@@ -1,0 +1,16 @@
+<properties>
+	<property name="default" 
+			f:timeoutConnection = "20000"
+			f:timeoutSocket = "20000"
+			f:retryTime = "1"
+			f:maxLineLength = "-1"
+			f:maxHeaderCount = "200"
+			f:maxTotal = "800"
+			f:defaultMaxPerRoute = "200"
+		class="org.frameworkset.spi.remote.http.ClientConfiguration">		      
+	</property>
+	
+	 
+	
+		
+</properties>

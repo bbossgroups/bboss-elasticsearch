@@ -1,0 +1,171 @@
+
+configure(allprojects) { project ->
+	group = PROJ_GROUP
+	version = PROJ_VERSION	
+	
+	apply plugin: "java"
+	apply plugin: "maven-publish"
+	apply plugin: "eclipse"
+	apply plugin: "idea"
+	apply plugin: "signing"
+	apply plugin: "maven"
+	eclipse {
+		jdt {
+			//if you want to alter the java versions (by default they are configured with gradle java plugin settings):
+			sourceCompatibility = SOURCE_COMPILER_LEVEL
+			targetCompatibility = TARGET_COMPILER_LEVEL
+			//javaRuntimeName = "../../org.eclipse.jdt.launching.JRE_CONTAINER"
+
+		}
+	}
+
+	tasks.withType(JavaCompile) {
+		
+		sourceCompatibility = SOURCE_COMPILER_LEVEL
+		targetCompatibility = TARGET_COMPILER_LEVEL
+		options.encoding = 'UTF-8'
+	}
+
+	tasks.withType(Javadoc) {
+		sourceCompatibility = JAVADOC_SOURCE_LEVEL
+		targetCompatibility = JAVADOC_COMPILER_LEVEL
+		options.encoding = 'UTF-8'
+		// disable the crazy super-strict doclint tool in Java 8
+        // noinspection SpellCheckingInspection
+		if (JavaVersion.current().isJava8Compatible()) {
+			options.addStringOption('Xdoclint:none', '-quiet')
+		}
+	}
+
+	jar {
+		manifest {
+			attributes (
+					'Implementation': version,
+					'Specification-Version': version,
+					'Implementation-Vendor': 'bbossgroups',
+					'Implementation-ProductID': project.name,
+					'Compile-Timestamp': new Date().format('yyyy-MM-dd HH:mm:ss'),
+					'Compile-User': DEVELOPER_NAME
+			)
+		}
+	}
+
+
+	dependencies {
+		testCompile 'junit:junit:4.12'
+	}
+
+	repositories {
+		mavenLocal()
+		 maven {
+	        url "http://maven.aliyun.com/nexus/content/groups/public"
+	    } 
+		mavenCentral()
+		
+	}
+	if(project.getProperty('skipTest').equals("true"))
+	{
+		compileTestJava.enabled=false
+		processTestResources.enabled=false
+		testClasses.enabled = false
+		test.enabled = false  
+	}
+}
+
+ 
+configure(subprojects) { subproject ->
+	task sourcesJar(type: Jar) {
+		classifier = "sources"	
+		from sourceSets.main.allJava
+	}
+	
+	task javaDocJar(type: Jar, dependsOn: javadoc) {
+		classifier = "javadoc"
+		from javadoc.destinationDir
+	}
+	artifacts {
+	    archives sourcesJar, javaDocJar
+	}
+
+}
+
+configure([project(":bboss-plugin-elasticsearch")]) { subproject ->
+	ext.uploadtocenter=uploadArchivesToMavenCenter.equals("true")
+	if(uploadtocenter)
+	{
+		signing {
+		        //required { uploadtocenter }
+		        sign configurations.archives
+		 }
+	}
+	uploadArchives {
+		  repositories {
+		   
+			    mavenDeployer {
+			    
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	     	repository(url: sonatype_url) {
+	     		
+			         authentication(userName: sonatype_username, password: sonatype_password)
+			}
+				
+				
+				
+				 	
+		      pom.project {
+		        name project.name
+		        packaging 'jar'
+		        // optionally artifactId can be defined here 
+		        description PROJ_DESCRIPTION
+		        url PROJ_WEBSITEURL
+	
+		        scm {
+		          connection scm_connection
+		          developerConnection scm_developerConnection
+		          url scm_url
+		        }
+	
+		        licenses {
+		          license {
+		            name PROJ_LICENCE_NAME
+		            url PROJ_LICENCE_URL
+		          }
+		        }
+	
+		        developers {
+		          developer {
+		            id DEVELOPER_ID
+		            name DEVELOPER_NAME
+		            email DEVELOPER_EMAIL
+		          }
+		        }
+		      }
+		    }
+		  }
+		}
+		
+		publishing {
+			publications {
+				mavenJava(MavenPublication) {
+					
+					from components.java
+					
+					artifact sourcesJar
+					artifact javaDocJar
+					
+				}
+			}
+			repositories {
+		        /**maven {
+		            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+		            credentials {
+		                username ""
+		                password ""
+		            }
+		        }*/
+		        mavenLocal()    
+		    }
+			
+		}
+}
+
