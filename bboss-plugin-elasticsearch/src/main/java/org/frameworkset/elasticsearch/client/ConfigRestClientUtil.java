@@ -327,7 +327,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	@Override
 	public String executeHttp(String path, String templateName, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeHttp(path, evalTemplate(templateName, (Object) null));
+		return this.client.executeHttp(path, evalTemplate(templateName, (Object) null),action);
 	}
 
 
