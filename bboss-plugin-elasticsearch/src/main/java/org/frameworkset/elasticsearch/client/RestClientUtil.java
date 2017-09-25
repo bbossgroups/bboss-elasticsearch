@@ -88,9 +88,6 @@ public class RestClientUtil implements ClientUtil{
 	}
 	
 	
-	 
-	
-	
 	@Override
 	public String executeHttp(String path, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
@@ -131,7 +128,11 @@ public class RestClientUtil implements ClientUtil{
 	}
 	@Override
 	public SearchResult search(String path, String entity) throws ElasticSearchException {
-		return this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler(  ));
+		SearchResult searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler(  ));
+		if(searchResult instanceof ErrorResponse){
+			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+		}
+		return searchResult;
 	}
 
 	@Override
@@ -146,7 +147,11 @@ public class RestClientUtil implements ClientUtil{
 	}
 	@Override
 	public SearchResult search(String path, String entity,Class<?> type) throws ElasticSearchException {
-		return this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+		SearchResult searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+		if(searchResult instanceof ErrorResponse){
+			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+		}
+		return searchResult;
 	}
 
 	protected <T> ESDatas<T> buildESDatas(SearchResult result,Class<T> type){
@@ -158,9 +163,17 @@ public class RestClientUtil implements ClientUtil{
 		datas.setTotalSize(restResponse.getSearchHits().getTotal());
 		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
 		List<T> hits = new ArrayList<T>(searchHits.size());
+		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+		T data = null;
 		for(SearchHit hit:searchHits){
-			hits.add((T)hit.getSource());
+			data = (T) hit.getSource();
+			hits.add(data);
+			if(isESBaseData) {
+				buildESBaseData(  hit,  (ESBaseData)data);
+			}
+
 		}
+		datas.setAggregations(restResponse.getAggregations());
 		datas.setDatas(hits);
 		return datas;
 	}
@@ -182,14 +195,30 @@ public class RestClientUtil implements ClientUtil{
 	public <T> T searchObject(String path, String templateName, Object params,Class<T> type) throws ElasticSearchException {
 	 	return null;
 	}
+	protected void buildESBaseData(SearchHit hit,ESBaseData esBaseData){
+		esBaseData.setFields(hit.getFields());
+		esBaseData.setHighlight( hit.getHighlight());
+		esBaseData.setId(hit.getId());
+		esBaseData.setScore(hit.getScore());
+		esBaseData.setSort(hit.getSort());
+		esBaseData.setType(hit.getType());
+		esBaseData.setVersion(hit.getVersion());
+		esBaseData.setIndex(hit.getIndex());
+	}
 	protected <T> T buildObject(SearchResult result, Class<T> type){
 		if(result instanceof ErrorResponse){
 			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
 		}
 		RestResponse restResponse = (RestResponse)result;
 		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
-		if(searchHits != null && searchHits.size() > 0)
-			return (T)searchHits.get(0).getSource();
+		if(searchHits != null && searchHits.size() > 0) {
+			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+			SearchHit hit = searchHits.get(0);
+			T data = (T) searchHits.get(0).getSource();
+			if(isESBaseData) {
+				buildESBaseData(  hit,  (ESBaseData)data);
+			}
+		}
 		return null;
 
 	}
@@ -245,7 +274,6 @@ public class RestClientUtil implements ClientUtil{
 		}
 		else
 		{
-
 			return Float.parseFloat(num.toString());
 		}
 	}

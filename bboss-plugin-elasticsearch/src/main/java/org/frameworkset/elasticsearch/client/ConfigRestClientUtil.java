@@ -294,28 +294,30 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	@Override
 	public String executeRequest(String path, String templateName) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeRequest(path, evalTemplate(templateName, (Map) null));
+		return super.executeRequest(path, evalTemplate(templateName, (Map) null));
 	}
 
 	@Override
 	public String executeRequest(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeRequest(path, evalTemplate(templateName, params));
+		return super.executeRequest(path, evalTemplate(templateName, params));
 	}
 
 	@Override
 	public String executeRequest(String path, String templateName, Object params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeRequest(path, evalTemplate(templateName, params));
+		return super.executeRequest(path, evalTemplate(templateName, params));
 	}
 
 	public <T> T executeRequest(String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
+		return super.executeRequest(  path, evalTemplate(templateName, params),   responseHandler);
+//		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
 
 
 	public <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
+		return super.executeRequest(  path, evalTemplate(templateName, params), responseHandler);
+//		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
 
 	@Override
@@ -327,88 +329,104 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	@Override
 	public String executeHttp(String path, String templateName, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeHttp(path, evalTemplate(templateName, (Object) null),action);
+//		return this.client.executeHttp(path, evalTemplate(templateName, (Object) null),action);
+		return super.executeHttp(  path, evalTemplate(templateName, (Object) null),   action);
 	}
 
 
 	@Override
 	public <T> T executeRequest(String path, String templateName, ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
+//		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
+		return super.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName, Map params) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName, Object params) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName) throws ElasticSearchException {
-
-		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
+		return super.search(path, evalTemplate(templateName, (Object) null));
+//		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(path, evalTemplate(templateName, params), type);
 	}
+
 
 	@Override
 	public SearchResult search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(path, evalTemplate(templateName, params), type);
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName, Class<?> type) throws ElasticSearchException {
-		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+//		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+		return super.search(path, evalTemplate(templateName, (Object)null), type);
 	}
 
+
 	public <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return buildESDatas(result, type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return buildESDatas(result, type);
+		return super.searchList(  path,   this.evalTemplate(templateName, params),type);
 	}
 
 	public <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return buildESDatas(result, type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return buildESDatas(result, type);
+		return super.searchList(  path,   this.evalTemplate(templateName, params),type);
 	}
 
 	public <T> ESDatas<T> searchList(String path, String templateName, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
-		return buildESDatas(result, type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+//		return buildESDatas(result, type);
+		return super.searchList(  path,   this.evalTemplate(templateName, (Map)null),type);
 	}
 
 
 	public <T> T searchObject(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return buildObject(result, type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return buildObject(result, type);
+		return super.searchObject(  path,   this.evalTemplate(templateName, params),type);
 	}
 
 	public <T> T searchObject(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return buildObject(result, type);
+		return super.searchObject(  path,   this.evalTemplate(templateName, params),type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		return buildObject(result, type);
 	}
 
 	public <T> T searchObject(String path, String templateName, Class<T> type) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
-		return buildObject(result, type);
+		return super.searchObject(  path,   this.evalTemplate(templateName, (Object) null),type);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+//		return buildObject(result, type);
 
 	}
 
 
 	@Override
 	public SearchResult search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(  path,evalTemplate(templateName, params),   type);
 	}
 
 	@Override
 	public SearchResult search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
-		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(  path, evalTemplate(templateName, params),   type);
+//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
 	}
 
 	@Override
@@ -518,13 +536,15 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	public Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException {
-		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
+		return super.searchMap(  path, this.evalTemplate(templateName, params));
+//		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> searchMap(String path, String templateName, Object params) throws ElasticSearchException {
-		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
+		return super.searchMap(  path, this.evalTemplate(templateName, params));
+//		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
 	}
 
 	/**
@@ -537,33 +557,36 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Map params, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
-		return buildESAggDatas(result, type, aggs, stats);
+		return super.searchAgg(  path,   this.evalTemplate(templateName, params),   type,   aggs,   stats);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Object params, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
-		return buildESAggDatas(result, type, aggs, stats);
+		return super.searchAgg(  path,   this.evalTemplate(templateName, params), type, aggs, stats);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
-		return buildESAggDatas(result, type, aggs, stats);
+		return super.searchAgg(  path, this.evalTemplate(templateName, (Object) null),   type,   aggs,   stats);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	@Override
 	public String createTempate(String template, String templateName) throws ElasticSearchException {
-		return this.client.executeHttp("_template/"+template,this.evalTemplate(templateName,(Object)null),ClientUtil.HTTP_PUT);
+		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)null));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Object params) throws ElasticSearchException {
-		return this.client.executeHttp("_template/"+template,this.evalTemplate(templateName,(Object)params),ClientUtil.HTTP_PUT);
+		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)params));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Map params) throws ElasticSearchException {
-		return this.client.executeHttp("_template/"+template,this.evalTemplate(templateName,(Object)params),ClientUtil.HTTP_PUT);
+		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)params));
 	}
 
 }

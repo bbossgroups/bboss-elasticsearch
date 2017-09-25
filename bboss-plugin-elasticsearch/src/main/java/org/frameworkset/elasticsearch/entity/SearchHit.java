@@ -18,9 +18,13 @@ public class SearchHit  implements Serializable {
 	@JsonProperty("_score")
 	private int  score;
 	@JsonProperty("_source")
-	
+
 	private Object source;
 	private Map<String,List<Object>> fields;
+	@JsonProperty("_version")
+	private int version;
+
+	private Map<String,List<Object>> highlight;
 	private long[] sort;
 	public SearchHit() {
 		// TODO Auto-generated constructor stub
@@ -70,5 +74,21 @@ public class SearchHit  implements Serializable {
 
 	public void setFields(Map<String, List<Object>> fields) {
 		this.fields = fields;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public Map<String, List<Object>> getHighlight() {
+		return highlight;
+	}
+
+	public void setHighlight(Map<String, List<Object>> highlight) {
+		this.highlight = highlight;
 	}
 }

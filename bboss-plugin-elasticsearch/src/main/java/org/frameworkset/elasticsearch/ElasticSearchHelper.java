@@ -7,14 +7,17 @@ import org.frameworkset.spi.DefaultApplicationContext;
 public class ElasticSearchHelper {
 	private static DefaultApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch.xml");
 	public static final String DEFAULT_SEARCH = "elasticSearch";
-	private static ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+	private static ElasticSearch elasticSearchSink = null;
 	public ElasticSearchHelper() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	public static ElasticSearch getElasticSearchSink(String elasticSearch){
-		if(elasticSearch == null || elasticSearch.equals(""))
+		if(elasticSearch == null || elasticSearch.equals("")) {
+			if(elasticSearchSink == null)
+				elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
 			return elasticSearchSink;
+		}
 		ElasticSearch elasticSearchSink = context.getTBeanObject(elasticSearch, ElasticSearch.class);
 		return elasticSearchSink;
 	}

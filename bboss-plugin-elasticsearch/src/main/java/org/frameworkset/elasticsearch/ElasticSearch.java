@@ -20,7 +20,6 @@ package org.frameworkset.elasticsearch;
 
 import com.frameworkset.util.SimpleStringUtil;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.client.ClientUtil;
@@ -425,14 +424,14 @@ public class ElasticSearch {
 
 
 
-		Preconditions.checkState(SimpleStringUtil.isNotEmpty(indexName),
-				"Missing Param:" + INDEX_NAME);
-		Preconditions.checkState(SimpleStringUtil.isNotEmpty(indexType),
-				"Missing Param:" + INDEX_TYPE);
-		Preconditions.checkState(SimpleStringUtil.isNotEmpty(clusterName),
-				"Missing Param:" + CLUSTER_NAME);
-		Preconditions.checkState(batchSize >= 1, BATCH_SIZE
-				+ " must be greater than 0");
+//		Preconditions.checkState(SimpleStringUtil.isNotEmpty(indexName),
+//				"Missing Param:" + INDEX_NAME);
+//		Preconditions.checkState(SimpleStringUtil.isNotEmpty(indexType),
+//				"Missing Param:" + INDEX_TYPE);
+//		Preconditions.checkState(SimpleStringUtil.isNotEmpty(clusterName),
+//				"Missing Param:" + CLUSTER_NAME);
+//		Preconditions.checkState(batchSize >= 1, BATCH_SIZE
+//				+ " must be greater than 0");
 	}
 
 	public void start() {

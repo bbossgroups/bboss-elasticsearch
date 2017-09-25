@@ -1,8 +1,9 @@
 package org.frameworkset.elasticsearch.entity;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+import java.util.Map;
 
 public class ErrorInfo {
 	@JsonProperty("root_cause")
@@ -12,6 +13,7 @@ public class ErrorInfo {
 	private String phase;//": "query",
 	private boolean  grouped;//": true,
 	private int line;
+	private Map<String,Object> header;
 	private int col;
 	@JsonProperty("failed_shards")
     private List<FailedShard> failedShards;
@@ -67,4 +69,11 @@ public class ErrorInfo {
 		this.col = col;
 	}
 
+	public Map<String, Object> getHeader() {
+		return header;
+	}
+
+	public void setHeader(Map<String, Object> header) {
+		this.header = header;
+	}
 }

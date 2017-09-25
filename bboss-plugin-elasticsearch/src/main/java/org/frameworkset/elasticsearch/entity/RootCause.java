@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class RootCause  implements Serializable {
 	private String type;//": "query_shard_exception",
@@ -10,7 +11,7 @@ public class RootCause  implements Serializable {
 	@JsonProperty("index_uuid")
 	private String indexUuid;//": "Yh1s0aoDTdqa3ojpbYq2BQ",
 	private String index;//": "trace-2017.08.31"
-	
+	private Map<String,Object> header;
 	private int line;
 	private int col;
 	public RootCause() {
@@ -53,4 +54,11 @@ public class RootCause  implements Serializable {
 		this.col = col;
 	}
 
+	public Map<String, Object> getHeader() {
+		return header;
+	}
+
+	public void setHeader(Map<String, Object> header) {
+		this.header = header;
+	}
 }

@@ -6,6 +6,7 @@ public class Shards  implements Serializable {
 	private long total;
 	private long successful;
 	private long failed;
+	private long skipped;
 	public Shards() {
 		// TODO Auto-generated constructor stub
 	}
@@ -28,4 +29,11 @@ public class Shards  implements Serializable {
 		this.failed = failed;
 	}
 
+	public long getSkipped() {
+		return skipped;
+	}
+
+	public void setSkipped(long skipped) {
+		this.skipped = skipped;
+	}
 }
