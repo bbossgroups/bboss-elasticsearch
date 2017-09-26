@@ -11,11 +11,14 @@ public class ElasticSearchHelper {
 	public ElasticSearchHelper() {
 		// TODO Auto-generated constructor stub
 	}
-	
+	private static void init(){
+		if(elasticSearchSink == null)
+			elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+	}
+
 	public static ElasticSearch getElasticSearchSink(String elasticSearch){
 		if(elasticSearch == null || elasticSearch.equals("")) {
-			if(elasticSearchSink == null)
-				elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+			init();
 			return elasticSearchSink;
 		}
 		ElasticSearch elasticSearchSink = context.getTBeanObject(elasticSearch, ElasticSearch.class);
@@ -23,6 +26,7 @@ public class ElasticSearchHelper {
 	}
 	
 	public static ElasticSearch getElasticSearchSink(){
+		init();
 		return elasticSearchSink;
 	}
 	
@@ -39,6 +43,7 @@ public class ElasticSearchHelper {
 	
 	public static Client getClient(){
 //		ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+		init();
 		return elasticSearchSink.getClient();
 	}
 	
@@ -50,6 +55,7 @@ public class ElasticSearchHelper {
 	
 	public static ClientUtil getConfigRestClientUtil(String configFile){
 //		ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+		init();
 		return elasticSearchSink.getConfigRestClientUtil(configFile);
 	}
 	

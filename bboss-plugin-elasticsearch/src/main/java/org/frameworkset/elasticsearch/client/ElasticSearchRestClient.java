@@ -19,12 +19,9 @@
 package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -39,6 +36,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+
+//import org.apache.http.client.HttpClient;
+//import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * Rest ElasticSearch client which is responsible for sending bulks of events to
@@ -56,9 +56,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private final ElasticSearchEventSerializer serializer;
 	private final RoundRobinList<ESAddress> serversList;
 	private Properties extendElasticsearchPropes;
+	private String httpPool;
 	private String elasticUser;
 	private String elasticPassword;
-	private HttpClient httpClient;
+//	private HttpClient httpClient;
 	private Map<String, String> headers = new HashMap<>();
 	private boolean showTemplate = false;
  
@@ -82,18 +83,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			addressList.add(new ESAddress(host));
 		}
 		serversList = new RoundRobinList<ESAddress>(addressList);
-		httpClient = new DefaultHttpClient();
+//		httpClient = new DefaultHttpClient();
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
 		this.init();
 	}
 
-	@VisibleForTesting
-	public ElasticSearchRestClient(String[] hostNames, String elasticUser, String elasticPassword,
-								   ElasticSearchEventSerializer serializer, HttpClient client, Properties extendElasticsearchPropes) {
-		this(hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
-		httpClient = client;
-	}
+//	@VisibleForTesting
+//	public ElasticSearchRestClient(String[] hostNames, String elasticUser, String elasticPassword,
+//								   ElasticSearchEventSerializer serializer, Properties extendElasticsearchPropes) {
+//		this(hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
+//
+//	}
 
 	public void init() {
 		//Authorization
@@ -116,6 +117,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    String timeZoneString = elasticsearchPropes.getProperty(TimeBasedIndexNameBuilder.TIME_ZONE);
 	    
 	    String showTemplate_ = elasticsearchPropes.getProperty("elasticsearch.showTemplate");
+	    String httpPool = elasticsearchPropes.getProperty("elasticsearch.httpPool");
+	    if(httpPool == null || httpPool.equals("")){
+			httpPool = "default";
+		}
 	    if(showTemplate_ != null && showTemplate_.equals("true")){
 	    	this.showTemplate = true;
 	    }
@@ -186,7 +191,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				if(this.showTemplate && logger.isInfoEnabled()){
 					logger.info(entity);
 				}
-				response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
+				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
 //				if (response != null) {
 //
 //					logger.info("Status message from elasticsearch: " + response);
@@ -266,23 +271,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				if (entity == null){
 					if(action == null)				
-						response = HttpRequestUtil.httpPostforString(url, null, this.headers);
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers);
 					else if(action == ClientUtil.HTTP_POST )				
-						response = HttpRequestUtil.httpPostforString(url, null, this.headers);
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers);
 					else if( action == ClientUtil.HTTP_PUT)				
-						response = HttpRequestUtil.httpPutforString(url, null, this.headers);
+						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers);
 					else if(action == ClientUtil.HTTP_GET)				
-						response = HttpRequestUtil.httpGetforString(url, this.headers);
+						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers);
 					else if(action == ClientUtil.HTTP_DELETE)				
-						response = HttpRequestUtil.httpDelete(url, null, this.headers);
+						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers);
 				}
 				else
 				{
 					 if(action == ClientUtil.HTTP_POST )	
-						 response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
+						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
 					 else if( action == ClientUtil.HTTP_PUT)	
 					 {
-						 response = HttpRequestUtil.putJson(entity, url, this.headers);
+						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers);
 					 }
 				}
 //				if (response != null) {
