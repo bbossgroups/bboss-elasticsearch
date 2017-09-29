@@ -71,9 +71,19 @@ public class RestClientUtil implements ClientUtil{
 	}
 
 	@Override
-	public void deleteIndex(String indexName, String indexType, String... ids) throws ElasticSearchException {
-		// TODO Auto-generated method stub
+	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
+		StringBuilder builder = new StringBuilder();
+		for(String id:ids) {
+			builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+		}
+		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		
+	}
+
+	@Override
+	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException {
+
+		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(),ClientUtil.HTTP_DELETE);
 	}
 	@Override
 	public String executeRequest(String path, String entity) throws ElasticSearchException {

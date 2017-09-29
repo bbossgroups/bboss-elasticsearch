@@ -295,27 +295,30 @@ public class ElasticSearch {
 
 	}
 
-	public Object deleteIndex(String indexName, String indexType, String... ids) throws EventDeliveryException {
+	public Object deleteIndexs(String indexName, String indexType, String... ids) throws EventDeliveryException {
 		ClientUtil clientUtil = this.getTransportClientUtil();
 		if(clientUtil == null){
 			clientUtil = this.getRestClientUtil();
+			return clientUtil.deleteIndexs(indexName, indexType, ids);
 		}
-		try {
+		else {
+			try {
 
-			clientUtil.deleteIndex(indexName, indexType, ids);
-			return clientUtil.execute();
+				clientUtil.deleteIndexs(indexName, indexType, ids);
+				return clientUtil.execute();
 
-		} catch (EventDeliveryException ex) {
+			} catch (EventDeliveryException ex) {
 
-			throw ex;
+				throw ex;
 
-		} catch (Throwable ex) {
+			} catch (Throwable ex) {
 
 //		        logger.error(
 //		            "Exception in rollback. Rollback might not have been successful.",
 //		            ex);
-			throw new EventDeliveryException(ex);
+				throw new EventDeliveryException(ex);
 
+			}
 		}
 	}
 

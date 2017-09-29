@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch.client;
 import org.apache.http.client.ResponseHandler;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -81,7 +82,7 @@ public class TransportClientUtil  implements ClientUtil{
 	 
 	
 	@Override
-	public void deleteIndex(String indexName, String indexType, String... ids) throws ElasticSearchException {
+	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
 		init();
 		for(int i = 0; i < ids.length; i ++){
 			try {
@@ -90,7 +91,16 @@ public class TransportClientUtil  implements ClientUtil{
 				throw new ElasticSearchException(e);
 			}
 		}
+		return null;
 		
+	}
+
+	@Override
+	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException {
+
+		DeleteResponse response = this.getClient().delete(client.deleteIndex(indexName,indexType,id).request()).actionGet();
+		 return response.toString();
+
 	}
 	public void updateIndexs(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer)throws ElasticSearchException{
 		try {

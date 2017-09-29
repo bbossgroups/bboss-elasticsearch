@@ -97,8 +97,8 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	@Override
-	public void deleteIndex(String indexName, String indexType, String... ids) throws ElasticSearchException {
-		// TODO Auto-generated method stub
+	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
+		return super.deleteIndexs(indexName,indexType,ids);
 
 	}
 

@@ -17,7 +17,10 @@ public interface ClientUtil {
 	public final String HTTP_DELETE = "delete";
 	public final String HTTP_PUT = "put";
 
-	public void deleteIndex(String indexName, String indexType, String... ids) throws ElasticSearchException;
+	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException;
+
+
+	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException;
 
 	public void addEvent(Event event, ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException;
 

@@ -14,7 +14,7 @@ public abstract class ESBaseData implements Serializable{
 	private int version;
 	private String index;//"_index": "trace-2017.09.01",
 	private Map<String,List<Object>> highlight;
-	private long[] sort;
+	private Object[] sort;
 	private int  score;
 
 
@@ -58,11 +58,11 @@ public abstract class ESBaseData implements Serializable{
 		this.highlight = highlight;
 	}
 
-	public long[] getSort() {
+	public Object[] getSort() {
 		return sort;
 	}
 
-	public void setSort(long[] sort) {
+	public void setSort(Object[] sort) {
 		this.sort = sort;
 	}
 

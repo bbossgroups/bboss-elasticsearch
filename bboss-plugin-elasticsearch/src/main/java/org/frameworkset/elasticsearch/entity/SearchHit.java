@@ -25,7 +25,7 @@ public class SearchHit  implements Serializable {
 	private int version;
 
 	private Map<String,List<Object>> highlight;
-	private long[] sort;
+	private Object[] sort;
 	public SearchHit() {
 		// TODO Auto-generated constructor stub
 	}
@@ -61,10 +61,10 @@ public class SearchHit  implements Serializable {
 	public void setSource(Object source) {
 		this.source = source;
 	}
-	public long[] getSort() {
+	public Object[] getSort() {
 		return sort;
 	}
-	public void setSort(long[] sort) {
+	public void setSort(Object[] sort) {
 		this.sort = sort;
 	}
 

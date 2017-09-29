@@ -31,6 +31,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
+import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchIndexRequestBuilderFactory;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.event.Event;
@@ -336,7 +337,7 @@ public class ElasticSearchTransportClient implements ElasticSearchClient {
 		return null;
 	}
 
-	public DeleteRequestBuilder deleteIndex(String indexName, String indexType, String id) throws Exception{
+	public DeleteRequestBuilder deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException {
 		return client.prepareDelete(indexName, indexType, id);
 	}
 
