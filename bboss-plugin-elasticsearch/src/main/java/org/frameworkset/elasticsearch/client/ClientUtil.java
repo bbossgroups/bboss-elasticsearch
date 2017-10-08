@@ -19,6 +19,28 @@ public interface ClientUtil {
 
 	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException;
 
+	/**
+	 * 批量创建索引
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException;
+	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException;
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException;
+
 
 	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException;
 
@@ -269,5 +291,6 @@ public interface ClientUtil {
 	public String createTempate(String template, String templateName,Object params) throws ElasticSearchException ;
 
 	public String createTempate(String template, String templateName,Map params) throws ElasticSearchException ;
+
 
 }

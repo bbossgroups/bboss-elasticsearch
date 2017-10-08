@@ -15,27 +15,10 @@
  */
 package org.frameworkset.elasticsearch.template;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-
-import org.frameworkset.spi.assemble.Pro;
-
-import com.frameworkset.velocity.BBossVelocityUtil;
-
 import bboss.org.apache.velocity.VelocityContext;
 import bboss.org.apache.velocity.context.Context;
 import bboss.org.apache.velocity.context.InternalContextAdapterImpl;
-import bboss.org.apache.velocity.exception.MethodInvocationException;
-import bboss.org.apache.velocity.exception.ParseErrorException;
-import bboss.org.apache.velocity.exception.ResourceNotFoundException;
-import bboss.org.apache.velocity.exception.TemplateInitException;
-import bboss.org.apache.velocity.exception.VelocityException;
+import bboss.org.apache.velocity.exception.*;
 import bboss.org.apache.velocity.runtime.RuntimeConstants;
 import bboss.org.apache.velocity.runtime.directive.Scope;
 import bboss.org.apache.velocity.runtime.directive.StopCommand;
@@ -45,6 +28,12 @@ import bboss.org.apache.velocity.runtime.parser.node.Node;
 import bboss.org.apache.velocity.runtime.parser.node.SimpleNode;
 import bboss.org.apache.velocity.runtime.resource.Resource;
 import bboss.org.apache.velocity.runtime.resource.ResourceManager;
+import com.frameworkset.velocity.BBossVelocityUtil;
+import org.frameworkset.soa.BBossStringReader;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p> SQLTemplate.java</p>
@@ -144,7 +133,7 @@ public class ESTemplate extends Resource
 	         */
 	        try
 	        {
-	        	is = new StringReader(template);
+	        	is = new BBossStringReader(template);
 	        }
 	        catch( ResourceNotFoundException rnfe )
 	        {

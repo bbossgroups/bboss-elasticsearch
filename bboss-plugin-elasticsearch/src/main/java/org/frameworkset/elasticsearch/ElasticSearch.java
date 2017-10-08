@@ -19,7 +19,6 @@
 package org.frameworkset.elasticsearch;
 
 import com.frameworkset.util.SimpleStringUtil;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.client.ClientUtil;
@@ -93,42 +92,35 @@ public class ElasticSearch {
 
 
 
-	@VisibleForTesting
+	
 	String[] getRestServerAddresses() {
 		return restServerAddresses;
 	}
 
-	@VisibleForTesting
 	String[] getTransportServerAddresses() {
 		return transportServerAddresses;
 	}
 
-	@VisibleForTesting
 	String getClusterName() {
 		return clusterName;
 	}
 
-	@VisibleForTesting
 	String getIndexName() {
 		return indexName;
 	}
 
-	@VisibleForTesting
+
 	String getIndexType() {
 		return indexType;
 	}
 
-	@VisibleForTesting
 	long getTTLMs() {
 		return ttlMs;
 	}
 
-	@VisibleForTesting
 	ElasticSearchEventSerializer getEventSerializer() {
 		return eventSerializer;
 	}
-
-	@VisibleForTesting
 	IndexNameBuilder getIndexNameBuilder() {
 		return indexNameBuilder;
 	}

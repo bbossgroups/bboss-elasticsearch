@@ -16,24 +16,25 @@
 
 package org.frameworkset.elasticsearch.template;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import bboss.org.apache.velocity.VelocityContext;
+import com.frameworkset.util.*;
+import com.frameworkset.velocity.BBossVelocityUtil;
+import org.elasticsearch.ElasticsearchParseException;
+import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.Param;
 import org.frameworkset.spi.assemble.Pro;
+import org.frameworkset.util.ClassUtil;
+import org.frameworkset.util.annotations.DateFormateMeta;
+import org.frameworkset.util.annotations.wraper.ColumnWraper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.DaemonThread;
-import com.frameworkset.util.ResourceInitial;
-import com.frameworkset.velocity.BBossVelocityUtil;
-
-import bboss.org.apache.velocity.VelocityContext;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -58,11 +59,299 @@ public class ESUtil {
 	private static Logger log = LoggerFactory.getLogger(ESUtil.class);
 	protected static Map<String,ESUtil> esutils = new HashMap<String,ESUtil>(); 
 	protected static long refresh_interval = 5000;
+	protected  ESTemplateCache templateCache = new ESTemplateCache();
 	protected Map<String,ESInfo> esInfos;
 	protected Map<String,ESRef> esrefs;
 	protected boolean hasrefs;
 	protected String templateFile;
 	protected String realTemplateFile;
+	private static String java_date_format = "yyyy-MM-dd HH:mm:ss";
+	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
+		return this.templateCache.getTemplateStruction(esInfo,template);
+	}
+	public String getJavaDateFormat() {
+		return java_date_format;
+	}
+
+	public VelocityContext buildVelocityContext(Object bean) {
+		VelocityContext context_ = new VelocityContext();
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		String name = null;
+		DateFormateMeta dataformat = null;
+
+//		String charset = null;
+		Object value = null;
+		Class type = null;
+
+//		Method writeMethod = null;
+
+		List<ClassUtil.PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
+		for (int i = 0; attributes != null && i < attributes.size(); i++) {
+			ClassUtil.PropertieDescription property = attributes.get(i);
+			ColumnWraper column = property.getColumn();
+			if (column != null && (column.ignoreCUDbind() || column.ignorebind()))
+				continue;
+
+			type = property.getPropertyType();
+
+
+			try {
+				if (property.canread()) {
+					try {
+						value = property.getValue(bean);
+					} catch (InvocationTargetException e1) {
+						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1.getTargetException());
+					} catch (Exception e1) {
+						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1);
+					}
+
+					name = property.getName();
+
+					if (column != null) {
+						ColumnEditorInf editor = column.editor();
+						if (editor == null || editor instanceof ColumnToFieldEditor) {
+
+							dataformat = column.getDateFormateMeta();
+
+//							charset = column.charset();
+
+
+						} else {
+							Object cv = editor.toColumnValue(column, value);
+							if (cv == null)
+								throw new ElasticSearchException("转换属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。");
+
+							if (!(cv instanceof ColumnType)) {
+								value = cv;
+								type = value.getClass();
+
+							} else {
+								type = ((ColumnType) cv).getType();
+							}
+						}
+
+					}
+					if (value == null) {
+						context_.put(name, null);
+					} else if (value instanceof Date) {
+						if(dataformat != null)
+							context_.put(name, this.getDate((Date) value, dataformat));
+						else
+							context_.put(name, ((Date) value).getTime());
+					} else {
+						context_.put(name, value);
+					}
+//					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
+
+				}
+				name = null;
+				value = null;
+				dataformat = null;
+
+//				charset = null;
+
+
+			} catch (SecurityException e) {
+				throw new ElasticSearchException(e);
+			} catch (IllegalArgumentException e) {
+				throw new ElasticSearchException(e);
+			}
+//			catch (InvocationTargetException e) {
+//				throw new ElasticSearchException(e.getTargetException());
+//			}
+
+
+			catch (Exception e) {
+				throw new ElasticSearchException(e);
+			}
+
+
+		}
+
+
+		return context_;
+
+	}
+
+
+
+	public VelocityContext buildVelocityContext(Map data) {
+
+		VelocityContext context_ = new VelocityContext();
+		Iterator<Map.Entry<String, Param>> it = data.entrySet().iterator();
+		Object temp = null;
+		while (it.hasNext()) {
+			Map.Entry<String, Param> entry = it.next();
+			temp = entry.getValue();
+
+			if (temp != null)
+				context_.put(entry.getKey(), temp);
+		}
+
+		return context_;
+
+	}
+	public String getDate(Date date, DateFormateMeta dateFormateMeta) throws ParseException {
+		String format = null;
+		if (dateFormateMeta == null) {
+			format = this.getJavaDateFormat();
+		} else
+			format = dateFormateMeta.getDateformat();
+		SimpleDateFormat f = dateFormateMeta == null ? new SimpleDateFormat(format) : new SimpleDateFormat(format, dateFormateMeta.getLocale());
+		String _date = f.format(date);
+
+		return _date;
+	}
+	public void getVariableValue(StringBuilder builder,VariableHandler.Variable variable,Object bean,List<ClassUtil.PropertieDescription> attributes,ClassUtil.ClassInfo beanInfo,String template) {
+//		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		String name = null;
+		DateFormateMeta dataformat = null;
+
+//		String charset = null;
+		Object value = null;
+		Class type = null;
+
+//		Method writeMethod = null;
+
+//		List<ClassUtil.PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
+		for (int i = 0; attributes != null && i < attributes.size(); i++) {
+			ClassUtil.PropertieDescription property = attributes.get(i);
+			if(!property.getName().equals(variable.getVariableName()))
+				continue;
+			ColumnWraper column = property.getColumn();
+			if (column != null && (column.ignoreCUDbind() || column.ignorebind()))
+				continue;
+
+			type = property.getPropertyType();
+
+			try {
+				if (property.canread()) {
+					try {
+						value = property.getValue(bean);
+					} catch (InvocationTargetException e1) {
+						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1.getTargetException());
+					} catch (Exception e1) {
+						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1);
+					}
+
+					name = property.getName();
+
+					if (column != null) {
+						ColumnEditorInf editor = column.editor();
+						if (editor == null || editor instanceof ColumnToFieldEditor) {
+
+							dataformat = column.getDateFormateMeta();
+
+//							charset = column.charset();
+
+
+						} else {
+							Object cv = editor.toColumnValue(column, value);
+							if (cv == null)
+								throw new ElasticSearchException("转换属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。");
+
+							if (!(cv instanceof ColumnType)) {
+								value = cv;
+								type = value.getClass();
+
+							} else {
+								type = ((ColumnType) cv).getType();
+							}
+						}
+
+					}
+					if (value == null) {
+						builder.append("null");
+					} else if (value instanceof Date) {
+						if(dataformat != null)
+							builder.append(this.getDate((Date) value, dataformat));
+						else
+							builder.append(((Date) value).getTime());
+					} else {
+						value = VariableHandler.evaluateVariableValue(variable, value);
+						if(value instanceof String){
+							builder.append("\"").append(value.toString()).append("\"");
+						}
+						else
+							builder.append(value.toString());
+					}
+//					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
+
+				}
+				name = null;
+				value = null;
+				dataformat = null;
+
+				return;
+
+			} catch (SecurityException e) {
+				throw new ElasticSearchException(e);
+			} catch (IllegalArgumentException e) {
+				throw new ElasticSearchException(e);
+			}
+//			catch (InvocationTargetException e) {
+//				throw new ElasticSearchException(e.getTargetException());
+//			}
+
+
+			catch (Exception e) {
+				throw new ElasticSearchException(e);
+			}
+
+
+		}
+		throw new ElasticsearchParseException(new StringBuilder().append(beanInfo.getClazz().getName()).append("没有为elasticsearch模板[")
+				.append(template).append("]@").append(this.templatecontext.getConfigfile())
+				.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+
+
+
+
+
+	}
+
+	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Object bean,String template){
+		List<String> tokens = templateStruction.getTokens();
+		List<VariableHandler.Variable> variables = templateStruction.getVariables();
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		List<ClassUtil.PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
+		for(int i = 0; i < tokens.size(); i ++){
+			builder.append(tokens.get(i));
+			VariableHandler.Variable variable = variables.get(i);
+			this.getVariableValue(builder,variable,bean,attributes,beanInfo,  template);
+		}
+	}
+
+	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Map bean,String template){
+		List<String> tokens = templateStruction.getTokens();
+		List<VariableHandler.Variable> variables = templateStruction.getVariables();
+		for(int i = 0; i < tokens.size(); i ++){
+			builder.append(tokens.get(i));
+			VariableHandler.Variable variable = variables.get(i);
+			Object data = bean.get(variable.getVariableName());
+			if(data == null){
+				if(bean.containsKey(variable.getVariableName()))
+					builder.append("null");
+				else
+				{
+					throw new ElasticsearchParseException(new StringBuilder().append("没有为elasticsearch模板[")
+							.append(template).append("]@").append(this.templatecontext.getConfigfile())
+							.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+				}
+			}
+			else {
+				Object value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
+				if(value instanceof String){
+					builder.append("\"").append(value.toString()).append("\"");
+				}
+				else
+					builder.append(value.toString());
+			}
+
+		}
+
+	}
+
 	public static class ESRef
 	{
 		public ESRef(String esname, String templatefile, String name) {
@@ -211,6 +500,7 @@ public class ESUtil {
 			this.esrefs.clear();
 			esrefs = null;
 		}
+		this.templateCache.clear();
 		if(templatecontext != null)
 			templatecontext.destroy(true);
 		
@@ -230,6 +520,7 @@ public class ESUtil {
 			this.esrefs.clear();
 			esrefs = null;
 		}
+		this.templateCache.clear();
 		String file = templatecontext.getConfigfile();
 		templatecontext.destroy(true);
 		templatecontext = new ESSOAFileApplicationContext(file);		

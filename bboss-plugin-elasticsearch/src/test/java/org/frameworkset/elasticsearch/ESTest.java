@@ -1,17 +1,17 @@
 package org.frameworkset.elasticsearch;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Map;
-import java.util.TimeZone;
-
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.junit.Test;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
+import java.util.TimeZone;
 
 public class ESTest {
 
@@ -25,6 +25,10 @@ public class ESTest {
 		FastDateFormat df = FastDateFormat.getInstance(format,TimeZone.getTimeZone("Asia/Shanghai"));
 		Object ojb = df.parseObject(data);
 		System.out.println();
+	}
+	@Test
+	public void createIndex(){
+
 	}
 	@Test
 	public void test() throws Exception{

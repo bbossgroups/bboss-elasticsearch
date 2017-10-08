@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.template;
 
+import com.frameworkset.util.VariableHandler;
 import org.frameworkset.spi.assemble.Pro;
 
 public class ESInfo {
@@ -92,6 +93,13 @@ public class ESInfo {
 	{
 		return this.esUtil.getPlainTemplate( sqlname);
 	}
+
+	public VariableHandler.URLStruction getTemplateStruction(String template){
+		return this.esUtil.getTempateStruction(this,template);
+	}
+
+
+
 	 
 
 }

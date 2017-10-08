@@ -18,9 +18,9 @@
  */
 package org.frameworkset.elasticsearch;
 
-import java.util.Properties;
-
 import org.frameworkset.elasticsearch.event.Event;
+
+import java.util.Properties;
 
 public interface IndexNameBuilder  {
   /**
@@ -30,7 +30,15 @@ public interface IndexNameBuilder  {
    * @return index name of the form 'indexPrefix-indexDynamicName'
    */
   public  String getIndexName(Event event);
-  
+
+
+  /**
+   * Gets the name of the index to use for an index request
+   * @param index
+   *          Event which determines index name
+   * @return index name of the form 'indexPrefix-indexDynamicName'
+   */
+  public  String getIndexName(String index);
   /**
    * Gets the prefix of index to use for an index request.
    * @param event

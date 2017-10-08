@@ -41,6 +41,9 @@ public class RestClientUtil implements ClientUtil{
 	public void updateIndexs(Event event, ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException {
 
 	}
+	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException{
+		return null;
+	}
 	@Override
 	public String executeRequest(String path, String templateName,Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
@@ -78,6 +81,33 @@ public class RestClientUtil implements ClientUtil{
 		}
 		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		
+	}
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException
+	{
+		return null;
+	}
+
+	@Override
+	/**
+	 * only use by config rest clientutil
+	 */
+	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException {
+//		StringBuilder builder = new StringBuilder();
+//		for(Object id:beans) {
+//			builder.append("{ \"index\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+//		}
+//		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		return null;
+
 	}
 
 	@Override

@@ -1,10 +1,7 @@
 package org.frameworkset.elasticsearch.client;
 
 import bboss.org.apache.velocity.VelocityContext;
-import com.frameworkset.common.poolman.NestedSQLException;
-import com.frameworkset.util.ColumnEditorInf;
-import com.frameworkset.util.ColumnToFieldEditor;
-import com.frameworkset.util.ColumnType;
+import com.frameworkset.util.VariableHandler;
 import org.apache.http.client.ResponseHandler;
 import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
@@ -19,25 +16,16 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.elasticsearch.template.ESTemplate;
 import org.frameworkset.elasticsearch.template.ESUtil;
-import org.frameworkset.spi.assemble.Param;
+import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.util.ClassUtil;
 import org.frameworkset.util.ClassUtil.ClassInfo;
 import org.frameworkset.util.ClassUtil.PropertieDescription;
-import org.frameworkset.util.annotations.DateFormateMeta;
-import org.frameworkset.util.annotations.wraper.ColumnWraper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * 通过配置文件加载模板
@@ -102,136 +90,66 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	}
 
-	protected VelocityContext buildVelocityContext(Object bean) {
-		VelocityContext context_ = new VelocityContext();
+	private Object getId(Object bean){
 		ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		String name = null;
-		DateFormateMeta dataformat = null;
-
-//		String charset = null;
-		Object value = null;
-		Class type = null;
-
-//		Method writeMethod = null;
-
-		List<PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
-		for (int i = 0; attributes != null && i < attributes.size(); i++) {
-			PropertieDescription property = attributes.get(i);
-			ColumnWraper column = property.getColumn();
-			if (column != null && (column.ignoreCUDbind() || column.ignorebind()))
-				continue;
-
-			type = property.getPropertyType();
+		PropertieDescription pkProperty = beanInfo.getPkProperty();
+		if(pkProperty == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+	}
 
 
-			try {
-				if (property.canread()) {
-					try {
-						value = property.getValue(bean);
-					} catch (InvocationTargetException e1) {
-						logger.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1.getTargetException());
-					} catch (Exception e1) {
-						logger.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1);
-					}
 
-					name = property.getName();
-
-					if (column != null) {
-						ColumnEditorInf editor = column.editor();
-						if (editor == null || editor instanceof ColumnToFieldEditor) {
-
-							dataformat = column.getDateFormateMeta();
-
-//							charset = column.charset();
-
-
-						} else {
-							Object cv = editor.toColumnValue(column, value);
-							if (cv == null)
-								throw new NestedSQLException("转换属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。");
-
-							if (!(cv instanceof ColumnType)) {
-								value = cv;
-								type = value.getClass();
-
-							} else {
-								type = ((ColumnType) cv).getType();
-							}
-						}
-
-					}
-					if (value == null) {
-						context_.put(name, null);
-					} else if (dataformat != null && value instanceof Date) {
-						context_.put(name, this.getDate((Date) value, dataformat));
-					} else {
-						context_.put(name, value);
-					}
-//					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
-
-				}
-				name = null;
-				value = null;
-				dataformat = null;
-
-//				charset = null;
-
-
-			} catch (SecurityException e) {
-				throw new ElasticSearchException(e);
-			} catch (IllegalArgumentException e) {
-				throw new ElasticSearchException(e);
-			}
-//			catch (InvocationTargetException e) {
-//				throw new ElasticSearchException(e.getTargetException());
-//			}
-
-
-			catch (Exception e) {
-				throw new ElasticSearchException(e);
-			}
-
-
+	/**
+	 * 批量创建索引
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	@Override
+	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException {
+		StringBuilder builder = new StringBuilder();
+		for(Object bean:beans) {
+			evalBuilkTemplate(builder,indexName,indexType,addTemplate,bean,"index");
 		}
-
-
-		return context_;
+		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 
 	}
 
-	public String getJavaDateFormat() {
-		return java_date_format;
-	}
-
-	public String getDate(Date date, DateFormateMeta dateFormateMeta) throws ParseException {
-		String format = null;
-		if (dateFormateMeta == null) {
-			format = this.getJavaDateFormat();
-		} else
-			format = dateFormateMeta.getDateformat();
-		SimpleDateFormat f = dateFormateMeta == null ? new SimpleDateFormat(format) : new SimpleDateFormat(format, dateFormateMeta.getLocale());
-		String _date = f.format(date);
-
-		return _date;
-	}
-
-
-	protected VelocityContext buildVelocityContext(Map data) {
-
-		VelocityContext context_ = new VelocityContext();
-		Iterator<Entry<String, Param>> it = data.entrySet().iterator();
-		Object temp = null;
-		while (it.hasNext()) {
-			Entry<String, Param> entry = it.next();
-			temp = entry.getValue();
-
-			if (temp != null)
-				context_.put(entry.getKey(), temp);
+	/**
+	 * 批量更新索引，对于按时间分区存储的索引，需要应用程序自行处理带日期时间的索引名称
+	 * @param indexName
+	 * @param indexType
+	 * @param updateTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		for(Object bean:beans) {
+			evalBuilkTemplate(builder,indexName,indexType,updateTemplate,bean,"update");
 		}
-
-		return context_;
-
+		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 	}
+
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException
+	{
+		return addIndexs(  this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate, beans);
+	}
+
 
 	private String evalTemplate(String templateName, Map params) {
 
@@ -245,9 +163,9 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			ESTemplate esTemplate = esInfo.getEstpl();
 			esTemplate.process();//识别sql语句是不是真正的velocity sql模板
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 
-				StringWriter sw = new StringWriter();
+				BBossStringWriter sw = new BBossStringWriter();
 				esTemplate.merge(vcontext, sw);
 				template = sw.toString();
 			} else {
@@ -273,9 +191,9 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		if (esInfo.isTpl()) {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 
-				StringWriter sw = new StringWriter();
+				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				template = sw.toString();
 			} else {
@@ -288,6 +206,102 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 		return template;
 		//return templateName;
+	}
+
+	private void buildMeta(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action){
+		Object id = this.getId(params);
+		if(id != null)
+			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+		else
+			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+	}
+
+	private void evalBuilkTemplate(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action) {
+
+		ESInfo esInfo = esUtil.getESInfo(templateName);
+		if (esInfo == null)
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
+		if (params == null) {
+			buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+			if(!action.equals("update"))
+				builder.append(esInfo.getTemplate()).append("\n");
+			else
+			{
+				builder.append("{\"doc\":").append(esInfo.getTemplate()).append("}\n");
+			}
+		}
+		if (esInfo.isTpl()) {
+			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
+
+			if (esInfo.isTpl()) {
+				buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				BBossStringWriter sw = new BBossStringWriter();
+				esInfo.getEstpl().merge(vcontext, sw);
+				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
+				evalStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action);
+			} else {
+				buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
+				evalStruction(  builder,  struction ,  params,  templateName,  action);
+			}
+
+		} else {
+			buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
+			evalStruction(  builder,  struction ,  params,  templateName,  action);
+		}
+
+		//return templateName;
+	}
+
+	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
+		if(!struction.hasVars()) {
+			if(!action.equals("update"))
+				builder.append(struction.getUrl()).append("\n");
+			else
+			{
+				builder.append("{\"doc\":").append(struction.getUrl()).append("}\n");
+			}
+		}
+		else
+		{
+			if(!action.equals("update")) {
+				this.esUtil.evalStruction(builder,struction,params,templateName);
+				builder.append("\n");
+			}
+			else
+			{
+				builder.append("{\"doc\":");
+				this.esUtil.evalStruction(builder,struction,params,templateName);
+				builder.append("}\n");
+			}
+
+		}
+	}
+	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+		if(!struction.hasVars()) {
+			if(!action.equals("update"))
+				builder.append(struction.getUrl()).append("\n");
+			else
+			{
+				builder.append("{\"doc\":").append(struction.getUrl()).append("}\n");
+			}
+		}
+		else
+		{
+			if(!action.equals("update")) {
+				this.esUtil.evalStruction(builder,struction,params,templateName);
+				builder.append("\n");
+			}
+			else
+			{
+				builder.append("{\"doc\":");
+				this.esUtil.evalStruction(builder,struction,params,templateName);
+				builder.append("}\n");
+			}
+
+		}
 	}
 
 

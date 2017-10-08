@@ -18,16 +18,15 @@
  */
 package org.frameworkset.elasticsearch;
 
-import java.util.Properties;
-import java.util.TimeZone;
-
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.SimpleStringUtil;
-import com.google.common.annotations.VisibleForTesting;
+import java.util.Date;
+import java.util.Properties;
+import java.util.TimeZone;
 
 /**
  * Default index name builder. It prepares name of index using configured
@@ -48,8 +47,7 @@ public class TimeBasedIndexNameBuilder implements
 
   private String indexPrefix;
 
-  @VisibleForTesting
-  FastDateFormat getFastDateFormat() {
+  public FastDateFormat getFastDateFormat() {
     return fastDateFormat;
   }
 
@@ -69,7 +67,15 @@ public class TimeBasedIndexNameBuilder implements
     logger.debug("Index Name = "+indexName);
     return indexName;
   }
-  
+
+  @Override
+  public String getIndexName(String index) {
+
+    String indexName = new StringBuilder(index).append('-')
+            .append(fastDateFormat.format(new Date())).toString();
+    return null;
+  }
+
   @Override
   public String getIndexPrefix(Event event) {
     return BucketPath.escapeString(event.getIndexPrefix() != null?event.getIndexPrefix():indexPrefix, event.getHeaders());
