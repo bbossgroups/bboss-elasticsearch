@@ -16,9 +16,9 @@
 
 package org.frameworkset.elasticsearch;
 
-import java.util.Properties;
-
 import org.frameworkset.elasticsearch.event.Event;
+
+import java.util.Properties;
 
 public class SimpleIndexNameBuilder implements IndexNameBuilder {
 
@@ -38,6 +38,12 @@ public class SimpleIndexNameBuilder implements IndexNameBuilder {
   public void configure(Properties elasticsearchPropes) {
     indexName = elasticsearchPropes.getProperty(ElasticSearchSinkConstants.INDEX_NAME);
   }
+
+@Override
+public String getIndexName(String index) {
+	// TODO Auto-generated method stub
+	return index;
+}
 
    
 }

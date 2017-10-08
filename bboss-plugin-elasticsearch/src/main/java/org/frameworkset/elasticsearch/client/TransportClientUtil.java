@@ -388,4 +388,22 @@ public class TransportClientUtil  implements ClientUtil{
 	public String createTempate(String template, String templateName, Map params) throws ElasticSearchException {
 		return null;
 	}
+	@Override
+	public String addIndexs(String indexName, String indexType, String addTemplate, List<Object> beans)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String updateIndexs(String indexName, String indexType, String updateTemplate, List<Object> beans)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateIndexs(String indexName, String indexType, String addTemplate, List<Object> beans)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
