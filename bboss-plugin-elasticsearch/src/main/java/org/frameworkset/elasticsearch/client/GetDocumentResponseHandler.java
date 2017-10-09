@@ -4,6 +4,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.SearchHit;
 import org.frameworkset.elasticsearch.entity.SearchResult;
@@ -64,12 +65,13 @@ public class GetDocumentResponseHandler extends BaseESResponsehandler<SearchResu
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
+				 String content = EntityUtils.toString(entity);
 				 SearchHit searchResponse = null;
                  try {
-                     searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), SearchHit.class) : null;
+                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, SearchHit.class) : null;
                  }
                  catch (Exception e){
-					 throw new ElasticSearchException(e);
+					 throw new ElasticSearchException(content,e);
                  }
                  return searchResponse;
              }

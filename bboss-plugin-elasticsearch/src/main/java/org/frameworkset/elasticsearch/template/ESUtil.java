@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -65,7 +64,7 @@ public class ESUtil {
 	protected boolean hasrefs;
 	protected String templateFile;
 	protected String realTemplateFile;
-	private static String java_date_format = "yyyy-MM-dd HH:mm:ss";
+	private static String java_date_format = "yyyy-MM-dd HH:mm:ss.SSS";
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
@@ -191,7 +190,7 @@ public class ESUtil {
 		return context_;
 
 	}
-	public String getDate(Date date, DateFormateMeta dateFormateMeta) throws ParseException {
+	public String getDate(Date date, DateFormateMeta dateFormateMeta){
 		String format = null;
 		if (dateFormateMeta == null) {
 			format = this.getJavaDateFormat();
@@ -207,9 +206,14 @@ public class ESUtil {
 				f = new SimpleDateFormat(format, dateFormateMeta.getLocale());
 
 		}
-		String _date = f.format(date);
+		try {
+			String _date = f.format(date);
 
-		return _date;
+			return _date;
+		}
+		catch (Exception e) {
+			throw new ElasticSearchException(e);
+		}
 	}
 	public void getVariableValue(StringBuilder builder,VariableHandler.Variable variable,Object bean,List<ClassUtil.PropertieDescription> attributes,ClassUtil.ClassInfo beanInfo,String template) {
 //		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
@@ -272,15 +276,14 @@ public class ESUtil {
 					if (value == null) {
 						builder.append("null");
 					} else if (value instanceof Date) {
-//						if(dataformat != null)
-//							builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
-//						else
-//							builder.append(((Date) value).getTime());
-						builder.append(((Date) value).getTime());
+						builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof String){
 							builder.append("\"").append(value.toString()).append("\"");
+						}
+						else if (value instanceof Date) {
+							builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
 						}
 						else
 							builder.append(value.toString());
@@ -352,11 +355,21 @@ public class ESUtil {
 								.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
 					}
 				} else {
-					Object value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
-					if (value instanceof String) {
-						builder.append("\"").append(value.toString()).append("\"");
-					} else
-						builder.append(value.toString());
+					Object value = bean.get(variable.getVariableName());
+					if(value instanceof Date){
+						builder.append("\"").append(this.getDate((Date) value, null)).append("\"");
+					}
+					else {
+
+						value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
+						if(value instanceof Date){
+							builder.append("\"").append(this.getDate((Date) value, null)).append("\"");
+						}
+						else if (value instanceof String) {
+							builder.append("\"").append(value.toString()).append("\"");
+						} else
+							builder.append(value.toString());
+					}
 				}
 			}
 

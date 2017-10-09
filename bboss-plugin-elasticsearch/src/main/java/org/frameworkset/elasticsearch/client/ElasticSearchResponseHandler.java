@@ -4,6 +4,8 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.util.EntityUtils;
+import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.ErrorResponse;
 import org.frameworkset.elasticsearch.entity.RestResponse;
 import org.frameworkset.elasticsearch.entity.SearchHit;
@@ -51,7 +53,8 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
              }
              catch (Exception e){
-                 logger.error("",e);
+//                 logger.error("",e);
+				 throw new ElasticSearchException(e);
              }
              finally{
             	 ESSerialThreadLocal.clean();
@@ -64,12 +67,14 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
+				 String content = EntityUtils.toString(entity);
                  ErrorResponse searchResponse = null;
                  try {
-                     searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), ErrorResponse.class) : null;
+                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
                  }
                  catch (Exception e){
-                     logger.error("",e);
+//                     logger.error("",e);
+					 throw new ElasticSearchException(content,e);
                  }
                  return searchResponse;
              }

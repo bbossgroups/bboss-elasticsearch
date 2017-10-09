@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.frameworkset.orm.annotation.Column;
 import com.frameworkset.orm.annotation.PrimaryKey;
 import org.frameworkset.elasticsearch.entity.ESBaseData;
@@ -10,7 +11,8 @@ public class Demo extends ESBaseData{
 	@PrimaryKey
 	private long demoId;
 	private String contentbody;
-	@Column(dataformat = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+	@Column(dataformat = "yyyy-MM-dd HH:mm:ss.SSS")
 	private Date agentStarttime;
 	private String applicationName;
 

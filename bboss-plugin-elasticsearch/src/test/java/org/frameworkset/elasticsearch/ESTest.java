@@ -174,17 +174,26 @@ public class ESTest {
 		System.out.println(template);
 
 	}
-
+	@Test
+	public void testGetmapping(){
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		String date = format.format(new Date());
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		System.out.println(clientUtil.getIndice("demo-"+date));
+		clientUtil.dropIndice("demo-"+date);
+	}
 	@Test
 	public void testAddDateDocument() throws ParseException{
-
+		testGetmapping();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		String date = format.format(new Date());
 		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
 		Demo demo = new Demo();
-		demo.setDemoId(1l);
+		demo.setDemoId(5l);
 		demo.setAgentStarttime(new Date());
 		demo.setApplicationName("blackcatdemo");
 		demo.setContentbody("this is content body");
-
+		org.joda.time.format.DateTimeParserBucket s;
 		//创建模板
 		String response = clientUtil.addDateDocument("demo",//索引表
 				"demo",//索引类型
@@ -194,21 +203,23 @@ public class ESTest {
 		System.out.println("addDateDocument-------------------------");
 		System.out.println(response);
 
-		response = clientUtil.getDocument("demo-2017.10.09",//索引表
+		response = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"1");
+				"5");
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
-		demo = clientUtil.getDocument("demo-2017.10.09",//索引表
+		demo = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"1",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 				Demo.class);
 	}
 	
 	@Test
 	public void testBulkAddDateDocument() throws ParseException{
-
+		testGetmapping();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		String date = format.format(new Date());
 		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
 		List<Demo> demos = new ArrayList<>();
 		Demo demo = new Demo();
@@ -234,13 +245,13 @@ public class ESTest {
 		System.out.println("addDateDocument-------------------------");
 		System.out.println(response);
 
-		response = clientUtil.getDocument("demo-2017.10.09",//索引表
+		response = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
 				"2");
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
-		demo = clientUtil.getDocument("demo-2017.10.09",//索引表
+		demo = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
 				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 				Demo.class);

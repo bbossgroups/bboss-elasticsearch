@@ -307,8 +307,8 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/indices-templates.ht
                             }
                         },
                         "agentStarttime": {
-                            "type": "date"
-
+                            "type": "date",
+                            "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
                         },
                         "applicationName": {
                             "type": "text",
