@@ -291,12 +291,12 @@ public class ElasticSearch {
 		ClientUtil clientUtil = this.getTransportClientUtil();
 		if(clientUtil == null){
 			clientUtil = this.getRestClientUtil();
-			return clientUtil.deleteIndexs(indexName, indexType, ids);
+			return clientUtil.deleteDocuments(indexName, indexType, ids);
 		}
 		else {
 			try {
 
-				clientUtil.deleteIndexs(indexName, indexType, ids);
+				clientUtil.deleteDocuments(indexName, indexType, ids);
 				return clientUtil.execute();
 
 			} catch (EventDeliveryException ex) {

@@ -10,8 +10,7 @@ import org.junit.Test;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ESTest {
 
@@ -85,7 +84,7 @@ public class ESTest {
 	@Test
 	public void testConfig() throws ParseException{
 		
-		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("org/frameworkset/elasticsearch/ESTracesMapper.xml");
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
 		TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
 		traceExtraCriteria.setApplication("testweb1");
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -104,22 +103,147 @@ public class ESTest {
 	
 	@Test
 	public void testSearh() throws ParseException{
-		
+
 		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("org/frameworkset/elasticsearch/ESTracesMapper.xml");
 		TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
 		traceExtraCriteria.setApplication("testweb1");
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		traceExtraCriteria.setStartTime(dateFormat.parse("2017-09-02 00:00:00").getTime());
 		traceExtraCriteria.setEndTime(dateFormat.parse("2017-09-10 00:00:00").getTime());
-		 String data = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new StringResponseHandler());
-	        System.out.println("------------------------------");
-	        System.out.println(data);
-	        System.out.println("------------------------------");
-	        
-	        Map<String,Object> response = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new MapResponseHandler());
-	        if(response.containsKey("error")){
-	            return ;
-	        }
+		String data = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new StringResponseHandler());
+		System.out.println("------------------------------");
+		System.out.println(data);
+		System.out.println("------------------------------");
+
+		Map<String,Object> response = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new MapResponseHandler());
+		if(response.containsKey("error")){
+			return ;
+		}
+	}
+
+	@Test
+	public void testTempate() throws ParseException{
+
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTemplate.xml");
+		//创建模板
+		String response = clientUtil.createTempate("demotemplate_1",//模板名称
+				"demoTemplate");//模板对应的脚本名称，在estrace/ESTemplate.xml中配置
+		System.out.println("createTempate-------------------------");
+		System.out.println(response);
+		//获取模板
+		/**
+		 * 指定模板
+		 * /_template/demoTemplate_1
+		 * /_template/demoTemplate*
+		 * 所有模板 /_template
+		 *
+		 */
+		String template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_GET);
+		System.out.println("HTTP_GET-------------------------");
+		System.out.println(template);
+		//删除模板
+		template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_DELETE);
+		System.out.println("HTTP_DELETE-------------------------");
+		System.out.println(template);
+
+		template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_GET);
+		System.out.println("HTTP_GET after delete-------------------------");
+		System.out.println(template);
+	}
+
+
+	@Test
+	public void testCreateTempate() throws ParseException{
+
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTemplate.xml");
+		//创建模板
+		String response = clientUtil.createTempate("demotemplate_1",//模板名称
+				"demoTemplate");//模板对应的脚本名称，在estrace/ESTemplate.xml中配置
+		System.out.println("createTempate-------------------------");
+		System.out.println(response);
+		//获取模板
+		/**
+		 * 指定模板
+		 * /_template/demoTemplate_1
+		 * /_template/demoTemplate*
+		 * 所有模板 /_template
+		 *
+		 */
+		String template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_GET);
+		System.out.println("HTTP_GET-------------------------");
+		System.out.println(template);
+
+	}
+
+	@Test
+	public void testAddDateDocument() throws ParseException{
+
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		Demo demo = new Demo();
+		demo.setDemoId(1l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo");
+		demo.setContentbody("this is content body");
+
+		//创建模板
+		String response = clientUtil.addDateDocument("demo",//索引表
+				"demo",//索引类型
+				"createDemoDocument",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				demo);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo-2017.10.09",//索引表
+				"demo",//索引类型
+				"1");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo-2017.10.09",//索引表
+				"demo",//索引类型
+				"1",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
+	
+	@Test
+	public void testBulkAddDateDocument() throws ParseException{
+
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		List<Demo> demos = new ArrayList<>();
+		Demo demo = new Demo();
+		demo.setDemoId(2l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo2");
+		demo.setContentbody("this is content body2");
+		demos.add(demo);
+
+		demo = new Demo();
+		demo.setDemoId(3l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo3");
+		demo.setContentbody("this is content body3");
+		demos.add(demo);
+
+		//创建模板
+		String response = clientUtil.addDateDocuments("demo",//索引表
+				"demo",//索引类型
+				"createDemoDocument",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				demos);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo-2017.10.09",//索引表
+				"demo",//索引类型
+				"2");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo-2017.10.09",//索引表
+				"demo",//索引类型
+				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
 	}
 
 }

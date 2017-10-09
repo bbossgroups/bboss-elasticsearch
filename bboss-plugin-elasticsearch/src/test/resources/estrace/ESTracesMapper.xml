@@ -35,39 +35,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
             }
         }]]>
     </property>
-
-
-    <property name="createTrace">
-        <![CDATA[{
-                    "traceId": #[traceId],
-                    "collectorAcceptTime": #[collectorAcceptTime],
-                    "starttimedate": #[starttimedate],
-                    "acceptorhost": #[acceptorhost],
-                    "agentid": #[agentid],
-                    "agentstarttime": #[agentstarttime],
-                    "apiid": #[apiid],
-                    "applicationname": #[applicationname],
-                    "applicationservicetype": #[applicationservicetype],
-                    "elapsed": #[elapsed],
-                    "endpoint": #[endpoint],
-                    "err": #[err],
-                    "exceptioninfo": #[exceptioninfo],
-                    "flag": #[flag],
-                    "loggingtransactioninfo": #[loggingtransactioninfo],
-                    "params": #[params],
-                    "parentapplicationname": #[parentapplicationname],
-                    "parentapplicationtype": #[parentapplicationtype],
-                    "parentspanid": #[parentspanid],
-                    "remoteaddr": #[remoteaddr],
-                    "rpc": #[rpc],
-                    "servicetype": #[servicetype],
-                    "spanid": #[spanid],
-                    "starttime": #[starttime],
-                    "transactionidAgentid": #[parentapplicationtype],
-                    "transactionidAgentstarttime": #[transactionidAgentstarttime],
-                    "transactionidTransactionsequence": #[transactionidTransactionsequence]
-                }]]>
-    </property>
     <!--
     https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html
     select rpc, avg(elapsed) avg_elapsed, count(1) count from traces where start_time >= #{startTime} and start_time <= #{endTime} GROUP by rpc order by avg_elapsed desc
@@ -240,7 +207,56 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
             }
         }]]>
     </property>
-    <property name="queryServiceByCondition">
+    <!--
+    查询条件
+    -->
+    <property name="qcondition">
+        <![CDATA[
+        "bool": {
+            "filter": [
+                #if($application && !$application.equals("_all"))
+                {"term": {
+                    "applicationName": "$application"
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  #if($application && !$application.equals("_all")),#end
+                  {"term": {
+
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  #if($application && !$application.equals("_all")),#end
+                  {"term": {
+
+                       "err": 1
+                  }}
+                #end
+            ],
+            "must": [
+                #if($queryCondition && !$queryCondition.equals(""))
+                {
+                    "query_string": {
+                        "query": "$queryCondition",
+                        "analyze_wildcard": true,
+                        "all_fields": true
+                    }
+                },
+                #end
+                {
+                    "range": {
+                        "startTime": {
+                            "gte": $startTime,
+                            "lt": $endTime,
+                            "format": "epoch_millis"
+                        }
+                    }
+                }
+            ]
+        }]]>
+    </property>
+    <!--废弃-->
+    <property name="_queryServiceByCondition">
         <![CDATA[{
             "sort": [
                 {
@@ -249,9 +265,10 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                     }
                 }
             ],
-            #if($lastStartTime > 0)
+            #if($lastStartTime && $lastStartTime > 0)
             "search_after": [$lastStartTime],
             #end
+            "version":true,
             "size": 100,
             "query": {
                 "bool":{
@@ -286,7 +303,8 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                      "must" : {
                         "multi_match" : {
                           "query" : "$queryCondition",
-
+                          "type":       "cross_fields",
+                          "operator":   "and",
                           "fields" : [ "agentId", "applicationName" ,"endPoint","params","remoteAddr","rpc","exceptionInfo"]
                         }
                      }
@@ -294,6 +312,53 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                 }
             }
         }]]>
+    </property>
+
+
+    <property name="queryServiceByCondition">
+        <![CDATA[{
+            "version": true,
+            #if($lastStartTime && $lastStartTime > 0)
+                #if($orderBy && $orderBy.equals("elapsed"))
+                "search_after": [$lastElapsed,$lastStartTime,"trace#$lastId"],
+                #else
+                "search_after": [$lastStartTime,"trace#$lastId"],
+                #end
+            #end
+            "size": $pageSize,
+            "sort": [
+                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+                {"startTime": "desc"},
+                {"_uid": "desc"}
+            ],
+            "query": {
+                @{qcondition}
+            },
+            "_source": {
+                "excludes": []
+            },
+            "highlight": {
+                "pre_tags": [
+                    "<mark>"
+                ],
+                "post_tags": [
+                    "</mark>"
+                ],
+                "fields": {
+                    "*": {
+                        "highlight_query": {
+                            @{qcondition}
+                        }
+                    }
+                },
+                "fragment_size": 2147483647
+            }
+        }]]></property>
+
+
+
+    <property name="createDemoDocument">
+        <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
     </property>
 
 </properties>

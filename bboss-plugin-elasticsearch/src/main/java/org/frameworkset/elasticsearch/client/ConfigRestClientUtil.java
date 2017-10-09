@@ -85,8 +85,8 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	@Override
-	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
-		return super.deleteIndexs(indexName,indexType,ids);
+	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
+		return super.deleteDocuments(indexName,indexType,ids);
 
 	}
 
@@ -110,7 +110,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	@Override
-	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException {
+	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException {
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
 			evalBuilkTemplate(builder,indexName,indexType,addTemplate,bean,"index");
@@ -128,7 +128,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException{
+	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
 			evalBuilkTemplate(builder,indexName,indexType,updateTemplate,bean,"update");
@@ -145,9 +145,45 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException
+	public String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException
 	{
-		return addIndexs(  this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate, beans);
+		return addDocuments(  this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate, beans);
+	}
+
+	/**
+	 * 创建索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addIndex
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType,String addIndex, Object bean) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		Object id = this.getId(bean);
+		builder.append(indexName).append("/").append(indexType);
+		if(id != null){
+			builder.append("/").append(id);
+		}
+		String path = builder.toString();
+		builder.setLength(0);
+		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addIndex,bean,"create"),ClientUtil.HTTP_PUT);
+		builder = null;
+		return path;
+	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param addIndex
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType,String addIndex, Object bean) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,  addIndex,   bean);
 	}
 
 
@@ -216,7 +252,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
 	}
 
-	private void evalBuilkTemplate(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action) {
+	private void evalBuilkTemplate(StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action) {
 
 		ESInfo esInfo = esUtil.getESInfo(templateName);
 		if (esInfo == null)
@@ -250,6 +286,39 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 			evalStruction(  builder,  struction ,  params,  templateName,  action);
+		}
+
+		//return templateName;
+	}
+
+	private String evalDocumentTemplate(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action) {
+
+		ESInfo esInfo = esUtil.getESInfo(templateName);
+		if (esInfo == null)
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
+		if (params == null) {
+			return esInfo.getTemplate();
+		}
+		if (esInfo.isTpl()) {
+			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
+
+			if (esInfo.isTpl()) {
+
+				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				BBossStringWriter sw = new BBossStringWriter(builder);
+				esInfo.getEstpl().merge(vcontext, sw);
+				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
+				builder.setLength(0);
+				return evalDocumentStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action);
+			} else {
+
+				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
+				return evalDocumentStruction(  builder,  struction ,  params,  templateName,  action);
+			}
+
+		} else {
+			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
+			return evalDocumentStruction(  builder,  struction ,  params,  templateName,  action);
 		}
 
 		//return templateName;
@@ -301,6 +370,31 @@ public class ConfigRestClientUtil extends RestClientUtil {
 				builder.append("}\n");
 			}
 
+		}
+	}
+
+	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+		if(!struction.hasVars()) {
+
+				return struction.getUrl();
+
+		}
+		else
+		{
+			this.esUtil.evalStruction(builder,struction,params,templateName);
+			return builder.toString();
+		}
+	}
+	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
+		if(!struction.hasVars()) {
+
+			return struction.getUrl();
+
+		}
+		else
+		{
+			this.esUtil.evalStruction(builder,struction,params,templateName);
+			return builder.toString();
 		}
 	}
 
@@ -590,17 +684,17 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	@Override
 	public String createTempate(String template, String templateName) throws ElasticSearchException {
-		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)null));
+		return super.createTempate(template,this.evalTemplate(templateName,(Object)null));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Object params) throws ElasticSearchException {
-		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)params));
+		return super.createTempate(template,this.evalTemplate(templateName,(Object)params));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Map params) throws ElasticSearchException {
-		return super.createTempate("_template/"+template,this.evalTemplate(templateName,(Object)params));
+		return super.createTempate(template,this.evalTemplate(templateName,(Object)params));
 	}
 
 }

@@ -197,7 +197,16 @@ public class ESUtil {
 			format = this.getJavaDateFormat();
 		} else
 			format = dateFormateMeta.getDateformat();
-		SimpleDateFormat f = dateFormateMeta == null ? new SimpleDateFormat(format) : new SimpleDateFormat(format, dateFormateMeta.getLocale());
+		SimpleDateFormat f = null;
+		if(dateFormateMeta == null )
+			f = new SimpleDateFormat(format) ;
+		else {
+			if(dateFormateMeta.getLocale() == null)
+				f = new SimpleDateFormat(format);
+			else
+				f = new SimpleDateFormat(format, dateFormateMeta.getLocale());
+
+		}
 		String _date = f.format(date);
 
 		return _date;
@@ -263,10 +272,11 @@ public class ESUtil {
 					if (value == null) {
 						builder.append("null");
 					} else if (value instanceof Date) {
-						if(dataformat != null)
-							builder.append(this.getDate((Date) value, dataformat));
-						else
-							builder.append(((Date) value).getTime());
+//						if(dataformat != null)
+//							builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
+//						else
+//							builder.append(((Date) value).getTime());
+						builder.append(((Date) value).getTime());
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof String){
@@ -317,8 +327,11 @@ public class ESUtil {
 		List<ClassUtil.PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
 		for(int i = 0; i < tokens.size(); i ++){
 			builder.append(tokens.get(i));
-			VariableHandler.Variable variable = variables.get(i);
-			this.getVariableValue(builder,variable,bean,attributes,beanInfo,  template);
+			if(i < variables.size()) {
+				VariableHandler.Variable variable = variables.get(i);
+				this.getVariableValue(builder, variable, bean, attributes, beanInfo, template);
+			}
+
 		}
 	}
 
@@ -327,25 +340,24 @@ public class ESUtil {
 		List<VariableHandler.Variable> variables = templateStruction.getVariables();
 		for(int i = 0; i < tokens.size(); i ++){
 			builder.append(tokens.get(i));
-			VariableHandler.Variable variable = variables.get(i);
-			Object data = bean.get(variable.getVariableName());
-			if(data == null){
-				if(bean.containsKey(variable.getVariableName()))
-					builder.append("null");
-				else
-				{
-					throw new ElasticsearchParseException(new StringBuilder().append("没有为elasticsearch模板[")
-							.append(template).append("]@").append(this.templatecontext.getConfigfile())
-							.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+			if(i < variables.size()) {
+				VariableHandler.Variable variable = variables.get(i);
+				Object data = bean.get(variable.getVariableName());
+				if (data == null) {
+					if (bean.containsKey(variable.getVariableName()))
+						builder.append("null");
+					else {
+						throw new ElasticsearchParseException(new StringBuilder().append("没有为elasticsearch模板[")
+								.append(template).append("]@").append(this.templatecontext.getConfigfile())
+								.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+					}
+				} else {
+					Object value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
+					if (value instanceof String) {
+						builder.append("\"").append(value.toString()).append("\"");
+					} else
+						builder.append(value.toString());
 				}
-			}
-			else {
-				Object value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
-				if(value instanceof String){
-					builder.append("\"").append(value.toString()).append("\"");
-				}
-				else
-					builder.append(value.toString());
 			}
 
 		}

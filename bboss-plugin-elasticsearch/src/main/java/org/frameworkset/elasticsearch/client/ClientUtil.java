@@ -17,7 +17,7 @@ public interface ClientUtil {
 	public final String HTTP_DELETE = "delete";
 	public final String HTTP_PUT = "put";
 
-	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException;
+	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
 
 	/**
 	 * 批量创建索引
@@ -28,8 +28,72 @@ public interface ClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException;
-	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException;
+	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException;
+	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException;
+
+	/**
+	 * 创建索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
+
+	/**
+	 * 获取文档，通过options设置获取文档的参数
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException;
+
+	/**
+	 * 获取文档
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocument(String indexName, String indexType,String documentId,Class<T> beanType) throws ElasticSearchException;
+
+	/**
+	 * 获取文档，通过options设置获取文档的参数
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException;
+
+	/**
+	 * 获取文档
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocument(String indexName, String indexType,String documentId) throws ElasticSearchException;
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
 	 * @param indexName
@@ -39,10 +103,10 @@ public interface ClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException;
+	public String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException;
 
 
-	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException;
+	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException;
 
 	public void addEvent(Event event, ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException;
 

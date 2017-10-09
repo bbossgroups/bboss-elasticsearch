@@ -51,6 +51,10 @@
 			<property name="elasticsearch.serialize" value="${elasticsearch.serialize:}">
 				<description> <![CDATA[ elasticsearch.serializer=org.frameworkset.elasticsearch.ElasticSearchJSONEventSerializer]]></description>
 			</property>
+			<property name="elasticsearch.httpPool" value="${elasticsearch.httpPool:default}">
+				<description> <![CDATA[ http连接池逻辑名称，在conf/httpclient.xml中配置]]></description>
+			</property>
+			
 		</propes>
 	</property>
 	<property name="elasticSearch"

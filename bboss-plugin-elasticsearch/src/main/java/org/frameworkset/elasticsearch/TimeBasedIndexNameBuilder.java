@@ -73,7 +73,7 @@ public class TimeBasedIndexNameBuilder implements
 
     String indexName = new StringBuilder(index).append('-')
             .append(fastDateFormat.format(new Date())).toString();
-    return null;
+    return indexName;
   }
 
   @Override

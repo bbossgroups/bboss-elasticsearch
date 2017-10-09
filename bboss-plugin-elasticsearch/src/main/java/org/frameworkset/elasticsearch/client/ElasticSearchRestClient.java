@@ -354,6 +354,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			throw new ElasticSearchException(e);
 		return response;
 	}
+	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+		return executeRequest(path, entity,responseHandler,ClientUtil.HTTP_POST);
+	}
 	/**
 	 * 需要补充容错机制
 	 * @param path
@@ -362,7 +365,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler,String action) throws ElasticSearchException {
 		T response = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:\n{}",path,entity);
@@ -373,15 +376,35 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //			String url = new StringBuilder().append(host.getAddress()).append("/").append(path).toString();
 			String url =  getPath(host.getAddress(),path);
 			try {
-				if (entity == null)
-					response = HttpRequestUtil.httpPostforString(url, null, this.headers,  responseHandler);
+//				if (entity == null)
+//					response = HttpRequestUtil.httpPostforString(url, null, this.headers,  responseHandler);
+//				else
+//					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers, responseHandler);
+
+				if (entity == null){
+					if(action == null)
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,  responseHandler);
+					else if(action == ClientUtil.HTTP_POST )
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,  responseHandler);
+					else if( action == ClientUtil.HTTP_PUT)
+						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,  responseHandler);
+					else if(action == ClientUtil.HTTP_GET)
+						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,  responseHandler);
+					else if(action == ClientUtil.HTTP_DELETE)
+						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,  responseHandler);
+				}
 				else
-					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers, responseHandler);
-//				if (response != null) {
-//
-//					logger.info("Status message from elasticsearch: " + response);
-//
-//				}
+				{
+					if(action == ClientUtil.HTTP_POST )
+						response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,  responseHandler);
+					else if( action == ClientUtil.HTTP_PUT)
+					{
+						response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,  responseHandler);
+					}
+					else if(action == ClientUtil.HTTP_DELETE)
+						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,  responseHandler);
+
+				}
 				break;
 			} catch (Exception ex) {
 				throw new ElasticSearchException(ex);

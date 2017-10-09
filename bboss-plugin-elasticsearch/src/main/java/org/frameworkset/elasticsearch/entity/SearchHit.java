@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.frameworkset.elasticsearch.serial.ESHitDeserializer;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class SearchHit  implements Serializable {
+public class SearchHit  implements SearchResult {
 	@JsonProperty("_index")
 	private String index;//"_index": "trace-2017.09.01",
 	@JsonProperty("_type")
@@ -23,7 +22,7 @@ public class SearchHit  implements Serializable {
 	private Map<String,List<Object>> fields;
 	@JsonProperty("_version")
 	private int version;
-
+	private boolean found;
 	private Map<String,List<Object>> highlight;
 	private Object[] sort;
 	public SearchHit() {
@@ -90,5 +89,13 @@ public class SearchHit  implements Serializable {
 
 	public void setHighlight(Map<String, List<Object>> highlight) {
 		this.highlight = highlight;
+	}
+
+	public boolean isFound() {
+		return found;
+	}
+
+	public void setFound(boolean found) {
+		this.found = found;
 	}
 }

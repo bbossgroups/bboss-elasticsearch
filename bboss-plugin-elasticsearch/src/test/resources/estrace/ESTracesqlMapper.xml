@@ -211,5 +211,91 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
         }]]>
     </property>
 
+  <!--
+      查询条件
+      -->
+  <property name="qcondition">
+    <![CDATA[
+        "bool": {
+            "filter": [
+                #if($application && !$application.equals("_all"))
+                {"term": {
+                    "applicationName": "$application"
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  #if($application && !$application.equals("_all")),#end
+                  {"term": {
 
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  #if($application && !$application.equals("_all")),#end
+                  {"term": {
+
+                       "err": 1
+                  }}
+                #end
+            ],
+            "must": [
+                #if($queryCondition && !$queryCondition.equals(""))
+                {
+                    "query_string": {
+                        "query": "$queryCondition",
+                        "analyze_wildcard": true,
+                        "all_fields": true
+                    }
+                },
+                #end
+                {
+                    "range": {
+                        "startTime": {
+                            "gte": $startTime,
+                            "lt": $endTime,
+                            "format": "epoch_millis"
+                        }
+                    }
+                }
+            ]
+        }]]>
+  </property>
+  <property name="querySQLByCondition">
+    <![CDATA[{
+            "version": true,
+            #if($lastStartTime && $lastStartTime > 0)
+                #if($orderBy && $orderBy.equals("elapsed"))
+                "search_after": [$lastElapsed,$lastStartTime,"tracesql#$lastId"],
+                #else
+                "search_after": [$lastStartTime,"tracesql#$lastId"],
+                #end
+            #end
+            "size": $pageSize,
+            "sort": [
+                 #if($orderBy && $orderBy.equals("elapsed")){"sqlEndElapsed": "desc"},#end
+                {"startTime": "desc"},
+                {"_uid": "desc"}
+            ],
+            "query": {
+                @{qcondition}
+            },
+            "_source": {
+                "excludes": []
+            },
+            "highlight": {
+                "pre_tags": [
+                    "<mark>"
+                ],
+                "post_tags": [
+                    "</mark>"
+                ],
+                "fields": {
+                    "*": {
+                        "highlight_query": {
+                            @{qcondition}
+                        }
+                    }
+                },
+                "fragment_size": 2147483647
+            }
+        }]]></property>
 </properties>

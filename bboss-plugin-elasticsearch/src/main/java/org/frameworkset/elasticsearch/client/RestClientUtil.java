@@ -41,12 +41,38 @@ public class RestClientUtil implements ClientUtil{
 	public void updateIndexs(Event event, ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException {
 
 	}
-	public String updateIndexs(String indexName, String indexType,String updateTemplate, List<Object> beans) throws ElasticSearchException{
+	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException{
 		return null;
 	}
 	@Override
 	public String executeRequest(String path, String templateName,Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * 创建索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException{
+		return null;
+	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException{
 		return null;
 	}
 	
@@ -74,7 +100,7 @@ public class RestClientUtil implements ClientUtil{
 	}
 
 	@Override
-	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
+	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
 		StringBuilder builder = new StringBuilder();
 		for(String id:ids) {
 			builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
@@ -91,7 +117,7 @@ public class RestClientUtil implements ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDateIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException
+	public String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException
 	{
 		return null;
 	}
@@ -100,7 +126,7 @@ public class RestClientUtil implements ClientUtil{
 	/**
 	 * only use by config rest clientutil
 	 */
-	public String addIndexs(String indexName, String indexType,String addTemplate, List<Object> beans) throws ElasticSearchException {
+	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException {
 //		StringBuilder builder = new StringBuilder();
 //		for(Object id:beans) {
 //			builder.append("{ \"index\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
@@ -110,8 +136,87 @@ public class RestClientUtil implements ClientUtil{
 
 	}
 
+	/**
+	 * 获取文档，通过options设置获取文档的参数
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
+
+		return this.client.executeHttp(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),ClientUtil.HTTP_GET);
+	}
+
+	private String buildGetDocumentRequest(String indexName, String indexType,String documentId,Map<String,Object> options){
+		StringBuilder builder = new StringBuilder();
+		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
+		if(options != null){
+			builder.append("?");
+			Iterator<Map.Entry<String, Object>> iterable = options.entrySet().iterator();
+			boolean first = true;
+			while(iterable.hasNext()){
+				Map.Entry<String, Object> entry = iterable.next();
+				if(first) {
+					builder.append(entry.getKey()).append("=").append(entry.getValue());
+					first = false;
+				}
+				else
+				{
+					builder.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+				}
+			}
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 获取文档
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocument(String indexName, String indexType,String documentId) throws ElasticSearchException{
+		return getDocument(indexName, indexType,documentId,(Map<String,Object>)null);
+	}
+
+	/**
+	 * 获取文档
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocument(String indexName, String indexType,String documentId,Class<T> beanType) throws ElasticSearchException{
+		return getDocument(  indexName,   indexType,  documentId,(Map<String,Object>)null,beanType);
+	}
+
+	/**
+	 * 获取文档，通过options设置获取文档的参数
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException{
+		SearchResult searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+
+		return buildObject(searchResult, beanType);
+
+	}
+
+
+
+
 	@Override
-	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException {
+	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
 		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(),ClientUtil.HTTP_DELETE);
 	}
@@ -246,20 +351,41 @@ public class RestClientUtil implements ClientUtil{
 		esBaseData.setIndex(hit.getIndex());
 	}
 	protected <T> T buildObject(SearchResult result, Class<T> type){
+		if(result == null){
+			return null;
+		}
 		if(result instanceof ErrorResponse){
 			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
 		}
-		RestResponse restResponse = (RestResponse)result;
-		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
-		if(searchHits != null && searchHits.size() > 0) {
+		if(result instanceof RestResponse) {
+			RestResponse restResponse = (RestResponse) result;
+			List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
+			if (searchHits != null && searchHits.size() > 0) {
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+				SearchHit hit = searchHits.get(0);
+				T data = (T) hit.getSource();
+				if (isESBaseData) {
+					buildESBaseData(hit, (ESBaseData) data);
+				}
+				return data;
+			}
+			return null;
+		}
+		else
+		{
 			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
-			SearchHit hit = searchHits.get(0);
-			T data = (T) searchHits.get(0).getSource();
-			if(isESBaseData) {
-				buildESBaseData(  hit,  (ESBaseData)data);
+			SearchHit hit = (SearchHit)result;
+			if(hit.isFound()) {
+				T data = (T) hit.getSource();
+				if (isESBaseData) {
+					buildESBaseData(hit, (ESBaseData) data);
+				}
+				return data;
+			}
+			else {
+				return null;
 			}
 		}
-		return null;
 
 	}
 	public <T> T searchObject(String path, String entity, Class<T> type) throws ElasticSearchException{

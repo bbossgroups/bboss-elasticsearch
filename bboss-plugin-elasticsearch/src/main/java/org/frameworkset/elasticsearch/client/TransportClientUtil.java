@@ -82,7 +82,7 @@ public class TransportClientUtil  implements ClientUtil{
 	 
 	
 	@Override
-	public String deleteIndexs(String indexName, String indexType, String... ids) throws ElasticSearchException {
+	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
 		init();
 		for(int i = 0; i < ids.length; i ++){
 			try {
@@ -96,7 +96,7 @@ public class TransportClientUtil  implements ClientUtil{
 	}
 
 	@Override
-	public String deleteIndex(String indexName, String indexType, String id) throws ElasticSearchException {
+	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
 		DeleteResponse response = this.getClient().delete(client.deleteIndex(indexName,indexType,id).request()).actionGet();
 		 return response.toString();
@@ -389,19 +389,50 @@ public class TransportClientUtil  implements ClientUtil{
 		return null;
 	}
 	@Override
-	public String addIndexs(String indexName, String indexType, String addTemplate, List<Object> beans)
+	public String addDocuments(String indexName, String indexType, String addTemplate, List<?> beans)
 			throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public String updateIndexs(String indexName, String indexType, String updateTemplate, List<Object> beans)
+	public String updateDocuments(String indexName, String indexType, String updateTemplate, List<?> beans)
 			throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
-	public String addDateIndexs(String indexName, String indexType, String addTemplate, List<Object> beans)
+	public String addDocument(String indexName, String indexType, String addTemplate, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocument(String indexName, String indexType, String documentId, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocument(String indexName, String indexType, String documentId, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocument(String indexName, String indexType, String documentId, Map<String, Object> options, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocument(String indexName, String indexType, String documentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, String indexType, String addTemplate, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, String indexType, String addTemplate, List<?> beans)
 			throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;

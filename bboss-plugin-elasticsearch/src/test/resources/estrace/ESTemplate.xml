@@ -1,6 +1,7 @@
 <!--es
 https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-term-query.html
 https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-query.html
+https://www.elastic.co/guide/en/elasticsearch/reference/5.5/indices-templates.html
 -->
 <properties>
 
@@ -278,6 +279,45 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                         },
                         "transactionIdTransactionSequence": {
                             "type": "long"
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+
+    <property name="demoTemplate">
+        <![CDATA[{
+            "template": "demo*",
+            "settings": {
+                "number_of_shards": 6,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "demo": {
+                    "properties": {
+                        "contentbody": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "agentStarttime": {
+                            "type": "date"
+
+                        },
+                        "applicationName": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
                         }
                     }
                 }
