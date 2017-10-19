@@ -206,22 +206,19 @@ public class ConfigRestClientUtil extends RestClientUtil {
 //				template = sw.toString();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-				template = builder.toString();
+				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-				template = builder.toString();
+				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			StringBuilder builder = new StringBuilder();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-			template = builder.toString();
+			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
 		}
 
 		return template;
@@ -246,22 +243,20 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				StringBuilder builder = new StringBuilder();
-				this.evalDocumentStruction( builder,  struction ,  vcontext.getContext(),  templateName,  null);
-				template = builder.toString();
+				template = this.evalDocumentStruction( builder,  struction ,  vcontext.getContext(),  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 				StringBuilder builder = new StringBuilder();
-				evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-				template = builder.toString();
+				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 			StringBuilder builder = new StringBuilder();
-			evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-			template = builder.toString();
+			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
+//			template = builder.toString();
 		}
 
 		return template;

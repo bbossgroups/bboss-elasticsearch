@@ -1,5 +1,7 @@
 package org.frameworkset.elasticsearch.client;
 
+import org.elasticsearch.ElasticsearchException;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
@@ -26,9 +28,11 @@ public class RoundRobinList<T extends ESAddress> {
 	private final Collection<T> elements;
 
 	private Iterator<T> iterator;
+	private String message;
 
 	public RoundRobinList(Collection<T> elements) {
 		this.elements = elements;
+		message = "All elasticServer "+elements.toString()+" can't been connected.";
 		iterator = this.elements.iterator();
 	}
 
@@ -59,22 +63,29 @@ public class RoundRobinList<T extends ESAddress> {
 		try {
 			lock.lock();
 			T address = null;
+			T temp = null;
 			while (iterator.hasNext()) {
 				address = iterator.next();
-				if (address.ok())
+				if (address.ok()){
+					temp = address;
 					break;
+				}
 			}
-			if (address != null) {
-				return address;
+			if (temp != null) {
+				return temp;
 
 			} else {
 				iterator = elements.iterator();
 				while (iterator.hasNext()) {
 					address = iterator.next();
-					if (address.ok())
+					if (address.ok()){
+						temp = address;
 						break;
+					}
 				}
-				return address;
+				if(temp == null)
+					throw new ElasticsearchException(message);
+				return temp;
 			}
 		}
 		finally {
