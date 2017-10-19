@@ -35,6 +35,7 @@ public interface ElasticSearchClient {
 	void close();
 	ClientUtil getClientUtil(IndexNameBuilder indexNameBuilder);
 	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder,String configFile);
+	public void init();
 //	BulkRequestBuilder prepareBulk();
 //
 //	IndexRequestBuilder createIndexRequest(IndexNameBuilder indexNameBuilder, Event event) throws IOException;

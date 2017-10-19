@@ -16,6 +16,7 @@ public interface ClientUtil {
 	public final String HTTP_POST = "post";
 	public final String HTTP_DELETE = "delete";
 	public final String HTTP_PUT = "put";
+	public final String HTTP_HEAD = "head";
 
 	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
 

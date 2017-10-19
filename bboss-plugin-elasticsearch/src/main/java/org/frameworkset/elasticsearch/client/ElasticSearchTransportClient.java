@@ -30,10 +30,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
-import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.ElasticSearchIndexRequestBuilderFactory;
-import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +57,8 @@ public class ElasticSearchTransportClient implements ElasticSearchClient {
 	private ElasticSearchIndexRequestBuilderFactory indexRequestBuilderFactory;
 	private String elasticUser;
 	private String elasticPassword;
-
-
+	private ElasticSearch elasticSearch;
+	private String clusterName;
 
 	private Client client;
 
@@ -80,23 +77,29 @@ public class ElasticSearchTransportClient implements ElasticSearchClient {
 	 * @param serializer
 	 * @throws UnknownHostException
 	 */
-	public ElasticSearchTransportClient(String[] hostNames, String elasticUser, String elasticPassword,
+	public ElasticSearchTransportClient(ElasticSearch elasticSearch,String[] hostNames, String elasticUser, String elasticPassword,
 			String clusterName, ElasticSearchEventSerializer serializer,Properties extendElasticsearchPropes) throws UnknownHostException {
 		this.extendElasticsearchPropes = extendElasticsearchPropes;
+		this.elasticSearch = elasticSearch;
 		configureHostnames(hostNames);
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
 		this.serializer = serializer;
-		openClient(clusterName);
+		this.clusterName = clusterName;
+		
 	}
 
-	public ElasticSearchTransportClient(String[] hostNames, String elasticUser, String elasticPassword,
-			String clusterName, ElasticSearchIndexRequestBuilderFactory indexBuilder,Properties extendElasticsearchPropes) throws UnknownHostException {
+	public ElasticSearchTransportClient(ElasticSearch elasticSearch, String[] hostNames, String elasticUser, String elasticPassword,
+										String clusterName, ElasticSearchIndexRequestBuilderFactory indexBuilder, Properties extendElasticsearchPropes) throws UnknownHostException {
 		this.extendElasticsearchPropes = extendElasticsearchPropes;
 		configureHostnames(hostNames);
 		this.indexRequestBuilderFactory = indexBuilder;
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
+		this.clusterName = clusterName;
+		
+	}
+	public void init(){
 		openClient(clusterName);
 	}
 

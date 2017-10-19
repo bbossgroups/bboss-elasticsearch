@@ -22,11 +22,9 @@ import com.frameworkset.util.SimpleStringUtil;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.conn.HttpHostConnectException;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.IndexNameBuilder;
-import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
+import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.frameworkset.util.FastDateFormat;
@@ -34,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -59,9 +58,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private String httpPool;
 	private String elasticUser;
 	private String elasticPassword;
+	private long healthCheckInterval = -1l;
 //	private HttpClient httpClient;
 	private Map<String, String> headers = new HashMap<>();
 	private boolean showTemplate = false;
+	private List<ESAddress> addressList;
  
     private FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy.MM.dd",
       TimeZone.getTimeZone("Etc/UTC"));
@@ -69,20 +70,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
     private String dateFormat = "yyyy.MM.dd";
 
     private TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
-	public ElasticSearchRestClient(String[] hostNames, String elasticUser, String elasticPassword,
+    private ElasticSearch elasticSearch;
+	public ElasticSearchRestClient(ElasticSearch elasticSearch,String[] hostNames, String elasticUser, String elasticPassword,
 								   ElasticSearchEventSerializer serializer, Properties extendElasticsearchPropes) {
 		this.extendElasticsearchPropes = extendElasticsearchPropes;
-		for (int i = 0; i < hostNames.length; ++i) {
-			if (!hostNames[i].contains("http://") && !hostNames[i].contains("https://")) {
-				hostNames[i] = "http://" + hostNames[i];
-			}
-		}
+		this.elasticSearch = elasticSearch;
 		this.serializer = serializer;
-		List<ESAddress> addressList = new ArrayList<ESAddress>();
+		addressList = new ArrayList<ESAddress>();
 		for(String host:hostNames){
 			addressList.add(new ESAddress(host));
 		}
 		serversList = new RoundRobinList<ESAddress>(addressList);
+
+
 //		httpClient = new DefaultHttpClient();
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
@@ -100,11 +100,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		//Authorization
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
-
+		if(healthCheckInterval > 0) {
+			logger.info("start elastic healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to disable healthCheck thread.");
+			HealthCheck healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
+			healthCheck.run();
+		}
 
 	}
 
-	private String getHeader(String user, String password) {
+	public static String getHeader(String user, String password) {
 		String auth = user + ":" + password;
 		byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
 		return "Basic " + new String(encodedAuth);
@@ -124,7 +128,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    if(showTemplate_ != null && showTemplate_.equals("true")){
 	    	this.showTemplate = true;
 	    }
-		//  logger.info(">>>>>>>>>>>>>>>>>>dateFormatString:"+dateFormatString+",timeZoneString:"+timeZoneString);
 	    if (SimpleStringUtil.isEmpty(dateFormatString)) {
 	      dateFormatString = TimeBasedIndexNameBuilder.DEFAULT_DATE_FORMAT;
 	    }
@@ -135,6 +138,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    this.timeZone = TimeZone.getTimeZone(timeZoneString);
 	    fastDateFormat = FastDateFormat.getInstance(dateFormatString,
 	        TimeZone.getTimeZone(timeZoneString));
+	    String healthCheckInterval_ = elasticsearchPropes.getProperty("elasticsearch.healthCheckInterval");
+		if(healthCheckInterval_ == null){
+			this.healthCheckInterval = 3000l;
+		}
+		else{
+			try {
+				this.healthCheckInterval = Long.parseLong(healthCheckInterval_);
+			}
+			catch (Exception e){
+				logger.error("Parse Long healthCheckInterval parameter failed:"+healthCheckInterval_,e);
+			}
+		}
+
 	}
 
 	@Override
@@ -198,7 +214,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //
 //				}
 				break;
-			} catch (Exception ex) {
+			} 
+			catch (HttpHostConnectException ex) {
+				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -206,6 +224,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					e = ex;
 					break;
 				}
+                
+            } catch (UnknownHostException ex) {
+            	host.setStatus(1);
+            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                 
+            }
+			catch (ElasticSearchException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				e = ex;
 			}
 
 
@@ -296,7 +331,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //
 //				}
 				break;
-			} catch (Exception ex) {
+			} catch (HttpHostConnectException ex) {
+				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -304,6 +340,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					e = ex;
 					break;
 				}
+                
+            } catch (UnknownHostException ex) {
+            	host.setStatus(1);
+            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                 
+            }
+			catch (ElasticSearchException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				e = ex;
 			}
 
 
@@ -337,7 +390,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //
 //				}
 				break;
-			} catch (Exception ex) {
+			} catch (HttpHostConnectException ex) {
+				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -345,6 +399,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					e = ex;
 					break;
 				}
+                
+            } catch (UnknownHostException ex) {
+            	host.setStatus(1);
+            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                 
+            }
+			catch (ElasticSearchException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				e = ex;
 			}
 
 
@@ -367,6 +438,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 */
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler,String action) throws ElasticSearchException {
 		T response = null;
+		int triesCount = 0;
+		Exception e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:\n{}",path,entity);
 		}
@@ -406,18 +479,34 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 				}
 				break;
-			} catch (Exception ex) {
-				throw new ElasticSearchException(ex);
-//				if (triesCount < serversList.size()) {//失败尝试下一个地址
-//					triesCount++;
-//					continue;
-//				} else {
-//					e = ex;
-//					break;
-//				}
+			} catch (HttpHostConnectException ex) {
+				host.setStatus(1);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                
+            } catch (UnknownHostException ex) {
+            	host.setStatus(1);
+            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                 
+            }
+			catch (ElasticSearchException ex) {
+				throw ex;
 			}
-
-
+			catch (Exception ex) {
+				e = ex;
+			}
+			throw new ElasticSearchException(e);
 
 		}
 		return response;

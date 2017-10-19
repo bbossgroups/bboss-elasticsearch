@@ -18,6 +18,7 @@
  */
 package org.frameworkset.elasticsearch.client;
 
+import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchIndexRequestBuilderFactory;
 
@@ -31,6 +32,7 @@ import java.util.Properties;
 public class ElasticSearchClientFactory {
 	public static final String TransportClient = "transport";
 	public static final String RestClient = "rest";
+	private ElasticSearch elasticSearch;
 
 	/**
 	 * @param clientType  String representation of client type
@@ -40,16 +42,17 @@ public class ElasticSearchClientFactory {
 	 * @return
 	 * @throws UnknownHostException
 	 */
-	public ElasticSearchClient getClient(String clientType, String[] hostNames, String elasticUser, String elasticPassword,
+	public ElasticSearchClient getClient(ElasticSearch elasticSearch,String clientType, String[] hostNames, String elasticUser, String elasticPassword,
 										 String clusterName, ElasticSearchEventSerializer serializer,
 										 ElasticSearchIndexRequestBuilderFactory indexBuilder, Properties extendElasticsearchPropes) throws NoSuchClientTypeException, UnknownHostException {
+		this.elasticSearch = elasticSearch;
 		if (clientType.equalsIgnoreCase(TransportClient)) {
 			if (indexBuilder != null)
-				return new ElasticSearchTransportClient(hostNames, elasticUser, elasticPassword, clusterName, indexBuilder, extendElasticsearchPropes);
+				return new ElasticSearchTransportClient(elasticSearch,hostNames, elasticUser, elasticPassword, clusterName, indexBuilder, extendElasticsearchPropes);
 			else
-				return new ElasticSearchTransportClient(hostNames, elasticUser, elasticPassword, clusterName, serializer, extendElasticsearchPropes);
+				return new ElasticSearchTransportClient( elasticSearch,hostNames, elasticUser, elasticPassword, clusterName, serializer, extendElasticsearchPropes);
 		} else if (clientType.equalsIgnoreCase(RestClient)) {
-			return new ElasticSearchRestClient(hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
+			return new ElasticSearchRestClient(elasticSearch,hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
 		}
 		throw new NoSuchClientTypeException();
 	}

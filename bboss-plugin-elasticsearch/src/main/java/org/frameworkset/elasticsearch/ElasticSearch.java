@@ -25,6 +25,7 @@ import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.client.ElasticSearchClient;
 import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
 import org.frameworkset.elasticsearch.event.Event;
+import org.frameworkset.spi.support.ApplicationObjectSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.*;
  * http://www.elasticsearch.org/guide/reference/api/admin-indices-templates.
  * html
  */
-public class ElasticSearch {
+public class ElasticSearch extends ApplicationObjectSupport {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(ElasticSearch.class);
@@ -432,13 +433,16 @@ public class ElasticSearch {
 	public void start() {
 		ElasticSearchClientFactory clientFactory = new ElasticSearchClientFactory();
 
-		logger.info("ElasticSearch client started");
+		
 
 		try {
 			if(this.transportServerAddresses != null && this.transportServerAddresses.length > 0) {
-				transportClient = clientFactory.getClient(ElasticSearchClientFactory.TransportClient, transportServerAddresses, this.elasticUser, this.elasticPassword,
+				logger.info("Start ElasticSearch Transport client");
+				transportClient = clientFactory.getClient(this,ElasticSearchClientFactory.TransportClient, transportServerAddresses, this.elasticUser, this.elasticPassword,
 						clusterName, eventSerializer, indexRequestFactory, extendElasticsearchPropes);
 				transportClient.configure(elasticsearchPropes);
+				transportClient.init();
+				logger.info("ElasticSearch Transport client started.");
 			}
 
 
@@ -456,17 +460,20 @@ public class ElasticSearch {
 
 		try {
 
-
+			
 			if(this.restServerAddresses != null && this.restServerAddresses.length > 0) {
-				restClient = clientFactory.getClient(ElasticSearchClientFactory.RestClient, restServerAddresses, this.elasticUser, this.elasticPassword,
+				logger.info("Start ElasticSearch rest client");
+				restClient = clientFactory.getClient(this,ElasticSearchClientFactory.RestClient, restServerAddresses, this.elasticUser, this.elasticPassword,
 						clusterName, eventSerializer, indexRequestFactory, extendElasticsearchPropes);
 				restClient.configure(elasticsearchPropes);
+				restClient.init();
+				logger.info("ElasticSearch Transport client started.");
 			}
 
 
 
 		} catch (Exception ex) {
-			logger.error("ES Rest Client started failed", ex);
+			logger.error("ElasticSearch Rest Client started failed", ex);
 
 			if (restClient != null) {
 				restClient.close();

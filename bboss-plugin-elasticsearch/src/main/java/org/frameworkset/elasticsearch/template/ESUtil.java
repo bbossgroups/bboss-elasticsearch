@@ -242,9 +242,11 @@ public class ESUtil {
 					try {
 						value = property.getValue(bean);
 					} catch (InvocationTargetException e1) {
-						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1.getTargetException());
+						log.error(new StringBuilder().append("获取属性[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "]值失败：请检查模板定义").append("[")
+								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1.getTargetException());
 					} catch (Exception e1) {
-						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1);
+						log.error(new StringBuilder().append("获取属性[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "]值失败：请检查模板定义").append("[")
+								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1);
 					}
 
 					name = property.getName();
@@ -261,7 +263,8 @@ public class ESUtil {
 						} else {
 							Object cv = editor.toColumnValue(column, value);
 							if (cv == null)
-								throw new ElasticSearchException("转换属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。");
+								throw new ElasticSearchException(new StringBuilder().append("转换属性[" ).append( beanInfo.getClazz().getName() ).append( "." ).append( property.getName() ).append( "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。请检查模板定义").append("[")
+										.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString());
 
 							if (!(cv instanceof ColumnType)) {
 								value = cv;
@@ -298,9 +301,11 @@ public class ESUtil {
 				return;
 
 			} catch (SecurityException e) {
-				throw new ElasticSearchException(e);
+				throw new ElasticSearchException(new StringBuilder().append("转换属性值失败：请检查模板定义").append("[")
+						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
 			} catch (IllegalArgumentException e) {
-				throw new ElasticSearchException(e);
+				throw new ElasticSearchException(new StringBuilder().append("转换属性值失败：请检查模板定义").append("[")
+						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
 			}
 //			catch (InvocationTargetException e) {
 //				throw new ElasticSearchException(e.getTargetException());
