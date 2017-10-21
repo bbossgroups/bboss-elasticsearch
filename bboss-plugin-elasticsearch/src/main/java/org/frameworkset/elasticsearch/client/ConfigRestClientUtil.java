@@ -701,6 +701,25 @@ public class ConfigRestClientUtil extends RestClientUtil {
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Map params, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return super.searchAgg(  path,   this.evalTemplate(templateName, params),   type,   aggs,   stats, aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
+	}
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Object params, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return super.searchAgg(  path,   this.evalTemplate(templateName, params), type, aggs, stats,  aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
+	}
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return super.searchAgg(  path, this.evalTemplate(templateName, (Object) null),   type,   aggs,   stats, aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
+//		return buildESAggDatas(result, type, aggs, stats);
+	}
+
+
 	@Override
 	public String createTempate(String template, String templateName) throws ElasticSearchException {
 		return super.createTempate(template,this.evalTemplate(templateName,(Object)null));

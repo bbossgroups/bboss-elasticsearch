@@ -533,7 +533,7 @@ public class RestClientUtil implements ClientUtil{
 		doubleRangeHit.setSum(doubleValue(stats_.get("sum"),0d));
 	}
 
-	protected  <T extends AggHit> ESAggDatas<T> buildESAggDatas(SearchResult result,Class<T> type,String aggs,String stats){
+	protected  <T extends AggHit> ESAggDatas<T> buildESAggDatas(SearchResult result,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle){
 		if(result instanceof ErrorResponse){
 			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
 		}
@@ -567,6 +567,10 @@ public class RestClientUtil implements ClientUtil{
 							}else if(obj instanceof DoubleAggHit){
 								buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
 							}
+							if(aggBucketHandle != null)
+							{
+								aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
+							}
 
 							datas.add(obj);
 						} catch (InstantiationException e) {
@@ -584,19 +588,29 @@ public class RestClientUtil implements ClientUtil{
 					List<T> datas = new ArrayList<>(buckets.size());
 					ret.setAggDatas(datas);
 					Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
+					Map<String, Object> bucket = null;
+					Map.Entry<String, Map<String, Object>> entry = null;
+					String key = null;
+					T obj = null;
 					while(iterable.hasNext()){
-						Map.Entry<String, Map<String, Object>> entry = iterable.next();
-						String key = entry.getKey();
+						entry = iterable.next();
+						key = entry.getKey();
+						bucket = entry.getValue();
 						try {
-							T obj = type.newInstance();
+							obj = type.newInstance();
+
 							if (obj instanceof LongAggRangeHit) {
-								buildLongAggRangeHit((LongAggRangeHit) obj, entry.getValue(),  stats,key);
+								buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
 							} else if (obj instanceof DoubleAggRangeHit)
 							{
-								buildDoubleAggRangeHit((DoubleAggRangeHit) obj, entry.getValue(),  stats,key);
+								buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
 							}else if (obj instanceof FloatAggRangeHit)
 							{
-								buildFloatAggRangeHit((FloatAggRangeHit) obj, entry.getValue(),  stats,key);
+								buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
+							}
+							if(aggBucketHandle != null)
+							{
+								aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
 							}
 							datas.add(obj);
 						}catch (InstantiationException e) {
@@ -620,10 +634,21 @@ public class RestClientUtil implements ClientUtil{
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Object params,Class<T> type,String aggs,String stats) throws ElasticSearchException{
 		return null;
 	}
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
 
+		return null;
+	}
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Object params,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
+		return null;
+	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats) throws ElasticSearchException{
 		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
-		return buildESAggDatas(result,type,aggs,stats);
+		return buildESAggDatas(result,type,aggs,stats,(ESAggBucketHandle<T>)null);
+	}
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
+		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+		return buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
 	}
 
 	@Override
