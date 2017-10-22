@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch.client;
 public class ESAddress {
 	private String address;
 	private String healthPath;
+	private transient Thread healthCheck;
 	/**
 	 * 服务器状态：0 正常 1 异常
 	 */
@@ -46,12 +47,28 @@ public class ESAddress {
 	}
 
 	public void setStatus(int status) {
+		
 		this.status = status;
+		if(status == 1 && healthCheck != null){
+			synchronized(healthCheck){
+				healthCheck.notifyAll();
+			}
+		}
+	}
+	
+	public void onlySetStatus(int status) {
+		
+		this.status = status;
+		
 	}
 	public String toString(){
 		return this.address;
 	}
 	public boolean ok(){
 		return this.status == 0;
+	}
+
+	public void setHealthCheck(Thread healthCheck) {
+		this.healthCheck = healthCheck;
 	}
 }

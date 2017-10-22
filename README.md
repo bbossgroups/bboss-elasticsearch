@@ -1,6 +1,19 @@
 # bboss-elastic
 
 不错的elasticsearch客户端工具包,bboss es开发套件采用类似于mybatis的方式操作elasticsearch
+
+maven坐标
+```
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-plugin-elasticsearch</artifactId>
+    <version>5.0.3.6.9</version>
+</dependency>
+```
+gradle坐标
+```
+compile "com.bbossgroups.plugins:bboss-plugin-elasticsearch:5.0.3.6.9"
+```
 # elastic search配置
 对应的配置文件为conf/elasticsearch.properties
 

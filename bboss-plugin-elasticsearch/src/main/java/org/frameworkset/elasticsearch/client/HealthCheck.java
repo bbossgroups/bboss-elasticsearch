@@ -38,6 +38,8 @@ public class HealthCheck implements Runnable{
 		ESAddress address;
 		boolean stop = false;
 		public HCRunable(ESAddress address){
+			super("Elasticsearch server["+address.toString()+"] health check");
+			address.setHealthCheck(this);
 			this.address = address;
 		}
 		public void stopRun(){
@@ -61,9 +63,9 @@ public class HealthCheck implements Runnable{
 								 if (status >= 200 && status < 300) {
 									 if(logger.isInfoEnabled())
 										 logger.info(new StringBuilder().append("Dead elasticsearch server[").append(address.toString()).append("] recovered to normal server.").toString());
-									 address.setStatus(0);
+									 address.onlySetStatus(0);
 								 } else {
-									address.setStatus(1);
+									address.onlySetStatus(1);
 								 }
 								 return null;
 							 }
@@ -72,16 +74,26 @@ public class HealthCheck implements Runnable{
 					 } catch (Exception e) {
 						 if(logger.isInfoEnabled())
 							 logger.info(new StringBuilder().append("Elasticsearch server[").append(address.toString()).append("] is dead.").toString());
-						 address.setStatus(1);
+						 address.onlySetStatus(1);
+					 }
+			 		 if(this.stop)
+					 		break;
+					 try {
+						 sleep(checkInterval);
+					 } catch (InterruptedException e) {					 
+						 break;
 					 }
 			 	 }
-				 if(this.stop)
-				 		break;
-				 try {
-					 sleep(checkInterval);
-				 } catch (InterruptedException e) {					 
-					 break;
-				 }
+			 	 else{
+			 		 try {
+			 			 synchronized(this){
+			 				 wait();
+			 			 }
+					} catch (InterruptedException e) {
+						break;
+					}
+			 	 }
+				
 			 }
 		}
 	}
