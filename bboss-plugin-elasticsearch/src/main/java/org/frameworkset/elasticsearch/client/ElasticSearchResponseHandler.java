@@ -45,22 +45,19 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
          if (status >= 200 && status < 300) {
              HttpEntity entity = response.getEntity();
              RestResponse searchResponse = null;
-             try {
-            	 ESSerialThreadLocal.setESTypeReferences(types);
-                 searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), RestResponse.class) : null;
-//                 String content = EntityUtils.toString(entity);
-//                 System.out.println(content);
-//                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
+              
+             if (entity != null ) {
+	             try {	            	
+	            	 ESSerialThreadLocal.setESTypeReferences(types);
+	                 searchResponse = SimpleStringUtil.json2Object(entity.getContent(), RestResponse.class) ;
+	             }
+	             catch (Exception e){
+					 throw new ElasticSearchException(e);
+	             }
+	             finally{
+	            	 ESSerialThreadLocal.clean();
+	             }
              }
-             catch (Exception e){
-//                 logger.error("",e);
-				 throw new ElasticSearchException(e);
-             }
-             finally{
-            	 ESSerialThreadLocal.clean();
-             }
-//             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
-//             NamedWriteableRegistry namedWriteableRegistry = (NamedWriteableRegistry)classInfo.getPropertyValue(clientUtil.getClient(),"namedWriteableRegistry");
 
              return searchResponse;
 
@@ -73,7 +70,6 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
                      searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
                  }
                  catch (Exception e){
-//                     logger.error("",e);
 					 throw new ElasticSearchException(content,e);
                  }
                  return searchResponse;

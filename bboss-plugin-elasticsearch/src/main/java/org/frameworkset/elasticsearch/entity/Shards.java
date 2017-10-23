@@ -1,11 +1,14 @@
 package org.frameworkset.elasticsearch.entity;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public class Shards  implements Serializable {
 	private long total;
 	private long successful;
 	private long failed;
+	private List<Map<String,Object>> failures;
 	private long skipped;
 	public Shards() {
 		// TODO Auto-generated constructor stub
@@ -36,4 +39,11 @@ public class Shards  implements Serializable {
 	public void setSkipped(long skipped) {
 		this.skipped = skipped;
 	}
+	public List<Map<String, Object>> getFailures() {
+		return failures;
+	}
+	public void setFailures(List<Map<String, Object>> failures) {
+		this.failures = failures;
+	}
+	
 }
