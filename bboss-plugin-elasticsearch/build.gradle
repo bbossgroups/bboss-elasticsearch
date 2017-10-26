@@ -47,7 +47,7 @@ dependencies {
    compile([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_VERSION}", transitive: true], )   
        
     compile([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true], )  
-     compile([group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "2.8.2", transitive: false], )   
+     compile([group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: false], )
      
     
    compile (
@@ -61,8 +61,8 @@ dependencies {
          
        // [group: 'commons-lang', name: 'commons-lang', version: "2.5", transitive: true],
         [group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true],
-        [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "2.8.2", transitive: false],
-        [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "2.8.2", transitive: false],
+        [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
+        [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25', transitive: false],
          
     )
