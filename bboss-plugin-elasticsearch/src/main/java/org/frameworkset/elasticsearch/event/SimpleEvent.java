@@ -21,8 +21,10 @@ package org.frameworkset.elasticsearch.event;
 
 import java.util.HashMap;
 
+import org.elasticsearch.common.xcontent.XContentType;
+
 public class SimpleEvent  extends BaseEvent implements Event {
- 
+  private XContentType xcontentType;
   private Object body;
    
   public SimpleEvent(Object body) {
@@ -41,6 +43,20 @@ public class SimpleEvent  extends BaseEvent implements Event {
     
     this.body = body;
   }
+
+
+@Override
+public XContentType getXContentType() {
+	// TODO Auto-generated method stub
+	return xcontentType;
+}
+
+
+@Override
+public void setXContentType(XContentType xcontentType) {
+	// TODO Auto-generated method stub
+	this.xcontentType = xcontentType;
+}
 
    
 

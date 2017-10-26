@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import org.elasticsearch.common.io.BytesStream;
+import org.elasticsearch.common.io.stream.BytesStream;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.frameworkset.elasticsearch.event.Event;
 

@@ -2,6 +2,8 @@ package org.frameworkset.elasticsearch.event;
 
 import java.util.Map;
 
+import org.elasticsearch.common.xcontent.XContentType;
+
 public interface Event {
 
 	  /**
@@ -34,5 +36,6 @@ public interface Event {
 	  public void setIndexPrefix(String indexPrefix);
 	  public void setId(String id);
 	  public String getId();
-
+	  public XContentType getXContentType();
+	  public void setXContentType(XContentType xcontentType);
 }
