@@ -7,12 +7,12 @@ maven坐标
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-plugin-elasticsearch</artifactId>
-    <version>5.0.3.6.9</version>
+    <version>5.0.3.7</version>
 </dependency>
 ```
 gradle坐标
 ```
-compile "com.bbossgroups.plugins:bboss-plugin-elasticsearch:5.0.3.6.9"
+compile "com.bbossgroups.plugins:bboss-plugin-elasticsearch:5.0.3.7"
 ```
 # elastic search配置
 对应的配置文件为conf/elasticsearch.properties
@@ -148,3 +148,8 @@ ESDatas<Traces> data //ESDatas为查询结果集对象，封装了返回的当�
 
 ```
 
+# 完整的demo
+https://github.com/bbossgroups/elasticsearchdemo
+
+# bboss elastic特点
+https://www.oschina.net/p/bboss-elastic
