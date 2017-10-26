@@ -1,12 +1,13 @@
 package org.frameworkset.elasticsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.frameworkset.elasticsearch.serial.ESHitDeserializer;
 
 import java.util.List;
 import java.util.Map;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchHit  implements SearchResult {
 	@JsonProperty("_index")
 	private String index;//"_index": "trace-2017.09.01",

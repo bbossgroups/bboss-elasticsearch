@@ -1,7 +1,9 @@
 package org.frameworkset.elasticsearch.entity;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.Serializable;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorResponse implements SearchResult,Serializable{
 	private ErrorInfo error;
 	private int status;

@@ -309,6 +309,10 @@ public class RestClientUtil implements ClientUtil{
 		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
 		List<T> hits = new ArrayList<T>(searchHits.size());
 		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+		boolean isESId = false;
+		if(!isESBaseData){
+			isESId = ESId.class.isAssignableFrom(type);
+		}
 		T data = null;
 		for(SearchHit hit:searchHits){
 			data = (T) hit.getSource();
@@ -316,7 +320,10 @@ public class RestClientUtil implements ClientUtil{
 			if(isESBaseData) {
 				buildESBaseData(  hit,  (ESBaseData)data);
 			}
-
+			else if(isESId)
+			{
+				buildESId(hit,(ESId )data);
+			}
 		}
 		datas.setAggregations(restResponse.getAggregations());
 		datas.setDatas(hits);
@@ -350,6 +357,11 @@ public class RestClientUtil implements ClientUtil{
 		esBaseData.setVersion(hit.getVersion());
 		esBaseData.setIndex(hit.getIndex());
 	}
+	protected void buildESId(SearchHit hit,ESId esBaseData){
+
+		esBaseData.setId(hit.getId());
+
+	}
 	protected <T> T buildObject(SearchResult result, Class<T> type){
 		if(result == null){
 			return null;
@@ -362,10 +374,18 @@ public class RestClientUtil implements ClientUtil{
 			List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
 			if (searchHits != null && searchHits.size() > 0) {
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+				boolean isESId = false;
+				if(!isESBaseData){
+					isESId = ESId.class.isAssignableFrom(type);
+				}
 				SearchHit hit = searchHits.get(0);
 				T data = (T) hit.getSource();
 				if (isESBaseData) {
 					buildESBaseData(hit, (ESBaseData) data);
+				}
+				else if(isESId)
+				{
+					buildESId(hit,(ESId )data);
 				}
 				return data;
 			}
@@ -374,11 +394,19 @@ public class RestClientUtil implements ClientUtil{
 		else
 		{
 			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+			boolean isESId = false;
+			if(!isESBaseData){
+				isESId = ESId.class.isAssignableFrom(type);
+			}
 			SearchHit hit = (SearchHit)result;
 			if(hit.isFound()) {
 				T data = (T) hit.getSource();
 				if (isESBaseData) {
 					buildESBaseData(hit, (ESBaseData) data);
+				}
+				else if(isESId)
+				{
+					buildESId(hit,(ESId )data);
 				}
 				return data;
 			}

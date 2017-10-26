@@ -1,10 +1,11 @@
 package org.frameworkset.elasticsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Map;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RestResponse  implements SearchResult,Serializable {
 	
     private long took;

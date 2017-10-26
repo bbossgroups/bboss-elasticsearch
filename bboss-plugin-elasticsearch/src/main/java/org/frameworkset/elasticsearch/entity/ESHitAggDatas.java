@@ -1,5 +1,7 @@
 package org.frameworkset.elasticsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import java.util.List;
  * @param <Hits>
  * @param <Aggs>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ESHitAggDatas<Hits,Aggs>  implements Serializable {
 	private long totalSize;
 	private List<Aggs> aggDatas;

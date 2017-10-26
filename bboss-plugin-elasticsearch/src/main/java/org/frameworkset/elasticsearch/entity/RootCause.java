@@ -1,10 +1,11 @@
 package org.frameworkset.elasticsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Map;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RootCause  implements Serializable {
 	private String type;//": "query_shard_exception",
 	private String reason;//": "No mapping found for [start_time] in order to sort on",

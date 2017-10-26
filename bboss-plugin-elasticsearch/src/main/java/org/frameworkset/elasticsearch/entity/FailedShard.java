@@ -1,7 +1,9 @@
 package org.frameworkset.elasticsearch.entity;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.Serializable;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FailedShard  implements Serializable {
 	private int shard;//": 0,
     private String index;//": "trace-2017.08.31",
