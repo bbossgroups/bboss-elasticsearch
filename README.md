@@ -148,6 +148,92 @@ ESDatas<Traces> data //ESDatas为查询结果集对象，封装了返回的当�
 
 ```
 
+# 进阶
+初始化bboss elasticsearch组件ClientUtil时，可以指定elasticsearch服务器，支持在指定的elasticsearch服务器集群进行操作,例如：
+```
+ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("traceElasticSearch",//可以指定elasticSearch服务器
+                                                                    "estrace/ESTracesqlMapper.xml");
+```
+traceElasticSearch服务器组件，在conf/elasticsearch.xml文件中配置：
+```
+	    <!--
+        其他elasticSearch组件，对应另外一个elasticsearch服务器
+        -->
+    	<property name="traceElasticsearchPropes">
+    		<propes>
+    
+    			<property name="elasticsearch.client" value="${trace.elasticsearch.client:restful}">
+    				<description> <![CDATA[ 客户端类型:transport，restful ]]></description>
+    			</property>
+    
+    			<property name="elasticUser" value="${trace.elasticUser:}">
+    				<description> <![CDATA[ 认证用户 ]]></description>
+    			</property>
+    
+    			<property name="elasticPassword" value="${trace.elasticPassword:}">
+    				<description> <![CDATA[ 认证口令 ]]></description>
+    			</property>
+    			<!--<property name="elasticsearch.hostNames" value="${trace.elasticsearch.hostNames}">
+    				<description> <![CDATA[ tcp协议地址 ]]></description>
+    			</property>-->
+    
+    			<property name="elasticsearch.rest.hostNames" value="${trace.elasticsearch.rest.hostNames}">
+    				<description> <![CDATA[ rest协议地址 ]]></description>
+    			</property>
+    
+    			<property name="elasticsearch.transport.hostNames" value="${trace.elasticsearch.transport.hostNames}">
+    				<description> <![CDATA[ tcp协议地址 ]]></description>
+    			</property>
+    
+    			<property name="elasticsearch.clusterName" value="${trace.elasticsearch.clusterName:}">
+    				<description> <![CDATA[ es集群名称]]></description>
+    			</property>
+    			<property name="elasticsearch.dateFormat" value="${trace.elasticsearch.dateFormat}">
+    				<description> <![CDATA[ 索引日期格式]]></description>
+    			</property>
+    			<property name="elasticsearch.timeZone" value="${trace.elasticsearch.timeZone}">
+    				<description> <![CDATA[ 时区信息]]></description>
+    			</property>
+    			<property name="elasticsearch.indexName" value="${trace.elasticsearch.indexName}">
+    				<description> <![CDATA[ 默认索引名称]]></description>
+    			</property>
+    			<property name="elasticsearch.indexType" value="${trace.elasticsearch.indexType}">
+    				<description> <![CDATA[ 默认索引类型]]></description>
+    			</property>
+    			<property name="elasticsearch.ttl" value="${elasticsearch.ttl}">
+    				<description> <![CDATA[ ms(毫秒) s(秒) m(分钟) h(小时) d(天) w(星期)]]></description>
+    			</property>
+    
+    			<property name="elasticsearch.showTemplate" value="${trace.elasticsearch.showTemplate:false}">
+    				<description> <![CDATA[ ms(毫秒) s(秒) m(分钟) h(小时) d(天) w(星期)]]></description>
+    			</property>
+    			<property name="elasticsearch.serialize" value="${trace.elasticsearch.serialize:}">
+    				<description> <![CDATA[ elasticsearch.serializer=org.frameworkset.elasticsearch.ElasticSearchJSONEventSerializer]]></description>
+    			</property>
+    			<property name="elasticsearch.httpPool" value="${trace.elasticsearch.httpPool:default}">
+    				<description> <![CDATA[ http连接池逻辑名称，在conf/httpclient.xml中配置]]></description>
+    			</property>
+    
+    		</propes>
+    	</property>
+	<property name="traceElasticSearch"
+			  class="org.frameworkset.elasticsearch.ElasticSearch"
+			  init-method="configure"
+			  destroy-method="stop"
+			  f:elasticsearchPropes="attr:traceElasticsearchPropes"/>
+```
+elasticsearch的服务属性配置在文件conf/elasticsearch.properties中配置:
+```
+trace.elasticsearch.client=rest
+trace.elasticUser=elastic
+trace.elasticPassword=changeme
+trace.elasticsearch.transport.hostNames=192.168.0.2:9300
+trace.elasticsearch.rest.hostNames=192.168.0.2:9200
+trace.elasticsearch.dateFormat=yyyy.MM.dd
+trace.elasticsearch.timeZone=Asia/Shanghai
+trace.elasticsearch.ttl=2d
+trace.elasticsearch.showTemplate=true
+```
 # 完整的demo
 https://github.com/bbossgroups/elasticsearchdemo
 
