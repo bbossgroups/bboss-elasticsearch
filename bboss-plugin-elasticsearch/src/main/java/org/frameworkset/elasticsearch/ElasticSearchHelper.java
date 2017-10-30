@@ -31,6 +31,7 @@ public class ElasticSearchHelper {
 	}
 	
 	public static ClientUtil getRestClientUtil(){
+		init();
 //		ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
 		return elasticSearchSink.getRestClientUtil();
 	}

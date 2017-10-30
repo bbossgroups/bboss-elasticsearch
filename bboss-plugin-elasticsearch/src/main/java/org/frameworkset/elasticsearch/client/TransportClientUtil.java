@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class TransportClientUtil  implements ClientUtil{
+public class TransportClientUtil  extends ClientUtil{
 	private ElasticSearchTransportClient client;
 	 private BulkRequestBuilder bulkRequestBuilder;
 	 private IndexNameBuilder indexNameBuilder;

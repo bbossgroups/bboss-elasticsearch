@@ -20,7 +20,7 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RestClientUtil implements ClientUtil{
+public class RestClientUtil extends ClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(RestClientUtil.class);
 	protected ElasticSearchRestClient client;
 	protected StringBuilder bulkBuilder;
