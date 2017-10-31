@@ -19,7 +19,16 @@ public interface ClientInterface {
 	public final String HTTP_HEAD = "head";
 
 	public abstract String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
+	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
+	/**
+	 * 获取索引表
+	 * @param index
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public List<IndexField> getIndexMappingFields(String index,String indexType) throws ElasticSearchException;
 	/**
 	 * 批量创建索引
 	 * @param indexName
@@ -150,6 +159,8 @@ public interface ClientInterface {
 	public abstract String delete(String path, String string);
 
 	public abstract String getIndexMapping(String index) throws ElasticSearchException;
+
+	public abstract String getIndexMapping(String index,boolean pretty) throws ElasticSearchException;
 
 	public abstract String executeRequest(String path, String templateName, Map params) throws ElasticSearchException;
 

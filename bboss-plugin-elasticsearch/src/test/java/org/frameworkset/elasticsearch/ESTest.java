@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch;
 
 import org.frameworkset.elasticsearch.client.ClientUtil;
+import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
@@ -24,6 +25,19 @@ public class ESTest {
 		FastDateFormat df = FastDateFormat.getInstance(format,TimeZone.getTimeZone("Asia/Shanghai"));
 		Object ojb = df.parseObject(data);
 		System.out.println();
+	}
+
+
+	@Test
+	public void testQueryDocMapping(){
+
+		ClientUtil clientUtil = ElasticSearchHelper.getRestClientUtil();
+		System.out.println(clientUtil.getIndexMapping("trace-*",true));
+		final List<IndexField> fields = clientUtil.getIndexMappingFields("trace-*","trace");
+
+		System.out.println(fields.size());
+//		http://127.0.0.1:9200/productindex/_mapping?pretty
+
 	}
 	@Test
 	public void createIndex(){

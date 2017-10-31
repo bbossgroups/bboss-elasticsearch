@@ -96,6 +96,21 @@ public class TransportClientUtil  extends ClientUtil{
 	}
 
 	@Override
+	public <T> T getIndexMapping(String index, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getIndexMapping(String index, boolean pretty, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public List<IndexField> getIndexMappingFields(String index,String indexType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
 		DeleteResponse response = this.getClient().delete(client.deleteIndex(indexName,indexType,id).request()).actionGet();
@@ -183,7 +198,12 @@ public class TransportClientUtil  extends ClientUtil{
 	public String getIndexMapping(String index) throws ElasticSearchException{
 		return null;
 	}
-	
+
+	@Override
+	public String getIndexMapping(String index, boolean pretty) throws ElasticSearchException {
+		return null;
+	}
+
 	public <T> T executeRequest(String path, String templateName,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return null;
 	}

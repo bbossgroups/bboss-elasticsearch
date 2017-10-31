@@ -1,7 +1,11 @@
 package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -9,6 +13,7 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +30,112 @@ public class RestClientUtil extends ClientUtil{
 	protected ElasticSearchRestClient client;
 	protected StringBuilder bulkBuilder;
 	protected IndexNameBuilder indexNameBuilder;
+
 	public RestClientUtil(ElasticSearchClient client,IndexNameBuilder indexNameBuilder) {
 		this.client = (ElasticSearchRestClient)client;
 		this.indexNameBuilder = indexNameBuilder;
 	}
+	private void handleFields(Map<String,Object> subFileds,String fieldName,List<IndexField> fields){
+		if(subFileds == null || subFileds.size() == 0)
+			return ;
+		Iterator<Map.Entry<String,Object>> iterator = subFileds.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String,Object> entry = iterator.next();
+			IndexField indexField = buildIndexField(entry, fields,fieldName);
+		}
+
+	}
+
+	private IndexField buildIndexField(Map.Entry<String,Object> field,List<IndexField> fields,String parentFieldName){
+//		Map.Entry<String,Object> field = fileds.next();
+		IndexField indexField = new IndexField();
+		String fieldName = null;
+		if(parentFieldName != null){
+			fieldName = parentFieldName + "."+field.getKey();
+		}
+		else {
+			fieldName = field.getKey();
+		}
+		indexField.setFieldName(fieldName);
+		Map<String,Object> fieldInfo = (Map<String,Object>)field.getValue();
+		indexField.setType((String)fieldInfo.get("type"));
+		indexField.setIgnoreAbove(ClientUtil.intValue(fieldInfo.get("ignore_above"),null));
+		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
+		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
+		indexField.setBoost((Integer)fieldInfo.get("boost"));
+		indexField.setCoerce((Boolean) fieldInfo.get("coerce"));
+		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
+		indexField.setDocValues((Boolean)fieldInfo.get("doc_values"));//setCoerce();
+		indexField.setDynamic((Boolean)fieldInfo.get("doc_values"));	//dynamic
+		indexField.setEnabled((Boolean)fieldInfo.get("enabled"));			//enabled
+		indexField.setFielddata((Boolean)fieldInfo.get("fielddata"));	//fielddata
+		indexField.setFormat((String)fieldInfo.get("format"));		//	format
+		indexField.setIgnoreMalformed((Boolean)fieldInfo.get("ignore_malformed"));//Coerce();	//		ignore_malformed
+		indexField.setIncludeInAll((Boolean)fieldInfo.get("include_in_all"));	//include_in_all
+		indexField.setIndexOptions((String)fieldInfo.get("index_options"));
+		indexField.setIndex((Boolean)fieldInfo.get("index"));	//
+		indexField.setFields((Map<String,Object>)fieldInfo.get("fields"));	//
+
+		indexField.setNorms((Boolean)fieldInfo.get("norms"));//	norms
+		indexField.setNullValue(fieldInfo.get("null_value"));	//
+		indexField.setPositionIncrementGap((Integer)fieldInfo.get("position_increment_gap"));
+		indexField.setProperties((Map<String,Object>)fieldInfo.get("properties"));	//
+		indexField.setSearchAnalyzer((String)fieldInfo.get("search_analyzer"));	//search_analyzer
+		indexField.setSimilarity((String)fieldInfo.get("similarity"));	//
+		indexField.setStore((Boolean)fieldInfo.get("store"));	//store
+		indexField.setTermVector((String)fieldInfo.get("term_vector"));	//
+		fields.add(indexField);
+		handleFields(indexField.getFields(), fieldName,fields);
+		return indexField;
+	}
+	/**
+	 * 获取索引表字段信息
+	 * @param index
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public List<IndexField> getIndexMappingFields(String index,final String indexType) throws ElasticSearchException{
+		final List<IndexField> fields = new ArrayList<IndexField>();
+		getIndexMapping(index,false,new ResponseHandler<Void>(){
+
+			@Override
+			public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					/**
+					 * Map<indexName,Mapping<Type,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>>
+					 */
+					Map<String,Object> map = SimpleStringUtil.json2ObjectWithType(entity.getContent(),new JsonTypeReference<Map<String,Object>>(){});
+					Iterator<Map.Entry<String,Object>> entries = map.entrySet().iterator();
+					while(entries.hasNext()){
+						Map.Entry<String,Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
+						Map<String,Map<String,Object>> mapping = (Map<String, Map<String,Object>>) entry.getValue();
+						Map<String,Map<String,Object>> typeProperties = (Map<String,Map<String,Object>>)mapping.get("mappings").get(indexType);
+						Map<String,Object> 	properties = 	(Map<String,Object>)typeProperties.get("properties");
+						Iterator<Map.Entry<String,Object>> fileds = properties.entrySet().iterator();
+						while(fileds.hasNext()){
+							Map.Entry<String,Object> field = fileds.next();
+							IndexField indexField = buildIndexField(field,fields,null);
+						}
+						break;
+
+					}
+					return null;
+
+				} else {
+					HttpEntity entity = response.getEntity();
+					if (entity != null )
+						throw new ElasticSearchException(new StringBuilder().append("Unexpected response : " ).append( EntityUtils.toString(entity)).toString());
+					else
+						throw new ElasticSearchException("Unexpected response status: " + status);
+				}
+			}
+		});
+		return fields;
+	}
+
 	public   void addEvent(Event event,ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException {
 	    if (bulkBuilder == null) {
 	    	 bulkBuilder = new StringBuilder();
@@ -245,7 +352,26 @@ public class RestClientUtil extends ClientUtil{
 	}
 	
 	public String getIndexMapping(String index) throws ElasticSearchException{
-		return this.client.executeHttp(index+"/_mapping?pretty",ClientUtil.HTTP_GET);
+		return this.getIndexMapping(index,true);
+
+	}
+	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+		return this.getIndexMapping(index,true,responseHandler);
+
+	}
+
+	public String getIndexMapping(String index,boolean pretty) throws ElasticSearchException{
+		if(pretty)
+			return this.client.executeHttp(index+"/_mapping?pretty",ClientUtil.HTTP_GET);
+		else
+			return this.client.executeHttp(index+"/_mapping",ClientUtil.HTTP_GET);
+	}
+
+	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+		if(pretty)
+			return this.client.executeRequest(index+"/_mapping?pretty",null,responseHandler,ClientUtil.HTTP_GET);
+		else
+			return this.client.executeRequest(index+"/_mapping",null,responseHandler,ClientUtil.HTTP_GET);
 	}
 	@Override
 	public String delete(String path, String string) {
@@ -420,84 +546,7 @@ public class RestClientUtil extends ClientUtil{
 		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return buildObject(result, type);
 	}
-	private Long longValue(Object num,Long defaultValue){
-		if(num == null)
-			return defaultValue;
-		if(num instanceof Long)
-		{
-			return ((Long)num);
-		}else if(num instanceof Double)
-		{
-			return ((Double)num).longValue();
-		}else if(num instanceof Integer){
-			return ((Integer)num).longValue();
-		}
-		else if(num instanceof Float)
-		{
-			return ((Float)num).longValue();
-		}
-		else  if(num instanceof Short)
-		{
-			return ((Short)num).longValue();
-		}
-		else
-		{
-			return Long.parseLong(num.toString());
-		}
-	}
 
-	private Float floatValue(Object num,Float defaultValue){
-		if(num == null)
-			return defaultValue;
-		if(num instanceof Float)
-		{
-			return (Float)num;
-		}else if(num instanceof Double)
-		{
-			return ((Double)num).floatValue();
-		}else if(num instanceof Integer){
-			return ((Integer)num).floatValue();
-		}
-		else  if(num instanceof Long)
-		{
-			return ((Long)num).floatValue();
-		}
-		else  if(num instanceof Short)
-		{
-			return ((Short)num).floatValue();
-		}
-		else
-		{
-			return Float.parseFloat(num.toString());
-		}
-	}
-
-	private Double doubleValue(Object num,Double defaultValue){
-		if(num == null)
-			return defaultValue;
-		if(num instanceof Double)
-		{
-			return (Double)num;
-		}else if(num instanceof Float)
-		{
-			return ((Float)num).doubleValue();
-		}else if(num instanceof Integer){
-			return ((Integer)num).doubleValue();
-		}
-		else  if(num instanceof Long)
-		{
-			return ((Long)num).doubleValue();
-		}
-		else  if(num instanceof Short)
-		{
-			return ((Short)num).doubleValue();
-		}
-		else
-		{
-
-			return Double.parseDouble(num.toString());
-		}
-	}
 	private void buildLongAggHit(LongAggHit longRangeHit,Map<String,Object> bucket,String stats){
 		longRangeHit.setKey((String)bucket.get("key"));
 		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
@@ -800,8 +849,9 @@ public class RestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String getIndice(String index)  throws ElasticSearchException {
-		 String response = (String)client.executeHttp(index+"/_mapping?pretty",ClientUtil.HTTP_GET);
-		 return response;
+//		 String response = (String)client.executeHttp(index+"/_mapping?pretty",ClientUtil.HTTP_GET);
+//		 return response;
+		 return this.getIndexMapping(index,true);
 	 }
 	 public List<ESIndice> getIndexes() throws ElasticSearchException{
 		 String data = this.client.executeHttp("_cat/indices?v",HTTP_GET);

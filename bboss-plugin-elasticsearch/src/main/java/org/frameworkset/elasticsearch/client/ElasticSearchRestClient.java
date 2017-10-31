@@ -294,7 +294,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		String response = null;
 		Exception e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
-			logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			logger.info("Elastic search action:{},request body:{}",path,entity);
 		}
 		while (true) {
 
