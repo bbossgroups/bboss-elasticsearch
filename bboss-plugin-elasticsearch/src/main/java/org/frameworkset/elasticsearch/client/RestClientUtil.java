@@ -46,6 +46,18 @@ public class RestClientUtil extends ClientUtil{
 
 	}
 
+	private Boolean parseBoolean(Object norms){
+		if(norms == null){
+			return null;
+		}
+		if(norms instanceof Boolean){
+			return (Boolean)norms;
+		}
+		else if(norms instanceof Map){
+			return (Boolean) ((Map) norms).get("enabled");
+		}
+		return null;
+	}
 	private IndexField buildIndexField(Map.Entry<String,Object> field,List<IndexField> fields,String parentFieldName){
 //		Map.Entry<String,Object> field = fileds.next();
 		IndexField indexField = new IndexField();
@@ -63,26 +75,26 @@ public class RestClientUtil extends ClientUtil{
 		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
 		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
 		indexField.setBoost((Integer)fieldInfo.get("boost"));
-		indexField.setCoerce((Boolean) fieldInfo.get("coerce"));
+		indexField.setCoerce(parseBoolean( fieldInfo.get("coerce")));
 		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
-		indexField.setDocValues((Boolean)fieldInfo.get("doc_values"));//setCoerce();
-		indexField.setDynamic((Boolean)fieldInfo.get("doc_values"));	//dynamic
-		indexField.setEnabled((Boolean)fieldInfo.get("enabled"));			//enabled
-		indexField.setFielddata((Boolean)fieldInfo.get("fielddata"));	//fielddata
+		indexField.setDocValues(parseBoolean(fieldInfo.get("doc_values")));//setCoerce();
+		indexField.setDynamic(parseBoolean(fieldInfo.get("doc_values")));	//dynamic
+		indexField.setEnabled(parseBoolean(fieldInfo.get("enabled")));			//enabled
+		indexField.setFielddata(parseBoolean(fieldInfo.get("fielddata")));	//fielddata
 		indexField.setFormat((String)fieldInfo.get("format"));		//	format
-		indexField.setIgnoreMalformed((Boolean)fieldInfo.get("ignore_malformed"));//Coerce();	//		ignore_malformed
-		indexField.setIncludeInAll((Boolean)fieldInfo.get("include_in_all"));	//include_in_all
+		indexField.setIgnoreMalformed(parseBoolean(fieldInfo.get("ignore_malformed")));//Coerce();	//		ignore_malformed
+		indexField.setIncludeInAll(parseBoolean(fieldInfo.get("include_in_all")));	//include_in_all
 		indexField.setIndexOptions((String)fieldInfo.get("index_options"));
-		indexField.setIndex((Boolean)fieldInfo.get("index"));	//
+		indexField.setIndex(parseBoolean(fieldInfo.get("index")));	//
 		indexField.setFields((Map<String,Object>)fieldInfo.get("fields"));	//
 
-		indexField.setNorms((Boolean)fieldInfo.get("norms"));//	norms
+		indexField.setNorms(parseBoolean(fieldInfo.get("norms")));//	norms
 		indexField.setNullValue(fieldInfo.get("null_value"));	//
 		indexField.setPositionIncrementGap((Integer)fieldInfo.get("position_increment_gap"));
 		indexField.setProperties((Map<String,Object>)fieldInfo.get("properties"));	//
 		indexField.setSearchAnalyzer((String)fieldInfo.get("search_analyzer"));	//search_analyzer
 		indexField.setSimilarity((String)fieldInfo.get("similarity"));	//
-		indexField.setStore((Boolean)fieldInfo.get("store"));	//store
+		indexField.setStore(parseBoolean(fieldInfo.get("store")));	//store
 		indexField.setTermVector((String)fieldInfo.get("term_vector"));	//
 		fields.add(indexField);
 		handleFields(indexField.getFields(), fieldName,fields);

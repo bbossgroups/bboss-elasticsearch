@@ -30,14 +30,10 @@ public class ESTest {
 
 	@Test
 	public void testQueryDocMapping(){
-
 		ClientUtil clientUtil = ElasticSearchHelper.getRestClientUtil();
 		System.out.println(clientUtil.getIndexMapping("trace-*",true));
 		final List<IndexField> fields = clientUtil.getIndexMappingFields("trace-*","trace");
-
 		System.out.println(fields.size());
-//		http://127.0.0.1:9200/productindex/_mapping?pretty
-
 	}
 	@Test
 	public void createIndex(){
