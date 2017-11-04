@@ -325,7 +325,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException{
-		SearchResult searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+		SearchHit searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
 
 		return buildObject(searchResult, beanType);
 
@@ -400,47 +400,47 @@ public class RestClientUtil extends ClientUtil{
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String templateName, Map params) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String templateName, Object params) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String entity) throws ElasticSearchException {
-		SearchResult searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler(  ));
-		if(searchResult instanceof ErrorResponse){
-			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
-		}
+	public RestResponse search(String path, String entity) throws ElasticSearchException {
+		RestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler(  ));
+//		if(searchResult instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+//		}
 		return searchResult;
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Map params,Class<?> type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params,Class<?> type) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String templateName, Object params,Class<?> type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params,Class<?> type) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String entity,Class<?> type) throws ElasticSearchException {
-		SearchResult searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
-		if(searchResult instanceof ErrorResponse){
-			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
-		}
+	public RestResponse search(String path, String entity,Class<?> type) throws ElasticSearchException {
+		RestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+//		if(searchResult instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+//		}
 		return searchResult;
 	}
 
-	protected <T> ESDatas<T> buildESDatas(SearchResult result,Class<T> type){
-		if(result instanceof ErrorResponse){
-			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
-		}
+	protected <T> ESDatas<T> buildESDatas(RestResponse result,Class<T> type){
+//		if(result instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
+//		}
 		ESDatas<T> datas = new ESDatas<T>();
 		RestResponse restResponse = (RestResponse)result;
 		datas.setTotalSize(restResponse.getSearchHits().getTotal());
@@ -474,7 +474,7 @@ public class RestClientUtil extends ClientUtil{
 	 	return null;
 	}
 	public <T> ESDatas<T> searchList(String path, String entity, Class<T> type) throws ElasticSearchException{
-		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return buildESDatas(result,type);
 	}
 
@@ -500,13 +500,11 @@ public class RestClientUtil extends ClientUtil{
 		esBaseData.setId(hit.getId());
 
 	}
-	protected <T> T buildObject(SearchResult result, Class<T> type){
+	protected <T> T buildObject(Object result, Class<T> type){
 		if(result == null){
 			return null;
 		}
-		if(result instanceof ErrorResponse){
-			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
-		}
+		
 		if(result instanceof RestResponse) {
 			RestResponse restResponse = (RestResponse) result;
 			List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
@@ -529,7 +527,7 @@ public class RestClientUtil extends ClientUtil{
 			}
 			return null;
 		}
-		else
+		else   if(result instanceof SearchHit)
 		{
 			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 			boolean isESId = false;
@@ -552,10 +550,13 @@ public class RestClientUtil extends ClientUtil{
 				return null;
 			}
 		}
+		else {
+			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
+		}			
 
 	}
 	public <T> T searchObject(String path, String entity, Class<T> type) throws ElasticSearchException{
-		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return buildObject(result, type);
 	}
 
@@ -622,97 +623,93 @@ public class RestClientUtil extends ClientUtil{
 		doubleRangeHit.setSum(doubleValue(stats_.get("sum"),0d));
 	}
 
-	protected  <T extends AggHit> ESAggDatas<T> buildESAggDatas(SearchResult result,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle){
-		if(result instanceof ErrorResponse){
-			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
-		}
-		else
-		{
-			RestResponse searchResult =(RestResponse)result;
-			Map<String,Map<String,Object>> aggregations = searchResult.getAggregations();
-			if(aggregations != null){
-				Map<String,Object> traces = aggregations.get(aggs);
-				Object _buckets = traces.get("buckets");
-				ESAggDatas<T> ret = new ESAggDatas<T>();
-				ret.setTotalSize(searchResult.getSearchHits().getTotal());
+	protected  <T extends AggHit> ESAggDatas<T> buildESAggDatas(RestResponse searchResult,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle){
+		
+		 
+		Map<String,Map<String,Object>> aggregations = searchResult.getAggregations();
+		if(aggregations != null){
+			Map<String,Object> traces = aggregations.get(aggs);
+			Object _buckets = traces.get("buckets");
+			ESAggDatas<T> ret = new ESAggDatas<T>();
+			ret.setTotalSize(searchResult.getSearchHits().getTotal());
 
-				if(_buckets instanceof List) {
-					List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
-					List<T> datas = new ArrayList<>(buckets.size());
-					ret.setAggDatas(datas);
-					for (Map<String, Object> bucket : buckets) {
-						try {
-							T obj = type.newInstance();
-							if(obj instanceof LongAggRangeHit){
-								buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,null);
-							}else if(obj instanceof FloatAggRangeHit){
-								buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,null);
-							}else if(obj instanceof DoubleAggRangeHit){
-								buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,null);
-							} else if (obj instanceof LongAggHit) {
-								buildLongAggHit((LongAggHit) obj, bucket,  stats);
-							} else if(obj instanceof FloatAggHit){
-								buildFloatAggHit((FloatAggHit) obj, bucket,  stats);
-							}else if(obj instanceof DoubleAggHit){
-								buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
-							}
-							if(aggBucketHandle != null)
-							{
-								aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
-							}
-
-							datas.add(obj);
-						} catch (InstantiationException e) {
-							throw new ElasticSearchException(e);
-						} catch (IllegalAccessException e) {
-							throw new ElasticSearchException(e);
+			if(_buckets instanceof List) {
+				List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
+				List<T> datas = new ArrayList<>(buckets.size());
+				ret.setAggDatas(datas);
+				for (Map<String, Object> bucket : buckets) {
+					try {
+						T obj = type.newInstance();
+						if(obj instanceof LongAggRangeHit){
+							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,null);
+						}else if(obj instanceof FloatAggRangeHit){
+							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,null);
+						}else if(obj instanceof DoubleAggRangeHit){
+							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,null);
+						} else if (obj instanceof LongAggHit) {
+							buildLongAggHit((LongAggHit) obj, bucket,  stats);
+						} else if(obj instanceof FloatAggHit){
+							buildFloatAggHit((FloatAggHit) obj, bucket,  stats);
+						}else if(obj instanceof DoubleAggHit){
+							buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
 						}
-					}
-
-
-				}
-				else
-				{
-					Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
-					List<T> datas = new ArrayList<>(buckets.size());
-					ret.setAggDatas(datas);
-					Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
-					Map<String, Object> bucket = null;
-					Map.Entry<String, Map<String, Object>> entry = null;
-					String key = null;
-					T obj = null;
-					while(iterable.hasNext()){
-						entry = iterable.next();
-						key = entry.getKey();
-						bucket = entry.getValue();
-						try {
-							obj = type.newInstance();
-
-							if (obj instanceof LongAggRangeHit) {
-								buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
-							} else if (obj instanceof DoubleAggRangeHit)
-							{
-								buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
-							}else if (obj instanceof FloatAggRangeHit)
-							{
-								buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
-							}
-							if(aggBucketHandle != null)
-							{
-								aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
-							}
-							datas.add(obj);
-						}catch (InstantiationException e) {
-							throw new ElasticSearchException(e);
-						} catch (IllegalAccessException e) {
-							throw new ElasticSearchException(e);
+						if(aggBucketHandle != null)
+						{
+							aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
 						}
+
+						datas.add(obj);
+					} catch (InstantiationException e) {
+						throw new ElasticSearchException(e);
+					} catch (IllegalAccessException e) {
+						throw new ElasticSearchException(e);
 					}
 				}
-				return ret;
+
+
 			}
+			else
+			{
+				Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
+				List<T> datas = new ArrayList<>(buckets.size());
+				ret.setAggDatas(datas);
+				Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
+				Map<String, Object> bucket = null;
+				Map.Entry<String, Map<String, Object>> entry = null;
+				String key = null;
+				T obj = null;
+				while(iterable.hasNext()){
+					entry = iterable.next();
+					key = entry.getKey();
+					bucket = entry.getValue();
+					try {
+						obj = type.newInstance();
 
+						if (obj instanceof LongAggRangeHit) {
+							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
+						} else if (obj instanceof DoubleAggRangeHit)
+						{
+							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
+						}else if (obj instanceof FloatAggRangeHit)
+						{
+							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
+						}
+						if(aggBucketHandle != null)
+						{
+							aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
+						}
+						datas.add(obj);
+					}catch (InstantiationException e) {
+						throw new ElasticSearchException(e);
+					} catch (IllegalAccessException e) {
+						throw new ElasticSearchException(e);
+					}
+				}
+			}
+			return ret;
 		}
+
+		 
 		return null;
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs,String stats) throws ElasticSearchException{
@@ -732,11 +729,11 @@ public class RestClientUtil extends ClientUtil{
 		return null;
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats) throws ElasticSearchException{
-		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return buildESAggDatas(result,type,aggs,stats,(ESAggBucketHandle<T>)null);
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
-		SearchResult result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
 	}
 
@@ -757,17 +754,17 @@ public class RestClientUtil extends ClientUtil{
 
 
 	@Override
-	public SearchResult search(String path, String templateName, Map params,ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params,ESTypeReferences type) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public SearchResult search(String path, String entity,ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String entity,ESTypeReferences type) throws ElasticSearchException {
 		return this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 	}
 	

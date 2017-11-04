@@ -1,8 +1,8 @@
 package org.frameworkset.elasticsearch.client;
 
-import org.frameworkset.elasticsearch.entity.SearchResult;
-
 import java.util.Map;
+
+import org.frameworkset.elasticsearch.entity.RestResponse;
 
 /**
  * 聚合查询bucket处理接口
@@ -15,5 +15,5 @@ public interface ESAggBucketHandle<T> {
 	 * @param obj 封装指标数据的业务对象
 	 * @param key 桶的对应的指标键值名称
 	 */
-	void bucketHandle(SearchResult result, Map<String, Object> bucket, T obj, String key);
+	void bucketHandle(RestResponse result, Map<String, Object> bucket, T obj, String key);
 }

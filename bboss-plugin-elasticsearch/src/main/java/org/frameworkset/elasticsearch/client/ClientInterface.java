@@ -175,17 +175,17 @@ public interface ClientInterface {
 
 	public abstract <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String templateName, Map params) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Map params) throws ElasticSearchException;
 
 
-	public abstract SearchResult search(String path, String templateName, Object params) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Object params) throws ElasticSearchException;
 
 	/**
 	 * @param path
 	 * @param entity
 	 * @return
 	 */
-	public abstract SearchResult search(String path, String entity) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String entity) throws ElasticSearchException;
 
 
 	public abstract Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException;
@@ -319,18 +319,18 @@ public interface ClientInterface {
 
 	public abstract String refreshIndexInterval(int interval) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String entity, Class<?> type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String entity, Class<?> type) throws ElasticSearchException;
 
 
-	public abstract SearchResult search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException;
 
-	public abstract SearchResult search(String path, String entity, ESTypeReferences type) throws ElasticSearchException;
+	public abstract RestResponse search(String path, String entity, ESTypeReferences type) throws ElasticSearchException;
 
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException;
 

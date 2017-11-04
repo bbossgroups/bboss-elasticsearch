@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RestResponse  implements SearchResult,Serializable {
+public class RestResponse  implements Serializable {
 	
     private long took;
     @JsonProperty("timed_out")

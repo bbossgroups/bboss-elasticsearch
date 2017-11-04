@@ -1,7 +1,8 @@
 package org.frameworkset.elasticsearch.client;
 
-import bboss.org.apache.velocity.VelocityContext;
-import com.frameworkset.util.VariableHandler;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.http.client.ResponseHandler;
 import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
@@ -10,7 +11,7 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.AggHit;
 import org.frameworkset.elasticsearch.entity.ESAggDatas;
 import org.frameworkset.elasticsearch.entity.ESDatas;
-import org.frameworkset.elasticsearch.entity.SearchResult;
+import org.frameworkset.elasticsearch.entity.RestResponse;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESInfo;
@@ -24,8 +25,9 @@ import org.frameworkset.util.ClassUtil.PropertieDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import com.frameworkset.util.VariableHandler;
+
+import bboss.org.apache.velocity.VelocityContext;
 
 /**
  * 通过配置文件加载模板
@@ -469,38 +471,38 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Map params) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
 		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Object params) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
 		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName) throws ElasticSearchException {
 		return super.search(path, evalTemplate(templateName, (Object) null));
 //		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
 		return super.search(path, evalTemplate(templateName, params), type);
 	}
 
 
 	@Override
-	public SearchResult search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
 		return super.search(path, evalTemplate(templateName, params), type);
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Class<?> type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Class<?> type) throws ElasticSearchException {
 //		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
 		return super.search(path, evalTemplate(templateName, (Object)null), type);
 	}
@@ -546,18 +548,18 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 
 	@Override
-	public SearchResult search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException {
 		return super.search(  path,evalTemplate(templateName, params),   type);
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
 		return super.search(  path, evalTemplate(templateName, params),   type);
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
 	}
 
 	@Override
-	public SearchResult search(String path, String templateName, ESTypeReferences type) throws ElasticSearchException {
+	public RestResponse search(String path, String templateName, ESTypeReferences type) throws ElasticSearchException {
 		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
 	}
 

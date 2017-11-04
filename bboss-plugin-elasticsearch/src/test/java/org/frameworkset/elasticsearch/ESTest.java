@@ -132,6 +132,25 @@ public class ESTest {
 	}
 
 	@Test
+	public void testSearhHits() throws ParseException{
+
+		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("org/frameworkset/elasticsearch/ESTracesMapper.xml");
+		TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
+		traceExtraCriteria.setApplication("testweb1");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		traceExtraCriteria.setStartTime(dateFormat.parse("2017-09-02 00:00:00").getTime());
+		traceExtraCriteria.setEndTime(dateFormat.parse("2017-09-10 00:00:00").getTime());
+		String data = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new StringResponseHandler());
+		System.out.println("------------------------------");
+		System.out.println(data);
+		System.out.println("------------------------------");
+		Map<String,Object> response = clientUtil.executeRequest("trace-*/_search","queryPeriodsTopN",traceExtraCriteria,new MapResponseHandler());
+		if(response.containsKey("error")){
+			return ;
+		}
+	}
+
+	@Test
 	public void testTempate() throws ParseException{
 
 		ClientUtil clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTemplate.xml");
@@ -266,5 +285,9 @@ public class ESTest {
 				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 				Demo.class);
 	}
+
+
+
+
 
 }

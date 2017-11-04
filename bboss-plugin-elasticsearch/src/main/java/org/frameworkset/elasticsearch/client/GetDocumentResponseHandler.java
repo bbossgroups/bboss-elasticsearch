@@ -1,23 +1,23 @@
 package org.frameworkset.elasticsearch.client;
 
-import com.frameworkset.util.SimpleStringUtil;
+import java.io.IOException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.SearchHit;
-import org.frameworkset.elasticsearch.entity.SearchResult;
-import org.frameworkset.elasticsearch.handler.BaseESResponsehandler;
+import org.frameworkset.elasticsearch.handler.BaseGetDocESResponsehandler;
 import org.frameworkset.elasticsearch.serial.ESClassType;
 import org.frameworkset.elasticsearch.serial.ESSerialThreadLocal;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import com.frameworkset.util.SimpleStringUtil;
 
-public class GetDocumentResponseHandler extends BaseESResponsehandler<SearchResult> {
+public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 	private static Logger logger = LoggerFactory.getLogger(GetDocumentResponseHandler.class);
 
 	public GetDocumentResponseHandler() {
@@ -36,7 +36,7 @@ public class GetDocumentResponseHandler extends BaseESResponsehandler<SearchResu
 	}
 
 	 @Override
-     public SearchResult handleResponse(final HttpResponse response)
+     public SearchHit handleResponse(final HttpResponse response)
              throws ClientProtocolException, IOException {
          int status = response.getStatusLine().getStatusCode();
 
@@ -65,18 +65,10 @@ public class GetDocumentResponseHandler extends BaseESResponsehandler<SearchResu
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-				 String content = EntityUtils.toString(entity);
-				 SearchHit searchResponse = null;
-                 try {
-                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, SearchHit.class) : null;
-                 }
-                 catch (Exception e){
-					 throw new ElasticSearchException(content,e);
-                 }
-                 return searchResponse;
+				throw new ElasticSearchException(EntityUtils.toString(entity));
              }
              else
-                 throw new ClientProtocolException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status);
          }
      }
 

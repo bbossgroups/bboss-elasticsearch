@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHit> {
+public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchResponseHandler.class);
 	
 	public ElasticSearchResponseHandler() {
@@ -38,7 +38,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
 	}
 
 	 @Override
-     public SearchResult handleResponse(final HttpResponse response)
+     public RestResponse handleResponse(final HttpResponse response)
              throws ClientProtocolException, IOException {
          int status = response.getStatusLine().getStatusCode();
 
@@ -64,18 +64,19 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler<SearchHi
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-				 String content = EntityUtils.toString(entity);
-                 ErrorResponse searchResponse = null;
-                 try {
-                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
-                 }
-                 catch (Exception e){
-					 throw new ElasticSearchException(content,e);
-                 }
-                 return searchResponse;
+            	 throw new ElasticSearchException(EntityUtils.toString(entity));
+//				 String content = EntityUtils.toString(entity);
+//                 ErrorResponse searchResponse = null;
+//                 try {
+//                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
+//                 }
+//                 catch (Exception e){
+//					 throw new ElasticSearchException(content,e);
+//                 }
+//                 return searchResponse;
              }
              else
-                 throw new ClientProtocolException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status);
          }
      }
 
