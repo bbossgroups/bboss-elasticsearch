@@ -1,8 +1,5 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class FloatAggHit extends AggHit{
 	private String key;
 	private Long docCount;

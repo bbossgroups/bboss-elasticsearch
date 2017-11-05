@@ -1,8 +1,5 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class FloatAggRangeHit extends FloatAggHit{
 	private Float from ;
 	private Float to;

@@ -1,9 +1,5 @@
 package org.frameworkset.elasticsearch.client;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.client.ResponseHandler;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -15,14 +11,14 @@ import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.EventDeliveryException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
-import org.frameworkset.elasticsearch.entity.AggHit;
-import org.frameworkset.elasticsearch.entity.ESAggDatas;
-import org.frameworkset.elasticsearch.entity.ESDatas;
-import org.frameworkset.elasticsearch.entity.ESIndice;
-import org.frameworkset.elasticsearch.entity.IndexField;
-import org.frameworkset.elasticsearch.entity.RestResponse;
+import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
+import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class TransportClientUtil  extends ClientUtil{
 	private ElasticSearchTransportClient client;
@@ -458,6 +454,16 @@ public class TransportClientUtil  extends ClientUtil{
 
 	@Override
 	public <T> T getDocument(String indexName, String indexType, String documentId, Map<String, Object> options, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public MapSearchHit getDocumentHit(String indexName, String indexType, String documentId, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public MapSearchHit getDocumentHit(String indexName, String indexType, String documentId) throws ElasticSearchException {
 		return null;
 	}
 

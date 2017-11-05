@@ -1,6 +1,5 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.Date;
  * green  open   twitter2 nYFWZEO7TUiOjLQXBaYJpA   5   0          0            0       260b           260b
  * .watcher-history-3-2017.07.02
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class ESIndice {
     private String health;
     private String status ;

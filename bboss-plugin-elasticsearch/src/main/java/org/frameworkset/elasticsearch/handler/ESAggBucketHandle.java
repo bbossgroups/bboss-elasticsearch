@@ -1,8 +1,8 @@
-package org.frameworkset.elasticsearch.client;
-
-import java.util.Map;
+package org.frameworkset.elasticsearch.handler;
 
 import org.frameworkset.elasticsearch.entity.RestResponse;
+
+import java.util.Map;
 
 /**
  * 聚合查询bucket处理接口

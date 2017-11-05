@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.handler;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
@@ -6,11 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.entity.ErrorResponse;
 import org.frameworkset.elasticsearch.entity.RestResponse;
-import org.frameworkset.elasticsearch.entity.SearchHit;
-import org.frameworkset.elasticsearch.entity.SearchResult;
-import org.frameworkset.elasticsearch.handler.BaseESResponsehandler;
 import org.frameworkset.elasticsearch.serial.ESClassType;
 import org.frameworkset.elasticsearch.serial.ESSerialThreadLocal;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;

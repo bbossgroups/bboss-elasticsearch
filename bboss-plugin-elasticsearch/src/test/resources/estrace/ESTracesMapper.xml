@@ -314,29 +314,121 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
         }]]>
     </property>
 
+    <!--
+            分页查询和按日期分钟统计片段
+            应用：链路检索和统计查询，rpc时间段统计查询
+            { "_score":"desc" },
+        -->
+    <property name="searchAfterAggs">
+        <![CDATA[
+            #if($traceScore)
+	            #if($lastStartTime && $lastStartTime > 0)
+	                #if($orderBy && $orderBy.equals("elapsed"))
+	                "search_after": [$lastScore,$lastElapsed,$lastStartTime,"trace#$lastId"],
+	                #else
+	                "search_after": [$lastScore,$lastStartTime,"trace#$lastId"],
+	                #end
+	            #end
+	            "size": $pageSize,
+	            "sort": [
 
+	                 {"_score": "desc"},
+	                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+	                {"startTime": "desc"},
+	                {"_uid": "desc"}
+	            ],
+            #else
+	            #if($lastStartTime && $lastStartTime > 0)
+	                #if($orderBy && $orderBy.equals("elapsed"))
+	                "search_after": [$lastElapsed,$lastStartTime,"trace#$lastId"],
+	                #else
+	                "search_after": [$lastStartTime,"trace#$lastId"],
+	                #end
+	            #end
+	            "size": $pageSize,
+	            "sort": [
+	                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+	                {"startTime": "desc"},
+	                {"_uid": "desc"}
+	            ],
+            #end
+            "aggs": {
+                "traces_date_histogram": {
+                    "date_histogram": {
+                        "field": "starttimeDate",
+                        "interval": "1m",
+                        "time_zone": "Asia/Shanghai",
+                        "min_doc_count": 0
+                    }
+                }
+            },]]>
+    </property>
+    <!--
+    全文检索查询条件
+    -->
+    <property name="qcondition">
+        <![CDATA[
+        "bool": {
+            "filter": [
+                 {"range": {
+                        "startTime": {
+                            "gte": #[startTime],
+                            "lt": #[endTime],
+                            "format": "epoch_millis"
+                        }
+                 }}
+                #if($application && !$application.equals("_all"))
+                ,
+                {"term": {
+                    "applicationName.keyword": #[application]
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  ,
+                  {"term": {
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  ,
+                  {"term": {
+                       "err": 1
+                  }}
+                #end
+            ]
+            #if($queryCondition && !$queryCondition.equals(""))
+                 ,
+                "must": [
+                    {
+                        "query_string": {
+                            "query": #[queryCondition],
+                            "analyze_wildcard": true,
+                            #if(!$searchFields)
+                                "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
+                            #else
+                                "fields":[
+                                #foreach($field in $searchFields)
+                                      #if($velocityCount > 0),#end "$field"
+                                #end
+                                ]
+                            #end
+                        }
+                    }
+                ]
+            #end
+        }]]>
+    </property>
+
+    <!--
+    全文检索链路query dsl
+    -->
     <property name="queryServiceByCondition">
         <![CDATA[{
-            "version": true,
-            #if($lastStartTime && $lastStartTime > 0)
-                #if($orderBy && $orderBy.equals("elapsed"))
-                "search_after": [$lastElapsed,$lastStartTime,"trace#$lastId"],
-                #else
-                "search_after": [$lastStartTime,"trace#$lastId"],
-                #end
-            #end
-            "size": $pageSize,
-            "sort": [
-                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
-                {"startTime": "desc"},
-                {"_uid": "desc"}
-            ],
+
+            @{searchAfterAggs}
             "query": {
                 @{qcondition}
             },
-            "_source": {
-                "excludes": []
-            },
+
             "highlight": {
                 "pre_tags": [
                     "<mark>"
@@ -355,7 +447,103 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
             }
         }]]></property>
 
+    <!--
+        精确查询条件
+        -->
+    <property name="exactQcondition">
+        <![CDATA[
+        "bool": {
+            "filter":[
+                 {"range": {
+                        "startTime": {
+                            "gte": #[startTime],
+                            "lt": #[endTime],
+                            "format": "epoch_millis"
+                        }
+                 }}
+                #if($application && !$application.equals("_all"))
+                ,
+                {"term": {
+                    "applicationName.keyword": #[application]
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  ,
+                  {"term": {
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  ,
+                  {"term": {
+                       "err": 1
+                  }}
+                #end
 
+            #if($queryCondition && !$queryCondition.equals(""))
+                 ,
+                 {
+                    "bool":{
+                        "should":[
+                            #if(!$searchFields)
+                                {"term": {"rpc.keyword": "$queryCondition"}},
+                                {"term": {"params.keyword": "$queryCondition"}},
+                                {"term": {"agentId.keyword": "$queryCondition"}},
+                                {"term": {"applicationName.keyword": "$queryCondition"}},
+                                {"term": {"endPoint.keyword": "$queryCondition"}},
+                                {"term": {"remoteAddr.keyword": "$queryCondition"}}
+                            #else
+                                #foreach($field in $searchFields)
+                                      #if($velocityCount > 0),#end {"term": {"${field}.keyword": "$queryCondition"}}
+                                #end
+                            #end
+                        ]
+                    }
+                }
+            #end
+            ]
+        }]]>
+    </property>
+    <!--
+        精确查找
+        分页查询和按日期分钟统计片段
+        应用：链路检索和统计查询，rpc时间段统计查询
+        { "_score":"desc" },
+    -->
+    <property name="exactSearchAfterAggs">
+        <![CDATA[
+            #if($lastStartTime && $lastStartTime > 0)
+                #if($orderBy && $orderBy.equals("elapsed"))
+                "search_after": [$lastElapsed,$lastStartTime,"trace#$lastId"],
+                #else
+                "search_after": [$lastStartTime,"trace#$lastId"],
+                #end
+            #end
+            "size": $pageSize,
+            "sort": [
+                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+                {"startTime": "desc"},
+                {"_uid": "desc"}
+            ],
+            "aggs": {
+                "traces_date_histogram": {
+                    "date_histogram": {
+                        "field": "starttimeDate",
+                        "interval": "1m",
+                        "time_zone": "Asia/Shanghai",
+                        "min_doc_count": 0
+                    }
+                }
+            },]]>
+    </property>
+    <property name="exactQueryServiceByCondition">
+        <![CDATA[{
+            "version": true,
+            @{exactSearchAfterAggs}
+            "query": {
+                @{exactQcondition}
+            }
+
+        }]]></property>
 
     <property name="createDemoDocument">
         <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>

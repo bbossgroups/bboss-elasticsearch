@@ -12,6 +12,10 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
+import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
+import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
+import org.frameworkset.elasticsearch.handler.GetDocumentHitResponseHandler;
+import org.frameworkset.elasticsearch.handler.GetDocumentResponseHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
@@ -292,7 +296,7 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	/**
-	 * 获取文档
+	 * 获取json格式的文档
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
@@ -304,7 +308,7 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	/**
-	 * 获取文档
+	 * 获取文档对象
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
@@ -329,6 +333,32 @@ public class RestClientUtil extends ClientUtil{
 
 		return buildObject(searchResult, beanType);
 
+	}
+
+	/**
+	 * 获取文档MapSearchHit对象，封装了索引文档的所有属性数据
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   MapSearchHit getDocumentHit(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
+		MapSearchHit searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentHitResponseHandler( ),ClientUtil.HTTP_GET);
+		return searchResult;
+	}
+
+	/**
+	 * 获取文档MapSearchHit对象，封装了索引文档的所有属性数据
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   MapSearchHit getDocumentHit(String indexName, String indexType,String documentId) throws ElasticSearchException{
+		return getDocumentHit(indexName, indexType,documentId,(Map<String,Object> )null);
 	}
 
 
@@ -500,59 +530,61 @@ public class RestClientUtil extends ClientUtil{
 		esBaseData.setId(hit.getId());
 
 	}
-	protected <T> T buildObject(Object result, Class<T> type){
+	protected <T> T buildObject(RestResponse result, Class<T> type){
 		if(result == null){
 			return null;
 		}
-		
-		if(result instanceof RestResponse) {
-			RestResponse restResponse = (RestResponse) result;
-			List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
-			if (searchHits != null && searchHits.size() > 0) {
-				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
-				boolean isESId = false;
-				if(!isESBaseData){
-					isESId = ESId.class.isAssignableFrom(type);
-				}
-				SearchHit hit = searchHits.get(0);
-				T data = (T) hit.getSource();
-				if (isESBaseData) {
-					buildESBaseData(hit, (ESBaseData) data);
-				}
-				else if(isESId)
-				{
-					buildESId(hit,(ESId )data);
-				}
-				return data;
-			}
-			return null;
-		}
-		else   if(result instanceof SearchHit)
-		{
+
+		RestResponse restResponse = (RestResponse) result;
+		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
+		if (searchHits != null && searchHits.size() > 0) {
 			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 			boolean isESId = false;
 			if(!isESBaseData){
 				isESId = ESId.class.isAssignableFrom(type);
 			}
-			SearchHit hit = (SearchHit)result;
-			if(hit.isFound()) {
-				T data = (T) hit.getSource();
-				if (isESBaseData) {
-					buildESBaseData(hit, (ESBaseData) data);
-				}
-				else if(isESId)
-				{
-					buildESId(hit,(ESId )data);
-				}
-				return data;
+			SearchHit hit = searchHits.get(0);
+			T data = (T) hit.getSource();
+			if (isESBaseData) {
+				buildESBaseData(hit, (ESBaseData) data);
 			}
-			else {
-				return null;
+			else if(isESId)
+			{
+				buildESId(hit,(ESId )data);
 			}
+			return data;
+		}
+		return null;
+
+
+	}
+
+
+	protected <T> T buildObject(SearchHit result, Class<T> type){
+		if(result == null){
+			return null;
+		}
+		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+		boolean isESId = false;
+		if(!isESBaseData){
+			isESId = ESId.class.isAssignableFrom(type);
+		}
+		SearchHit hit = (SearchHit)result;
+		if(hit.isFound()) {
+			T data = (T) hit.getSource();
+			if (isESBaseData) {
+				buildESBaseData(hit, (ESBaseData) data);
+			}
+			else if(isESId)
+			{
+				buildESId(hit,(ESId )data);
+			}
+			return data;
 		}
 		else {
-			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
-		}			
+			return null;
+		}
+
 
 	}
 	public <T> T searchObject(String path, String entity, Class<T> type) throws ElasticSearchException{

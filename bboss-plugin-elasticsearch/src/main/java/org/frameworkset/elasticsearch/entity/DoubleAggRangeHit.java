@@ -1,8 +1,5 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class DoubleAggRangeHit extends DoubleAggHit{
 	private Double from ;
 	private Double to;

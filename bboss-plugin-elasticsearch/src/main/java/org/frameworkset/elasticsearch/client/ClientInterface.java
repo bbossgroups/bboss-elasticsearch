@@ -6,6 +6,7 @@ import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
+import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 
 import java.util.List;
@@ -51,9 +52,17 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
-
 	/**
-	 * 获取文档，通过options设置获取文档的参数
+	 * 获取json格式文档
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String getDocument(String indexName, String indexType,String documentId) throws ElasticSearchException;
+	/**
+	 * 获取json格式文档，通过options设置获取文档的参数
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
@@ -64,7 +73,7 @@ public interface ClientInterface {
 	public abstract String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException;
 
 	/**
-	 * 获取文档
+	 * 获取文档,返回类型可以继承ESBaseData(这样方法自动将索引的元数据信息设置到T对象中)和ESId（方法自动将索引文档id设置到对象中）
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
@@ -74,7 +83,7 @@ public interface ClientInterface {
 	public abstract <T> T getDocument(String indexName, String indexType,String documentId,Class<T> beanType) throws ElasticSearchException;
 
 	/**
-	 * 获取文档，通过options设置获取文档的参数
+	 * 获取文档，通过options设置获取文档的参数，返回类型可以继承ESBaseData(这样方法自动将索引的元数据信息设置到T对象中)和ESId（方法自动将索引文档id设置到对象中）
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
@@ -84,15 +93,28 @@ public interface ClientInterface {
 	 */
 	public abstract <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException;
 
+
+
 	/**
-	 * 获取文档
+	 * 获取文档MapSearchHit对象，封装了索引文档的所有属性数据
+	 * @param indexName
+	 * @param indexType
+	 * @param documentId
+	 * @param options
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract MapSearchHit getDocumentHit(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException;
+
+	/**
+	 * 获取文档MapSearchHit对象，封装了索引文档的所有属性数据
 	 * @param indexName
 	 * @param indexType
 	 * @param documentId
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract String getDocument(String indexName, String indexType,String documentId) throws ElasticSearchException;
+	public abstract MapSearchHit getDocumentHit(String indexName, String indexType,String documentId) throws ElasticSearchException;
 
 	/**
 	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
