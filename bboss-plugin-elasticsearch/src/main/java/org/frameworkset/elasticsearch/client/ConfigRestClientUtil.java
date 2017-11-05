@@ -7,10 +7,7 @@ import org.elasticsearch.client.Client;
 import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
-import org.frameworkset.elasticsearch.entity.AggHit;
-import org.frameworkset.elasticsearch.entity.ESAggDatas;
-import org.frameworkset.elasticsearch.entity.ESDatas;
-import org.frameworkset.elasticsearch.entity.RestResponse;
+import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
@@ -471,19 +468,19 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	@Override
-	public RestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
 		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
-	public RestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
 		return super.search(path, evalTemplate(templateName, params));
 	}
 
 	@Override
-	public RestResponse search(String path, String templateName) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName) throws ElasticSearchException {
 		return super.search(path, evalTemplate(templateName, (Object) null));
 //		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
 	}

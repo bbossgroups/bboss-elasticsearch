@@ -220,17 +220,17 @@ public class TransportClientUtil  extends ClientUtil{
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String entity) throws ElasticSearchException {
+	public MapRestResponse search(String path, String entity) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}

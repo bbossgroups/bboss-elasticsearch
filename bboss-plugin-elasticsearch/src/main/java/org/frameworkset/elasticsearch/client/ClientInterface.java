@@ -197,17 +197,17 @@ public interface ClientInterface {
 
 	public abstract <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
-	public abstract RestResponse search(String path, String templateName, Map params) throws ElasticSearchException;
+	public abstract MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException;
 
 
-	public abstract RestResponse search(String path, String templateName, Object params) throws ElasticSearchException;
+	public abstract MapRestResponse search(String path, String templateName, Object params) throws ElasticSearchException;
 
 	/**
 	 * @param path
 	 * @param entity
 	 * @return
 	 */
-	public abstract RestResponse search(String path, String entity) throws ElasticSearchException;
+	public abstract MapRestResponse search(String path, String entity) throws ElasticSearchException;
 
 
 	public abstract Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException;

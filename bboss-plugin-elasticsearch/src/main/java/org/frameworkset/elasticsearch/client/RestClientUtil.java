@@ -12,10 +12,7 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.event.Event;
-import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
-import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
-import org.frameworkset.elasticsearch.handler.GetDocumentHitResponseHandler;
-import org.frameworkset.elasticsearch.handler.GetDocumentResponseHandler;
+import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
@@ -430,18 +427,18 @@ public class RestClientUtil extends ClientUtil{
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
+	public MapRestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public RestResponse search(String path, String entity) throws ElasticSearchException {
-		RestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler(  ));
+	public MapRestResponse search(String path, String entity) throws ElasticSearchException {
+		MapRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchMapResponseHandler(  ));
 //		if(searchResult instanceof ErrorResponse){
 //			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
 //		}
