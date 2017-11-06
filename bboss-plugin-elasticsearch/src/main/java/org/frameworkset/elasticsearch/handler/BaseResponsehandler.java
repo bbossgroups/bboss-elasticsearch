@@ -3,8 +3,9 @@ package org.frameworkset.elasticsearch.handler;
 import org.frameworkset.elasticsearch.serial.ESClass;
 import org.frameworkset.elasticsearch.serial.ESClassType;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.spi.remote.http.BaseResponseHandler;
 
-public abstract class BaseResponsehandler {
+public abstract class BaseResponsehandler extends BaseResponseHandler {
 	protected ESClass types;
 
 	public BaseResponsehandler(ESTypeReferences types) {

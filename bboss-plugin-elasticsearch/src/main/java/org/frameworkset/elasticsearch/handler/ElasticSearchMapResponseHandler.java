@@ -1,6 +1,5 @@
 package org.frameworkset.elasticsearch.handler;
 
-import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -8,12 +7,13 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MapRestResponse;
+import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchMapResponseHandler implements ResponseHandler<MapRestResponse> {
+public class ElasticSearchMapResponseHandler extends BaseResponseHandler implements ResponseHandler<MapRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchMapResponseHandler.class);
 
 	public ElasticSearchMapResponseHandler() {
@@ -29,12 +29,13 @@ public class ElasticSearchMapResponseHandler implements ResponseHandler<MapRestR
 
          if (status >= 200 && status < 300) {
              HttpEntity entity = response.getEntity();
-			 MapRestResponse searchResponse = null;
-              
-             if (entity != null ) {
-	             try {	            	
 
-	                 searchResponse = SimpleStringUtil.json2Object(entity.getContent(), MapRestResponse.class) ;
+
+             if (entity != null ) {
+
+	             try {
+
+					 return super.converJson(entity,MapRestResponse.class);
 	             }
 	             catch (Exception e){
 					 throw new ElasticSearchException(e);
@@ -42,7 +43,7 @@ public class ElasticSearchMapResponseHandler implements ResponseHandler<MapRestR
 
              }
 
-             return searchResponse;
+             return null;
 
          } else {
              HttpEntity entity = response.getEntity();

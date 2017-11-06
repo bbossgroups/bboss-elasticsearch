@@ -15,13 +15,13 @@ import java.util.*;
  * es节点健康检查
  */
 public class HealthCheck implements Runnable{
-	private Collection<ESAddress> esAddresses;
+	private List<ESAddress> esAddresses;
 	private static final String healthCheckHttpPool = "healthCheckHttpPool";
 	private static Logger logger = LoggerFactory.getLogger(HealthCheck.class);
 	private long checkInterval = 5000;
 	private List<HCRunable> checkThreads ;
 	private Map<String, String> headers;
-	public HealthCheck(Collection<ESAddress> esAddresses,long checkInterval,Map<String, String> headers){
+	public HealthCheck(List<ESAddress> esAddresses,long checkInterval,Map<String, String> headers){
 		this.esAddresses = esAddresses;
 		this.checkInterval = checkInterval;
 		this.headers = headers;
@@ -116,4 +116,17 @@ public class HealthCheck implements Runnable{
 			}
 		});
 	}
+
+	public void addNewAddress(List<ESAddress> addresses){
+		Iterator<ESAddress> iterable = addresses.iterator();
+		HCRunable t = null;
+		ESAddress address = null;
+		while(iterable.hasNext()){
+			address = iterable.next();
+			t = new HCRunable(address);
+			t.start();
+			checkThreads.add(t);
+		}
+	}
+
 }

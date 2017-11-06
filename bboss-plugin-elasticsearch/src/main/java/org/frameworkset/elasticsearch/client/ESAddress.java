@@ -71,4 +71,13 @@ public class ESAddress {
 	public void setHealthCheck(Thread healthCheck) {
 		this.healthCheck = healthCheck;
 	}
+	public boolean equals(Object obj){
+		if(obj == null)
+			return false;
+		if(obj instanceof  ESAddress){
+			String other = ((ESAddress)obj).getAddress();
+			return other != null && other.equals(this.getAddress());
+		}
+		return  false;
+	}
 }

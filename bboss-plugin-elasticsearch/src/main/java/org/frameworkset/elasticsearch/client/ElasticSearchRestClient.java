@@ -53,7 +53,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public static final String BULK_ENDPOINT = "_bulk";
 	private static final Logger logger = LoggerFactory.getLogger(ElasticSearchRestClient.class);
 	private final ElasticSearchEventSerializer serializer;
-	private final RoundRobinList<ESAddress> serversList;
+	private final RoundRobinList serversList;
 	private Properties extendElasticsearchPropes;
 	private String httpPool;
 	private String elasticUser;
@@ -80,7 +80,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		for(String host:hostNames){
 			addressList.add(new ESAddress(host));
 		}
-		serversList = new RoundRobinList<ESAddress>(addressList);
+		serversList = new RoundRobinList(addressList);
 
 
 //		httpClient = new DefaultHttpClient();
@@ -88,6 +88,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		this.elasticPassword = elasticPassword;
 		this.init();
 	}
+	private boolean containAddress(ESAddress address){
+		ESAddress temp = null;
+		for (int i = 0; i < addressList.size(); i ++){
+			temp = addressList.get(i);
+			if(temp.equals(address)){
+				return true;
+			}
+		}
+		return false;
+	}
+	public void addAddress(String[] address){
+		List<ESAddress> temp = new ArrayList<ESAddress>();
+		for(String host:address){
+			ESAddress esAddress = new ESAddress(host);
+			if(!containAddress(esAddress))
+				temp.add(new ESAddress(host));
+		}
+		if(temp.size()> 0)
+			this.serversList.addAddress(temp);
+	}
+
 
 //	@VisibleForTesting
 //	public ElasticSearchRestClient(String[] hostNames, String elasticUser, String elasticPassword,

@@ -1,6 +1,5 @@
 package org.frameworkset.elasticsearch.handler;
 
-import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -8,12 +7,13 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MapSearchHit;
+import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class GetDocumentHitResponseHandler implements ResponseHandler<MapSearchHit> {
+public class GetDocumentHitResponseHandler extends BaseResponseHandler implements ResponseHandler<MapSearchHit> {
 	private static Logger logger = LoggerFactory.getLogger(GetDocumentHitResponseHandler.class);
 
 
@@ -25,10 +25,10 @@ public class GetDocumentHitResponseHandler implements ResponseHandler<MapSearchH
 
          if (status >= 200 && status < 300) {
              HttpEntity entity = response.getEntity();
-			 MapSearchHit searchResponse = null;
              try {
 
-                 searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), MapSearchHit.class) : null;
+                 if(entity != null )
+                     return super.converJson(entity, MapSearchHit.class);
 //                 String content = EntityUtils.toString(entity);
 //                 System.out.println(content);
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
@@ -41,7 +41,7 @@ public class GetDocumentHitResponseHandler implements ResponseHandler<MapSearchH
 //             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
 //             NamedWriteableRegistry namedWriteableRegistry = (NamedWriteableRegistry)classInfo.getPropertyValue(clientUtil.getClient(),"namedWriteableRegistry");
 
-             return searchResponse;
+             return null;
 
          } else {
              HttpEntity entity = response.getEntity();

@@ -1,7 +1,5 @@
 package org.frameworkset.elasticsearch.handler;
 
-import java.io.IOException;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,7 +12,7 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.SimpleStringUtil;
+import java.io.IOException;
 
 public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 	private static Logger logger = LoggerFactory.getLogger(GetDocumentResponseHandler.class);
@@ -41,10 +39,11 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 
          if (status >= 200 && status < 300) {
              HttpEntity entity = response.getEntity();
-			 SearchHit searchResponse = null;
              try {
             	 ESSerialThreadLocal.setESTypeReferences(types);
-                 searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), SearchHit.class) : null;
+            	 if(entity != null)
+            	 	return super.converJson(entity,SearchHit.class);
+//                 searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), SearchHit.class) : null;
 //                 String content = EntityUtils.toString(entity);
 //                 System.out.println(content);
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
@@ -59,7 +58,7 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 //             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
 //             NamedWriteableRegistry namedWriteableRegistry = (NamedWriteableRegistry)classInfo.getPropertyValue(clientUtil.getClient(),"namedWriteableRegistry");
 
-             return searchResponse;
+             return null;
 
          } else {
              HttpEntity entity = response.getEntity();
