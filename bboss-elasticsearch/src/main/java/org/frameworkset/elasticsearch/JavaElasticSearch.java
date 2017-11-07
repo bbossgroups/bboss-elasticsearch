@@ -402,7 +402,7 @@ public class JavaElasticSearch extends ElasticSearch {
 				eventRestClient.init();
 				this.restClient = eventRestClient;
 				
-				logger.info("ElasticSearch Transport client started.");
+				logger.info("ElasticSearch Rest client started.");
 			}
 
 

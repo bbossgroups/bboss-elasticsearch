@@ -386,8 +386,28 @@ public interface ClientInterface {
 	public abstract String createTempate(String template,String entity)  throws ElasticSearchException;
 
 	public abstract String createTempate(String template, String templateName,Object params) throws ElasticSearchException ;
-
+	/**
+	 * 删除模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String deleteTempate(String template) throws ElasticSearchException ;
 	public abstract String createTempate(String template, String templateName,Map params) throws ElasticSearchException ;
-
+	/**
+	 * 查询模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String getTempate(String template) throws ElasticSearchException ;
+	
+	/**
+	 * 查询所有模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String getTempate() throws ElasticSearchException ;
 
 }

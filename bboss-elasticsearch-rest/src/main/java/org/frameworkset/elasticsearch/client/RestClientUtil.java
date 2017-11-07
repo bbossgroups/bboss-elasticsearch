@@ -208,6 +208,36 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		
 	}
+	
+	/**
+	 * 删除模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteTempate(String template) throws ElasticSearchException {
+		return client.executeHttp("/_template/"+template,ClientUtil.HTTP_DELETE);
+	}
+	
+	/**
+	 * 查询模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String getTempate(String template) throws ElasticSearchException {
+		return client.executeHttp("/_template/"+template,ClientUtil.HTTP_GET);
+	}
+	
+	/**
+	 * 查询所有模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String getTempate() throws ElasticSearchException {
+		return client.executeHttp("/_template",ClientUtil.HTTP_GET);
+	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
 	 * @param indexName

@@ -34,6 +34,25 @@ public class TransportClientUtil  implements EventClientUtil{
 		this.client = (ElasticSearchTransportClient)client;
 		this.indexNameBuilder = indexNameBuilder;
 	}
+	/**
+	 * 查询模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String getTempate(String template) throws ElasticSearchException {
+		return null;
+	}
+	
+	/**
+	 * 查询所有模板
+	 * @param template
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String getTempate() throws ElasticSearchException {
+		return null;
+	}
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 
@@ -502,6 +521,11 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 	@Override
 	public String createTempate(String template, String templateName, Map params) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String deleteTempate(String template) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
