@@ -1,7 +1,6 @@
 package org.frameworkset.elasticsearch;
 
 import org.elasticsearch.client.Client;
-import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.EventClientUtil;
 
 public class EventElasticSearchHelper extends ElasticSearchHelper{
