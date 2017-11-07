@@ -1,0 +1,7 @@
+/build/
+/bin/
+/.settings/
+/es.log
+/out/
+/.classpath
+/.project

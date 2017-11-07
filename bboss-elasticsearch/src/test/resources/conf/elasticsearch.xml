@@ -1,0 +1,66 @@
+<properties>
+	<config file="conf/elasticsearch.properties"/>
+	<property name="elasticsearchPropes">
+		<propes>
+
+			<property name="elasticsearch.client" value="${elasticsearch.client}">
+				<description> <![CDATA[ 客户端类型:transport，restful ]]></description>
+			</property>
+
+			<property name="elasticUser" value="${elasticUser:}">
+				<description> <![CDATA[ 认证用户 ]]></description>
+			</property>
+
+			<property name="elasticPassword" value="${elasticPassword:}">
+				<description> <![CDATA[ 认证口令 ]]></description>
+			</property>
+			<!--<property name="elasticsearch.hostNames" value="${elasticsearch.hostNames}">
+				<description> <![CDATA[ 指定序列化处理类，默认为kafka.serializer.DefaultEncoder,即byte[] ]]></description>
+			</property>-->
+
+			<property name="elasticsearch.rest.hostNames" value="${elasticsearch.rest.hostNames}">
+				<description> <![CDATA[ rest协议地址 ]]></description>
+			</property>
+
+			<property name="elasticsearch.transport.hostNames" value="${elasticsearch.transport.hostNames}">
+				<description> <![CDATA[ tcp协议地址 ]]></description>
+			</property>
+
+			<property name="elasticsearch.clusterName" value="${elasticsearch.clusterName:}">
+				<description> <![CDATA[ es集群名称]]></description>
+			</property>
+			<property name="elasticsearch.dateFormat" value="${elasticsearch.dateFormat}">
+				<description> <![CDATA[ 索引日期格式]]></description>
+			</property>
+			<property name="elasticsearch.timeZone" value="${elasticsearch.timeZone}">
+				<description> <![CDATA[ 时区信息]]></description>
+			</property>
+			<property name="elasticsearch.indexName" value="${elasticsearch.indexName}">
+				<description> <![CDATA[ 默认索引名称]]></description>
+			</property>
+			<property name="elasticsearch.indexType" value="${elasticsearch.indexType}">
+				<description> <![CDATA[ 默认索引类型]]></description>
+			</property>
+			<property name="elasticsearch.ttl" value="${elasticsearch.ttl}">
+				<description> <![CDATA[ ms(毫秒) s(秒) m(分钟) h(小时) d(天) w(星期)]]></description>
+			</property>
+
+			<property name="elasticsearch.showTemplate" value="${elasticsearch.showTemplate:false}">
+				<description> <![CDATA[ ms(毫秒) s(秒) m(分钟) h(小时) d(天) w(星期)]]></description>
+			</property>
+			<property name="elasticsearch.serialize" value="${elasticsearch.serialize:}">
+				<description> <![CDATA[ elasticsearch.serializer=org.frameworkset.elasticsearch.ElasticSearchJSONEventSerializer]]></description>
+			</property>
+			<property name="elasticsearch.httpPool" value="${elasticsearch.httpPool:default}">
+				<description> <![CDATA[ http连接池逻辑名称，在conf/httpclient.xml中配置]]></description>
+			</property>
+			
+		</propes>
+	</property>
+	<property name="elasticSearch"
+			  class="org.frameworkset.elasticsearch.JavaElasticSearch"
+			  init-method="configure"
+			  destroy-method="stop"
+			  f:elasticsearchPropes="attr:elasticsearchPropes"/>
+
+</properties>
