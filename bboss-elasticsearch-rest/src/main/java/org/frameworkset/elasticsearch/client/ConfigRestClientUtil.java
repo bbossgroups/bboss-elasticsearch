@@ -152,7 +152,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		}
 		String path = builder.toString();
 		builder.setLength(0);
-		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addIndex,bean,"create"),ClientUtil.HTTP_PUT);
+		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addIndex,bean,"create"),ClientUtil.HTTP_POST);
 		builder = null;
 		return path;
 	}

@@ -345,14 +345,14 @@ public class ESTest {
 		demo.setDemoId(2l);
 		demo.setAgentStarttime(new Date());
 		demo.setApplicationName("blackcatdemo2");
-		demo.setContentbody("this is content body2");
+		demo.setContentbody("this is content body2中文");
 		demos.add(demo);
 
 		demo = new Demo();
 		demo.setDemoId(3l);
 		demo.setAgentStarttime(new Date());
 		demo.setApplicationName("blackcatdemo3");
-		demo.setContentbody("this is content body3");
+		demo.setContentbody("this is content body3中文");
 		demos.add(demo);
 
 		//创建文档
