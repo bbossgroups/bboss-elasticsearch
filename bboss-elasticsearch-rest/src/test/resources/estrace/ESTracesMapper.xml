@@ -549,4 +549,162 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
         <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
     </property>
 
+    <property name="createDemoIndice">
+        <![CDATA[{
+            "settings": {
+                "number_of_shards": 6,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "demo": {
+                    "properties": {
+                        "contentbody": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "agentStarttime": {
+                            "type": "date",
+                            "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                        },
+                        "applicationName": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+    <property name="createTraceIndice">
+        <![CDATA[
+            {
+                "settings" : {
+                    "number_of_shards" : 1
+                },
+                "mappings" : {
+                  "tracetype" : {
+                    "properties" : {
+                      "agentId" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "agentStarttime" : {
+                        "type" : "long"
+                      },
+                      "apiId" : {
+                        "type" : "long"
+                      },
+                      "applicationName" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "applicationServiceType" : {
+                        "type" : "long"
+                      },
+                      "collectorAcceptTime" : {
+                        "type" : "date"
+                      },
+                      "elapsed" : {
+                        "type" : "long"
+                      },
+                      "endPoint" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "err" : {
+                        "type" : "long"
+                      },
+                      "flag" : {
+                        "type" : "long"
+                      },
+                      "loggingTransactionInfo" : {
+                        "type" : "long"
+                      },
+                      "params" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "parentApplicationType" : {
+                        "type" : "long"
+                      },
+                      "parentSpanId" : {
+                        "type" : "long"
+                      },
+                      "remoteAddr" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "rpc" : {
+                        "type" : "text",
+                        "fields" : {
+                          "keyword" : {
+                            "type" : "keyword",
+                            "ignore_above" : 256
+                          }
+                        }
+                      },
+                      "serviceType" : {
+                        "type" : "long"
+                      },
+                      "spanId" : {
+                        "type" : "long"
+                      },
+                      "startTime" : {
+                        "type" : "long"
+                      },
+                      "starttimeDate" : {
+                        "type" : "date"
+                      },
+                      "traceId" : {
+                        "type" : "long"
+                      },
+                      "transactionIdAgentStarttime" : {
+                        "type" : "long"
+                      },
+                      "transactionIdTransactionSequence" : {
+                        "type" : "long"
+                      }
+                    }
+                  }
+                }
+            }
+        ]]>
+    </property>
+
 </properties>

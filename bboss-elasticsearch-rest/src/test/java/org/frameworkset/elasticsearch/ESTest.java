@@ -1,14 +1,5 @@
 package org.frameworkset.elasticsearch;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.entity.IndexField;
@@ -17,6 +8,11 @@ import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.junit.Test;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ESTest {
 
@@ -247,7 +243,7 @@ public class ESTest {
 				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 				Demo.class);
 	}
-	
+
 	@Test
 	public void testBulkAddDateDocument() throws ParseException{
 		testGetmapping();
@@ -291,7 +287,94 @@ public class ESTest {
 	}
 
 
+	@Test
+	public void testCreateDemoMapping(){
 
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		//获取索引表结构
+		System.out.println(clientUtil.getIndice("demo"));
+		//删除索引表结构
+		System.out.println(clientUtil.dropIndice("demo"));
+		//创建索引表结构
+		System.out.println(clientUtil.createIndiceMapping("demo","createDemoIndice"));
+
+		System.out.println(clientUtil.getIndice("demo"));
+		
+		System.out.println(clientUtil.getIndice("demo"));
+		
+		System.out.println(clientUtil.getIndice("demo"));
+	}
+	@Test
+	public void testAddDocument() throws ParseException{
+		testCreateDemoMapping();
+
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		Demo demo = new Demo();
+		demo.setDemoId(5l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo");
+		demo.setContentbody("this is content body");
+		//创建文档
+		String response = clientUtil.addDocument("demo",//索引表
+				"demo",//索引类型
+				"createDemoDocument",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				demo);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"5");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
+
+	@Test
+	public void testBulkAddDocument() throws ParseException{
+		testCreateDemoMapping();
+
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		List<Demo> demos = new ArrayList<>();
+		Demo demo = new Demo();
+		demo.setDemoId(2l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo2");
+		demo.setContentbody("this is content body2");
+		demos.add(demo);
+
+		demo = new Demo();
+		demo.setDemoId(3l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo3");
+		demo.setContentbody("this is content body3");
+		demos.add(demo);
+
+		//创建文档
+		String response = clientUtil.addDocuments("demo",//索引表
+				"demo",//索引类型
+				"createDemoDocument",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				demos);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"2");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
 
 
 }

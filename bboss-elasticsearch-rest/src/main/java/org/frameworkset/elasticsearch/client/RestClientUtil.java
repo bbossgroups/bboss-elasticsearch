@@ -864,7 +864,7 @@ public class RestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String createIndiceMapping(String indexName,String indexMapping)  throws ElasticSearchException {
-		 return this.client.executeHttp(indexName+"?pretty",indexMapping,ClientUtil.HTTP_POST);
+		 return this.client.executeHttp(indexName,indexMapping,ClientUtil.HTTP_PUT);
 	 }
 	@Override
 	public String updateIndiceMapping(String action, String templateName, Object parameter)
