@@ -529,6 +529,48 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,
+			String... ids) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDocuments(String indexName, String indexType, String addTemplate, List<?> beans,
+			String refreshOption) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String updateDocuments(String indexName, String indexType, String updateTemplate, List<?> beans,
+			String refreshOption) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDocument(String indexName, String indexType, String addTemplate, Object bean, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocument(String indexName, String indexType, String addTemplate, Object bean,
+			String refreshOption) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocuments(String indexName, String indexType, String addTemplate, List<?> beans,
+			String refreshOption) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String deleteDocument(String indexName, String indexType, String id, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	  

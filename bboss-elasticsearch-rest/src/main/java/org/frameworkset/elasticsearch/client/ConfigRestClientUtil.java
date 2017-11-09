@@ -68,11 +68,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	 
 
-	@Override
-	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
-		return super.deleteDocuments(indexName,indexType,ids);
-
-	}
+	
 
 	private Object getId(Object bean){
 		ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
@@ -95,13 +91,42 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	@Override
 	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException {
+		return addDocuments(  indexName,   indexType,  addTemplate,   beans,  null);
+
+	}
+	/**
+	 * 批量创建索引
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
 			evalBuilkTemplate(builder,indexName,indexType,addTemplate,bean,"index");
 		}
-		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-
+		if(refreshOption == null)
+			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
+	
+	
+	
 
 	/**
 	 * 批量更新索引，对于按时间分区存储的索引，需要应用程序自行处理带日期时间的索引名称
@@ -119,6 +144,13 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		}
 		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 	}
+	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		for(Object bean:beans) {
+			evalBuilkTemplate(builder,indexName,indexType,updateTemplate,bean,"update");
+		}
+		return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
 
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -133,26 +165,47 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	{
 		return addDocuments(  this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate, beans);
 	}
+	
+	public String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		return addDocuments(  this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate, beans,refreshOption);
+	}
 
 	/**
 	 * 创建索引文档
 	 * @param indexName
 	 * @param indexType
-	 * @param addIndex
+	 * @param addTemplate
 	 * @param bean
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDocument(String indexName, String indexType,String addIndex, Object bean) throws ElasticSearchException{
+	public String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException{
+		return addDocument(  indexName,   indexType,  addTemplate,   bean,null);
+	}
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @param refreshOption
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		Object id = this.getId(bean);
 		builder.append(indexName).append("/").append(indexType);
 		if(id != null){
 			builder.append("/").append(id);
 		}
+		if(refreshOption != null ){
+			builder.append("?").append(refreshOption);
+		}
 		String path = builder.toString();
 		builder.setLength(0);
-		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addIndex,bean,"create"),ClientUtil.HTTP_POST);
+		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addTemplate,bean,"create"),ClientUtil.HTTP_POST);
 		builder = null;
 		return path;
 	}
@@ -161,13 +214,17 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
 	 * @param indexName
 	 * @param indexType
-	 * @param addIndex
+	 * @param addTemplate
 	 * @param bean
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDateDocument(String indexName, String indexType,String addIndex, Object bean) throws ElasticSearchException{
-		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,  addIndex,   bean);
+	public String addDateDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate,   bean);
+	}
+
+	public String addDateDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,  addTemplate,   bean,refreshOption);
 	}
 
 
@@ -434,7 +491,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	@Override
 	public String delete(String path, String string) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.delete(path, string);
 	}
 
 	@Override

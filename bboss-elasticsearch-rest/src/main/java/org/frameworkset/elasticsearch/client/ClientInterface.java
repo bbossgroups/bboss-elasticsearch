@@ -18,6 +18,7 @@ public interface ClientInterface {
 	public final String HTTP_HEAD = "head";
 
 	public abstract String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
+	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String... ids) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
@@ -34,14 +35,27 @@ public interface ClientInterface {
 	 * @param indexType
 	 * @param addTemplate
 	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
 	 * @return
 	 * @throws ElasticSearchException
 	 */
+	public abstract String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException;
 	public abstract String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException;
+	public abstract String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
 
 	/**
-	 * 创建索引文档
+	 * 创建或者更新索引文档
 	 * @param indexName
 	 * @param indexType
 	 * @param addTemplate
@@ -50,6 +64,18 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @param refreshOption
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException;
 	/**
 	 * 获取json格式文档
 	 * @param indexName
@@ -124,6 +150,8 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDateDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
+
+	public abstract String addDateDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException;
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
 	 * @param indexName
@@ -135,9 +163,9 @@ public interface ClientInterface {
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException;
 
-
+	public abstract String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
 	public abstract String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException;
-
+	public abstract String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException;
 	 
 	 
 
@@ -404,7 +432,6 @@ public interface ClientInterface {
 	
 	/**
 	 * 查询所有模板
-	 * @param template
 	 * @return
 	 * @throws ElasticSearchException
 	 */

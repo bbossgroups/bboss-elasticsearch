@@ -151,6 +151,9 @@ public class RestClientUtil extends ClientUtil{
 	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException{
 		return null;
 	}
+	public   String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		return null;
+	}
 	@Override
 	public String executeRequest(String path, String templateName,Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
@@ -158,7 +161,7 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	/**
-	 * 创建索引文档
+	 * 创建或者更新索引文档
 	 * @param indexName
 	 * @param indexType
 	 * @param addTemplate
@@ -167,6 +170,23 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException{
+		return null;
+	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @param refreshOption
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
+		return null;
+	}
+
+	public String addDateDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
 		return null;
 	}
 
@@ -208,6 +228,15 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		
 	}
+	
+	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String... ids) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		for(String id:ids) {
+			builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+		}
+		return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
+	
 	
 	/**
 	 * 删除模板
@@ -251,6 +280,9 @@ public class RestClientUtil extends ClientUtil{
 	{
 		return null;
 	}
+	public String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		return null;
+	}
 
 	@Override
 	/**
@@ -264,6 +296,30 @@ public class RestClientUtil extends ClientUtil{
 //		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		return null;
 
+	}
+	/**
+	 * 批量创建索引
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException
+	{
+		return null;
 	}
 
 	/**
@@ -375,6 +431,10 @@ public class RestClientUtil extends ClientUtil{
 	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
 		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(),ClientUtil.HTTP_DELETE);
+	}
+	public   String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException{
+		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/")
+				.append(id).append("?").append(refreshOption).toString(),ClientUtil.HTTP_DELETE);
 	}
 	@Override
 	public String executeRequest(String path, String entity) throws ElasticSearchException {

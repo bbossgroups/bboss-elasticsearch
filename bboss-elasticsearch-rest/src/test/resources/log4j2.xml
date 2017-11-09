@@ -16,7 +16,7 @@
     <Logger name="com.foo.Bar" level="debug" additivity="false">
       <AppenderRef ref="RollingFile"/>
     </Logger>
-    <Root level="all">
+    <Root level="info">
       <AppenderRef ref="Console"/>
     </Root>
   </Loggers>
