@@ -188,7 +188,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public String execute(String entity) throws ElasticSearchException {
 		int triesCount = 0;
 		String response = null;
-		Exception e = null;
+		Throwable e = null;
 		while (true) {
 
 			ESAddress host = serversList.get();
@@ -226,18 +226,38 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (IOException ex) {
+				host.setStatus(1);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                
+            }
 			catch (ElasticSearchException ex) {
-				throw ex;
+				e = ex;
+				break;
 			}
 			catch (Exception ex) {
 				e = ex;
+				break;
+			}
+			catch (Throwable ex) {
+				e = ex;
+				break;
 			}
 
 
 
 		}
-		if (e != null)
+		if (e != null){
+			if(e instanceof ElasticSearchException)
+				throw (ElasticSearchException)e;
 			throw new ElasticSearchException(e);
+		}
 		return response;
 
 
@@ -282,7 +302,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
 		int triesCount = 0;
 		String response = null;
-		Exception e = null;
+		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:{}",path,entity);
 		}
@@ -346,25 +366,45 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (IOException ex) {
+				host.setStatus(1);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                
+            }
 			catch (ElasticSearchException ex) {
-				throw ex;
+				e = ex;
+				break;
 			}
 			catch (Exception ex) {
 				e = ex;
+				break;
+			}
+			catch (Throwable ex) {
+				e = ex;
+				break;
 			}
 
 
 
 		}
-		if (e != null)
+		if (e != null){
+			if(e instanceof ElasticSearchException)
+				throw (ElasticSearchException)e;
 			throw new ElasticSearchException(e);
+		}
 		return response;
 	}
 
 	public String executeRequest(String path, String entity) throws ElasticSearchException {
 		int triesCount = 0;
 		String response = null;
-		Exception e = null;
+		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:\n{}",path,entity);
 		}
@@ -384,7 +424,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //
 //				}
 				break;
-			} catch (HttpHostConnectException ex) {
+			} 
+			
+			catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
@@ -405,18 +447,37 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (IOException ex) {
+				host.setStatus(1);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                
+            }
 			catch (ElasticSearchException ex) {
 				throw ex;
 			}
+		
 			catch (Exception ex) {
 				e = ex;
+				break;
+			}
+			catch (Throwable ex) {
+				e = ex;
+				break;
 			}
 
 
 
 		}
-		if (e != null)
+		if (e != null){
+			
 			throw new ElasticSearchException(e);
+		}
 		return response;
 	}
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
@@ -433,7 +494,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler,String action) throws ElasticSearchException {
 		T response = null;
 		int triesCount = 0;
-		Exception e = null;
+		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:\n{}",path,entity);
 		}
@@ -498,14 +559,36 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (IOException ex) {
+				host.setStatus(1);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					e = ex;
+					break;
+				}
+                
+            }
 			catch (ElasticSearchException ex) {
 				throw ex;
 			}
+
 			catch (Exception ex) {
 				e = ex;
+				break;
 			}
-			throw new ElasticSearchException(e);
+			catch (Throwable ex) {
+				e = ex;
+				break;
+			}
+//			throw new ElasticSearchException(e);
 
+		}
+		if (e != null){
+			if(e instanceof ElasticSearchException)
+				throw (ElasticSearchException)e;
+			throw new ElasticSearchException(e);
 		}
 		return response;
 	}

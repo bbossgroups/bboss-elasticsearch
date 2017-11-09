@@ -7,6 +7,10 @@
 			f:maxHeaderCount = "200"
 			f:maxTotal = "800"
 			f:defaultMaxPerRoute = "200"
+			f:validateAfterInactivity="-1"
+			f:soKeepAlive="false"
+			f:soReuseAddress="false"
+			f:timeToLive="10000"
 		class="org.frameworkset.spi.remote.http.ClientConfiguration">		      
 	</property>
 	

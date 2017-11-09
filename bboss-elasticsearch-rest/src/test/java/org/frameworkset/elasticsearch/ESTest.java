@@ -1,5 +1,15 @@
 package org.frameworkset.elasticsearch;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.http.config.SocketConfig;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.entity.IndexField;
@@ -8,11 +18,6 @@ import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.junit.Test;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class ESTest {
 
@@ -291,10 +296,16 @@ public class ESTest {
 	public void testCreateDemoMapping(){
 
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
-		//获取索引表结构
-		System.out.println(clientUtil.getIndice("demo"));
-		//删除索引表结构
-		System.out.println(clientUtil.dropIndice("demo"));
+		try {
+			//获取索引表结构
+			System.out.println(clientUtil.getIndice("demo"));
+			//删除索引表结构
+			System.out.println(clientUtil.dropIndice("demo"));
+		} catch (ElasticSearchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//创建索引表结构
 		System.out.println(clientUtil.createIndiceMapping("demo","createDemoIndice"));
 
@@ -307,7 +318,8 @@ public class ESTest {
 	@Test
 	public void testAddDocument() throws ParseException{
 		testCreateDemoMapping();
-
+		org.apache.http.impl.io.SessionInputBufferImpl s;
+		SocketConfig dd;
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
 		Demo demo = new Demo();
 		demo.setDemoId(5l);
@@ -341,19 +353,17 @@ public class ESTest {
 
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
 		List<Demo> demos = new ArrayList<>();
-		Demo demo = new Demo();
-		demo.setDemoId(2l);
-		demo.setAgentStarttime(new Date());
-		demo.setApplicationName("blackcatdemo2");
-		demo.setContentbody("this is content body2中文");
-		demos.add(demo);
+		for(int i = 0; i < 10000; i ++){
+			Demo demo = new Demo();
+			demo.setDemoId(i);
+			demo.setAgentStarttime(new Date());
+			demo.setApplicationName("blackcatdemo"+i);
+			demo.setContentbody("this is content body中文"+i);
+			demos.add(demo);
+		}
+		
 
-		demo = new Demo();
-		demo.setDemoId(3l);
-		demo.setAgentStarttime(new Date());
-		demo.setApplicationName("blackcatdemo3");
-		demo.setContentbody("this is content body3中文");
-		demos.add(demo);
+	 
 
 		//创建文档
 		String response = clientUtil.addDocuments("demo",//索引表
@@ -370,7 +380,7 @@ public class ESTest {
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
-		demo = clientUtil.getDocument("demo",//索引表
+		Demo demo = clientUtil.getDocument("demo",//索引表
 				"demo",//索引类型
 				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 				Demo.class);
