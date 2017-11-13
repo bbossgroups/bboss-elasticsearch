@@ -228,7 +228,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 
-	private String evalTemplate(String templateName, Map params) {
+	private String evalTemplate(String templateName, Map params)  {
 
 		ESInfo esInfo = esUtil.getESInfo(templateName);
 		if (esInfo == null)
@@ -247,19 +247,19 @@ public class ConfigRestClientUtil extends RestClientUtil {
 //				template = sw.toString();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,false);
 			} else {
 //				template = esInfo.getTemplate();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,true);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			StringBuilder builder = new StringBuilder();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
+			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,true);
 		}
 
 		return template;
@@ -284,7 +284,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				StringBuilder builder = new StringBuilder();
-				template = this.evalDocumentStruction( builder,  struction ,  vcontext.getContext(),  templateName,  null);
+				template = this.evalDocumentStruction( builder,  struction ,  vcontext.getContext(),  templateName,  null,false);
 			} else {
 //				template = esInfo.getTemplate();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -335,7 +335,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				evalStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action);
+				evalStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
 			} else {
 				buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -369,7 +369,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				builder.setLength(0);
-				return evalDocumentStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action);
+				return evalDocumentStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
 			} else {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -408,7 +408,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 		}
 	}
-	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
 		if(!struction.hasVars()) {
 			if(!action.equals("update"))
 				builder.append(struction.getUrl()).append("\n");
@@ -420,20 +420,20 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		else
 		{
 			if(!action.equals("update")) {
-				this.esUtil.evalStruction(builder,struction,params,templateName);
+				this.esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
 				builder.append("\n");
 			}
 			else
 			{
 				builder.append("{\"doc\":");
-				this.esUtil.evalStruction(builder,struction,params,templateName);
+				this.esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
 				builder.append("}\n");
 			}
 
 		}
 	}
 
-	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
 		if(!struction.hasVars()) {
 
 				return struction.getUrl();
@@ -441,7 +441,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		}
 		else
 		{
-			this.esUtil.evalStruction(builder,struction,params,templateName);
+			this.esUtil.evalStruction(builder,struction,params,templateName, escapeValue);
 			return builder.toString();
 		}
 	}

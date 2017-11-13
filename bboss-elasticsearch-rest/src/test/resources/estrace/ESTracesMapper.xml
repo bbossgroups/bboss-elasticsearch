@@ -546,7 +546,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
         }]]></property>
 
     <property name="createDemoDocument">
-        <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
+        <![CDATA[{"applicationName" : "$applicationName","agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
     </property>
 
     <property name="createDemoIndice">

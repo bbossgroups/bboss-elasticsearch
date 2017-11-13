@@ -16,19 +16,13 @@
 
 package org.frameworkset.elasticsearch.template;
 
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import bboss.org.apache.velocity.VelocityContext;
+import com.frameworkset.util.*;
+import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
+import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
+import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Param;
 import org.frameworkset.spi.assemble.Pro;
@@ -38,15 +32,10 @@ import org.frameworkset.util.annotations.wraper.ColumnWraper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.ColumnEditorInf;
-import com.frameworkset.util.ColumnToFieldEditor;
-import com.frameworkset.util.ColumnType;
-import com.frameworkset.util.DaemonThread;
-import com.frameworkset.util.ResourceInitial;
-import com.frameworkset.util.VariableHandler;
-import com.frameworkset.velocity.BBossVelocityUtil;
-
-import bboss.org.apache.velocity.VelocityContext;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -150,7 +139,12 @@ public class ESUtil {
 							context_.put(name, this.getDate((Date) value, dataformat));
 						else
 							context_.put(name, ((Date) value).getTime());
-					} else {
+					} else if(value instanceof String){
+						CharEscapeUtil charEscapeUtil = new CharEscapeUtil();
+						charEscapeUtil.writeString((String)value,false);
+						context_.put(name, charEscapeUtil.toString());
+					}
+					else {
 						context_.put(name, value);
 					}
 //					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
@@ -195,9 +189,15 @@ public class ESUtil {
 		while (it.hasNext()) {
 			Map.Entry<String, Param> entry = it.next();
 			temp = entry.getValue();
-
-			if (temp != null)
+			
+			if (temp != null){
+				if(temp instanceof String) {
+					CharEscapeUtil charEscapeUtil = new CharEscapeUtil();
+					charEscapeUtil.writeString((String) temp,false);
+					temp = charEscapeUtil.toString();
+				}
 				context_.put(entry.getKey(), temp);
+			}
 		}
 
 		return context_;
@@ -296,7 +296,15 @@ public class ESUtil {
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof String){
-							builder.append("\"").append(value.toString()).append("\"");
+							builder.append("\"");
+//							if(escapeValue){
+								CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+								charEscapeUtil.writeString((String)value,true);
+//							}
+//							else {
+//								builder.append(value.toString());
+//							}
+							builder.append("\"");
 						}
 						else if (value instanceof Date) {
 							builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
@@ -356,7 +364,7 @@ public class ESUtil {
 		}
 	}
 
-	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Map bean,String template){
+	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Map bean,String template,boolean escapeValue){
 		List<String> tokens = templateStruction.getTokens();
 		List<VariableHandler.Variable> variables = templateStruction.getVariables();
 		for(int i = 0; i < tokens.size(); i ++){
@@ -379,12 +387,21 @@ public class ESUtil {
 					}
 					else {
 
-						value = VariableHandler.evaluateVariableValue(variable, bean.get(variable.getVariableName()));
+						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof Date){
 							builder.append("\"").append(this.getDate((Date) value, null)).append("\"");
 						}
 						else if (value instanceof String) {
-							builder.append("\"").append(value.toString()).append("\"");
+							if(!escapeValue) {
+								builder.append("\"").append((String)value).append("\"");
+							}
+							else
+							{
+								builder.append("\"");
+								CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+								charEscapeUtil.writeString((String)value,true);
+								builder.append("\"");
+							}
 						} else
 							builder.append(value.toString());
 					}

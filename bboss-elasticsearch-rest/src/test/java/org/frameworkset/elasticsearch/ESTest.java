@@ -1,5 +1,8 @@
 package org.frameworkset.elasticsearch;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,11 +16,15 @@ import org.apache.http.config.SocketConfig;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.entity.IndexField;
+import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.junit.Test;
+
+import com.frameworkset.util.FileUtil;
+import com.frameworkset.util.SimpleStringUtil;
 
 public class ESTest {
 
@@ -325,7 +332,8 @@ public class ESTest {
 		demo.setDemoId(5l);
 		demo.setAgentStarttime(new Date());
 		demo.setApplicationName("blackcatdemo");
-		demo.setContentbody("this is content body");
+		 
+		demo.setContentbody(FileUtil.getFileContent(new File("E:/workspace/bbossgroups/bboss-elastic/bboss-elasticsearch-rest/src/test/java/org/frameworkset/elasticsearch/ESTest.java")));
 		//创建文档
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
@@ -392,6 +400,39 @@ public class ESTest {
 //				"demo",//索引类型
 //				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 //				Demo.class);
+	}
+	@Test
+	public void testJsonEscape(){
+		Demo demo = new Demo();
+		demo.setDemoId(10);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo");
+		demo.setContentbody("成家宁,河北秦皇岛 移动^A电话18713518970");
+		String valur = SimpleStringUtil.object2json(demo);
+
+		System.out.println(valur);
+		SimpleStringUtil.json2Object(valur,Demo.class);
+
+		com.fasterxml.jackson.core.json.WriterBasedJsonGenerator w;
+		com.fasterxml.jackson.core.io.CharTypes q;
+
+	}
+
+	@Test
+	public void testCharEscapeUtil(){
+		StringWriter writer = new StringWriter();
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(writer,0);
+		
+			charEscapeUtil.writeString("成家宁,河北秦皇岛 移动^A电话18713518970",false);
+			charEscapeUtil.writeString("  $ ^F^HB ^L  $",false);
+			charEscapeUtil.writeString("( ^E`!a",false);
+			charEscapeUtil.writeString(FileUtil.getFileContent(new File("E:/workspace/bbossgroups/bboss-elastic/bboss-elasticsearch-rest/src/test/java/org/frameworkset/elasticsearch/ESTest.java")),false);
+			 
+			System.out.println(writer.toString());
+			
+			
+		
+
 	}
 
 
