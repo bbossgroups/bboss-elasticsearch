@@ -260,7 +260,6 @@ public class RestClientUtil extends ClientUtil{
 	
 	/**
 	 * 查询所有模板
-	 * @param template
 	 * @return
 	 * @throws ElasticSearchException
 	 */
@@ -458,6 +457,17 @@ public class RestClientUtil extends ClientUtil{
 	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return this.client.executeHttp(path,entity,action);
+	}
+
+	@Override
+	public <T> T executeHttp(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return this.client.executeHttp(path,action,responseHandler);
+	}
+	@Override
+	public <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return this.client.executeHttp(path,entity,action,responseHandler);
 	}
 	
 	public String getIndexMapping(String index) throws ElasticSearchException{

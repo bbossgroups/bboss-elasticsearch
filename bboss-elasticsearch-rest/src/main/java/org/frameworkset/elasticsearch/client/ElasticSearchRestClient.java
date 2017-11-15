@@ -24,6 +24,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.HttpHostConnectException;
 import org.frameworkset.elasticsearch.*;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -285,6 +286,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return executeHttp(path, null,  action) ;
 	}
 
+	public <T> T executeHttp(String path,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+		return executeHttp(path, null,  action, responseHandler) ;
+	}
+
 	private String getPath(String host,String path){
 		String url = path.equals("") || path.startsWith("/")?
 				new StringBuilder().append(host).append(path).toString()
@@ -299,9 +304,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
+	public <T> T executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		int triesCount = 0;
-		String response = null;
+		T response = null;
 		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
 			logger.info("Elastic search action:{},request body:{}",path,entity);
@@ -316,25 +321,25 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				if (entity == null){
 					if(action == null)				
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers);
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers, responseHandler);
 					else if(action == ClientUtil.HTTP_POST )				
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers);
+						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,responseHandler);
 					else if( action == ClientUtil.HTTP_PUT)				
-						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers);
+						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,responseHandler);
 					else if(action == ClientUtil.HTTP_GET)				
-						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers);
+						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,responseHandler);
 					else if(action == ClientUtil.HTTP_DELETE)				
-						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers);
+						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,responseHandler);
 					else
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 				}
 				else
 				{
 					 if(action == ClientUtil.HTTP_POST )	
-						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
+						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,responseHandler);
 					 else if( action == ClientUtil.HTTP_PUT)	
 					 {
-						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers);
+						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,responseHandler);
 					 }
 					else
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
@@ -399,6 +404,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			throw new ElasticSearchException(e);
 		}
 		return response;
+	}
+
+	/**
+	 *
+	 * @param path
+	 * @param entity
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
+		return executeHttp( path,  entity, action,new StringResponseHandler());
 	}
 
 	public String executeRequest(String path, String entity) throws ElasticSearchException {
