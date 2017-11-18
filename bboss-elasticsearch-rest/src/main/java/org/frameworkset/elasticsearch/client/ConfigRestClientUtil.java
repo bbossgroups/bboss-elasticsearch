@@ -14,9 +14,6 @@ import org.frameworkset.elasticsearch.template.ESTemplate;
 import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
-import org.frameworkset.util.ClassUtil;
-import org.frameworkset.util.ClassUtil.ClassInfo;
-import org.frameworkset.util.ClassUtil.PropertieDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,13 +67,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	
 
-	private Object getId(Object bean){
-		ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		PropertieDescription pkProperty = beanInfo.getPkProperty();
-		if(pkProperty == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,pkProperty.getName());
-	}
+
 
 
 
@@ -304,13 +295,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		//return templateName;
 	}
 
-	private void buildMeta(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action){
-		Object id = this.getId(params);
-		if(id != null)
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-		else
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
-	}
+
 
 	private void evalBuilkTemplate(StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action) {
 
@@ -318,7 +303,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		if (esInfo == null)
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
-			buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+			buildMeta(  builder ,  indexType,  indexName,   params,action);
 			if(!action.equals("update"))
 				builder.append(esInfo.getTemplate()).append("\n");
 			else
@@ -330,20 +315,20 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
 
 			if (esInfo.isTpl()) {
-				buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+				buildMeta(  builder ,  indexType,  indexName,   params,action);
 				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				evalStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
 			} else {
-				buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+				buildMeta(  builder ,  indexType,  indexName,   params,action);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 				evalStruction(  builder,  struction ,  params,  templateName,  action);
 			}
 
 		} else {
-			buildMeta(  builder ,  indexType,  indexName,  templateName, params,action);
+			buildMeta(  builder ,  indexType,  indexName,   params,action);
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 			evalStruction(  builder,  struction ,  params,  templateName,  action);
 		}

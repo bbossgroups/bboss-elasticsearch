@@ -1,17 +1,7 @@
 package org.frameworkset.elasticsearch;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
+import com.frameworkset.util.FileUtil;
+import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.config.SocketConfig;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
@@ -23,8 +13,12 @@ import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.junit.Test;
 
-import com.frameworkset.util.FileUtil;
-import com.frameworkset.util.SimpleStringUtil;
+import java.io.File;
+import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ESTest {
 
@@ -225,7 +219,7 @@ public class ESTest {
 		clientUtil.dropIndice("demo-"+date);
 	}
 	@Test
-	public void testAddDateDocument() throws ParseException{
+	public void testAddDateDocumentByTemplate() throws ParseException{
 		testGetmapping();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
@@ -257,7 +251,7 @@ public class ESTest {
 	}
 
 	@Test
-	public void testBulkAddDateDocument() throws ParseException{
+	public void testBulkAddDateDocumentByTemplate() throws ParseException{
 		testGetmapping();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
@@ -298,6 +292,94 @@ public class ESTest {
 				Demo.class);
 	}
 
+	@Test
+	public void testBulkAddDateDocument() throws ParseException{
+		testCreateDemoMapping();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		String date = format.format(new Date());
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		List<Demo> demos = new ArrayList<>();
+		Demo demo = new Demo();
+		demo.setDemoId(2l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo2");
+		demo.setContentbody("this is content body2");
+		demos.add(demo);
+
+		demo = new Demo();
+		demo.setDemoId(3l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo3");
+		demo.setContentbody("this is content body3");
+		demos.add(demo);
+
+		//批量创建文档
+		String response = clientUtil.addDateDocuments("demo",//索引表
+				"demo",//索引类型
+				demos);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo-"+date,//索引表
+				"demo",//索引类型
+				"2");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo-"+date,//索引表
+				"demo",//索引类型
+				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
+
+	@Test
+	public void testBulkAddAndUpdateDateDocuments() throws ParseException{
+		testCreateDemoMapping();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		String date = format.format(new Date());
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		List<Demo> demos = new ArrayList<>();
+		Demo demo = new Demo();
+		demo.setDemoId(2l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo2");
+		demo.setContentbody("this is content body2");
+		demos.add(demo);
+
+		demo = new Demo();
+		demo.setDemoId(3l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo3");
+		demo.setContentbody("this is content body3");
+		demos.add(demo);
+
+		//批量创建文档
+		String response = clientUtil.addDateDocuments("demo",//索引表
+				"demo",//索引类型
+				demos);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		//批量更新文档
+		demo.setContentbody("updated");
+		response = clientUtil.updateDocuments("demo-"+date,"demo",demos);
+		System.out.println("updateDateDocument-------------------------");
+
+		System.out.println(response);
+		response = clientUtil.getDocument("demo-"+date,//索引表
+				"demo",//索引类型
+				"2");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo-"+date,//索引表
+				"demo",//索引类型
+				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
+
 
 	@Test
 	public void testCreateDemoMapping(){
@@ -323,7 +405,7 @@ public class ESTest {
 		System.out.println(clientUtil.getIndice("demo"));
 	}
 	@Test
-	public void testAddDocument() throws ParseException{
+	public void testAddDocumentByTemplate() throws ParseException{
 		testCreateDemoMapping();
 		org.apache.http.impl.io.SessionInputBufferImpl s;
 		SocketConfig dd;
@@ -356,7 +438,37 @@ public class ESTest {
 	}
 
 	@Test
-	public void testBulkAddDocument() {
+	public void testAddDocument() throws ParseException{
+		testCreateDemoMapping();
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+		Demo demo = new Demo();
+		demo.setDemoId(5l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo");
+
+		demo.setContentbody(FileUtil.getFileContent(new File("E:/workspace/bbossgroups/bboss-elastic/bboss-elasticsearch-rest/src/test/java/org/frameworkset/elasticsearch/ESTest.java")));
+		//创建文档
+		String response = clientUtil.addDocument("demo",//索引表
+				"demo",//索引类型
+				demo);
+
+		System.out.println("addDateDocument-------------------------");
+		System.out.println(response);
+
+		response = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"5");
+		System.out.println("getDocument-------------------------");
+		System.out.println(response);
+
+		demo = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				Demo.class);
+	}
+
+	@Test
+	public void testBulkAddDocumentByTemplate() {
 		testCreateDemoMapping();
 		String response = null;
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
@@ -401,6 +513,8 @@ public class ESTest {
 //				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
 //				Demo.class);
 	}
+
+
 	@Test
 	public void testJsonEscape(){
 		Demo demo = new Demo();
@@ -408,13 +522,15 @@ public class ESTest {
 		demo.setAgentStarttime(new Date());
 		demo.setApplicationName("blackcatdemo");
 		demo.setContentbody("成家宁,河北秦皇岛 移动^A电话18713518970");
+		demo.setSfiled("aaa");
+		demo.setSfiled1("cccc");
 		String valur = SimpleStringUtil.object2json(demo);
 
 		System.out.println(valur);
-		SimpleStringUtil.json2Object(valur,Demo.class);
+		String v1 = "{\"type\":null,\"id\":null,\"sfiled\":\"fields\",\"sfiled1\":\"fields\",\"fields\":null,\"version\":0,\"index\":null,\"highlight\":null,\"sort\":null,\"score\":0,\"demoId\":10,\"contentbody\":\"成家宁,河北秦皇岛 移动^A电话18713518970\",\"agentStarttime\":\"2017-11-18 04:31:38.229\",\"applicationName\":\"blackcatdemo\"}";
+		demo = SimpleStringUtil.json2Object(v1,Demo.class);
 
-		com.fasterxml.jackson.core.json.WriterBasedJsonGenerator w;
-		com.fasterxml.jackson.core.io.CharTypes q;
+		System.out.println( );
 
 	}
 

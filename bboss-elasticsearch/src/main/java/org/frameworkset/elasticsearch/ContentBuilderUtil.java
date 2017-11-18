@@ -17,11 +17,17 @@
  * under the License.
  */
 package org.frameworkset.elasticsearch;
-import com.fasterxml.jackson.core.JsonParseException;
-import org.elasticsearch.common.xcontent.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
+
+import com.fasterxml.jackson.core.JsonParseException;
 
 /**
  * Utility methods for using ElasticSearch {@link XContentBuilder}
@@ -34,7 +40,7 @@ public class ContentBuilderUtil {
   }
 
   public static void appendField(XContentBuilder builder, String field,
-      byte[] data) throws IOException {
+                                 byte[] data) throws IOException {
     XContentType contentType = XContentFactory.xContentType(data);
     if (contentType == null) {
       addSimpleField(builder, field, data);

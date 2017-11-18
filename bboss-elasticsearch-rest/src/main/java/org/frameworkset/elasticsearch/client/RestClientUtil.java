@@ -12,14 +12,13 @@ import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.json.JsonTypeReference;
+import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
+import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -160,6 +159,196 @@ public class RestClientUtil extends ClientUtil{
 		return null;
 	}
 
+	/**************************************创建或者修改文档开始**************************************************************/
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType, Object bean) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean);
+	}
+
+	public String addDateDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,refreshOption);
+	}
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
+		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans);
+	}
+
+	public String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException{
+		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,refreshOption);
+	}
+
+	/**************************************创建或者修改文档结束**************************************************************/
+
+	/***************************添加或者修改文档开始************************************/
+	/**
+	 * 批量创建索引
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
+		return addDocuments(indexName, indexType,  beans,null);
+	}
+	public String addDocuments(String indexName, String indexType,  List<?> beans,String refreshOption) throws ElasticSearchException{
+		if(beans == null || beans.size() == 0)
+			return null;
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Object bean:beans) {
+			try {
+				evalBuilk(writer,indexName,indexType,bean,"index");
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(refreshOption == null)
+			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
+	protected void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
+		Object id = this.getId(params);
+		if(id != null)
+			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+		else
+			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+	}
+	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
+		Object id = this.getId(params);
+		if(id != null) {
+			writer.write("{ \"");
+			writer.write(action);
+			writer.write("\" : { \"_index\" : \"");
+			writer.write(indexName);
+			writer.write("\", \"_type\" : \"");
+			writer.write(indexType);
+			writer.write("\", \"_id\" : \"");
+			writer.write(String.valueOf(id));
+			writer.write("\" } }\n");
+		}
+		else {
+
+			writer.write("{ \"");
+			writer.write(action);
+			writer.write("\" : { \"_index\" : \"");
+			writer.write(indexName);
+			writer.write("\", \"_type\" : \"");
+			writer.write(indexType);
+			writer.write("\" } }\n");
+		}
+	}
+	private void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
+
+		if (param != null) {
+			buildMeta(  writer ,  indexType,  indexName,   param,action);
+			if(!action.equals("update")) {
+				SimpleStringUtil.object2json(param,writer);
+				writer.write("\n");
+			}
+			else
+			{
+				writer.write("{\"doc\":");
+				SimpleStringUtil.object2json(param,writer);
+				writer.write("}\n");
+			}
+		}
+
+	}
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException{
+		return this.addDocument(indexName,indexType,bean,null);
+	}
+	protected Object getId(Object bean){
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		ClassUtil.PropertieDescription pkProperty = beanInfo.getPkProperty();
+		if(pkProperty == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		Object id = this.getId(bean);
+		builder.append(indexName).append("/").append(indexType);
+		if(id != null){
+			builder.append("/").append(id);
+		}
+		if(refreshOption != null ){
+			builder.append("?").append(refreshOption);
+		}
+		String path = builder.toString();
+		builder = null;
+		path = this.client.executeHttp(path,SimpleStringUtil.object2json(bean),ClientUtil.HTTP_POST);
+		return path;
+	}
+
+	public String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
+		return updateDocuments(indexName, indexType, beans,null);
+	}
+	public String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException{
+
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Object bean:beans) {
+			try {
+				evalBuilk(writer,indexName,indexType,bean,"update");
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(refreshOption != null) {
+			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
+		}
+		else {
+			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+		}
+	}
+
+	/***************************添加或者修改文档结束************************************/
 	/**
 	 * 创建或者更新索引文档
 	 * @param indexName

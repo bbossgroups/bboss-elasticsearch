@@ -18,23 +18,17 @@
  */
 package org.frameworkset.elasticsearch.client;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
+import com.google.gson.Gson;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.frameworkset.elasticsearch.ElasticSearch;
-import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.EventIndexNameBuilder;
-import org.frameworkset.elasticsearch.IndexNameBuilder;
-import org.frameworkset.elasticsearch.JavaElasticSearch;
+import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 //import org.apache.http.client.HttpClient;
 //import org.apache.http.impl.client.DefaultHttpClient;
@@ -77,7 +71,7 @@ public class ElasticSearchRestEventClient extends ElasticSearchRestClient implem
 			Map<String, String> indexParameters = new HashMap<String, String>();
 			indexParameters.put(ElasticSearchRestClient.INDEX_PARAM, ((EventIndexNameBuilder)indexNameBuilder).getIndexName(event));
 			indexParameters.put(ElasticSearchRestClient.TYPE_PARAM, event.getIndexType());
-			if (event.getTTL() > 0) {
+			if (event.getTTL() != null && event.getTTL() > 0) {
 				indexParameters.put(ElasticSearchRestClient.TTL_PARAM, Long.toString(event.getTTL()) + "ms");
 			}
 			parameters.put(ElasticSearchRestClient.INDEX_OPERATION_NAME, indexParameters);

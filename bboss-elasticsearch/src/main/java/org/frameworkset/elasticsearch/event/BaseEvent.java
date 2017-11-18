@@ -5,7 +5,7 @@ import java.util.Map;
 public class BaseEvent {
 	protected String id;
 	protected Map<String, String> headers;
-	protected long TTL;
+	protected Long TTL;
 	protected String indexType;
 	protected String indexPrefix;
 	public BaseEvent() {
@@ -29,11 +29,11 @@ public class BaseEvent {
 			this.indexType = indexType;
 		}
 		
-		public long getTTL() {
+		public Long getTTL() {
 			return TTL;
 		}
 		
-		public void setTTL(long tTL) {
+		public void setTTL(Long tTL) {
 			TTL = tTL;
 		}
 		

@@ -297,7 +297,7 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 					event.getIndexType(), event);
 		}
 
-		if (event.getTTL() > 0) {
+		if (event.getTTL() != null && event.getTTL() > 0) {
 			indexRequestBuilder.setTTL(event.getTTL());
 		}
 		return indexRequestBuilder;

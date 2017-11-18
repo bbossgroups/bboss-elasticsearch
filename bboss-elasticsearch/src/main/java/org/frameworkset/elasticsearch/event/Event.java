@@ -1,8 +1,8 @@
 package org.frameworkset.elasticsearch.event;
 
-import java.util.Map;
-
 import org.elasticsearch.common.xcontent.XContentType;
+
+import java.util.Map;
 
 public interface Event {
 
@@ -30,8 +30,8 @@ public interface Event {
 	  
 	  public void setIndexType(String indexType);
 	  public String getIndexType();
-	  public void setTTL(long ttl);
-	  public long getTTL();
+	  public void setTTL(Long ttl);
+	  public Long getTTL();
 	  public String getIndexPrefix();
 	  public void setIndexPrefix(String indexPrefix);
 	  public void setId(String id);

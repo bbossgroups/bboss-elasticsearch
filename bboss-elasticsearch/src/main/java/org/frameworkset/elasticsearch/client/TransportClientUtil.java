@@ -574,6 +574,61 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public String addDocuments(String indexName, String indexType, List<?> beans, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDocument(String indexName, String indexType, Object bean, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String updateDocuments(String indexName, String indexType, List<?> beans, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocument(String indexName, String indexType, Object bean) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocument(String indexName, String indexType, Object bean, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String addDateDocuments(String indexName, String indexType, List<?> beans, String refreshOption)
+			throws ElasticSearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	  
