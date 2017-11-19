@@ -18,6 +18,8 @@
  */
 package org.frameworkset.elasticsearch;
 
+import org.frameworkset.elasticsearch.handler.ElasticSearchMapResponseHandler;
+
 public class ElasticSearchSinkConstants {
 
   /**
@@ -30,6 +32,8 @@ public class ElasticSearchSinkConstants {
    */
   public static final String REST_HOSTNAMES = "elasticsearch.rest.hostNames";
   public static final String TRANSPORT_HOSTNAMES = "elasticsearch.transport.hostNames";
+  public static final String healthCheckHttpPool = "esHealthCheckHttpPool";
+  public static final ElasticSearchMapResponseHandler elasticSearchMapResponseHandler = new ElasticSearchMapResponseHandler();
   /**
    * The name to index the document to, defaults to 'flume'</p>
    * The current date in the format 'yyyy-MM-dd' will be appended to this name,

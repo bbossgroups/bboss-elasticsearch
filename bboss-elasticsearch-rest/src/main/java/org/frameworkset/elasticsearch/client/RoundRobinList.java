@@ -1,12 +1,12 @@
 package org.frameworkset.elasticsearch.client;
 
 
+import org.frameworkset.elasticsearch.ElasticSearchException;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.frameworkset.elasticsearch.ElasticSearchException;
 
 /*
  * Copyright 2014 Apache Software Foundation.
@@ -30,6 +30,7 @@ public class RoundRobinList {
 
 	private Iterator<ESAddress> iterator;
 	private String message;
+
 
 	public RoundRobinList(List<ESAddress> elements) {
 		this.elements = elements;
@@ -59,7 +60,7 @@ public class RoundRobinList {
 //		}
 //
 //	}
-	public void addAddress(List<ESAddress> address){
+	public void addAddresses(List<ESAddress> address){
 		try{
 			lock.lock();
 			this.elements.addAll(address);

@@ -3,20 +3,24 @@ package org.frameworkset.elasticsearch.client;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.frameworkset.elasticsearch.ElasticSearchSinkConstants;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * es节点健康检查
  */
 public class HealthCheck implements Runnable{
 	private List<ESAddress> esAddresses;
-	private static final String healthCheckHttpPool = "healthCheckHttpPool";
+
 	private static Logger logger = LoggerFactory.getLogger(HealthCheck.class);
 	private long checkInterval = 5000;
 	private List<HCRunable> checkThreads ;
@@ -34,6 +38,17 @@ public class HealthCheck implements Runnable{
 			t.stopRun();
 		}
 	}
+
+	public void checkNewAddresses(List<ESAddress> addresses) {
+		HCRunable t = null;
+		for(int i = 0; i < addresses.size(); i ++){
+			ESAddress address = addresses.get(i);
+			t = new HCRunable(address);
+			t.start();
+			checkThreads.add(t);
+		}
+	}
+
 	class HCRunable extends Thread {
 		ESAddress address;
 		boolean stop = false;
@@ -55,7 +70,7 @@ public class HealthCheck implements Runnable{
 			 		 try {		
 			 			 if(logger.isDebugEnabled())
 			 				 logger.debug(new StringBuilder().append("Check dead elasticsearch server[").append(address.toString()).append("] status.").toString());
-						 HttpRequestUtil.httpGet(healthCheckHttpPool,address.getHealthPath(),headers,new ResponseHandler<Void>(){
+						 HttpRequestUtil.httpGet(ElasticSearchSinkConstants.healthCheckHttpPool,address.getHealthPath(),headers,new ResponseHandler<Void>(){
 	
 							 @Override
 							 public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {

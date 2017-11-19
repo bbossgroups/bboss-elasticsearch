@@ -35,8 +35,6 @@ public class ElasticSearchClientFactory {
 	/**
 	 * @param clientType  String representation of client type
 	 * @param hostNames   Array of strings that represents hostnames with ports (hostname:port)
-	 * @param clusterName Elasticsearch cluster name used only by Transport Client
-	 * @param serializer  Serializer of flume events to elasticsearch documents
 	 * @return
 	 * @throws UnknownHostException
 	 */

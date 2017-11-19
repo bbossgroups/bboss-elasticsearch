@@ -67,42 +67,43 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected String dateFormat = "yyyy.MM.dd";
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
+
+	public ElasticSearch getElasticSearch() {
+		return elasticSearch;
+	}
+
 	protected ElasticSearch elasticSearch;
+	protected HealthCheck healthCheck = null;
+	private Map<String,ESAddress> addressMap = new HashMap<String,ESAddress>();
 	public ElasticSearchRestClient(ElasticSearch elasticSearch,String[] hostNames, String elasticUser, String elasticPassword,
 								     Properties extendElasticsearchPropes) {
 		this.extendElasticsearchPropes = extendElasticsearchPropes;
 		this.elasticSearch = elasticSearch;
 		addressList = new ArrayList<ESAddress>();
 		for(String host:hostNames){
-			addressList.add(new ESAddress(host));
+			ESAddress esAddress = new ESAddress(host);
+			addressList.add(esAddress);
+			addressMap.put(esAddress.getAddress(),esAddress);
 		}
 		serversList = new RoundRobinList(addressList);
-
-
 //		httpClient = new DefaultHttpClient();
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
-		this.init();
+//		this.init();
 	}
-	private boolean containAddress(ESAddress address){
-		ESAddress temp = null;
-		for (int i = 0; i < addressList.size(); i ++){
-			temp = addressList.get(i);
-			if(temp.equals(address)){
-				return true;
-			}
-		}
-		return false;
+
+	public boolean containAddress(ESAddress address){
+		return addressMap.containsKey(address.getAddress());
 	}
-	public void addAddress(String[] address){
-		List<ESAddress> temp = new ArrayList<ESAddress>();
-		for(String host:address){
-			ESAddress esAddress = new ESAddress(host);
-			if(!containAddress(esAddress))
-				temp.add(new ESAddress(host));
+	public void addAddresses(List<ESAddress> address){
+		this.serversList.addAddresses(address);
+		if(this.healthCheck != null){
+			this.healthCheck.checkNewAddresses(address);
 		}
-		if(temp.size()> 0)
-			this.serversList.addAddress(temp);
+		for(ESAddress host:address){
+			addressMap.put(host.getAddress(),host);
+		}
+
 	}
 
 
@@ -119,11 +120,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
 		if(healthCheckInterval > 0) {
 			logger.info("start elastic healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to disable healthCheck thread.");
-			HealthCheck healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
+			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
 			healthCheck.run();
 		}
+		HostDiscover hostDiscover = new HostDiscover(this);
+		hostDiscover.start();
 
 	}
+
+
 
 	public static String getHeader(String user, String password) {
 		String auth = user + ":" + password;
