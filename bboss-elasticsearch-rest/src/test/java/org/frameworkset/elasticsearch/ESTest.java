@@ -297,7 +297,7 @@ public class ESTest {
 		testCreateDemoMapping();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
-		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		List<Demo> demos = new ArrayList<>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
@@ -323,13 +323,13 @@ public class ESTest {
 
 		response = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"2");
+				"2");//文档id
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
 		demo = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				"3",//文档id
 				Demo.class);
 	}
 
@@ -338,7 +338,7 @@ public class ESTest {
 		testCreateDemoMapping();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
-		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		List<Demo> demos = new ArrayList<>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
@@ -370,13 +370,13 @@ public class ESTest {
 		System.out.println(response);
 		response = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"2");
+				"2");//文档id
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
 		demo = clientUtil.getDocument("demo-"+date,//索引表
 				"demo",//索引类型
-				"3",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				"3",//文档id
 				Demo.class);
 	}
 
@@ -433,7 +433,7 @@ public class ESTest {
 
 		demo = clientUtil.getDocument("demo",//索引表
 				"demo",//索引类型
-				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				"5",//文档id
 				Demo.class);
 	}
 
@@ -457,13 +457,13 @@ public class ESTest {
 
 		response = clientUtil.getDocument("demo",//索引表
 				"demo",//索引类型
-				"5");
+				"5");//文档id
 		System.out.println("getDocument-------------------------");
 		System.out.println(response);
 
 		demo = clientUtil.getDocument("demo",//索引表
 				"demo",//索引类型
-				"5",//创建文档对应的脚本名称，在estrace/ESTracesMapper.xml中配置
+				"5",//文档id
 				Demo.class);
 	}
 
