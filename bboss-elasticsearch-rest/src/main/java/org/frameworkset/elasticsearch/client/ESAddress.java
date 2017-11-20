@@ -5,7 +5,7 @@ public class ESAddress {
 	private String healthPath;
 	private transient Thread healthCheck;
 	/**
-	 * 服务器状态：0 正常 1 异常
+	 * 服务器状态：0 正常 1 异常 2 removed
 	 */
 	private volatile int status= 0;
 	public ESAddress(){
@@ -47,8 +47,18 @@ public class ESAddress {
 	}
 
 	public void setStatus(int status) {
-		
-		this.status = status;
+		synchronized (this) {
+			if(status == 0){
+				this.status = status;
+				return;
+			}
+			else if (this.status == 2) {//删除节点，无需修改状态
+				return;
+			}
+			this.status = status;
+		}
+
+
 		if(status == 1 && healthCheck != null){
 			synchronized(healthCheck){
 				healthCheck.notifyAll();
@@ -57,8 +67,13 @@ public class ESAddress {
 	}
 	
 	public void onlySetStatus(int status) {
-		
-		this.status = status;
+		synchronized (this) {
+			if(status == 0)
+				this.status = status;
+
+			if (this.status != 2)//如果没有移除，则设置故障状态
+				this.status = status;
+		}
 		
 	}
 	public String toString(){
@@ -66,6 +81,10 @@ public class ESAddress {
 	}
 	public boolean ok(){
 		return this.status == 0;
+	}
+
+	public boolean failedCheck(){
+		return this.status == 1;
 	}
 
 	public void setHealthCheck(Thread healthCheck) {

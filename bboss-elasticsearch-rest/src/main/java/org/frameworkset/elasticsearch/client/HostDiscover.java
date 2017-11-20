@@ -31,6 +31,7 @@ public class HostDiscover extends Thread{
 	private ElasticSearch elasticSearch;
 	private ElasticSearchRestClient elasticSearchRestClient;
 	public HostDiscover(ElasticSearchRestClient elasticSearchRestClient ){
+		super("ElasticSearch HostDiscover Thread");
 		this.jsonFactory = new JsonFactory();
 		this.elasticSearchRestClient = elasticSearchRestClient;
 		this.elasticSearch = elasticSearchRestClient.getElasticSearch();
@@ -47,6 +48,27 @@ public class HostDiscover extends Thread{
 		this.stop = true;
 		this.interrupt();
 	}
+
+	private void handleDiscoverHosts(List<HttpHost> hosts){
+		List<ESAddress> newAddress = new ArrayList<ESAddress>();
+		//恢复移除节点
+		elasticSearchRestClient.recoverRemovedNodes(hosts);
+		//识别新增节点
+		for(int i = 0; i < hosts.size();i ++){
+			ESAddress address = new ESAddress(hosts.get(i).toString());
+			if(!elasticSearchRestClient.containAddress(address)){
+				newAddress.add(address);
+			}
+		}
+		//处理新增节点
+		if(newAddress.size() > 0) {
+			if (logger.isInfoEnabled())
+				logger.info(new StringBuilder().append("Discovery new elasticsearch server[").append(newAddress).append("].").toString());
+			elasticSearchRestClient.addAddresses(newAddress);
+		}
+		//处理删除节点
+		elasticSearchRestClient.handleRemoved( hosts);
+	}
 	@Override
 	public void run() {
 		do {
@@ -60,18 +82,8 @@ public class HostDiscover extends Thread{
 						int status = response.getStatusLine().getStatusCode();
 						if (status >= 200 && status < 300) {
 							List<HttpHost> hosts = readHosts(response.getEntity());
-							List<ESAddress> newAddress = new ArrayList<ESAddress>();
-							for(int i = 0; i < hosts.size();i ++){
-								ESAddress address = new ESAddress(hosts.get(i).toString());
-								if(!elasticSearchRestClient.containAddress(address)){
-									newAddress.add(address);
-								}
-							}
-							if(newAddress.size() > 0) {
-								if (logger.isInfoEnabled())
-									logger.info(new StringBuilder().append("Discovery new elasticsearch server[").append(newAddress).append("].").toString());
-								elasticSearchRestClient.addAddresses(newAddress);
-							}
+							handleDiscoverHosts(hosts);
+
 						} else {
 
 						}

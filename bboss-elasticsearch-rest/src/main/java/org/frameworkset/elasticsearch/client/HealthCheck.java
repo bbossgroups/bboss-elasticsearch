@@ -66,7 +66,7 @@ public class HealthCheck implements Runnable{
 			 while (true){
 			 	if(this.stop)
 			 		break;
-			 	 if(!address.ok()){			
+			 	 if(address.failedCheck()){
 			 		 try {		
 			 			 if(logger.isDebugEnabled())
 			 				 logger.debug(new StringBuilder().append("Check dead elasticsearch server[").append(address.toString()).append("] status.").toString());

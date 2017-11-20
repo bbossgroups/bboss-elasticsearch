@@ -20,6 +20,7 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHost;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.HttpHostConnectException;
 import org.frameworkset.elasticsearch.*;
@@ -67,6 +68,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected String dateFormat = "yyyy.MM.dd";
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
+	protected  boolean discoverHost = false;
 
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
@@ -74,6 +76,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
+
+	public Map<String, ESAddress> getAddressMap() {
+		return addressMap;
+	}
+
 	private Map<String,ESAddress> addressMap = new HashMap<String,ESAddress>();
 	public ElasticSearchRestClient(ElasticSearch elasticSearch,String[] hostNames, String elasticUser, String elasticPassword,
 								     Properties extendElasticsearchPropes) {
@@ -94,6 +101,35 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	public boolean containAddress(ESAddress address){
 		return addressMap.containsKey(address.getAddress());
+	}
+	public void handleRemoved(List<HttpHost> hosts){
+		boolean hasHosts = true;
+		if(hosts == null || hosts.size() == 0){//没有可用节点
+			hasHosts = false;
+		}
+		Iterator<Map.Entry<String, ESAddress>> iterator = this.addressMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String, ESAddress> esAddressEntry = iterator.next();
+			String host = esAddressEntry.getKey();
+			ESAddress address = esAddressEntry.getValue();
+			if(hasHosts) {
+				boolean exist = false;
+				for (HttpHost httpHost : hosts) {
+					if (httpHost.toString().equals(host)) {
+						exist = true;
+						break;
+					}
+				}
+				if (!exist) {
+					address.setStatus(2);
+				}
+			}
+			else {
+				address.setStatus(2);
+			}
+
+		}
+
 	}
 	public void addAddresses(List<ESAddress> address){
 		this.serversList.addAddresses(address);
@@ -119,12 +155,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
 		if(healthCheckInterval > 0) {
-			logger.info("start elastic healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to disable healthCheck thread.");
+			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to disable healthCheck thread.");
 			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
 			healthCheck.run();
 		}
-		HostDiscover hostDiscover = new HostDiscover(this);
-		hostDiscover.start();
+		else {
+			logger.info("Elasticsearch healthCheck disable,you can set elasticsearch.healthCheckInterval=3000 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to enabled healthCheck thread.");
+
+		}
+		if(discoverHost) {
+			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getApplicationContext().getConfigfile()+".");
+
+			HostDiscover hostDiscover = new HostDiscover(this);
+			hostDiscover.start();
+		}
+		else {
+			logger.info("Discover Elasticsearch Host is disabled,to enabled set elasticsearch.discoverHost=true  in "+this.elasticSearch.getApplicationContext().getConfigfile()+".");
+		}
 
 	}
 
@@ -172,6 +219,20 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				logger.error("Parse Long healthCheckInterval parameter failed:"+healthCheckInterval_,e);
 			}
 		}
+		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");
+		if(discoverHost_ == null){
+
+		}
+		else{
+			try {
+				this.discoverHost = Boolean.parseBoolean(discoverHost_);
+			}
+			catch (Exception e){
+				logger.error("Parse Long discoverHost parameter failed:"+discoverHost_,e);
+			}
+		}
+
+
 
 	}
 
@@ -643,5 +704,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public void setShowTemplate(boolean showTemplate) {
 		this.showTemplate = showTemplate;
 	}
-	
+
+	public void recoverRemovedNodes(List<HttpHost> hosts) {
+		if(hosts == null || hosts.size() == 0){
+			return;
+		}
+		for(HttpHost httpHost: hosts) {
+			ESAddress address = this.addressMap.get(httpHost.toString());
+			if(address != null  ){
+				if(address.getStatus() == 2){//节点还原
+					address.onlySetStatus(0);
+				}
+			}
+		}
+	}
 }
