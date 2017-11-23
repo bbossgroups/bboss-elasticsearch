@@ -18,34 +18,15 @@
  */
 package org.frameworkset.elasticsearch;
 
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.BATCH_SIZE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.CLIENT_TYPE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.CLUSTER_NAME;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_CLIENT_TYPE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_CLUSTER_NAME;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_NAME_BUILDER_CLASS;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME_BUILDER;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_TYPE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.SERIALIZER;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.TRANSPORT_HOSTNAMES;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.TTL;
-
+import com.frameworkset.util.SimpleStringUtil;
+import com.google.common.base.Throwables;
 import org.elasticsearch.client.Client;
-import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.ClientUtil;
-import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
-import org.frameworkset.elasticsearch.client.ElasticSearchEventClientFactory;
-import org.frameworkset.elasticsearch.client.ElasticSearchTransportClient;
-import org.frameworkset.elasticsearch.client.EventClientUtil;
-import org.frameworkset.elasticsearch.client.EventElasticSearchClient;
-import org.frameworkset.elasticsearch.client.TransportClientUtil;
+import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.SimpleStringUtil;
-import com.google.common.base.Throwables;
+import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.*;
 
 /**
  * A sink which reads events from a channel and writes them to ElasticSearch
@@ -179,12 +160,10 @@ public class JavaElasticSearch extends ElasticSearch {
 			int count;
 			for (count = 0; count < datas.size(); ++count) {
 				Event event = datas.get(count);
-
-
 				if (event == null) {
 					break;
 				}
-				if (event.getTTL() <= 0l)
+				if (event.getTTL() != null && event.getTTL() <= 0l)
 					event.setTTL(ttlMs);
 				String realIndexType = event.getIndexType() == null ? BucketPath.escapeString(indexType, event.getHeaders()) : event.getIndexType();
 				event.setIndexType(realIndexType);
@@ -241,7 +220,7 @@ public class JavaElasticSearch extends ElasticSearch {
 				if (event == null) {
 					break;
 				}
-				if (event.getTTL() <= 0l)
+				if (event.getTTL() != null && event.getTTL() <= 0l)
 					event.setTTL(ttlMs);
 				String realIndexType = event.getIndexType() == null ? BucketPath.escapeString(indexType, event.getHeaders()) : event.getIndexType();
 				event.setIndexType(realIndexType);
