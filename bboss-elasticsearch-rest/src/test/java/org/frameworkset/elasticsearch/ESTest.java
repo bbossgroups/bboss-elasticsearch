@@ -316,7 +316,7 @@ public class ESTest {
 		//批量创建文档
 		String response = clientUtil.addDateDocuments("demo",//索引表
 				"demo",//索引类型
-				demos);
+				demos,"refresh=true");
 
 		System.out.println("addDateDocument-------------------------");
 		System.out.println(response);

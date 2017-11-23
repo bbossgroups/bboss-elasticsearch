@@ -39,8 +39,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
     https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html
     select rpc, avg(elapsed) avg_elapsed, count(1) count from traces where start_time >= #{startTime} and start_time <= #{endTime} GROUP by rpc order by avg_elapsed desc
     -->
-
-
     <property name="queryServiceTracesAvgElapsed">
         <![CDATA[
         {
@@ -78,8 +76,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                   }
                 }
               }
-        }
-        ]]>
+        }]]>
     </property>
 
     <!--
@@ -168,7 +165,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                     }
                 }
             }
-
         }
         ]]>
     </property>
