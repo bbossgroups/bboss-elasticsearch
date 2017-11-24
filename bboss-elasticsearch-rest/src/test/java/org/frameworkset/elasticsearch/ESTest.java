@@ -7,6 +7,7 @@ import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
+import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
@@ -524,7 +525,8 @@ public class ESTest {
 		demo.setContentbody("成家宁,河北秦皇岛 移动^A电话18713518970");
 		demo.setSfiled("aaa");
 		demo.setSfiled1("cccc");
-		String valur = SimpleStringUtil.object2json(demo);
+		demo.setTestJsonSerialize("aaaa");
+		String valur = SerialUtil.object2json(demo);
 
 		System.out.println(valur);
 		String v1 = "{\"type\":null,\"id\":null,\"sfiled\":\"fields\",\"sfiled1\":\"fields\",\"fields\":null,\"version\":0,\"index\":null,\"highlight\":null,\"sort\":null,\"score\":0,\"demoId\":10,\"contentbody\":\"成家宁,河北秦皇岛 移动^A电话18713518970\",\"agentStarttime\":\"2017-11-18 04:31:38.229\",\"applicationName\":\"blackcatdemo\"}";

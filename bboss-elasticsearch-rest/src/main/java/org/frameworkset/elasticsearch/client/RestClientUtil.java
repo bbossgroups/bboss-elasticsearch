@@ -11,6 +11,7 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
@@ -269,13 +270,13 @@ public class RestClientUtil extends ClientUtil{
 		if (param != null) {
 			buildMeta(  writer ,  indexType,  indexName,   param,action);
 			if(!action.equals("update")) {
-				SimpleStringUtil.object2json(param,writer);
+				SerialUtil.object2json(param,writer);
 				writer.write("\n");
 			}
 			else
 			{
 				writer.write("{\"doc\":");
-				SimpleStringUtil.object2json(param,writer);
+				SerialUtil.object2json(param,writer);
 				writer.write("}\n");
 			}
 		}
@@ -321,9 +322,10 @@ public class RestClientUtil extends ClientUtil{
 		}
 		String path = builder.toString();
 		builder = null;
-		path = this.client.executeHttp(path,SimpleStringUtil.object2json(bean),ClientUtil.HTTP_POST);
+		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
 		return path;
 	}
+
 
 	public String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
 		return updateDocuments(indexName, indexType, beans,null);

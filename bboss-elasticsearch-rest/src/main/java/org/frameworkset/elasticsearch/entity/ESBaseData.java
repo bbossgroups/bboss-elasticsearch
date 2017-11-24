@@ -1,7 +1,5 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -9,23 +7,22 @@ import java.util.Map;
 /**
  * elastic search 结果基础对象,用于业务对象的基础类,所有属性允许反序列化，不允许序列化
  */
-
 public abstract class ESBaseData implements Serializable{
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private String  type;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private String  id;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private Map<String,List<Object>> fields;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private int version;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private String index;//"_index": "trace-2017.09.01",
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private Map<String,List<Object>> highlight;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private Object[] sort;
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private int  score;
 
 

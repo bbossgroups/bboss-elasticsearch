@@ -17,7 +17,15 @@ public class Demo extends ESBaseData{
 	@Column(dataformat = "yyyy-MM-dd HH:mm:ss.SSS")
 	private Date agentStarttime;
 	private String applicationName;
-	 
+
+	public String getTestJsonSerialize() {
+		return testJsonSerialize;
+	}
+	public void setTestJsonSerialize(String testJsonSerialize) {
+		this.testJsonSerialize = testJsonSerialize;
+	}
+
+	private String testJsonSerialize;
 	private String sfiled;
 	private String sfiled1;
 	public String getContentbody() {

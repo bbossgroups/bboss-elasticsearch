@@ -145,21 +145,21 @@ public abstract class ClientUtil implements ClientInterface{
 		if(condition == null || condition.equals("")){
 			return condition;
 		}
-		condition = condition.replace(":","\\\\:");
-		condition = condition.replace("-","\\\\-");
-		condition = condition.replace("+","\\\\+");
-		condition = condition.replace("&","\\\\&");
-		condition = condition.replace("!","\\\\!");
-		condition = condition.replace("{","\\\\{");
-		condition = condition.replace("}","\\\\}");
-		condition = condition.replace("(","\\\\(");
-		condition = condition.replace(")","\\\\)");
-		condition = condition.replace("|","\\\\|");
+		condition = condition.replace(":","\\:");
+		condition = condition.replace("-","\\-");
+		condition = condition.replace("+","\\+");
+		condition = condition.replace("&","\\&");
+		condition = condition.replace("!","\\!");
+		condition = condition.replace("{","\\{");
+		condition = condition.replace("}","\\}");
+		condition = condition.replace("(","\\(");
+		condition = condition.replace(")","\\)");
+		condition = condition.replace("|","\\|");
 
-		condition = condition.replace("~","\\\\~");
-		condition = condition.replace("*","\\\\*");
-		condition = condition.replace("?","\\\\?");
-		condition = condition.replace("/","\\\\/");
+		condition = condition.replace("~","\\~");
+		condition = condition.replace("*","\\*");
+		condition = condition.replace("?","\\?");
+		condition = condition.replace("/","\\/");
 
 
 		return condition;

@@ -1,9 +1,7 @@
 package org.frameworkset.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ESId {
-	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
+//	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private String id;
 
 	public String getId() {
