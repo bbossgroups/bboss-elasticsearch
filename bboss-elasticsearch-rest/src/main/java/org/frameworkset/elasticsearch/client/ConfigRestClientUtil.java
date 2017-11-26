@@ -487,6 +487,58 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 
+	/**
+	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
+	 * @param path
+	 * @param templateName
+	 * @param action
+	 * @param responseHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T  executeHttp(String path, String templateName,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return super.executeHttp(  path, evalTemplate(templateName, params),   action,responseHandler);
+	}
+
+	/**
+	 * 发送es restful请求，获取String类型json报文
+	 * @param path
+	 * @param templateName 请求报文
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String executeHttp(String path, String templateName,Map params, String action) throws ElasticSearchException{
+		return super.executeHttp(  path, evalTemplate(templateName, params),   action);
+	}
+	/**
+	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
+	 * @param path
+	 * @param templateName
+	 * @param action
+	 * @param responseHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T  executeHttp(String path, String templateName,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return super.executeHttp(  path, evalTemplate(templateName, bean),   action,responseHandler);
+	}
+
+	/**
+	 * 发送es restful请求，获取String类型json报文
+	 * @param path
+	 * @param templateName 请求报文
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String executeHttp(String path, String templateName,Object bean, String action) throws ElasticSearchException{
+		return super.executeHttp(  path, evalTemplate(templateName, bean),   action);
+	}
+
+
 	@Override
 	public <T> T executeRequest(String path, String templateName, ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub

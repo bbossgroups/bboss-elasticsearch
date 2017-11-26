@@ -556,6 +556,9 @@ https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-quer
                     "properties": {
                         "contentbody": {
                             "type": "text",
+                            "term_vector": "with_positions_offsets",
+                            "analyzer": "ik_max_word",
+                            "search_analyzer": "ik_max_word",
                             "fields": {
                                 "keyword": {
                                     "type": "keyword",

@@ -266,6 +266,27 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <T> T executeHttp(String path, String entity, String action, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String executeHttp(String path, String entity, Map params, String action) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T executeHttp(String path, String entity, String action, Object bean, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String executeHttp(String path, String entity, Object bean, String action) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public String delete(String path, String string) {
 		// TODO Auto-generated method stub

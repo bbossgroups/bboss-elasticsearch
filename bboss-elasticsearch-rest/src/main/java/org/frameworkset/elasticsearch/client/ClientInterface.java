@@ -311,6 +311,48 @@ public interface ClientInterface {
 	public abstract String executeHttp(String path, String entity, String action) throws ElasticSearchException;
 
 	/**
+	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
+	 * @param path
+	 * @param entity
+	 * @param action
+	 * @param responseHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T  executeHttp(String path, String entity,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+
+	/**
+	 * 发送es restful请求，获取String类型json报文
+	 * @param path
+	 * @param entity 请求报文
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String executeHttp(String path, String entity,Map params, String action) throws ElasticSearchException;
+	/**
+	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
+	 * @param path
+	 * @param entity
+	 * @param action
+	 * @param responseHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T  executeHttp(String path, String entity,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+
+	/**
+	 * 发送es restful请求，获取String类型json报文
+	 * @param path
+	 * @param entity 请求报文
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String executeHttp(String path, String entity,Object bean, String action) throws ElasticSearchException;
+	/**
 	 * @param path
 	 * @param string
 	 * @return
