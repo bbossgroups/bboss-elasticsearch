@@ -1,8 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
 
-import org.frameworkset.elasticsearch.ElasticSearchException;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -96,7 +94,7 @@ public class RoundRobinList {
 					}
 				}
 				if(temp == null)
-					throw new ElasticSearchException(message);
+					throw new NoServerElasticSearchException(message);
 				return temp;
 			}
 		}

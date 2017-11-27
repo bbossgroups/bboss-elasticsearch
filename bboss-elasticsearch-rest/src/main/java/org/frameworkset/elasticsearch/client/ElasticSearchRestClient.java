@@ -23,14 +23,16 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHost;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.HttpHostConnectException;
-import org.frameworkset.elasticsearch.*;
+import org.frameworkset.elasticsearch.ElasticSearch;
+import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -96,7 +98,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //		httpClient = new DefaultHttpClient();
 		this.elasticUser = elasticUser;
 		this.elasticPassword = elasticPassword;
-//		this.init();
 	}
 
 	public boolean containAddress(ESAddress address){
@@ -256,26 +257,26 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
+		ESAddress host = null;
+		String url = null;
 		while (true) {
 
-			ESAddress host = serversList.get();
-			String url = host.getAddress() + "/" + BULK_ENDPOINT;
+
 			try {
+				host = serversList.get();
+				url = host.getAddress() + "/" + BULK_ENDPOINT;
 				if(this.showTemplate && logger.isInfoEnabled()){
 					logger.info(entity);
 				}
 				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
-//				if (response != null) {
-//
-//					logger.info("Status message from elasticsearch: " + response);
-//
-//				}
+				e = null;
 				break;
 			} 
 			catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -286,6 +287,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             	host.setStatus(1);
             	if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -293,17 +295,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
-			catch (IOException ex) {
-				host.setStatus(1);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
-					triesCount++;
-					continue;
-				} else {
+//			catch (IOException ex) {
+//				host.setStatus(1);
+//				if (triesCount < serversList.size()) {//失败尝试下一个地址
+//					triesCount++;
+//					e = ex;
+//					continue;
+//				} else {
+//					e = ex;
+//					break;
+//				}
+//
+//            }
+			catch (NoServerElasticSearchException ex){
+				if(e == null){
 					e = ex;
-					break;
 				}
-                
-            }
+				else {
+					e = new ElasticSearchException(ex.getMessage(),e);
+				}
+				break;
+			}
 			catch (ElasticSearchException ex) {
 				e = ex;
 				break;
@@ -375,16 +387,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		T response = null;
 		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
-			logger.info("Elastic search action:{},request body:{}",path,entity);
+			if(entity != null)
+				logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			else
+				logger.info("Elastic search action:{}",path);
 		}
+		ESAddress host = null;
+		String url = null;
 		while (true) {
-
-			ESAddress host = serversList.get();
-			String url = getPath(host.getAddress(),path);
-//			path.equals("") || path.startsWith("/")?
-//					new StringBuilder().append(host.getAddress()).append(path).toString()
-//					:new StringBuilder().append(host.getAddress()).append("/").append(path).toString();
 			try {
+				host = serversList.get();
+				url = getPath(host.getAddress(),path);
 				if (entity == null){
 					if(action == null)				
 						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers, responseHandler);
@@ -410,16 +423,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					else
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 				}
-//				if (response != null) {
-//
-//					logger.info("Status message from elasticsearch: " + response);
-//
-//				}
+				e = null;
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -430,6 +440,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             	host.setStatus(1);
             	if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -437,17 +448,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
-			catch (IOException ex) {
-				host.setStatus(1);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
-					triesCount++;
-					continue;
-				} else {
+//			catch (IOException ex) {
+//				host.setStatus(1);
+//				if (triesCount < serversList.size()) {//失败尝试下一个地址
+//					triesCount++;
+//					e = ex;
+//					continue;
+//				} else {
+//					e = ex;
+//					break;
+//				}
+//
+//            }
+			catch (NoServerElasticSearchException ex){
+				if(e == null){
 					e = ex;
-					break;
 				}
-                
-            }
+				else {
+					e = new ElasticSearchException(ex.getMessage(),e);
+				}
+				break;
+			}
 			catch (ElasticSearchException ex) {
 				e = ex;
 				break;
@@ -460,9 +481,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				e = ex;
 				break;
 			}
-
-
-
 		}
 		if (e != null){
 			if(e instanceof ElasticSearchException)
@@ -489,23 +507,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		String response = null;
 		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
-			logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			if(entity != null)
+				logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			else
+				logger.info("Elastic search action:{}",path);
 		}
+		ESAddress host = null;
+		String url = null;
 		while (true) {
 
-			ESAddress host = serversList.get();
-			String url =  getPath(host.getAddress(),path);
-//					new StringBuilder().append(host.getAddress()).append("/").append(path).toString();
 			try {
+				host = serversList.get();
+				url =  getPath(host.getAddress(),path);
 				if (entity == null)
 					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
 				else
 					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
-//				if (response != null) {
-//					if(logger.isDebugEnabled())
-//						logger.debug("Status message from elasticsearch: {}", response);
-//
-//				}
+				e = null;
 				break;
 			} 
 			
@@ -513,6 +531,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -523,6 +542,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             	host.setStatus(1);
             	if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -530,17 +550,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
-			catch (IOException ex) {
-				host.setStatus(1);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
-					triesCount++;
-					continue;
-				} else {
+//			catch (IOException ex) {
+//				host.setStatus(1);
+//				if (triesCount < serversList.size()) {//失败尝试下一个地址
+//					triesCount++;
+//					e = ex;
+//					continue;
+//				} else {
+//					e = ex;
+//					break;
+//				}
+//
+//            }
+			catch (NoServerElasticSearchException ex){
+				if(e == null){
 					e = ex;
-					break;
 				}
-                
-            }
+				else {
+					e = new ElasticSearchException(ex.getMessage(),e);
+				}
+				break;
+			}
 			catch (ElasticSearchException ex) {
 				throw ex;
 			}
@@ -553,12 +583,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				e = ex;
 				break;
 			}
-
-
-
 		}
 		if (e != null){
-			
 			throw new ElasticSearchException(e);
 		}
 		return response;
@@ -579,19 +605,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		Throwable e = null;
 		if(this.showTemplate && logger.isInfoEnabled()){
-			logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			if(entity != null)
+				logger.info("Elastic search action:{},request body:\n{}",path,entity);
+			else
+				logger.info("Elastic search action:{}",path);
 		}
+		ESAddress host = null;
+		String url = null;
 		while (true) {
-
-			ESAddress host = serversList.get();
-//			String url = new StringBuilder().append(host.getAddress()).append("/").append(path).toString();
-			String url =  getPath(host.getAddress(),path);
 			try {
-//				if (entity == null)
-//					response = HttpRequestUtil.httpPostforString(url, null, this.headers,  responseHandler);
-//				else
-//					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers, responseHandler);
-
+				host = serversList.get();
+				url =  getPath(host.getAddress(),path);
 				if (entity == null){
 					if(action == null)
 						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,  responseHandler);
@@ -620,11 +644,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 
 				}
+				e = null;
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -635,6 +661,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             	host.setStatus(1);
             	if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
+					e = ex;
 					continue;
 				} else {
 					e = ex;
@@ -642,17 +669,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
-			catch (IOException ex) {
-				host.setStatus(1);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
-					triesCount++;
-					continue;
-				} else {
+//			catch (IOException ex) {
+//				host.setStatus(1);
+//				if (triesCount < serversList.size()) {//失败尝试下一个地址
+//					triesCount++;
+//					e = ex;
+//					continue;
+//				} else {
+//					e = ex;
+//					break;
+//				}
+//
+//            }
+            catch (NoServerElasticSearchException ex){
+				if(e == null){
 					e = ex;
-					break;
 				}
-                
-            }
+				else {
+					e = new ElasticSearchException(ex.getMessage(),e);
+				}
+				break;
+			}
 			catch (ElasticSearchException ex) {
 				throw ex;
 			}
