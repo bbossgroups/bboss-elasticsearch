@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class HostDiscover extends Thread{
 	private final JsonFactory jsonFactory;
-	private static Logger logger = LoggerFactory.getLogger(HealthCheck.class);
+	private static Logger logger = LoggerFactory.getLogger(HostDiscover.class);
 	private Scheme scheme = HostDiscover.Scheme.HTTP;
 	private long discoverInterval  = 10000l;
 	private ClientInterface clientInterface ;
@@ -62,8 +62,9 @@ public class HostDiscover extends Thread{
 		}
 		//处理新增节点
 		if(newAddress.size() > 0) {
-			if (logger.isInfoEnabled())
+			if (logger.isInfoEnabled()) {
 				logger.info(new StringBuilder().append("Discovery new elasticsearch server[").append(newAddress).append("].").toString());
+			}
 			elasticSearchRestClient.addAddresses(newAddress);
 		}
 		//处理删除节点

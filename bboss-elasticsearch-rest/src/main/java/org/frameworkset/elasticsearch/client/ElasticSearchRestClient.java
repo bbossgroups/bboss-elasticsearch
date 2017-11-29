@@ -123,10 +123,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
 				if (!exist) {
 					address.setStatus(2);
+					if(logger.isInfoEnabled()){
+						logger.info("ElasticSearch Node["+address.toString()+"] is down.");
+					}
 				}
 			}
 			else {
 				address.setStatus(2);
+				if(logger.isInfoEnabled()){
+					logger.info("ElasticSearch Node["+address.toString()+"] is down.");
+				}
 			}
 
 		}
@@ -140,7 +146,25 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		for(ESAddress host:address){
 			addressMap.put(host.getAddress(),host);
 		}
+		if(logger.isInfoEnabled()){
+			StringBuilder info = new StringBuilder();
+			info.append("All Live ElasticSearch Server:");
+			Iterator<Map.Entry<String, ESAddress>> iterator = this.addressMap.entrySet().iterator();
+			boolean firsted = true;
+			while(iterator.hasNext()){
+				Map.Entry<String, ESAddress> esAddressEntry = iterator.next();
+				String host = esAddressEntry.getKey();
 
+				if(firsted){
+					info.append(host);
+					firsted = false;
+				}
+				else{
+					info.append(",").append(host);
+				}
+			}
+			logger.info(info.toString());
+		}
 	}
 
 
