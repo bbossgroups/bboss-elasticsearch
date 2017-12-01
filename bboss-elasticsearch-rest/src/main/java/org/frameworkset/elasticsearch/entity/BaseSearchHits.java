@@ -7,7 +7,7 @@ import java.io.Serializable;
 public abstract class BaseSearchHits implements Serializable {
 	private long total;
 	@JsonProperty("max_score")
-	private Long maxScore;
+	private Double maxScore;
 
 	public BaseSearchHits() {
 		// TODO Auto-generated constructor stub
@@ -18,10 +18,10 @@ public abstract class BaseSearchHits implements Serializable {
 	public void setTotal(long total) {
 		this.total = total;
 	}
-	public Long getMaxScore() {
+	public Double getMaxScore() {
 		return maxScore;
 	}
-	public void setMaxScore(Long maxScore) {
+	public void setMaxScore(Double maxScore) {
 		this.maxScore = maxScore;
 	}
 }

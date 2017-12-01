@@ -7,10 +7,14 @@ public class ESTypeReferences<HIT,AGG> extends ESClass implements Comparable<EST
 //	private static String type2 = "com.fasterxml.jackson.core.type.TypeReference";
 //	private static String type1 = "org.codehaus.jackson.type.TypeReference";
 	 protected  Type hitType; 
-	 protected  Type aggType; 
+	 protected  Type aggType;
 
 
-	
+
+	protected  Type innerHitType;
+
+
+
 	public ESTypeReferences()
 	{
 		Type superClass = getClass().getGenericSuperclass();
@@ -55,11 +59,5 @@ public class ESTypeReferences<HIT,AGG> extends ESClass implements Comparable<EST
 
 
 
-
-
-
-
-
- 
 
 }

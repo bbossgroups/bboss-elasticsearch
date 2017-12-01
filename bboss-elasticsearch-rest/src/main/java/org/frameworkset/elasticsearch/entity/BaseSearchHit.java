@@ -14,13 +14,33 @@ public class BaseSearchHit implements Serializable {
 	@JsonProperty("_id")
 	private String  id;
 	@JsonProperty("_score")
-	private int  score;
+	private Double  score;
 	private Map<String,List<Object>> fields;
 	@JsonProperty("_version")
 	private int version;
+	@JsonProperty("_routing")
+	private Object routing;
+	@JsonProperty("_parent")
+	private Object parent;
 	private boolean found;
 	private Map<String,List<Object>> highlight;
 	private Object[] sort;
+
+	public Object getRouting() {
+		return routing;
+	}
+
+	public void setRouting(Object routing) {
+		this.routing = routing;
+	}
+
+	public Object getParent() {
+		return parent;
+	}
+
+	public void setParent(Object parent) {
+		this.parent = parent;
+	}
 
 	public String getIndex() {
 		return index;
@@ -40,10 +60,10 @@ public class BaseSearchHit implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public int getScore() {
+	public Double getScore() {
 		return score;
 	}
-	public void setScore(int score) {
+	public void setScore(Double score) {
 		this.score = score;
 	}
 

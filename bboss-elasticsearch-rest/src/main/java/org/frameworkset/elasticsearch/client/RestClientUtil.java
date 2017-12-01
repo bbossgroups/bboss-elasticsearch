@@ -763,26 +763,58 @@ public class RestClientUtil extends ClientUtil{
 		RestResponse restResponse = (RestResponse)result;
 		datas.setTotalSize(restResponse.getSearchHits().getTotal());
 		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
-		List<T> hits = new ArrayList<T>(searchHits.size());
-		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
-		boolean isESId = false;
-		if(!isESBaseData){
-			isESId = ESId.class.isAssignableFrom(type);
-		}
-		T data = null;
-		for(SearchHit hit:searchHits){
-			data = (T) hit.getSource();
-			hits.add(data);
-			if(isESBaseData) {
-				buildESBaseData(  hit,  (ESBaseData)data);
+		if(SearchHit.class.isAssignableFrom(type)){
+
+			datas.setAggregations(restResponse.getAggregations());
+			if(searchHits != null && searchHits.size() > 0) {
+				Object obj = searchHits.get(0).getSource();
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(obj.getClass());
+				boolean isESId = false;
+				if (!isESBaseData) {
+					isESId = ESId.class.isAssignableFrom(obj.getClass());
+				}
+
+				for (int i = 0; i < searchHits.size(); i++) {
+					SearchHit hit = searchHits.get(i);
+					if(isESBaseData || isESId) {
+						//处理源对象
+						Object data = hit.getSource();
+						if (data != null) {
+							injectBaseData(data, hit, isESBaseData, isESId);
+						}
+					}
+					//处理InnerHit对象
+					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+					if (innerHits != null && innerHits.size() > 0) {
+						injectInnerHitBaseData(innerHits);
+					}
+				}
 			}
-			else if(isESId)
-			{
-				buildESId(hit,(ESId )data);
-			}
+			datas.setDatas((List<T>) searchHits);
 		}
-		datas.setAggregations(restResponse.getAggregations());
-		datas.setDatas(hits);
+		else{
+			List<T> hits = new ArrayList<T>(searchHits.size());
+			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+			boolean isESId = false;
+			if(!isESBaseData){
+				isESId = ESId.class.isAssignableFrom(type);
+			}
+			T data = null;
+			for(SearchHit hit:searchHits){
+				data = (T) hit.getSource();
+				hits.add(data);
+				if(isESBaseData) {
+					buildESBaseData(  hit,  (ESBaseData)data);
+				}
+				else if(isESId)
+				{
+					buildESId(hit,(ESId )data);
+				}
+			}
+			datas.setAggregations(restResponse.getAggregations());
+			datas.setDatas(hits);
+		}
+
 		return datas;
 	}
 	public <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
@@ -803,7 +835,7 @@ public class RestClientUtil extends ClientUtil{
 	public <T> T searchObject(String path, String templateName, Object params,Class<T> type) throws ElasticSearchException {
 	 	return null;
 	}
-	protected void buildESBaseData(SearchHit hit,ESBaseData esBaseData){
+	protected void buildESBaseData(BaseSearchHit hit,ESBaseData esBaseData){
 		esBaseData.setFields(hit.getFields());
 		esBaseData.setHighlight( hit.getHighlight());
 		esBaseData.setId(hit.getId());
@@ -813,34 +845,94 @@ public class RestClientUtil extends ClientUtil{
 		esBaseData.setVersion(hit.getVersion());
 		esBaseData.setIndex(hit.getIndex());
 	}
-	protected void buildESId(SearchHit hit,ESId esBaseData){
+	protected void buildESId(BaseSearchHit hit,ESId esBaseData){
 
 		esBaseData.setId(hit.getId());
+
+	}
+	protected void injectBaseData(Object data,BaseSearchHit hit,boolean isESBaseData,boolean isESId){
+
+		if (isESBaseData) {
+			buildESBaseData(hit, (ESBaseData) data);
+		} else if (isESId) {
+			buildESId(hit, (ESId) data);
+		}
+	}
+
+	protected void injectInnerHitBaseData(Map<String, Map<String,InnerSearchHits>> innerHits){
+		Iterator<Map.Entry<String, Map<String, InnerSearchHits>>> iterator = innerHits.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String, Map<String, InnerSearchHits>> entry = iterator.next();
+			Map<String, InnerSearchHits> value = entry.getValue();
+			InnerSearchHits hitsEntryValue = value.get("hits");
+			if(hitsEntryValue != null){
+				List<InnerSearchHit> innerSearchHits = hitsEntryValue.getHits();
+				if(innerSearchHits != null && innerSearchHits.size() > 0){
+					Object source = innerSearchHits.get(0).getSource();
+					boolean isESBaseData = ESBaseData.class.isAssignableFrom(source.getClass());
+					boolean isESId = false;
+					if(!isESBaseData){
+						isESId = ESId.class.isAssignableFrom(source.getClass());
+					}
+					if(isESBaseData || isESId) {
+						for (int i = 0; i < innerSearchHits.size(); i++) {
+							InnerSearchHit innerSearchHit = innerSearchHits.get(i);
+							source = innerSearchHit.getSource();
+							if (source != null) {
+								injectBaseData(source, innerSearchHit, isESBaseData, isESId);
+							}
+						}
+					}
+				}
+			}
+
+		}
 
 	}
 	protected <T> T buildObject(RestResponse result, Class<T> type){
 		if(result == null){
 			return null;
 		}
-
 		RestResponse restResponse = (RestResponse) result;
 		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
 		if (searchHits != null && searchHits.size() > 0) {
-			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
-			boolean isESId = false;
-			if(!isESBaseData){
-				isESId = ESId.class.isAssignableFrom(type);
-			}
 			SearchHit hit = searchHits.get(0);
-			T data = (T) hit.getSource();
-			if (isESBaseData) {
-				buildESBaseData(hit, (ESBaseData) data);
+			if(SearchHit.class.isAssignableFrom(type)){
+				//处理源对象
+				Object data =  hit.getSource();
+				if(data != null) {
+
+					boolean isESBaseData = ESBaseData.class.isAssignableFrom(data.getClass());
+					boolean isESId = false;
+					if(!isESBaseData){
+						isESId = ESId.class.isAssignableFrom(data.getClass());
+					}
+					injectBaseData(data,hit,isESBaseData,isESId);
+				}
+				//处理InnerHit对象
+				Map<String, Map<String,InnerSearchHits>> innerHits = hit.getInnerHits();
+				if(innerHits != null && innerHits.size() > 0){
+					injectInnerHitBaseData(innerHits);
+				}
+				return (T)hit;
 			}
-			else if(isESId)
-			{
-				buildESId(hit,(ESId )data);
+			else{
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+				boolean isESId = false;
+				if(!isESBaseData){
+					isESId = ESId.class.isAssignableFrom(type);
+				}
+				T data = (T) hit.getSource();
+				if (isESBaseData) {
+					buildESBaseData(hit, (ESBaseData) data);
+				}
+				else if(isESId)
+				{
+					buildESId(hit,(ESId )data);
+				}
+				return data;
 			}
-			return data;
+
 		}
 		return null;
 
@@ -852,12 +944,30 @@ public class RestClientUtil extends ClientUtil{
 		if(result == null){
 			return null;
 		}
+		if(SearchHit.class.isAssignableFrom(type)){
+			//处理源对象
+			Object data =  result.getSource();
+			if(data != null) {
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(data.getClass());
+				boolean isESId = false;
+				if(!isESBaseData){
+					isESId = ESId.class.isAssignableFrom(data.getClass());
+				}
+				injectBaseData(data,result,isESBaseData,isESId);
+			}
+			//处理InnerHit对象
+			Map<String, Map<String,InnerSearchHits>> innerHits = result.getInnerHits();
+			if(innerHits != null && innerHits.size() > 0){
+				injectInnerHitBaseData(innerHits);
+			}
+			return (T)result;
+		}
 		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 		boolean isESId = false;
 		if(!isESBaseData){
 			isESId = ESId.class.isAssignableFrom(type);
 		}
-		SearchHit hit = (SearchHit)result;
+		SearchHit hit = result;
 		if(hit.isFound()) {
 			T data = (T) hit.getSource();
 			if (isESBaseData) {

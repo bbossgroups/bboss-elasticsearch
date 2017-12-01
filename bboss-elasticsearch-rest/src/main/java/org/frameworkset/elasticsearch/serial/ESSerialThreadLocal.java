@@ -14,11 +14,19 @@ public abstract class ESSerialThreadLocal {
 	}
 	
 	public static void setESTypeReferences(ESClass refs){
-		typeLocals.set(refs);
+		if(typeLocals.get() == null)
+			typeLocals.set(refs);
+	}
+
+	public static void setESTypeReferences(Class<?> refs){
+		typeLocals.set(new ESClassType(refs));
 	}
 	public static ESClass getESTypeReferences(){
 		return typeLocals.get();
 	}
+
+
+
 	public static void clean(){
 		typeLocals.set(null);
 	}
