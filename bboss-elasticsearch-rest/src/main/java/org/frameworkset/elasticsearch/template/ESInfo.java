@@ -79,9 +79,9 @@ public class ESInfo {
 	{
 		return this.esUtil != null && this.esUtil.fromConfig();
 	}
-	public int compareTo(ESInfo sql)
+	public int compareTo(ESInfo queryDSL)
 	{
-		return this.template.compareTo(sql.getTemplate());
+		return this.template.compareTo(queryDSL.getTemplate());
 	}
 	
 	public ESInfo getESInfo(String sqlname)
@@ -89,7 +89,7 @@ public class ESInfo {
 		return this.esUtil.getESInfo( sqlname);
 	}
 	
-	public String getPlainSQL(String sqlname)
+	public String getPlainQueryDSL(String sqlname)
 	{
 		return this.esUtil.getPlainTemplate( sqlname);
 	}
