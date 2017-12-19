@@ -39,6 +39,18 @@ public class ESDatas<T> implements Serializable {
 	public Map<String, Map<String,Object>> getAggregations() {
 		return aggregations;
 	}
+	public List<Map<String, Object>> getAggregationBuckets(String buckets) {
+		if(aggregations != null && aggregations.size() > 0) {
+			Map<String,Object> temp = aggregations.get(buckets);
+			if(temp != null){
+				return (List<Map<String, Object>>)temp.get("buckets");
+			}
+		}
+		return null;
+	}
+
+
+
 
 	public void setAggregations(Map<String, Map<String,Object>> aggregations) {
 		this.aggregations = aggregations;
