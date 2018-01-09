@@ -18,32 +18,21 @@
  */
 package org.frameworkset.elasticsearch;
 
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.BATCH_SIZE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_NAME;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_NAME_BUILDER_CLASS;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_TYPE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_TTL;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME_BUILDER;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.INDEX_TYPE;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.REST_HOSTNAMES;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.SERIALIZER;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.TTL;
-import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.TTL_REGEX;
+import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ElasticSearchClient;
+import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
+import org.frameworkset.spi.support.ApplicationObjectSupport;
+import org.frameworkset.util.FastDateFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.ElasticSearchClient;
-import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
-import org.frameworkset.spi.support.ApplicationObjectSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.frameworkset.util.SimpleStringUtil;
+import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.*;
 
 /**
  * A sink which reads events from a channel and writes them to ElasticSearch
@@ -101,6 +90,10 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	
 	String[] getRestServerAddresses() {
 		return restServerAddresses;
+	}
+
+	public FastDateFormat getIndexDateFormat(){
+		return this.indexNameBuilder.getFastDateFormat();
 	}
 
 	

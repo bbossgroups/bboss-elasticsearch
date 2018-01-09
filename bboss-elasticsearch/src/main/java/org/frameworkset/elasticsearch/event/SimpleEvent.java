@@ -19,13 +19,14 @@
 
 package org.frameworkset.elasticsearch.event;
 
-import java.util.HashMap;
-
 import org.elasticsearch.common.xcontent.XContentType;
+
+import java.util.HashMap;
 
 public class SimpleEvent  extends BaseEvent implements Event {
   private XContentType xcontentType;
   private Object body;
+
    
   public SimpleEvent(Object body) {
     headers = new HashMap<String, String>();

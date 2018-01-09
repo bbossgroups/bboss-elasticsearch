@@ -18,16 +18,15 @@
  */
 package org.frameworkset.elasticsearch;
 
-import java.util.Map;
-
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.event.SimpleEvent;
 import org.joda.time.DateTimeUtils;
 
-import com.frameworkset.util.SimpleStringUtil;
+import java.util.Map;
 
 /**
- * {@link org.apache.flume.Event} implementation that has a timestamp.
+ * {@link Event} implementation that has a timestamp.
  * The timestamp is taken from (in order of precedence):<ol>
  * <li>The "timestamp" header of the base event, if present</li>
  * <li>The "@timestamp" header of the base event, if present</li>
@@ -36,12 +35,12 @@ import com.frameworkset.util.SimpleStringUtil;
  */
 final class TimestampedEvent extends SimpleEvent {
 
-  private final long timestamp;
+
 
   TimestampedEvent(Event base) {
 	  super(base);
 //    setBody(base.getBody());
-	
+
     Map<String, String> headers =base.getHeaders();
     String timestampString = headers != null ?headers.get("timestamp"):null;
     if (SimpleStringUtil.isEmpty(timestampString)) {
@@ -56,7 +55,5 @@ final class TimestampedEvent extends SimpleEvent {
     setHeaders(headers);
   }
 
-  long getTimestamp() {
-    return timestamp;
-  }
+
 }

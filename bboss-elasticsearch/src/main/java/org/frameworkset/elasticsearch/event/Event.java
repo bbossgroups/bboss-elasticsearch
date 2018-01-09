@@ -38,4 +38,8 @@ public interface Event {
 	  public String getId();
 	  public XContentType getXContentType();
 	  public void setXContentType(XContentType xcontentType);
+	  public String getIndexTimestamp();
+	  public long getTimestamp();
+	public void setTimestamp(long timestamp);
+	public void setIndexTimestamp(String indexTimestamp);
 }

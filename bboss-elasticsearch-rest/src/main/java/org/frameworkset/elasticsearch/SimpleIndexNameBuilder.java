@@ -17,6 +17,8 @@
 package org.frameworkset.elasticsearch;
 
 
+import org.frameworkset.util.FastDateFormat;
+
 import java.util.Properties;
 
 public class SimpleIndexNameBuilder implements IndexNameBuilder {
@@ -29,7 +31,12 @@ public class SimpleIndexNameBuilder implements IndexNameBuilder {
     indexName = elasticsearchPropes.getProperty(ElasticSearchSinkConstants.INDEX_NAME);
   }
 
-@Override
+  @Override
+  public FastDateFormat getFastDateFormat() {
+    return null;
+  }
+
+  @Override
 public String getIndexName(String index) {
 	// TODO Auto-generated method stub
 	return index;

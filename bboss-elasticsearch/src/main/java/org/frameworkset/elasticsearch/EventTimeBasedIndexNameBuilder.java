@@ -18,15 +18,9 @@
  */
 package org.frameworkset.elasticsearch;
 
-import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.event.Event;
-import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
-import java.util.Properties;
-import java.util.TimeZone;
 
 /**
  * Default index name builder. It prepares name of index using configured
@@ -48,13 +42,24 @@ public class EventTimeBasedIndexNameBuilder extends TimeBasedIndexNameBuilder im
    */
   @Override
   public  String getIndexName(Event event) {
-    TimestampedEvent timestampedEvent = new TimestampedEvent(event);
-    long timestamp = timestampedEvent.getTimestamp();
-    String realIndexPrefix = BucketPath.escapeString(event.getIndexPrefix() != null?event.getIndexPrefix():indexPrefix, event.getHeaders());
-    String indexName = new StringBuilder(realIndexPrefix).append('-')
-      .append(fastDateFormat.format(timestamp)).toString();
-    logger.debug("Index Name = "+indexName);
-    return indexName;
+    String realIndexPrefix = BucketPath.escapeString(event.getIndexPrefix() != null ? event.getIndexPrefix() : indexPrefix, event.getHeaders());
+    if(event.getIndexTimestamp() != null){
+
+      String indexName = new StringBuilder(realIndexPrefix).append('-')
+              .append(event.getIndexTimestamp()).toString();
+      if(logger.isDebugEnabled())
+        logger.debug("Index Name = " + indexName);
+      return indexName;
+    }
+    else {
+      TimestampedEvent timestampedEvent = new TimestampedEvent(event);
+      long timestamp = timestampedEvent.getTimestamp();
+      String indexName = new StringBuilder(realIndexPrefix).append('-')
+              .append(fastDateFormat.format(timestamp)).toString();
+      if(logger.isDebugEnabled())
+        logger.debug("Index Name = " + indexName);
+      return indexName;
+    }
   }
  
 

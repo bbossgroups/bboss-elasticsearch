@@ -8,6 +8,8 @@ public class BaseEvent {
 	protected Long TTL;
 	protected String indexType;
 	protected String indexPrefix;
+	protected long timestamp;
+	protected String indexTimestamp;
 	public BaseEvent() {
 		// TODO Auto-generated constructor stub
 	}
@@ -16,12 +18,28 @@ public class BaseEvent {
 	    return headers;
 	  }
 
-	  
-	  public void setHeaders(Map<String, String> headers) {
+
+	public String getIndexTimestamp() {
+		return indexTimestamp;
+	}
+
+	public void setIndexTimestamp(String indexTimestamp) {
+		this.indexTimestamp = indexTimestamp;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
 	    this.headers = headers;
 	  }
 
-		public String getIndexType() {
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public String getIndexType() {
 			return indexType;
 		}
 		
