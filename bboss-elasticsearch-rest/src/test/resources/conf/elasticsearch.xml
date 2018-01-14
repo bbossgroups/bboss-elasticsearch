@@ -58,7 +58,11 @@
 				<description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
 			</property>
 			<property name="elasticsearch.loglevel" value="${elasticsearch.loglevel:INFO}">
-				<description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
+				<description> <![CDATA[ #enable query dsl debug into logfiles
+					elasticsearch.showTemplate=true
+					elasticsearch.loglevel=INFO
+					与log4j相结合输出客户端的调试日志，通过elasticsearch.loglevel控制es的输出日志的级别
+					]]></description>
 			</property>
 			
 		</propes>
