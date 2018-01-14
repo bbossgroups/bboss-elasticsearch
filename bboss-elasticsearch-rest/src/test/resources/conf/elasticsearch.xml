@@ -57,6 +57,10 @@
 			<property name="elasticsearch.discoverHost" value="${elasticsearch.discoverHost:false}">
 				<description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
 			</property>
+			<property name="elasticsearch.loglevel" value="${elasticsearch.loglevel:INFO}">
+				<description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
+			</property>
+			
 		</propes>
 	</property>
 	<property name="elasticSearch"

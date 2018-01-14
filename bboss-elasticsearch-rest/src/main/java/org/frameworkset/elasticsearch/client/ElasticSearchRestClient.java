@@ -62,6 +62,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //	private HttpClient httpClient;
 	protected Map<String, String> headers = new HashMap<>();
 	protected boolean showTemplate = false;
+	protected int loglevel = loglevel_info;
+	protected static final int loglevel_debug = 1;
+	protected static final int loglevel_info = 2;
+	protected static final int loglevel_warn = 3;
+	protected static final int loglevel_error = 4;
 	protected List<ESAddress> addressList;
  
 	protected FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy.MM.dd",
@@ -215,6 +220,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    String timeZoneString = elasticsearchPropes.getProperty(TimeBasedIndexNameBuilder.TIME_ZONE);
 	    
 	    String showTemplate_ = elasticsearchPropes.getProperty("elasticsearch.showTemplate");
+		String loglevel_ = elasticsearchPropes.getProperty("elasticsearch.loglevel");
 	    String httpPool = elasticsearchPropes.getProperty("elasticsearch.httpPool");
 	    if(httpPool == null || httpPool.equals("")){
 			httpPool = "default";
@@ -222,6 +228,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    if(showTemplate_ != null && showTemplate_.equals("true")){
 	    	this.showTemplate = true;
 	    }
+		if(loglevel_ != null && !loglevel_.trim().equals("")){
+			loglevel = loglevel_debug;
+			if(loglevel_.equals("DEBUG"))
+				loglevel = loglevel_debug;
+			else if(loglevel_.equals("INFO"))
+				loglevel = loglevel_info;
+			else if(loglevel_.equals("WARN"))
+				loglevel = loglevel_warn;
+			else if(loglevel_.equals("ERROR"))
+				loglevel = loglevel_error;
+
+		}
 	    if (SimpleStringUtil.isEmpty(dateFormatString)) {
 	      dateFormatString = TimeBasedIndexNameBuilder.DEFAULT_DATE_FORMAT;
 	    }
@@ -277,6 +295,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //    }
 //  }
 
+
 	public String execute(String entity) throws ElasticSearchException {
 		int triesCount = 0;
 		String response = null;
@@ -289,8 +308,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url = host.getAddress() + "/" + BULK_ENDPOINT;
-				if(this.showTemplate && logger.isInfoEnabled()){
-					logger.info(entity);
+				if(this.showTemplate ){
+					if(loglevel == this.loglevel_debug && logger.isDebugEnabled())
+						logger.debug(entity);
+					else if(loglevel == this.loglevel_info && logger.isInfoEnabled())
+						logger.info(entity);
+					else if(loglevel == this.loglevel_warn && logger.isWarnEnabled())
+						logger.warn(entity);
+					else if(loglevel == this.loglevel_error && logger.isErrorEnabled())
+						logger.error(entity);
 				}
 				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
 				e = null;
@@ -410,11 +436,32 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		T response = null;
 		Throwable e = null;
-		if(this.showTemplate && logger.isInfoEnabled()){
-			if(entity != null)
-				logger.info("Elastic search action:{},request body:\n{}",path,entity);
-			else
-				logger.info("Elastic search action:{}",path);
+		if(this.showTemplate ){
+			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
+				if (entity != null)
+					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+				else
+					logger.debug("Elastic search action:{}", path);
+			}
+			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
+				if(entity != null)
+					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.info("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
+				if(entity != null)
+					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.warn("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
+				if(entity != null)
+					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.error("Elastic search action:{}",path);
+			}
+
 		}
 		ESAddress host = null;
 		String url = null;
@@ -530,11 +577,32 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
-		if(this.showTemplate && logger.isInfoEnabled()){
-			if(entity != null)
-				logger.info("Elastic search action:{},request body:\n{}",path,entity);
-			else
-				logger.info("Elastic search action:{}",path);
+		if(this.showTemplate ){
+			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
+				if (entity != null)
+					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+				else
+					logger.debug("Elastic search action:{}", path);
+			}
+			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
+				if(entity != null)
+					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.info("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
+				if(entity != null)
+					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.warn("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
+				if(entity != null)
+					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.error("Elastic search action:{}",path);
+			}
+
 		}
 		ESAddress host = null;
 		String url = null;
@@ -628,11 +696,32 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		T response = null;
 		int triesCount = 0;
 		Throwable e = null;
-		if(this.showTemplate && logger.isInfoEnabled()){
-			if(entity != null)
-				logger.info("Elastic search action:{},request body:\n{}",path,entity);
-			else
-				logger.info("Elastic search action:{}",path);
+		if(this.showTemplate  ){
+			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
+				if (entity != null)
+					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+				else
+					logger.debug("Elastic search action:{}", path);
+			}
+			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
+				if(entity != null)
+					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.info("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
+				if(entity != null)
+					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.warn("Elastic search action:{}",path);
+			}
+			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
+				if(entity != null)
+					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+				else
+					logger.error("Elastic search action:{}",path);
+			}
+
 		}
 		ESAddress host = null;
 		String url = null;
