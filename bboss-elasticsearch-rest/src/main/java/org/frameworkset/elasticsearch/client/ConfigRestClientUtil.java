@@ -1,7 +1,5 @@
 package org.frameworkset.elasticsearch.client;
 
-import bboss.org.apache.velocity.VelocityContext;
-import com.frameworkset.util.VariableHandler;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
@@ -9,10 +7,8 @@ import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
-import org.frameworkset.elasticsearch.template.ESInfo;
-import org.frameworkset.elasticsearch.template.ESTemplate;
+import org.frameworkset.elasticsearch.template.ESTemplateHelper;
 import org.frameworkset.elasticsearch.template.ESUtil;
-import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +104,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
-			evalBuilkTemplate(builder,indexName,indexType,addTemplate,bean,"index");
+			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,addTemplate,bean,"index");
 		}
 		if(refreshOption == null)
 			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
@@ -131,14 +127,14 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
-			evalBuilkTemplate(builder,indexName,indexType,updateTemplate,bean,"update");
+			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,updateTemplate,bean,"update");
 		}
 		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
-			evalBuilkTemplate(builder,indexName,indexType,updateTemplate,bean,"update");
+			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,updateTemplate,bean,"update");
 		}
 		return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
@@ -196,7 +192,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		}
 		String path = builder.toString();
 		builder.setLength(0);
-		path = this.client.executeHttp(path,this.evalDocumentTemplate(builder,indexType,indexName,addTemplate,bean,"create"),ClientUtil.HTTP_POST);
+		path = this.client.executeHttp(path,ESTemplateHelper.evalDocumentTemplate(esUtil,builder,indexType,indexName,addTemplate,bean,"create"),ClientUtil.HTTP_POST);
 		builder = null;
 		return path;
 	}
@@ -219,257 +215,32 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 
-	private String evalTemplate(String templateName, Map params)  {
-
-		ESInfo esInfo = esUtil.getESInfo(templateName);
-		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null || params.size() == 0)
-			return esInfo.getTemplate();
-		String template = null;
-		if (esInfo.isTpl()) {
-			ESTemplate esTemplate = esInfo.getEstpl();
-			esTemplate.process();//识别sql语句是不是真正的velocity sql模板
-			if (esInfo.isTpl()) {
-				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
-
-				BBossStringWriter sw = new BBossStringWriter();
-				esTemplate.merge(vcontext, sw);
-//				template = sw.toString();
-				StringBuilder builder = new StringBuilder();
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,false);
-			} else {
-//				template = esInfo.getTemplate();
-				StringBuilder builder = new StringBuilder();
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,true);
-			}
-
-		} else {
-//			template = esInfo.getTemplate();
-			StringBuilder builder = new StringBuilder();
-			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null,true);
-		}
-
-		return template;
-		//return templateName;
-	}
-
-	private String evalTemplate(String templateName, Object params) {
-
-		ESInfo esInfo = esUtil.getESInfo(templateName);
-		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null)
-			return esInfo.getTemplate();
-		String template = null;
-		if (esInfo.isTpl()) {
-			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
-			if (esInfo.isTpl()) {
-				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
-
-				BBossStringWriter sw = new BBossStringWriter();
-				esInfo.getEstpl().merge(vcontext, sw);
-
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				StringBuilder builder = new StringBuilder();
-				template = this.evalDocumentStruction( builder,  struction ,  vcontext.getContext(),  templateName,  null,false);
-			} else {
-//				template = esInfo.getTemplate();
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				StringBuilder builder = new StringBuilder();
-				template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-			}
-
-		} else {
-//			template = esInfo.getTemplate();
-			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			StringBuilder builder = new StringBuilder();
-			template = evalDocumentStruction(  builder,  struction ,  params,  templateName,  null);
-//			template = builder.toString();
-		}
-
-		return template;
-		//return templateName;
-	}
-
-
-
-	private void evalBuilkTemplate(StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action) {
-
-		ESInfo esInfo = esUtil.getESInfo(templateName);
-		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null) {
-			buildMeta(  builder ,  indexType,  indexName,   params,action);
-			if(!action.equals("update"))
-				builder.append(esInfo.getTemplate()).append("\n");
-			else
-			{
-				builder.append("{\"doc\":").append(esInfo.getTemplate()).append("}\n");
-			}
-		}
-		if (esInfo.isTpl()) {
-			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
-
-			if (esInfo.isTpl()) {
-				buildMeta(  builder ,  indexType,  indexName,   params,action);
-				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
-				BBossStringWriter sw = new BBossStringWriter();
-				esInfo.getEstpl().merge(vcontext, sw);
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				evalStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
-			} else {
-				buildMeta(  builder ,  indexType,  indexName,   params,action);
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				evalStruction(  builder,  struction ,  params,  templateName,  action);
-			}
-
-		} else {
-			buildMeta(  builder ,  indexType,  indexName,   params,action);
-			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			evalStruction(  builder,  struction ,  params,  templateName,  action);
-		}
-
-		//return templateName;
-	}
-
-	private String evalDocumentTemplate(StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action) {
-
-		ESInfo esInfo = esUtil.getESInfo(templateName);
-		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + this.esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null) {
-			return esInfo.getTemplate();
-		}
-		if (esInfo.isTpl()) {
-			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
-
-			if (esInfo.isTpl()) {
-
-				VelocityContext vcontext = this.esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
-				BBossStringWriter sw = new BBossStringWriter(builder);
-				esInfo.getEstpl().merge(vcontext, sw);
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				builder.setLength(0);
-				return evalDocumentStruction(  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
-			} else {
-
-				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				return evalDocumentStruction(  builder,  struction ,  params,  templateName,  action);
-			}
-
-		} else {
-			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			return evalDocumentStruction(  builder,  struction ,  params,  templateName,  action);
-		}
-
-		//return templateName;
-	}
-
-	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
-		if(!struction.hasVars()) {
-			if(!action.equals("update"))
-				builder.append(struction.getUrl()).append("\n");
-			else
-			{
-				builder.append("{\"doc\":").append(struction.getUrl()).append("}\n");
-			}
-		}
-		else
-		{
-			if(!action.equals("update")) {
-				this.esUtil.evalStruction(builder,struction,params,templateName);
-				builder.append("\n");
-			}
-			else
-			{
-				builder.append("{\"doc\":");
-				this.esUtil.evalStruction(builder,struction,params,templateName);
-				builder.append("}\n");
-			}
-
-		}
-	}
-	private void evalStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
-		if(!struction.hasVars()) {
-			if(!action.equals("update"))
-				builder.append(struction.getUrl()).append("\n");
-			else
-			{
-				builder.append("{\"doc\":").append(struction.getUrl()).append("}\n");
-			}
-		}
-		else
-		{
-			if(!action.equals("update")) {
-				this.esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
-				builder.append("\n");
-			}
-			else
-			{
-				builder.append("{\"doc\":");
-				this.esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
-				builder.append("}\n");
-			}
-
-		}
-	}
-
-	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
-		if(!struction.hasVars()) {
-
-				return struction.getUrl();
-
-		}
-		else
-		{
-			this.esUtil.evalStruction(builder,struction,params,templateName, escapeValue);
-			return builder.toString();
-		}
-	}
-	private String evalDocumentStruction(StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
-		if(!struction.hasVars()) {
-
-			return struction.getUrl();
-
-		}
-		else
-		{
-			this.esUtil.evalStruction(builder,struction,params,templateName);
-			return builder.toString();
-		}
-	}
-
-
 	@Override
 	public String executeRequest(String path, String templateName) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return super.executeRequest(path, evalTemplate(templateName, (Map) null));
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Map) null));
 	}
 
 	@Override
 	public String executeRequest(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return super.executeRequest(path, evalTemplate(templateName, params));
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
 	}
 
 	@Override
 	public String executeRequest(String path, String templateName, Object params) throws ElasticSearchException {
 		// TODO Auto-generated method stub
-		return super.executeRequest(path, evalTemplate(templateName, params));
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
 	}
 
 	public <T> T executeRequest(String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return super.executeRequest(  path, evalTemplate(templateName, params),   responseHandler);
+		return super.executeRequest(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params),   responseHandler);
 //		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
 
 
 	public <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return super.executeRequest(  path, evalTemplate(templateName, params), responseHandler);
+		return super.executeRequest(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), responseHandler);
 //		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
 
@@ -483,7 +254,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public String executeHttp(String path, String templateName, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 //		return this.client.executeHttp(path, evalTemplate(templateName, (Object) null),action);
-		return super.executeHttp(  path, evalTemplate(templateName, (Object) null),   action);
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null),   action);
 	}
 
 
@@ -498,7 +269,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  executeHttp(String path, String templateName,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return super.executeHttp(  path, evalTemplate(templateName, params),   action,responseHandler);
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params),   action,responseHandler);
 	}
 
 	/**
@@ -510,7 +281,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String executeHttp(String path, String templateName,Map params, String action) throws ElasticSearchException{
-		return super.executeHttp(  path, evalTemplate(templateName, params),   action);
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params),   action);
 	}
 	/**
 	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
@@ -523,7 +294,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  executeHttp(String path, String templateName,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return super.executeHttp(  path, evalTemplate(templateName, bean),   action,responseHandler);
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, bean),   action,responseHandler);
 	}
 
 	/**
@@ -535,7 +306,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String executeHttp(String path, String templateName,Object bean, String action) throws ElasticSearchException{
-		return super.executeHttp(  path, evalTemplate(templateName, bean),   action);
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, bean),   action);
 	}
 
 
@@ -543,81 +314,81 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public <T> T executeRequest(String path, String templateName, ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 //		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
-		return super.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), responseHandler);
 	}
 
 	@Override
 	public MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
-		return super.search(path, evalTemplate(templateName, params));
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
 	}
 
 	@Override
 	public MapRestResponse search(String path, String templateName, Object params) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler());
-		return super.search(path, evalTemplate(templateName, params));
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
 	}
 
 	@Override
 	public MapRestResponse search(String path, String templateName) throws ElasticSearchException {
-		return super.search(path, evalTemplate(templateName, (Object) null));
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null));
 //		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
 	}
 
 	@Override
 	public RestResponse search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return super.search(path, evalTemplate(templateName, params), type);
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), type);
 	}
 
 
 	@Override
 	public RestResponse search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
-//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
-		return super.search(path, evalTemplate(templateName, params), type);
+//		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), type);
 	}
 
 	@Override
 	public RestResponse search(String path, String templateName, Class<?> type) throws ElasticSearchException {
-//		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
-		return super.search(path, evalTemplate(templateName, (Object)null), type);
+//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
+		return super.search(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null), type);
 	}
 
 
 	public <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
 //		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
 //		return buildESDatas(result, type);
-		return super.searchList(  path,   this.evalTemplate(templateName, params),type);
+		return super.searchList(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
 	}
 
 	public <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
 //		return buildESDatas(result, type);
-		return super.searchList(  path,   this.evalTemplate(templateName, params),type);
+		return super.searchList(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
 	}
 
 	public <T> ESDatas<T> searchList(String path, String templateName, Class<T> type) throws ElasticSearchException {
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
 //		return buildESDatas(result, type);
-		return super.searchList(  path,   this.evalTemplate(templateName, (Map)null),type);
+		return super.searchList(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, (Map)null),type);
 	}
 
 
 	public <T> T searchObject(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
 //		return buildObject(result, type);
-		return super.searchObject(  path,   this.evalTemplate(templateName, params),type);
+		return super.searchObject(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
 	}
 
 	public <T> T searchObject(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
-		return super.searchObject(  path,   this.evalTemplate(templateName, params),type);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.searchObject(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
 //		return buildObject(result, type);
 	}
 
 	public <T> T searchObject(String path, String templateName, Class<T> type) throws ElasticSearchException {
-		return super.searchObject(  path,   this.evalTemplate(templateName, (Object) null),type);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+		return super.searchObject(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null),type);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
 //		return buildObject(result, type);
 
 	}
@@ -625,18 +396,18 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	@Override
 	public RestResponse search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException {
-		return super.search(  path,evalTemplate(templateName, params),   type);
+		return super.search(  path,ESTemplateHelper.evalTemplate(esUtil,templateName, params),   type);
 	}
 
 	@Override
 	public RestResponse search(String path, String templateName, Object params, ESTypeReferences type) throws ElasticSearchException {
-		return super.search(  path, evalTemplate(templateName, params),   type);
-//		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));
+		return super.search(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params),   type);
+//		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
 	}
 
 	@Override
 	public RestResponse search(String path, String templateName, ESTypeReferences type) throws ElasticSearchException {
-		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler(type));
+		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
 	}
 
 
@@ -647,7 +418,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateIndiceMapping(String action, String templateName) throws ElasticSearchException {
-		return super.updateIndiceMapping(action, evalTemplate(templateName, (Object) null));
+		return super.updateIndiceMapping(action, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null));
 	}
 
 	/**
@@ -670,7 +441,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String createIndiceMapping(String indexName, String templateName) throws ElasticSearchException {
-		return super.createIndiceMapping(indexName, evalTemplate(templateName, (Object) null));
+		return super.createIndiceMapping(indexName, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null));
 	}
 
 
@@ -681,7 +452,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateIndiceMapping(String action, String templateName, Object parameter) throws ElasticSearchException {
-		return super.updateIndiceMapping(action, evalTemplate(templateName, parameter));
+		return super.updateIndiceMapping(action, ESTemplateHelper.evalTemplate(esUtil,templateName, parameter));
 	}
 
 	/**
@@ -704,7 +475,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String createIndiceMapping(String indexName, String templateName, Object parameter) throws ElasticSearchException {
-		return super.createIndiceMapping(indexName, evalTemplate(templateName, parameter));
+		return super.createIndiceMapping(indexName, ESTemplateHelper.evalTemplate(esUtil,templateName, parameter));
 	}
 
 	/**
@@ -714,7 +485,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateIndiceMapping(String action, String templateName, Map parameter) throws ElasticSearchException {
-		return super.updateIndiceMapping(action, evalTemplate(templateName, parameter));
+		return super.updateIndiceMapping(action, ESTemplateHelper.evalTemplate(esUtil,templateName, parameter));
 	}
 
 	/**
@@ -737,19 +508,19 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String createIndiceMapping(String indexName, String templateName, Map parameter) throws ElasticSearchException {
-		return super.createIndiceMapping(indexName, evalTemplate(templateName, parameter));
+		return super.createIndiceMapping(indexName, ESTemplateHelper.evalTemplate(esUtil,templateName, parameter));
 	}
 
 	public Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException {
-		return super.searchMap(  path, this.evalTemplate(templateName, params));
-//		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
+		return super.searchMap(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new MapResponseHandler());
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> searchMap(String path, String templateName, Object params) throws ElasticSearchException {
-		return super.searchMap(  path, this.evalTemplate(templateName, params));
-//		return this.client.executeRequest(path, this.evalTemplate(templateName, params), new MapResponseHandler());
+		return super.searchMap(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new MapResponseHandler());
 	}
 
 	/**
@@ -758,59 +529,59 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> searchMap(String path, String templateName) throws ElasticSearchException {
-		return super.executeRequest(path, this.evalTemplate(templateName, (Object) null), new MapResponseHandler());
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new MapResponseHandler());
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Map params, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		return super.searchAgg(  path,   this.evalTemplate(templateName, params),   type,   aggs,   stats);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),   type,   aggs,   stats);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Object params, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		return super.searchAgg(  path,   this.evalTemplate(templateName, params), type, aggs, stats);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params), type, aggs, stats);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Class<T> type, String aggs, String stats) throws ElasticSearchException {
-		return super.searchAgg(  path, this.evalTemplate(templateName, (Object) null),   type,   aggs,   stats);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null),   type,   aggs,   stats);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Map params, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
-		return super.searchAgg(  path,   this.evalTemplate(templateName, params),   type,   aggs,   stats, aggBucketHandle);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params),   type,   aggs,   stats, aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Object params, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
-		return super.searchAgg(  path,   this.evalTemplate(templateName, params), type, aggs, stats,  aggBucketHandle);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, params), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path,   ESTemplateHelper.evalTemplate(esUtil,templateName, params), type, aggs, stats,  aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Class<T> type, String aggs, String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
-		return super.searchAgg(  path, this.evalTemplate(templateName, (Object) null),   type,   aggs,   stats, aggBucketHandle);
-//		SearchResult result = this.client.executeRequest(path, this.evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
+		return super.searchAgg(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null),   type,   aggs,   stats, aggBucketHandle);
+//		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ElasticSearchResponseHandler());
 //		return buildESAggDatas(result, type, aggs, stats);
 	}
 
 
 	@Override
 	public String createTempate(String template, String templateName) throws ElasticSearchException {
-		return super.createTempate(template,this.evalTemplate(templateName,(Object)null));
+		return super.createTempate(template,ESTemplateHelper.evalTemplate(esUtil,templateName,(Object)null));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Object params) throws ElasticSearchException {
-		return super.createTempate(template,this.evalTemplate(templateName,(Object)params));
+		return super.createTempate(template,ESTemplateHelper.evalTemplate(esUtil,templateName,(Object)params));
 	}
 
 	@Override
 	public String createTempate(String template, String templateName,Map params) throws ElasticSearchException {
-		return super.createTempate(template,this.evalTemplate(templateName,(Object)params));
+		return super.createTempate(template,ESTemplateHelper.evalTemplate(esUtil,templateName,(Object)params));
 	}
 
 }

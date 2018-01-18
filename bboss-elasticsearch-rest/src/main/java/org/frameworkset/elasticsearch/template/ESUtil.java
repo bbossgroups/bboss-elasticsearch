@@ -217,6 +217,8 @@ public class ESUtil {
 				f = new SimpleDateFormat(format);
 			else
 				f = new SimpleDateFormat(format, dateFormateMeta.getLocale());
+			if(dateFormateMeta.getTimeZone() != null)
+				f.setTimeZone(dateFormateMeta.getTimeZone());
 
 		}
 		try {

@@ -67,6 +67,7 @@ public class ESTemplateCache {
 		protected boolean quoted = true;
 		protected String dateFormat ;
 		protected String locale;
+		protected String timeZone;
 		protected DateFormateMeta dateFormateMeta;
 		public TempateVariable(){
 			super();
@@ -88,6 +89,9 @@ public class ESTemplateCache {
 						}
 						else if(t.startsWith("locale=")){
 							locale= t.substring("locale=".length()).trim();
+						}
+						else if(t.startsWith("timezone=")){
+							timeZone = t.substring("timezone=".length()).trim();
 						}
 					}
 

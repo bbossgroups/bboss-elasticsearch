@@ -1,0 +1,38 @@
+<property name="querySqlTraces">
+    <![CDATA[{
+            "sort": [
+                {
+                    "startTime": {
+                        "order": "desc"
+                    }
+                },
+                "_score"
+            ],
+             "_source": [ "startTime", "sqlEndElapsed" ],
+            "docvalue_fields" : ["startTime", "sqlEndElapsed"],
+            "size":10000,
+            "query": {
+                "bool": {
+                    "filter": {
+                        "term": {
+                            "applicationName": #[application]
+                        },
+                         "term": {
+                            "applicationNames": "#[application,noquoted]s"
+                        },
+                        "term": {
+                            "startDate": "#[date,noquoted,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]"
+                        }
+                    },
+                    "must": {
+                        "range": {
+                            "startTime": {
+                                "gte": #[startTime],
+                                "lt": #[endTime]
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+</property>
