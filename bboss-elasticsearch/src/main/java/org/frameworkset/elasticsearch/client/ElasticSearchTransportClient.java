@@ -18,7 +18,6 @@
  */
 package org.frameworkset.elasticsearch.client;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -26,7 +25,7 @@ import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
@@ -52,7 +51,7 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 
 	public static final Logger logger = LoggerFactory.getLogger(ElasticSearchTransportClient.class);
 	private Properties extendElasticsearchPropes;
-	private InetSocketTransportAddress[] serverAddresses;
+	private TransportAddress[] serverAddresses;
 	private ElasticSearchEventSerializer serializer;
 	private ElasticSearchIndexRequestBuilderFactory indexRequestBuilderFactory;
 	private String elasticUser;
@@ -62,8 +61,7 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 
 	private Client client;
 
-	@VisibleForTesting
-	InetSocketTransportAddress[] getServerAddresses() {
+	TransportAddress[] getServerAddresses() {
 		return serverAddresses;
 	}
 
@@ -150,13 +148,13 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 
 	private void configureHostnames(String[] hostNames) throws UnknownHostException {
 		logger.warn(Arrays.toString(hostNames));
-		serverAddresses = new InetSocketTransportAddress[hostNames.length];
+		serverAddresses = new TransportAddress[hostNames.length];
 		for (int i = 0; i < hostNames.length; i++) {
 			String[] hostPort = hostNames[i].trim().split(":");
 			String host = hostPort[0].trim();
 			int port = hostPort.length == 2 ? Integer.parseInt(hostPort[1].trim()) : DEFAULT_PORT;
 			// serverAddresses[i] = new InetSocketTransportAddress(host, port);
-			serverAddresses[i] = new InetSocketTransportAddress(InetAddress.getByName(host), port);
+			serverAddresses[i] = new TransportAddress(InetAddress.getByName(host), port);
 		}
 	}
 
@@ -208,30 +206,33 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		logger.info("Using ElasticSearch hostnames: {} ", Arrays.toString(serverAddresses));
 
 		Settings settings = null;
-		org.elasticsearch.common.settings.Settings.Builder builder = null;
+		Settings.Builder builder = Settings.builder();
 		if (this.elasticUser != null && !this.elasticUser.equals("")) {
-			builder = Settings.builder().put("cluster.name", clusterName)
+			builder.put("cluster.name", clusterName)
 					.put("xpack.security.user", this.elasticUser + ":" + this.elasticPassword);
 					// .put("shield.user",
 					// this.elasticUser+":"+this.elasticPassword)
 			
 		} else {
-			builder = Settings.builder().put("cluster.name", clusterName);
+
+			builder.put("cluster.name", clusterName);
 			
 		}
 		
-		settings = builder.build();
+
 		if(this.extendElasticsearchPropes != null && extendElasticsearchPropes.size() > 0){
 			Iterator<Entry<Object, Object>> iterator = extendElasticsearchPropes.entrySet().iterator();
 			while(iterator.hasNext()){
-				builder.put(extendElasticsearchPropes);
+				Entry<Object, Object> entry = iterator.next();
+				builder.put((String)entry.getKey(),String.valueOf(entry.getValue()));
 			}
 		}
+		settings = builder.build();
 		try{
 			TransportClient transportClient = this.elasticUser != null && !this.elasticUser.equals("")
 					? new PreBuiltXPackTransportClient(settings) : new PreBuiltTransportClient(settings);
 			// TransportClient transportClient = new TransportClient(settings);
-			for (InetSocketTransportAddress host : serverAddresses) {
+			for (TransportAddress host : serverAddresses) {
 				transportClient.addTransportAddress(host);
 			}
 			if (client != null) {
@@ -297,9 +298,9 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 					event.getIndexType(), event);
 		}
 
-		if (event.getTTL() != null && event.getTTL() > 0) {
-			indexRequestBuilder.setTTL(event.getTTL());
-		}
+//		if (event.getTTL() != null && event.getTTL() > 0) {
+//			indexRequestBuilder.setTTL(event.getTTL());
+//		}
 		return indexRequestBuilder;
 
 	}

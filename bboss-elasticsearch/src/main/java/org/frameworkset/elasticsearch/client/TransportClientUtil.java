@@ -45,6 +45,12 @@ public class TransportClientUtil  implements EventClientUtil{
 	public   String getTempate() throws ElasticSearchException {
 		return null;
 	}
+
+	@Override
+	public String cleanAllXPackIndices() throws ElasticSearchException {
+		return null;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 

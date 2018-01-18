@@ -52,6 +52,7 @@ dependencies {
 			[group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true],
 	){
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
+		exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
 	}
    compile (
 

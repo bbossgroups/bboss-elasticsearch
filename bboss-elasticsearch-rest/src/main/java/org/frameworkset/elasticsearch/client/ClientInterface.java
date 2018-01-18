@@ -595,4 +595,11 @@ public interface ClientInterface {
 	 */
 	public abstract String getTempate() throws ElasticSearchException ;
 
+	/**
+	 * 删除所有xpack相关的监控索引
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String cleanAllXPackIndices() throws ElasticSearchException;
+
 }

@@ -1,7 +1,9 @@
 package org.frameworkset.elasticsearch;
 
+import org.elasticsearch.common.settings.Settings;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
+import org.frameworkset.elasticsearch.client.EventClientUtil;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
@@ -287,6 +289,22 @@ public class ESTest {
 				Demo.class);
 	}
 
+	@Test
+	public void testEventElasticSearchHelper(){
+//		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+//		clientInterface.cleanAllXPackIndices();
+		EventClientUtil eventClientUtil = EventElasticSearchHelper.getRestEventClientUtil();
+		System.out.println(eventClientUtil.getIndice(".security"));
+		System.out.println(eventClientUtil.cleanAllXPackIndices());
+	}
+
+	@Test
+	public void testEventElasticSearchHelperSetting(){
+		EventClientUtil eventClientUtil = EventElasticSearchHelper.getRestEventClientUtil();
+
+		Settings settings = EventElasticSearchHelper.getClient().settings();
+		System.out.println(settings);
+	}
 
 
 

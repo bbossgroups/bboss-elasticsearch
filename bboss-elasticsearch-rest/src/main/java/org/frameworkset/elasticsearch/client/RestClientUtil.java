@@ -28,6 +28,15 @@ public class RestClientUtil extends ClientUtil{
 	protected ElasticSearchRestClient client;
 	protected StringBuilder bulkBuilder;
 	protected IndexNameBuilder indexNameBuilder;
+	/**
+	 * ".security",".watches",
+	 * 清除监控表
+	 */
+	protected String[] monitorIndices = new String[]{
+			".monitoring*",".triggered_watches",
+			".watcher-history*",".ml*"
+	};
+	protected String monitorIndicesString = ".monitoring*,.triggered_watches,.watcher-history*,.ml*";
 
 	public RestClientUtil(ElasticSearchClient client,IndexNameBuilder indexNameBuilder) {
 		this.client = (ElasticSearchRestClient)client;
@@ -1459,6 +1468,25 @@ public class RestClientUtil extends ClientUtil{
 	    public String refreshIndexInterval(int interval) throws ElasticSearchException{
 	    	return refreshIndexInterval(interval,false);
 	    }
-		 
+
+	/**
+	 * 删除所有监控索引
+	 * .security,.monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
+	 * @return
+	 */
+	    public String cleanAllXPackIndices() throws ElasticSearchException{
+
+			StringBuilder ret = new StringBuilder();
+			for(String monitor:monitorIndices) {
+				try {
+					ret.append(this.client.executeHttp(java.net.URLEncoder.encode(monitor, "UTF-8") + "?pretty", HTTP_DELETE)).append("\n");
+				}
+				catch (Exception e){
+					ret.append(e.getMessage()).append("\n");
+				}
+			}
+			return ret.toString();
+
+		}
  
 }
