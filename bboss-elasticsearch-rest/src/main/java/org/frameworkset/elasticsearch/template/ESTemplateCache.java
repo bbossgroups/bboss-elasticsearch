@@ -69,8 +69,42 @@ public class ESTemplateCache {
 		protected String locale;
 		protected String timeZone;
 		protected DateFormateMeta dateFormateMeta;
+		/**
+		 * 在变量左边追加lpad对应的字符
+		 */
+		protected String lpad;
+		/**
+		 * 在变量的右边追加rpad对应的字符
+		 */
+		protected String rpad;
 		public TempateVariable(){
 			super();
+		}
+
+		/**
+		 * 处理pad数据
+		 * @param pad_
+		 * @return
+		 */
+		private String handlePad(String pad_){
+			int idx = pad_.indexOf("|");
+			String pad = null;
+
+			if(idx > 0 ){
+				String value = pad_.substring(0,idx);
+				int count = Integer.parseInt(pad_.substring(idx+1));
+				pad = value;
+				if(count > 0) {
+					for (int j = 1; j < count; j++) {
+						pad = pad + value;
+					}
+				}
+
+			}
+			else{
+				pad = pad_;
+			}
+			return pad;
 		}
 		public void after(){
 			super.after();
@@ -81,8 +115,10 @@ public class ESTemplateCache {
 					this.variableName = ts[0];
 					for (int i = 1; i < ts.length; i ++) {
 						String t = ts[i];
-						if (t.equals("noquoted")) {
-							quoted = false;
+						if (t.startsWith("quoted=")) {
+							String q = t.substring("quoted=".length()).trim();
+							if(q.equals("false"))
+								quoted = false;
 						}
 						else if(t.startsWith("dateformat=")){
 							dateFormat= t.substring("dateformat=".length()).trim();
@@ -92,6 +128,15 @@ public class ESTemplateCache {
 						}
 						else if(t.startsWith("timezone=")){
 							timeZone = t.substring("timezone=".length()).trim();
+						}
+						else if(t.startsWith("lpad=")){
+							String lpad_= t.substring("lpad=".length()).trim();
+							this.lpad = handlePad(lpad_);
+
+						}
+						else if(t.startsWith("rpad=")){
+							String rpad_ = t.substring("rpad=".length()).trim();
+							this.rpad = handlePad(rpad_);
 						}
 					}
 
@@ -117,6 +162,18 @@ public class ESTemplateCache {
 
 		public DateFormateMeta getDateFormateMeta() {
 			return dateFormateMeta;
+		}
+
+		public String getTimeZone() {
+			return timeZone;
+		}
+
+		public String getLpad() {
+			return lpad;
+		}
+
+		public String getRpad() {
+			return rpad;
 		}
 	}
 	static class TempateStructionBuiler extends VariableHandler.URLStructionBuiler {

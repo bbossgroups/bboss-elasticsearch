@@ -230,6 +230,45 @@ public class ESUtil {
 			throw new ElasticSearchException(e);
 		}
 	}
+	public void handleVaribleValue(StringBuilder builder,ESTemplateCache.TempateVariable variable,String value,boolean escape){
+
+		if(variable.isQuoted()) {
+
+			builder.append("\"");
+		}
+		if(variable.getLpad() != null || variable.getRpad() != null) {
+			StringBuilder innerValue = new StringBuilder();
+			if (variable.getLpad() != null) {
+				innerValue.append(variable.getLpad());
+			}
+			innerValue.append(value);
+
+			if (variable.getRpad() != null) {
+				innerValue.append(variable.getRpad());
+			}
+			if (!escape) {
+				builder.append(innerValue.toString());
+			} else {
+
+				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+				charEscapeUtil.writeString(innerValue.toString(), true);
+			}
+		}
+		else{
+			if (!escape) {
+				builder.append(value);
+			} else {
+
+				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+				charEscapeUtil.writeString(value, true);
+			}
+		}
+		if(variable.isQuoted()) {
+			builder.append("\"");
+		}
+
+
+	}
 	public void getVariableValue(StringBuilder builder, ESTemplateCache.TempateVariable variable, Object bean, List<ClassUtil.PropertieDescription> attributes, ClassUtil.ClassInfo beanInfo, String template) {
 //		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
 		String name = null;
@@ -294,39 +333,29 @@ public class ESUtil {
 					if (value == null) {
 						builder.append("null");
 					} else if (value instanceof Date) {
-						if(variable.isQuoted()) {
-							builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
-						}
-						else{
-							builder .append(this.getDate((Date) value, dataformat)) ;
-						}
+						String value_ = this.getDate((Date) value, dataformat);
+						handleVaribleValue(  builder,  variable,value_,false);
+
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof String){
-							if(variable.isQuoted()) {
-								builder.append("\"");
-							}
-//							if(escapeValue){
-								CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
-								charEscapeUtil.writeString((String)value,true);
-//							}
-//							else {
-//								builder.append(value.toString());
-//							}
-							if(variable.isQuoted()) {
-								builder.append("\"");
-							}
+							handleVaribleValue(  builder,  variable,(String)value,true);
+
 						}
 						else if (value instanceof Date) {
-							if(variable.isQuoted()) {
-								builder.append("\"").append(this.getDate((Date) value, dataformat)).append("\"");
+							String value_ = this.getDate((Date) value, dataformat);
+							handleVaribleValue(  builder,  variable,value_,false);
+
+						}
+						else {
+							if(variable.getLpad() != null){
+								builder.append(variable.getLpad());
 							}
-							else{
-								builder .append(this.getDate((Date) value, dataformat)) ;
+							builder.append(value.toString());
+							if(variable.getRpad() != null){
+								builder.append(variable.getRpad());
 							}
 						}
-						else
-							builder.append(value.toString());
 					}
 //					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
 
@@ -399,47 +428,30 @@ public class ESUtil {
 				} else {
 					Object value = bean.get(variable.getVariableName());
 					if(value instanceof Date){
-						if(variable.isQuoted()){
-							builder.append("\"").append(this.getDate((Date) value, variable.getDateFormateMeta())).append("\"");
-						}
-						else{
-							builder .append(this.getDate((Date) value, variable.getDateFormateMeta())) ;
-						}
+						String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
+						this.handleVaribleValue(builder,variable,value_,false);
+
 
 					}
 					else {
 
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof Date){
-							if(variable.isQuoted()) {
-								builder.append("\"").append(this.getDate((Date) value, variable.getDateFormateMeta())).append("\"");
-							}
-							else{
-								builder.append(this.getDate((Date) value, variable.getDateFormateMeta()));
-							}
+							String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
+							this.handleVaribleValue(builder,variable,value_,false);
 						}
 						else if (value instanceof String) {
-							if(!escapeValue) {
-								if(variable.isQuoted()) {
-									builder.append("\"").append((String) value).append("\"");
-								}
-								else{
-									builder .append((String) value) ;
-								}
+							this.handleVaribleValue(builder,variable,(String) value,true);
+
+						} else {
+							if (variable.getLpad() != null) {
+								builder.append(variable.getLpad());
 							}
-							else
-							{
-								if(variable.isQuoted()) {
-									builder.append("\"");
-								}
-								CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
-								charEscapeUtil.writeString((String)value,true);
-								if(variable.isQuoted()) {
-									builder.append("\"");
-								}
-							}
-						} else
 							builder.append(value.toString());
+							if (variable.getRpad() != null) {
+								builder.append(variable.getRpad());
+							}
+						}
 					}
 				}
 			}

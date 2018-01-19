@@ -18,10 +18,16 @@
                             "applicationName": #[application]
                         },
                          "term": {
-                            "applicationNames": "#[application,noquoted]s"
+                            "applicationNames": "#[application,quoted=false]s"
                         },
                         "term": {
-                            "startDate": "#[date,noquoted,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]"
+                            "applicationNamelpads": "#[application,quoted=false,lpad=#|2,rpad=#|3]s"
+                        },
+                        "term": {
+                            "applicationNamelpads1": "#[application,quoted=false,lpad=#|2,rpad=#]s"
+                        },
+                        "term": {
+                            "startDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]
                         }
                     },
                     "must": {
