@@ -3,7 +3,7 @@ package org.frameworkset.elasticsearch.serial;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ESTypeReferences<HIT,AGG> extends ESClass implements Comparable<ESTypeReferences<HIT,AGG>>{
+public abstract class ESTypeReferences<HIT,AGG> extends ESClass implements Comparable<ESTypeReferences<HIT,AGG>>{
 //	private static String type2 = "com.fasterxml.jackson.core.type.TypeReference";
 //	private static String type1 = "org.codehaus.jackson.type.TypeReference";
 	 protected  Type hitType; 
