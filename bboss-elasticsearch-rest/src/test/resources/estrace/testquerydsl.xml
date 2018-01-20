@@ -1,44 +1,49 @@
-<property name="querySqlTraces">
-    <![CDATA[{
-            "sort": [
-                {
-                    "startTime": {
-                        "order": "desc"
-                    }
-                },
-                "_score"
-            ],
-             "_source": [ "startTime", "sqlEndElapsed" ],
-            "docvalue_fields" : ["startTime", "sqlEndElapsed"],
-            "size":10000,
-            "query": {
-                "bool": {
-                    "filter": {
-                        "term": {
-                            "applicationName": #[application]
-                        },
-                         "term": {
-                            "applicationNames": "#[application,quoted=false]s"
-                        },
-                        "term": {
-                            "applicationNamelpads": "#[application,quoted=false,lpad=#|2,rpad=#|3]s"
-                        },
-                        "term": {
-                            "applicationNamelpads1": "#[application,quoted=false,lpad=#|2,rpad=#]s"
-                        },
-                        "term": {
-                            "startDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]
+<properties>
+    <property name="querySqlTraces">
+        <![CDATA[{
+                "sort": [
+                    {
+                        "startTime": {
+                            "order": "desc"
                         }
                     },
-                    "must": {
-                        "range": {
-                            "startTime": {
-                                "gte": #[startTime],
-                                "lt": #[endTime]
+                    "_score"
+                ],
+                 "_source": [ "startTime", "sqlEndElapsed" ],
+                "docvalue_fields" : ["startTime", "sqlEndElapsed"],
+                "size":10000,
+                "query": {
+                    "bool": {
+                        "filter": {
+                            "term": {
+                                "applicationName": #[application]
+                            },
+                             "term": {
+                                "applicationNames": "asdfaf#[application,quoted=false]s"
+                            },
+                            "term": {
+                                "applicationNamelpads": "#[application,quoted=false,lpad=#|2,rpad=#|3]s"
+                            },
+                            "term": {
+                                "applicationNamelpads1": "#[application,quoted=false,lpad=#|2,rpad=#]s"
+                            },
+                            "term": {
+                                "applicationNamelpads1": "#[application,quoted=false,lpad=#]s"
+                            },
+                            "term": {
+                                "startDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]
+                            }
+                        },
+                        "must": {
+                            "range": {
+                                "startTime": {
+                                    "gte": #[startTime],
+                                    "lt": #[endTime]
+                                }
                             }
                         }
                     }
                 }
-            }
-        }]]>
-</property>
+            }]]>
+    </property>
+</properties>

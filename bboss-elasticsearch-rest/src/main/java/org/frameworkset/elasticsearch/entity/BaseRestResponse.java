@@ -69,6 +69,19 @@ public abstract  class BaseRestResponse implements Serializable {
 	/**
 	 *
 	 * @param metrics
+	 * @return
+	 */
+	public Object getAggBuckets(String metrics){
+		Map<String,Object> map = aggregations.get(metrics);
+		if(map != null){
+			return map.get("buckets");
+		}
+		return null;
+	}
+
+	/**
+	 *
+	 * @param metrics
 	 * @param typeReference 容器类型对象
 	 * @param <T>
 	 * @return
@@ -94,6 +107,20 @@ public abstract  class BaseRestResponse implements Serializable {
 			return (T)map.get(attribute);
 		}
 		return (T)null;
+	}
+
+	/**
+	 *
+	 * @param metrics
+
+	 * @return
+	 */
+	public Object getAggAttribute(String metrics,String attribute){
+		Map<String,Object> map = aggregations.get(metrics);
+		if(map != null){
+			return map.get(attribute);
+		}
+		return null;
 	}
 
 	/**
@@ -205,6 +232,8 @@ public abstract  class BaseRestResponse implements Serializable {
 		return (T)null;
 	}
 
+
+
 	/**
 	 * {
 		 "key": "demoproject",
@@ -258,6 +287,33 @@ public abstract  class BaseRestResponse implements Serializable {
 			return (T)metrics_.get("buckets");
 		}
 		return (T)null;
+	}
+	/**
+	 * {
+	 "key": "demoproject",
+	 "doc_count": 30,
+	 "successsums": {
+	 "doc_count_error_upper_bound": 0,
+	 "sum_other_doc_count": 0,
+	 "buckets": [
+	 {
+	 "key": 0,
+	 "doc_count": 30
+	 }
+	 ]
+	 }
+	 },
+	 * @param map
+	 * @param metrics successsums->buckets
+
+	 * @return
+	 */
+	public static Object getAggBuckets(Map<String,Object> map ,String metrics){
+		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
+		if(metrics_ != null){
+			return metrics_.get("buckets");
+		}
+		return null;
 	}
 
 	/**
@@ -321,6 +377,36 @@ public abstract  class BaseRestResponse implements Serializable {
 			return (T)metrics_.get(attribute);
 		}
 		return (T)null;
+	}
+
+	/**
+	 * {
+	 "key": "demoproject",
+	 "doc_count": 30,
+	 "successsums": {
+	 "doc_count_error_upper_bound": 0,
+	 "sum_other_doc_count": 0,
+	 "buckets": [
+	 {
+	 "key": 0,
+	 "doc_count": 30
+	 }
+	 ]
+	 }
+	 }
+	 *
+	 * @param map
+	 * @param metrics successsums->doc_count_error_upper_bound
+	 *                successsums->sum_other_doc_count
+	 * @param attribute maybe doc_count_error_upper_bound sum_other_doc_count buckets
+	 * @return
+	 */
+	public static Object getAggAttribute(Map<String,Object> map ,String metrics,String attribute){
+		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
+		if(metrics_ != null){
+			return metrics_.get(attribute);
+		}
+		return null;
 	}
 
 
