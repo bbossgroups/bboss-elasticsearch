@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -205,25 +206,16 @@ public class ESUtil {
 	}
 	public String getDate(Date date, DateFormateMeta dateFormateMeta){
 		String format = null;
-		if (dateFormateMeta == null) {
+		DateFormat f = null;
+		if(dateFormateMeta == null ) {
 			format = this.getJavaDateFormat();
-		} else
-			format = dateFormateMeta.getDateformat();
-		SimpleDateFormat f = null;
-		if(dateFormateMeta == null )
-			f = new SimpleDateFormat(format) ;
+			f = new SimpleDateFormat(format);
+		}
 		else {
-			if(dateFormateMeta.getLocale() == null)
-				f = new SimpleDateFormat(format);
-			else
-				f = new SimpleDateFormat(format, dateFormateMeta.getLocale());
-			if(dateFormateMeta.getTimeZone() != null)
-				f.setTimeZone(dateFormateMeta.getTimeZone());
-
+			f = dateFormateMeta.toDateFormat();
 		}
 		try {
 			String _date = f.format(date);
-
 			return _date;
 		}
 		catch (Exception e) {

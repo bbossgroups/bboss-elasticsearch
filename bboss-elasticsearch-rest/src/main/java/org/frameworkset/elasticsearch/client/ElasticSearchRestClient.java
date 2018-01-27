@@ -433,27 +433,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if(this.showTemplate ){
 			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
 				if (entity != null)
-					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+					logger.debug("ElasticSearch http request action:{},request body:\n{}", path, entity);
 				else
-					logger.debug("Elastic search action:{}", path);
+					logger.debug("ElasticSearch http request action:{}", path);
 			}
 			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
 				if(entity != null)
-					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.info("Elastic search action:{}",path);
+					logger.info("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
 				if(entity != null)
-					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+					logger.warn("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.warn("Elastic search action:{}",path);
+					logger.warn("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
 				if(entity != null)
-					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+					logger.error("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.error("Elastic search action:{}",path);
+					logger.error("ElasticSearch http request action:{}",path);
 			}
 
 		}
@@ -567,27 +567,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if(this.showTemplate ){
 			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
 				if (entity != null)
-					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+					logger.debug("ElasticSearch http request action:{},request body:\n{}", path, entity);
 				else
-					logger.debug("Elastic search action:{}", path);
+					logger.debug("ElasticSearch http request action:{}", path);
 			}
 			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
 				if(entity != null)
-					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.info("Elastic search action:{}",path);
+					logger.info("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
 				if(entity != null)
-					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+					logger.warn("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.warn("Elastic search action:{}",path);
+					logger.warn("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
 				if(entity != null)
-					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+					logger.error("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.error("Elastic search action:{}",path);
+					logger.error("ElasticSearch http request action:{}",path);
 			}
 
 		}
@@ -679,27 +679,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if(this.showTemplate  ){
 			if(loglevel == this.loglevel_debug && logger.isDebugEnabled()) {
 				if (entity != null)
-					logger.debug("Elastic search action:{},request body:\n{}", path, entity);
+					logger.debug("ElasticSearch http request action:{},request body:\n{}", path, entity);
 				else
-					logger.debug("Elastic search action:{}", path);
+					logger.debug("ElasticSearch http request action:{}", path);
 			}
 			else if(loglevel == this.loglevel_info && logger.isInfoEnabled()) {
 				if(entity != null)
-					logger.info("Elastic search action:{},request body:\n{}",path,entity);
+					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.info("Elastic search action:{}",path);
+					logger.info("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_warn && logger.isWarnEnabled()) {
 				if(entity != null)
-					logger.warn("Elastic search action:{},request body:\n{}",path,entity);
+					logger.warn("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.warn("Elastic search action:{}",path);
+					logger.warn("ElasticSearch http request action:{}",path);
 			}
 			else if(loglevel == this.loglevel_error && logger.isErrorEnabled()) {
 				if(entity != null)
-					logger.error("Elastic search action:{},request body:\n{}",path,entity);
+					logger.error("ElasticSearch http request action:{},request body:\n{}",path,entity);
 				else
-					logger.error("Elastic search action:{}",path);
+					logger.error("ElasticSearch http request action:{}",path);
 			}
 
 		}

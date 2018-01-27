@@ -157,6 +157,14 @@ public class ESTest {
 			return ;
 		}
 	}
+	@Test
+	public void cleanAllXPackIndices(){
+//		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+//		clientInterface.cleanAllXPackIndices();
+		ClientInterface eventClientUtil = ElasticSearchHelper.getRestClientUtil();
+		System.out.println(eventClientUtil.getIndice(".security"));
+		System.out.println(eventClientUtil.cleanAllXPackIndices());
+	}
 
 	@Test
 	public void testTempate() throws ParseException{
