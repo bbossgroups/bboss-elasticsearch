@@ -17,8 +17,11 @@ package org.frameworkset.elasticsearch;/*
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
+import org.frameworkset.util.annotations.DateFormateMeta;
 import org.junit.Test;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 
 public class TestSerialUtil {
@@ -36,5 +39,16 @@ public class TestSerialUtil {
 		//DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
 
 		//System.out.println(dateFormateMeta.toDateFormat().format(jsonObj.getAgentStarttime()));
+	}
+	@Test
+	public void testDate() throws ParseException {
+		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
+		String date = dateFormateMeta.toDateFormat().format(new Date());
+		System.out.println(date);
+
+		dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
+		DateFormat dateFormat = dateFormateMeta.toDateFormat();
+		Date date_ = dateFormat.parse(date);
+		System.out.println(date_);
 	}
 }
