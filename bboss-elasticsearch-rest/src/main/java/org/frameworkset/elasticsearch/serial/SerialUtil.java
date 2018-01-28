@@ -14,7 +14,7 @@ public class SerialUtil {
 	protected static ObjectMapper esBaseDataFilterMapper = null;
 	protected static ObjectMapper esIdFilterMapper = null;
 	static {
-		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
+		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC");
 
 		init(dateFormateMeta);
 	}

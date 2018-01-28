@@ -42,11 +42,11 @@ public class TestSerialUtil {
 	}
 	@Test
 	public void testDate() throws ParseException {
-		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
+		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC");
 		String date = dateFormateMeta.toDateFormat().format(new Date());
 		System.out.println(date);
 
-		dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"UTC");
+		dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC");
 		DateFormat dateFormat = dateFormateMeta.toDateFormat();
 		Date date_ = dateFormat.parse(date);
 		System.out.println(date_);

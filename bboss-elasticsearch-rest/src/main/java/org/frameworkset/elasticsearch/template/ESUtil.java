@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -209,11 +208,9 @@ public class ESUtil {
 		DateFormat f = null;
 		if(dateFormateMeta == null ) {
 			format = this.getJavaDateFormat();
-			f = new SimpleDateFormat(format);
+			dateFormateMeta = DateFormateMeta.buildDateFormateMeta(format);
 		}
-		else {
-			f = dateFormateMeta.toDateFormat();
-		}
+		f = dateFormateMeta.toDateFormat();
 		try {
 			String _date = f.format(date);
 			return _date;
