@@ -474,6 +474,15 @@ public class ESTest {
 				"demo",//索引类型
 				"5",//文档id
 				Demo.class);
+		//删除索引文档
+		clientUtil.deleteDocument("demo",//索引表
+				"demo",//索引类型
+				"5");//文档id
+
+		//批量删除索引文档
+		clientUtil.deleteDocuments("demo",//索引表
+				"demo",//索引类型
+				"1","2","3");//文档ids
 	}
 
 	@Test
