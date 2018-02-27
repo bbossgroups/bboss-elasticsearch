@@ -78,7 +78,7 @@ public class RestClientUtil extends ClientUtil{
 		indexField.setFieldName(fieldName);
 		Map<String,Object> fieldInfo = (Map<String,Object>)field.getValue();
 		indexField.setType((String)fieldInfo.get("type"));
-		indexField.setIgnoreAbove(ClientUtil.intValue(fieldInfo.get("ignore_above"),null));
+		indexField.setIgnoreAbove(ResultUtil.intValue(fieldInfo.get("ignore_above"),null));
 		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
 		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
 		indexField.setBoost((Integer)fieldInfo.get("boost"));
@@ -999,158 +999,7 @@ public class RestClientUtil extends ClientUtil{
 		return buildObject(result, type);
 	}
 
-	private void buildLongAggHit(LongAggHit longRangeHit,Map<String,Object> bucket,String stats){
-		longRangeHit.setKey((String)bucket.get("key"));
-		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		longRangeHit.setMax(longValue(stats_.get("max"),0l));
-		longRangeHit.setMin(longValue(stats_.get("min"),0l));
-		longRangeHit.setAvg(floatValue(stats_.get("avg"),0f));
-		longRangeHit.setSum(longValue(stats_.get("sum"),0l));
-	}
-	private void buildFloatAggHit(FloatAggHit floatRangeHit,Map<String,Object> bucket,String stats){
-		floatRangeHit.setKey((String)bucket.get("key"));
-		floatRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		floatRangeHit.setMax(floatValue(stats_.get("max"),0f));
-		floatRangeHit.setMin(floatValue(stats_.get("min"),0f));
-		floatRangeHit.setAvg(floatValue(stats_.get("avg"),0f));
-		floatRangeHit.setSum(floatValue(stats_.get("sum"),0f));
-	}
 
-	private void buildDoubleAggHit(DoubleAggHit doubleAggHit,Map<String,Object> bucket,String stats){
-		doubleAggHit.setKey((String)bucket.get("key"));
-		doubleAggHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		doubleAggHit.setMax(doubleValue(stats_.get("max"),0d));
-		doubleAggHit.setMin(doubleValue(stats_.get("min"),0d));
-		doubleAggHit.setAvg(doubleValue(stats_.get("avg"),0d));
-		doubleAggHit.setSum(doubleValue(stats_.get("sum"),0d));
-	}
-
-	private void buildLongAggRangeHit(LongAggRangeHit longRangeHit,Map<String,Object> bucket,String stats,String key){
-		longRangeHit.setKey(key);
-		longRangeHit.setFrom(longValue(bucket.get("from"),null));
-		longRangeHit.setTo(longValue(bucket.get("to"),null));
-		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		longRangeHit.setMax(longValue(stats_.get("max"),0l));
-		longRangeHit.setMin(longValue(stats_.get("min"),0l));
-		longRangeHit.setAvg(floatValue(stats_.get("avg"),0f));
-		longRangeHit.setSum(longValue(stats_.get("sum"),0l));
-	}
-	private void buildFloatAggRangeHit(FloatAggRangeHit floatRangeHit,Map<String,Object> bucket,String stats,String key){
-		floatRangeHit.setKey(key);
-		floatRangeHit.setFrom(floatValue(bucket.get("from"),null));
-		floatRangeHit.setTo(floatValue(bucket.get("to"),null));
-		floatRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		floatRangeHit.setMax(floatValue(stats_.get("max"),0f));
-		floatRangeHit.setMin(floatValue(stats_.get("min"),0f));
-		floatRangeHit.setAvg(floatValue(stats_.get("avg"),0f));
-		floatRangeHit.setSum(floatValue(stats_.get("sum"),0f));
-	}
-	private void buildDoubleAggRangeHit(DoubleAggRangeHit doubleRangeHit,Map<String,Object> bucket,String stats,String key){
-		doubleRangeHit.setKey(key);
-		doubleRangeHit.setFrom(doubleValue(bucket.get("from"),null));
-		doubleRangeHit.setTo(doubleValue(bucket.get("to"),null));
-		doubleRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
-		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
-		doubleRangeHit.setMax(doubleValue(stats_.get("max"),0d));
-		doubleRangeHit.setMin(doubleValue(stats_.get("min"),0d));
-		doubleRangeHit.setAvg(doubleValue(stats_.get("avg"),0d));
-		doubleRangeHit.setSum(doubleValue(stats_.get("sum"),0d));
-	}
-
-	protected  <T extends AggHit> ESAggDatas<T> buildESAggDatas(RestResponse searchResult,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle){
-		
-		 
-		Map<String,Map<String,Object>> aggregations = searchResult.getAggregations();
-		if(aggregations != null){
-			Map<String,Object> traces = aggregations.get(aggs);
-			Object _buckets = traces.get("buckets");
-			ESAggDatas<T> ret = new ESAggDatas<T>();
-			ret.setTotalSize(searchResult.getSearchHits().getTotal());
-
-			if(_buckets instanceof List) {
-				List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<>(buckets.size());
-				ret.setAggDatas(datas);
-				for (Map<String, Object> bucket : buckets) {
-					try {
-						T obj = type.newInstance();
-						if(obj instanceof LongAggRangeHit){
-							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,null);
-						}else if(obj instanceof FloatAggRangeHit){
-							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,null);
-						}else if(obj instanceof DoubleAggRangeHit){
-							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,null);
-						} else if (obj instanceof LongAggHit) {
-							buildLongAggHit((LongAggHit) obj, bucket,  stats);
-						} else if(obj instanceof FloatAggHit){
-							buildFloatAggHit((FloatAggHit) obj, bucket,  stats);
-						}else if(obj instanceof DoubleAggHit){
-							buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
-						}
-						if(aggBucketHandle != null)
-						{
-							aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
-						}
-
-						datas.add(obj);
-					} catch (InstantiationException e) {
-						throw new ElasticSearchException(e);
-					} catch (IllegalAccessException e) {
-						throw new ElasticSearchException(e);
-					}
-				}
-
-
-			}
-			else
-			{
-				Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<>(buckets.size());
-				ret.setAggDatas(datas);
-				Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
-				Map<String, Object> bucket = null;
-				Map.Entry<String, Map<String, Object>> entry = null;
-				String key = null;
-				T obj = null;
-				while(iterable.hasNext()){
-					entry = iterable.next();
-					key = entry.getKey();
-					bucket = entry.getValue();
-					try {
-						obj = type.newInstance();
-
-						if (obj instanceof LongAggRangeHit) {
-							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
-						} else if (obj instanceof DoubleAggRangeHit)
-						{
-							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
-						}else if (obj instanceof FloatAggRangeHit)
-						{
-							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
-						}
-						if(aggBucketHandle != null)
-						{
-							aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
-						}
-						datas.add(obj);
-					}catch (InstantiationException e) {
-						throw new ElasticSearchException(e);
-					} catch (IllegalAccessException e) {
-						throw new ElasticSearchException(e);
-					}
-				}
-			}
-			return ret;
-		}
-
-		 
-		return null;
-	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs,String stats) throws ElasticSearchException{
 
 		return null;
@@ -1169,11 +1018,11 @@ public class RestClientUtil extends ClientUtil{
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats) throws ElasticSearchException{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
-		return buildESAggDatas(result,type,aggs,stats,(ESAggBucketHandle<T>)null);
+		return ResultUtil.buildESAggDatas(result,type,aggs,stats,(ESAggBucketHandle<T>)null);
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
-		return buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
+		return ResultUtil.buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
 	}
 
 	@Override
