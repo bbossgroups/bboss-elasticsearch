@@ -432,9 +432,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static <T> T getAggBuckets(Map<String,?> map , String metrics, ESTypeReference<T> typeReference){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return (T)metrics_.get("buckets");
+		if(map != null) {
+			Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
+			if(metrics_ != null){
+				return (T)metrics_.get("buckets");
+			}
 		}
 		return (T)null;
 	}
@@ -489,9 +491,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static <T> T getAggBuckets(Map<String,?> map ,String metrics,Class<T> typeReference){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return (T)metrics_.get("buckets");
+		if(map != null) {
+			Map<String, Object> metrics_ = (Map<String, Object>) map.get(metrics);
+			if (metrics_ != null) {
+				return (T) metrics_.get("buckets");
+			}
 		}
 		return (T)null;
 	}
@@ -516,9 +520,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static Object getAggBuckets(Map<String,?> map ,String metrics){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return metrics_.get("buckets");
+		if(map != null){
+			Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
+			if(metrics_ != null){
+				return metrics_.get("buckets");
+			}
 		}
 		return null;
 	}
@@ -548,9 +554,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static <T> T getAggAttribute(Map<String,?> map ,String metrics,String attribute,ESTypeReference<T> typeReference){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return (T)metrics_.get(attribute);
+		if(map != null) {
+			Map<String, Object> metrics_ = (Map<String, Object>) map.get(metrics);
+			if (metrics_ != null) {
+				return (T) metrics_.get(attribute);
+			}
 		}
 		return (T)null;
 	}
@@ -579,9 +587,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static <T> T getAggAttribute(Map<String,?> map ,String metrics,String attribute,Class<T> typeReference){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return (T)metrics_.get(attribute);
+		if(map != null) {
+			Map<String, Object> metrics_ = (Map<String, Object>) map.get(metrics);
+			if (metrics_ != null) {
+				return (T) metrics_.get(attribute);
+			}
 		}
 		return (T)null;
 	}
@@ -609,9 +619,11 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static Object getAggAttribute(Map<String,?> map ,String metrics,String attribute){
-		Map<String,Object> metrics_ = (Map<String,Object>)map.get(metrics);
-		if(metrics_ != null){
-			return metrics_.get(attribute);
+		if(map != null) {
+			Map<String, Object> metrics_ = (Map<String, Object>) map.get(metrics);
+			if (metrics_ != null) {
+				return metrics_.get(attribute);
+			}
 		}
 		return null;
 	}
