@@ -203,6 +203,14 @@ public class ESUtil {
 		return context_;
 
 	}
+
+	public VelocityContext buildVelocityContext() {
+
+		VelocityContext context_ = new VelocityContext();
+
+		return context_;
+
+	}
 	public String getDate(Date date, DateFormateMeta dateFormateMeta){
 		String format = null;
 		DateFormat f = null;
