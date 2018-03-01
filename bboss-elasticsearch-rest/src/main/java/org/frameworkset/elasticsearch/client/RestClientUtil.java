@@ -770,8 +770,11 @@ public class RestClientUtil extends ClientUtil{
 //		}
 		ESDatas<T> datas = new ESDatas<T>();
 		RestResponse restResponse = (RestResponse)result;
-		datas.setTotalSize(restResponse.getSearchHits().getTotal());
-		List<SearchHit> searchHits = restResponse.getSearchHits().getHits();
+		List<SearchHit> searchHits = null;
+		if(restResponse.getSearchHits() != null) {
+			datas.setTotalSize(restResponse.getSearchHits().getTotal());
+			searchHits = restResponse.getSearchHits().getHits();
+		}
 		if(SearchHit.class.isAssignableFrom(type)){
 
 			datas.setAggregations(restResponse.getAggregations());
@@ -802,26 +805,27 @@ public class RestClientUtil extends ClientUtil{
 			datas.setDatas((List<T>) searchHits);
 		}
 		else{
-			List<T> hits = new ArrayList<T>(searchHits.size());
-			boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
-			boolean isESId = false;
-			if(!isESBaseData){
-				isESId = ESId.class.isAssignableFrom(type);
-			}
-			T data = null;
-			for(SearchHit hit:searchHits){
-				data = (T) hit.getSource();
-				hits.add(data);
-				if(isESBaseData) {
-					buildESBaseData(  hit,  (ESBaseData)data);
+			if(searchHits != null && searchHits.size() > 0) {
+				List<T> hits = new ArrayList<T>(searchHits.size());
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+				boolean isESId = false;
+				if (!isESBaseData) {
+					isESId = ESId.class.isAssignableFrom(type);
 				}
-				else if(isESId)
-				{
-					buildESId(hit,(ESId )data);
+				T data = null;
+				for (SearchHit hit : searchHits) {
+					data = (T) hit.getSource();
+					hits.add(data);
+					if (isESBaseData) {
+						buildESBaseData(hit, (ESBaseData) data);
+					} else if (isESId) {
+						buildESId(hit, (ESId) data);
+					}
 				}
+
+				datas.setDatas(hits);
 			}
 			datas.setAggregations(restResponse.getAggregations());
-			datas.setDatas(hits);
 		}
 
 		return datas;

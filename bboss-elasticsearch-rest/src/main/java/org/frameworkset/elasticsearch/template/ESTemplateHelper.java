@@ -26,15 +26,52 @@ import java.io.Writer;
 import java.util.Map;
 
 public class ESTemplateHelper {
-
+	private static String evalNullParamsTemplate(ESUtil esUtil,String templateName,ESInfo esInfo){
+		if(!esInfo.isTpl()) {
+			return esInfo.getTemplate();
+		}
+		else{
+			ESTemplate esTemplate = esInfo.getEstpl();
+			esTemplate.process();
+			if (esInfo.isTpl()) {
+				VelocityContext vcontext = esUtil.buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
+				BBossStringWriter sw = new BBossStringWriter();
+				esTemplate.merge(vcontext, sw);
+				return sw.toString();
+			}
+			else
+			{
+				return esInfo.getTemplate();
+			}
+		}
+	}
 
 	public static String evalTemplate(ESUtil esUtil,String templateName, Map params)  {
 
 		ESInfo esInfo = esUtil.getESInfo(templateName);
 		if (esInfo == null)
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null || params.size() == 0)
-			return esInfo.getTemplate();
+		if (params == null || params.size() == 0) {
+//			if(!esInfo.isTpl()) {
+//				return esInfo.getTemplate();
+//			}
+//			else{
+//				ESTemplate esTemplate = esInfo.getEstpl();
+//				esTemplate.process();
+//				if (esInfo.isTpl()) {
+//					VelocityContext vcontext = esUtil.buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
+//					BBossStringWriter sw = new BBossStringWriter();
+//					esTemplate.merge(vcontext, sw);
+//					return sw.toString();
+//				}
+//				else
+//				{
+//					return esInfo.getTemplate();
+//				}
+//			}
+			return evalNullParamsTemplate(esUtil,templateName,esInfo);
+
+		}
 		String template = null;
 		if (esInfo.isTpl()) {
 			ESTemplate esTemplate = esInfo.getEstpl();
@@ -77,8 +114,10 @@ public class ESTemplateHelper {
 		ESInfo esInfo = esUtil.getESInfo(templateName);
 		if (esInfo == null)
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
-		if (params == null)
-			return esInfo.getTemplate();
+		if (params == null) {
+//			return esInfo.getTemplate();
+			return evalNullParamsTemplate(esUtil,templateName,esInfo);
+		}
 		String template = null;
 		if (esInfo.isTpl()) {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
@@ -166,12 +205,14 @@ public class ESTemplateHelper {
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
 			buildMeta(  builder ,  indexType,  indexName,   params,action);
+			String template = ESTemplateHelper.evalNullParamsTemplate(esUtil,templateName,esInfo);
 			if(!action.equals("update"))
-				builder.append(esInfo.getTemplate()).append("\n");
+				builder.append(template).append("\n");
 			else
 			{
-				builder.append("{\"doc\":").append(esInfo.getTemplate()).append("}\n");
+				builder.append("{\"doc\":").append(template).append("}\n");
 			}
+			return;
 		}
 		if (esInfo.isTpl()) {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
@@ -204,7 +245,8 @@ public class ESTemplateHelper {
 		if (esInfo == null)
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
-			return esInfo.getTemplate();
+			String template = ESTemplateHelper.evalNullParamsTemplate(esUtil,templateName,esInfo);
+			return template;
 		}
 		if (esInfo.isTpl()) {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
