@@ -44,10 +44,12 @@ configurations {
 }
 dependencies {
     compile project(':bboss-elasticsearch-rest')
-       
-	compile('org.elasticsearch:elasticsearch:5.6.3') {
+	compile (
+			[group: 'org.elasticsearch', name: 'elasticsearch', version: "${elasticsearch}", transitive: true],
+	){
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
 	}
+
 	compile (
 			[group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true],
 	){
