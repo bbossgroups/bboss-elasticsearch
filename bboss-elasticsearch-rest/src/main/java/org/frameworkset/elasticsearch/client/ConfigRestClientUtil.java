@@ -4,6 +4,9 @@ import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
@@ -582,6 +585,66 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	@Override
 	public String createTempate(String template, String templateName,Map params) throws ElasticSearchException {
 		return super.createTempate(template,ESTemplateHelper.evalTemplate(esUtil,templateName,(Object)params));
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return super.termSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return super.phraseSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
+
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return super.termSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName) throws ElasticSearchException {
+		return super.termSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null));
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return super.phraseSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName) throws ElasticSearchException {
+		return super.phraseSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null));
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Class<?> type) throws ElasticSearchException {
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName,  (Object)null),type);
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params),type);
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName) throws ElasticSearchException {
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null));
+	}
+
+	public CompleteRestResponse complateSuggest(String path, String templateName,Map params) throws ElasticSearchException{
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
+	public CompleteRestResponse complateSuggest(String path, String templateName,Object params) throws ElasticSearchException{
+		return super.complateSuggest(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params));
 	}
 
 }

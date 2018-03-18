@@ -1,9 +1,11 @@
 package org.frameworkset.elasticsearch.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.frameworkset.elasticsearch.entity.suggest.CompleteSuggest;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 public abstract  class BaseRestResponse implements Serializable {
@@ -13,6 +15,35 @@ public abstract  class BaseRestResponse implements Serializable {
 	private boolean timedOut;
 	@JsonProperty("_shards")
 	private Shards shards;
+
+
+	/**
+	 * The count API allows to easily execute a query and get the number of matches for that query. It can be executed across one or more indices and across one or more types. The query can either be provided using a simple query string as a parameter, or using the Query DSL defined within the request body. Here is an example:
+
+	 PUT /twitter/_doc/1?refresh
+	 {
+	 "user": "kimchy"
+	 }
+
+	 GET /twitter/_doc/_count?q=user:kimchy
+
+	 GET /twitter/_doc/_count
+	 {
+	 "query" : {
+	 "term" : { "user" : "kimchy" }
+	 }
+	 }
+	 * @return
+	 */
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
+	private long count;
 
 	private Map<String,Map<String,Object>> aggregations;
 
@@ -44,9 +75,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	}
 
 	public <T> T getAggBuckets(String metrics,Class<T> type){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return (T)map.get("buckets");
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return (T) map.get("buckets");
+			}
 		}
 		return (T)null;
 	}
@@ -59,9 +92,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public <T> T getAggBuckets(String metrics,ESTypeReference<T> typeReference){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return (T)map.get("buckets");
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return (T) map.get("buckets");
+			}
 		}
 		return (T)null;
 	}
@@ -72,9 +107,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public Object getAggBuckets(String metrics){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return map.get("buckets");
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return map.get("buckets");
+			}
 		}
 		return null;
 	}
@@ -87,9 +124,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public <T> T getAggAttribute(String metrics,String attribute,ESTypeReference<T> typeReference){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return (T)map.get(attribute);
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return (T) map.get(attribute);
+			}
 		}
 		return (T)null;
 	}
@@ -102,9 +141,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public <T> T getAggAttribute(String metrics,String attribute,Class<T> typeReference){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return (T)map.get(attribute);
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return (T) map.get(attribute);
+			}
 		}
 		return (T)null;
 	}
@@ -116,9 +157,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public Object getAggAttribute(String metrics,String attribute){
-		Map<String,Object> map = aggregations.get(metrics);
-		if(map != null){
-			return map.get(attribute);
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
+			if (map != null) {
+				return map.get(attribute);
+			}
 		}
 		return null;
 	}
@@ -129,9 +172,12 @@ public abstract  class BaseRestResponse implements Serializable {
 	 * @return
 	 */
 	public Map<String,Object> getAggregationMetrics(String metrics){
-		Map<String,Object> map = aggregations.get(metrics);
+		if(aggregations != null) {
+			Map<String, Object> map = aggregations.get(metrics);
 
-		return map;
+			return map;
+		}
+		return null;
 	}
 
 
