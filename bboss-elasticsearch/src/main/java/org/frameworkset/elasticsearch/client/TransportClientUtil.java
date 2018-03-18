@@ -11,6 +11,9 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.EventDeliveryException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
@@ -103,8 +106,23 @@ public class TransportClientUtil  implements EventClientUtil{
 		      bulkRequestBuilder = client.prepareBulk();
 		    }
 	  }
-	 
-	
+
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
 	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
 		init();
 		for(int i = 0; i < ids.length; i ++){
@@ -351,6 +369,52 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String entity, Class<?> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException {
 		// TODO Auto-generated method stub

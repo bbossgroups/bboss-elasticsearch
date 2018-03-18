@@ -9,6 +9,7 @@ import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.suggest.*;
 import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
@@ -743,6 +744,69 @@ public class RestClientUtil extends ClientUtil{
 //			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
 //		}
 		return searchResult;
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException {
+		TermRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchTermResponseHandler( ));
+		return searchResult;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String entity) throws ElasticSearchException {
+		PhraseRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchPhraseResponseHandler( ));
+		return searchResult;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String entity, Class<?> type) throws ElasticSearchException {
+		RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( type));
+		return (CompleteRestResponse)searchResult;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException {
+		RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( Map.class));
+		return (CompleteRestResponse)searchResult;
+	}
+
+	public CompleteRestResponse complateSuggest(String path, String templateName,Map params) throws ElasticSearchException{
+		return null;
+	}
+
+	public CompleteRestResponse complateSuggest(String path, String templateName,Object params) throws ElasticSearchException{
+		return null;
+	}
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public TermRestResponse termSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public PhraseRestResponse phraseSuggest(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public CompleteRestResponse complateSuggest(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
+		return null;
 	}
 
 	@Override

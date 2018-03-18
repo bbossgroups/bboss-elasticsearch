@@ -9,6 +9,8 @@ public abstract class BaseSearchHits implements Serializable {
 	@JsonProperty("max_score")
 	private Double maxScore;
 
+
+
 	public BaseSearchHits() {
 		// TODO Auto-generated constructor stub
 	}

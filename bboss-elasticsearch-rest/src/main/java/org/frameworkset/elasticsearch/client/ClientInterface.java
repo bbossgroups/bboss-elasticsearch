@@ -1,9 +1,11 @@
 package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
-
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
+import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 
@@ -16,8 +18,33 @@ public interface ClientInterface {
 	public final String HTTP_DELETE = "delete";
 	public final String HTTP_PUT = "put";
 	public final String HTTP_HEAD = "head";
+	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException;
 
+	public CompleteRestResponse complateSuggest(String path, String templateName,Map params) throws ElasticSearchException;
+
+	public CompleteRestResponse complateSuggest(String path, String templateName,Object params) throws ElasticSearchException;
 	public abstract String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+
+	 * @param ids
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String... ids) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
@@ -78,6 +105,27 @@ public interface ClientInterface {
 	public abstract String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException;
 
 	public abstract String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param updateTemplate
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
 
 	/***************************读取模板文件添加或者修改文档结束************************************/
@@ -121,12 +169,42 @@ public interface ClientInterface {
 	 * @param indexType
 	 * @param bean
 	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
 	 * @return
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException;
 
 	public abstract String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
 
 	/***************************添加或者修改文档结束************************************/
@@ -205,6 +283,25 @@ public interface ClientInterface {
 	 */
 	public abstract String addDateDocument(String indexName, String indexType, Object bean) throws ElasticSearchException;
 
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String addDateDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException;
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -216,6 +313,25 @@ public interface ClientInterface {
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException;
 
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
 
 	/**************************************创建或者修改文档结束**************************************************************/
@@ -233,6 +349,26 @@ public interface ClientInterface {
 	 */
 	public abstract String addDateDocument(String indexName, String indexType,String addTemplate, Object bean) throws ElasticSearchException;
 
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String addDateDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException;
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -245,11 +381,51 @@ public interface ClientInterface {
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException;
 
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param addTemplate
+	 * @param beans
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
 
 	/**************************************基于query dsl配置文件脚本创建或者修改文档结束**************************************************************/
 
 	public abstract String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param id
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException;
 	 
 	 
@@ -387,7 +563,62 @@ public interface ClientInterface {
 	 * @return
 	 */
 	public abstract MapRestResponse search(String path, String entity) throws ElasticSearchException;
+	/**
+	 * @param path
+	 * @param entity
+	 * @return
+	 */
+	public abstract TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException;
 
+	/**
+	 * @param path
+	 * @param entity
+	 * @return
+	 */
+	public abstract PhraseRestResponse phraseSuggest(String path, String entity) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract TermRestResponse termSuggest(String path, String templateName, Object params) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract PhraseRestResponse phraseSuggest(String path, String templateName, Object params) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract TermRestResponse termSuggest(String path, String templateName, Map params) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract PhraseRestResponse phraseSuggest(String path, String templateName, Map params) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @param entity
+	 * @return
+	 */
+	public abstract CompleteRestResponse complateSuggest(String path, String entity,Class<?> type) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract CompleteRestResponse complateSuggest(String path, String templateName, Object params,Class<?> type) throws ElasticSearchException;
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public abstract CompleteRestResponse complateSuggest(String path, String templateName, Map params,Class<?> type) throws ElasticSearchException;
 
 	public abstract Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException;
 
@@ -521,6 +752,7 @@ public interface ClientInterface {
 	public abstract String refreshIndexInterval(int interval) throws ElasticSearchException;
 
 	public abstract RestResponse search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException;
+
 
 	public abstract RestResponse search(String path, String templateName, Object params, Class<?> type) throws ElasticSearchException;
 
