@@ -437,6 +437,55 @@ public class RestClientUtil extends ClientUtil{
 		}
 		return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
+
+
+	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete-by-query.html
+	 * @param path twitter/_delete_by_query?routing=1
+	 *             twitter/_doc/_delete_by_query?conflicts=proceed
+	 *             twitter/_delete_by_query
+	 *             twitter/_delete_by_query?scroll_size=5000
+	 *
+	 * @param entity
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteByQuery(String path,String entity) throws ElasticSearchException{
+		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+	}
+	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete-by-query.html
+	 * @param path twitter/_delete_by_query?routing=1
+	 *             twitter/_doc/_delete_by_query?conflicts=proceed
+	 *             twitter/_delete_by_query
+	 *             twitter/_delete_by_query?scroll_size=5000
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteByQuery(String path,String templateName,Map params) throws ElasticSearchException{
+		return null;
+	}
+	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete-by-query.html
+	 * @param path twitter/_delete_by_query?routing=1
+	 *             twitter/_doc/_delete_by_query?conflicts=proceed
+	 *             twitter/_delete_by_query
+	 *             twitter/_delete_by_query?scroll_size=5000
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteByQuery(String path,String templateName,Object params) throws ElasticSearchException{
+		return null;
+	}
 	
 	
 	/**
@@ -536,6 +585,73 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),ClientUtil.HTTP_GET);
 	}
 
+	/**
+	 * 获取json格式文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
+	 * @param path twitter/_doc/0
+	 *             twitter/_doc/0?_source=false
+	 *             twitter/_doc/0?_source_include=*.id&_source_exclude=entities
+	 *             twitter/_doc/0?_source=*.id,retweeted
+	 *             twitter/_doc/1?stored_fields=tags,counter
+	 *             twitter/_doc/2?routing=user1&stored_fields=tags,counter
+	 *             twitter/_doc/1/_source
+	 *             GET twitter/_doc/2?routing=user1
+	 *
+	 * @param path
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocumentByPath(String path) throws ElasticSearchException{
+		return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+	}
+
+
+	/**
+	 * 获取json格式文档Source,不带索引元数据
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
+	 * @param path twitter/_doc/1/_source 其中1为文档id
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String getDocumentSource(String path) throws ElasticSearchException{
+		return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+	}
+
+	/**
+	 * 获取json格式文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
+	 * @param path twitter/_doc/0
+	 *             twitter/_doc/0?_source=false
+	 *             twitter/_doc/0?_source_include=*.id&_source_exclude=entities
+	 *             twitter/_doc/0?_source=*.id,retweeted
+	 *             twitter/_doc/1?stored_fields=tags,counter
+	 *             twitter/_doc/2?routing=user1&stored_fields=tags,counter
+	 *             twitter/_doc/1/_source
+	 *             GET twitter/_doc/2?routing=user1
+	 *
+	 * @param path
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentByPath(String path,Class<T> beanType) throws ElasticSearchException{
+		SearchHit searchResult = this.client.executeRequest(path,null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+		return buildObject(searchResult, beanType);
+	}
+
+
+
+	/**
+	 * 获取文档Source对象，不带索引元数据
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
+	 * @param path twitter/_doc/1/_source 其中1为文档id
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentSource(String path,Class<T> beanType) throws ElasticSearchException{
+		T searchResult = (T) this.client.executeRequest(path,null,   new GetDocumentSourceResponseHandler( beanType),ClientUtil.HTTP_GET);
+		return searchResult;
+	}
+
 	private String buildGetDocumentRequest(String indexName, String indexType,String documentId,Map<String,Object> options){
 		StringBuilder builder = new StringBuilder();
 		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
@@ -596,6 +712,61 @@ public class RestClientUtil extends ClientUtil{
 
 		return buildObject(searchResult, beanType);
 
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+	 * @param path _mget
+	 *             test/_mget
+	 *             test/type/_mget
+	 *             test/type/_mget?stored_fields=field1,field2
+	 *             _mget?routing=key1
+	 * @param entity
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T> mgetDocuments(String path,String entity,Class<T> type)  throws ElasticSearchException{
+		MGetDocs searchResult = (MGetDocs) this.client.executeRequest(path,entity,   new MGetDocumentsSourceResponseHandler( type),ClientUtil.HTTP_POST);
+
+		return buildObjects(searchResult, type);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+	 * @param path _mget
+	 *             test/_mget
+	 *             test/type/_mget
+	 *             test/type/_mget?stored_fields=field1,field2
+	 *             _mget?routing=key1
+	 * @param templateName
+	 * @param params
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T> mgetDocuments(String path,String templateName,Object params,Class<T> type)  throws ElasticSearchException{
+		return null;
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+	 * @param path _mget
+	 *             test/_mget
+	 *             test/type/_mget
+	 *             test/type/_mget?stored_fields=field1,field2
+	 *             _mget?routing=key1
+	 * @param templateName
+	 * @param params
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T> mgetDocuments(String path,String templateName,Map params,Class<T> type)  throws ElasticSearchException{
+		return null;
 	}
 
 	/**
@@ -719,10 +890,15 @@ public class RestClientUtil extends ClientUtil{
 		else
 			return this.client.executeRequest(index+"/_mapping",null,responseHandler,ClientUtil.HTTP_GET);
 	}
-	@Override
-	public String delete(String path, String string) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * 删除索引文档
+	 * @param path /twitter/_doc/1
+	 *             /twitter/_doc/1?routing=kimchy
+	 *             /twitter/_doc/1?timeout=5m
+	 * @return
+	 */
+	public String deleteByPath(String path) throws ElasticSearchException{
+		return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
 	}
 
 	public <T> T executeRequest(String path, String templateName,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
@@ -1023,6 +1199,22 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 
+	protected <T> List<T> buildObjects(MGetDocs results, Class<T> type){
+		if(results == null){
+			return null;
+		}
+		List<SearchHit> hits = results.getDocs();
+		if(hits == null ){
+			return null;
+		}
+		List<T> docs  = new ArrayList<T>(hits.size());
+		for(SearchHit result:hits) {
+			docs.add (buildObject(  result,  type));
+		}
+		return docs;
+
+
+	}
 	protected <T> T buildObject(SearchHit result, Class<T> type){
 		if(result == null){
 			return null;
@@ -1411,5 +1603,130 @@ public class RestClientUtil extends ClientUtil{
 			return ret.toString();
 
 		}
- 
+
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param path test/_doc/1
+	 *             test/_doc/1/_update
+	 *
+	 *
+	 * @param entity
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByPath(String path,String entity) throws ElasticSearchException{
+		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param path test/_doc/1
+	 *             test/_doc/1/_update
+	 *
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByPath(String path,String templateName,Map params) throws ElasticSearchException{
+		return null;
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param path test/_doc/1
+	 *             test/_doc/1/_update
+	 *
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByPath(String path,String templateName,Object params) throws ElasticSearchException{
+		return null;
+	}
+
+	/**
+	 * The simplest usage of _update_by_query just performs an update on every document in the index without changing the source. This is useful to pick up a new property or some other online mapping change. Here is the API:
+
+	 * POST twitter/_update_by_query?conflicts=proceed
+	 * @param path twitter/_update_by_query?conflicts=proceed
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByQuery(String path) throws ElasticSearchException{
+		return this.client.executeHttp(path,ClientUtil.HTTP_POST);
+	}
+	/**
+	 * The simplest usage of _update_by_query just performs an update on every document in the index without changing the source. This is useful to pick up a new property or some other online mapping change. Here is the API:
+
+	 * POST twitter/_update_by_query?conflicts=proceed
+	 * @param path twitter/_update_by_query?conflicts=proceed
+	 *             twitter/_doc/_update_by_query?conflicts=proceed
+	 *             twitter/_update_by_query
+	 *             twitter,blog/_doc,post/_update_by_query
+	 *             twitter/_update_by_query?routing=1
+	 *             twitter/_update_by_query?scroll_size=100
+	 *             twitter/_update_by_query?pipeline=set-foo
+	 *
+	 *
+	 * @param entity
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByQuery(String path,String entity) throws ElasticSearchException{
+		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 * The simplest usage of _update_by_query just performs an update on every document in the index without changing the source. This is useful to pick up a new property or some other online mapping change. Here is the API:
+
+	 * POST twitter/_update_by_query?conflicts=proceed
+	 * @param path twitter/_update_by_query?conflicts=proceed
+	 *             twitter/_doc/_update_by_query?conflicts=proceed
+	 *             twitter/_update_by_query
+	 *             twitter,blog/_doc,post/_update_by_query
+	 *             twitter/_update_by_query?routing=1
+	 *             twitter/_update_by_query?scroll_size=100
+	 *             twitter/_update_by_query?pipeline=set-foo
+	 *
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByQuery(String path,String templateName,Map params) throws ElasticSearchException{
+		return null;
+	}
+
+	/**
+	 * The simplest usage of _update_by_query just performs an update on every document in the index without changing the source. This is useful to pick up a new property or some other online mapping change. Here is the API:
+
+	 * POST twitter/_update_by_query?conflicts=proceed
+	 * @param path twitter/_update_by_query?conflicts=proceed
+	 *             twitter/_doc/_update_by_query?conflicts=proceed
+	 *             twitter/_update_by_query
+	 *             twitter,blog/_doc,post/_update_by_query
+	 *             twitter/_update_by_query?routing=1
+	 *             twitter/_update_by_query?scroll_size=100
+	 *             twitter/_update_by_query?pipeline=set-foo
+	 *
+	 *
+	 * @param templateName
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateByQuery(String path,String templateName,Object params) throws ElasticSearchException{
+		return null;
+	}
+
+
 }

@@ -39,22 +39,22 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 
          if (status >= 200 && status < 300) {
              HttpEntity entity = response.getEntity();
-             try {
-            	 ESSerialThreadLocal.setESTypeReferences(types);
-            	 if(entity != null)
-            	 	return super.converJson(entity,SearchHit.class);
+			 if(entity != null) {
+				 try {
+					 ESSerialThreadLocal.setESTypeReferences(types);
+
+					 return super.converJson(entity, SearchHit.class);
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(entity.getContent(), SearchHit.class) : null;
 //                 String content = EntityUtils.toString(entity);
 //                 System.out.println(content);
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
-             }
-             catch (Exception e){
+				 } catch (Exception e) {
 //                 logger.error("",e);
-                 throw new ElasticSearchException(e);
-             }
-             finally{
-            	 ESSerialThreadLocal.clean();
-             }
+					 throw new ElasticSearchException(e);
+				 } finally {
+					 ESSerialThreadLocal.clean();
+				 }
+			 }
 //             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
 //             NamedWriteableRegistry namedWriteableRegistry = (NamedWriteableRegistry)classInfo.getPropertyValue(clientUtil.getClient(),"namedWriteableRegistry");
 
