@@ -253,6 +253,14 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		return super.delete(path, string);
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param templateName
+	 * @param action
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	@Override
 	public String executeHttp(String path, String templateName, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
@@ -299,15 +307,19 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public <T> T  executeHttp(String path, String templateName,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, bean),   action,responseHandler);
 	}
+	@Override
+	public <T> T  executeHttp(String path, String templateName,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null),   action,responseHandler);
+	}
 
-	/**
-	 * 发送es restful请求，获取String类型json报文
-	 * @param path
-	 * @param templateName 请求报文
-	 * @param action get,post,put,delete
-	 * @return
-	 * @throws ElasticSearchException
-	 */
+		/**
+		 * 发送es restful请求，返回String类型json报文
+		 * @param path
+		 * @param templateName 请求报文dsl名称，在配置文件中指定
+		 * @param action get,post,put,delete
+		 * @return
+		 * @throws ElasticSearchException
+		 */
 	public String executeHttp(String path, String templateName,Object bean, String action) throws ElasticSearchException{
 		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, bean),   action);
 	}
