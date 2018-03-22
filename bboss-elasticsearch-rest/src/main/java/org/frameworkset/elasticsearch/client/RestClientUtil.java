@@ -647,8 +647,14 @@ public class RestClientUtil extends ClientUtil{
 		// TODO Auto-generated method stub
 		return this.client.executeRequest(path,entity,  responseHandler);
 	}
-	
-	
+
+	/**
+	 * 没有报文的请求处理api
+	 * @param path 请求url相对路径，可以带参数
+	 * @param action
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	@Override
 	public String executeHttp(String path, String action) throws ElasticSearchException {
 		// TODO Auto-generated method stub
