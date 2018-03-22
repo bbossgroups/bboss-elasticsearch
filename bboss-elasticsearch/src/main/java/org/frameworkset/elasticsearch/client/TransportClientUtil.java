@@ -54,6 +54,41 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public String updateByQuery(String path) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByQuery(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByQuery(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByQuery(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> mgetDocuments(String path, String entity, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> mgetDocuments(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> mgetDocuments(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 
@@ -120,6 +155,41 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public CompleteRestResponse complateSuggest(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByPath(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByPath(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateByPath(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteByPath(String path) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteByQuery(String path, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteByQuery(String path, String templateName, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteByQuery(String path, String templateName, Object params) throws ElasticSearchException {
 		return null;
 	}
 
@@ -218,6 +288,27 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getDocumentByPath(String path) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocumentSource(String path) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentByPath(String path, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentSource(String path, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public <T> T getDocument(String indexName, String indexType, String documentId, Class<T> beanType)
 			throws ElasticSearchException {
@@ -311,11 +402,6 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
-	@Override
-	public String delete(String path, String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	@Override
 	public String getIndexMapping(String index) throws ElasticSearchException {
 		// TODO Auto-generated method stub
