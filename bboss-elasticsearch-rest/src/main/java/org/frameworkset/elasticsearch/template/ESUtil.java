@@ -22,6 +22,7 @@ import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
+import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Param;
@@ -66,12 +67,8 @@ public class ESUtil {
 	protected boolean hasrefs;
 	protected String templateFile;
 	protected String realTemplateFile;
-	private static String java_date_format = "yyyy-MM-dd HH:mm:ss.SSS";
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
 		return this.templateCache.getTemplateStruction(esInfo,template);
-	}
-	public String getJavaDateFormat() {
-		return java_date_format;
 	}
 
 	public VelocityContext buildVelocityContext(Object bean) {
@@ -215,8 +212,9 @@ public class ESUtil {
 		String format = null;
 		DateFormat f = null;
 		if(dateFormateMeta == null ) {
-			format = this.getJavaDateFormat();
-			dateFormateMeta = DateFormateMeta.buildDateFormateMeta(format);
+//			format = this.getJavaDateFormat();
+//			dateFormateMeta = DateFormateMeta.buildDateFormateMeta(format);
+			dateFormateMeta = SerialUtil.getDateFormateMeta();
 		}
 		f = dateFormateMeta.toDateFormat();
 		try {
@@ -423,7 +421,7 @@ public class ESUtil {
 								.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
 					}
 				} else {
-					Object value = bean.get(variable.getVariableName());
+					Object value = data;//bean.get(variable.getVariableName());
 					if(value instanceof Date){
 						String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
 						this.handleVaribleValue(builder,variable,value_,false);

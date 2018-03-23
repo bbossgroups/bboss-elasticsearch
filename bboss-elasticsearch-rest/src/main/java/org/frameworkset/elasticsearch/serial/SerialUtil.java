@@ -13,10 +13,14 @@ public class SerialUtil {
 	protected static ObjectMapper normaMapper = null;
 	protected static ObjectMapper esBaseDataFilterMapper = null;
 	protected static ObjectMapper esIdFilterMapper = null;
+	protected static DateFormateMeta dateFormateMeta;
 	static {
-		DateFormateMeta dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC");
+		dateFormateMeta = DateFormateMeta.buildDateFormateMeta("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC");
 
 		init(dateFormateMeta);
+	}
+	public static DateFormateMeta getDateFormateMeta(){
+		return dateFormateMeta;
 	}
 	public static void init(DateFormateMeta dateFormateMeta){
 		normaMapper = new ObjectMapper();
