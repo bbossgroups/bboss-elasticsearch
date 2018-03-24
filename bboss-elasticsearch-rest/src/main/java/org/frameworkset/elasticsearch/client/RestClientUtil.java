@@ -1728,5 +1728,183 @@ public class RestClientUtil extends ClientUtil{
 		return null;
 	}
 
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+	 * @param index _mget
+	 *             test/_mget
+	 *             test/type/_mget
+	 *             test/type/_mget?stored_fields=field1,field2
+	 *             _mget?routing=key1
+	 * @param indexType
+	 * @param type
+	 * @param ids
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T> mgetDocuments(String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException{
+		if(ids == null || ids.length ==0)
+			return null;
+		StringBuilder path = new StringBuilder();
+		if(indexType == null || indexType.equals(""))
+			path.append(index).append("/_mget");
+		else
+			path.append(index).append("/").append(indexType).append("/_mget");
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"ids\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(ids,writer);
+		builder.append("}");
+		MGetDocs searchResult = (MGetDocs) this.client.executeRequest(path.toString(),builder.toString(),   new MGetDocumentsSourceResponseHandler( type),ClientUtil.HTTP_POST);
+
+		return buildObjects(searchResult, type);
+
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+	 * @param index _mget
+	 *             test/_mget
+	 *             test/type/_mget
+	 *             test/type/_mget?stored_fields=field1,field2
+	 *             _mget?routing=key1
+	 * @param indexType
+	 * @param ids
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String mgetDocuments(String index,String indexType,Object ... ids)  throws ElasticSearchException{
+		if(ids == null || ids.length ==0)
+			return null;
+		StringBuilder path = new StringBuilder();
+		if(indexType == null || indexType.equals(""))
+			path.append(index).append("/_mget");
+		else
+			path.append(index).append("/").append(indexType).append("/_mget");
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"ids\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(ids,writer);
+		builder.append("}");
+		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+
+		return searchResult;
+
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params) throws ElasticSearchException{
+		return updateDocument(index,indexType,id,params,null);
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params) throws ElasticSearchException{
+		return updateDocument(index,indexType,id,params,null);
+	}
+
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption) throws ElasticSearchException{
+		StringBuilder path = new StringBuilder();
+		if(indexType == null || indexType.equals(""))
+			path.append(index).append("/").append(id).append("/_update");
+		else
+			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+		if(refreshOption != null){
+			path.append("?").append(refreshOption);
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"doc\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(params,writer);
+		builder.append("}");
+		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+
+		return searchResult;
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption) throws ElasticSearchException{
+		StringBuilder path = new StringBuilder();
+		if(indexType == null || indexType.equals(""))
+			path.append(index).append("/").append(id).append("/_update");
+		else
+			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+		if(refreshOption != null){
+			path.append("?").append(refreshOption);
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"doc\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(params,writer);
+		builder.append("}");
+		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+
+		return searchResult;
+	}
 
 }
