@@ -75,6 +75,16 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> List<T> mgetDocuments(String index, String indexType, Class<T> type, Object... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String mgetDocuments(String index, String indexType, Object... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> List<T> mgetDocuments(String path, String entity, Class<T> type) throws ElasticSearchException {
 		return null;
 	}
@@ -170,6 +180,26 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public String updateByPath(String path, String templateName, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String type, Object id, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String type, Object id, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String type, Object id, Map params, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String type, Object id, Object params, String refreshOption) throws ElasticSearchException {
 		return null;
 	}
 
