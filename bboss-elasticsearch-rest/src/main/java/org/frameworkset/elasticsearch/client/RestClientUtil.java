@@ -1021,6 +1021,7 @@ public class RestClientUtil extends ClientUtil{
 			datas.setTotalSize(restResponse.getSearchHits().getTotal());
 			searchHits = restResponse.getSearchHits().getHits();
 		}
+		datas.setScrollId(restResponse.getScrollId());
 		if(SearchHit.class.isAssignableFrom(type)){
 
 			datas.setAggregations(restResponse.getAggregations());

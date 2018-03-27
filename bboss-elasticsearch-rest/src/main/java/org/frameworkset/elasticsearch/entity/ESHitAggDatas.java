@@ -12,6 +12,7 @@ import java.util.Map;
 public class ESHitAggDatas<Hits,Aggs>  implements Serializable {
 	private long totalSize;
 	private List<Aggs> aggDatas;
+	private String scrollId;
 	/**
 	 * 当前获取的记录集合
 	 */
@@ -25,4 +26,12 @@ public class ESHitAggDatas<Hits,Aggs>  implements Serializable {
 	}
 
 	private Map<String,Map<String,Object>> aggregations;
+
+	public String getScrollId() {
+		return scrollId;
+	}
+
+	public void setScrollId(String scrollId) {
+		this.scrollId = scrollId;
+	}
 }

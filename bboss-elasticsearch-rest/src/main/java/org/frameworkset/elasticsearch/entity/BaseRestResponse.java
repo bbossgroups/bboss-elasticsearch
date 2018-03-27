@@ -1,15 +1,14 @@
 package org.frameworkset.elasticsearch.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.frameworkset.elasticsearch.entity.suggest.CompleteSuggest;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 public abstract  class BaseRestResponse implements Serializable {
-
+	@JsonProperty("_scroll_id")
+	private String scrollId;
 	private long took;
 	@JsonProperty("timed_out")
 	private boolean timedOut;
@@ -181,6 +180,11 @@ public abstract  class BaseRestResponse implements Serializable {
 	}
 
 
+	public String getScrollId() {
+		return scrollId;
+	}
 
-
+	public void setScrollId(String scrollId) {
+		this.scrollId = scrollId;
+	}
 }
