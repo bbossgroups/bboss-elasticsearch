@@ -447,6 +447,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					 {
 						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,responseHandler);
 					 }
+					 else if(action == ClientUtil.HTTP_DELETE)
+						 response = HttpRequestUtil.httpDelete(httpPool,url,entity, null, this.headers,responseHandler);
 					else
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 				}
@@ -658,7 +660,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,  responseHandler);
 					}
 					else if(action == ClientUtil.HTTP_DELETE)
-						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,  responseHandler);
+						response = HttpRequestUtil.httpDelete(httpPool,url, entity,null, this.headers,  responseHandler);
 					else
 						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 

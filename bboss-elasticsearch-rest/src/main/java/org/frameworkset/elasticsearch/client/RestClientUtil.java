@@ -1010,6 +1010,94 @@ public class RestClientUtil extends ClientUtil{
 		return searchResult;
 	}
 
+	/**
+	 * scroll search
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
+	 * @param scroll
+	 * @param scrollId
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchScroll(String scroll,String scrollId ,Class<T> type) throws ElasticSearchException{
+		StringBuilder entity = new StringBuilder();
+		entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
+		RestResponse result = this.client.executeRequest("_search/scroll",entity.toString(),   new ElasticSearchResponseHandler( type));
+		return buildESDatas(result,type);
+	}
+
+	/**
+	 * scroll search
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
+	 * @param scroll
+	 * @param scrollId
+
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String searchScroll(String scroll,String scrollId ) throws ElasticSearchException{
+		StringBuilder entity = new StringBuilder();
+		entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
+		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_GET);
+		return result;
+	}
+
+
+	/**
+	 * 清理scrollId
+	 * @param scrollIds
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteScrolls(String ... scrollIds) throws ElasticSearchException{
+		if(scrollIds == null || scrollIds.length == 0)
+			return null;
+		StringBuilder entity = new StringBuilder();
+		entity.append("{\"scroll_id\" : [");
+		for(int i = 0; i < scrollIds.length; i ++){
+			String scrollId = scrollIds[i];
+			if(i > 0)
+				entity.append(",");
+			entity.append("\"").append(scrollId).append("\"");
+		}
+		entity.append("]}");
+		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_DELETE);
+		return result;
+	}
+
+	/**
+	 * 清理scrollId
+	 * @param scrollIds
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException{
+		if(scrollIds == null || scrollIds.size() == 0)
+			return null;
+		StringBuilder entity = new StringBuilder();
+		entity.append("{\"scroll_id\" : [");
+		for(int i = 0; i < scrollIds.size(); i ++){
+			String scrollId = scrollIds.get(i);
+			if(i > 0)
+				entity.append(",");
+			entity.append("\"").append(scrollId).append("\"");
+		}
+		entity.append("]}");
+		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_DELETE);
+		return result;
+	}
+
+	/**
+	 * 清理all scrollId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteAllScrolls() throws ElasticSearchException{
+		String result = this.client.executeHttp("_search/scroll/_all",ClientUtil.HTTP_DELETE);
+		return result;
+	}
+
 	protected <T> ESDatas<T> buildESDatas(RestResponse result,Class<T> type){
 //		if(result instanceof ErrorResponse){
 //			throw new ElasticSearchException(SimpleStringUtil.object2json(result));

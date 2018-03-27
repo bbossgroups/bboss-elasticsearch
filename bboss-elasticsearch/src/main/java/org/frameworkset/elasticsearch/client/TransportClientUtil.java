@@ -655,6 +655,32 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <T> ESDatas<T> searchScroll(String scroll, String scrollId, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String searchScroll(String scroll, String scrollId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteScrolls(String... scrollIds) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteAllScrolls() throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type)
 			throws ElasticSearchException {

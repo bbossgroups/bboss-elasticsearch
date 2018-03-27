@@ -985,6 +985,51 @@ public interface ClientInterface {
 
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException;
 
+	/**
+	 * scroll search
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
+	 * @param scroll
+	 * @param scrollId
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchScroll(String scroll,String scrollId ,Class<T> type) throws ElasticSearchException;
+	/**
+	 * scroll search
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
+	 * @param scroll
+	 * @param scrollId
+
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String searchScroll(String scroll,String scrollId ) throws ElasticSearchException;
+
+	/**
+	 * 清理scrollId
+	 * @param scrollIds
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteScrolls(String ... scrollIds) throws ElasticSearchException;
+
+	/**
+	 * 清理all scrollId
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteAllScrolls() throws ElasticSearchException;
+
+	/**
+	 * 清理scrollId
+	 * @param scrollIds
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException;
+
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException;
 
 	public abstract <T> ESDatas<T> searchList(String path, String entity, Class<T> type) throws ElasticSearchException;
@@ -1194,4 +1239,5 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String path,String templateName,Map params,Class<T> type)  throws ElasticSearchException;
+
 }
