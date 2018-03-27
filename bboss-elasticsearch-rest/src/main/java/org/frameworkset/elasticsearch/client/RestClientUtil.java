@@ -186,6 +186,41 @@ public class RestClientUtil extends ClientUtil{
 	public String addDateDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
 		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,refreshOption);
 	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId);
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,refreshOption);
+	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
 	 * @param indexName
@@ -321,8 +356,58 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
+
 		Object id = this.getId(bean);
+		return addDocument(indexName, indexType, bean,id,refreshOption);
+//		StringBuilder builder = new StringBuilder();
+//		Object id = this.getId(bean);
+//		builder.append(indexName).append("/").append(indexType);
+//		if(id != null){
+//			builder.append("/").append(id);
+//		}
+//		if(refreshOption != null ){
+//			builder.append("?").append(refreshOption);
+//		}
+//		String path = builder.toString();
+//		builder = null;
+//		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
+//		return path;
+	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
+		return addDocument(indexName, indexType, bean,docId,null);
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		Object id = docId;
 		builder.append(indexName).append("/").append(indexType);
 		if(id != null){
 			builder.append("/").append(id);
@@ -335,6 +420,8 @@ public class RestClientUtil extends ClientUtil{
 		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
 		return path;
 	}
+
+
 
 
 	public String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
