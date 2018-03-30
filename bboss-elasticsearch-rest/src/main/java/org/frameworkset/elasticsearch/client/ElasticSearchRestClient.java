@@ -280,23 +280,28 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //  }
 
 
-	public String execute(String entity) throws ElasticSearchException {
+	public String execute(String entity,String options) throws ElasticSearchException {
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
 		ESAddress host = null;
 		String url = null;
+		String endpoint = BULK_ENDPOINT;
+		if(options != null){
+			endpoint = new StringBuilder().append(endpoint).append("?").append(options).toString();
+		}
+		if(this.showTemplate ){
+			if(logger.isInfoEnabled()) {
+				logger.info("ElasticSearch http request action:{},request body:\n{}",endpoint,entity);
+			}
+
+		}
 		while (true) {
 
 
 			try {
 				host = serversList.get();
-				url = host.getAddress() + "/" + BULK_ENDPOINT;
-				if(this.showTemplate ){
-					if(logger.isInfoEnabled())
-						logger.info(entity);
-
-				}
+				url = new StringBuilder().append(host.getAddress()).append( "/" ).append( endpoint).toString();
 				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
 				e = null;
 				break;

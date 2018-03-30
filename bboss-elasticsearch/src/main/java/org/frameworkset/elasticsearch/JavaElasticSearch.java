@@ -144,11 +144,11 @@ public class JavaElasticSearch extends ElasticSearch {
 	 * @param datas
 	 * @throws EventDeliveryException
 	 */
-	public Object addIndexs(java.util.List<Event> datas) throws EventDeliveryException {
-		return addIndexs(datas, null);
+	public Object addIndexs(java.util.List<Event> datas,String options) throws EventDeliveryException {
+		return addIndexs(datas, null,options);
 
 	}
-	public Object addIndexs(java.util.List<Event> datas, ElasticSearchEventSerializer elasticSearchEventSerializer) throws EventDeliveryException {
+	public Object addIndexs(java.util.List<Event> datas, ElasticSearchEventSerializer elasticSearchEventSerializer,String options) throws EventDeliveryException {
 		/**
 		 * 优先采用tcp协议
 		 */
@@ -171,7 +171,7 @@ public class JavaElasticSearch extends ElasticSearch {
 			}
 
 
-			return clientUtil.execute();
+			return clientUtil.execute( options);
 
 		} catch (EventDeliveryException ex) {
 
@@ -206,7 +206,7 @@ public class JavaElasticSearch extends ElasticSearch {
 	 * @param elasticSearchEventSerializer
 	 * @throws EventDeliveryException
 	 */
-	public Object updateIndexs(java.util.List<Event> datas, ElasticSearchEventSerializer elasticSearchEventSerializer) throws EventDeliveryException {
+	public Object updateIndexs(java.util.List<Event> datas, ElasticSearchEventSerializer elasticSearchEventSerializer,String options) throws EventDeliveryException {
 		EventClientUtil clientUtil = this.getTransportClientUtil();
 		if(clientUtil == null)
 			clientUtil = this.getEventRestClientUtil();
@@ -228,7 +228,7 @@ public class JavaElasticSearch extends ElasticSearch {
 			}
 
 
-			return clientUtil.execute();
+			return clientUtil.execute( options);
 
 		} catch (EventDeliveryException ex) {
 
@@ -247,12 +247,12 @@ public class JavaElasticSearch extends ElasticSearch {
 		}
 	}
 
-	public Object updateIndexs(java.util.List<Event> datas) throws EventDeliveryException {
-		return updateIndexs(datas, null);
+	public Object updateIndexs(java.util.List<Event> datas,String options) throws EventDeliveryException {
+		return updateIndexs(datas, null,  options);
 
 	}
 
-	public Object deleteIndexs(String indexName, String indexType, String... ids) throws EventDeliveryException {
+	public Object deleteIndexs(String indexName, String indexType,String options, String... ids) throws EventDeliveryException {
 		EventClientUtil clientUtil = this.getTransportClientUtil();
 		if(clientUtil == null){
 			clientUtil = this.getEventRestClientUtil();
@@ -262,7 +262,7 @@ public class JavaElasticSearch extends ElasticSearch {
 			try {
 
 				clientUtil.deleteDocuments(indexName, indexType, ids);
-				return clientUtil.execute();
+				return clientUtil.execute( options);
 
 			} catch (EventDeliveryException ex) {
 
