@@ -30,8 +30,8 @@ public class RestEventClientUtil extends RestClientUtil implements EventClientUt
 
 	 
 	  
-	public Object execute() throws ElasticSearchException {
-		  return client.execute(this.bulkBuilder.toString());
+	public Object execute(String options) throws ElasticSearchException {
+		  return client.execute(this.bulkBuilder.toString(),  options);
 	  }
 
 

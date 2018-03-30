@@ -135,8 +135,22 @@ public class TransportClientUtil  implements EventClientUtil{
 	  }
 
  
-	  public Object execute() throws ElasticSearchException {
+	  public Object execute(String options) throws ElasticSearchException {
 	    try {
+	    	if(options != null) {
+	    		if(options.indexOf("refresh=true") > 0) {
+					bulkRequestBuilder.setRefreshPolicy("true");
+				}
+				else if(options.indexOf("refresh=wait_for") > 0){
+					bulkRequestBuilder.setRefreshPolicy("wait_for");
+				}
+				else if(options.indexOf("refresh=false") > 0){
+					bulkRequestBuilder.setRefreshPolicy("false");
+				}
+				else if(options.indexOf("refresh") > 0){
+					bulkRequestBuilder.setRefreshPolicy("true");
+				}
+			}
 	      BulkResponse bulkResponse = bulkRequestBuilder.execute().actionGet();
 	      if (bulkResponse.hasFailures()) {
 	        throw new EventDeliveryException(bulkResponse.buildFailureMessage());

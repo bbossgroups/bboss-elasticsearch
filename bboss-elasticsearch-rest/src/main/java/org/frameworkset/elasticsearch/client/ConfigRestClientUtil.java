@@ -58,8 +58,8 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		return executeRequest(path, null);
 	}
 
-	public Object execute() throws ElasticSearchException {
-		return client.execute(this.bulkBuilder.toString());
+	public Object execute(String options) throws ElasticSearchException {
+		return client.execute(this.bulkBuilder.toString(),  options);
 	}
 
 	 
