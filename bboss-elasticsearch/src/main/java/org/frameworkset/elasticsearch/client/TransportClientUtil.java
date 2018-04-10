@@ -845,7 +845,17 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String addDocument(String indexName, String indexType, Object bean, Object docId) throws ElasticSearchException {
+	public String addDocumentWithId(String indexName, String indexType, Object bean, Object docId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentWithId(String indexName, String indexType, Object bean, Object docId, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, String indexType, Object bean, Object docId, Object parentId, String refreshOption) throws ElasticSearchException {
 		return null;
 	}
 
@@ -878,12 +888,22 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String addDateDocument(String indexName, String indexType, Object bean, Object docId) throws ElasticSearchException {
+	public String addDateDocumentWithId(String indexName, String indexType, Object bean, Object docId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithId(String indexName, String indexType, Object bean, Object docId, Object parentId) throws ElasticSearchException {
 		return null;
 	}
 
 	@Override
 	public String addDateDocument(String indexName, String indexType, Object bean, Object docId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, String indexType, Object bean, Object docId, Object parentId, String refreshOption) throws ElasticSearchException {
 		return null;
 	}
 
