@@ -183,6 +183,26 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public String updateByPath(String path, String entity) throws ElasticSearchException {
 		return null;
 	}

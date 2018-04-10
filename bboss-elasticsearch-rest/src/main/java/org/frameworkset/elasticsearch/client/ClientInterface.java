@@ -23,7 +23,21 @@ public interface ClientInterface {
 	public CompleteRestResponse complateSuggest(String path, String templateName,Map params) throws ElasticSearchException;
 
 	public CompleteRestResponse complateSuggest(String path, String templateName,Object params) throws ElasticSearchException;
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId) throws ElasticSearchException;
 
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId,String refreshOption) throws ElasticSearchException;
+
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId) throws ElasticSearchException;
+
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId,String refreshOption) throws ElasticSearchException;
 	/**
 	 * 根据路径更新文档
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
