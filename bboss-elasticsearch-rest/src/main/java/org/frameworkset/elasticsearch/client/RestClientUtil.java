@@ -195,8 +195,20 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDateDocument(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
-		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId);
+	public String addDateDocumentWithId(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
+		return addDocumentWithId(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId);
+	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentWithId(String indexName, String indexType, Object bean,Object docId,Object parentId) throws ElasticSearchException{
+		return addDocumentWithId(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,parentId);
 	}
 
 	/**
@@ -220,6 +232,29 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String addDateDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException{
 		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,refreshOption);
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,  parentId,refreshOption);
 	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -281,13 +316,51 @@ public class RestClientUtil extends ClientUtil{
 	}
 	protected void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
 		Object id = this.getId(params);
-		if(id != null)
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-		else
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+		Object parentId = this.getParentId(params);
+		if(id != null) {
+			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName)
+					.append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : ");
+			this.buildId(id,builder);
+			if(parentId != null){
+				builder.append(",\"parent\":");
+				this.buildId(parentId,builder);
+			}
+			builder.append(" } }\n");
+		}
+		else {
+			if(parentId == null)
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+			else{
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\"");
+				builder.append(",\"parent\":");
+				this.buildId(parentId,builder);
+				builder.append(" } }\n");
+			}
+		}
+	}
+	protected void buildId(Object id,StringBuilder builder){
+		if (id instanceof String) {
+			builder.append("\"").append(id).append("\"");
+
+		}
+		else{
+			builder.append(id);
+		}
+	}
+	protected void buildId(Object id,Writer writer) throws IOException {
+		if (id instanceof String) {
+			writer.write("\"");
+			writer.write((String)id);
+			writer.write("\"");
+
+		}
+		else{
+			writer.write(String.valueOf(id));
+		}
 	}
 	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
 		Object id = this.getId(params);
+		Object parentId = this.getParentId(params);
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
@@ -295,9 +368,13 @@ public class RestClientUtil extends ClientUtil{
 			writer.write(indexName);
 			writer.write("\", \"_type\" : \"");
 			writer.write(indexType);
-			writer.write("\", \"_id\" : \"");
-			writer.write(String.valueOf(id));
-			writer.write("\" } }\n");
+			writer.write("\", \"_id\" : ");
+			this.buildId(id,writer);
+			if(parentId != null){
+				writer.write(", \"parent\" : ");
+				this.buildId(parentId,writer);
+			}
+			writer.write(" } }\n");
 		}
 		else {
 
@@ -307,6 +384,10 @@ public class RestClientUtil extends ClientUtil{
 			writer.write(indexName);
 			writer.write("\", \"_type\" : \"");
 			writer.write(indexType);
+			if(parentId != null){
+				writer.write(", \"parent\" : ");
+				this.buildId(parentId,writer);
+			}
 			writer.write("\" } }\n");
 		}
 	}
@@ -341,7 +422,19 @@ public class RestClientUtil extends ClientUtil{
 	}
 	protected Object getId(Object bean){
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		ClassUtil.PropertieDescription pkProperty = beanInfo.getPkProperty();
+		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(pkProperty == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+	}
+
+	protected Object getParentId(Object bean){
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
 		if(pkProperty == null)
 			return null;
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
@@ -358,7 +451,8 @@ public class RestClientUtil extends ClientUtil{
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
 
 		Object id = this.getId(bean);
-		return addDocument(indexName, indexType, bean,id,refreshOption);
+		Object parentId = this.getParentId(bean);
+		return addDocument(indexName, indexType, bean,id,parentId,refreshOption);
 //		StringBuilder builder = new StringBuilder();
 //		Object id = this.getId(bean);
 //		builder.append(indexName).append("/").append(indexType);
@@ -382,8 +476,20 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDocument(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
+	public String addDocumentWithId(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException{
 		return addDocument(indexName, indexType, bean,docId,null);
+	}
+
+	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocumentWithId(String indexName, String indexType, Object bean,Object docId,Object parentId) throws ElasticSearchException{
+		return addDocument(indexName, indexType, bean,docId,  parentId,(String)null);
 	}
 
 	/**
@@ -406,6 +512,29 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException{
+		return addDocument(  indexName,   indexType,   bean,docId,(Object)null,refreshOption);
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
 		builder.append(indexName).append("/").append(indexType);
@@ -414,6 +543,14 @@ public class RestClientUtil extends ClientUtil{
 		}
 		if(refreshOption != null ){
 			builder.append("?").append(refreshOption);
+			if(parentId != null){
+				builder.append("&parent=").append(parentId);
+			}
+		}
+		else{
+			if(parentId != null){
+				builder.append("?parent=").append(parentId);
+			}
 		}
 		String path = builder.toString();
 		builder = null;
@@ -1279,6 +1416,9 @@ public class RestClientUtil extends ClientUtil{
 		esBaseData.setType(hit.getType());
 		esBaseData.setVersion(hit.getVersion());
 		esBaseData.setIndex(hit.getIndex());
+		esBaseData.setParent(hit.getParent());
+		esBaseData.setRouting(hit.getRouting());
+		esBaseData.setFound(hit.isFound());
 	}
 	protected void buildESId(BaseSearchHit hit,ESId esBaseData){
 

@@ -9,14 +9,16 @@ import java.util.Map;
  */
 public abstract class ESBaseData implements Serializable{
 	private String  type;
-	private String  id;
+	private Object  id;
 	private Map<String,List<Object>> fields;
 	private int version;
 	private String index;//"_index": "trace-2017.09.01",
 	private Map<String,List<Object>> highlight;
 	private Object[] sort;
 	private Double  score;
-
+	private Object parent;
+	private Object routing;
+	private boolean found;
 
 	public String getType() {
 		return type;
@@ -26,11 +28,11 @@ public abstract class ESBaseData implements Serializable{
 		this.type = type;
 	}
 
-	public String getId() {
+	public Object getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Object id) {
 		this.id = id;
 	}
 
@@ -83,4 +85,27 @@ public abstract class ESBaseData implements Serializable{
 	}
 
 
+	public Object getRouting() {
+		return routing;
+	}
+
+	public void setRouting(Object routing) {
+		this.routing = routing;
+	}
+
+	public Object getParent() {
+		return parent;
+	}
+
+	public void setParent(Object parent) {
+		this.parent = parent;
+	}
+
+	public boolean isFound() {
+		return found;
+	}
+
+	public void setFound(boolean found) {
+		this.found = found;
+	}
 }

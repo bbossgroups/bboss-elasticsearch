@@ -190,8 +190,15 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		if(id != null){
 			builder.append("/").append(id);
 		}
+		Object parentId = this.getParentId(bean);
 		if(refreshOption != null ){
 			builder.append("?").append(refreshOption);
+			if(parentId != null){
+				builder.append("&parent=").append(parentId);
+			}
+		}
+		else if(parentId != null){
+			builder.append("?parent=").append(parentId);
 		}
 		String path = builder.toString();
 		builder.setLength(0);

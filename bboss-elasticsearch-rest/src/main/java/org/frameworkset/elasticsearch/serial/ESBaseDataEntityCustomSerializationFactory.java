@@ -8,7 +8,11 @@ public class ESBaseDataEntityCustomSerializationFactory extends EntityCustomSeri
 			"index",
 			"highlight",
 			"sort",
-			"score"};
+			"score",
+			"parent",
+			"routing",
+			"found"
+			};
 	@Override
 	protected String[] getFilterFields() {
 		return esBaseDataIgnoreField;
