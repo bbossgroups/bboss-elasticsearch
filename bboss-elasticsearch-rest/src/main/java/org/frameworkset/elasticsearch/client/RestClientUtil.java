@@ -210,6 +210,10 @@ public class RestClientUtil extends ClientUtil{
 	public String addDateDocumentWithId(String indexName, String indexType, Object bean,Object docId,Object parentId) throws ElasticSearchException{
 		return addDocumentWithId(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,parentId);
 	}
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId) throws ElasticSearchException{
+		return addDocumentWithId(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,(Object)null,parentId);
+	}
+
 
 	/**
 	 *
@@ -255,6 +259,10 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String addDateDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
 		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,docId,  parentId,refreshOption);
+	}
+
+	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId,String refreshOption) throws ElasticSearchException{
+		return addDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,     bean,(Object)null,  parentId,refreshOption);
 	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -493,6 +501,18 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	/**
+	 * 创建索引文档，根据elasticsearch.xml中指定的日期时间格式，生成对应时间段的索引表名称
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId) throws ElasticSearchException{
+		return addDocument(indexName, indexType, bean,(Object)null,  parentId,(String)null);
+	}
+
+	/**
 	 *
 	 * @param indexName
 	 * @param indexType
@@ -556,6 +576,29 @@ public class RestClientUtil extends ClientUtil{
 		builder = null;
 		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
 		return path;
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId,String refreshOption) throws ElasticSearchException{
+		return addDocument(  indexName,   indexType,   bean,(Object )null,  parentId,  refreshOption);
 	}
 
 
