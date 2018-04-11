@@ -11,7 +11,7 @@ public class ESBaseDataEntityCustomSerializationFactory extends EntityCustomSeri
 			"score",
 			"parent",
 			"routing",
-			"found"
+			"found","nested","innerHits"
 			};
 	@Override
 	protected String[] getFilterFields() {

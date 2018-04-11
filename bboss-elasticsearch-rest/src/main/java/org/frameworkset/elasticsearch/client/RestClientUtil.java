@@ -1390,13 +1390,13 @@ public class RestClientUtil extends ClientUtil{
 
 				for (int i = 0; i < searchHits.size(); i++) {
 					SearchHit hit = searchHits.get(i);
-					if(isESBaseData || isESId) {
-						//处理源对象
-						Object data = hit.getSource();
-						if (data != null) {
-							injectBaseData(data, hit, isESBaseData, isESId);
-						}
+
+					//处理源对象
+					Object data = hit.getSource();
+					if (data != null) {
+						injectBaseData(data, hit, isESBaseData, isESId);
 					}
+
 					//处理InnerHit对象
 					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
 					if (innerHits != null && innerHits.size() > 0) {
@@ -1418,11 +1418,20 @@ public class RestClientUtil extends ClientUtil{
 				for (SearchHit hit : searchHits) {
 					data = (T) hit.getSource();
 					hits.add(data);
-					if (isESBaseData) {
-						buildESBaseData(hit, (ESBaseData) data);
-					} else if (isESId) {
-						buildESId(hit, (ESId) data);
+					if (data != null) {
+						injectBaseData(data, hit, isESBaseData, isESId);
 					}
+					//处理InnerHit对象
+					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+					if (innerHits != null && innerHits.size() > 0) {
+						injectInnerHitBaseData(innerHits);
+					}
+//					if (isESBaseData) {
+//						buildESBaseData(hit, (ESBaseData) data);
+//					} else if (isESId) {
+//						buildESId(hit, (ESId) data);
+//					}
+
 				}
 
 				datas.setDatas(hits);
@@ -1462,7 +1471,10 @@ public class RestClientUtil extends ClientUtil{
 		esBaseData.setParent(hit.getParent());
 		esBaseData.setRouting(hit.getRouting());
 		esBaseData.setFound(hit.isFound());
+		esBaseData.setNested(hit.getNested());
+		esBaseData.setInnerHits(hit.getInnerHits());
 	}
+
 	protected void buildESId(BaseSearchHit hit,ESId esBaseData){
 
 		esBaseData.setId(hit.getId());

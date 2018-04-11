@@ -46,4 +46,6 @@ public class InnerSearchHit  extends BaseSearchHit{
 	public void setSource(Object source) {
 		this.source = source;
 	}
+
+
 }
