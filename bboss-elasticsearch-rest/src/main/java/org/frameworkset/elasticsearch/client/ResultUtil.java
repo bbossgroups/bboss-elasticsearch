@@ -25,6 +25,53 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ResultUtil {
+	public static <T> List<T> getInnerHits(Map<String,Map<String,InnerSearchHits>> innerHits,String indexType, Class<T> type){
+		if(innerHits == null || innerHits.size() == 0)
+			return null;
+		Map<String,InnerSearchHits> hits = innerHits.get(indexType);
+		if(hits != null){
+			InnerSearchHits ihits = hits.get("hits");
+			if(ihits != null){
+				List<InnerSearchHit> temp = ihits.getHits();
+				if(temp.size() == 0)
+					return null;
+				if(InnerSearchHit.class.isAssignableFrom(type))
+				{
+					return (List<T>)temp;
+				}
+				else{
+					List<T> ts = new ArrayList<T>(temp.size());
+					for(int i = 0; i < temp.size(); i ++){
+						ts.add((T) temp.get(i).getSource());
+					}
+					return ts;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static List getInnerHits(Map<String,Map<String,InnerSearchHits>> innerHits,String indexType){
+		if(innerHits == null || innerHits.size() == 0)
+			return null;
+		Map<String,InnerSearchHits> hits = innerHits.get(indexType);
+		if(hits != null){
+			InnerSearchHits ihits = hits.get("hits");
+			if(ihits != null){
+				List<InnerSearchHit> temp = ihits.getHits();
+				if(temp.size() == 0)
+					return null;
+
+				List ts = new ArrayList<Object>(temp.size());
+				for(int i = 0; i < temp.size(); i ++){
+					ts.add(temp.get(i).getSource());
+				}
+				return ts;
+
+			}
+		}
+		return null;
+	}
 	public static  Long longValue(Object num,Long defaultValue){
 		if(num == null)
 			return defaultValue;

@@ -19,7 +19,8 @@ public abstract class ESBaseData implements Serializable{
 	private Object parent;
 	private Object routing;
 	private boolean found;
-
+	private Map<String,Object> nested;
+	private Map<String,Map<String,InnerSearchHits>> innerHits;
 	public String getType() {
 		return type;
 	}
@@ -107,5 +108,21 @@ public abstract class ESBaseData implements Serializable{
 
 	public void setFound(boolean found) {
 		this.found = found;
+	}
+
+	public Map<String, Object> getNested() {
+		return nested;
+	}
+
+	public void setNested(Map<String, Object> nested) {
+		this.nested = nested;
+	}
+
+	public Map<String, Map<String, InnerSearchHits>> getInnerHits() {
+		return innerHits;
+	}
+
+	public void setInnerHits(Map<String, Map<String, InnerSearchHits>> innerHits) {
+		this.innerHits = innerHits;
 	}
 }
