@@ -99,6 +99,21 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public long count(String path, String entity) throws ElasticSearchException {
+		return 0;
+	}
+
+	@Override
+	public long count(String path, String template, Map params) throws ElasticSearchException {
+		return 0;
+	}
+
+	@Override
+	public long count(String path, String template, Object params) throws ElasticSearchException {
+		return 0;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 

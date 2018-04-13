@@ -1195,6 +1195,21 @@ public class RestClientUtil extends ClientUtil{
 		return searchResult;
 	}
 
+	public long count(String index,String entity)  throws ElasticSearchException{
+		MapRestResponse searchResult = this.client.executeRequest(new StringBuilder().append(index).append("/_count").toString(),
+				entity,   new ElasticSearchMapResponseHandler(  ));
+//		if(searchResult instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+//		}
+		return searchResult.getCount();
+	}
+	public long count(String index,String template,Map params)  throws ElasticSearchException{
+		throw new ElasticSearchException("Un implements method");
+	}
+	public long count(String path,String template,Object params)  throws ElasticSearchException{
+		throw new ElasticSearchException("Un implements method");
+	}
+
 	@Override
 	public TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException {
 		TermRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchTermResponseHandler( ));
