@@ -402,6 +402,16 @@ public class ConfigRestClientUtil extends RestClientUtil {
 //		return super.executeRequest(path, evalTemplate(templateName, (Object) null), new ElasticSearchResponseHandler());
 	}
 
+	public long count(String index,String templateName)  throws ElasticSearchException{
+		return  super.count(index, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null));
+	}
+	public long count(String index,String templateName,Map params)  throws ElasticSearchException{
+		return super.count(index, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+	public long count(String index,String templateName,Object params)  throws ElasticSearchException{
+		return super.count(index, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
+	}
+
 	@Override
 	public RestResponse search(String path, String templateName, Map params, Class<?> type) throws ElasticSearchException {
 //		return super.executeRequest(path, evalTemplate(templateName, params), new ElasticSearchResponseHandler(type));

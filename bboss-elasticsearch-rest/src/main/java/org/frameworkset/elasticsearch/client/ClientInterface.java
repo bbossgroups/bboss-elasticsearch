@@ -1246,6 +1246,7 @@ public interface ClientInterface {
 	 * @param path twitter/_update_by_query?conflicts=proceed
 	 * @return
 	 * @throws ElasticSearchException
+	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html#picking-up-a-new-property"
 	 */
 	public String updateByQuery(String path) throws ElasticSearchException;
 	/**
@@ -1264,6 +1265,7 @@ public interface ClientInterface {
 	 * @param entity
 	 * @return
 	 * @throws ElasticSearchException
+	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html#picking-up-a-new-property"
 	 */
 	public String updateByQuery(String path,String entity) throws ElasticSearchException;
 
@@ -1284,6 +1286,7 @@ public interface ClientInterface {
 	 * @param params
 	 * @return
 	 * @throws ElasticSearchException
+	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html#picking-up-a-new-property"
 	 */
 	public String updateByQuery(String path,String templateName,Map params) throws ElasticSearchException;
 
@@ -1304,6 +1307,7 @@ public interface ClientInterface {
 	 * @param params
 	 * @return
 	 * @throws ElasticSearchException
+	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html#picking-up-a-new-property"
 	 */
 	public String updateByQuery(String path,String templateName,Object params) throws ElasticSearchException;
 
@@ -1381,5 +1385,7 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String path,String templateName,Map params,Class<T> type)  throws ElasticSearchException;
-
+	public long count(String path,String entity)  throws ElasticSearchException;
+	public long count(String path,String template,Map params)  throws ElasticSearchException;
+	public long count(String path,String template,Object params)  throws ElasticSearchException;
 }
