@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public abstract class ESBaseData implements Serializable{
 	private String  type;
-	private Object  id;
+	private String  id;
 	private Map<String,List<Object>> fields;
 	private int version;
 	private String index;//"_index": "trace-2017.09.01",
@@ -29,11 +29,11 @@ public abstract class ESBaseData implements Serializable{
 		this.type = type;
 	}
 
-	public Object getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Object id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -71,6 +71,13 @@ public class ESUtil {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
 
+	/**
+	 * since 5.0.6.0,去掉vm模板解析时变量的转义，因此在模板中的使用$aaa模式变量的情况时，需要注意转义的问题，如果存在转义问题，请使用#[]模式变量
+	 * 日期也不做格式化转换，使用$aaa模式变量的情况下需要注意日期格式问题，如果存在日期，则需要使用#[]模式变量，这样bboss会根据bean属性配置的格式，或者变量中指定的格式
+	 * 对日期进行格式化，如果不指定格式采用默认的格式和时区进行处理
+	 * @param bean
+	 * @return
+	 */
 	public VelocityContext buildVelocityContext(Object bean) {
 		VelocityContext context_ = new VelocityContext();
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
@@ -79,7 +86,7 @@ public class ESUtil {
 
 //		String charset = null;
 		Object value = null;
-		Class type = null;
+//		Class type = null;
 
 //		Method writeMethod = null;
 
@@ -90,7 +97,7 @@ public class ESUtil {
 			if (column != null && (column.ignoreCUDbind() || column.ignorebind()))
 				continue;
 
-			type = property.getPropertyType();
+//			type = property.getPropertyType();
 
 
 			try {
@@ -121,22 +128,30 @@ public class ESUtil {
 
 							if (!(cv instanceof ColumnType)) {
 								value = cv;
-								type = value.getClass();
+//								type = value.getClass();
 
 							} else {
-								type = ((ColumnType) cv).getType();
+//								type = ((ColumnType) cv).getType();
 							}
 						}
 
 					}
+					/**
+					 * since 5.0.6.0,去掉vm模板解析时变量的转义，因此在模板中的使用$aaa模式变量的情况时，需要注意转义的问题，如果存在转义问题，请使用#[]模式变量
+					 * 	 日期也不做格式化转换，使用$aaa模式变量的情况下需要注意日期格式问题，如果存在日期，则需要使用#[]模式变量，这样bboss会根据bean属性配置的格式，或者变量中指定的格式
+					 * 	 对日期进行格式化，如果不指定格式采用默认的格式和时区进行处理
+					 */
+					/**
 					if (value == null) {
 						context_.put(name, null);
 					} else if (value instanceof Date) {
-						if(dataformat != null)
+//						if(dataformat != null)
 							context_.put(name, this.getDate((Date) value, dataformat));
-						else
-							context_.put(name, ((Date) value).getTime());
-					} else if(value instanceof String){
+//						else {
+////							context_.put(name, ((Date) value).getTime());
+//							context_.put(name, ((Date) value));
+//						}
+					} else if(value instanceof String){//提前转义
 						CharEscapeUtil charEscapeUtil = new CharEscapeUtil();
 						charEscapeUtil.writeString((String)value,false);
 						context_.put(name, charEscapeUtil.toString());
@@ -144,6 +159,8 @@ public class ESUtil {
 					else {
 						context_.put(name, value);
 					}
+					 */
+					context_.put(name, value);
 //					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
 
 				}
@@ -177,7 +194,12 @@ public class ESUtil {
 	}
 
 
-
+	/**
+	 * since 5.0.6.0,去掉vm模板解析时变量的转义，因此在模板中的使用$aaa模式变量的情况时，需要注意转义的问题，如果存在转义问题，请使用#[]模式变量
+	 *
+	 * @param data
+	 * @return
+	 */
 	public VelocityContext buildVelocityContext(Map data) {
 
 		VelocityContext context_ = new VelocityContext();
@@ -186,7 +208,7 @@ public class ESUtil {
 		while (it.hasNext()) {
 			Map.Entry<String, Param> entry = it.next();
 			temp = entry.getValue();
-			
+			/**
 			if (temp != null){
 				if(temp instanceof String) {
 					CharEscapeUtil charEscapeUtil = new CharEscapeUtil();
@@ -194,7 +216,8 @@ public class ESUtil {
 					temp = charEscapeUtil.toString();
 				}
 				context_.put(entry.getKey(), temp);
-			}
+			}*/
+			context_.put(entry.getKey(), temp);
 		}
 
 		return context_;
@@ -267,8 +290,8 @@ public class ESUtil {
 	public void getVariableValue(StringBuilder builder, ESTemplateCache.TempateVariable variable, Object bean, List<ClassUtil.PropertieDescription> attributes, ClassUtil.ClassInfo beanInfo, String template) {
 //		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
 		String name = null;
-		DateFormateMeta dataformat = variable.getDateFormateMeta();
-
+		DateFormateMeta dataformat = variable.getDateFormateMeta();//优先采用模板变量参数中的日期格式
+		Boolean escape = variable.getEscape();
 //		String charset = null;
 		Object value = null;
 		Class type = null;
@@ -301,6 +324,9 @@ public class ESUtil {
 					name = property.getName();
 
 					if (column != null) {
+						if(escape == null){
+							escape = column.isEscape();
+						}
 						ColumnEditorInf editor = column.editor();
 						if (editor == null || editor instanceof ColumnToFieldEditor) {
 							if(dataformat == null)
@@ -334,7 +360,10 @@ public class ESUtil {
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
 						if(value instanceof String){
-							handleVaribleValue(  builder,  variable,(String)value,true);
+							if(escape == null)
+								handleVaribleValue(  builder,  variable,(String)value,true);
+							else
+								handleVaribleValue(  builder,  variable,(String)value,escape.booleanValue());//默认对字符串进行转义处理
 
 						}
 						else if (value instanceof Date) {
@@ -404,13 +433,14 @@ public class ESUtil {
 		}
 	}
 
-	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Map bean,String template,boolean escapeValue){
+	public void evalStruction(StringBuilder builder,VariableHandler.URLStruction templateStruction,Map bean,String template){
 		List<String> tokens = templateStruction.getTokens();
 		List<VariableHandler.Variable> variables = templateStruction.getVariables();
 		for(int i = 0; i < tokens.size(); i ++){
 			builder.append(tokens.get(i));
 			if(i < variables.size()) {
 				ESTemplateCache.TempateVariable variable = (ESTemplateCache.TempateVariable)variables.get(i);
+				Boolean escape = variable.getEscape();
 				Object data = bean.get(variable.getVariableName());
 				if (data == null) {
 					if (bean.containsKey(variable.getVariableName()))
@@ -435,9 +465,13 @@ public class ESUtil {
 							String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
 							this.handleVaribleValue(builder,variable,value_,false);
 						}
-						else if (value instanceof String) {
-							this.handleVaribleValue(builder,variable,(String) value,true);
-
+						else if (value instanceof String) {//如果值没有变化，则是否转义由escapeValue参数决定
+							if(escape == null) {
+								this.handleVaribleValue(builder, variable, (String) value, true);
+							}
+							else{
+								this.handleVaribleValue(builder, variable, (String) value, escape.booleanValue());
+							}
 						} else {
 							if (variable.getLpad() != null) {
 								builder.append(variable.getLpad());

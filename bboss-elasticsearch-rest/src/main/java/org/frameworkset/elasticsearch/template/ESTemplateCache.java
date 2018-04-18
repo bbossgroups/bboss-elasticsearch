@@ -68,6 +68,7 @@ public class ESTemplateCache {
 		protected String dateFormat ;
 		protected String locale;
 		protected String timeZone;
+		private Boolean escape;
 		protected DateFormateMeta dateFormateMeta;
 		/**
 		 * 在变量左边追加lpad对应的字符
@@ -138,6 +139,14 @@ public class ESTemplateCache {
 							String rpad_ = t.substring("rpad=".length()).trim();
 							this.rpad = handlePad(rpad_);
 						}
+						else if(t.startsWith("escape=")){
+							String escape_ = t.substring("escape=".length()).trim();
+							if(escape_.equals("false"))
+								escape = new Boolean(false);
+							else if(escape_.equals("true"))
+								escape = new Boolean(true);
+
+						}
 					}
 
 					if(this.dateFormat != null){
@@ -174,6 +183,14 @@ public class ESTemplateCache {
 
 		public String getRpad() {
 			return rpad;
+		}
+
+		public Boolean getEscape() {
+			return escape;
+		}
+
+		public void setEscape(Boolean escape) {
+			this.escape = escape;
 		}
 	}
 	static class TempateStructionBuiler extends VariableHandler.URLStructionBuiler {

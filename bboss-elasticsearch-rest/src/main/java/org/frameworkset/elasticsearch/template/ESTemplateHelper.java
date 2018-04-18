@@ -77,26 +77,26 @@ public class ESTemplateHelper {
 			ESTemplate esTemplate = esInfo.getEstpl();
 			esTemplate.process();//识别sql语句是不是真正的velocity sql模板
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？,已经被转义处理
 
 				BBossStringWriter sw = new BBossStringWriter();
 				esTemplate.merge(vcontext, sw);
 //				template = sw.toString();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				template = evalDocumentStruction(    esUtil,builder,  struction ,  params,  templateName,  null,false);
+				template = evalDocumentStruction(    esUtil,builder,  struction ,  params,  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				template = evalDocumentStruction(  esUtil,  builder,  struction ,  params,  templateName,  null,true);
+				template = evalDocumentStruction(  esUtil,  builder,  struction ,  params,  templateName,  null);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			StringBuilder builder = new StringBuilder();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			template = evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  null,true);
+			template = evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  null);
 		}
 
 		return template;
@@ -129,7 +129,8 @@ public class ESTemplateHelper {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				StringBuilder builder = new StringBuilder();
-				template = evalDocumentStruction(   esUtil,builder,  struction ,  vcontext.getContext(),  templateName,  null,false);
+//				template = evalDocumentStruction(   esUtil,builder,  struction ,  vcontext.getContext(),  templateName,  null,true);
+				template = evalDocumentStruction(   esUtil,builder,  struction ,  params,  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -223,7 +224,7 @@ public class ESTemplateHelper {
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				evalStruction(  esUtil,  builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
+				evalStruction(  esUtil,  builder,  struction ,  params,  templateName,  action);
 			} else {
 				buildMeta(  builder ,  indexType,  indexName,   params,action);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -258,7 +259,7 @@ public class ESTemplateHelper {
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				builder.setLength(0);
-				return evalDocumentStruction(   esUtil, builder,  struction ,  vcontext.getContext(),  templateName,  action,false);
+				return evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  action);
 			} else {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
@@ -297,7 +298,7 @@ public class ESTemplateHelper {
 
 		}
 	}
-	public static void evalStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
+	public static void evalStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
 		if(!struction.hasVars()) {
 			if(!action.equals("update"))
 				builder.append(struction.getUrl()).append("\n");
@@ -309,20 +310,20 @@ public class ESTemplateHelper {
 		else
 		{
 			if(!action.equals("update")) {
-				esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
+				esUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("\n");
 			}
 			else
 			{
 				builder.append("{\"doc\":");
-				esUtil.evalStruction(builder,struction,params,templateName,escapeValue);
+				esUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("}\n");
 			}
 
 		}
 	}
 
-	public static String evalDocumentStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action,boolean escapeValue){
+	public static String evalDocumentStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
 		if(!struction.hasVars()) {
 
 			return struction.getUrl();
@@ -330,7 +331,7 @@ public class ESTemplateHelper {
 		}
 		else
 		{
-			esUtil.evalStruction(builder,struction,params,templateName, escapeValue);
+			esUtil.evalStruction(builder,struction,params,templateName);
 			return builder.toString();
 		}
 	}
