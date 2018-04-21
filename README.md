@@ -42,3 +42,9 @@ $xxx模式变量将直接输出变量的原始值，不会对变量进行特殊�
 只有#[xxx]格式的变量才会对特殊字符进行自动转义处理和日期格式化处理，同时为其增加escape布尔值属性，
 
 用来控制是否对#[xxx]模式变量进行自动化转义处理，false禁用转义处理，true启用，默认启用
+
+## License
+
+The BBoss Framework is released under version 2.0 of the [Apache License][].
+
+[Apache License]: http://www.apache.org/licenses/LICENSE-2.0
