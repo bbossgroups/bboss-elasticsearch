@@ -1,0 +1,14 @@
+<properties>
+    <config file="conf/elasticsearch.properties"/>
+    <property name="default"
+              f:timeoutConnection = "${http.timeoutConnection:400000}"
+              f:timeoutSocket = "${http.timeoutSocket:400000}"
+              f:connectionRequestTimeout="${http.connectionRequestTimeout:400000}"
+              f:retryTime = "${http.retryTime:1}"
+              f:maxLineLength = "${http.maxLineLength:-1}"
+              f:maxHeaderCount = "${http.maxHeaderCount:200}"
+              f:maxTotal = "${http.maxTotal:400}"
+              f:defaultMaxPerRoute = "${http.defaultMaxPerRoute:200}"
+              class="org.frameworkset.spi.remote.http.ClientConfiguration">
+    </property>
+</properties>

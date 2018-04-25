@@ -233,6 +233,22 @@ public interface ClientInterface {
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 	/**
+	 * 判断索引是否存在
+	 * @param indiceName
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public boolean existIndice(String indiceName) throws ElasticSearchException;
+
+	/**
+	 * 判断所引类型是否存在
+	 * @param indiceName
+	 * @param type
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public boolean existIndiceType(String indiceName,String type) throws ElasticSearchException;
+	/**
 	 * 获取索引表
 	 * @param index
 	 * @return

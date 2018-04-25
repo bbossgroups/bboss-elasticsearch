@@ -1167,7 +1167,47 @@ public class RestClientUtil extends ClientUtil{
 	public String deleteByPath(String path) throws ElasticSearchException{
 		return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
 	}
+	/**
+	 * 判断索引是否存在
+	 * @param indiceName
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public boolean existIndice(String indiceName) throws ElasticSearchException{
+		try {
+			executeHttp(indiceName, ClientInterface.HTTP_HEAD);
+			return true;
+		}
+		catch(ElasticSearchException exception){
+			String msg = exception.getMessage();
+			if(msg.endsWith("Unexpected response status: 404"))
+				return false;
+			else
+				throw exception;
+		}
 
+	}
+
+	/**
+	 * 判断所引类型是否存在
+	 * @param indiceName
+	 * @param type
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public boolean existIndiceType(String indiceName,String type) throws ElasticSearchException{
+		try {
+			executeHttp(new StringBuilder(indiceName).append("/_mapping/").append(type).toString(), ClientInterface.HTTP_HEAD);
+			return true;
+		}
+		catch(ElasticSearchException exception){
+			String msg = exception.getMessage();
+			if(msg.endsWith("Unexpected response status: 404"))
+				return false;
+			else
+				throw exception;
+		}
+	}
 	public <T> T executeRequest(String path, String templateName,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return null;
 	}
