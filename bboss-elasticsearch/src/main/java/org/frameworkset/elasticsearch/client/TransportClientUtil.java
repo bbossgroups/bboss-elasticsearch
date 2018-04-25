@@ -333,6 +333,17 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean existIndice(String indiceName) throws ElasticSearchException {
+		return false;
+	}
+
+	@Override
+	public boolean existIndiceType(String indiceName, String type) throws ElasticSearchException {
+		return false;
+	}
+
 	@Override
 	public List<IndexField> getIndexMappingFields(String index, String indexType) throws ElasticSearchException {
 		// TODO Auto-generated method stub

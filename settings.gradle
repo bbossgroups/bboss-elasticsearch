@@ -1,2 +1,3 @@
 include 'bboss-elasticsearch-rest'
 include 'bboss-elasticsearch'
+include 'bboss-elasticsearch-rest-booter'
