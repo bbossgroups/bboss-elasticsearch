@@ -1,0 +1,7 @@
+<properties>
+    <!--
+        优先从bboss es属性配置文件加载扩展属性，其次从spring boot 配置文件application.properties加载属性
+        必须配置elasticsearch.rest.hostNames这一个属性，其他属性可选
+    -->
+    <config file="conf/elasticsearch.properties,application.properties"/>
+</properties>
