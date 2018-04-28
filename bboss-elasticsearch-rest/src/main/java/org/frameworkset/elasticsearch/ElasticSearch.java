@@ -22,6 +22,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ElasticSearchClient;
 import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
+import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -60,6 +61,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected static final int defaultBatchSize = 100;
 	protected final Pattern pattern = Pattern.compile(TTL_REGEX,
 			Pattern.CASE_INSENSITIVE);
+
+
+
+
+
 	protected Properties elasticsearchPropes;
 	protected Properties extendElasticsearchPropes;
 	protected int batchSize = defaultBatchSize;
@@ -137,11 +143,14 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		return clientUtil.executeRequest(path, entity);
 	}
 
-	 
-   
 
-	public void configure() {
 
+	public void configure(){
+		configureWithConfigContext(null);
+	}
+	public void configureWithConfigContext(BaseApplicationContext configContext) {
+		if(configContext != null)
+			this.setApplicationContext(configContext);
 		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty(REST_HOSTNAMES))) {
 			restServerAddresses =
 					elasticsearchPropes.getProperty(REST_HOSTNAMES).trim().split(",");
@@ -190,7 +199,8 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			indexNameBuilder = clazz.newInstance();
 //      indexnameBuilderContext.put(INDEX_NAME, indexName);
 			indexNameBuilder.configure(elasticsearchPropes);
-			this.start();
+			if(configContext == null)//booter的情况下，从外部启动
+				this.start();
 
 		} catch (Exception e) {
 			throw new ElasticSearchException("Could not instantiate index name builder.",e);
@@ -298,7 +308,9 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		return -1;
 	}
 
-
+	public void setElasticsearchPropes(Properties elasticsearchPropes) {
+		this.elasticsearchPropes = elasticsearchPropes;
+	}
 
 	public Properties getExtendElasticsearchPropes() {
 		return extendElasticsearchPropes;
