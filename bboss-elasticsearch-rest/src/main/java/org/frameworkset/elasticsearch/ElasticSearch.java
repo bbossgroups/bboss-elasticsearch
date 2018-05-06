@@ -78,6 +78,16 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected Matcher matcher = pattern.matcher("");
 
 	protected String[] restServerAddresses = null;
+
+	public String getOrigineRestServerAddresses() {
+		return origineRestServerAddresses;
+	}
+
+	public void setOrigineRestServerAddresses(String origineRestServerAddresses) {
+		this.origineRestServerAddresses = origineRestServerAddresses;
+	}
+
+	protected String origineRestServerAddresses;
 	
 	protected ElasticSearchClient restClient = null;
 
@@ -151,9 +161,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public void configureWithConfigContext(BaseApplicationContext configContext) {
 		if(configContext != null)
 			this.setApplicationContext(configContext);
-		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty(REST_HOSTNAMES))) {
-			restServerAddresses =
-					elasticsearchPropes.getProperty(REST_HOSTNAMES).trim().split(",");
+		origineRestServerAddresses = elasticsearchPropes.getProperty(REST_HOSTNAMES);
+		if (SimpleStringUtil.isNotEmpty(origineRestServerAddresses)) {
+			origineRestServerAddresses = origineRestServerAddresses.trim();
+
+			restServerAddresses = origineRestServerAddresses.split(",");
 		}
 		
 //		Preconditions.checkState(serverAddresses != null
@@ -234,7 +246,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 
 			
 			if(this.restServerAddresses != null && this.restServerAddresses.length > 0) {
-				logger.info("Start ElasticSearch rest client");
+				logger.info("Start ElasticSearch rest client:"+origineRestServerAddresses);
 				restClient = clientFactory.getClient(this,ElasticSearchClientFactory.RestClient, restServerAddresses, this.elasticUser, this.elasticPassword,
 						  extendElasticsearchPropes);
 				restClient.configure(elasticsearchPropes);
