@@ -43,6 +43,11 @@ $xxx模式变量将直接输出变量的原始值，不会对变量进行特殊�
 
 用来控制是否对#[xxx]模式变量进行自动化转义处理，false禁用转义处理，true启用，默认启用
 
+## elasticsearch技术交流群:166471282 
+     
+## elasticsearch微信公众号:bbossgroup   
+![GitHub Logo](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+
 ## License
 
 The BBoss Framework is released under version 2.0 of the [Apache License][].
