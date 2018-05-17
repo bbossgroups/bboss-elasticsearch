@@ -276,6 +276,32 @@ public class RestClientUtil extends ClientUtil{
 		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans);
 	}
 
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdKey map中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException{
+		return addDocumentsWithIdKey(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdKey);
+	}
+
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdKey map中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String addDateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException{
+		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdKey,refreshOption);
+	}
+
 	public String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException{
 		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,refreshOption);
 	}
@@ -322,6 +348,27 @@ public class RestClientUtil extends ClientUtil{
 		else
 			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
+	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException{
+		if(beans == null || beans.size() == 0)
+			return null;
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Map bean:beans) {
+			try {
+				evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(refreshOption == null)
+			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
+	public String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey) throws ElasticSearchException{
+		return addDocuments(indexName, indexType, beans,docIdKey,(String )null);
+	}
 	protected void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
 		Object id = this.getId(params);
 		Object parentId = this.getParentId(params);
@@ -366,9 +413,21 @@ public class RestClientUtil extends ClientUtil{
 			writer.write(String.valueOf(id));
 		}
 	}
+
 	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
 		Object id = this.getId(params);
 		Object parentId = this.getParentId(params);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId);
+	}
+
+	protected void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey) throws IOException {
+		Object id = docIdKey != null ?params.get(docIdKey):null;
+		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId);
+	}
+
+	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId) throws IOException {
+
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
@@ -403,6 +462,24 @@ public class RestClientUtil extends ClientUtil{
 
 		if (param != null) {
 			buildMeta(  writer ,  indexType,  indexName,   param,action);
+			if(!action.equals("update")) {
+				SerialUtil.object2json(param,writer);
+				writer.write("\n");
+			}
+			else
+			{
+				writer.write("{\"doc\":");
+				SerialUtil.object2json(param,writer);
+				writer.write("}\n");
+			}
+		}
+
+	}
+
+	private void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey) throws IOException {
+
+		if (param != null) {
+			buildMetaWithDocIdKey(  writer ,  indexType,  indexName,   param,action,docIdKey,parentIdKey);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
