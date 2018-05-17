@@ -352,6 +352,9 @@ public interface ClientInterface {
 	public abstract String addDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocuments(String indexName, String indexType,  List<?> beans) throws ElasticSearchException;
 
+	public abstract String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
+	public abstract String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey) throws ElasticSearchException;
+
 	/**
 	 * 创建或者更新索引文档
 	 * @param indexName
@@ -684,6 +687,7 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDateDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException;
+
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
 	 * @param indexName
@@ -693,6 +697,17 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException;
+
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdKey map中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException;
 
 	/**
 	 *
@@ -714,6 +729,17 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
+
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdKey map中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
 
 	/**************************************创建或者修改文档结束**************************************************************/
 
