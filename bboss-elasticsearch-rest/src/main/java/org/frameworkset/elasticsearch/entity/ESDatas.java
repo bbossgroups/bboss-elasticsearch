@@ -19,6 +19,7 @@ public class ESDatas<T> implements Serializable {
 	private List<T> datas;
 	private Map<String,Map<String,Object>> aggregations;
 	private String scrollId;
+	private BaseRestResponse restResponse;
 
 	public long getTotalSize() {
 		return totalSize;
@@ -62,5 +63,13 @@ public class ESDatas<T> implements Serializable {
 
 	public void setScrollId(String scrollId) {
 		this.scrollId = scrollId;
+	}
+
+	public BaseRestResponse getRestResponse() {
+		return restResponse;
+	}
+
+	public void setRestResponse(BaseRestResponse restResponse) {
+		this.restResponse = restResponse;
 	}
 }

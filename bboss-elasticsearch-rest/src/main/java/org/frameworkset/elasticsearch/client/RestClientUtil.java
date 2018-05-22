@@ -1256,6 +1256,9 @@ public class RestClientUtil extends ClientUtil{
 		// TODO Auto-generated method stub
 		return this.client.executeHttp(path,action,responseHandler);
 	}
+	public <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return this.client.executeHttp(path,action,responseHandler);
+	}
 	@Override
 	public <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub

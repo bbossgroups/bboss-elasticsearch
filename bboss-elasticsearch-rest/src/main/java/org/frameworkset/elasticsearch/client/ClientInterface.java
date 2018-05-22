@@ -898,6 +898,8 @@ public interface ClientInterface {
 	 */
 	public abstract <T> T executeHttp(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
+	public abstract <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+
 	/**
 	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
 	 * @param path

@@ -462,6 +462,11 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> T discover(String path, String action, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> T executeHttp(String path, String entity, String action, ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return null;
 	}
