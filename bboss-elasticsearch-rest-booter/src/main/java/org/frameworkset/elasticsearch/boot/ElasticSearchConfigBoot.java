@@ -21,6 +21,7 @@ import org.frameworkset.spi.remote.http.ClientConfiguration;
 
 public abstract class ElasticSearchConfigBoot {
 	private static boolean inited = false;
+
 	public static void boot(){
 		if(inited)
 			return;

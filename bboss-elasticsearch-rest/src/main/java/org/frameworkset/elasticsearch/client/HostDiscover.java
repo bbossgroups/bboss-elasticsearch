@@ -76,7 +76,7 @@ public class HostDiscover extends Thread{
 			if(this.stop)
 				break;
 			try {
-				clientInterface.executeHttp("_nodes/http",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
+				clientInterface.discover("_nodes/http",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
 					@Override
 					public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {

@@ -853,6 +853,7 @@ public abstract class ResultUtil {
 //		}
 		ESDatas<T> datas = new ESDatas<T>();
 		RestResponse restResponse = (RestResponse)result;
+		datas.setRestResponse(restResponse);
 		List<SearchHit> searchHits = null;
 		if(restResponse.getSearchHits() != null) {
 			datas.setTotalSize(restResponse.getSearchHits().getTotal());
