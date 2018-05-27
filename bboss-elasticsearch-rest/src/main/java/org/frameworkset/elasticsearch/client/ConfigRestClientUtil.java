@@ -13,6 +13,7 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESTemplateHelper;
 import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
+import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,20 +186,32 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	public   String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
-		Object id = this.getId(bean);
+		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(bean.getClass());
+		Object id = this.getId(bean,classInfo);
+		Object routing = this.getRouting(bean,classInfo);
+
 		builder.append(indexName).append("/").append(indexType);
 		if(id != null){
 			builder.append("/").append(id);
 		}
-		Object parentId = this.getParentId(bean);
+		Object parentId = this.getParentId(bean,classInfo);
 		if(refreshOption != null ){
 			builder.append("?").append(refreshOption);
 			if(parentId != null){
 				builder.append("&parent=").append(parentId);
 			}
+			if(routing != null){
+				builder.append("&routing=").append(routing);
+			}
 		}
 		else if(parentId != null){
 			builder.append("?parent=").append(parentId);
+			if(routing != null){
+				builder.append("&routing=").append(routing);
+			}
+		}
+		else if(routing != null){
+			builder.append("?routing=").append(routing);
 		}
 		String path = builder.toString();
 		builder.setLength(0);

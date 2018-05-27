@@ -28,6 +28,7 @@ public class SerialUtil {
 		normaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		normaMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		normaMapper.setDateFormat(dateFormateMeta.toDateFormat());
+		normaMapper.setSerializerFactory(new DefaultEntityCustomSerializationFactory());
 		esBaseDataFilterMapper = new ObjectMapper();
 		//反序列化时，属性不存在时忽略属性
 		esBaseDataFilterMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);

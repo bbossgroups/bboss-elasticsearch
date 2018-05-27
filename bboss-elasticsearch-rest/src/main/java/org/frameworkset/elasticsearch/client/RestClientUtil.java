@@ -169,6 +169,9 @@ public class RestClientUtil extends ClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public String getDynamicIndexName(String indexName){
+		return this.indexNameBuilder.getIndexName(indexName);
+	}
 
 	/**************************************创建或者修改文档开始**************************************************************/
 	/**
@@ -420,8 +423,9 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	protected void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
-		Object id = this.getId(params);
-		Object parentId = this.getParentId(params);
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
+		Object id = this.getId(params,  beanInfo );
+		Object parentId = this.getParentId(params,  beanInfo );
 		if(id != null) {
 			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName)
 					.append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : ");
@@ -465,18 +469,35 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
-		Object id = this.getId(params);
-		Object parentId = this.getParentId(params);
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId);
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
+		Object id = this.getId(params,beanInfo);
+		Object parentId = this.getParentId(params,beanInfo);
+		Object routing = this.getRouting(params,beanInfo);
+		Object esRetryOnConflict = this.getEsRetryOnConflict(params,beanInfo);
+
+
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
 	}
 
 	protected void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey) throws IOException {
+//		Object id = docIdKey != null ?params.get(docIdKey):null;
+//		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
+//		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
+		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
+	}
+	protected void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey) throws IOException {
 		Object id = docIdKey != null ?params.get(docIdKey):null;
 		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId);
+		Object routing = routingKey != null ?params.get(routingKey):null;
+
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing);
+	}
+	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing) throws IOException {
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null);
 	}
 
-	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId) throws IOException {
+	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
+							 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws IOException {
 
 		if(id != null) {
 			writer.write("{ \"");
@@ -491,6 +512,38 @@ public class RestClientUtil extends ClientUtil{
 				writer.write(", \"parent\" : ");
 				this.buildId(parentId,writer);
 			}
+			if(routing != null){
+
+				writer.write(", \"_routing\" : ");
+				this.buildId(routing,writer);
+			}
+
+			if(action.equals("update")) {
+				if (esRetryOnConflict != null) {
+					writer.write(",\"retry_on_conflict\":");
+					writer.write(String.valueOf(esRetryOnConflict));
+				}
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
+				ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
+				if (esVersionProperty != null) {
+					Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
+					if(version != null) {
+						writer.write(",\"_version\":");
+
+						writer.write(String.valueOf(version));
+					}
+				}
+				ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
+				if (esVersionTypeProperty != null) {
+					Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
+					if(versionType != null) {
+						writer.write(",\"_version_type\":\"");
+						writer.write(String.valueOf(versionType));
+						writer.write("\"");
+					}
+				}
+			}
+
 			writer.write(" } }\n");
 		}
 		else {
@@ -505,10 +558,22 @@ public class RestClientUtil extends ClientUtil{
 				writer.write(", \"parent\" : ");
 				this.buildId(parentId,writer);
 			}
+			if(routing != null){
+
+				writer.write(", \"_routing\" : ");
+				this.buildId(routing,writer);
+			}
+			if(action.equals("update")) {
+				if (esRetryOnConflict != null) {
+					writer.write(",\"retry_on_conflict\":");
+					writer.write(String.valueOf(esRetryOnConflict));
+				}
+			}
 			writer.write("\" } }\n");
 		}
 	}
 	private void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
+
 
 		if (param != null) {
 			buildMeta(  writer ,  indexType,  indexName,   param,action);
@@ -518,9 +583,32 @@ public class RestClientUtil extends ClientUtil{
 			}
 			else
 			{
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(param.getClass());
+				ClassUtil.PropertieDescription esDocAsUpsertProperty = classInfo.getEsDocAsUpsertProperty();
+
+
+				ClassUtil.PropertieDescription esReturnSourceProperty = classInfo.getEsReturnSourceProperty();
+
 				writer.write("{\"doc\":");
 				SerialUtil.object2json(param,writer);
+				if(esDocAsUpsertProperty != null){
+					Object esDocAsUpsert = classInfo.getPropertyValue(param,esDocAsUpsertProperty.getName());
+					if(esDocAsUpsert != null){
+						writer.write(",\"doc_as_upsert\":");
+						writer.write(String.valueOf(esDocAsUpsert));
+					}
+				}
+				if(esReturnSourceProperty != null){
+					Object returnSource = classInfo.getPropertyValue(param,esReturnSourceProperty.getName());
+					if(returnSource != null){
+						writer.write(",\"_source\":");
+						writer.write(String.valueOf(returnSource));
+					}
+				}
 				writer.write("}\n");
+
+
+
 			}
 		}
 
@@ -555,8 +643,8 @@ public class RestClientUtil extends ClientUtil{
 	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException{
 		return this.addDocument(indexName,indexType,bean,null);
 	}
-	protected Object getId(Object bean){
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+	protected Object getId(Object bean,ClassUtil.ClassInfo beanInfo ){
+
 		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -565,8 +653,24 @@ public class RestClientUtil extends ClientUtil{
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
 	}
 
-	protected Object getParentId(Object bean){
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+	protected Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ){
+		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(esRetryOnConflictProperty == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,esRetryOnConflictProperty.getName());
+	}
+	protected Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo ){
+		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(routingProperty == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,routingProperty.getName());
+	}
+
+	protected Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
 		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -574,6 +678,7 @@ public class RestClientUtil extends ClientUtil{
 			return null;
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
 	}
+
 	/**
 	 * 创建或者更新索引文档
 	 * @param indexName
@@ -584,9 +689,10 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		Object id = this.getId(bean,beanInfo);
+		Object parentId = this.getParentId(bean,beanInfo);
 
-		Object id = this.getId(bean);
-		Object parentId = this.getParentId(bean);
 		return addDocument(indexName, indexType, bean,id,parentId,refreshOption);
 //		StringBuilder builder = new StringBuilder();
 //		Object id = this.getId(bean);
@@ -661,6 +767,11 @@ public class RestClientUtil extends ClientUtil{
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException{
 		return addDocument(  indexName,   indexType,   bean,docId,(Object)null,refreshOption);
 	}
+	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		Object routing = this.getRouting(bean,beanInfo);
+		return addDocument( indexName,  indexType,  bean, docId, parentId, (Object)routing, refreshOption);
+	}
 
 	/**
 	 *
@@ -681,9 +792,10 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
+	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,Object routing,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
+
 		builder.append(indexName).append("/").append(indexType);
 		if(id != null){
 			builder.append("/").append(id);
@@ -693,11 +805,21 @@ public class RestClientUtil extends ClientUtil{
 			if(parentId != null){
 				builder.append("&parent=").append(parentId);
 			}
+			if(routing != null){
+				builder.append("&routing=").append(routing);
+			}
 		}
 		else{
 			if(parentId != null){
 				builder.append("?parent=").append(parentId);
+				if(routing != null){
+					builder.append("&routing=").append(routing);
+				}
 			}
+			else if(routing != null){
+				builder.append("?routing=").append(routing);
+			}
+
 		}
 		String path = builder.toString();
 		builder = null;
@@ -2114,7 +2236,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Object params) throws ElasticSearchException{
-		return updateDocument(index,indexType,id,params,null);
+		return updateDocument(index,indexType,id,params,(String)null);
 	}
 
 	/**
@@ -2129,7 +2251,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Map params) throws ElasticSearchException{
-		return updateDocument(index,indexType,id,params,null);
+		return updateDocument(index,indexType,id,params,(String)null);
 	}
 
 
@@ -2157,22 +2279,23 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption) throws ElasticSearchException{
-		StringBuilder path = new StringBuilder();
-		if(indexType == null || indexType.equals(""))
-			path.append(index).append("/").append(id).append("/_update");
-		else
-			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
-		if(refreshOption != null){
-			path.append("?").append(refreshOption);
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.append(" {\"doc\":");
-		Writer writer = new BBossStringWriter(builder);
-		SerialUtil.object2json(params,writer);
-		builder.append("}");
-		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
-
-		return searchResult;
+//		StringBuilder path = new StringBuilder();
+//		if(indexType == null || indexType.equals(""))
+//			path.append(index).append("/").append(id).append("/_update");
+//		else
+//			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+//		if(refreshOption != null){
+//			path.append("?").append(refreshOption);
+//		}
+//		StringBuilder builder = new StringBuilder();
+//		builder.append(" {\"doc\":");
+//		Writer writer = new BBossStringWriter(builder);
+//		SerialUtil.object2json(params,writer);
+//		builder.append("}");
+//		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+//
+//		return searchResult;
+		return updateDocument(index,indexType,id,params,refreshOption,(Boolean)null,(Boolean)null);
 	}
 
 	/**
@@ -2199,6 +2322,83 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption) throws ElasticSearchException{
+//		StringBuilder path = new StringBuilder();
+//		if(indexType == null || indexType.equals(""))
+//			path.append(index).append("/").append(id).append("/_update");
+//		else
+//			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+//		if(refreshOption != null){
+//			path.append("?").append(refreshOption);
+//		}
+//		StringBuilder builder = new StringBuilder();
+//		builder.append(" {\"doc\":");
+//		Writer writer = new BBossStringWriter(builder);
+//		SerialUtil.object2json(params,writer);
+//		builder.append("}");
+//		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+//
+//		return searchResult;
+		return updateDocument(index,indexType,id,params,refreshOption,(Boolean)null,(Boolean)null);
+	}
+
+
+	/*********************************************************/
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+		return updateDocument(index,indexType,id,params,(String)null,  detect_noop,  doc_as_upsert);
+	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+		return updateDocument(index,indexType,id,params,(String)null,  detect_noop,  doc_as_upsert);
+	}
+
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
 		StringBuilder path = new StringBuilder();
 		if(indexType == null || indexType.equals(""))
 			path.append(index).append("/").append(id).append("/_update");
@@ -2211,10 +2411,69 @@ public class RestClientUtil extends ClientUtil{
 		builder.append(" {\"doc\":");
 		Writer writer = new BBossStringWriter(builder);
 		SerialUtil.object2json(params,writer);
+		if(detect_noop != null){
+			builder.append(",\"detect_noop\":").append(detect_noop);
+		}
+		if(doc_as_upsert != null){
+			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+		}
 		builder.append("}");
 		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
 
 		return searchResult;
 	}
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 * @param detect_noop default null
+	 * @param doc_as_upsert default null
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+		StringBuilder path = new StringBuilder();
+		if(indexType == null || indexType.equals(""))
+			path.append(index).append("/").append(id).append("/_update");
+		else
+			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+		if(refreshOption != null){
+			path.append("?").append(refreshOption);
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"doc\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(params,writer);
+		if(detect_noop != null){
+			builder.append(",\"detect_noop\":").append(detect_noop);
+		}
+		if(doc_as_upsert != null){
+			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+		}
+		builder.append("}");
+
+		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+
+		return searchResult;
+	}
+
+
 
 }
