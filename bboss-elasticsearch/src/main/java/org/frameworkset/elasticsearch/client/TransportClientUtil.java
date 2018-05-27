@@ -114,6 +114,26 @@ public class TransportClientUtil  implements EventClientUtil{
 		return 0;
 	}
 
+	@Override
+	public String updateDocument(String index, String indexType, Object id, Object params, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String indexType, Object id, Map params, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String indexType, Object id, Map params, String refreshOption, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, String indexType, Object id, Object params, String refreshOption, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 
@@ -181,6 +201,11 @@ public class TransportClientUtil  implements EventClientUtil{
 		    }
 	  }
 
+
+	@Override
+	public String getDynamicIndexName(String indexName) {
+		return this.indexNameBuilder.getIndexName(indexName);
+	}
 
 	@Override
 	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException {

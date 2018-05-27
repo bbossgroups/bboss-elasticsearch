@@ -18,6 +18,17 @@ public interface ClientInterface {
 	public final String HTTP_DELETE = "delete";
 	public final String HTTP_PUT = "put";
 	public final String HTTP_HEAD = "head";
+	public final String VERSION_TYPE_INTERNAL = "internal";
+	public final String VERSION_TYPE_EXTERNAL = "external";
+	public final String VERSION_TYPE_EXTERNAL_GT = "external_gt";
+	public final String VERSION_TYPE_EXTERNAL_GTE = "external_gte";
+
+	/**
+	 * 获取动态索引表名称
+	 * @param indexName
+	 * @return
+	 */
+	public String getDynamicIndexName(String indexName);
 	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException;
 
 	public CompleteRestResponse complateSuggest(String path, String templateName,Map params) throws ElasticSearchException;
@@ -1459,4 +1470,82 @@ public interface ClientInterface {
 	public long count(String path,String entity)  throws ElasticSearchException;
 	public long count(String path,String template,Map params)  throws ElasticSearchException;
 	public long count(String path,String template,Object params)  throws ElasticSearchException;
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
+
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param id
+	 * @param params
+	 * @param refreshOption
+	 * @param detect_noop default null
+	 * @param doc_as_upsert default null
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
 }

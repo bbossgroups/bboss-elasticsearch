@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerBuilder;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import org.frameworkset.util.ClassUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,39 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 		super(config);
 	}
 	protected abstract  String[] getFilterFields();
+	private boolean isFilterField(ClassUtil.ClassInfo classInfo,String propName,String[] fs){
+		boolean find = false;
+		if(fs != null && fs.length > 0) {
+			for (String f : fs) {
+				if (f.equals(propName)) {
+					find = true;
+					break;
+				}
+			}
+		}
+		if(find)
+			return true;
+		List<ClassUtil.PropertieDescription> esAnnonationProperties = classInfo.getEsAnnonationProperties();
+		if(esAnnonationProperties != null && esAnnonationProperties.size() > 0) {
+			for (ClassUtil.PropertieDescription esAnnonationProperty : esAnnonationProperties) {
+				if (esAnnonationProperty.getName().equals(propName)) {
+					if(!esAnnonationProperty.isPersistentESId()
+							&& !esAnnonationProperty.isPersistentESParentId()
+							&& !esAnnonationProperty.isPersistentESDocAsUpsert()
+							&& !esAnnonationProperty.isPersistentESRetryOnConflict()
+							&& !esAnnonationProperty.isPersistentESRouting()
+							&& !esAnnonationProperty.isPersistentESSource()
+							&& !esAnnonationProperty.isPersistentESVersion()
+							&& !esAnnonationProperty.isPersistentESVersionType()
+							)
+					find = true;
+					break;
+				}
+			}
+		}
+		return find;
+
+	}
 
 	// ignored fields
 	@Override
@@ -29,6 +63,7 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 		// ignore fields only for concrete class
 		// note, that you can avoid or change this check
 		Class<?> beanClass = builder.getBeanDescription().getBeanClass();
+		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(beanClass);
 		// if (builder.getBeanDescription().getBeanClass().equals(Entity.class))
 		// {
 		// get original writer
@@ -39,19 +74,12 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 		for (BeanPropertyWriter writer : originalWriters) {
 			final String propName = writer.getName();
 			// if it isn't ignored field, add to actual writers list
-			boolean find = false;
-			for(String f:fs) {
-				if (f.equals(propName)) {
-					find = true;
-					break;
-				}
-			}
+			boolean find = isFilterField(  classInfo,  propName,  fs);
+
 			if(!find){
 				writers.add(writer);
 			}
 		}
-
-
 		builder.setProperties(writers);
 	}
 }
