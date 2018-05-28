@@ -518,7 +518,8 @@ public class RestClientUtil extends ClientUtil{
 				this.buildId(routing,writer);
 			}
 
-			if(action.equals("update")) {
+//			if(action.equals("update"))
+//			{
 				if (esRetryOnConflict != null) {
 					writer.write(",\"retry_on_conflict\":");
 					writer.write(String.valueOf(esRetryOnConflict));
@@ -542,7 +543,7 @@ public class RestClientUtil extends ClientUtil{
 						writer.write("\"");
 					}
 				}
-			}
+//			}
 
 			writer.write(" } }\n");
 		}
@@ -563,12 +564,34 @@ public class RestClientUtil extends ClientUtil{
 				writer.write(", \"_routing\" : ");
 				this.buildId(routing,writer);
 			}
-			if(action.equals("update")) {
-				if (esRetryOnConflict != null) {
-					writer.write(",\"retry_on_conflict\":");
-					writer.write(String.valueOf(esRetryOnConflict));
+//			if(action.equals("update"))
+//			{
+				{
+					if (esRetryOnConflict != null) {
+						writer.write(",\"retry_on_conflict\":");
+						writer.write(String.valueOf(esRetryOnConflict));
+					}
+					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
+					ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
+					if (esVersionProperty != null) {
+						Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
+						if(version != null) {
+							writer.write(",\"_version\":");
+
+							writer.write(String.valueOf(version));
+						}
+					}
+					ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
+					if (esVersionTypeProperty != null) {
+						Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
+						if(versionType != null) {
+							writer.write(",\"_version_type\":\"");
+							writer.write(String.valueOf(versionType));
+							writer.write("\"");
+						}
+					}
 				}
-			}
+//			}
 			writer.write("\" } }\n");
 		}
 	}
