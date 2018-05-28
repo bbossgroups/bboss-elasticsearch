@@ -43,71 +43,7 @@ public class RestClientUtil extends ClientUtil{
 		this.client = (ElasticSearchRestClient)client;
 		this.indexNameBuilder = indexNameBuilder;
 	}
-	private void handleFields(Map<String,Object> subFileds,String fieldName,List<IndexField> fields){
-		if(subFileds == null || subFileds.size() == 0)
-			return ;
-		Iterator<Map.Entry<String,Object>> iterator = subFileds.entrySet().iterator();
-		while(iterator.hasNext()){
-			Map.Entry<String,Object> entry = iterator.next();
-			IndexField indexField = buildIndexField(entry, fields,fieldName);
-		}
 
-	}
-
-	private Boolean parseBoolean(Object norms){
-		if(norms == null){
-			return null;
-		}
-		if(norms instanceof Boolean){
-			return (Boolean)norms;
-		}
-		else if(norms instanceof Map){
-			return (Boolean) ((Map) norms).get("enabled");
-		}
-		return null;
-	}
-	private IndexField buildIndexField(Map.Entry<String,Object> field,List<IndexField> fields,String parentFieldName){
-//		Map.Entry<String,Object> field = fileds.next();
-		IndexField indexField = new IndexField();
-		String fieldName = null;
-		if(parentFieldName != null){
-			fieldName = parentFieldName + "."+field.getKey();
-		}
-		else {
-			fieldName = field.getKey();
-		}
-		indexField.setFieldName(fieldName);
-		Map<String,Object> fieldInfo = (Map<String,Object>)field.getValue();
-		indexField.setType((String)fieldInfo.get("type"));
-		indexField.setIgnoreAbove(ResultUtil.intValue(fieldInfo.get("ignore_above"),null));
-		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
-		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
-		indexField.setBoost((Integer)fieldInfo.get("boost"));
-		indexField.setCoerce(parseBoolean( fieldInfo.get("coerce")));
-		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
-		indexField.setDocValues(parseBoolean(fieldInfo.get("doc_values")));//setCoerce();
-		indexField.setDynamic(parseBoolean(fieldInfo.get("doc_values")));	//dynamic
-		indexField.setEnabled(parseBoolean(fieldInfo.get("enabled")));			//enabled
-		indexField.setFielddata(parseBoolean(fieldInfo.get("fielddata")));	//fielddata
-		indexField.setFormat((String)fieldInfo.get("format"));		//	format
-		indexField.setIgnoreMalformed(parseBoolean(fieldInfo.get("ignore_malformed")));//Coerce();	//		ignore_malformed
-		indexField.setIncludeInAll(parseBoolean(fieldInfo.get("include_in_all")));	//include_in_all
-		indexField.setIndexOptions((String)fieldInfo.get("index_options"));
-		indexField.setIndex(parseBoolean(fieldInfo.get("index")));	//
-		indexField.setFields((Map<String,Object>)fieldInfo.get("fields"));	//
-
-		indexField.setNorms(parseBoolean(fieldInfo.get("norms")));//	norms
-		indexField.setNullValue(fieldInfo.get("null_value"));	//
-		indexField.setPositionIncrementGap((Integer)fieldInfo.get("position_increment_gap"));
-		indexField.setProperties((Map<String,Object>)fieldInfo.get("properties"));	//
-		indexField.setSearchAnalyzer((String)fieldInfo.get("search_analyzer"));	//search_analyzer
-		indexField.setSimilarity((String)fieldInfo.get("similarity"));	//
-		indexField.setStore(parseBoolean(fieldInfo.get("store")));	//store
-		indexField.setTermVector((String)fieldInfo.get("term_vector"));	//
-		fields.add(indexField);
-		handleFields(indexField.getFields(), fieldName,fields);
-		return indexField;
-	}
 	/**
 	 * 获取索引表字段信息
 	 * @param index
@@ -137,7 +73,7 @@ public class RestClientUtil extends ClientUtil{
 						Iterator<Map.Entry<String,Object>> fileds = properties.entrySet().iterator();
 						while(fileds.hasNext()){
 							Map.Entry<String,Object> field = fileds.next();
-							IndexField indexField = buildIndexField(field,fields,null);
+							IndexField indexField = BuildTool.buildIndexField(field,fields,null);
 						}
 						break;
 
@@ -316,7 +252,7 @@ public class RestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
 			try {
-				evalBuilk(writer,indexName,indexType,bean,"index");
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index");
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -359,7 +295,7 @@ public class RestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
 			try {
-				evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -407,7 +343,7 @@ public class RestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
 			try {
-				evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,parentIdKey);
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,parentIdKey);
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -422,238 +358,8 @@ public class RestClientUtil extends ClientUtil{
 		return addDocuments(indexName, indexType, beans,docIdKey, parentIdKey,(String)null);
 	}
 
-	protected void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
-		Object id = this.getId(params,  beanInfo );
-		Object parentId = this.getParentId(params,  beanInfo );
-		if(id != null) {
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName)
-					.append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : ");
-			this.buildId(id,builder);
-			if(parentId != null){
-				builder.append(",\"parent\":");
-				this.buildId(parentId,builder);
-			}
-			builder.append(" } }\n");
-		}
-		else {
-			if(parentId == null)
-				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
-			else{
-				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\"");
-				builder.append(",\"parent\":");
-				this.buildId(parentId,builder);
-				builder.append(" } }\n");
-			}
-		}
-	}
-	protected void buildId(Object id,StringBuilder builder){
-		if (id instanceof String) {
-			builder.append("\"").append(id).append("\"");
-
-		}
-		else{
-			builder.append(id);
-		}
-	}
-	protected void buildId(Object id,Writer writer) throws IOException {
-		if (id instanceof String) {
-			writer.write("\"");
-			writer.write((String)id);
-			writer.write("\"");
-
-		}
-		else{
-			writer.write(String.valueOf(id));
-		}
-	}
-
-	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
-		Object id = this.getId(params,beanInfo);
-		Object parentId = this.getParentId(params,beanInfo);
-		Object routing = this.getRouting(params,beanInfo);
-		Object esRetryOnConflict = this.getEsRetryOnConflict(params,beanInfo);
 
 
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
-	}
-
-	protected void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey) throws IOException {
-//		Object id = docIdKey != null ?params.get(docIdKey):null;
-//		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-//		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
-		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
-	}
-	protected void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey) throws IOException {
-		Object id = docIdKey != null ?params.get(docIdKey):null;
-		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-		Object routing = routingKey != null ?params.get(routingKey):null;
-
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing);
-	}
-	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing) throws IOException {
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null);
-	}
-
-	protected void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-							 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws IOException {
-
-		if(id != null) {
-			writer.write("{ \"");
-			writer.write(action);
-			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
-			writer.write("\", \"_id\" : ");
-			this.buildId(id,writer);
-			if(parentId != null){
-				writer.write(", \"parent\" : ");
-				this.buildId(parentId,writer);
-			}
-			if(routing != null){
-
-				writer.write(", \"_routing\" : ");
-				this.buildId(routing,writer);
-			}
-
-//			if(action.equals("update"))
-//			{
-				if (esRetryOnConflict != null) {
-					writer.write(",\"retry_on_conflict\":");
-					writer.write(String.valueOf(esRetryOnConflict));
-				}
-				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
-				ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
-				if (esVersionProperty != null) {
-					Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
-					if(version != null) {
-						writer.write(",\"_version\":");
-
-						writer.write(String.valueOf(version));
-					}
-				}
-				ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
-				if (esVersionTypeProperty != null) {
-					Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
-					if(versionType != null) {
-						writer.write(",\"_version_type\":\"");
-						writer.write(String.valueOf(versionType));
-						writer.write("\"");
-					}
-				}
-//			}
-
-			writer.write(" } }\n");
-		}
-		else {
-
-			writer.write("{ \"");
-			writer.write(action);
-			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
-			if(parentId != null){
-				writer.write(", \"parent\" : ");
-				this.buildId(parentId,writer);
-			}
-			if(routing != null){
-
-				writer.write(", \"_routing\" : ");
-				this.buildId(routing,writer);
-			}
-//			if(action.equals("update"))
-//			{
-				{
-					if (esRetryOnConflict != null) {
-						writer.write(",\"retry_on_conflict\":");
-						writer.write(String.valueOf(esRetryOnConflict));
-					}
-					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
-					ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
-					if (esVersionProperty != null) {
-						Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
-						if(version != null) {
-							writer.write(",\"_version\":");
-
-							writer.write(String.valueOf(version));
-						}
-					}
-					ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
-					if (esVersionTypeProperty != null) {
-						Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
-						if(versionType != null) {
-							writer.write(",\"_version_type\":\"");
-							writer.write(String.valueOf(versionType));
-							writer.write("\"");
-						}
-					}
-				}
-//			}
-			writer.write("\" } }\n");
-		}
-	}
-	private void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
-
-
-		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action);
-			if(!action.equals("update")) {
-				SerialUtil.object2json(param,writer);
-				writer.write("\n");
-			}
-			else
-			{
-				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(param.getClass());
-				ClassUtil.PropertieDescription esDocAsUpsertProperty = classInfo.getEsDocAsUpsertProperty();
-
-
-				ClassUtil.PropertieDescription esReturnSourceProperty = classInfo.getEsReturnSourceProperty();
-
-				writer.write("{\"doc\":");
-				SerialUtil.object2json(param,writer);
-				if(esDocAsUpsertProperty != null){
-					Object esDocAsUpsert = classInfo.getPropertyValue(param,esDocAsUpsertProperty.getName());
-					if(esDocAsUpsert != null){
-						writer.write(",\"doc_as_upsert\":");
-						writer.write(String.valueOf(esDocAsUpsert));
-					}
-				}
-				if(esReturnSourceProperty != null){
-					Object returnSource = classInfo.getPropertyValue(param,esReturnSourceProperty.getName());
-					if(returnSource != null){
-						writer.write(",\"_source\":");
-						writer.write(String.valueOf(returnSource));
-					}
-				}
-				writer.write("}\n");
-
-
-
-			}
-		}
-
-	}
-
-	private void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey) throws IOException {
-
-		if (param != null) {
-			buildMetaWithDocIdKey(  writer ,  indexType,  indexName,   param,action,docIdKey,parentIdKey);
-			if(!action.equals("update")) {
-				SerialUtil.object2json(param,writer);
-				writer.write("\n");
-			}
-			else
-			{
-				writer.write("{\"doc\":");
-				SerialUtil.object2json(param,writer);
-				writer.write("}\n");
-			}
-		}
-
-	}
 
 	/**
 	 * 创建或者更新索引文档
@@ -666,41 +372,7 @@ public class RestClientUtil extends ClientUtil{
 	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException{
 		return this.addDocument(indexName,indexType,bean,null);
 	}
-	protected Object getId(Object bean,ClassUtil.ClassInfo beanInfo ){
 
-		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(pkProperty == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,pkProperty.getName());
-	}
-
-	protected Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ){
-		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(esRetryOnConflictProperty == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,esRetryOnConflictProperty.getName());
-	}
-	protected Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo ){
-		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(routingProperty == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,routingProperty.getName());
-	}
-
-	protected Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
-		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(pkProperty == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,pkProperty.getName());
-	}
 
 	/**
 	 * 创建或者更新索引文档
@@ -713,8 +385,8 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		Object id = this.getId(bean,beanInfo);
-		Object parentId = this.getParentId(bean,beanInfo);
+		Object id = BuildTool.getId(bean,beanInfo);
+		Object parentId = BuildTool.getParentId(bean,beanInfo);
 
 		return addDocument(indexName, indexType, bean,id,parentId,refreshOption);
 //		StringBuilder builder = new StringBuilder();
@@ -792,7 +464,7 @@ public class RestClientUtil extends ClientUtil{
 	}
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		Object routing = this.getRouting(bean,beanInfo);
+		Object routing = BuildTool.getRouting(bean,beanInfo);
 		return addDocument( indexName,  indexType,  bean, docId, parentId, (Object)routing, refreshOption);
 	}
 
@@ -885,7 +557,7 @@ public class RestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
 			try {
-				evalBuilk(writer,indexName,indexType,bean,"update");
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update");
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -1121,7 +793,7 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
 
-		return this.client.executeHttp(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),ClientUtil.HTTP_GET);
+		return this.client.executeHttp(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),ClientUtil.HTTP_GET);
 	}
 
 	/**
@@ -1191,27 +863,7 @@ public class RestClientUtil extends ClientUtil{
 		return searchResult;
 	}
 
-	private String buildGetDocumentRequest(String indexName, String indexType,String documentId,Map<String,Object> options){
-		StringBuilder builder = new StringBuilder();
-		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
-		if(options != null){
-			builder.append("?");
-			Iterator<Map.Entry<String, Object>> iterable = options.entrySet().iterator();
-			boolean first = true;
-			while(iterable.hasNext()){
-				Map.Entry<String, Object> entry = iterable.next();
-				if(first) {
-					builder.append(entry.getKey()).append("=").append(entry.getValue());
-					first = false;
-				}
-				else
-				{
-					builder.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-				}
-			}
-		}
-		return builder.toString();
-	}
+
 
 	/**
 	 * 获取json格式的文档
@@ -1247,7 +899,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException{
-		SearchHit searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+		SearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
 
 		return ResultUtil.buildObject(searchResult, beanType);
 
@@ -1318,7 +970,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   MapSearchHit getDocumentHit(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
-		MapSearchHit searchResult = this.client.executeRequest(buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentHitResponseHandler( ),ClientUtil.HTTP_GET);
+		MapSearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentHitResponseHandler( ),ClientUtil.HTTP_GET);
 		return searchResult;
 	}
 
@@ -1905,7 +1557,7 @@ public class RestClientUtil extends ClientUtil{
 		                continue;
 		            }
 		            
-		            ESIndice esIndice = buildESIndice(  line,  format);
+		            ESIndice esIndice = BuildTool.buildESIndice(  line,  format);
 		            //如果索引已经过时，则清除过时索引数据
 //		            if(esIndice.getGenDate() != null && esIndice.getGenDate().before(deadLine)){
 		                indices.add(esIndice);
@@ -1933,94 +1585,7 @@ public class RestClientUtil extends ClientUtil{
 
 	    }
 	    
-	    private ESIndice buildESIndice(String line, SimpleDateFormat format)
-	    {
-	    	StringBuilder token = new StringBuilder();
-	        ESIndice esIndice = new ESIndice();
 
-	        int k = 0;
-	        for(int j = 0; j < line.length(); j ++){
-	            char c = line.charAt(j);
-	            if(c != ' '){
-	                token.append(c);
-	            }
-	            else {
-	                if(token.length() == 0)
-	                    continue;
-	                switch (k ){
-	                    case 0:
-	                        esIndice.setHealth(token.toString());
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 1:
-	                        esIndice.setStatus(token.toString());
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 2:
-	                        esIndice.setIndex(token.toString());
-	                        putGendate(  esIndice,  format);
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 3:
-	                        esIndice.setUuid(token.toString());
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 4:
-	                        esIndice.setPri(Integer.parseInt(token.toString()));
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 5:
-	                        esIndice.setRep(Integer.parseInt(token.toString()));
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 6:
-	                        esIndice.setDocsCcount(Long.parseLong(token.toString()));
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 7:
-	                        esIndice.setDocsDeleted(Long.parseLong(token.toString()));
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 8:
-	                        esIndice.setStoreSize(token.toString());
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    case 9:
-	                        esIndice.setPriStoreSize(token.toString());
-	                        token.setLength(0);
-	                        k ++;
-	                        break;
-	                    default:
-	                        break;
-
-	                }
-	            }
-	        }
-	        esIndice.setPriStoreSize(token.toString());
-	        return esIndice;
-	    }
-	    private void putGendate(ESIndice esIndice,SimpleDateFormat format){
-	    	int dsplit = esIndice.getIndex().lastIndexOf('-');
-
-	        try {
-	        	if(dsplit > 0){
-		            String date = esIndice.getIndex().substring(dsplit+1);
-		            esIndice.setGenDate((Date)format.parseObject(date));
-	        	}
-
-	        } catch (Exception e) {
-
-	        }
-	    }
 	    public String refreshIndexInterval(String indexName,int interval) throws ElasticSearchException{
 	    	return this.client.executeHttp(new StringBuilder().append(indexName).append("/_settings").toString(), new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"   } }").toString(), HTTP_PUT);
 	    }

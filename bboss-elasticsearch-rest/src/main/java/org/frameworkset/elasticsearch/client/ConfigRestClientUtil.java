@@ -187,14 +187,14 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public   String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(bean.getClass());
-		Object id = this.getId(bean,classInfo);
-		Object routing = this.getRouting(bean,classInfo);
+		Object id = BuildTool.getId(bean,classInfo);
+		Object routing = BuildTool.getRouting(bean,classInfo);
 
 		builder.append(indexName).append("/").append(indexType);
 		if(id != null){
 			builder.append("/").append(id);
 		}
-		Object parentId = this.getParentId(bean,classInfo);
+		Object parentId = BuildTool.getParentId(bean,classInfo);
 		if(refreshOption != null ){
 			builder.append("?").append(refreshOption);
 			if(parentId != null){
