@@ -213,7 +213,7 @@ public abstract class BuildTool {
 //			if(action.equals("update"))
 //			{
 			if (esRetryOnConflict != null) {
-				writer.write(",\"retry_on_conflict\":");
+				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
 			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
@@ -260,7 +260,7 @@ public abstract class BuildTool {
 //			{
 			{
 				if (esRetryOnConflict != null) {
-					writer.write(",\"retry_on_conflict\":");
+					writer.write(",\"_retry_on_conflict\":");
 					writer.write(String.valueOf(esRetryOnConflict));
 				}
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
