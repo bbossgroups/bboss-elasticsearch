@@ -1,0 +1,34 @@
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+           
+        }
+        resources {
+			srcDir 'src/main/resources'
+			srcDir 'src/main/java'  exclude '**/*.java'
+        }
+        
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+           
+        }
+        resources {
+			srcDir 'src/test/resources'
+			srcDir 'src/test/java'  exclude '**/*.java'
+        }
+        
+    }
+    
+}
+
+
+dependencies {
+    compile project(':bboss-elasticsearch-rest-booter')    
+       
+    compile([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])  
+  
+     
+}
