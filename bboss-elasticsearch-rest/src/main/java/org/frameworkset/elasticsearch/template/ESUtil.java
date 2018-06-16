@@ -231,7 +231,10 @@ public class ESUtil {
 		return context_;
 
 	}
-	public String getDate(Date date, DateFormateMeta dateFormateMeta){
+	public static String getDate(Date date){
+		return getDate(date, (DateFormateMeta )null);
+	}
+	public static String getDate(Date date, DateFormateMeta dateFormateMeta){
 		String format = null;
 		DateFormat f = null;
 		if(dateFormateMeta == null ) {

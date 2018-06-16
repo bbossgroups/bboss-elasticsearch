@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.jdbc;/*
+package org.frameworkset.elasticsearch.client;/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +14,22 @@ package org.frameworkset.elasticsearch.jdbc;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.persitent.util.JDBCResultSet;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JDBCResultSet {
+public class ESJDBCResultSet extends JDBCResultSet {
 	private String esIdField;
 	private String esParentIdField;
 	private String routingField;
 	private String routingValue;
 	private Boolean esDocAsUpsert;
 	private Integer esRetryOnConflict;
-	private ResultSet resultSet;
+	private Boolean esReturnSource;
+	private String esVersionField;
+	private String esVersionType;
+
 
 	public boolean next() throws SQLException {
 		return resultSet.next();
@@ -84,5 +89,29 @@ public class JDBCResultSet {
 
 	public void setEsIdField(String esIdField) {
 		this.esIdField = esIdField;
+	}
+
+	public Boolean getEsReturnSource() {
+		return esReturnSource;
+	}
+
+	public void setEsReturnSource(Boolean esReturnSource) {
+		this.esReturnSource = esReturnSource;
+	}
+
+	public String getEsVersionField() {
+		return esVersionField;
+	}
+
+	public void setEsVersionField(String esVersionField) {
+		this.esVersionField = esVersionField;
+	}
+
+	public String getEsVersionType() {
+		return esVersionType;
+	}
+
+	public void setEsVersionType(String esVersionType) {
+		this.esVersionType = esVersionType;
 	}
 }
