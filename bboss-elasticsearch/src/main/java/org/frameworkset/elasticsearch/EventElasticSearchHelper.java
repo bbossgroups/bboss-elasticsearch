@@ -7,6 +7,7 @@ public class EventElasticSearchHelper extends ElasticSearchHelper{
 	 
 	protected static JavaElasticSearch javaElasticSearchSink = null;
 	protected static void init(){
+		ElasticSearchHelper.init();
 		if(javaElasticSearchSink == null){
 			javaElasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, JavaElasticSearch.class);
 			elasticSearchSink = javaElasticSearchSink;

@@ -294,7 +294,12 @@ public class ESTest {
 //		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 //		clientInterface.cleanAllXPackIndices();
 		EventClientUtil eventClientUtil = EventElasticSearchHelper.getRestEventClientUtil();
-		System.out.println(eventClientUtil.getIndice(".security"));
+		try {
+			System.out.println(eventClientUtil.getIndice(".security"));
+		}
+		catch (Exception e){
+
+		}
 		System.out.println(eventClientUtil.cleanAllXPackIndices());
 	}
 

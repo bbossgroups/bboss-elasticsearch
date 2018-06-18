@@ -163,7 +163,7 @@ public class ImportBuilder {
 		return this;
 	}
 
-	public ESJDBC builder(){
+	public DataStream builder(){
 		ESJDBC esjdbcResultSet = new ESJDBC();
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());
 //		esjdbcResultSet.setResultSet(resultSet);
@@ -193,7 +193,9 @@ public class ImportBuilder {
 		esjdbcResultSet.setDbUser(this.dbUser);
 		esjdbcResultSet.setDbPassword(this.dbPassword);
 		esjdbcResultSet.setValidateSQL(this.validateSQL);
-		return esjdbcResultSet;
+		DataStream dataStream = new DataStream();
+		dataStream.setEsjdbc(esjdbcResultSet);
+		return dataStream;
 	}
 
 	public ImportBuilder setIndexType(String indexType) {

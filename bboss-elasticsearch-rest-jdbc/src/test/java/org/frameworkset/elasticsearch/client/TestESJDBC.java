@@ -125,8 +125,7 @@ public class TestESJDBC {
 		/**
 		 * 执行数据库表数据导入es操作
 		 */
-		ESJDBC esjdbc = importBuilder.builder();
-		DataStream dataStream = new DataStream();
-		dataStream.db2es(esjdbc);
+		DataStream dataStream = importBuilder.builder();
+		dataStream.db2es();
 	}
 }

@@ -24,8 +24,10 @@ import java.sql.ResultSet;
 
 public class DataStream {
 	private ESJDBC esjdbc;
-	public void db2es(ESJDBC esjdbc) throws ESDataImportException{
-		this.esjdbc = esjdbc;
+	public void db2es() throws ESDataImportException{
+		if(esjdbc == null){
+			throw new ESDataImportException("ESJDBC is null.");
+		}
 		try {
 			initDS();
 			importData();
@@ -33,6 +35,9 @@ public class DataStream {
 		catch (Exception e) {
 			throw new ESDataImportException(e);
 		}
+	}
+	public void setEsjdbc(ESJDBC esjdbc){
+		this.esjdbc = esjdbc;
 	}
 	private void initDS(){
 		if(SimpleStringUtil.isNotEmpty(esjdbc.getDbDriver()) && SimpleStringUtil.isNotEmpty(esjdbc.getDbUrl())) {

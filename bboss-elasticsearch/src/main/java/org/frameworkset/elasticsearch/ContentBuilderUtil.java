@@ -18,16 +18,11 @@
  */
 package org.frameworkset.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import org.elasticsearch.common.xcontent.*;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
-
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.XContentType;
-
-import com.fasterxml.jackson.core.JsonParseException;
 
 /**
  * Utility methods for using ElasticSearch {@link XContentBuilder}
@@ -68,12 +63,12 @@ public class ContentBuilderUtil {
       // elasticsearch.
       // If validation fails then the incoming event is submitted to
       // elasticsearch as plain text.
-      parser = XContentFactory.xContent(contentType).createParser(NamedXContentRegistry.EMPTY,data);
+      parser = XContentFactory.xContent(contentType).createParser(NamedXContentRegistry.EMPTY,LoggingDeprecationHandler.INSTANCE,data);
       while (parser.nextToken() != null) {};
 
       // If the JSON is valid then include it
       try {
-        parser = XContentFactory.xContent(contentType).createParser(NamedXContentRegistry.EMPTY, data);
+        parser = XContentFactory.xContent(contentType).createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE,data);
         // Add the field name, but not the value.
         builder.field(fieldName);
         // This will add the whole parsed content as the value of the field.
