@@ -1467,9 +1467,17 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String path,String templateName,Map params,Class<T> type)  throws ElasticSearchException;
-	public long count(String path,String entity)  throws ElasticSearchException;
-	public long count(String path,String template,Map params)  throws ElasticSearchException;
-	public long count(String path,String template,Object params)  throws ElasticSearchException;
+	public long count(String index,String entity)  throws ElasticSearchException;
+	public long count(String index,String template,Map params)  throws ElasticSearchException;
+	public long count(String index,String template,Object params)  throws ElasticSearchException;
+
+	/**
+	 * 查询index中的所有文档数量
+	 * @param index
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public long countAll(String index) throws ElasticSearchException;
 	/**
 	 * 根据路径更新文档
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html

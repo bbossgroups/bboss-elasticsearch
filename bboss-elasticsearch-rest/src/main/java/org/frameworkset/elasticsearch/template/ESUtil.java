@@ -251,6 +251,17 @@ public class ESUtil {
 			throw new ElasticSearchException(e);
 		}
 	}
+
+	public static String getDate(Date date, DateFormat f){
+
+		try {
+			String _date = f.format(date);
+			return _date;
+		}
+		catch (Exception e) {
+			throw new ElasticSearchException(e);
+		}
+	}
 	public void handleVaribleValue(StringBuilder builder,ESTemplateCache.TempateVariable variable,String value,boolean escape){
 
 		if(variable.isQuoted()) {

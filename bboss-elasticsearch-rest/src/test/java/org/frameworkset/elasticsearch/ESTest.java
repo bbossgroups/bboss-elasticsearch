@@ -559,7 +559,7 @@ public class ESTest {
 		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(writer,0);
 		
 			charEscapeUtil.writeString("成家宁,河北秦皇岛 移动^A电话18713518970",false);
-			charEscapeUtil.writeString("  $ ^F^HB ^L  $",false);
+			charEscapeUtil.writeString("  $ ^F^HB ^L  $\t",false);
 			charEscapeUtil.writeString("( ^E`!a",false);
 			charEscapeUtil.writeString(FileUtil.getFileContent(new File("E:/workspace/bbossgroups/bboss-elastic/bboss-elasticsearch-rest/src/test/java/org/frameworkset/elasticsearch/ESTest.java")),false);
 			 

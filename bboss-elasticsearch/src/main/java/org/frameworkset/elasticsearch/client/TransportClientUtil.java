@@ -100,17 +100,22 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public long count(String path, String entity) throws ElasticSearchException {
+	public long count(String index, String entity) throws ElasticSearchException {
 		return 0;
 	}
 
 	@Override
-	public long count(String path, String template, Map params) throws ElasticSearchException {
+	public long count(String index, String template, Map params) throws ElasticSearchException {
 		return 0;
 	}
 
 	@Override
-	public long count(String path, String template, Object params) throws ElasticSearchException {
+	public long count(String index, String template, Object params) throws ElasticSearchException {
+		return 0;
+	}
+
+	@Override
+	public long countAll(String index) throws ElasticSearchException {
 		return 0;
 	}
 
