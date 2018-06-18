@@ -11,7 +11,22 @@ maven坐标
 ```
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest</artifactId>
+    <artifactId>bboss-elasticsearch-rest-booter</artifactId>
+    <version>5.0.7.3</version>
+</dependency>
+```
+gradle坐标
+```
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-booter:5.0.7.3"
+```
+
+如果需要使用db表数据导入es功能，则需要使用以下maven坐标
+
+maven坐标
+```
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-elasticsearch-rest-</artifactId>
     <version>5.0.7.2</version>
 </dependency>
 ```

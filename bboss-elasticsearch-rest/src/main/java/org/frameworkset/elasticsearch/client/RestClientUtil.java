@@ -1173,8 +1173,13 @@ public class RestClientUtil extends ClientUtil{
 	public long count(String index,String template,Map params)  throws ElasticSearchException{
 		throw new ElasticSearchException("Un implements method");
 	}
-	public long count(String path,String template,Object params)  throws ElasticSearchException{
+	public long count(String index,String template,Object params)  throws ElasticSearchException{
 		throw new ElasticSearchException("Un implements method");
+	}
+
+	public long countAll(String index)  throws ElasticSearchException{
+		String queryAll = "{\"query\": {\"match_all\": {}}}";
+		return this.count(index,queryAll);
 	}
 
 	@Override

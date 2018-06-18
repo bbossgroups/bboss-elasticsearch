@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
+import java.util.Map;
+
 public abstract class ElasticSearchBoot {
 	/**
 	 * 根据指定的配置文件初始化elasticsearch客户端工具
@@ -35,7 +37,17 @@ public abstract class ElasticSearchBoot {
 	 * conf/elasticsearch.properties,application.properties,config/application.properties
 	 */
 	public final static void boot(){
-		ElasticSearchPropertiesFilePlugin.init(null);
+		ElasticSearchPropertiesFilePlugin.init((String)null);
+		ElasticSearchConfigBoot.boot();
+
+	}
+
+	/**
+	 * 按照默认的配置文件初始化elasticsearch客户端工具
+	 * conf/elasticsearch.properties,application.properties,config/application.properties
+	 */
+	public final static void boot(Map configProperties){
+		ElasticSearchPropertiesFilePlugin.init(configProperties);
 		ElasticSearchConfigBoot.boot();
 
 	}

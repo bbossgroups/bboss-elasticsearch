@@ -231,7 +231,10 @@ public class ESUtil {
 		return context_;
 
 	}
-	public String getDate(Date date, DateFormateMeta dateFormateMeta){
+	public static String getDate(Date date){
+		return getDate(date, (DateFormateMeta )null);
+	}
+	public static String getDate(Date date, DateFormateMeta dateFormateMeta){
 		String format = null;
 		DateFormat f = null;
 		if(dateFormateMeta == null ) {
@@ -240,6 +243,17 @@ public class ESUtil {
 			dateFormateMeta = SerialUtil.getDateFormateMeta();
 		}
 		f = dateFormateMeta.toDateFormat();
+		try {
+			String _date = f.format(date);
+			return _date;
+		}
+		catch (Exception e) {
+			throw new ElasticSearchException(e);
+		}
+	}
+
+	public static String getDate(Date date, DateFormat f){
+
 		try {
 			String _date = f.format(date);
 			return _date;

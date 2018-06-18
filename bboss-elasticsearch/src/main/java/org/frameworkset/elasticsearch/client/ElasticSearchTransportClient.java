@@ -204,7 +204,6 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 	 */
 	private void openClient(String clusterName) {
 		logger.info("Using ElasticSearch hostnames: {} ", Arrays.toString(serverAddresses));
-
 		Settings settings = null;
 		Settings.Builder builder = Settings.builder();
 		if (this.elasticUser != null && !this.elasticUser.equals("")) {

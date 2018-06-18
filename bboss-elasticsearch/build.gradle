@@ -51,11 +51,15 @@ dependencies {
 	}
 
 	compile (
-			[group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true],
+			[group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true]
 	){
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
 	}
+	compile 'com.unboundid:unboundid-ldapsdk:3.2.0'
+	compile 'org.bouncycastle:bcprov-jdk15on:1.58'
+	compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
+
    compile (
 
         [group: 'com.google.code.gson', name: 'gson', version: "2.2.2", transitive: true],

@@ -11,13 +11,13 @@ maven坐标
 ```
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest</artifactId>
-    <version>5.0.6.3</version>
+    <artifactId>bboss-elasticsearch-rest-booter</artifactId>
+    <version>5.0.7.3</version>
 </dependency>
 ```
 gradle坐标
 ```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest:5.0.6.3"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-booter:5.0.7.3"
 ```
 # elastic search配置和使用
 

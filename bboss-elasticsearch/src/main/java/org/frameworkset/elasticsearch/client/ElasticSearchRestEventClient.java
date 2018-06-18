@@ -65,8 +65,8 @@ public class ElasticSearchRestEventClient extends ElasticSearchRestClient implem
 	public void createIndexRequest(StringBuilder bulkBuilder, IndexNameBuilder indexNameBuilder, Event event, ElasticSearchEventSerializer elasticSearchEventSerializer) throws ElasticSearchException {
 
 		try {
-			BytesReference content = elasticSearchEventSerializer == null ? serializer.getContentBuilder(event).bytes() :
-					elasticSearchEventSerializer.getContentBuilder(event).bytes();
+			BytesReference content = elasticSearchEventSerializer == null ? BytesReference.bytes(serializer.getContentBuilder(event) ) :
+					BytesReference.bytes(elasticSearchEventSerializer.getContentBuilder(event)) ;
 			Map<String, Map<String, String>> parameters = new HashMap<String, Map<String, String>>();
 			Map<String, String> indexParameters = new HashMap<String, String>();
 			indexParameters.put(ElasticSearchRestClient.INDEX_PARAM, ((EventIndexNameBuilder)indexNameBuilder).getIndexName(event));

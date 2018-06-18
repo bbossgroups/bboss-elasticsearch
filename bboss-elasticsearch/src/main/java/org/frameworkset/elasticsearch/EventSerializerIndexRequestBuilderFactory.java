@@ -18,14 +18,13 @@
  */
 package org.frameworkset.elasticsearch;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.util.FastDateFormat;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Default implementation of {@link ElasticSearchIndexRequestBuilderFactory}.
@@ -59,10 +58,9 @@ public class EventSerializerIndexRequestBuilderFactory
   protected void prepareIndexRequest(IndexRequestBuilder indexRequest,
       String indexName, String indexType, Event event) throws IOException {
 	XContentBuilder contentBuilder = serializer.getContentBuilder(event);
-	
+    // toFixed ?yinbp
     indexRequest.setIndex(indexName)
         .setType(indexType)
-        .setSource(contentBuilder.bytes(),
-        		event.getXContentType() != null?event.getXContentType():XContentType.JSON);
+        .setSource(contentBuilder );
   }
 }

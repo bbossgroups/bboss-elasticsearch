@@ -16,7 +16,9 @@ package org.frameworkset.elasticsearch.client;/*
 
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
+import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
+import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.ClassUtil;
 
 import java.io.IOException;
@@ -119,7 +121,10 @@ public abstract class BuildTool {
 
 	public static String buildGetDocumentRequest(String indexName, String indexType,String documentId,Map<String,Object> options){
 		StringBuilder builder = new StringBuilder();
-		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
+//		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
+		builder.append("/").append(indexName).append("/").append(indexType).append("/");
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+		charEscapeUtil.writeString(documentId, true);
 		if(options != null){
 			builder.append("?");
 			Iterator<Map.Entry<String, Object>> iterable = options.entrySet().iterator();
@@ -139,19 +144,34 @@ public abstract class BuildTool {
 		return builder.toString();
 	}
 
-	public static void buildId(Object id,StringBuilder builder){
+	public static void buildId(Object id,StringBuilder builder,boolean escape){
 		if (id instanceof String) {
-			builder.append("\"").append(id).append("\"");
+			if(!escape) {
+				builder.append("\"")
+						.append(id).append("\"");
+			}
+			else{
+				builder.append("\"");
+				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+				charEscapeUtil.writeString((String) id, true);
+				builder.append("\"");
+			}
 
 		}
 		else{
 			builder.append(id);
 		}
 	}
-	public static void buildId(Object id,Writer writer) throws IOException {
+	public static void buildId(Object id,Writer writer,boolean escape) throws IOException {
 		if (id instanceof String) {
 			writer.write("\"");
-			writer.write((String)id);
+			if(!escape) {
+				writer.write((String) id);
+			}
+			else{
+				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(writer);
+				charEscapeUtil.writeString((String) id, true);
+			}
 			writer.write("\"");
 
 		}
@@ -199,15 +219,15 @@ public abstract class BuildTool {
 			writer.write("\", \"_type\" : \"");
 			writer.write(indexType);
 			writer.write("\", \"_id\" : ");
-			buildId(id,writer);
+			buildId(id,writer,true);
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
-				buildId(parentId,writer);
+				buildId(parentId,writer,true);
 			}
 			if(routing != null){
 
 				writer.write(", \"_routing\" : ");
-				buildId(routing,writer);
+				buildId(routing,writer,true);
 			}
 
 //			if(action.equals("update"))
@@ -249,12 +269,12 @@ public abstract class BuildTool {
 			writer.write(indexType);
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
-				buildId(parentId,writer);
+				buildId(parentId,writer,true);
 			}
 			if(routing != null){
 
 				writer.write(", \"_routing\" : ");
-				buildId(routing,writer);
+				buildId(routing,writer,true);
 			}
 //			if(action.equals("update"))
 //			{
@@ -336,10 +356,10 @@ public abstract class BuildTool {
 		if(id != null) {
 			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName)
 					.append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : ");
-			buildId(id,builder);
+			buildId(id,builder,true);
 			if(parentId != null){
 				builder.append(",\"parent\":");
-				buildId(parentId,builder);
+				buildId(parentId,builder,true);
 			}
 			builder.append(" } }\n");
 		}
@@ -349,7 +369,7 @@ public abstract class BuildTool {
 			else{
 				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\"");
 				builder.append(",\"parent\":");
-				buildId(parentId,builder);
+				buildId(parentId,builder,true);
 				builder.append(" } }\n");
 			}
 		}

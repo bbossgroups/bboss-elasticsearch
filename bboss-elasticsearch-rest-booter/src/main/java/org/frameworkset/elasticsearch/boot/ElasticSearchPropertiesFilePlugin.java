@@ -17,13 +17,31 @@ package org.frameworkset.elasticsearch.boot;/*
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.plugin.PropertiesFilePlugin;
 
+import java.util.Map;
+
 public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 	private static String elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+	private static Map configProperties;
 	public static void init(String elasticSearchConfigFiles){
 		if(elasticSearchConfigFiles != null && elasticSearchConfigFiles.trim().length() > 0){
 			ElasticSearchPropertiesFilePlugin.elasticSearchConfigFiles = elasticSearchConfigFiles.trim();
 		}
 	}
+
+	/**
+	 * 直接从map中装载初始化话es所需要的属性，用于从zookeeper/consul/etcd/ Eureka动态加载es配置
+	 * @param configProperties
+	 */
+	public static void init(Map configProperties){
+		if(configProperties != null && configProperties.size() > 0){
+			ElasticSearchPropertiesFilePlugin.configProperties = configProperties;
+		}
+	}
+	@Override
+	public Map getConfigProperties(BaseApplicationContext applicationContext) {
+		return configProperties;
+	}
+
 	@Override
 	public String getFiles(BaseApplicationContext applicationContext) {
 		return elasticSearchConfigFiles;
