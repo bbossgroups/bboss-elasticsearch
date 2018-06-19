@@ -309,7 +309,7 @@ public class JDBCRestClientUtil {
 			writer.write("\"");
 			writer.write(javaName);
 			writer.write("\":");
-			int colType = metaData.getColumnTypeByIndex(i);
+//			int colType = metaData.getColumnTypeByIndex(i);
 			Object value = getValue(      esjdbc.getResultSet(),  i,  colName);
 			if(value != null) {
 				if (value instanceof String) {
