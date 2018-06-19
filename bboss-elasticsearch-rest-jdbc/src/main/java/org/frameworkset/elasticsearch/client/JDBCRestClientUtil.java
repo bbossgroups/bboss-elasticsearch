@@ -293,8 +293,12 @@ public class JDBCRestClientUtil {
 				continue;
 			String javaName = null;
 			FieldMeta fieldMeta = esjdbc.getMappingName(colName);
-			if(fieldMeta != null)
+
+			if(fieldMeta != null) {
+				if(fieldMeta.getIgnore() != null && fieldMeta.getIgnore() == true)
+					continue;
 				javaName = fieldMeta.getEsFieldName();
+			}
 			else
 				javaName = useJavaName ?metaData.getColumnJavaNameByIndex(i):colName;
 			if(javaName == null){
@@ -305,7 +309,7 @@ public class JDBCRestClientUtil {
 			writer.write("\"");
 			writer.write(javaName);
 			writer.write("\":");
-			int colType = metaData.getColumnTypeByIndex(i);
+//			int colType = metaData.getColumnTypeByIndex(i);
 			Object value = getValue(      esjdbc.getResultSet(),  i,  colName);
 			if(value != null) {
 				if (value instanceof String) {

@@ -120,7 +120,8 @@ public class TestESJDBC {
 		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
 		 */
 		importBuilder.addFieldMapping("document_id","docId")
-					 .addFieldMapping("docwtime","docwTime");
+					 .addFieldMapping("docwtime","docwTime")
+					 .addIgnoreFieldMapping("channel_id");//添加忽略字段
 
 		/**
 		 * 执行数据库表数据导入es操作
