@@ -24,6 +24,15 @@ import java.text.DateFormat;
 import java.util.Map;
 
 public class ESJDBC extends JDBCResultSet {
+	public String getApplicationPropertiesFile() {
+		return applicationPropertiesFile;
+	}
+
+	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
+		this.applicationPropertiesFile = applicationPropertiesFile;
+	}
+
+	private String applicationPropertiesFile;
 	private boolean usePool = false;
 	private String esIdField;
 	private String esParentIdField;
