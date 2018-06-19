@@ -92,7 +92,7 @@ public class TestESJDBC {
 				.setUsePool(false);//是否使用连接池
 
 
-		//指定导入数据的sql语句，必填项
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑
 		importBuilder.setSql("select * from td_cms_document");
 		/**
 		 * es相关配置
@@ -121,6 +121,46 @@ public class TestESJDBC {
 		 */
 		importBuilder.addFieldMapping("document_id","docId")
 					 .addFieldMapping("docwtime","docwTime");
+
+		/**
+		 * 执行数据库表数据导入es操作
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.db2es();
+	}
+
+	@Test
+	public void testSimpleImportBuilder(){
+		ImportBuilder importBuilder = ImportBuilder.newInstance();
+		try {
+			//清除测试表
+			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");
+		}
+		catch (Exception e){
+
+		}
+		//数据源相关配置，可选项，可以在外部启动数据源
+		importBuilder.setDbName("test")
+				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+				.setDbUrl("jdbc:mysql://localhost:3306/bboss")
+				.setDbUser("root")
+				.setDbPassword("123456")
+				.setValidateSQL("select 1")
+				.setUsePool(false);//是否使用连接池
+
+
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑
+		importBuilder.setSql("select * from td_cms_document");
+		/**
+		 * es相关配置
+		 */
+		importBuilder
+				.setIndex("dbclobdemo") //必填项
+				.setIndexType("dbclobdemo") //必填项
+				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
+				.setBatchSize(1000);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+
 
 		/**
 		 * 执行数据库表数据导入es操作
