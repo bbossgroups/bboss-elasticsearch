@@ -69,18 +69,33 @@ public class ImportBuilder {
 		FieldMeta fieldMeta = new FieldMeta();
 		fieldMeta.setDbColumnName(dbColumnName);
 		fieldMeta.setEsFieldName(esFieldName);
+		fieldMeta.setIgnore(false);
 		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat));
+		return fieldMeta;
+	}
+
+	private FieldMeta buildIgnoreFieldMeta(String dbColumnName){
+		FieldMeta fieldMeta = new FieldMeta();
+		fieldMeta.setDbColumnName(dbColumnName);
+
+		fieldMeta.setIgnore(true);
 		return fieldMeta;
 	}
 	private FieldMeta buildFieldMeta(String dbColumnName,String esFieldName ,String dateFormat,String locale,String timeZone){
 		FieldMeta fieldMeta = new FieldMeta();
 		fieldMeta.setDbColumnName(dbColumnName);
 		fieldMeta.setEsFieldName(esFieldName);
+		fieldMeta.setIgnore(false);
 		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone));
 		return fieldMeta;
 	}
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName){
 		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildFieldMeta(  dbColumnName,  esFieldName,null ));
+		return this;
+	}
+
+	public ImportBuilder addIgnoreFieldMapping(String dbColumnName){
+		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildIgnoreFieldMeta(  dbColumnName));
 		return this;
 	}
 
