@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.StatementInfo;
+import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 
 import java.sql.ResultSet;
@@ -25,6 +26,8 @@ public class ImportBuilder {
 	private ImportBuilder(){
 
 	}
+	private String applicationPropertiesFile;
+	private boolean freezen;
 	private String sql;
 	private String dbName;
 	private String dbDriver;
@@ -178,7 +181,28 @@ public class ImportBuilder {
 		return this;
 	}
 
-	public DataStream builder(){
+	private void buildDBConfig(){
+		if(!this.freezen) {
+			PropertiesContainer propertiesContainer = new PropertiesContainer();
+			if(this.applicationPropertiesFile == null) {
+				propertiesContainer.addConfigPropertiesFile("application.properties");
+			}
+			else{
+				propertiesContainer.addConfigPropertiesFile(applicationPropertiesFile);
+			}
+			this.dbName  = propertiesContainer.getProperty("db.name");
+			this.dbUser  = propertiesContainer.getProperty("db.user");
+			this.dbPassword  = propertiesContainer.getProperty("db.password");
+			this.dbDriver  = propertiesContainer.getProperty("db.driver");
+			this.dbUrl  = propertiesContainer.getProperty("db.url");
+			String _usePool = propertiesContainer.getProperty("db.usePool");
+			if(_usePool != null && !_usePool.equals(""))
+				this.usePool  = Boolean.parseBoolean(_usePool);
+			this.validateSQL  = propertiesContainer.getProperty("db.validateSQL");
+
+		}
+	}
+	private ESJDBC buildESConfig(){
 		ESJDBC esjdbcResultSet = new ESJDBC();
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());
 //		esjdbcResultSet.setResultSet(resultSet);
@@ -208,6 +232,12 @@ public class ImportBuilder {
 		esjdbcResultSet.setDbUser(this.dbUser);
 		esjdbcResultSet.setDbPassword(this.dbPassword);
 		esjdbcResultSet.setValidateSQL(this.validateSQL);
+		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
+		return esjdbcResultSet;
+	}
+	public DataStream builder(){
+		this.buildDBConfig();
+		ESJDBC esjdbcResultSet = this.buildESConfig();
 		DataStream dataStream = new DataStream();
 		dataStream.setEsjdbc(esjdbcResultSet);
 		return dataStream;
@@ -234,6 +264,7 @@ public class ImportBuilder {
 	}
 
 	public ImportBuilder setDbName(String dbName) {
+		freezen = true;
 		this.dbName = dbName;
 		return this;
 	}
@@ -244,32 +275,46 @@ public class ImportBuilder {
 	}
 
 	public ImportBuilder setDbDriver(String dbDriver) {
+		freezen = true;
 		this.dbDriver = dbDriver;
 		return this;
 	}
 
 	public ImportBuilder setDbUrl(String dbUrl) {
+		freezen = true;
 		this.dbUrl = dbUrl;
 		return this;
 	}
 
 	public ImportBuilder setDbUser(String dbUser) {
+		freezen = true;
 		this.dbUser = dbUser;
 		return this;
 	}
 
 	public ImportBuilder setDbPassword(String dbPassword) {
+		freezen = true;
 		this.dbPassword = dbPassword;
 		return this;
 	}
 
 	public ImportBuilder setValidateSQL(String validateSQL) {
+		freezen = true;
 		this.validateSQL = validateSQL;
 		return this;
 	}
 
 	public ImportBuilder setUsePool(boolean usePool) {
+		freezen = true;
 		this.usePool = usePool;
 		return this;
+	}
+
+	public String getApplicationPropertiesFile() {
+		return applicationPropertiesFile;
+	}
+
+	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
+		this.applicationPropertiesFile = applicationPropertiesFile;
 	}
 }

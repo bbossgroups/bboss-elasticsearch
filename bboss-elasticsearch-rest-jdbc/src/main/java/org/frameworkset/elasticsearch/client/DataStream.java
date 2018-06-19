@@ -19,6 +19,7 @@ import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 
 import java.sql.ResultSet;
 
@@ -29,6 +30,7 @@ public class DataStream {
 			throw new ESDataImportException("ESJDBC is null.");
 		}
 		try {
+			initES();
 			initDS();
 			importData();
 		}
@@ -38,6 +40,10 @@ public class DataStream {
 	}
 	public void setEsjdbc(ESJDBC esjdbc){
 		this.esjdbc = esjdbc;
+	}
+	private void initES(){
+		if(SimpleStringUtil.isNotEmpty(esjdbc.getApplicationPropertiesFile() ))
+			ElasticSearchBoot.boot(esjdbc.getApplicationPropertiesFile());
 	}
 	private void initDS(){
 		if(SimpleStringUtil.isNotEmpty(esjdbc.getDbDriver()) && SimpleStringUtil.isNotEmpty(esjdbc.getDbUrl())) {
