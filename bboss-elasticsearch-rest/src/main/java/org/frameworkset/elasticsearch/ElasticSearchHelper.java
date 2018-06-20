@@ -13,6 +13,8 @@ public class ElasticSearchHelper {
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
 	private static boolean inited;
+	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
+	private static long dslfileRefreshInterval = 5000;
 
 	private static Method bootMethod;
 	static {
@@ -24,6 +26,12 @@ public class ElasticSearchHelper {
 		} catch (NoSuchMethodException e) {
 
 		}
+	}
+	public static long getDslfileRefreshInterval(){
+		return dslfileRefreshInterval;
+	}
+	public static void setDslfileRefreshInterval(long dslfileRefreshInterval){
+		ElasticSearchHelper.dslfileRefreshInterval = dslfileRefreshInterval;
 	}
 	private static Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
 	public ElasticSearchHelper() {
@@ -78,6 +86,7 @@ public class ElasticSearchHelper {
 		inited = true;
 		ElasticSearch elasticSearchSink = null;
 		ElasticSearch firstElasticSearch = null;
+		initDslFileRefreshInterval( configContext);
 		Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
 		for(String serverName:elasticsearchServerNames){
 			Properties elasticsearchPropes = new Properties();
@@ -155,7 +164,7 @@ public class ElasticSearchHelper {
 			return defaultValue;
 		}
 		try {
-			long ret = Long.parseLong(_value);
+			long ret = Long.parseLong(_value.trim());
 			return ret;
 		}
 		catch (Exception e){
@@ -201,6 +210,14 @@ public class ElasticSearchHelper {
 		}
 		return _value;
 	}
+	private static void initDslFileRefreshInterval(BaseApplicationContext context){
+		try {
+			long _dslfileRefreshInterval = ElasticSearchHelper._getLongValue("default","dslfile.refreshInterval",context,5000l);
+			dslfileRefreshInterval = _dslfileRefreshInterval;
+		} catch (Exception e) {
+
+		}
+	}
 
 	protected static void init(){
 		if(inited )
@@ -213,6 +230,7 @@ public class ElasticSearchHelper {
 				if (_elasticSearchSink == null) {
 					context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch.xml");
 					if(!context.isEmptyContext()) {
+						initDslFileRefreshInterval( context);
 						_elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
 						if (_elasticSearchSink != null) {
 							elasticSearchMap.put(DEFAULT_SEARCH, _elasticSearchSink);

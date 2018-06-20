@@ -20,6 +20,7 @@ import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.util.*;
 import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
@@ -726,7 +727,7 @@ public class ESUtil {
 	private static Object lock = new Object();
 	private static void checkESUtil(String sqlfile,ESUtil sqlutil){
 		
-		refresh_interval = BaseApplicationContext.getSQLFileRefreshInterval();
+		refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
 		if(refresh_interval > 0)
 		{
 			if(damon == null)
@@ -742,6 +743,9 @@ public class ESUtil {
 				}
 			}
 			damon.addFile(sqlfile, new ResourceTempateRefresh(sqlutil));
+		}
+		else{
+			log.debug("ElasticSearch files Refresh Interval:"+refresh_interval+",ignore hotload dsl file["+sqlfile+"]");
 		}
 		
 	}
