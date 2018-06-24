@@ -181,22 +181,22 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
 		if(healthCheckInterval > 0) {
-			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to disable healthCheck thread.");
+			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
 			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
 			healthCheck.run();
 		}
 		else {
-			logger.info("Elasticsearch healthCheck disable,you can set elasticsearch.healthCheckInterval=3000 in "+this.elasticSearch.getApplicationContext().getConfigfile()+" to enabled healthCheck thread.");
+			logger.info("Elasticsearch healthCheck disable,you can set elasticsearch.healthCheckInterval=3000 in "+this.elasticSearch.getConfigContainerInfo()+" to enabled healthCheck thread.");
 
 		}
 		if(discoverHost) {
-			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getApplicationContext().getConfigfile()+".");
+			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
 			HostDiscover hostDiscover = new HostDiscover(this);
 			hostDiscover.start();
 		}
 		else {
-			logger.info("Discover Elasticsearch Host is disabled,to enabled set elasticsearch.discoverHost=true  in "+this.elasticSearch.getApplicationContext().getConfigfile()+".");
+			logger.info("Discover Elasticsearch Host is disabled,to enabled set elasticsearch.discoverHost=true  in "+this.elasticSearch.getConfigContainerInfo()+".");
 		}
 
 	}

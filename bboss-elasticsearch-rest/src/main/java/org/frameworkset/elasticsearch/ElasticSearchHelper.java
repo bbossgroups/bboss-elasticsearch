@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
+import org.frameworkset.spi.assemble.GetProperties;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -80,15 +81,23 @@ public class ElasticSearchHelper {
 	 *                 <description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
 	 *             </property>
 	 */
-	public static void booter(String[] elasticsearchServerNames,BaseApplicationContext configContext){
-		if(inited )
-			return;
+	public static void booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot){
+		if(inited ) {
+			if(!forceBoot)
+				return;
+		}
 		inited = true;
 		ElasticSearch elasticSearchSink = null;
 		ElasticSearch firstElasticSearch = null;
 		initDslFileRefreshInterval( configContext);
 		Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
 		for(String serverName:elasticsearchServerNames){
+			if(ElasticSearchHelper.elasticSearchMap.containsKey(serverName))
+				continue;
+			else if (serverName.equals("default")){
+				if(ElasticSearchHelper.elasticSearchMap.containsKey(DEFAULT_SEARCH))
+					continue;
+			}
 			Properties elasticsearchPropes = new Properties();
 			elasticsearchPropes.put("elasticsearch.client",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.client",configContext,"restful"));
@@ -149,7 +158,7 @@ public class ElasticSearchHelper {
 		}
 	}
 
-	private static long _getLongValue(String poolName,String propertyName,BaseApplicationContext context,long defaultValue) throws Exception {
+	private static long _getLongValue(String poolName,String propertyName,GetProperties context,long defaultValue) throws Exception {
 		String _value = null;
 		if(poolName.equals("default")){
 			_value = (String)context.getExternalProperty(propertyName);
@@ -194,7 +203,7 @@ public class ElasticSearchHelper {
 			throw e;
 		}
 	}
-	private static String _getStringValue(String poolName,String propertyName,BaseApplicationContext context,String defaultValue){
+	private static String _getStringValue(String poolName,String propertyName,GetProperties context,String defaultValue){
 		String _value = null;
 		if(poolName.equals("default")){
 			_value = (String)context.getExternalProperty(propertyName);
@@ -210,7 +219,7 @@ public class ElasticSearchHelper {
 		}
 		return _value;
 	}
-	private static void initDslFileRefreshInterval(BaseApplicationContext context){
+	private static void initDslFileRefreshInterval(GetProperties context){
 		try {
 			long _dslfileRefreshInterval = ElasticSearchHelper._getLongValue("default","dslfile.refreshInterval",context,5000l);
 			dslfileRefreshInterval = _dslfileRefreshInterval;

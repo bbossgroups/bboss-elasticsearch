@@ -17,30 +17,64 @@ package org.frameworkset.elasticsearch.boot;/*
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
+import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
+
+import java.util.Map;
 
 public abstract class ElasticSearchConfigBoot {
 	private static boolean inited = false;
-
 	public static void boot(){
-		if(inited)
-			return;
-		synchronized (ElasticSearchConfigBoot.class) {
-			if(inited)
+		boot(false);
+	}
+
+	/**
+	 *
+	 * @param forceBoot 强制启动
+	 */
+	public static void boot(boolean forceBoot){
+		if(inited) {
+			if(!forceBoot)
 				return;
+		}
+
+		synchronized (ElasticSearchConfigBoot.class) {
+			if(inited){
+				if(!forceBoot)
+					return;
+			}
 			try {
-				BaseApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch-boot-config.xml");
+				BaseApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch-boot-config.xml",forceBoot);
 				String _elasticsearchServerNames = context.getExternalProperty("elasticsearch.serverNames", "default");
 				String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
 				//初始化Http连接池
 				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, context);
 
 				//初始化ElasticSearchServer
-				ElasticSearchHelper.booter(elasticsearchServerNames, context);
+				ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot);
 			}
 			finally {
 				inited = true;
 			}
+		}
+
+
+
+
+	}
+
+	public static void boot(Map properties){
+
+
+		synchronized (ElasticSearchConfigBoot.class) {
+				PropertiesContainer propertiesContainer = new PropertiesContainer();
+				propertiesContainer.addAll(properties);
+				String _elasticsearchServerNames = propertiesContainer.getExternalProperty("elasticsearch.serverNames", "default");
+				String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
+				//初始化Http连接池
+				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, propertiesContainer);
+				//初始化ElasticSearchServer
+				ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true);
 		}
 
 

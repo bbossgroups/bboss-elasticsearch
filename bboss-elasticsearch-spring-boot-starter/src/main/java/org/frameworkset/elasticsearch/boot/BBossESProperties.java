@@ -357,11 +357,6 @@ public class BBossESProperties {
 		public void setDiscoverHost(String discoverHost) {
 			this.discoverHost = discoverHost;
 		}
-
-
-
-
-
 	}
 	public static class Dslfile{
 		private String refreshInterval;
@@ -515,16 +510,11 @@ public class BBossESProperties {
 				properties.put(_name+"http.hostnameVerifier",this.getHttp().getHostnameVerifier());
 		}
 
-
-
 		if(dslfile != null){
 			properties.put("dslfile.refreshInterval",dslfile.getRefreshInterval());
 		}
 
-
-
-
-//# 演示数据库数据导入elasticsearch源配置
+		//# 演示数据库数据导入elasticsearch源配置
 		if(this.getDb() != null){
 			if(SimpleStringUtil.isNotEmpty(this.db.getName()))
 				properties.put("db.name",this.db.getName());
@@ -541,8 +531,6 @@ public class BBossESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.db.getValidateSQL()))
 				properties.put("db.validateSQL",this.db.getValidateSQL());
 		}
-
-
 		return properties;
 	}
 

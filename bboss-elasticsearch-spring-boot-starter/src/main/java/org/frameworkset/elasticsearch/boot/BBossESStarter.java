@@ -14,9 +14,17 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
-public class BBossESStarter {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class BBossESStarter {
+	private static final Logger log = LoggerFactory.getLogger(BBossESStarter.class);
 	public void start(BBossESProperties properties) {
-		ElasticSearchBoot.boot(properties.buildProperties());
+		if(properties.buildProperties() != null
+				&& properties.buildProperties().size() > 0)
+			ElasticSearchBoot.boot(properties.buildProperties());
+		else{
+			log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
+		}
 	}
 }

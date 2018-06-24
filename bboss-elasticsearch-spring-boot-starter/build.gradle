@@ -28,11 +28,11 @@ sourceSets {
 dependencies {
 
 	compile(
-
+			project(':bboss-elasticsearch-rest-jdbc'),
 			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.0.3.RELEASE', transitive: true],
 			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.0.3.RELEASE', transitive: true]
 	)
-	compile project(':bboss-elasticsearch-rest-jdbc')
+//	compile project(':bboss-elasticsearch-rest-jdbc')
 //	compile "org.springframework.boot:spring-boot-starter-data-redis:+"
 
 }

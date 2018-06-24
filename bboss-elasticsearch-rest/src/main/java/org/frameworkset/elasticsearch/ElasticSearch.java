@@ -23,6 +23,7 @@ import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ElasticSearchClient;
 import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -153,14 +154,20 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		return clientUtil.executeRequest(path, entity);
 	}
 
-
+	public String getConfigContainerInfo(){
+		if(this.getApplicationContext() != null)
+			return getApplicationContext().getConfigfile();
+		else{
+			return "ElasticSearch Configs";
+		}
+	}
 
 	public void configure(){
 		configureWithConfigContext(null);
 	}
-	public void configureWithConfigContext(BaseApplicationContext configContext) {
-		if(configContext != null)
-			this.setApplicationContext(configContext);
+	public void configureWithConfigContext(GetProperties configContext) {
+		if(configContext != null && configContext instanceof BaseApplicationContext)
+			this.setApplicationContext((BaseApplicationContext)configContext);
 		origineRestServerAddresses = elasticsearchPropes.getProperty(REST_HOSTNAMES);
 		if (SimpleStringUtil.isNotEmpty(origineRestServerAddresses)) {
 			origineRestServerAddresses = origineRestServerAddresses.trim();
