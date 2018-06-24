@@ -23,18 +23,15 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(BBossESStarter.class)
-@EnableConfigurationProperties(BBossESProperties.class)
+@EnableConfigurationProperties({BBossESProperties.class})
 public class BBossESAutoConfiguration {
-	private final BBossESProperties properties;
-	public BBossESAutoConfiguration(BBossESProperties properties){
-		this.properties = properties;
+
+	public BBossESAutoConfiguration( ){
 
 	}
-	@Bean
+	@Bean(initMethod = "start")
 	@ConditionalOnMissingBean
-	public BBossESStarter getBbossESStarter() {
-		BBossESStarter bBossESStarter = new BBossESStarter();
-		bBossESStarter.start(properties);
-		return bBossESStarter;
+	public BBossESStarter bbossESStarter() {
+		return new BBossESStarter();
 	}
 }

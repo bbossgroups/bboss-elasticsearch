@@ -16,15 +16,36 @@ package org.frameworkset.elasticsearch.boot;/*
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class BBossESStarter {
+import java.util.Map;
+
+
+public class BBossESStarter  extends BaseESProperties{
+	@Autowired
+	private BBossESProperties properties;
 	private static final Logger log = LoggerFactory.getLogger(BBossESStarter.class);
-	public void start(BBossESProperties properties) {
-		if(properties.buildProperties() != null
-				&& properties.buildProperties().size() > 0)
-			ElasticSearchBoot.boot(properties.buildProperties());
-		else{
-			log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
+	public void start() {
+		if(this.getElasticsearch() == null) {
+			if (properties.getElasticsearch() != null) {
+				Map ps = properties.buildProperties();
+				if (ps != null && ps.size() > 0)
+					ElasticSearchBoot.boot(ps);
+				else {
+					log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
+				}
+			}
 		}
+		else{
+			if(properties.getDslfile() != null && this.getDslfile() == null)
+				this.setDslfile(properties.getDslfile());
+			Map ps = buildProperties();
+			if (ps != null && ps.size() > 0)
+				ElasticSearchBoot.boot(ps);
+			else {
+				log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
+			}
+		}
+
 	}
 }
