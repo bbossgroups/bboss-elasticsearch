@@ -89,7 +89,7 @@ configure(subprojects) { subproject ->
 
 }
 
-configure([project(":bboss-elasticsearch-rest"),project(":bboss-elasticsearch"),project(":bboss-elasticsearch-rest-booter"),project(":bboss-elasticsearch-rest-jdbc")]) { subproject ->
+configure([project(":bboss-elasticsearch-rest"),project(":bboss-elasticsearch"),project(":bboss-elasticsearch-rest-booter"),project(":bboss-elasticsearch-rest-jdbc"),project(":bboss-elasticsearch-spring-boot-starter")]) { subproject ->
 	ext.uploadtocenter=uploadArchivesToMavenCenter.equals("true")
 	if(uploadtocenter)
 	{

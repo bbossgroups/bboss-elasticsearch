@@ -22,9 +22,16 @@ import java.util.Map;
 public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 	private static String elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
 	private static Map configProperties;
+	/**
+	 * 0: 外部自定义配置文件
+	 * 1：外部自定义属性
+	 * -1:采用默认配置文件
+	 */
+	private static int initType = -1;
 	public static void init(String elasticSearchConfigFiles){
 		if(elasticSearchConfigFiles != null && elasticSearchConfigFiles.trim().length() > 0){
 			ElasticSearchPropertiesFilePlugin.elasticSearchConfigFiles = elasticSearchConfigFiles.trim();
+			initType = 0;
 		}
 	}
 
@@ -35,8 +42,25 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 	public static void init(Map configProperties){
 		if(configProperties != null && configProperties.size() > 0){
 			ElasticSearchPropertiesFilePlugin.configProperties = configProperties;
+			initType = 1;
 		}
 	}
+	public int getInitType(){
+		return initType;
+	}
+
+	@Override
+	public void restore() {
+		elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+		configProperties = null;
+		/**
+		 * 0: 外部自定义配置文件
+		 * 1：外部自定义属性
+		 * -1:采用默认配置文件
+		 */
+		initType = -1;
+	}
+
 	@Override
 	public Map getConfigProperties(BaseApplicationContext applicationContext) {
 		return configProperties;

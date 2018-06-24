@@ -1,0 +1,38 @@
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+           
+        }
+        resources {
+			srcDir 'src/main/resources'
+			srcDir 'src/main/java'  exclude '**/*.java'
+        }
+        
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+           
+        }
+        resources {
+			srcDir 'src/test/resources'
+			srcDir 'src/test/java'  exclude '**/*.java'
+        }
+        
+    }
+    
+}
+
+
+dependencies {
+
+	compile(
+
+			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.0.3.RELEASE', transitive: true],
+			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.0.3.RELEASE', transitive: true]
+	)
+	compile project(':bboss-elasticsearch-rest-jdbc')
+//	compile "org.springframework.boot:spring-boot-starter-data-redis:+"
+
+}
