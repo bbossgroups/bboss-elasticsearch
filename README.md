@@ -12,12 +12,12 @@ maven坐标
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-booter</artifactId>
-    <version>5.0.7.3</version>
+    <version>5.0.7.7</version>
 </dependency>
 ```
 gradle坐标
 ```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-booter:5.0.7.3"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-booter:5.0.7.7"
 ```
 
 如果需要使用db表数据导入es功能，则需要使用以下maven坐标
@@ -26,13 +26,13 @@ maven坐标
 ```
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest-</artifactId>
-    <version>5.0.7.5</version>
+    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+    <version>5.0.7.7</version>
 </dependency>
 ```
 gradle坐标
 ```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest:5.0.7.5"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest:5.0.7.7"
 ```
 # elastic search配置和使用
 
