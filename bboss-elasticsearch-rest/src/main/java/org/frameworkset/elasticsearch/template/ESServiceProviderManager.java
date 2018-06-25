@@ -15,15 +15,27 @@
  */
 package org.frameworkset.elasticsearch.template;
 
+import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
+import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.ServiceProviderManager;
 
 public class ESServiceProviderManager extends ServiceProviderManager {
 	public static String var_pre = "@{";
 	public static String var_end = "}";
+	public static String jsonEscapePre = "@\"\"\"";
+	public static String jsonEscapeEnd = "\"\"\"";
 	public ESServiceProviderManager(BaseApplicationContext applicationContext, String charset) {
 		super(applicationContext, charset);
 		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String getEscapePre(){
+		return jsonEscapePre;
+	}
+	@Override
+	public String getEscapeEnd(){
+		return jsonEscapeEnd;
 	}
 
 	public ESServiceProviderManager(BaseApplicationContext applicationContext) {
@@ -41,6 +53,11 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 	@Override
 	public boolean findVariableFromSelf(){
 		return true;
+	}
+	@Override
+	public void escapeValue(String value,StringBuilder builder){
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+		charEscapeUtil.writeString(value,true);
 	}
 
 }
