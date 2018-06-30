@@ -6,34 +6,15 @@ jdk要求： jdk 1.6+
 
 elasticsearch版本要求：2.x,5.x,6.x,+
 
-在项目中导入bboss elasticsearch
-maven坐标
-```
-<dependency>
-    <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest-booter</artifactId>
-    <version>5.0.7.7</version>
-</dependency>
-```
-gradle坐标
-```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-booter:5.0.7.7"
-```
+## 快速集成和应用 
+非spring boot项目：
+https://my.oschina.net/bboss/blog/1801273 
 
-如果需要使用db表数据导入es功能，则需要使用以下maven坐标
+spring boot项目：
+https://my.oschina.net/bboss/blog/1835601
 
-maven坐标
-```
-<dependency>
-    <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>5.0.7.7</version>
-</dependency>
-```
-gradle坐标
-```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.0.7.7"
-```
+详细配置说明参考文档：
+https://my.oschina.net/bboss/blog/1556866
 # elastic search配置和使用
 
 elastic search配置和使用参考文档
