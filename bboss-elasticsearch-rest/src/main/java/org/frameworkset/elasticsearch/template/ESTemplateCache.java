@@ -1,7 +1,10 @@
 package org.frameworkset.elasticsearch.template;
 
+import com.frameworkset.util.SimpleStringUtil;
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.util.annotations.DateFormateMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -9,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ESTemplateCache {
+	private static Logger logger = LoggerFactory.getLogger(ESTemplateCache.class);
 	private Lock lock = new ReentrantLock();
 	private Lock vtplLock = new ReentrantLock();
 	private Map<String,VariableHandler.URLStruction> parserTempateStructions = new java.util.HashMap<String,VariableHandler.URLStruction>();
@@ -69,6 +73,7 @@ public class ESTemplateCache {
 		protected String locale;
 		protected String timeZone;
 		private Boolean escape;
+		private Boolean serialJson ;
 		protected DateFormateMeta dateFormateMeta;
 		/**
 		 * 在变量左边追加lpad对应的字符
@@ -78,6 +83,7 @@ public class ESTemplateCache {
 		 * 在变量的右边追加rpad对应的字符
 		 */
 		protected String rpad;
+		private int escapeCount = 1;
 		public TempateVariable(){
 			super();
 		}
@@ -147,6 +153,25 @@ public class ESTemplateCache {
 								escape = new Boolean(true);
 
 						}
+						else if(t.startsWith("serialJson=")){
+							String serialJson_ = t.substring("serialJson=".length()).trim();
+							if(serialJson_.equals("false"))
+								serialJson = new Boolean(false);
+							else if(serialJson_.equals("true"))
+								serialJson = new Boolean(true);
+
+						}else if(t.startsWith("escapeCount=")){
+							String escapeCount_ = t.substring("escapeCount=".length()).trim();
+							if(SimpleStringUtil.isNotEmpty(escapeCount_)) {
+								try {
+									escapeCount = Integer.parseInt(escapeCount_);
+								}
+								catch (Exception e){
+									logger.error("escapeCount must be a nummber:"+escapeCount_,e);
+								}
+							}
+						}
+
 					}
 
 					if(this.dateFormat != null){
@@ -191,6 +216,22 @@ public class ESTemplateCache {
 
 		public void setEscape(Boolean escape) {
 			this.escape = escape;
+		}
+
+		public int getEscapeCount() {
+			return escapeCount;
+		}
+
+		public void setEscapeCount(int escapeCount) {
+			this.escapeCount = escapeCount;
+		}
+
+		public Boolean getSerialJson() {
+			return serialJson;
+		}
+
+		public void setSerialJson(Boolean serialJson) {
+			this.serialJson = serialJson;
 		}
 	}
 	static class TempateStructionBuiler extends VariableHandler.URLStructionBuiler {

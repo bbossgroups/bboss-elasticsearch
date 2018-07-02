@@ -265,9 +265,17 @@ public class ESUtil {
 	}
 	public void handleVaribleValue(StringBuilder builder,ESTemplateCache.TempateVariable variable,String value,boolean escape){
 
+		int escapeCount = variable.getEscapeCount();
 		if(variable.isQuoted()) {
+			if(escapeCount <= 1)
+				builder.append("\"");
+			else{
+				for(int i = 0; i < escapeCount-1; i ++){
+					builder.append("\\");
+				}
+				builder.append("\"");
+			}
 
-			builder.append("\"");
 		}
 		if(variable.getLpad() != null || variable.getRpad() != null) {
 			StringBuilder innerValue = new StringBuilder();
@@ -282,9 +290,22 @@ public class ESUtil {
 			if (!escape) {
 				builder.append(innerValue.toString());
 			} else {
+				if(escapeCount <= 1){
+					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+					charEscapeUtil.writeString(innerValue.toString(), true);
+				}
+				else{
+					String innerValueString = innerValue.toString();
+					innerValue.setLength(0);
+					for(int i = 0; i < escapeCount; i ++) {
+						CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+						charEscapeUtil.writeString(innerValueString, true);
+						innerValueString = innerValue.toString();
+						innerValue.setLength(0);
+					}
+					builder.append(innerValueString);
+				}
 
-				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
-				charEscapeUtil.writeString(innerValue.toString(), true);
 			}
 		}
 		else{
@@ -292,12 +313,35 @@ public class ESUtil {
 				builder.append(value);
 			} else {
 
-				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
-				charEscapeUtil.writeString(value, true);
+//				CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+//				charEscapeUtil.writeString(value, true);
+
+				if(escapeCount <= 1){
+					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+					charEscapeUtil.writeString(value, true);
+				}
+				else{
+					StringBuilder innerValue = new StringBuilder();
+					for(int i = 0; i < escapeCount; i ++) {
+						CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+						charEscapeUtil.writeString(value, true);
+						value = innerValue.toString();
+						innerValue.setLength(0);
+					}
+					builder.append(value);
+				}
 			}
 		}
 		if(variable.isQuoted()) {
-			builder.append("\"");
+//			builder.append("\"");
+			if(escapeCount <= 1)
+				builder.append("\"");
+			else{
+				for(int i = 0; i < escapeCount-1; i ++){
+					builder.append("\\");
+				}
+				builder.append("\"");
+			}
 		}
 
 
@@ -374,7 +418,10 @@ public class ESUtil {
 
 					} else {
 						value = VariableHandler.evaluateVariableValue(variable, value);
-						if(value instanceof String){
+						if(value == null){
+							builder.append("null");
+						}
+						else if(value instanceof String){
 							if(escape == null)
 								handleVaribleValue(  builder,  variable,(String)value,true);
 							else
@@ -387,13 +434,14 @@ public class ESUtil {
 
 						}
 						else {
-							if(variable.getLpad() != null){
-								builder.append(variable.getLpad());
-							}
-							builder.append(value.toString());
-							if(variable.getRpad() != null){
-								builder.append(variable.getRpad());
-							}
+//							if(variable.getLpad() != null){
+//								builder.append(variable.getLpad());
+//							}
+//							builder.append(value.toString());
+//							if(variable.getRpad() != null){
+//								builder.append(variable.getRpad());
+//							}
+							handleObject(variable,builder,value);
 						}
 					}
 //					params.addSQLParamWithDateFormateMeta(name, value, sqltype, dataformat,charset);
@@ -470,13 +518,14 @@ public class ESUtil {
 					if(value instanceof Date){
 						String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
 						this.handleVaribleValue(builder,variable,value_,false);
-
-
 					}
 					else {
 
 						value = VariableHandler.evaluateVariableValue(variable, value);
-						if(value instanceof Date){
+						if(value == null){
+							builder.append("null");
+						}
+						else if(value instanceof Date){
 							String value_ = this.getDate((Date) value, variable.getDateFormateMeta());
 							this.handleVaribleValue(builder,variable,value_,false);
 						}
@@ -488,13 +537,16 @@ public class ESUtil {
 								this.handleVaribleValue(builder, variable, (String) value, escape.booleanValue());
 							}
 						} else {
-							if (variable.getLpad() != null) {
-								builder.append(variable.getLpad());
-							}
-							builder.append(value.toString());
-							if (variable.getRpad() != null) {
-								builder.append(variable.getRpad());
-							}
+//							if(variable.getSerialJson() == null) {
+//								if (variable.getLpad() != null) {
+//									builder.append(variable.getLpad());
+//								}
+//								builder.append(value.toString());
+//								if (variable.getRpad() != null) {
+//									builder.append(variable.getRpad());
+//								}
+//							}
+							handleObject(variable,builder,value);
 						}
 					}
 				}
@@ -502,6 +554,35 @@ public class ESUtil {
 
 		}
 
+	}
+	private  void handleObject(ESTemplateCache.TempateVariable variable,StringBuilder builder,Object value){
+		if(variable.getSerialJson() == null
+				|| variable.getSerialJson().booleanValue() == false) {
+			if (variable.getLpad() != null) {
+				builder.append(variable.getLpad());
+			}
+			builder.append(value.toString());
+			if (variable.getRpad() != null) {
+				builder.append(variable.getRpad());
+			}
+		}
+		else{
+			int escapeCount = variable.getEscapeCount();
+			if(escapeCount <= 1) {
+				builder.append(SerialUtil.object2json(value));
+			}
+			else{
+				String _value = SerialUtil.object2json(value);
+				StringBuilder innerValue = new StringBuilder();
+				for(int i = 0; i < escapeCount - 1; i ++) {
+					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+					charEscapeUtil.writeString(_value, true);
+					_value = innerValue.toString();
+					innerValue.setLength(0);
+				}
+				builder.append(_value);
+			}
+		}
 	}
 
 	public static class ESRef
