@@ -113,73 +113,141 @@ public class ESTemplateCache {
 			}
 			return pad;
 		}
+//		public void after(){
+//			super.after();
+//			if(this.variableName != null) {
+//				int pos = this.variableName.indexOf(",");
+//				if (pos > 0) {
+//					String[] ts = variableName.split(",");
+//					this.variableName = ts[0];
+//					for (int i = 1; i < ts.length; i ++) {
+//						String t = ts[i];
+//						if (t.startsWith("quoted=")) {
+//							String q = t.substring("quoted=".length()).trim();
+//							if(q.equals("false"))
+//								quoted = false;
+//						}
+//						else if(t.startsWith("dateformat=")){
+//							dateFormat= t.substring("dateformat=".length()).trim();
+//						}
+//						else if(t.startsWith("locale=")){
+//							locale= t.substring("locale=".length()).trim();
+//						}
+//						else if(t.startsWith("timezone=")){
+//							timeZone = t.substring("timezone=".length()).trim();
+//						}
+//						else if(t.startsWith("lpad=")){
+//							String lpad_= t.substring("lpad=".length()).trim();
+//							this.lpad = handlePad(lpad_);
+//
+//						}
+//						else if(t.startsWith("rpad=")){
+//							String rpad_ = t.substring("rpad=".length()).trim();
+//							this.rpad = handlePad(rpad_);
+//						}
+//						else if(t.startsWith("escape=")){
+//							String escape_ = t.substring("escape=".length()).trim();
+//							if(escape_.equals("false"))
+//								escape = new Boolean(false);
+//							else if(escape_.equals("true"))
+//								escape = new Boolean(true);
+//
+//						}
+//						else if(t.startsWith("serialJson=")){
+//							String serialJson_ = t.substring("serialJson=".length()).trim();
+//							if(serialJson_.equals("false"))
+//								serialJson = new Boolean(false);
+//							else if(serialJson_.equals("true"))
+//								serialJson = new Boolean(true);
+//
+//						}else if(t.startsWith("escapeCount=")){
+//							String escapeCount_ = t.substring("escapeCount=".length()).trim();
+//							if(SimpleStringUtil.isNotEmpty(escapeCount_)) {
+//								try {
+//									escapeCount = Integer.parseInt(escapeCount_);
+//								}
+//								catch (Exception e){
+//									logger.error("escapeCount must be a nummber:"+escapeCount_,e);
+//								}
+//							}
+//						}
+//
+//					}
+//
+//					if(this.dateFormat != null){
+//						this.dateFormateMeta = DateFormateMeta.buildDateFormateMeta(this.dateFormat,this.locale);
+//					}
+//
+//				}
+//			}
+//		}
+
 		public void after(){
 			super.after();
-			if(this.variableName != null) {
-				int pos = this.variableName.indexOf(",");
-				if (pos > 0) {
-					String[] ts = variableName.split(",");
-					this.variableName = ts[0];
-					for (int i = 1; i < ts.length; i ++) {
-						String t = ts[i];
-						if (t.startsWith("quoted=")) {
-							String q = t.substring("quoted=".length()).trim();
-							if(q.equals("false"))
-								quoted = false;
-						}
-						else if(t.startsWith("dateformat=")){
-							dateFormat= t.substring("dateformat=".length()).trim();
-						}
-						else if(t.startsWith("locale=")){
-							locale= t.substring("locale=".length()).trim();
-						}
-						else if(t.startsWith("timezone=")){
-							timeZone = t.substring("timezone=".length()).trim();
-						}
-						else if(t.startsWith("lpad=")){
-							String lpad_= t.substring("lpad=".length()).trim();
-							this.lpad = handlePad(lpad_);
+			if(this.attributes != null) {
+//				int pos = this.attributes.indexOf(",");
+				String[] ts = attributes.split(",");
 
-						}
-						else if(t.startsWith("rpad=")){
-							String rpad_ = t.substring("rpad=".length()).trim();
-							this.rpad = handlePad(rpad_);
-						}
-						else if(t.startsWith("escape=")){
-							String escape_ = t.substring("escape=".length()).trim();
-							if(escape_.equals("false"))
-								escape = new Boolean(false);
-							else if(escape_.equals("true"))
-								escape = new Boolean(true);
-
-						}
-						else if(t.startsWith("serialJson=")){
-							String serialJson_ = t.substring("serialJson=".length()).trim();
-							if(serialJson_.equals("false"))
-								serialJson = new Boolean(false);
-							else if(serialJson_.equals("true"))
-								serialJson = new Boolean(true);
-
-						}else if(t.startsWith("escapeCount=")){
-							String escapeCount_ = t.substring("escapeCount=".length()).trim();
-							if(SimpleStringUtil.isNotEmpty(escapeCount_)) {
-								try {
-									escapeCount = Integer.parseInt(escapeCount_);
-								}
-								catch (Exception e){
-									logger.error("escapeCount must be a nummber:"+escapeCount_,e);
-								}
-							}
-						}
+				for (int i = 0; i < ts.length; i ++) {
+					String t = ts[i];
+					if (t.startsWith("quoted=")) {
+						String q = t.substring("quoted=".length()).trim();
+						if(q.equals("false"))
+							quoted = false;
+					}
+					else if(t.startsWith("dateformat=")){
+						dateFormat= t.substring("dateformat=".length()).trim();
+					}
+					else if(t.startsWith("locale=")){
+						locale= t.substring("locale=".length()).trim();
+					}
+					else if(t.startsWith("timezone=")){
+						timeZone = t.substring("timezone=".length()).trim();
+					}
+					else if(t.startsWith("lpad=")){
+						String lpad_= t.substring("lpad=".length()).trim();
+						this.lpad = handlePad(lpad_);
 
 					}
+					else if(t.startsWith("rpad=")){
+						String rpad_ = t.substring("rpad=".length()).trim();
+						this.rpad = handlePad(rpad_);
+					}
+					else if(t.startsWith("escape=")){
+						String escape_ = t.substring("escape=".length()).trim();
+						if(escape_.equals("false"))
+							escape = new Boolean(false);
+						else if(escape_.equals("true"))
+							escape = new Boolean(true);
 
-					if(this.dateFormat != null){
-						this.dateFormateMeta = DateFormateMeta.buildDateFormateMeta(this.dateFormat,this.locale);
+					}
+					else if(t.startsWith("serialJson=")){
+						String serialJson_ = t.substring("serialJson=".length()).trim();
+						if(serialJson_.equals("false"))
+							serialJson = new Boolean(false);
+						else if(serialJson_.equals("true"))
+							serialJson = new Boolean(true);
+
+					}else if(t.startsWith("escapeCount=")){
+						String escapeCount_ = t.substring("escapeCount=".length()).trim();
+						if(SimpleStringUtil.isNotEmpty(escapeCount_)) {
+							try {
+								escapeCount = Integer.parseInt(escapeCount_);
+							}
+							catch (Exception e){
+								logger.error("escapeCount must be a nummber:"+escapeCount_,e);
+							}
+						}
 					}
 
 				}
+
+				if(this.dateFormat != null){
+					this.dateFormateMeta = DateFormateMeta.buildDateFormateMeta(this.dateFormat,this.locale);
+				}
+
 			}
+
 		}
 
 		public boolean isQuoted() {
