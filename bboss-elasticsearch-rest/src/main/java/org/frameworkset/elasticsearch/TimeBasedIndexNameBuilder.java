@@ -18,15 +18,14 @@
  */
 package org.frameworkset.elasticsearch;
 
-import java.util.Date;
-import java.util.Properties;
-import java.util.TimeZone;
-
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.frameworkset.util.SimpleStringUtil;
+import java.util.Date;
+import java.util.Properties;
+import java.util.TimeZone;
 
 /**
  * Default index name builder. It prepares name of index using configured
@@ -67,17 +66,26 @@ public class TimeBasedIndexNameBuilder implements
     String dateFormatString = elasticsearchPropes.getProperty(DATE_FORMAT);
 
     String timeZoneString = elasticsearchPropes.getProperty(TIME_ZONE);
+    indexPrefix = elasticsearchPropes.getProperty(ElasticSearchSinkConstants.INDEX_NAME);
+    logger.info("dateFormatString = "+dateFormatString+",timeZoneString="+timeZoneString+",indexPrefix="+indexPrefix);
 	//  logger.info(">>>>>>>>>>>>>>>>>>dateFormatString:"+dateFormatString+",timeZoneString:"+timeZoneString);
-    if (SimpleStringUtil.isEmpty(dateFormatString)) {
+
+    if (SimpleStringUtil.isEmpty(dateFormatString) || dateFormatString.startsWith("${")) {
+
       dateFormatString = DEFAULT_DATE_FORMAT;
     }
-    if (SimpleStringUtil.isEmpty(timeZoneString)) {
+    if (SimpleStringUtil.isEmpty(timeZoneString) || timeZoneString.startsWith("${")) {
       timeZoneString = DEFAULT_TIME_ZONE;
     }
-    fastDateFormat = FastDateFormat.getInstance(dateFormatString,
-        TimeZone.getTimeZone(timeZoneString));
-    indexPrefix = elasticsearchPropes.getProperty(ElasticSearchSinkConstants.INDEX_NAME);
-    logger.debug("dateFormatString = "+dateFormatString+",timeZoneString="+timeZoneString+",indexPrefix="+indexPrefix);
+
+    try {
+      fastDateFormat = FastDateFormat.getInstance(dateFormatString,
+              TimeZone.getTimeZone(timeZoneString));
+    }
+    catch (Exception e){
+        logger.warn("解析时间格式异常[dateFormatString = "+dateFormatString+",timeZoneString="+timeZoneString+"],将采用默认的时间格式和时区[yyyy.MM.dd Etc/UTC]",e);
+    }
+
   }
 
   
