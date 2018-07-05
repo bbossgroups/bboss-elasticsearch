@@ -692,7 +692,12 @@ public class ESUtil {
 								sqltpl = new ESTemplate(sqlinfo);
 								sqlinfo.setEstpl(sqltpl);
 								BBossVelocityUtil.initTemplate(sqltpl);
-								sqltpl.process();
+								try {
+									sqltpl.process();
+								}
+								catch (Exception e){
+									log.error(sqlinfo.getTemplate(),e);
+								}
 							}
 							
 							esInfos.put(key, sqlinfo);

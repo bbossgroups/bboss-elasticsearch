@@ -1,30 +1,53 @@
 package org.frameworkset.elasticsearch;
 
 public class ElasticSearchException extends RuntimeException {
+	private int httpStatusCode = -1;
+	public ElasticSearchException(int httpStatusCode) {
+		this.httpStatusCode = httpStatusCode;
+	}
+
+	public ElasticSearchException(String message,int httpStatusCode) {
+		super(message);
+		this.httpStatusCode = httpStatusCode;
+	}
+
+	public ElasticSearchException(Throwable cause,int httpStatusCode) {
+		super(cause);
+		this.httpStatusCode = httpStatusCode;
+	}
+
+	public ElasticSearchException(String message, Throwable cause,int httpStatusCode) {
+		super(message, cause);
+		this.httpStatusCode = httpStatusCode;
+	}
+
+	public ElasticSearchException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace,int httpStatusCode) {
+		super(message, cause, enableSuppression, writableStackTrace);
+		this.httpStatusCode = httpStatusCode;
+	}
 
 	public ElasticSearchException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ElasticSearchException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
-	public ElasticSearchException(Throwable cause) {
+	public ElasticSearchException(Throwable cause ) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
-	public ElasticSearchException(String message, Throwable cause) {
+	public ElasticSearchException(String message, Throwable cause ) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ElasticSearchException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
+								  boolean writableStackTrace ) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
 	}
 
+	public int getHttpStatusCode() {
+		return httpStatusCode;
+	}
 }

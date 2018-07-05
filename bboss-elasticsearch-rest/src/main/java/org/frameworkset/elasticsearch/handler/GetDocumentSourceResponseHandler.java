@@ -40,16 +40,16 @@ public class GetDocumentSourceResponseHandler extends BaseResponseHandler implem
 					return super.converJson(entity,type);
 			}
 			catch (Exception e){
-				throw new ElasticSearchException(e);
+				throw new ElasticSearchException(e,status);
 			}
 			return null;
 		} else {
 			HttpEntity entity = response.getEntity();
 			if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity));
+				throw new ElasticSearchException(EntityUtils.toString(entity),status);
 			}
 			else
-				throw new ElasticSearchException("Unexpected response status: " + status);
+				throw new ElasticSearchException("Unexpected response status: " + status,status);
 		}
 	}
 }

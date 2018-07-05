@@ -41,7 +41,7 @@ public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler impl
 					ESSerialThreadLocal.setESTypeReferences(types);
 					return super.converJson(entity, MGetDocs.class);
 				} catch (Exception e) {
-					throw new ElasticSearchException(e);
+					throw new ElasticSearchException(e,status);
 				}
 				finally {
 					ESSerialThreadLocal.clean();
@@ -51,10 +51,10 @@ public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler impl
 		} else {
 			HttpEntity entity = response.getEntity();
 			if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity));
+				throw new ElasticSearchException(EntityUtils.toString(entity),status);
 			}
 			else
-				throw new ElasticSearchException("Unexpected response status: " + status);
+				throw new ElasticSearchException("Unexpected response status: " + status,status);
 		}
 	}
 }

@@ -48,7 +48,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 //	                 searchResponse = SimpleStringUtil.json2Object(entity.getContent(), RestResponse.class) ;
 	             }
 	             catch (Exception e){
-					 throw new ElasticSearchException(e);
+					 throw new ElasticSearchException(e,status);
 	             }
 	             finally{
 	            	 ESSerialThreadLocal.clean();
@@ -60,7 +60,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-            	 throw new ElasticSearchException(EntityUtils.toString(entity));
+            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
 //				 String content = EntityUtils.toString(entity);
 //                 ErrorResponse searchResponse = null;
 //                 try {
@@ -72,7 +72,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 //                 return searchResponse;
              }
              else
-                 throw new ElasticSearchException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

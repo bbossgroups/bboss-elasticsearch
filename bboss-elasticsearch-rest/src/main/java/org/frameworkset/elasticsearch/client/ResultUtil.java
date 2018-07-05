@@ -14,15 +14,14 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
+import org.frameworkset.spi.remote.http.HttpRuntimeException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ResultUtil {
 	public static <T> List<T> getInnerHits(Map<String,Map<String,InnerSearchHits>> innerHits,String indexType, Class<T> type){
@@ -924,5 +923,49 @@ public abstract class ResultUtil {
 
 		return datas;
 	}
+	public static <T> T hand404HttpRuntimeException(ElasticSearchException e,Class<T> type,boolean getDocument){
+		Throwable throwable = e.getCause();
+		if(throwable != null && throwable instanceof HttpRuntimeException){
+			HttpRuntimeException httpRuntimeException = (HttpRuntimeException)throwable;
+			if(httpRuntimeException.getHttpStatusCode() == 404){
+				String errorInfo = httpRuntimeException.getMessage();
+				try{
+					if(getDocument) {
+						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+						Boolean found = (Boolean) data.get("found");
+						if (found != null && found == false) {
+							return (T) null;
+						}
+					}
+					else if(String.class.isAssignableFrom(type)){
+						return (T)errorInfo;
+					}
+				}
+				catch (Exception ie){
 
+				}
+			}
+		}
+		else{
+			if(e.getHttpStatusCode() == 404){
+				String errorInfo = e.getMessage();
+				try{
+					if(getDocument) {
+						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+						Boolean found = (Boolean) data.get("found");
+						if (found != null && found == false) {
+							return (T) null;
+						}
+					}
+					else if(String.class.isAssignableFrom(type)){
+						return (T)errorInfo;
+					}
+				}
+				catch (Exception ie){
+
+				}
+			}
+		}
+		throw e;
+	}
 }

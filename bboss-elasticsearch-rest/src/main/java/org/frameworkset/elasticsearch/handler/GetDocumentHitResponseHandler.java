@@ -35,7 +35,7 @@ public class GetDocumentHitResponseHandler extends BaseResponseHandler implement
              }
              catch (Exception e){
 //                 logger.error("",e);
-                 throw new ElasticSearchException(e);
+                 throw new ElasticSearchException(e,status);
              }
 
 //             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
@@ -46,10 +46,10 @@ public class GetDocumentHitResponseHandler extends BaseResponseHandler implement
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity));
+				throw new ElasticSearchException(EntityUtils.toString(entity),status);
              }
              else
-                 throw new ElasticSearchException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

@@ -22,7 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class RestClientUtil extends ClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(RestClientUtil.class);
@@ -792,8 +795,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
-
-		return this.client.executeHttp(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),ClientUtil.HTTP_GET);
+		try {
+			return this.client.executeHttp(BuildTool.buildGetDocumentRequest(indexName, indexType, documentId, options), ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+		}
 	}
 
 	/**
@@ -813,7 +820,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocumentByPath(String path) throws ElasticSearchException{
-		return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+		try {
+			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+		}
 	}
 
 
@@ -825,7 +837,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocumentSource(String path) throws ElasticSearchException{
-		return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+		try {
+			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+		}
 	}
 
 	/**
@@ -845,8 +862,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByPath(String path,Class<T> beanType) throws ElasticSearchException{
-		SearchHit searchResult = this.client.executeRequest(path,null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
-		return ResultUtil.buildObject(searchResult, beanType);
+		try {
+			SearchHit searchResult = this.client.executeRequest(path,null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+			return ResultUtil.buildObject(searchResult, beanType);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+		}
 	}
 
 
@@ -859,8 +881,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentSource(String path,Class<T> beanType) throws ElasticSearchException{
-		T searchResult = (T) this.client.executeRequest(path,null,   new GetDocumentSourceResponseHandler( beanType),ClientUtil.HTTP_GET);
-		return searchResult;
+		try {
+			T searchResult = (T) this.client.executeRequest(path,null,   new GetDocumentSourceResponseHandler( beanType),ClientUtil.HTTP_GET);
+			return searchResult;
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+		}
 	}
 
 
@@ -899,9 +926,14 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException{
-		SearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
+		try{
+			SearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
 
-		return ResultUtil.buildObject(searchResult, beanType);
+			return ResultUtil.buildObject(searchResult, beanType);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+		}
 
 	}
 
@@ -970,8 +1002,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   MapSearchHit getDocumentHit(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
-		MapSearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentHitResponseHandler( ),ClientUtil.HTTP_GET);
-		return searchResult;
+		try {
+			MapSearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(indexName, indexType, documentId, options), null, new GetDocumentHitResponseHandler(), ClientUtil.HTTP_GET);
+			return searchResult;
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,MapSearchHit.class,true);
+		}
 	}
 
 	/**
@@ -992,11 +1029,21 @@ public class RestClientUtil extends ClientUtil{
 	@Override
 	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
-		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(),ClientUtil.HTTP_DELETE);
+		try {
+			return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(), ClientUtil.HTTP_DELETE);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 	public   String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException{
-		return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/")
-				.append(id).append("?").append(refreshOption).toString(),ClientUtil.HTTP_DELETE);
+		try {
+			return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/")
+					.append(id).append("?").append(refreshOption).toString(),ClientUtil.HTTP_DELETE);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 	@Override
 	public String executeRequest(String path, String entity) throws ElasticSearchException {
@@ -1092,7 +1139,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String deleteByPath(String path) throws ElasticSearchException{
-		return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
+		try{
+			return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 	/**
 	 * 判断索引是否存在
@@ -1642,7 +1694,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String entity) throws ElasticSearchException{
-		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+		try {
+			return this.client.executeHttp(path, entity, ClientUtil.HTTP_POST);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 	/**
@@ -2011,9 +2068,14 @@ public class RestClientUtil extends ClientUtil{
 			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
 		}
 		builder.append("}");
-		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+		try {
+			String searchResult = this.client.executeHttp(path.toString(), builder.toString(), ClientUtil.HTTP_POST);
 
-		return searchResult;
+			return searchResult;
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 	/**
@@ -2061,10 +2123,14 @@ public class RestClientUtil extends ClientUtil{
 			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
 		}
 		builder.append("}");
+		try {
+			String searchResult = this.client.executeHttp(path.toString(), builder.toString(), ClientUtil.HTTP_POST);
 
-		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
-
-		return searchResult;
+			return searchResult;
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 

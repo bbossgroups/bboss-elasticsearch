@@ -38,7 +38,7 @@ public class ElasticSearchMapResponseHandler extends BaseResponseHandler impleme
 					 return super.converJson(entity,MapRestResponse.class);
 	             }
 	             catch (Exception e){
-					 throw new ElasticSearchException(e);
+					 throw new ElasticSearchException(e,status);
 	             }
 
              }
@@ -48,7 +48,7 @@ public class ElasticSearchMapResponseHandler extends BaseResponseHandler impleme
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-            	 throw new ElasticSearchException(EntityUtils.toString(entity));
+            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
 //				 String content = EntityUtils.toString(entity);
 //                 ErrorResponse searchResponse = null;
 //                 try {
@@ -60,7 +60,7 @@ public class ElasticSearchMapResponseHandler extends BaseResponseHandler impleme
 //                 return searchResponse;
              }
              else
-                 throw new ElasticSearchException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

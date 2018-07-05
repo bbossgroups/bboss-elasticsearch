@@ -50,7 +50,7 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
 				 } catch (Exception e) {
 //                 logger.error("",e);
-					 throw new ElasticSearchException(e);
+					 throw new ElasticSearchException(e,status);
 				 } finally {
 					 ESSerialThreadLocal.clean();
 				 }
@@ -63,10 +63,10 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
          } else {
              HttpEntity entity = response.getEntity();
              if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity));
+				throw new ElasticSearchException(EntityUtils.toString(entity),status);
              }
              else
-                 throw new ElasticSearchException("Unexpected response status: " + status);
+                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

@@ -746,7 +746,12 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(esUtil,templateName, (Object)null),ClientUtil.HTTP_POST);
+		try {
+			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, (Object) null), ClientUtil.HTTP_POST);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 	/**
@@ -762,7 +767,12 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName,Map params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params),ClientUtil.HTTP_POST);
+		try {
+			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, params), ClientUtil.HTTP_POST);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 	/**
@@ -778,7 +788,12 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName,Object params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(esUtil,templateName, params),ClientUtil.HTTP_POST);
+		try {
+			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, params), ClientUtil.HTTP_POST);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+		}
 	}
 
 	/**
