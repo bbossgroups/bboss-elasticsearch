@@ -54,45 +54,51 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public List<IndexField> getIndexMappingFields(String index,final String indexType) throws ElasticSearchException{
-		final List<IndexField> fields = new ArrayList<IndexField>();
-		getIndexMapping(index,false,new ResponseHandler<Void>(){
+		try{
+			final List<IndexField> fields = new ArrayList<IndexField>();
+			getIndexMapping(index,false,new ResponseHandler<Void>(){
 
-			@Override
-			public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-				int status = response.getStatusLine().getStatusCode();
+				@Override
+				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
 
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					/**
-					 * Map<indexName,Mapping<Type,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>>
-					 */
-					Map<String,Object> map = SimpleStringUtil.json2ObjectWithType(entity.getContent(),new JsonTypeReference<Map<String,Object>>(){});
-					Iterator<Map.Entry<String,Object>> entries = map.entrySet().iterator();
-					while(entries.hasNext()){
-						Map.Entry<String,Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
-						Map<String,Map<String,Object>> mapping = (Map<String, Map<String,Object>>) entry.getValue();
-						Map<String,Map<String,Object>> typeProperties = (Map<String,Map<String,Object>>)mapping.get("mappings").get(indexType);
-						Map<String,Object> 	properties = 	(Map<String,Object>)typeProperties.get("properties");
-						Iterator<Map.Entry<String,Object>> fileds = properties.entrySet().iterator();
-						while(fileds.hasNext()){
-							Map.Entry<String,Object> field = fileds.next();
-							IndexField indexField = BuildTool.buildIndexField(field,fields,null);
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						/**
+						 * Map<indexName,Mapping<Type,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>>
+						 */
+						Map<String,Object> map = SimpleStringUtil.json2ObjectWithType(entity.getContent(),new JsonTypeReference<Map<String,Object>>(){});
+						Iterator<Map.Entry<String,Object>> entries = map.entrySet().iterator();
+						while(entries.hasNext()){
+							Map.Entry<String,Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
+							Map<String,Map<String,Object>> mapping = (Map<String, Map<String,Object>>) entry.getValue();
+							Map<String,Map<String,Object>> typeProperties = (Map<String,Map<String,Object>>)mapping.get("mappings").get(indexType);
+							Map<String,Object> 	properties = 	(Map<String,Object>)typeProperties.get("properties");
+							Iterator<Map.Entry<String,Object>> fileds = properties.entrySet().iterator();
+							while(fileds.hasNext()){
+								Map.Entry<String,Object> field = fileds.next();
+								IndexField indexField = BuildTool.buildIndexField(field,fields,null);
+							}
+							break;
+
 						}
-						break;
+						return null;
 
+					} else {
+						HttpEntity entity = response.getEntity();
+						if (entity != null )
+							throw new ElasticSearchException(new StringBuilder().append("Unexpected response : " ).append( EntityUtils.toString(entity)).toString(),status);
+						else
+							throw new ElasticSearchException("Unexpected response status: " + status,status);
 					}
-					return null;
-
-				} else {
-					HttpEntity entity = response.getEntity();
-					if (entity != null )
-						throw new ElasticSearchException(new StringBuilder().append("Unexpected response : " ).append( EntityUtils.toString(entity)).toString());
-					else
-						throw new ElasticSearchException("Unexpected response status: " + status);
 				}
-			}
-		});
-		return fields;
+			});
+			return fields;
+		}
+		catch(ElasticSearchException e){
+			return (List<IndexField>)ResultUtil.hand404HttpRuntimeException(e,Object.class,ResultUtil.OPERTYPE_getIndice);
+		}
+
 	}
 
 	
@@ -709,7 +715,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String deleteTempate(String template) throws ElasticSearchException {
-		return client.executeHttp("/_template/"+template,ClientUtil.HTTP_DELETE);
+		try{
+			return client.executeHttp("/_template/"+template,ClientUtil.HTTP_DELETE);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deleteTempate);
+		}
 	}
 	
 	/**
@@ -719,7 +730,12 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   String getTempate(String template) throws ElasticSearchException {
-		return client.executeHttp("/_template/"+template,ClientUtil.HTTP_GET);
+		try {
+			return client.executeHttp("/_template/" + template, ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getTemplate);
+		}
 	}
 	
 	/**
@@ -799,7 +815,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(BuildTool.buildGetDocumentRequest(indexName, indexType, documentId, options), ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -824,7 +840,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -841,7 +857,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,true);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -867,7 +883,7 @@ public class RestClientUtil extends ClientUtil{
 			return ResultUtil.buildObject(searchResult, beanType);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -886,7 +902,7 @@ public class RestClientUtil extends ClientUtil{
 			return searchResult;
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -932,7 +948,7 @@ public class RestClientUtil extends ClientUtil{
 			return ResultUtil.buildObject(searchResult, beanType);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,beanType,true);
+			return ResultUtil.hand404HttpRuntimeException(e,beanType,ResultUtil.OPERTYPE_getDocument);
 		}
 
 	}
@@ -1007,7 +1023,7 @@ public class RestClientUtil extends ClientUtil{
 			return searchResult;
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,MapSearchHit.class,true);
+			return ResultUtil.hand404HttpRuntimeException(e,MapSearchHit.class,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
 
@@ -1033,7 +1049,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(), ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deleteDocument);
 		}
 	}
 	public   String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException{
@@ -1042,7 +1058,7 @@ public class RestClientUtil extends ClientUtil{
 					.append(id).append("?").append(refreshOption).toString(),ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deleteDocument);
 		}
 	}
 	@Override
@@ -1119,17 +1135,27 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	public String getIndexMapping(String index,boolean pretty) throws ElasticSearchException{
-		if(pretty)
-			return this.client.executeHttp(index+"/_mapping?pretty",ClientUtil.HTTP_GET);
-		else
-			return this.client.executeHttp(index+"/_mapping",ClientUtil.HTTP_GET);
+		try {
+			if (pretty)
+				return this.client.executeHttp(index + "/_mapping?pretty", ClientUtil.HTTP_GET);
+			else
+				return this.client.executeHttp(index + "/_mapping", ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getIndice);
+		}
 	}
 
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException{
-		if(pretty)
-			return this.client.executeRequest(index+"/_mapping?pretty",null,responseHandler,ClientUtil.HTTP_GET);
-		else
-			return this.client.executeRequest(index+"/_mapping",null,responseHandler,ClientUtil.HTTP_GET);
+		try {
+			if (pretty)
+				return this.client.executeRequest(index + "/_mapping?pretty", null, responseHandler, ClientUtil.HTTP_GET);
+			else
+				return this.client.executeRequest(index + "/_mapping", null, responseHandler, ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return (T)ResultUtil.hand404HttpRuntimeException(e,Object.class,ResultUtil.OPERTYPE_getIndice);
+		}
 	}
 	/**
 	 * 删除索引文档
@@ -1143,7 +1169,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deleteDocument);
 		}
 	}
 	/**
@@ -1157,12 +1183,8 @@ public class RestClientUtil extends ClientUtil{
 			executeHttp(indiceName, ClientInterface.HTTP_HEAD);
 			return true;
 		}
-		catch(ElasticSearchException exception){
-			String msg = exception.getMessage();
-			if(msg.endsWith("Unexpected response status: 404"))
-				return false;
-			else
-				throw exception;
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,boolean.class,ResultUtil.OPERTYPE_existIndice);
 		}
 
 	}
@@ -1179,12 +1201,8 @@ public class RestClientUtil extends ClientUtil{
 			executeHttp(new StringBuilder(indiceName).append("/_mapping/").append(type).toString(), ClientInterface.HTTP_HEAD);
 			return true;
 		}
-		catch(ElasticSearchException exception){
-			String msg = exception.getMessage();
-			if(msg.endsWith("Unexpected response status: 404"))
-				return false;
-			else
-				throw exception;
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,boolean.class,ResultUtil.OPERTYPE_existIndiceType);
 		}
 	}
 	public <T> T executeRequest(String path, String templateName,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
@@ -1508,7 +1526,12 @@ public class RestClientUtil extends ClientUtil{
 		 }
 	
 	 public String dropIndice(String index)  throws ElasticSearchException {
-		 return this.client.executeHttp(index+"?pretty",ClientUtil.HTTP_DELETE);
+		 	try {
+				return this.client.executeHttp(index + "?pretty", ClientUtil.HTTP_DELETE);
+			}
+			catch(ElasticSearchException e){
+				return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_dropIndice);
+			}
 		 
 	 }
 	 
@@ -1520,7 +1543,12 @@ public class RestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String updateIndiceMapping(String action,String indexMapping)  throws ElasticSearchException {
-		 return this.client.executeHttp(action,indexMapping,ClientUtil.HTTP_POST);
+	 	try {
+			return this.client.executeHttp(action, indexMapping, ClientUtil.HTTP_POST);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateIndiceMapping);
+		}
 	 }
 	 
 	 /**
@@ -1698,7 +1726,7 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp(path, entity, ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 
@@ -2074,7 +2102,7 @@ public class RestClientUtil extends ClientUtil{
 			return searchResult;
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 
@@ -2129,7 +2157,7 @@ public class RestClientUtil extends ClientUtil{
 			return searchResult;
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 

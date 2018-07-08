@@ -14,16 +14,40 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.util.SimpleStringUtil;
+import com.frameworkset.util.ValueObjectUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
 import org.frameworkset.spi.remote.http.HttpRuntimeException;
+import org.frameworkset.util.ClassUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ResultUtil {
+	private static Logger logger = LoggerFactory.getLogger(ResultUtil.class);
+	public static final int OPERTYPE_getDocument = 0;
+	public static final int OPERTYPE_updateDocument = 1;
+	public static final int OPERTYPE_deleteDocument = 2;
+
+	public static final int OPERTYPE_getTemplate = 3;
+	public static final int OPERTYPE_getIndice = 4;
+	public static final int OPERTYPE_existIndice = 5;
+
+	public static final int OPERTYPE_existIndiceType = 6;
+	public static final int OPERTYPE_dropIndice = 7;
+	public static final int OPERTYPE_deleteTempate = 8;
+	public static final int OPERTYPE_updateIndiceMapping = 8;
+
+	public static final Boolean exist = new Boolean(false);
+
+
 	public static <T> List<T> getInnerHits(Map<String,Map<String,InnerSearchHits>> innerHits,String indexType, Class<T> type){
 		if(innerHits == null || innerHits.size() == 0)
 			return null;
@@ -714,7 +738,9 @@ public abstract class ResultUtil {
 				List<InnerSearchHit> innerSearchHits = hitsEntryValue.getHits();
 				if(innerSearchHits != null && innerSearchHits.size() > 0){
 					Object source = innerSearchHits.get(0).getSource();
-					boolean isESBaseData = ESBaseData.class.isAssignableFrom(source.getClass());
+					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(source.getClass());
+
+					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
 						isESId = ESId.class.isAssignableFrom(source.getClass());
@@ -724,11 +750,57 @@ public abstract class ResultUtil {
 							InnerSearchHit innerSearchHit = innerSearchHits.get(i);
 							source = innerSearchHit.getSource();
 							if (source != null) {
+								injectAnnotationESId(classInfo,  source,innerSearchHit);
+								injectAnnotationESParentId(classInfo,  source,innerSearchHit);
 								injectBaseData(source, innerSearchHit, isESBaseData, isESId);
 							}
 						}
 					}
 				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * 如果对象有ESId注解标识的字段，则注入parent和
+	 * @param data
+	 */
+	private static void injectAnnotationESId(ClassUtil.ClassInfo classInfo,Object data ,BaseSearchHit hit){
+		if(data == null)
+			return;
+		Object id = hit.getId();
+		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsIdProperty() ;
+		_injectAnnotationES( propertieDescription,  data ,  hit,id );
+
+	}
+
+	/**
+	 * 如果对象有ESId注解标识的字段，则注入parent和
+	 * @param data
+	 */
+	private static void injectAnnotationESParentId(ClassUtil.ClassInfo classInfo,Object data ,BaseSearchHit hit){
+		if(data == null)
+			return;
+		Object id = hit.getParent();
+		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsParentProperty() ;
+		_injectAnnotationES( propertieDescription,  data ,  hit,id);
+
+	}
+	/**
+	 * 如果对象有ESId注解标识的字段，则注入parent和
+	 * @param data
+	 */
+	private static void _injectAnnotationES(ClassUtil.PropertieDescription propertieDescription,Object data ,BaseSearchHit hit,Object id ){
+		if(propertieDescription != null && propertieDescription.isEsIdReadSet()){
+
+			try {
+				propertieDescription.setValue(data,ValueObjectUtil.typeCast(id,propertieDescription.getPropertyType()));
+			} catch (IllegalAccessException e) {
+				logger.warn("设置属性失败："+propertieDescription.toString(),e);
+			} catch (InvocationTargetException e) {
+				logger.warn("设置属性失败："+propertieDescription.toString(),e.getTargetException());
 			}
 
 		}
@@ -746,11 +818,13 @@ public abstract class ResultUtil {
 				//处理源对象
 				Object data =  hit.getSource();
 				if(data != null) {
-
-					boolean isESBaseData = ESBaseData.class.isAssignableFrom(data.getClass());
+					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
+					injectAnnotationESId(classInfo,  data,hit);
+					injectAnnotationESParentId(classInfo,  data,hit);
+					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
-						isESId = ESId.class.isAssignableFrom(data.getClass());
+						isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 					}
 					injectBaseData(data,hit,isESBaseData,isESId);
 				}
@@ -762,12 +836,15 @@ public abstract class ResultUtil {
 				return (T)hit;
 			}
 			else{
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				boolean isESId = false;
 				if(!isESBaseData){
 					isESId = ESId.class.isAssignableFrom(type);
 				}
 				T data = (T) hit.getSource();
+				injectAnnotationESId(classInfo,  data,hit);
+				injectAnnotationESParentId(classInfo,  data,hit);
 				if (isESBaseData) {
 					buildESBaseData(hit, (ESBaseData) data);
 				}
@@ -809,10 +886,13 @@ public abstract class ResultUtil {
 			//处理源对象
 			Object data =  result.getSource();
 			if(data != null) {
-				boolean isESBaseData = ESBaseData.class.isAssignableFrom(data.getClass());
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
+				injectAnnotationESId(classInfo,  data,result);
+				injectAnnotationESParentId(classInfo,  data,result);
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if(!isESBaseData){
-					isESId = ESId.class.isAssignableFrom(data.getClass());
+					isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 				}
 				injectBaseData(data,result,isESBaseData,isESId);
 			}
@@ -823,6 +903,7 @@ public abstract class ResultUtil {
 			}
 			return (T)result;
 		}
+
 		boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 		boolean isESId = false;
 		if(!isESBaseData){
@@ -830,7 +911,11 @@ public abstract class ResultUtil {
 		}
 		SearchHit hit = result;
 		if(hit.isFound()) {
+
 			T data = (T) hit.getSource();
+			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
+			injectAnnotationESId(classInfo,  data,hit);
+			injectAnnotationESParentId(classInfo,  data,hit);
 			if (isESBaseData) {
 				buildESBaseData(hit, (ESBaseData) data);
 			}
@@ -864,10 +949,11 @@ public abstract class ResultUtil {
 			datas.setAggregations(restResponse.getAggregations());
 			if(searchHits != null && searchHits.size() > 0) {
 				Object obj = searchHits.get(0).getSource();
-				boolean isESBaseData = ESBaseData.class.isAssignableFrom(obj.getClass());
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(obj.getClass());
+				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if (!isESBaseData) {
-					isESId = ESId.class.isAssignableFrom(obj.getClass());
+					isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 				}
 
 				for (int i = 0; i < searchHits.size(); i++) {
@@ -876,6 +962,9 @@ public abstract class ResultUtil {
 					//处理源对象
 					Object data = hit.getSource();
 					if (data != null) {
+
+						injectAnnotationESId(classInfo,  data,hit);
+						injectAnnotationESParentId(classInfo,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 
@@ -892,6 +981,7 @@ public abstract class ResultUtil {
 			if(searchHits != null && searchHits.size() > 0) {
 				List<T> hits = new ArrayList<T>(searchHits.size());
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
+				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
 				boolean isESId = false;
 				if (!isESBaseData) {
 					isESId = ESId.class.isAssignableFrom(type);
@@ -901,6 +991,8 @@ public abstract class ResultUtil {
 					data = (T) hit.getSource();
 					hits.add(data);
 					if (data != null) {
+						injectAnnotationESId(classInfo,  data,hit);
+						injectAnnotationESParentId(classInfo,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 					//处理InnerHit对象
@@ -923,46 +1015,97 @@ public abstract class ResultUtil {
 
 		return datas;
 	}
-	public static <T> T hand404HttpRuntimeException(ElasticSearchException e,Class<T> type,boolean getDocument){
+
+	/**
+	 *
+	 * @param e
+	 * @param type
+	 * @param operType 0:getDocument 1:updateDocument 2:deleteDocument 3:getTemplate 4:getIndice 5:existIndice 6 existIndiceType 7:dropIndice 8:deleteTempate
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> T hand404HttpRuntimeException(ElasticSearchException e,Class<T> type,int operType){
 		Throwable throwable = e.getCause();
 		if(throwable != null && throwable instanceof HttpRuntimeException){
 			HttpRuntimeException httpRuntimeException = (HttpRuntimeException)throwable;
 			if(httpRuntimeException.getHttpStatusCode() == 404){
 				String errorInfo = httpRuntimeException.getMessage();
-				try{
-					if(getDocument) {
-						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-						Boolean found = (Boolean) data.get("found");
-						if (found != null && found == false) {
-							return (T) null;
-						}
-					}
-					else if(String.class.isAssignableFrom(type)){
-						return (T)errorInfo;
-					}
+
+				if(operType == ResultUtil.OPERTYPE_getDocument) {
+//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+//						Boolean found = (Boolean) data.get("found");
+//						if (found != null && found == false)
+//						{
+						return (T) null;
+//						}
 				}
-				catch (Exception ie){
+				else if(operType == ResultUtil.OPERTYPE_getTemplate) {
+					return (T) null;
 
 				}
+				else if(operType == ResultUtil.OPERTYPE_getIndice) {
+					return (T) null;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndice) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndiceType) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_dropIndice) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_deleteTempate) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(String.class.isAssignableFrom(type)){
+					return (T)errorInfo;
+				}
+
 			}
 		}
 		else{
 			if(e.getHttpStatusCode() == 404){
 				String errorInfo = e.getMessage();
-				try{
-					if(getDocument) {
-						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-						Boolean found = (Boolean) data.get("found");
-						if (found != null && found == false) {
-							return (T) null;
-						}
-					}
-					else if(String.class.isAssignableFrom(type)){
-						return (T)errorInfo;
-					}
+				if(operType == ResultUtil.OPERTYPE_getDocument) {
+//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+//						Boolean found = (Boolean) data.get("found");
+//						if (found != null && found == false)
+//						{
+					return (T) null;
+//						}
 				}
-				catch (Exception ie){
+				else if(operType == ResultUtil.OPERTYPE_getTemplate) {
+					return (T) null;
 
+				}
+				else if(operType == ResultUtil.OPERTYPE_getIndice) {
+					return (T) null;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndice) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndiceType) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_dropIndice) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_deleteTempate) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(String.class.isAssignableFrom(type)){
+					return (T)errorInfo;
 				}
 			}
 		}

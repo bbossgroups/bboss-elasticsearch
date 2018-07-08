@@ -750,7 +750,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, (Object) null), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 
@@ -771,7 +771,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, params), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 
@@ -792,7 +792,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(esUtil, templateName, params), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,false);
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
 
