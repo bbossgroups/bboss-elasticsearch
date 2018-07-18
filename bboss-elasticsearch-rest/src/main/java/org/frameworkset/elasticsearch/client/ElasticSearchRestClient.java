@@ -27,7 +27,6 @@ import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
-import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.frameworkset.spi.remote.http.StringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -59,6 +58,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected String elasticUser;
 	protected String elasticPassword;
 	protected long healthCheckInterval = -1l;
+	protected RestSeachExecutor restSeachExecutor;
 //	private HttpClient httpClient;
 	protected Map<String, String> headers = new HashMap<>();
 	protected boolean showTemplate = false;
@@ -180,6 +180,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		//Authorization
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
+		restSeachExecutor = new RestSeachExecutor(headers,this.httpPool);
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
 			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
@@ -302,7 +303,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url = new StringBuilder().append(host.getAddress()).append( "/" ).append( endpoint).toString();
-				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
+//				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
+				response = restSeachExecutor.execute(url,entity);
 				e = null;
 				break;
 			} 
@@ -430,35 +432,36 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url = getPath(host.getAddress(),path);
-				if (entity == null){
-					if(action == null)				
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers, responseHandler);
-					else if(action == ClientUtil.HTTP_POST )				
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,responseHandler);
-					else if( action == ClientUtil.HTTP_PUT)				
-						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,responseHandler);
-					else if(action == ClientUtil.HTTP_GET)				
-						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,responseHandler);
-					else if(action == ClientUtil.HTTP_DELETE)				
-						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,responseHandler);
-					else if(action == ClientUtil.HTTP_HEAD)
-						response = HttpRequestUtil.httpHead(httpPool,url, null, this.headers,responseHandler);
-					else
-						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-				}
-				else
-				{
-					 if(action == ClientUtil.HTTP_POST )	
-						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,responseHandler);
-					 else if( action == ClientUtil.HTTP_PUT)	
-					 {
-						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,responseHandler);
-					 }
-					 else if(action == ClientUtil.HTTP_DELETE)
-						 response = HttpRequestUtil.httpDelete(httpPool,url,entity, null, this.headers,responseHandler);
-					else
-						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-				}
+//				if (entity == null){
+//					if(action == null)
+//						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers, responseHandler);
+//					else if(action == ClientUtil.HTTP_POST )
+//						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,responseHandler);
+//					else if( action == ClientUtil.HTTP_PUT)
+//						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,responseHandler);
+//					else if(action == ClientUtil.HTTP_GET)
+//						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,responseHandler);
+//					else if(action == ClientUtil.HTTP_DELETE)
+//						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,responseHandler);
+//					else if(action == ClientUtil.HTTP_HEAD)
+//						response = HttpRequestUtil.httpHead(httpPool,url, null, this.headers,responseHandler);
+//					else
+//						throw new java.lang.IllegalArgumentException("not support http action:"+action);
+//				}
+//				else
+//				{
+//					 if(action == ClientUtil.HTTP_POST )
+//						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,responseHandler);
+//					 else if( action == ClientUtil.HTTP_PUT)
+//					 {
+//						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,responseHandler);
+//					 }
+//					 else if(action == ClientUtil.HTTP_DELETE)
+//						 response = HttpRequestUtil.httpDelete(httpPool,url,entity, null, this.headers,responseHandler);
+//					else
+//						throw new java.lang.IllegalArgumentException("not support http action:"+action);
+//				}
+				response = this.restSeachExecutor.executeHttp(url,entity,action,responseHandler);
 				e = null;
 				break;
 			} catch (HttpHostConnectException ex) {
@@ -550,10 +553,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url =  getPath(host.getAddress(),path);
-				if (entity == null)
-					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
-				else
-					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
+//				if (entity == null)
+//					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
+//				else
+//					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
+				response = this.restSeachExecutor.executeSimpleRequest(url,entity);
 				e = null;
 				break;
 			} 
@@ -644,36 +648,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url =  getPath(host.getAddress(),path);
-				if (entity == null){
-					if(action == null)
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,  responseHandler);
-					else if(action == ClientUtil.HTTP_POST )
-						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,  responseHandler);
-					else if( action == ClientUtil.HTTP_PUT)
-						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,  responseHandler);
-					else if(action == ClientUtil.HTTP_GET)
-						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,  responseHandler);
-					else if(action == ClientUtil.HTTP_DELETE)
-						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,  responseHandler);
-					else if(action == ClientUtil.HTTP_HEAD)
-						response = HttpRequestUtil.httpHead(httpPool,url, null, this.headers,  responseHandler);
-					else
-						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-				}
-				else
-				{
-					if(action == ClientUtil.HTTP_POST )
-						response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,  responseHandler);
-					else if( action == ClientUtil.HTTP_PUT)
-					{
-						response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,  responseHandler);
-					}
-					else if(action == ClientUtil.HTTP_DELETE)
-						response = HttpRequestUtil.httpDelete(httpPool,url, entity,null, this.headers,  responseHandler);
-					else
-						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-
-				}
+				response = this.restSeachExecutor.executeRequest(url,entity,action,responseHandler);
 				e = null;
 				break;
 			} catch (HttpHostConnectException ex) {

@@ -260,9 +260,6 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				restClient.init();
 				logger.info("ElasticSearch Transport client started.");
 			}
-
-
-
 		} catch (Exception ex) {
 			logger.error("ElasticSearch Rest Client started failed", ex);
 
