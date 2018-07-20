@@ -18,7 +18,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MGetDocs;
 import org.frameworkset.elasticsearch.serial.ESSerialThreadLocal;
@@ -26,7 +25,8 @@ import org.frameworkset.elasticsearch.serial.ESSerialThreadLocal;
 import java.io.IOException;
 
 public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler implements ResponseHandler<MGetDocs> {
-	private Class type;
+
+
 	public MGetDocumentsSourceResponseHandler(Class type){
 		super(type );
 	}
@@ -50,11 +50,12 @@ public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler impl
 			return null;
 		} else {
 			HttpEntity entity = response.getEntity();
-			if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity),status);
-			}
-			else
-				throw new ElasticSearchException("Unexpected response status: " + status,status);
+//			if (entity != null ) {
+//				throw new ElasticSearchException(EntityUtils.toString(entity),status);
+//			}
+//			else
+//				throw new ElasticSearchException("Unexpected response status: " + status,status);
+			return (MGetDocs)super.handleException(entity,status);
 		}
 	}
 }

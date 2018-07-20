@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 
 import java.util.Map;
@@ -36,9 +37,9 @@ public class RestSeachExecutor {
 		this.headers = headers;
 		this.httpPool = httpPool;
 	}
-	public String execute(String url,String entity) throws Exception {
+	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
 
-		String response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers);
+		String response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,responseHandler);
 		return response;
 
 	}
@@ -91,12 +92,16 @@ public class RestSeachExecutor {
 	 * @return
 	 * @throws Exception
 	 */
-	public String executeSimpleRequest(String url, String entity) throws Exception {
+	public String executeSimpleRequest(String url, String entity,ESStringResponseHandler responseHandler) throws Exception {
 		String response = null;
-		if (entity == null)
-			response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers);
-		else
-			response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers);
+		if (entity == null) {
+			response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
+//			response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers);
+		}
+		else {
+			response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
+//			response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers);
+		}
 
 		return response;
 	}

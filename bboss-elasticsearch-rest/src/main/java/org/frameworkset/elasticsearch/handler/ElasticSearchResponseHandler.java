@@ -3,7 +3,6 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.RestResponse;
 import org.frameworkset.elasticsearch.serial.ESClassType;
@@ -59,20 +58,21 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 
          } else {
              HttpEntity entity = response.getEntity();
-             if (entity != null ) {
-            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
-//				 String content = EntityUtils.toString(entity);
-//                 ErrorResponse searchResponse = null;
-//                 try {
-//                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
-//                 }
-//                 catch (Exception e){
-//					 throw new ElasticSearchException(content,e);
-//                 }
-//                 return searchResponse;
-             }
-             else
-                 throw new ElasticSearchException("Unexpected response status: " + status,status);
+			 return (RestResponse)super.handleException(entity,status);
+//             if (entity != null ) {
+//            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
+////				 String content = EntityUtils.toString(entity);
+////                 ErrorResponse searchResponse = null;
+////                 try {
+////                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
+////                 }
+////                 catch (Exception e){
+////					 throw new ElasticSearchException(content,e);
+////                 }
+////                 return searchResponse;
+//             }
+//             else
+//                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

@@ -15,7 +15,6 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.soa.BBossStringWriter;
-import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1522,7 +1521,7 @@ public class RestClientUtil extends ClientUtil{
 		 @SuppressWarnings("unchecked")
 		public Map<String,Object> searchMap(String path, String entity) throws ElasticSearchException {
 			 // TODO Auto-generated method stub
-			 return this.client.executeRequest(path,entity,  new MapResponseHandler());
+			 return this.client.executeRequest(path,entity,  new ESMapResponseHandler());
 		 }
 	
 	 public String dropIndice(String index)  throws ElasticSearchException {

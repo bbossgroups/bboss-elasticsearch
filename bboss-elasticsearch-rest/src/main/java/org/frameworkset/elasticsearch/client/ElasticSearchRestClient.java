@@ -27,7 +27,8 @@ import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
-import org.frameworkset.spi.remote.http.StringResponseHandler;
+import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
+import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -304,8 +305,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				host = serversList.get();
 				url = new StringBuilder().append(host.getAddress()).append( "/" ).append( endpoint).toString();
 //				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
-				response = restSeachExecutor.execute(url,entity);
-				e = null;
+				ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+				response = restSeachExecutor.execute(url,entity,responseHandler);
+				e = getException(  responseHandler );
 				break;
 			} 
 			catch (HttpHostConnectException ex) {
@@ -462,7 +464,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 //				}
 				response = this.restSeachExecutor.executeHttp(url,entity,action,responseHandler);
-				e = null;
+				e = getException(  responseHandler );
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
@@ -531,7 +533,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @throws ElasticSearchException
 	 */
 	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
-		return executeHttp( path,  entity, action,new StringResponseHandler());
+		return executeHttp( path,  entity, action,new ESStringResponseHandler());
 	}
 
 	public String executeRequest(String path, String entity) throws ElasticSearchException {
@@ -557,8 +559,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
 //				else
 //					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
-				response = this.restSeachExecutor.executeSimpleRequest(url,entity);
-				e = null;
+				ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+				response = this.restSeachExecutor.executeSimpleRequest(url,entity,responseHandler);
+				e = getException(  responseHandler );
 				break;
 			} 
 			
@@ -620,6 +623,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return executeRequest(path, entity,responseHandler,ClientUtil.HTTP_POST);
 	}
+	private Exception getException(ResponseHandler responseHandler ){
+		if(responseHandler instanceof BaseExceptionResponseHandler){
+			return ((BaseExceptionResponseHandler)responseHandler).getElasticSearchException();
+		}
+		return null;
+	}
 	/**
 	 * 需要补充容错机制
 	 * @param path
@@ -649,7 +658,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				host = serversList.get();
 				url =  getPath(host.getAddress(),path);
 				response = this.restSeachExecutor.executeRequest(url,entity,action,responseHandler);
-				e = null;
+				e = getException(  responseHandler );
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);

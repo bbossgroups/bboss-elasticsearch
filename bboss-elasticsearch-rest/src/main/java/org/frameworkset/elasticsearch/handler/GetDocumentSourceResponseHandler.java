@@ -18,13 +18,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.spi.remote.http.BaseResponseHandler;
 
 import java.io.IOException;
 
-public class GetDocumentSourceResponseHandler extends BaseResponseHandler implements ResponseHandler {
+public class GetDocumentSourceResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler {
 	private Class type;
 	public GetDocumentSourceResponseHandler(Class type){
 		this.type = type;
@@ -45,11 +43,12 @@ public class GetDocumentSourceResponseHandler extends BaseResponseHandler implem
 			return null;
 		} else {
 			HttpEntity entity = response.getEntity();
-			if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity),status);
-			}
-			else
-				throw new ElasticSearchException("Unexpected response status: " + status,status);
+//			if (entity != null ) {
+//				throw new ElasticSearchException(EntityUtils.toString(entity),status);
+//			}
+//			else
+//				throw new ElasticSearchException("Unexpected response status: " + status,status);
+			return super.handleException(entity,status);
 		}
 	}
 }

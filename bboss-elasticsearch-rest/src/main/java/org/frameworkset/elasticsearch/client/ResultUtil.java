@@ -1026,50 +1026,7 @@ public abstract class ResultUtil {
 	 */
 	public static <T> T hand404HttpRuntimeException(ElasticSearchException e,Class<T> type,int operType){
 		Throwable throwable = e.getCause();
-		if(throwable != null && throwable instanceof HttpRuntimeException){
-			HttpRuntimeException httpRuntimeException = (HttpRuntimeException)throwable;
-			if(httpRuntimeException.getHttpStatusCode() == 404){
-				String errorInfo = httpRuntimeException.getMessage();
-
-				if(operType == ResultUtil.OPERTYPE_getDocument) {
-//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-//						Boolean found = (Boolean) data.get("found");
-//						if (found != null && found == false)
-//						{
-						return (T) null;
-//						}
-				}
-				else if(operType == ResultUtil.OPERTYPE_getTemplate) {
-					return (T) null;
-
-				}
-				else if(operType == ResultUtil.OPERTYPE_getIndice) {
-					return (T) null;
-
-				}
-				else if(operType == ResultUtil.OPERTYPE_existIndice) {
-					return (T)ResultUtil.exist;
-
-				}
-				else if(operType == ResultUtil.OPERTYPE_existIndiceType) {
-					return (T)ResultUtil.exist;
-
-				}
-				else if(operType == ResultUtil.OPERTYPE_dropIndice) {
-//						return (T)ResultUtil.exist;
-
-				}
-				else if(operType == ResultUtil.OPERTYPE_deleteTempate) {
-//						return (T)ResultUtil.exist;
-
-				}
-				else if(String.class.isAssignableFrom(type)){
-					return (T)errorInfo;
-				}
-
-			}
-		}
-		else{
+		if(throwable == null || !(throwable instanceof HttpRuntimeException)){
 			if(e.getHttpStatusCode() == 404){
 				String errorInfo = e.getMessage();
 				if(operType == ResultUtil.OPERTYPE_getDocument) {
@@ -1107,6 +1064,50 @@ public abstract class ResultUtil {
 				else if(String.class.isAssignableFrom(type)){
 					return (T)errorInfo;
 				}
+			}
+		}
+		else{
+
+			HttpRuntimeException httpRuntimeException = (HttpRuntimeException)throwable;
+			if(httpRuntimeException.getHttpStatusCode() == 404){
+				String errorInfo = httpRuntimeException.getMessage();
+
+				if(operType == ResultUtil.OPERTYPE_getDocument) {
+//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+//						Boolean found = (Boolean) data.get("found");
+//						if (found != null && found == false)
+//						{
+					return (T) null;
+//						}
+				}
+				else if(operType == ResultUtil.OPERTYPE_getTemplate) {
+					return (T) null;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_getIndice) {
+					return (T) null;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndice) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_existIndiceType) {
+					return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_dropIndice) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_deleteTempate) {
+//						return (T)ResultUtil.exist;
+
+				}
+				else if(String.class.isAssignableFrom(type)){
+					return (T)errorInfo;
+				}
+
 			}
 		}
 		throw e;

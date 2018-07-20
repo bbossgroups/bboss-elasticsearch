@@ -4,16 +4,14 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MapRestResponse;
-import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchMapResponseHandler extends BaseResponseHandler implements ResponseHandler<MapRestResponse> {
+public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler<MapRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchMapResponseHandler.class);
 
 	public ElasticSearchMapResponseHandler() {
@@ -47,20 +45,22 @@ public class ElasticSearchMapResponseHandler extends BaseResponseHandler impleme
 
          } else {
              HttpEntity entity = response.getEntity();
-             if (entity != null ) {
-            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
-//				 String content = EntityUtils.toString(entity);
-//                 ErrorResponse searchResponse = null;
-//                 try {
-//                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
-//                 }
-//                 catch (Exception e){
-//					 throw new ElasticSearchException(content,e);
-//                 }
-//                 return searchResponse;
-             }
-             else
-                 throw new ElasticSearchException("Unexpected response status: " + status,status);
+             return (MapRestResponse)super.handleException(entity,status);
+
+//             if (entity != null ) {
+//            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
+////				 String content = EntityUtils.toString(entity);
+////                 ErrorResponse searchResponse = null;
+////                 try {
+////                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
+////                 }
+////                 catch (Exception e){
+////					 throw new ElasticSearchException(content,e);
+////                 }
+////                 return searchResponse;
+//             }
+//             else
+//                 throw new ElasticSearchException("Unexpected response status: " + status,status);
          }
      }
 

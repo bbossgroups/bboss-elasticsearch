@@ -3,7 +3,6 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.SearchHit;
 import org.frameworkset.elasticsearch.serial.ESClassType;
@@ -62,11 +61,12 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 
          } else {
              HttpEntity entity = response.getEntity();
-             if (entity != null ) {
-				throw new ElasticSearchException(EntityUtils.toString(entity),status);
-             }
-             else
-                 throw new ElasticSearchException("Unexpected response status: " + status,status);
+//             if (entity != null ) {
+//				throw new ElasticSearchException(EntityUtils.toString(entity),status);
+//             }
+//             else
+//                 throw new ElasticSearchException("Unexpected response status: " + status,status);
+			 return (SearchHit)super.handleException(entity,status);
          }
      }
 

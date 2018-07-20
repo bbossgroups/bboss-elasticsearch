@@ -8,11 +8,11 @@ import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
+import org.frameworkset.elasticsearch.handler.ESMapResponseHandler;
 import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESTemplateHelper;
 import org.frameworkset.elasticsearch.template.ESUtil;
-import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -603,14 +603,14 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 	public Map<String, Object> searchMap(String path, String templateName, Map params) throws ElasticSearchException {
 		return super.searchMap(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
-//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new MapResponseHandler());
+//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ESMapResponseHandler());
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> searchMap(String path, String templateName, Object params) throws ElasticSearchException {
 		return super.searchMap(  path, ESTemplateHelper.evalTemplate(esUtil,templateName, params));
-//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new MapResponseHandler());
+//		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ESMapResponseHandler());
 	}
 
 	/**
@@ -619,7 +619,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> searchMap(String path, String templateName) throws ElasticSearchException {
-		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new MapResponseHandler());
+		return super.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, (Object) null), new ESMapResponseHandler());
 	}
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String templateName, Map params, Class<T> type, String aggs, String stats) throws ElasticSearchException {
