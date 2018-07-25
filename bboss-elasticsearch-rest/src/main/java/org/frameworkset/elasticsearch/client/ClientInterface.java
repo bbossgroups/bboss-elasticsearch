@@ -1556,4 +1556,36 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param sourceIndice
+	 * @param destIndice
+	 * @return
+	 */
+	public String reindex(String sourceIndice,String destIndice);
+
+	/**
+	 * Associating the alias alias with index indice
+	 * more detail see :
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+	 * @param indice
+	 * @param alias
+	 * @return
+	 */
+	public String addAlias(String indice,String alias);
+
+	/**
+	 * removing that same alias [alias] of [indice]
+	 * more detail see :
+	 * 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+	 * @param indice
+	 * @param alias
+	 * @return
+	 */
+	public String removeAlias(String indice,String alias);
 }

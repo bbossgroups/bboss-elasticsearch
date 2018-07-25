@@ -139,6 +139,21 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public String reindex(String sourceIndice, String destIndice) {
+		return null;
+	}
+
+	@Override
+	public String addAlias(String indice, String alias) {
+		return null;
+	}
+
+	@Override
+	public String removeAlias(String indice, String alias) {
+		return null;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 
