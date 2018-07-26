@@ -2177,6 +2177,43 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param sourceIndice
+	 * @param destIndice
+	 * @return
+	 */
+	public String reindex(String sourceIndice,String destIndice,String versionType){
+		String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"version_type\": \"").append(versionType).append("\"}}").toString();
+		return this.client.executeHttp("_reindex",reindex,ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param sourceIndice
+	 * @param destIndice
+	 * @return
+	 */
+	public String reindex(String sourceIndice,String destIndice,String opType,String conflicts){
+		if(conflicts == null || conflicts.equals("")) {
+			String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"op_type\": \"").append(opType).append("\"}}").toString();
+			return this.client.executeHttp("_reindex", reindex, ClientUtil.HTTP_POST);
+		}
+		else
+		{
+			String reindex = new StringBuilder().append("{\"conflicts\": \"").append(conflicts).append("\",\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"op_type\": \"").append(opType).append("\"}}").toString();
+			return this.client.executeHttp("_reindex", reindex, ClientUtil.HTTP_POST);
+		}
+	}
+
+	/**
 	 * Associating the alias alias with index indice
 	 * more detail see :
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html

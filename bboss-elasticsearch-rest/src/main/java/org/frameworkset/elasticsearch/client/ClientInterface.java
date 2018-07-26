@@ -1569,6 +1569,30 @@ public interface ClientInterface {
 	 */
 	public String reindex(String sourceIndice,String destIndice);
 
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param sourceIndice
+	 * @param destIndice
+	 * @return
+	 */
+	public String reindex(String sourceIndice,String destIndice,String versionType);
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param sourceIndice
+	 * @param destIndice
+	 * @return
+	 */
+	public String reindex(String sourceIndice,String destIndice,String opType,String conflicts);
 	/**
 	 * Associating the alias alias with index indice
 	 * more detail see :

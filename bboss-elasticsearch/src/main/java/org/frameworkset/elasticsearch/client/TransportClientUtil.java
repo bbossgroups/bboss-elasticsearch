@@ -145,6 +145,16 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String reindex(String sourceIndice, String destIndice, String versionType) {
+		return null;
+	}
+
+	@Override
+	public String reindex(String sourceIndice, String destIndice, String opType, String conflicts) {
+		return null;
+	}
+
+	@Override
 	public String addAlias(String indice, String alias) {
 		return null;
 	}
