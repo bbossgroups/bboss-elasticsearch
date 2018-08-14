@@ -8,10 +8,11 @@ import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.util.annotations.ThreadSafe;
 
 import java.util.List;
 import java.util.Map;
-
+@ThreadSafe
 public interface ClientInterface {
 	public final String HTTP_GET = "get";
 	public final String HTTP_POST = "post";

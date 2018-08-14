@@ -22,6 +22,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHost;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -331,6 +332,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+            catch (ConnectTimeoutException connectTimeoutException){
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(connectTimeoutException);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+			}
 //			catch (IOException ex) {
 //				host.setStatus(1);
 //				if (triesCount < serversList.size()) {//失败尝试下一个地址
@@ -487,6 +498,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (ConnectTimeoutException connectTimeoutException){
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(connectTimeoutException);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+			}
 //			catch (IOException ex) {
 //				host.setStatus(1);
 //				if (triesCount < serversList.size()) {//失败尝试下一个地址
@@ -586,6 +607,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (ConnectTimeoutException connectTimeoutException){
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(connectTimeoutException);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+			}
 //			catch (IOException ex) {
 //				host.setStatus(1);
 //				if (triesCount < serversList.size()) {//失败尝试下一个地址
@@ -685,6 +716,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (ConnectTimeoutException connectTimeoutException){
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(connectTimeoutException);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+			}
 //			catch (IOException ex) {
 //				host.setStatus(1);
 //				if (triesCount < serversList.size()) {//失败尝试下一个地址
