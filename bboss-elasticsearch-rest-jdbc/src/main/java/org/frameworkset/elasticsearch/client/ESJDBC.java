@@ -22,6 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class ESJDBC extends JDBCResultSet {
 	public String getApplicationPropertiesFile() {
@@ -31,7 +34,16 @@ public class ESJDBC extends JDBCResultSet {
 	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
 	}
-
+	/**
+	 * use parallel import:
+	 *  true yes
+	 *  false no
+	 */
+	private boolean parallel;
+	/**
+	 * parallel import work thread nums,default 200
+	 */
+	private int threadCount = 200;
 	private String applicationPropertiesFile;
 	private boolean usePool = false;
 	private String esIdField;
@@ -64,6 +76,7 @@ public class ESJDBC extends JDBCResultSet {
 
 	private String dbPassword;
 	private String validateSQL;
+
 	public String getDbDriver() {
 		return dbDriver;
 	}
@@ -314,4 +327,32 @@ public class ESJDBC extends JDBCResultSet {
 	public void setUsePool(boolean usePool) {
 		this.usePool = usePool;
 	}
+
+	public boolean isParallel() {
+		return parallel;
+	}
+
+	public void setParallel(boolean parallel) {
+		this.parallel = parallel;
+	}
+
+	public int getThreadCount() {
+		return threadCount;
+	}
+
+	public void setThreadCount(int threadCount) {
+		this.threadCount = threadCount;
+	}
+
+	public ExecutorService buildThreadPool(){
+		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				return new DBESThread(r);
+			}
+		});
+		return executor;
+	}
+
+
 }

@@ -56,6 +56,17 @@ public class ImportBuilder {
 	private ResultSet resultSet;
 	private StatementInfo statementInfo;
 	private Map<String,FieldMeta> fieldMetaMap = new HashMap<String,FieldMeta>();
+
+	/**
+	 * use parallel import:
+	 *  true yes
+	 *  false no
+	 */
+	private boolean parallel;
+	/**
+	 * parallel import work thread nums,default 200
+	 */
+	private int threadCount = 200;
 	public static ImportBuilder newInstance(){
 		return new ImportBuilder();
 	}
@@ -233,6 +244,8 @@ public class ImportBuilder {
 		esjdbcResultSet.setDbPassword(this.dbPassword);
 		esjdbcResultSet.setValidateSQL(this.validateSQL);
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
+		esjdbcResultSet.setParallel(this.parallel);
+		esjdbcResultSet.setThreadCount(this.threadCount);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -316,5 +329,23 @@ public class ImportBuilder {
 
 	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
+	}
+
+	public boolean isParallel() {
+		return parallel;
+	}
+
+	public ImportBuilder setParallel(boolean parallel) {
+		this.parallel = parallel;
+		return this;
+	}
+
+	public int getThreadCount() {
+		return threadCount;
+	}
+
+	public ImportBuilder setThreadCount(int threadCount) {
+		this.threadCount = threadCount;
+		return this;
 	}
 }
