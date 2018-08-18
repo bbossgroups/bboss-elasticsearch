@@ -17,16 +17,18 @@ package org.frameworkset.elasticsearch.client;/*
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.util.annotations.DateFormateMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ESJDBC extends JDBCResultSet {
+	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	public String getApplicationPropertiesFile() {
 		return applicationPropertiesFile;
 	}
@@ -44,6 +46,7 @@ public class ESJDBC extends JDBCResultSet {
 	 * parallel import work thread nums,default 200
 	 */
 	private int threadCount = 200;
+	private int queue = Integer.MAX_VALUE;
 	private String applicationPropertiesFile;
 	private boolean usePool = false;
 	private String esIdField;
@@ -76,6 +79,7 @@ public class ESJDBC extends JDBCResultSet {
 
 	private String dbPassword;
 	private String validateSQL;
+	private AtomicInteger rejectCounts = new AtomicInteger();
 
 	public String getDbDriver() {
 		return dbDriver;
@@ -345,14 +349,49 @@ public class ESJDBC extends JDBCResultSet {
 	}
 
 	public ExecutorService buildThreadPool(){
-		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
-			@Override
-			public Thread newThread(Runnable r) {
-				return new DBESThread(r);
-			}
-		});
+//		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
+//			@Override
+//			public Thread newThread(Runnable r) {
+//				return new DBESThread(r);
+//			}
+//		});
+
+		ExecutorService executor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>(this.getQueue()),
+				new ThreadFactory() {
+					@Override
+					public Thread newThread(Runnable r) {
+						return new DBESThread(r);
+					}
+				},new RejectedExecutionHandler(){
+
+					/**
+					 * Always log per 1000 mults rejects.
+					 *
+					 * @param r the runnable task requested to be executed
+					 * @param e the executor attempting to execute this task
+					 * @throws RejectedExecutionException always
+					 */
+					public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+						int counts = rejectCounts.incrementAndGet();
+						if(logger.isInfoEnabled()) {
+							int t = counts / 1000;
+							if (t == 0) {
+								logger.info(new StringBuilder().append("DB to Elasticsearch Date Import Task rejected  ").append(counts).append(" times.").toString());
+							}
+						}
+					}
+				});
 		return executor;
 	}
 
 
+	public int getQueue() {
+		return queue;
+	}
+
+	public void setQueue(int queue) {
+		this.queue = queue;
+	}
 }

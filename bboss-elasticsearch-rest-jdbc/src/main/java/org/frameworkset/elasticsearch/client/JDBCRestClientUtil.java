@@ -60,7 +60,7 @@ public class JDBCRestClientUtil {
 				int count = 0;
 				StringBuilder builder = new StringBuilder();
 				BBossStringWriter writer = new BBossStringWriter(builder);
-				boolean hasData = false;
+//				boolean hasData = false;
 				String ret = null;
 				ExecutorService service = null;
 //					service.submit();
@@ -75,14 +75,15 @@ public class JDBCRestClientUtil {
 						try {
 							evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
 							count++;
-							hasData = true;
+//							hasData = true;
 							if (count == batchsize) {
 								writer.flush();
 								final String datas = builder.toString();
 								builder.setLength(0);
 								writer.close();
 								writer = new BBossStringWriter(builder);
-								hasData = false;
+//								hasData = false;
+								count = 0;
 								if(service != null) {
 									tasks.add(service.submit(new Runnable() {
 										@Override
@@ -110,7 +111,7 @@ public class JDBCRestClientUtil {
 					throw new ElasticSearchException(e);
 				}
 
-				if (hasData) {
+				if (count > 0) {
 					writer.flush();
 					final String datas = builder.toString();
 					if(service != null) {

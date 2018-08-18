@@ -67,6 +67,7 @@ public class ImportBuilder {
 	 * parallel import work thread nums,default 200
 	 */
 	private int threadCount = 200;
+	private int queue = Integer.MAX_VALUE;
 	public static ImportBuilder newInstance(){
 		return new ImportBuilder();
 	}
@@ -246,6 +247,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		esjdbcResultSet.setParallel(this.parallel);
 		esjdbcResultSet.setThreadCount(this.threadCount);
+		esjdbcResultSet.setQueue(this.queue);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -347,5 +349,13 @@ public class ImportBuilder {
 	public ImportBuilder setThreadCount(int threadCount) {
 		this.threadCount = threadCount;
 		return this;
+	}
+
+	public int getQueue() {
+		return queue;
+	}
+
+	public void setQueue(int queue) {
+		this.queue = queue;
 	}
 }
