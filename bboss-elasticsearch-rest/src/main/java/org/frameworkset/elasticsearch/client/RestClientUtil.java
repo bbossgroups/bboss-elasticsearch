@@ -578,6 +578,37 @@ public class RestClientUtil extends ClientUtil{
 			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
 		}
 	}
+	public  String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException
+	{
+		return updateDocuments( indexName,  indexType, beans, docIdKey,(String)null);
+	}
+	public String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException{
+		return updateDocuments( indexName,  indexType, beans, docIdKey,parentIdKey);
+	}
+	public  String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException
+	{
+		return updateDocuments(  indexName,   indexType,   beans,  docIdKey,(String )null,  refreshOption);
+	}
+	public String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Map bean:beans) {
+			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update");
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",docIdKey,parentIdKey);
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(refreshOption != null) {
+			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
+		}
+		else {
+			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+		}
+	}
+
 
 	/***************************添加或者修改文档结束************************************/
 	/**

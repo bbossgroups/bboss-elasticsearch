@@ -463,7 +463,8 @@ public interface ClientInterface {
 	public abstract String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException;
 
 	public abstract String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException;
-
+	public abstract String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException;
+	public abstract String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException;
 	/**
 	 *
 	 * @param indexName
@@ -484,6 +485,8 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
+	public abstract String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
+	public abstract String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException;
 
 	/***************************添加或者修改文档结束************************************/
 	/**
