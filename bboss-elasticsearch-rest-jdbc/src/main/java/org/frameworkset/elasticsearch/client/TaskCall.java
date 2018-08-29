@@ -19,13 +19,27 @@ package org.frameworkset.elasticsearch.client;
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/8/18 12:02
+ * @Date 2018/8/29 21:27
  * @author biaoping.yin
  * @version 1.0
  */
-public class DBESThread extends Thread {
-	public DBESThread(Runnable run){
-		super(run);
-		this.setName("DB2ESImportThread");
+public class TaskCall implements Runnable {
+	private String refreshOption;
+	private ClientInterface clientInterface;
+	private String datas;
+	public TaskCall(String refreshOption,ClientInterface clientInterface,String datas){
+		this.refreshOption = refreshOption;
+		this.clientInterface = clientInterface;
+		this.datas = datas;
+	}
+
+
+	@Override
+	public void run()   {
+		if (refreshOption == null)
+			clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+		else
+			clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+
 	}
 }

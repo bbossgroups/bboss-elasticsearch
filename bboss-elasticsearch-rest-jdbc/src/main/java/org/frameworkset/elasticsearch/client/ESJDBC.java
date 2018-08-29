@@ -80,6 +80,7 @@ public class ESJDBC extends JDBCResultSet {
 	private String dbPassword;
 	private String validateSQL;
 	private AtomicInteger rejectCounts = new AtomicInteger();
+	private boolean asyn;
 
 	public String getDbDriver() {
 		return dbDriver;
@@ -356,34 +357,16 @@ public class ESJDBC extends JDBCResultSet {
 //			}
 //		});
 
-		ExecutorService executor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
+		ExecutorService blockedExecutor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<Runnable>(this.getQueue()),
+				new ArrayBlockingQueue<Runnable>(this.getQueue()),
 				new ThreadFactory() {
 					@Override
 					public Thread newThread(Runnable r) {
 						return new DBESThread(r);
 					}
-				},new RejectedExecutionHandler(){
-
-					/**
-					 * Always log per 1000 mults rejects.
-					 *
-					 * @param r the runnable task requested to be executed
-					 * @param e the executor attempting to execute this task
-					 * @throws RejectedExecutionException always
-					 */
-					public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-						int counts = rejectCounts.incrementAndGet();
-						if(logger.isInfoEnabled()) {
-							int t = counts / 1000;
-							if (t == 0) {
-								logger.info(new StringBuilder().append("DB to Elasticsearch Date Import Task rejected  ").append(counts).append(" times.").toString());
-							}
-						}
-					}
-				});
-		return executor;
+				},new BlockedTaskRejectedExecutionHandler(rejectCounts));
+		return blockedExecutor;
 	}
 
 
@@ -393,5 +376,14 @@ public class ESJDBC extends JDBCResultSet {
 
 	public void setQueue(int queue) {
 		this.queue = queue;
+	}
+
+
+	public boolean isAsyn() {
+		return asyn;
+	}
+
+	public void setAsyn(boolean asyn) {
+		this.asyn = asyn;
 	}
 }

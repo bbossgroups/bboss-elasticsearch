@@ -33,7 +33,7 @@ public class JDBCRestClientUtil {
 	public JDBCRestClientUtil( String esCluster) {
 		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
 	}
-	public String addDocuments(String indexName, String indexType, ESJDBC jdbcResultSet, final String refreshOption, int batchsize) throws ElasticSearchException {
+	public String addDocuments(String indexName, String indexType, ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException {
 		if(jdbcResultSet == null || jdbcResultSet.getResultSet() == null)
 			return null;
 		try{
@@ -60,10 +60,8 @@ public class JDBCRestClientUtil {
 				int count = 0;
 				StringBuilder builder = new StringBuilder();
 				BBossStringWriter writer = new BBossStringWriter(builder);
-//				boolean hasData = false;
 				String ret = null;
 				ExecutorService service = null;
-//					service.submit();
 				List<Future> tasks = null;
 				if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
 					service = jdbcResultSet.buildThreadPool();
@@ -75,25 +73,16 @@ public class JDBCRestClientUtil {
 						try {
 							evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
 							count++;
-//							hasData = true;
 							if (count == batchsize) {
 								writer.flush();
-								final String datas = builder.toString();
+								String datas = builder.toString();
 								builder.setLength(0);
 								writer.close();
 								writer = new BBossStringWriter(builder);
-//								hasData = false;
 								count = 0;
+
 								if(service != null) {
-									tasks.add(service.submit(new Runnable() {
-										@Override
-										public void run() {
-											if (refreshOption == null)
-												clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-											else
-												clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-										}
-									}));
+									tasks.add(service.submit(new TaskCall(refreshOption ,clientInterface, datas)));
 								}
 								else {
 									if (refreshOption == null)
@@ -115,17 +104,7 @@ public class JDBCRestClientUtil {
 					writer.flush();
 					final String datas = builder.toString();
 					if(service != null) {
-						tasks.add(service.submit(new Runnable() {
-							@Override
-							public void run() {
-								if (refreshOption == null)
-									clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-								else
-									clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-							}
-						}));
-
-
+						tasks.add(service.submit(new TaskCall(refreshOption ,clientInterface, datas)));
 					}
 					else{
 						if (refreshOption == null)
@@ -135,14 +114,7 @@ public class JDBCRestClientUtil {
 					}
 				}
 				if(service != null) {
-					for (Future future : tasks) {
-						try {
-							future.get();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					service.shutdown();
+					waitTasksComplete(  jdbcResultSet, tasks,  service);
 				}
 				return ret;
 			}
@@ -152,6 +124,36 @@ public class JDBCRestClientUtil {
 		}
 
 	}
+
+	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,final ExecutorService service){
+		if(!jdbcResultSet.isAsyn()) {
+			for (Future future : tasks) {
+				try {
+					future.get();
+				} catch (Exception e) {
+					logger.error("",e);
+				}
+			}
+			service.shutdown();
+		}
+		else{
+			Thread completeThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					for (Future future : tasks) {
+						try {
+							future.get();
+						} catch (Exception e) {
+							logger.error("",e);
+						}
+					}
+					service.shutdown();
+				}
+			});
+			completeThread.start();
+		}
+	}
+
 	private Object handleDate(ResultSet row,int i)
 	{
 		Object value = null;

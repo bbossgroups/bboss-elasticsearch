@@ -68,6 +68,7 @@ public class ImportBuilder {
 	 */
 	private int threadCount = 200;
 	private int queue = Integer.MAX_VALUE;
+	private boolean asyn;
 	public static ImportBuilder newInstance(){
 		return new ImportBuilder();
 	}
@@ -248,6 +249,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setParallel(this.parallel);
 		esjdbcResultSet.setThreadCount(this.threadCount);
 		esjdbcResultSet.setQueue(this.queue);
+		esjdbcResultSet.setAsyn(this.asyn);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -357,5 +359,14 @@ public class ImportBuilder {
 
 	public void setQueue(int queue) {
 		this.queue = queue;
+	}
+
+	public boolean isAsyn() {
+		return asyn;
+	}
+
+	public ImportBuilder setAsyn(boolean asyn) {
+		this.asyn = asyn;
+		return this;
 	}
 }
