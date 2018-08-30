@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -24,22 +27,38 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public class TaskCall implements Runnable {
+	private static Logger logger = LoggerFactory.getLogger(TaskCall.class);
 	private String refreshOption;
 	private ClientInterface clientInterface;
 	private String datas;
-	public TaskCall(String refreshOption,ClientInterface clientInterface,String datas){
+	private ErrorWrapper errorWrapper;
+	private int taskNo;
+	public TaskCall(String refreshOption ,String datas,ErrorWrapper errorWrapper,int taskNo){
 		this.refreshOption = refreshOption;
-		this.clientInterface = clientInterface;
+		this.clientInterface = errorWrapper.getClientInterface();
 		this.datas = datas;
+		this.errorWrapper = errorWrapper;
+		this.taskNo = taskNo;
 	}
 
 
 	@Override
 	public void run()   {
-		if (refreshOption == null)
-			clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-		else
-			clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+		if(!errorWrapper.assertCondition()) {
+			if(logger.isWarnEnabled())
+				logger.warn(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Condition Failed, Ignore").toString());
+			return;
+		}
+		try {
+			if (refreshOption == null)
+				clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+			else
+				clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+		}
+		catch (Exception e){
+			errorWrapper.setError(e);
+			throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Failed").toString(),e);
+		}
 
 	}
 }

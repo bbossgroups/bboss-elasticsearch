@@ -47,9 +47,10 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
 		int counts = rejectCounts.incrementAndGet();
 		if(logger.isInfoEnabled()) {
-			int t = counts % 1000;
+			int t = counts % 100;
 			if (t == 0) {
-				logger.info(new StringBuilder().append("Task[Import DB Data to Elasticsearch] rejected  ").append(counts).append(" times.").toString());
+				if(logger.isInfoEnabled())
+					logger.info(new StringBuilder().append("Task[Import DB Data to Elasticsearch] rejected  ").append(counts).append(" times.").toString());
 			}
 		}
 //

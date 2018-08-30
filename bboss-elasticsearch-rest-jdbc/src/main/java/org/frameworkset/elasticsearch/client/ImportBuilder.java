@@ -69,6 +69,10 @@ public class ImportBuilder {
 	private int threadCount = 200;
 	private int queue = Integer.MAX_VALUE;
 	private boolean asyn;
+	/**
+	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
+	 */
+	private boolean continueOnError;
 	public static ImportBuilder newInstance(){
 		return new ImportBuilder();
 	}
@@ -250,6 +254,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setThreadCount(this.threadCount);
 		esjdbcResultSet.setQueue(this.queue);
 		esjdbcResultSet.setAsyn(this.asyn);
+		esjdbcResultSet.setContinueOnError(this.continueOnError);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -367,6 +372,11 @@ public class ImportBuilder {
 
 	public ImportBuilder setAsyn(boolean asyn) {
 		this.asyn = asyn;
+		return this;
+	}
+
+	public ImportBuilder setContinueOnError(boolean continueOnError) {
+		this.continueOnError = continueOnError;
 		return this;
 	}
 }

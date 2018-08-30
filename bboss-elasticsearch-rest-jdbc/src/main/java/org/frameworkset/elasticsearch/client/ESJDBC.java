@@ -81,6 +81,10 @@ public class ESJDBC extends JDBCResultSet {
 	private String validateSQL;
 	private AtomicInteger rejectCounts = new AtomicInteger();
 	private boolean asyn;
+	/**
+	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
+	 */
+	private boolean continueOnError = true;
 
 	public String getDbDriver() {
 		return dbDriver;
@@ -385,5 +389,13 @@ public class ESJDBC extends JDBCResultSet {
 
 	public void setAsyn(boolean asyn) {
 		this.asyn = asyn;
+	}
+
+	public boolean isContinueOnError() {
+		return continueOnError;
+	}
+
+	public void setContinueOnError(boolean continueOnError) {
+		this.continueOnError = continueOnError;
 	}
 }
