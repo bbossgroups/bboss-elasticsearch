@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,6 +68,7 @@ public class ESJDBC extends JDBCResultSet {
 	 * 以字段的小写名称为key
 	 */
 	private Map<String,FieldMeta> fieldMetaMap;
+	private List<FieldMeta> fieldValues;
 	private String sql;
 	private String dbName;
 
@@ -397,5 +399,13 @@ public class ESJDBC extends JDBCResultSet {
 
 	public void setContinueOnError(boolean continueOnError) {
 		this.continueOnError = continueOnError;
+	}
+
+	public List<FieldMeta> getFieldValues() {
+		return fieldValues;
+	}
+
+	public void setFieldValues(List<FieldMeta> fieldValues) {
+		this.fieldValues = fieldValues;
 	}
 }

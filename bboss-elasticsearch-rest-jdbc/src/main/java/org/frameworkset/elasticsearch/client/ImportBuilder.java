@@ -19,7 +19,9 @@ import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ImportBuilder {
@@ -56,6 +58,8 @@ public class ImportBuilder {
 	private ResultSet resultSet;
 	private StatementInfo statementInfo;
 	private Map<String,FieldMeta> fieldMetaMap = new HashMap<String,FieldMeta>();
+
+	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
 
 	/**
 	 * use parallel import:
@@ -128,6 +132,7 @@ public class ImportBuilder {
 		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
 		return this;
 	}
+
 
 
 
@@ -238,6 +243,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setRoutingValue(this.routingValue);
 		esjdbcResultSet.setUseJavaName(this.useJavaName);
 		esjdbcResultSet.setFieldMetaMap(this.fieldMetaMap);
+		esjdbcResultSet.setFieldValues(fieldValues);
 		esjdbcResultSet.setSql(this.sql);
 		esjdbcResultSet.setDbName(dbName);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
@@ -377,6 +383,36 @@ public class ImportBuilder {
 
 	public ImportBuilder setContinueOnError(boolean continueOnError) {
 		this.continueOnError = continueOnError;
+		return this;
+	}
+
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 */
+	public ImportBuilder addFieldValue(String fieldName,Object value){
+		FieldMeta fieldMeta = new FieldMeta();
+		fieldMeta.setEsFieldName(fieldName);
+		fieldMeta.setValue(value);
+		this.fieldValues.add(fieldMeta);
+		return this;
+	}
+
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param dateFormat
+	 * @param value
+	 * @return
+	 */
+	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value){
+		FieldMeta fieldMeta = new FieldMeta();
+		fieldMeta.setEsFieldName(fieldName);
+		fieldMeta.setValue(value);
+		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone));
+		this.fieldValues.add(fieldMeta);
 		return this;
 	}
 }

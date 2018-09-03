@@ -2,6 +2,7 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.common.poolman.handle.ValueExchange;
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
@@ -503,11 +506,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Boolean useJavaName = esjdbc.getUseJavaName();
 		if(useJavaName == null)
 			useJavaName = true;
+		boolean hasSeted = false;
 		for(int i =0; i < counts; i++)
 		{
-
 			String colName = metaData.getColumnLabelUpperByIndex(i);
-
 			if("ROWNUM__".equals(colName))//去掉oracle的行伪列
 				continue;
 			String javaName = null;
@@ -523,8 +525,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if(javaName == null){
 				javaName = colName;
 			}
-			if(i > 0)
+			if(hasSeted )
 				writer.write(",");
+			else
+				hasSeted = true;
 			writer.write("\"");
 			writer.write(javaName);
 			writer.write("\":");
@@ -568,9 +572,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write("\"");
 				}
 				else {
-
 					writer.write(String.valueOf(value));
-
 				}
 			}
 			else{
@@ -578,9 +580,82 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 
 		}
+		List<FieldMeta> fieldValueMetas = esjdbc.getFieldValues();
+		if(fieldValueMetas != null && fieldValueMetas.size() > 0){
+			for(int i =0; i < fieldValueMetas.size(); i++)
+			{
+
+				FieldMeta fieldMeta = fieldValueMetas.get(i);
+				String javaName = fieldMeta.getEsFieldName();
+				if(hasSeted || i > 0)
+					writer.write(",");
+				writer.write("\"");
+				writer.write(javaName);
+				writer.write("\":");
+//			int colType = metaData.getColumnTypeByIndex(i);
+				Object value = fieldMeta.getValue();
+				if(value != null) {
+					if (value instanceof String) {
+						writer.write("\"");
+						CharEscapeUtil charEscapeUtil = new CharEscapeUtil(writer);
+						charEscapeUtil.writeString((String) value, true);
+						writer.write("\"");
+					} else if (value instanceof Date) {
+						DateFormat dateFormat = null;
+						if(fieldMeta != null){
+							DateFormateMeta dateFormateMeta = fieldMeta.getDateFormateMeta();
+							if(dateFormateMeta != null){
+								dateFormat = dateFormateMeta.toDateFormat();
+							}
+						}
+						if(dateFormat == null)
+							dateFormat = esjdbc.getFormat();
+						String dataStr = ESUtil.getDate((Date) value,dateFormat);
+						writer.write("\"");
+						writer.write(dataStr);
+						writer.write("\"");
+					}
+					else if(isBasePrimaryType(value.getClass())){
+						writer.write(String.valueOf(value));
+					}
+
+					else {
+						SimpleStringUtil.object2json(value,writer);
+					}
+				}
+				else{
+					writer.write("null");
+				}
+
+			}
+		}
 		writer.write("}\n");
 	}
+	public static final Class[] basePrimaryTypes = new Class[]{Integer.TYPE, Long.TYPE,
+								Boolean.TYPE, Float.TYPE, Short.TYPE, Double.TYPE,
+								Character.TYPE, Byte.TYPE, BigInteger.class, BigDecimal.class};
 
+	public static boolean isBasePrimaryType(Class type) {
+		if (!type.isArray()) {
+			if (type.isEnum()) {
+				return true;
+			} else {
+				Class[] var1 = basePrimaryTypes;
+				int var2 = var1.length;
+
+				for(int var3 = 0; var3 < var2; ++var3) {
+					Class primaryType = var1[var3];
+					if (primaryType.isAssignableFrom(type)) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 
 
 	@Override

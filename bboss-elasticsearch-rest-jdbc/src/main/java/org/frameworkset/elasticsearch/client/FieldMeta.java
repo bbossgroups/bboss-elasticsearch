@@ -21,6 +21,7 @@ public class FieldMeta {
 	private String dbColumnName;
 	private DateFormateMeta dateFormateMeta;
 	private Boolean ignore ;
+	private Object value;
 	public String getEsFieldName() {
 		return esFieldName;
 	}
@@ -52,5 +53,13 @@ public class FieldMeta {
 
 	public void setIgnore(Boolean ignore) {
 		this.ignore = ignore;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
 	}
 }
