@@ -39,6 +39,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -99,6 +100,21 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 	}
 	public void init(){
 		openClient(clusterName);
+	}
+
+	@Override
+	public Map getClusterInfo() {
+		return null;
+	}
+
+	@Override
+	public String getClusterVarcharInfo() {
+		return null;
+	}
+
+	@Override
+	public String getClusterVersionInfo() {
+		return null;
 	}
 
 	// /**

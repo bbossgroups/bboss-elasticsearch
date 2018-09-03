@@ -1147,7 +1147,7 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp(path,action,responseHandler);
 	}
 	public <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return this.client.executeHttp(path,action,responseHandler);
+		return this.client.discover(path,action,responseHandler);
 	}
 	@Override
 	public <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {

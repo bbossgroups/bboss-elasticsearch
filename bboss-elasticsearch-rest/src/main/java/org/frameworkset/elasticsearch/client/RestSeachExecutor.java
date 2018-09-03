@@ -33,9 +33,11 @@ import java.util.Map;
 public class RestSeachExecutor {
 	private Map<String, String> headers;
 	private String httpPool;
-	public RestSeachExecutor(Map<String, String> headers,String httpPool){
+	private ElasticSearchClient elasticSearchClient;
+	public RestSeachExecutor(Map<String, String> headers,String httpPool,ElasticSearchClient elasticSearchClient){
 		this.headers = headers;
 		this.httpPool = httpPool;
+		this.elasticSearchClient = elasticSearchClient;
 	}
 	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
 
@@ -51,6 +53,17 @@ public class RestSeachExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+		return _executeHttp(  url,   entity,  action, responseHandler);
+	}
+
+	/**
+
+	 * @param entity
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	private <T> T _executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
 
 		T response = null;
 		if (entity == null){
@@ -84,6 +97,19 @@ public class RestSeachExecutor {
 		}
 		return response;
 	}
+
+	/**
+
+	 * @param entity
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+		return _executeHttp(  url,   entity,  action, responseHandler);
+	}
+
+
 
 
 	/**
@@ -144,6 +170,10 @@ public class RestSeachExecutor {
 
 		}
 		return response;
+	}
+
+	public String getClusterVersionInfo(){
+		return this.elasticSearchClient.getClusterVersionInfo();
 	}
 
 }

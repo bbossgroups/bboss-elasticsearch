@@ -49,7 +49,14 @@ public class TaskCall implements Runnable {
 				logger.warn(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Condition Failed, Ignore").toString());
 			return;
 		}
+		long start = System.currentTimeMillis();
+		StringBuilder info = null;
 		try {
+			if(logger.isDebugEnabled()) {
+				info = new StringBuilder();
+				info.append("Task[").append(this.taskNo).append("] starting ......");
+				logger.debug(info.toString());
+			}
 			if (refreshOption == null)
 				clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
 			else
@@ -57,8 +64,21 @@ public class TaskCall implements Runnable {
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
+			if(logger.isDebugEnabled()) {
+				long end = System.currentTimeMillis();
+				info.setLength(0);
+				info.append("Task[").append(this.taskNo).append("] failed,take ").append((end - start)).append("毫秒");
+				logger.debug(info.toString());
+			}
 			throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Failed").toString(),e);
 		}
+		if(logger.isDebugEnabled()) {
+			long end = System.currentTimeMillis();
+			info.setLength(0);
+			info.append("Task[").append(this.taskNo).append("] completed,take ").append((end - start)).append("毫秒");
+			logger.debug(info.toString());
+		}
+
 
 	}
 }

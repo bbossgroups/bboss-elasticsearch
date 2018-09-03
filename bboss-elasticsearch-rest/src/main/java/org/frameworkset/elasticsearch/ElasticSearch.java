@@ -258,7 +258,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 						  extendElasticsearchPropes);
 				restClient.configure(elasticsearchPropes);
 				restClient.init();
-				logger.info("ElasticSearch Transport client started.");
+				logger.info("ElasticSearch rest client started.");
 			}
 		} catch (Exception ex) {
 			logger.error("ElasticSearch Rest Client started failed", ex);

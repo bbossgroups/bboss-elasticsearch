@@ -20,10 +20,14 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
@@ -34,6 +38,7 @@ import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -81,6 +86,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
+	private Map clusterInfo ;
+	private String clusterVersionInfo;
+
+	private String clusterVarcharInfo;
 
 	public Map<String, ESAddress> getAddressMap() {
 		return addressMap;
@@ -177,12 +186,39 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //		this(hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
 //
 //	}
+	private void initVersionInfo(){
+		this.getElasticSearch().getRestClientUtil().discover("/",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
+			@Override
+			public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
+					if(logger.isInfoEnabled())
+					{
+						logger.info("Elasticsearch Server Info:\n"+clusterVarcharInfo);
+					}
+					clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
+					Object version = clusterInfo.get("version");
+					if(version instanceof Map)
+						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + ((Map)version).get("number");
+					else{
+						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + version;
+					}
+				} else {
+
+				}
+				return null;
+			}
+		});
+	}
 	public void init() {
 		//Authorization
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
-		restSeachExecutor = new RestSeachExecutor(headers,this.httpPool);
+		restSeachExecutor = new RestSeachExecutor(headers,this.httpPool,this);
+		initVersionInfo();
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
 			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
@@ -192,6 +228,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			logger.info("Elasticsearch healthCheck disable,you can set elasticsearch.healthCheckInterval=3000 in "+this.elasticSearch.getConfigContainerInfo()+" to enabled healthCheck thread.");
 
 		}
+
 		if(discoverHost) {
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
@@ -411,6 +448,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return executeHttp(path, null,  action, responseHandler) ;
 	}
 
+	public <T> T discover(String path,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+		return discover(path, null,  action, responseHandler) ;
+	}
+
 	private String getPath(String host,String path){
 		String url = path.equals("") || path.startsWith("/")?
 				new StringBuilder().append(host).append(path).toString()
@@ -426,6 +467,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return _executeHttp(path, entity,action,responseHandler,false);
+	}
+
+	/**
+	 *
+	 * @param path
+	 * @param entity
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	private <T> T _executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler,boolean discoverHost) throws ElasticSearchException {
 		int triesCount = 0;
 		T response = null;
 		Throwable e = null;
@@ -474,7 +527,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //					else
 //						throw new java.lang.IllegalArgumentException("not support http action:"+action);
 //				}
-				response = this.restSeachExecutor.executeHttp(url,entity,action,responseHandler);
+				if(!discoverHost) {
+					response = this.restSeachExecutor.executeHttp(url, entity, action, responseHandler);
+				}
+				else {
+					response = this.restSeachExecutor.discoverHost(url, entity, action, responseHandler);
+				}
+
 				e = getException(  responseHandler );
 				break;
 			} catch (HttpHostConnectException ex) {
@@ -486,18 +545,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				} else {
 					break;
 				}
-                
-            } catch (UnknownHostException ex) {
-            	host.setStatus(1);
+
+			} catch (UnknownHostException ex) {
+				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
 					break;
 				}
-                 
-            }
+
+			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(connectTimeoutException);
@@ -543,6 +602,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			throw new ElasticSearchException(e);
 		}
 		return response;
+	}
+	/**
+	 *
+	 * @param path
+	 * @param entity
+	 * @param action get,post,put,delete
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T discover(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+		return _executeHttp(path, entity,action,responseHandler,true);
 	}
 
 	/**
@@ -812,5 +882,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
 			}
 		}
+	}
+
+	public Map getClusterInfo() {
+		return clusterInfo;
+	}
+	public String getClusterVarcharInfo(){
+		return this.clusterVarcharInfo;
+	}
+	public String getClusterVersionInfo(){
+		return this.clusterVersionInfo;
 	}
 }

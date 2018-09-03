@@ -20,6 +20,7 @@ package org.frameworkset.elasticsearch.client;
 
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,6 +37,10 @@ public interface ElasticSearchClient {
 	ClientUtil getClientUtil(IndexNameBuilder indexNameBuilder);
 	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder,String configFile);
 	public void init();
+
+	public Map getClusterInfo() ;
+	public String getClusterVarcharInfo();
+	public String getClusterVersionInfo();
 //	BulkRequestBuilder prepareBulk();
 //
 //	IndexRequestBuilder createIndexRequest(IndexNameBuilder indexNameBuilder, Event event) throws IOException;
