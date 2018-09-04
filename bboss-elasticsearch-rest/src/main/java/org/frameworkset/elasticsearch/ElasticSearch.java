@@ -95,7 +95,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected ElasticSearchClient restClient = null;
 	protected ExecutorService sliceScrollQueryExecutorService;
 	protected int sliceScrollThreadCount = 500;
-	protected int sliceScrollThreadQueue = 1000;
+	protected int sliceScrollThreadQueue = 500;
 
 	protected IndexNameBuilder indexNameBuilder;
 

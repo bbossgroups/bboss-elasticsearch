@@ -119,6 +119,11 @@ public class ElasticSearchHelper {
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.httpPool",configContext,serverName));
 			elasticsearchPropes.put("elasticsearch.discoverHost",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.discoverHost",configContext,"false"));
+
+			elasticsearchPropes.put("elasticsearch.sliceScrollThreadCount",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadCount",configContext,"500"));
+			elasticsearchPropes.put("elasticsearch.sliceScrollThreadQueue",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadQueue",configContext,"500"));
 			final ElasticSearch elasticSearch = new ElasticSearch();
 			if(firstElasticSearch == null)
 				firstElasticSearch = elasticSearch;

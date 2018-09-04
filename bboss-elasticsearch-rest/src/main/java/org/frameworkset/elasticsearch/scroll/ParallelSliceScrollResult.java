@@ -91,20 +91,27 @@ public class ParallelSliceScrollResult<T> implements SliceScrollResultInf<T> {
 			this.scrollHandler.handle(sliceResponse);
 			return this.scrollHandler;
 		}
+		boolean inited = false;
 		try {
 			lockSetSliceResponse.lock();
 			if (this.scrollHandler != null) {
-				this.scrollHandler.handle(sliceResponse);
+				inited = true;
+			}
+			else{
+				useDefaultScrollHandler = true;
+				this.sliceResponse = sliceResponse;
+				this.scrollHandler = new ParallelSliceScrollHandler<T>(sliceResponse);
 				return this.scrollHandler;
 			}
-			useDefaultScrollHandler = true;
-			this.sliceResponse = sliceResponse;
-			this.scrollHandler = new ParallelSliceScrollHandler<T>(sliceResponse);
-			return this.scrollHandler;
+
 		}
 		finally {
 			lockSetSliceResponse.unlock();
 		}
+		if(inited){
+			this.scrollHandler.handle(sliceResponse);
+		}
+		return this.scrollHandler;
 
 	}
 }
