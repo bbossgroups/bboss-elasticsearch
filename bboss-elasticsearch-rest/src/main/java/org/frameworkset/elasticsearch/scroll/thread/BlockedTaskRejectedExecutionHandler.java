@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.scroll.thread;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -33,9 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHandler {
 	private static Logger logger = LoggerFactory.getLogger(BlockedTaskRejectedExecutionHandler.class);
-	private AtomicInteger rejectCounts;
-	public BlockedTaskRejectedExecutionHandler(AtomicInteger rejectCounts){
-		this.rejectCounts = rejectCounts;
+	private AtomicInteger rejectCounts = new AtomicInteger();
+	public BlockedTaskRejectedExecutionHandler(){
 	}
 
 	/**
@@ -50,7 +49,7 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 			int t = counts % 100;
 			if (t == 0) {
 				if(logger.isWarnEnabled())
-					logger.warn(new StringBuilder().append("Task[Import DB Data to Elasticsearch] rejected  ").append(counts).append(" times.").toString());
+					logger.warn(new StringBuilder().append("Task[Slice Scroll Query] rejected  ").append(counts).append(" times.").toString());
 			}
 		}
 //

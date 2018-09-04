@@ -22,6 +22,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ElasticSearchClient;
 import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
+import org.frameworkset.elasticsearch.scroll.thread.ThreadPoolFactory;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,6 +93,9 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected String origineRestServerAddresses;
 	
 	protected ElasticSearchClient restClient = null;
+	protected ExecutorService sliceScrollQueryExecutorService;
+	protected int sliceScrollThreadCount = 500;
+	protected int sliceScrollThreadQueue = 1000;
 
 	protected IndexNameBuilder indexNameBuilder;
 
@@ -188,9 +193,34 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		}
 
 		
-
-		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty(BATCH_SIZE))) {
-			this.batchSize = Integer.parseInt(elasticsearchPropes.getProperty(BATCH_SIZE));
+		String bz = elasticsearchPropes.getProperty(BATCH_SIZE);
+		if (SimpleStringUtil.isNotEmpty(bz)) {
+			try {
+				this.batchSize = Integer.parseInt(bz);
+			}
+			catch (Exception e){
+				logger.warn(bz,e);
+			}
+		}
+//		CLIENT_sliceScrollThreadCount = "elasticsearch.sliceScrollThreadCount";
+//		public static final String CLIENT_sliceScrollThreadQueue
+		String _sliceScrollThreadCount = elasticsearchPropes.getProperty(CLIENT_sliceScrollThreadCount);
+		if (SimpleStringUtil.isNotEmpty(_sliceScrollThreadCount)) {
+			try {
+				this.sliceScrollThreadCount = Integer.parseInt(_sliceScrollThreadCount);
+			}
+			catch (Exception e){
+				logger.warn(_sliceScrollThreadCount,e);
+			}
+		}
+		String _sliceScrollThreadQueue = elasticsearchPropes.getProperty(CLIENT_sliceScrollThreadQueue);
+		if (SimpleStringUtil.isNotEmpty(_sliceScrollThreadQueue)) {
+			try {
+				this.sliceScrollThreadQueue = Integer.parseInt(_sliceScrollThreadQueue);
+			}
+			catch (Exception e){
+				logger.warn(_sliceScrollThreadQueue,e);
+			}
 		}
 		String ttl = elasticsearchPropes.getProperty(TTL);
 		if (SimpleStringUtil.isNotEmpty(ttl)) {
@@ -278,6 +308,9 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if (restClient != null) {
 			restClient.close();
 		}
+		if(this.sliceScrollQueryExecutorService != null){
+			this.sliceScrollQueryExecutorService.shutdown();
+		}
 		 
 	}
 
@@ -331,5 +364,18 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public Properties getExtendElasticsearchPropes() {
 		return extendElasticsearchPropes;
 	}
+	public ExecutorService getSliceScrollQueryExecutorService(){
+		if(sliceScrollQueryExecutorService != null)
+			return sliceScrollQueryExecutorService;
+		synchronized (this) {
+			if(sliceScrollQueryExecutorService != null)
+				return sliceScrollQueryExecutorService;
+			if (this.sliceScrollQueryExecutorService == null) {
+				sliceScrollQueryExecutorService = ThreadPoolFactory.buildThreadPool(this.sliceScrollThreadCount, this.sliceScrollThreadQueue);
+			}
+		}
+		return this.sliceScrollQueryExecutorService;
+	}
+
 
 }

@@ -22,6 +22,19 @@ public class FieldMeta {
 	private DateFormateMeta dateFormateMeta;
 	private Boolean ignore ;
 	private Object value;
+	public FieldMeta(){
+
+	}
+	public FieldMeta(String esFieldName,Object value){
+		this.esFieldName = esFieldName;
+		this.value = value;
+	}
+	public FieldMeta(String esFieldName,DateFormateMeta dateFormat ,Object value){
+		this.esFieldName = esFieldName;
+		this.value = value;
+		this.dateFormateMeta = dateFormat;
+
+	}
 	public String getEsFieldName() {
 		return esFieldName;
 	}

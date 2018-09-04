@@ -91,6 +91,12 @@ public class ElasticSearchSinkConstants {
    */
   public static final String CLIENT_TYPE = "elasticsearch.client";
 
+  /**
+   * The client type used for sending bulks to ElasticSearch
+   */
+  public static final String CLIENT_sliceScrollThreadCount = "elasticsearch.sliceScrollThreadCount";
+  public static final String CLIENT_sliceScrollThreadQueue = "elasticsearch.sliceScrollThreadQueue";
+
 
   /**
    * The client prefix to extract the configuration that will be passed to

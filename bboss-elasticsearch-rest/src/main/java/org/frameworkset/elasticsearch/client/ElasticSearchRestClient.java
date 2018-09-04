@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 //import org.apache.http.client.HttpClient;
 //import org.apache.http.impl.client.DefaultHttpClient;
@@ -892,5 +893,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 	public String getClusterVersionInfo(){
 		return this.clusterVersionInfo;
+	}
+	public ExecutorService getSliceScrollQueryExecutorService(){
+		return this.elasticSearch.getSliceScrollQueryExecutorService();
 	}
 }

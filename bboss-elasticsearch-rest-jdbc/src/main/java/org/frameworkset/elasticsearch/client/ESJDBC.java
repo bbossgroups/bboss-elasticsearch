@@ -37,6 +37,7 @@ public class ESJDBC extends JDBCResultSet {
 	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
 	}
+	private ImportBuilder importBuilder;
 	/**
 	 * use parallel import:
 	 *  true yes
@@ -69,6 +70,7 @@ public class ESJDBC extends JDBCResultSet {
 	 */
 	private Map<String,FieldMeta> fieldMetaMap;
 	private List<FieldMeta> fieldValues;
+	private DataRefactor dataRefactor;
 	private String sql;
 	private String dbName;
 
@@ -408,4 +410,96 @@ public class ESJDBC extends JDBCResultSet {
 	public void setFieldValues(List<FieldMeta> fieldValues) {
 		this.fieldValues = fieldValues;
 	}
+
+	public DataRefactor getDataRefactor() {
+		return dataRefactor;
+	}
+
+	public void setDataRefactor(DataRefactor dataRefactor) {
+		this.dataRefactor = dataRefactor;
+	}
+
+	public Object getValue(  int i, String colName) throws Exception
+	{
+		Object value = this.resultSet.getObject(i+1);
+		return value;
+	}
+
+	public Object getValue( String colName) throws Exception
+	{
+		Object value = this.resultSet.getObject(colName);
+		return value;
+	}
+
+	public void refactorData() throws Exception {
+		if(this.dataRefactor != null){
+
+			dataRefactor.refactor(this);
+
+		}
+	}
+
+	public ImportBuilder getImportBuilder() {
+		return importBuilder;
+	}
+
+	public void setImportBuilder(ImportBuilder importBuilder) {
+		this.importBuilder = importBuilder;
+	}
+
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 */
+	public ESJDBC addFieldValue(String fieldName,Object value){
+		this.importBuilder.addFieldValue(fieldName,value);
+		return this;
+	}
+
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param dateFormat
+	 * @param value
+	 * @return
+	 */
+	public ESJDBC addFieldValue(String fieldName,String dateFormat,Object value){
+		this.importBuilder.addFieldValue(fieldName,dateFormat,value);
+		return this;
+	}
+
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param dateFormat
+	 * @param value
+	 * @return
+	 */
+	public ESJDBC addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone){
+		this.importBuilder.addFieldValue(fieldName,dateFormat,value,  locale,  timeZone);
+		return this;
+	}
+
+	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName){
+		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName);
+		return this;
+	}
+
+	public ESJDBC addIgnoreFieldMapping(String dbColumnName){
+		this.importBuilder.addIgnoreFieldMapping(dbColumnName);
+		return this;
+	}
+
+	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName,String dateFormat){
+		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat);
+		return this;
+	}
+
+	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
+		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat,locale,  timeZone);
+		return this;
+	}
+
 }

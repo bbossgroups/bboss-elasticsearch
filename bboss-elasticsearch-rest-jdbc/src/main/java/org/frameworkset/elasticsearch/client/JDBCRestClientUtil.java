@@ -345,26 +345,26 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 		return value;
 	}
-	private static Object getValue(  ResultSet row, int i, String colName) throws Exception
-	{
-		Object value = row.getObject(i+1);
+//	private static Object getValue(  ResultSet row, int i, String colName) throws Exception
+//	{
+//		Object value = row.getObject(i+1);
+//
+//
+//		return value;
+//	}
 
-
-		return value;
-	}
-
-	private static Object getFileValue(ESJDBC jdbcResultSet,String fileName) throws SQLException {
-		if(fileName != null){
-			Object id = jdbcResultSet.getResultSet().getObject(fileName);
-			return  id;
-		}
-		return null;
-	}
+//	private static Object getFileValue(ESJDBC jdbcResultSet,String fileName) throws SQLException {
+//		if(fileName != null){
+//			Object id = jdbcResultSet.getResultSet().getObject(fileName);
+//			return  id;
+//		}
+//		return null;
+//	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
 
-		Object id = getFileValue(jdbcResultSet,jdbcResultSet.getEsIdField());
-		Object parentId = getFileValue(jdbcResultSet,jdbcResultSet.getEsParentIdField());
-		Object routing = getFileValue(jdbcResultSet,jdbcResultSet.getRoutingField());
+		Object id = jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
+		Object parentId = jdbcResultSet.getValue(jdbcResultSet.getEsParentIdField());
+		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
 		if(routing == null)
 			routing = jdbcResultSet.getRoutingValue();
 		Object esRetryOnConflict = jdbcResultSet.getEsRetryOnConflict();
@@ -401,7 +401,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
-			Object version = getFileValue(esjdbc,esjdbc.getEsVersionField());
+			Object version = esjdbc.getValue(esjdbc.getEsVersionField());
 			if (version != null) {
 
 				writer.write(",\"_version\":");
@@ -445,7 +445,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write(",\"_retry_on_conflict\":");
 					writer.write(String.valueOf(esRetryOnConflict));
 				}
-				Object version = getFileValue(esjdbc,esjdbc.getEsVersionField());
+				Object version = esjdbc.getValue(esjdbc.getEsVersionField());
 				if (version != null) {
 
 					writer.write(",\"_version\":");
@@ -470,6 +470,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 
 		if (jdbcResultSet != null) {
+			jdbcResultSet.refactorData();
 			BuildTool.buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,action);
 
 			if(!action.equals("update")) {
@@ -507,6 +508,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		if(useJavaName == null)
 			useJavaName = true;
 		boolean hasSeted = false;
+
 		for(int i =0; i < counts; i++)
 		{
 			String colName = metaData.getColumnLabelUpperByIndex(i);
@@ -533,7 +535,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.write(javaName);
 			writer.write("\":");
 //			int colType = metaData.getColumnTypeByIndex(i);
-			Object value = getValue(      esjdbc.getResultSet(),  i,  colName);
+			Object value = esjdbc.getValue(     i,  colName);
 			if(value != null) {
 				if (value instanceof String) {
 					writer.write("\"");

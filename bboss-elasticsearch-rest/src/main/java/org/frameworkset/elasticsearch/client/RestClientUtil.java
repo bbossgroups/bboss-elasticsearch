@@ -11,6 +11,8 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.suggest.*;
 import org.frameworkset.elasticsearch.handler.*;
+import org.frameworkset.elasticsearch.scroll.DefualtScrollHandler;
+import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.json.JsonTypeReference;
@@ -26,6 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @see https://my.oschina.net/bboss/blog/1556866
+ */
 public class RestClientUtil extends ClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(RestClientUtil.class);
 	protected ElasticSearchRestClient client;
@@ -1279,8 +1284,30 @@ public class RestClientUtil extends ClientUtil{
 
 	public long countAll(String index)  throws ElasticSearchException{
 		String queryAll = "{\"query\": {\"match_all\": {}}}";
-		return this.count(index,queryAll);
+		MapRestResponse searchResult = this.client.executeRequest(new StringBuilder().append(index).append("/_count").toString(),
+				queryAll,   new ElasticSearchMapResponseHandler(  ));
+//		if(searchResult instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
+//		}
+		return searchResult.getCount();
 	}
+
+	/**
+	 * 检索索引所有数据
+	 * @param index
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchAll(String index,  Class<T> type) throws ElasticSearchException{
+		String queryAll = "{\"query\": {\"match_all\": {}}}";
+//		return this.searchList(new StringBuilder().append(index).append("/_search").toString(),queryAll,type);
+
+		RestResponse result = this.client.executeRequest(new StringBuilder().append(index).append("/_search").toString(),queryAll,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildESDatas(result,type);
+	}
+
 
 	@Override
 	public TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException {
@@ -1462,6 +1489,280 @@ public class RestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchList(String path, String entity, Class<T> type) throws ElasticSearchException{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
+	}
+
+	/**
+	 * 一次性返回scroll检索结果
+	 * @param path
+	 * @param dslTemplate
+	 * @param scroll
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Map params,Class<T> type) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+
+	/**
+	 * scroll检索,每次检索结果列表交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate
+	 * @param scroll
+	 * @param type
+	 * @param scrollHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Map params,Class<T> type,ScrollHandler<T> scrollHandler)
+			throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+
+
+
+	/**
+	 * 一次性返回scroll检索结果
+	 * @param path like agentstat/_search
+	 * @param entity
+	 * @param scroll
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scroll(String path,String entity,String scroll ,Class<T> type) throws ElasticSearchException{
+		return scroll(path,entity,  scroll , type,(ScrollHandler<T>)null);
+
+	}
+
+
+	/**
+	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
+	 * @param path
+	 * @param entity
+	 * @param scroll
+	 * @param type
+	 * @param scrollHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scroll(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		try {
+			path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
+					new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
+
+			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+			ESDatas<T> response =  ResultUtil.buildESDatas(result,type);
+			boolean useDefaultScrollHandler = false;
+			if(scrollHandler == null){
+				scrollHandler = new DefualtScrollHandler<T>(response);
+				useDefaultScrollHandler = true;
+			}
+			else{
+				scrollHandler.handle(response);
+			}
+			List<T> datas = response.getDatas();//第一页数据
+
+			List<String> scrollIds = new ArrayList<>();//用于记录每次scroll的scrollid，便于检索完毕后清除
+//			long totalSize = response.getTotalSize();//总记录数
+			String scrollId = response.getScrollId();//第一次的scrollid
+			if (scrollId != null)
+				scrollIds.add(scrollId);
+//		System.out.println("totalSize:"+totalSize);
+//		System.out.println("scrollId:"+scrollId);
+			if (datas != null && datas.size() > 0) {//每页1000条记录，通过迭代scrollid，遍历scroll分页结果
+				ESDatas<T> _response = null;
+				List<T> _datas = null;
+				do {
+
+					_response = searchScroll(scroll, scrollId, type);
+					scrollId = _response.getScrollId();//每页的scrollid
+					if (scrollId != null)
+						scrollIds.add(scrollId);
+					_datas = _response.getDatas();//每页的纪录数
+					if (_datas == null || _datas.size() == 0) {
+						break;
+					} else {
+						scrollHandler.handle(_response);
+					}
+				} while (true);
+			}
+
+			//清除scroll上下文信息,虽然说超过1分钟后，scrollid会自动失效，
+			//但是手动删除不用的scrollid，是一个好习惯
+			if (scrollIds.size() > 0) {
+				deleteScrolls(scrollIds);
+			}
+			if(!useDefaultScrollHandler)//结果自行处理，所以清空默认结果
+				response.setDatas(null);
+			return response;
+		}
+		catch (ElasticSearchException e){
+			throw e;
+		}
+		catch (Exception e){
+			throw new ElasticSearchException(e);
+		}
+	}
+	/**
+	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate here is a example dsltemplate: must contain id,max varialbe
+	 *    <property name="scrollSliceQuery">
+	 *         <![CDATA[
+	 *          {
+	 *            "slice": {
+	 *                 "id": #[id],
+	 *                 "max": #[max]
+	 *             },
+	 *             "size":#[size],
+	 *             "query": {
+	 *                 "term" : {
+	 *                     "gc.jvmGcOldCount" : 3
+	 *                 }
+	 *             }
+	 *         }
+	 *         ]]>
+	 *     </property>
+	 * @param scroll
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type,boolean parallel) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+
+	/**
+	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate here is a example dsltemplate: must contain id,max varialbe
+	 *    <property name="scrollSliceQuery">
+	 *         <![CDATA[
+	 *          {
+	 *            "slice": {
+	 *                 "id": #[id],
+	 *                 "max": #[max]
+	 *             },
+	 *             "size":#[size],
+	 *             "query": {
+	 *                 "term" : {
+	 *                     "gc.jvmGcOldCount" : 3
+	 *                 }
+	 *             }
+	 *         }
+	 *         ]]>
+	 *     </property>
+	 * @param scroll
+	 * @param type
+	 * @param scrollHandler 每次检索结果会被异步交给handle来处理
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type,
+									  ScrollHandler<T> scrollHandler,boolean parallel) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+	/**
+	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate
+	 * @param scroll
+	 * @param type
+	 * @param scrollHandler
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+	/**
+	 * 一次性返回scroll检索结果
+	 * @param path
+	 * @param dslTemplate
+	 * @param scroll
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+	/**
+	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate here is a example dsltemplate: must contain id,max varialbe
+	 *    <property name="scrollSliceQuery">
+	 *         <![CDATA[
+	 *          {
+	 *            "slice": {
+	 *                 "id": #[id],
+	 *                 "max": #[max]
+	 *             },
+	 *             "size":#[size],
+	 *             "query": {
+	 *                 "term" : {
+	 *                     "gc.jvmGcOldCount" : 3
+	 *                 }
+	 *             }
+	 *         }
+	 *         ]]>
+	 *     </property>
+	 * @param scroll
+	 * @param type
+	 * @param scrollHandler 每次检索结果会被异步交给handle来处理
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Object params ,int max,
+									  final String scroll  ,final Class<T> type,
+									  ScrollHandler<T> scrollHandler,boolean parallel) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+	/**
+	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * @param path
+	 * @param dslTemplate here is a example dsltemplate: must contain id,max varialbe
+	 *    <property name="scrollSliceQuery">
+	 *         <![CDATA[
+	 *          {
+	 *            "slice": {
+	 *                 "id": #[id],
+	 *                 "max": #[max]
+	 *             },
+	 *             "size":#[size],
+	 *             "query": {
+	 *                 "term" : {
+	 *                     "gc.jvmGcOldCount" : 3
+	 *                 }
+	 *             }
+	 *         }
+	 *         ]]>
+	 *     </property>
+	 * @param scroll
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Object params ,int max,
+									  final String scroll  ,final Class<T> type,boolean parallel) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
 	}
 
 	public <T> T searchObject(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {

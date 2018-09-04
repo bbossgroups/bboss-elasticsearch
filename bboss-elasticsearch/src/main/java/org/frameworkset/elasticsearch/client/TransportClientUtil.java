@@ -16,6 +16,7 @@ import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
+import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 
 import java.io.IOException;
@@ -777,7 +778,52 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> ESDatas<T> searchAll(String index, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> ESDatas<T> searchScroll(String scroll, String scrollId, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Object params, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Map params, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Map params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Object params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, ScrollHandler<T> scrollHandler, boolean parallel) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, boolean parallel) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String entity, String scroll, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scroll(String path, String entity, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
 		return null;
 	}
 

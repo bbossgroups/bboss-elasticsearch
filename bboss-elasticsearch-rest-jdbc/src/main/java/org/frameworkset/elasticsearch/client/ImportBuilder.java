@@ -60,7 +60,7 @@ public class ImportBuilder {
 	private Map<String,FieldMeta> fieldMetaMap = new HashMap<String,FieldMeta>();
 
 	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
-
+	private DataRefactor dataRefactor;
 	/**
 	 * use parallel import:
 	 *  true yes
@@ -94,7 +94,7 @@ public class ImportBuilder {
 		fieldMeta.setDbColumnName(dbColumnName);
 		fieldMeta.setEsFieldName(esFieldName);
 		fieldMeta.setIgnore(false);
-		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat));
+		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,  timeZone));
 		return fieldMeta;
 	}
 
@@ -226,6 +226,7 @@ public class ImportBuilder {
 	}
 	private ESJDBC buildESConfig(){
 		ESJDBC esjdbcResultSet = new ESJDBC();
+		esjdbcResultSet.setImportBuilder(this);
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());
 //		esjdbcResultSet.setResultSet(resultSet);
 		esjdbcResultSet.setDateFormat(dateFormat);
@@ -244,6 +245,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setUseJavaName(this.useJavaName);
 		esjdbcResultSet.setFieldMetaMap(this.fieldMetaMap);
 		esjdbcResultSet.setFieldValues(fieldValues);
+		esjdbcResultSet.setDataRefactor(this.dataRefactor);
 		esjdbcResultSet.setSql(this.sql);
 		esjdbcResultSet.setDbName(dbName);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
@@ -411,8 +413,33 @@ public class ImportBuilder {
 		FieldMeta fieldMeta = new FieldMeta();
 		fieldMeta.setEsFieldName(fieldName);
 		fieldMeta.setValue(value);
-		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone));
+		fieldMeta.setDateFormateMeta(buildDateFormateMeta( dateFormat));
 		this.fieldValues.add(fieldMeta);
+		return this;
+	}
+	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone){
+		FieldMeta fieldMeta = new FieldMeta();
+		fieldMeta.setEsFieldName(fieldName);
+		fieldMeta.setValue(value);
+		fieldMeta.setDateFormateMeta(buildDateFormateMeta( dateFormat,  locale,  timeZone));
+		this.fieldValues.add(fieldMeta);
+		return this;
+	}
+
+	public DateFormateMeta buildDateFormateMeta(String dateFormat){
+		return dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone);
+	}
+
+	public DateFormateMeta buildDateFormateMeta(String dateFormat,String locale,String timeZone){
+		return dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone);
+	}
+
+	public DataRefactor getDataRefactor() {
+		return dataRefactor;
+	}
+
+	public ImportBuilder setDataRefactor(DataRefactor dataRefactor) {
+		this.dataRefactor = dataRefactor;
 		return this;
 	}
 }
