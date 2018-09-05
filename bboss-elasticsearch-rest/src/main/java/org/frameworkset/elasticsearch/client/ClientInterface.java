@@ -1126,8 +1126,8 @@ public interface ClientInterface {
 	 * }
 	 * }
 	 * }
-	 *
-	 * @param indexMapping
+	 * @param indexName 索引表名称
+	 * @param indexMapping 索引mapping dsl名称
 	 * @return
 	 * @throws ElasticSearchException
 	 */
