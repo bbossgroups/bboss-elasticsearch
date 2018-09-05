@@ -27,6 +27,7 @@ public abstract class BaseESProperties {
 	private Http http;
 	private Db db;
 
+
 	private Dslfile dslfile;
 	public Dslfile getDslfile() {
 		return dslfile;
@@ -301,12 +302,15 @@ public abstract class BaseESProperties {
 
 
 	}
+
 	public static class Elasticsearch{
 		private Rest rest;
 		private String dateFormat;
 		private String timeZone;
 		private String ttl;
 		private String showTemplate;
+		private String sliceScrollThreadCount;
+		private String sliceScrollThreadQueue;
 		private String discoverHost;
 		public Rest getRest() {
 			return rest;
@@ -354,6 +358,22 @@ public abstract class BaseESProperties {
 
 		public void setDiscoverHost(String discoverHost) {
 			this.discoverHost = discoverHost;
+		}
+
+		public String getSliceScrollThreadQueue() {
+			return sliceScrollThreadQueue;
+		}
+
+		public void setSliceScrollThreadQueue(String sliceScrollThreadQueue) {
+			this.sliceScrollThreadQueue = sliceScrollThreadQueue;
+		}
+
+		public String getSliceScrollThreadCount() {
+			return sliceScrollThreadCount;
+		}
+
+		public void setSliceScrollThreadCount(String sliceScrollThreadCount) {
+			this.sliceScrollThreadCount = sliceScrollThreadCount;
 		}
 	}
 	public static class Dslfile{
@@ -470,6 +490,13 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDiscoverHost()))
 				properties.put(_name+"elasticsearch.discoverHost",this.getElasticsearch().getDiscoverHost());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadCount()))
+				properties.put(_name+"elasticsearch.sliceScrollThreadCount",this.getElasticsearch().getSliceScrollThreadCount());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadQueue()))
+				properties.put(_name+"elasticsearch.sliceScrollThreadQueue",this.getElasticsearch().getSliceScrollThreadQueue());
+
 		}
 
 

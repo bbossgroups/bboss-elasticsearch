@@ -27,22 +27,21 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0
  */
 public abstract class ErrorWrapper {
+	/**
+	 * see https://www.cnblogs.com/dolphin0520/p/3920373.html
+	 */
 	protected volatile Exception error;
 	private Lock lock = new ReentrantLock();
 	public void setError(Exception error) {
-		if(this.error != null){//only set the first exception
-			return;
-		}
-		try {
-			lock.lock();
-			if(this.error != null){//only set the first exception
-				return;
+		if(this.error == null) {//only set the first exception
+			try {
+				lock.lock();
+				if (this.error == null) {//only set the first exception
+					this.error = error;
+				}
+			} finally {
+				lock.unlock();
 			}
-			this.error = error;
-
-		}
-		finally {
-			lock.unlock();
 		}
 	}
 	/**
