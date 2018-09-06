@@ -84,8 +84,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.flush();
 				String datas = builder.toString();
 				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo)));
-
+				if(logger.isInfoEnabled())
+					logger.info("submit tasks:"+(taskNo+1));
 			}
+			else{
+				if(logger.isInfoEnabled())
+					logger.info("submit tasks:"+(taskNo));
+			}
+
 		} catch (SQLException e) {
 			throw new ElasticSearchException(e);
 
@@ -199,81 +205,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				else{
 					return this.batchExecute(indexName,indexType,batchsize,refreshOption);
 				}
-				/**
-				int count = 0;
-				StringBuilder builder = new StringBuilder();
-				BBossStringWriter writer = new BBossStringWriter(builder);
-				String ret = null;
-				ExecutorService service = null;
-				List<Future> tasks = null;
-				if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
-					service = jdbcResultSet.buildThreadPool();
-					tasks = new ArrayList<Future>();
-				}
-				int taskNo = 0;
-				try {		 
 
-					while (jdbcResultSet.next()) {
-						 	if(this.error != null && !jdbcResultSet.isContinueOnError()) {
-								throw error;
-							}
-							evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
-							count++;
-							if (count == batchsize) {
-								writer.flush();
-								String datas = builder.toString();
-								builder.setLength(0);
-								writer.close();
-								writer = new BBossStringWriter(builder);
-								count = 0;
-								if (service != null) {
-									tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo)));
-									taskNo ++;
-								} else {
-									if (refreshOption == null)
-										ret = this.clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-									else
-										ret = this.clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-								}
-							}
-						
-					}
-					if (count > 0) {
-						if(this.error != null && !jdbcResultSet.isContinueOnError()) {
-							throw error;
-						}
-						writer.flush();
-						String datas = builder.toString();
-						if (service != null) {
-							tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo)));
-						} else {
-							if (refreshOption == null)
-								clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-							else
-								clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-						}
-					}
-				} catch (SQLException e) {
-					throw new ElasticSearchException(e);
-				 
-				} catch (ElasticSearchException e) {
-					throw e;
-				} catch (Exception e) {
-					throw new ElasticSearchException(e);
-				}
-				finally {
-					if(service != null) {
-						waitTasksComplete(  jdbcResultSet, tasks,  service);
-					}
-					try {
-						writer.close();
-					} catch (Exception e) {
-
-					}
-				}
-
-				return ret;
-				 */
 			}
 		}
 		finally {
@@ -284,9 +216,11 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,final ExecutorService service){
 		if(!jdbcResultSet.isAsyn()) {
+			int count = 0;
 			for (Future future : tasks) {
 				try {
 					future.get();
+					count ++;
 				} catch (ExecutionException e) {
 					if(e.getCause() != null)
 						logger.error("",e.getCause());
@@ -296,15 +230,18 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					logger.error("",e);
 				}
 			}
+			logger.info("complete tasks:"+count);
 			service.shutdown();
 		}
 		else{
 			Thread completeThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
+					int count = 0;
 					for (Future future : tasks) {
 						try {
 							future.get();
+							count ++;
 						} catch (ExecutionException e) {
 							if(e.getCause() != null)
 								logger.error("",e.getCause());
@@ -314,6 +251,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 							logger.error("",e);
 						}
 					}
+					logger.info("complete tasks:"+count);
 					service.shutdown();
 				}
 			});
@@ -345,25 +283,24 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 		return value;
 	}
-//	private static Object getValue(  ResultSet row, int i, String colName) throws Exception
-//	{
-//		Object value = row.getObject(i+1);
-//
-//
-//		return value;
-//	}
 
-//	private static Object getFileValue(ESJDBC jdbcResultSet,String fileName) throws SQLException {
-//		if(fileName != null){
-//			Object id = jdbcResultSet.getResultSet().getObject(fileName);
-//			return  id;
-//		}
-//		return null;
-//	}
+	private static Object getEsId(ESJDBC jdbcResultSet) throws Exception {
+		if(jdbcResultSet.getEsIdField() != null)
+			return jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
+		return null;
+	}
+	private static Object getEsParentId(ESJDBC jdbcResultSet) throws Exception {
+		if(jdbcResultSet.getEsParentIdField() != null) {
+			return jdbcResultSet.getValue(jdbcResultSet.getEsParentIdField());
+		}
+		else
+			return jdbcResultSet.getEsParentIdValue();
+	}
+
 	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
 
-		Object id = jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
-		Object parentId = jdbcResultSet.getValue(jdbcResultSet.getEsParentIdField());
+		Object id = getEsId(jdbcResultSet) ;
+		Object parentId = getEsParentId(  jdbcResultSet);
 		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
 		if(routing == null)
 			routing = jdbcResultSet.getRoutingValue();
@@ -372,7 +309,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict);
 	}
-
+	private static Object getVersion(ESJDBC esjdbc) throws Exception {
+		Object version = esjdbc.getEsVersionField() !=null? esjdbc.getValue(esjdbc.getEsVersionField()):esjdbc.getEsVersionValue();
+		return version;
+	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC esjdbc,String action,
 								 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws Exception {
 
@@ -401,7 +341,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
-			Object version = esjdbc.getValue(esjdbc.getEsVersionField());
+			Object version = getVersion(  esjdbc);
+
 			if (version != null) {
 
 				writer.write(",\"_version\":");
@@ -445,7 +386,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write(",\"_retry_on_conflict\":");
 					writer.write(String.valueOf(esRetryOnConflict));
 				}
-				Object version = esjdbc.getValue(esjdbc.getEsVersionField());
+				Object version = getVersion(  esjdbc);
 				if (version != null) {
 
 					writer.write(",\"_version\":");
@@ -471,7 +412,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		if (jdbcResultSet != null) {
 			jdbcResultSet.refactorData();
-			BuildTool.buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,action);
+			buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,action);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
