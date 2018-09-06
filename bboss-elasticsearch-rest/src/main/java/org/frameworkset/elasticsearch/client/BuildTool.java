@@ -18,7 +18,6 @@ import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
-import org.frameworkset.elasticsearch.util.ESJDBCResultSet;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.ClassUtil;
 
@@ -191,16 +190,7 @@ public abstract class BuildTool {
 
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBCResultSet params,String action) throws IOException {
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
-		Object id = getId(params,beanInfo);
-		Object parentId = getParentId(params,beanInfo);
-		Object routing = getRouting(params,beanInfo);
-		Object esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
 
-
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
-	}
 
 	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey) throws IOException {
 //		Object id = docIdKey != null ?params.get(docIdKey):null;
