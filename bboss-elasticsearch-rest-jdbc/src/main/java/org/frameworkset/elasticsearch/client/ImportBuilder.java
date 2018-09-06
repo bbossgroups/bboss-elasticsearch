@@ -44,12 +44,14 @@ public class ImportBuilder {
 	private String indexType;
 	private String esIdField;
 	private String esParentIdField;
+	private String esParentIdValue;
 	private String routingField;
 	private String routingValue;
 	private Boolean esDocAsUpsert;
 	private Integer esRetryOnConflict;
 	private Boolean esReturnSource;
 	private String esVersionField;
+	private Object esVersionValue;
 	private String esVersionType;
 	private Boolean useJavaName;
 	private String dateFormat;
@@ -57,6 +59,119 @@ public class ImportBuilder {
 	private String timeZone;
 	private ResultSet resultSet;
 	private StatementInfo statementInfo;
+
+	public boolean isFreezen() {
+		return freezen;
+	}
+
+	public void setFreezen(boolean freezen) {
+		this.freezen = freezen;
+	}
+
+	public String getSql() {
+		return sql;
+	}
+
+	public String getDbName() {
+		return dbName;
+	}
+
+	public String getDbDriver() {
+		return dbDriver;
+	}
+
+	public String getDbUrl() {
+		return dbUrl;
+	}
+
+	public String getDbUser() {
+		return dbUser;
+	}
+
+	public String getDbPassword() {
+		return dbPassword;
+	}
+
+	public String getValidateSQL() {
+		return validateSQL;
+	}
+
+	public boolean isUsePool() {
+		return usePool;
+	}
+
+	public String getRefreshOption() {
+		return refreshOption;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public String getIndex() {
+		return index;
+	}
+
+	public String getIndexType() {
+		return indexType;
+	}
+
+	public String getEsIdField() {
+		return esIdField;
+	}
+
+	public String getEsParentIdField() {
+		return esParentIdField;
+	}
+
+	public String getRoutingField() {
+		return routingField;
+	}
+
+	public String getRoutingValue() {
+		return routingValue;
+	}
+
+	public Boolean getEsDocAsUpsert() {
+		return esDocAsUpsert;
+	}
+
+	public Integer getEsRetryOnConflict() {
+		return esRetryOnConflict;
+	}
+
+	public Boolean getEsReturnSource() {
+		return esReturnSource;
+	}
+
+	public String getEsVersionField() {
+		return esVersionField;
+	}
+
+	public String getEsVersionType() {
+		return esVersionType;
+	}
+
+	public Boolean getUseJavaName() {
+		return useJavaName;
+	}
+
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public boolean isContinueOnError() {
+		return continueOnError;
+	}
+
 	private Map<String,FieldMeta> fieldMetaMap = new HashMap<String,FieldMeta>();
 
 	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
@@ -235,9 +350,11 @@ public class ImportBuilder {
 		esjdbcResultSet.setEsDocAsUpsert(this.esDocAsUpsert);
 		esjdbcResultSet.setEsIdField(this.esIdField);
 		esjdbcResultSet.setEsParentIdField(esParentIdField);
+		esjdbcResultSet.setEsParentIdValue(esParentIdValue);
 		esjdbcResultSet.setEsRetryOnConflict(esRetryOnConflict);
 		esjdbcResultSet.setEsReturnSource(esReturnSource);
 		esjdbcResultSet.setEsVersionField(esVersionField);
+		esjdbcResultSet.setEsVersionValue(esVersionValue);
 		esjdbcResultSet.setEsVersionType(esVersionType);
 
 		esjdbcResultSet.setRoutingField(this.routingField);
@@ -441,5 +558,21 @@ public class ImportBuilder {
 	public ImportBuilder setDataRefactor(DataRefactor dataRefactor) {
 		this.dataRefactor = dataRefactor;
 		return this;
+	}
+
+	public String getEsParentIdValue() {
+		return esParentIdValue;
+	}
+
+	public void setEsParentIdValue(String esParentIdValue) {
+		this.esParentIdValue = esParentIdValue;
+	}
+
+	public Object getEsVersionValue() {
+		return esVersionValue;
+	}
+
+	public void setEsVersionValue(Object esVersionValue) {
+		this.esVersionValue = esVersionValue;
 	}
 }

@@ -45,10 +45,9 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 	@Override
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
 		int counts = rejectCounts.incrementAndGet();
-		if(logger.isInfoEnabled()) {
+		if(logger.isWarnEnabled()) {
 			int t = counts % 100;
 			if (t == 0) {
-				if(logger.isWarnEnabled())
 					logger.warn(new StringBuilder().append("Task[Slice Scroll Query] rejected  ").append(counts).append(" times.").toString());
 			}
 		}

@@ -57,10 +57,23 @@ public class TaskCall implements Runnable {
 				info.append("Task[").append(this.taskNo).append("] starting ......");
 				logger.debug(info.toString());
 			}
-			if (refreshOption == null)
-				clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-			else
-				clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+			if(logger.isDebugEnabled()) {
+				if (refreshOption == null) {
+					String data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+					logger.debug(data);
+				} else {
+					String data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+					logger.debug(data);
+				}
+			}
+			else{
+				if (refreshOption == null) {
+					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+				} else {
+					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+				}
+			}
+
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
@@ -70,7 +83,13 @@ public class TaskCall implements Runnable {
 				info.append("Task[").append(this.taskNo).append("] failed,take ").append((end - start)).append("毫秒");
 				logger.debug(info.toString());
 			}
-			throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Failed").toString(),e);
+			if(!errorWrapper.getESJDBC().isContinueOnError())
+				throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed").toString(),e);
+			else
+			{
+				if(logger.isErrorEnabled())
+					logger.error(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed,but continue On Error!").toString(),e);
+			}
 		}
 		if(logger.isDebugEnabled()) {
 			long end = System.currentTimeMillis();

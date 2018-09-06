@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import org.frameworkset.elasticsearch.serial.SerialUtil;
+import org.frameworkset.elasticsearch.util.ESJDBCResultSet;
 import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ESJDBC extends JDBCResultSet {
+public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	public String getApplicationPropertiesFile() {
 		return applicationPropertiesFile;
@@ -53,12 +54,14 @@ public class ESJDBC extends JDBCResultSet {
 	private boolean usePool = false;
 	private String esIdField;
 	private String esParentIdField;
+	private String esParentIdValue;
 	private String routingField;
 	private String routingValue;
 	private Boolean esDocAsUpsert;
 	private Integer esRetryOnConflict;
 	private Boolean esReturnSource;
 	private String esVersionField;
+	private Object esVersionValue;
 	private String esVersionType;
 	private Boolean useJavaName;
 	private String dateFormat;
@@ -427,6 +430,8 @@ public class ESJDBC extends JDBCResultSet {
 
 	public Object getValue( String colName) throws Exception
 	{
+		if(colName == null)
+			return null;
 		Object value = this.resultSet.getObject(colName);
 		return value;
 	}
@@ -500,6 +505,24 @@ public class ESJDBC extends JDBCResultSet {
 	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
 		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat,locale,  timeZone);
 		return this;
+	}
+
+	@Override
+	public String getEsParentIdValue() {
+		return esParentIdValue;
+	}
+
+	public void setEsParentIdValue(String esParentIdValue) {
+		this.esParentIdValue = esParentIdValue;
+	}
+
+	@Override
+	public Object getEsVersionValue() {
+		return esVersionValue;
+	}
+
+	public void setEsVersionValue(Object esVersionValue) {
+		this.esVersionValue = esVersionValue;
 	}
 
 }
