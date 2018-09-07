@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.handler.ESVoidResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,44 @@ public class TaskCall implements Runnable {
 		this.taskNo = taskNo;
 	}
 
+	public static String call(String refreshOption,ClientInterface clientInterface,String datas,ESJDBC esjdbc){
+		if(esjdbc.isDebugResponse()) {
+			String data = null;
+			if (refreshOption == null) {
+				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+				logger.info(data);
+			} else {
+				data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+				logger.info(data);
+			}
+			return data;
+		}
+		else{
+			if(esjdbc.isDiscardBulkResponse()) {
+				ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
+				if (refreshOption == null) {
+					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
+				} else {
+					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
+				}
+				if(esVoidResponseHandler.getElasticSearchException() != null)
+					throw esVoidResponseHandler.getElasticSearchException();
+				return null;
+			}
+			else{
+				String data = null;
+				if (refreshOption == null) {
+					data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
 
+				} else {
+					data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+				}
+				return data;
+			}
+
+
+		}
+	}
 	@Override
 	public void run()   {
 		if(!errorWrapper.assertCondition()) {
@@ -57,22 +95,23 @@ public class TaskCall implements Runnable {
 				info.append("Task[").append(this.taskNo).append("] starting ......");
 				logger.debug(info.toString());
 			}
-			if(logger.isDebugEnabled()) {
-				if (refreshOption == null) {
-					String data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-					logger.debug(data);
-				} else {
-					String data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-					logger.debug(data);
-				}
-			}
-			else{
-				if (refreshOption == null) {
-					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-				} else {
-					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-				}
-			}
+//			if(logger.isDebugEnabled()) {
+//				if (refreshOption == null) {
+//					String data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+//					logger.debug(data);
+//				} else {
+//					String data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+//					logger.debug(data);
+//				}
+//			}
+//			else{
+//				if (refreshOption == null) {
+//					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+//				} else {
+//					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+//				}
+//			}
+			call(refreshOption,clientInterface,datas,errorWrapper.getESJDBC());
 
 		}
 		catch (Exception e){

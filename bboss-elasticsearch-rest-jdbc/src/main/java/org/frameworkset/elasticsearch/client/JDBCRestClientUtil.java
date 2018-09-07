@@ -138,10 +138,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer = new BBossStringWriter(builder);
 					count = 0;
 					taskNo ++;
-					if (refreshOption == null)
-						ret = this.clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-					else
-						ret = this.clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+
+					ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
 
 				}
 
@@ -149,10 +147,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if (count > 0) {
 				writer.flush();
 				String datas = builder.toString();
-				if (refreshOption == null)
-					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-				else
-					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+
+				ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
 
 			}
 		} catch (SQLException e) {
@@ -194,10 +190,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					throw new ElasticSearchException(e);
 				}
 				writer.flush();
-				if (refreshOption == null)
-					return this.clientInterface.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-				else
-					return this.clientInterface.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
+				return TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
+
+
 			} else {
 				if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
 					return this.parallelBatchExecute(indexName,indexType,batchsize,refreshOption);

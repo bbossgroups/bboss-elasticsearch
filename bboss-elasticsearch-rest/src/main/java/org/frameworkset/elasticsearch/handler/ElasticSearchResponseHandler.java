@@ -59,20 +59,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
          } else {
              HttpEntity entity = response.getEntity();
 			 return (RestResponse)super.handleException(entity,status);
-//             if (entity != null ) {
-//            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);
-////				 String content = EntityUtils.toString(entity);
-////                 ErrorResponse searchResponse = null;
-////                 try {
-////                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
-////                 }
-////                 catch (Exception e){
-////					 throw new ElasticSearchException(content,e);
-////                 }
-////                 return searchResponse;
-//             }
-//             else
-//                 throw new ElasticSearchException("Unexpected response status: " + status,status);
+
          }
      }
 

@@ -30,35 +30,70 @@ public class ImportBuilder {
 	}
 	private String applicationPropertiesFile;
 	private boolean freezen;
+	/**抽取数据的sql语句*/
 	private String sql;
+	/**抽取数据的sql语句*/
 	private String dbName;
+	/**抽取数据的sql语句*/
 	private String dbDriver;
+	/**抽取数据的sql语句*/
 	private String dbUrl;
+	/**抽取数据的sql语句*/
 	private String dbUser;
+	/**抽取数据的sql语句*/
 	private String dbPassword;
+	/**抽取数据的sql语句*/
 	private String validateSQL;
+	/**抽取数据的sql语句*/
 	private boolean usePool = false;
+	/**抽取数据的sql语句*/
 	private String refreshOption;
+	/**抽取数据的sql语句*/
 	private int batchSize = 1000;
 	private String index;
+	/**抽取数据的sql语句*/
 	private String indexType;
+	/**抽取数据的sql语句*/
 	private String esIdField;
+	/**抽取数据的sql语句*/
 	private String esParentIdField;
+	/**抽取数据的sql语句*/
 	private String esParentIdValue;
+	/**抽取数据的sql语句*/
 	private String routingField;
+	/**抽取数据的sql语句*/
 	private String routingValue;
+	/**抽取数据的sql语句*/
 	private Boolean esDocAsUpsert;
+	/**抽取数据的sql语句*/
 	private Integer esRetryOnConflict;
+	/**抽取数据的sql语句*/
 	private Boolean esReturnSource;
+	/**抽取数据的sql语句*/
 	private String esVersionField;
+	/**抽取数据的sql语句*/
 	private Object esVersionValue;
+	/**抽取数据的sql语句*/
 	private String esVersionType;
+	/**抽取数据的sql语句*/
 	private Boolean useJavaName;
+	/**抽取数据的sql语句*/
 	private String dateFormat;
+	/**抽取数据的sql语句*/
 	private String locale;
+	/**抽取数据的sql语句*/
 	private String timeZone;
+	/**抽取数据的sql语句*/
 	private ResultSet resultSet;
+	/**抽取数据的sql语句*/
 	private StatementInfo statementInfo;
+	/**
+	 * 是否不需要返回响应，不需要的情况下，可以设置为true，
+	 * 提升性能，如果debugResponse设置为true，那么强制返回并打印响应到日志文件中
+	 */
+	private boolean discardBulkResponse = true;
+	/**是否调试bulk响应日志，true启用，false 不启用，*/
+	private boolean debugResponse;
 
 	public boolean isFreezen() {
 		return freezen;
@@ -186,7 +221,13 @@ public class ImportBuilder {
 	 * parallel import work thread nums,default 200
 	 */
 	private int threadCount = 200;
-	private int queue = Integer.MAX_VALUE;
+	/**
+	 * 并行队列大小，默认1000
+	 */
+	private int queue = 1000;
+	/**
+	 * 是否同步等待批处理作业结束，true 等待 false 不等待
+	 */
 	private boolean asyn;
 	/**
 	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
@@ -380,6 +421,13 @@ public class ImportBuilder {
 		esjdbcResultSet.setQueue(this.queue);
 		esjdbcResultSet.setAsyn(this.asyn);
 		esjdbcResultSet.setContinueOnError(this.continueOnError);
+		/**
+		 * 是否不需要返回响应，不需要的情况下，可以设置为true，
+		 * 提升性能，如果debugResponse设置为true，那么强制返回并打印响应到日志文件中
+		 */
+		esjdbcResultSet.setDiscardBulkResponse(this.discardBulkResponse);
+		/**是否调试bulk响应日志，true启用，false 不启用，*/
+		esjdbcResultSet.setDebugResponse(this.debugResponse);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -572,7 +620,26 @@ public class ImportBuilder {
 		return esVersionValue;
 	}
 
-	public void setEsVersionValue(Object esVersionValue) {
+	public ImportBuilder setEsVersionValue(Object esVersionValue) {
 		this.esVersionValue = esVersionValue;
+		return this;
+	}
+
+	public boolean isDiscardBulkResponse() {
+		return discardBulkResponse;
+	}
+
+	public ImportBuilder setDiscardBulkResponse(boolean discardBulkResponse) {
+		this.discardBulkResponse = discardBulkResponse;
+		return this;
+	}
+
+	public boolean isDebugResponse() {
+		return debugResponse;
+	}
+
+	public ImportBuilder setDebugResponse(boolean debugResponse) {
+		this.debugResponse = debugResponse;
+		return this;
 	}
 }
