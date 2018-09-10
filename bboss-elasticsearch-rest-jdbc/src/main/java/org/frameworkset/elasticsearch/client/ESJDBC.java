@@ -14,6 +14,9 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
+import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
+import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.elasticsearch.util.ESJDBCResultSet;
 import org.frameworkset.persitent.util.JDBCResultSet;
@@ -31,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
+	private ScheduleService scheduleService;
 	public String getApplicationPropertiesFile() {
 		return applicationPropertiesFile;
 	}
@@ -75,10 +79,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private List<FieldMeta> fieldValues;
 	private DataRefactor dataRefactor;
 	private String sql;
+	private String sqlFilepath;
+	private Long jdbcFetchSize;
 	private String dbName;
 
 	private String refreshOption;
 	private int batchSize = 1000;
+	private Integer scheduleBatchSize ;
 	private String index;
 	private String dbDriver;
 	private String dbUrl;
@@ -100,6 +107,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private boolean discardBulkResponse = true;
 	/**是否调试bulk响应日志，true启用，false 不启用，*/
 	private boolean debugResponse;
+
+
+	private ScheduleConfig scheduleConfig;
+	private ImportIncreamentConfig importIncreamentConfig;
 
 	public String getDbDriver() {
 		return dbDriver;
@@ -144,6 +155,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public String getSql() {
 		return sql;
 	}
+
 
 	public void setSql(String sql) {
 		this.sql = sql;
@@ -547,5 +559,70 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setDebugResponse(boolean debugResponse) {
 		this.debugResponse = debugResponse;
+	}
+
+	public ScheduleConfig getScheduleConfig() {
+		return scheduleConfig;
+	}
+
+	public void setScheduleConfig(ScheduleConfig scheduleConfig) {
+		this.scheduleConfig = scheduleConfig;
+	}
+
+	public ImportIncreamentConfig getImportIncreamentConfig() {
+		return importIncreamentConfig;
+	}
+
+	public void setImportIncreamentConfig(ImportIncreamentConfig importIncreamentConfig) {
+		this.importIncreamentConfig = importIncreamentConfig;
+	}
+
+	public String getSqlFilepath() {
+		return sqlFilepath;
+	}
+
+	public void setSqlFilepath(String sqlFilepath) {
+		this.sqlFilepath = sqlFilepath;
+	}
+
+	public Long getJdbcFetchSize() {
+		return jdbcFetchSize;
+	}
+
+	public void setJdbcFetchSize(Long jdbcFetchSize) {
+		this.jdbcFetchSize = jdbcFetchSize;
+	}
+
+	public ScheduleService getScheduleService() {
+		return scheduleService;
+	}
+
+	public void setScheduleService(ScheduleService scheduleService) {
+		this.scheduleService = scheduleService;
+	}
+
+	public Integer getScheduleBatchSize() {
+		return scheduleBatchSize;
+	}
+
+	public void setScheduleBatchSize(Integer scheduleBatchSize) {
+		this.scheduleBatchSize = scheduleBatchSize;
+	}
+
+	public Object getLastValue() throws Exception {
+		if(scheduleService != null) {
+			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
+				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
+			} else {
+				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
+			}
+
+		}
+		return null;
+	}
+
+	public void flushLastValue(Object lastValue) {
+		if(scheduleService != null)
+			this.scheduleService.flushLastValue(lastValue);
 	}
 }

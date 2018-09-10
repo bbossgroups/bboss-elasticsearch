@@ -40,6 +40,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
 	}
 
+
 	/**
 	 * 并行批处理导入
 	 * @param indexName
@@ -56,12 +57,15 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		ExecutorService	service = jdbcResultSet.buildThreadPool();
 		List<Future> tasks = new ArrayList<Future>();
 		int taskNo = 0;
+		Exception exception = null;
+		Object lastValue = null;
 		try {
 
 			while (jdbcResultSet.next()) {
-				if(this.error != null && !jdbcResultSet.isContinueOnError()) {
+				if(!assertCondition()) {
 					throw error;
 				}
+				lastValue = jdbcResultSet.getLastValue();
 				evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
 				count++;
 				if (count == batchsize) {
@@ -93,15 +97,18 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 
 		} catch (SQLException e) {
+			exception = e;
 			throw new ElasticSearchException(e);
 
 		} catch (ElasticSearchException e) {
+			exception = e;
 			throw e;
 		} catch (Exception e) {
+			exception = e;
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			waitTasksComplete(  jdbcResultSet, tasks,  service);
+			waitTasksComplete(  jdbcResultSet, tasks,  service,exception,  lastValue );
 			try {
 				writer.close();
 			} catch (Exception e) {
@@ -125,9 +132,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		String ret = null;
 		int taskNo = 0;
+		Exception exception = null;
+		Object lastValue = null;
 		try {
 
 			while (jdbcResultSet.next()) {
+				lastValue = jdbcResultSet.getLastValue();
 				evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
 				count++;
 				if (count == batchsize) {
@@ -140,7 +150,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					taskNo ++;
 
 					ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
-
+					jdbcResultSet.flushLastValue(lastValue);
 				}
 
 			}
@@ -149,18 +159,23 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				String datas = builder.toString();
 
 				ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
-
+				jdbcResultSet.flushLastValue(lastValue);
 			}
 		} catch (SQLException e) {
+			exception = e;
 			throw new ElasticSearchException(e);
 
 		} catch (ElasticSearchException e) {
+			exception = e;
 			throw e;
 		} catch (Exception e) {
+			exception = e;
 			throw new ElasticSearchException(e);
 		}
 		finally {
-
+			if(exception != null && !getESJDBC().isContinueOnError()){
+				getESJDBC().getScheduleService().stop();
+			}
 			try {
 				writer.close();
 			} catch (Exception e) {
@@ -174,59 +189,88 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		if(jdbcResultSet == null || jdbcResultSet.getResultSet() == null)
 			return null;
 		this.jdbcResultSet = jdbcResultSet;
-		try{
-			if (batchsize <= 0) {
-				StringBuilder builder = new StringBuilder();
-				BBossStringWriter writer = new BBossStringWriter(builder);
-				try {
-					while (jdbcResultSet.next()) {
-						try {
-							evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
-						} catch (Exception e) {
-							throw new ElasticSearchException(e);
-						}
+
+		if (batchsize <= 0) {
+			StringBuilder builder = new StringBuilder();
+			BBossStringWriter writer = new BBossStringWriter(builder);
+			Object lastValue = null;
+			Exception exception = null;
+			try {
+
+				while (jdbcResultSet.next()) {
+					try {
+						lastValue = jdbcResultSet.getLastValue();
+						evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+					} catch (Exception e) {
+						throw new ElasticSearchException(e);
 					}
-				} catch (SQLException e) {
-					throw new ElasticSearchException(e);
+
 				}
 				writer.flush();
-				return TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
-
-
-			} else {
-				if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
-					return this.parallelBatchExecute(indexName,indexType,batchsize,refreshOption);
-				}
-				else{
-					return this.batchExecute(indexName,indexType,batchsize,refreshOption);
-				}
-
+				String ret = TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
+				jdbcResultSet.flushLastValue(lastValue);
+				return ret;
+			} catch (Exception e) {
+				exception = e;
+				throw new ElasticSearchException(e);
 			}
+			finally {
+				if(exception != null && !getESJDBC().isContinueOnError()){
+					getESJDBC().getScheduleService().stop();
+				}
+			}
+
+
+		} else {
+			if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
+				return this.parallelBatchExecute(indexName,indexType,batchsize,refreshOption);
+			}
+			else{
+				return this.batchExecute(indexName,indexType,batchsize,refreshOption);
+			}
+
 		}
-		finally {
-			jdbcResultSet.destroy();
-		}
+
+
 
 	}
+	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ){
+		if (jdbcResultSet.getScheduleService() == null) {//作业定时调度执行的话，需要关闭线程池
+			service.shutdown();
+		}
+		else{
+			if(this.assertCondition(exception)){
+				jdbcResultSet.flushLastValue( lastValue );
+			}
+			else{
+				service.shutdown();
+				this.getESJDBC().getScheduleService().stop();
+			}
+		}
+	}
 
-	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,final ExecutorService service){
-		if(!jdbcResultSet.isAsyn()) {
+	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,final ExecutorService service,Exception exception,Object lastValue  ){
+		if(!jdbcResultSet.isAsyn() || jdbcResultSet.getScheduleService() != null) {
 			int count = 0;
 			for (Future future : tasks) {
 				try {
 					future.get();
 					count ++;
 				} catch (ExecutionException e) {
+					if(exception == null)
+						exception = e;
 					if(e.getCause() != null)
 						logger.error("",e.getCause());
 					else
 						logger.error("",e);
 				}catch (Exception e) {
+					if(exception == null)
+						exception = e;
 					logger.error("",e);
 				}
 			}
 			logger.info("complete tasks:"+count);
-			service.shutdown();
+			jobComplete(  service,exception,lastValue );
 		}
 		else{
 			Thread completeThread = new Thread(new Runnable() {
@@ -247,7 +291,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 						}
 					}
 					logger.info("complete tasks:"+count);
-					service.shutdown();
+					jobComplete(  service,null,null);
 				}
 			});
 			completeThread.start();

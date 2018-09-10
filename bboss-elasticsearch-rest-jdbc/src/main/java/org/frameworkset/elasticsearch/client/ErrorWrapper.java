@@ -55,6 +55,18 @@ public abstract class ErrorWrapper {
 		return true;
 	}
 
+	/**
+	 * 判断执行条件是否成立，成立返回true，否则返回false
+	 * @return
+	 */
+	public boolean assertCondition(Exception e){
+		if((this.error != null || e != null) && !getESJDBC().isContinueOnError()) {
+			return false;
+		}
+		return true;
+	}
+
+
 	public abstract ClientInterface getClientInterface();
 	public abstract ESJDBC getESJDBC();
 

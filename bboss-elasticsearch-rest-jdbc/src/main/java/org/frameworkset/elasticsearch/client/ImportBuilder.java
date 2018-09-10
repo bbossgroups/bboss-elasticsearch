@@ -15,14 +15,13 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.StatementInfo;
+import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
+import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ImportBuilder {
 	private ImportBuilder(){
@@ -32,6 +31,8 @@ public class ImportBuilder {
 	private boolean freezen;
 	/**抽取数据的sql语句*/
 	private String sql;
+	private String sqlFilepath;
+	private Long jdbcFetchSize;
 	/**抽取数据的sql语句*/
 	private String dbName;
 	/**抽取数据的sql语句*/
@@ -50,6 +51,7 @@ public class ImportBuilder {
 	private String refreshOption;
 	/**抽取数据的sql语句*/
 	private int batchSize = 1000;
+	private Integer scheduleBatchSize ;
 	private String index;
 	/**抽取数据的sql语句*/
 	private String indexType;
@@ -94,6 +96,8 @@ public class ImportBuilder {
 	private boolean discardBulkResponse = true;
 	/**是否调试bulk响应日志，true启用，false 不启用，*/
 	private boolean debugResponse;
+	private ScheduleConfig scheduleConfig;
+	private ImportIncreamentConfig importIncreamentConfig;
 
 	public boolean isFreezen() {
 		return freezen;
@@ -415,6 +419,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setDbUser(this.dbUser);
 		esjdbcResultSet.setDbPassword(this.dbPassword);
 		esjdbcResultSet.setValidateSQL(this.validateSQL);
+		esjdbcResultSet.setUsePool(this.usePool);
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		esjdbcResultSet.setParallel(this.parallel);
 		esjdbcResultSet.setThreadCount(this.threadCount);
@@ -428,6 +433,13 @@ public class ImportBuilder {
 		esjdbcResultSet.setDiscardBulkResponse(this.discardBulkResponse);
 		/**是否调试bulk响应日志，true启用，false 不启用，*/
 		esjdbcResultSet.setDebugResponse(this.debugResponse);
+		esjdbcResultSet.setScheduleConfig(this.scheduleConfig);//定时任务配置
+		esjdbcResultSet.setImportIncreamentConfig(this.importIncreamentConfig);//增量数据配置
+		esjdbcResultSet.setSqlFilepath(this.sqlFilepath);
+		if(this.scheduleBatchSize != null)
+			esjdbcResultSet.setScheduleBatchSize(this.scheduleBatchSize);
+		else
+			esjdbcResultSet.setScheduleBatchSize(this.batchSize);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -640,6 +652,130 @@ public class ImportBuilder {
 
 	public ImportBuilder setDebugResponse(boolean debugResponse) {
 		this.debugResponse = debugResponse;
+		return this;
+	}
+
+
+	public ImportBuilder setPeriod(Long period) {
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setPeriod(period);
+		return this;
+	}
+
+
+	public ImportBuilder setDeyLay(Long deyLay) {
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setDeyLay(deyLay);
+		return this;
+	}
+
+
+
+	public ImportBuilder setScheduleDate(Date scheduleDate) {
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setScheduleDate(scheduleDate);
+		return this;
+	}
+
+	public ImportBuilder setFixedRate(Boolean fixedRate) {
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setFixedRate(fixedRate);
+		return this;
+	}
+
+	public ScheduleConfig getScheduleConfig() {
+		return scheduleConfig;
+	}
+
+	public ImportIncreamentConfig getImportIncreamentConfig() {
+		return importIncreamentConfig;
+	}
+
+	public ImportBuilder setDateLastValueColumn(String dateLastValueColumn) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setDateLastValueColumn(dateLastValueColumn);
+		return this;
+	}
+
+
+	public ImportBuilder setNumberLastValueColumn(String numberLastValueColumn) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setNumberLastValueColumn(numberLastValueColumn);
+		return this;
+	}
+
+
+	public ImportBuilder setLastValueStorePath(String lastValueStorePath) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setLastValueStorePath(lastValueStorePath);
+		return this;
+	}
+
+
+
+	public ImportBuilder setLastValueStoreTableName(String lastValueStoreTableName) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setLastValueStoreTableName(lastValueStoreTableName);
+		return this;
+	}
+
+	public ImportBuilder setFromFirst(boolean fromFirst) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setFromFirst(fromFirst);
+		return this;
+	}
+
+	public ImportBuilder setLastValue(Long lastValue) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setLastValue(lastValue);
+		return this;
+	}
+
+	public ImportBuilder setLastValueType(int lastValueType) {
+		if(importIncreamentConfig == null){
+			importIncreamentConfig = new ImportIncreamentConfig();
+		}
+		this.importIncreamentConfig.setLastValueType(lastValueType);
+		return this;
+	}
+
+
+	public ImportBuilder setSqlFilepath(String sqlFilepath) {
+		this.sqlFilepath = sqlFilepath;
+		return this;
+	}
+
+	public ImportBuilder setJdbcFetchSize(Long jdbcFetchSize) {
+		this.jdbcFetchSize = jdbcFetchSize;
+		return  this;
+	}
+
+	public Integer getScheduleBatchSize() {
+		return scheduleBatchSize;
+	}
+
+	public ImportBuilder setScheduleBatchSize(Integer scheduleBatchSize) {
+		this.scheduleBatchSize = scheduleBatchSize;
 		return this;
 	}
 }
