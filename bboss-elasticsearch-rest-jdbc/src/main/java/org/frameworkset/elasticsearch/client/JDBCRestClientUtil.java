@@ -12,6 +12,7 @@ import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -450,18 +451,19 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 
 		if (jdbcResultSet != null) {
-			jdbcResultSet.refactorData();
+			Context context = new ContextImpl(jdbcResultSet);
+			jdbcResultSet.refactorData(context);
 			buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,action);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
-				serialResult(  writer,jdbcResultSet);
+				serialResult(  writer,jdbcResultSet,context);
 			}
 			else
 			{
 
 				writer.write("{\"doc\":");
-				serialResult(  writer,jdbcResultSet);
+				serialResult(  writer,jdbcResultSet,context);
 				if(jdbcResultSet.getEsDocAsUpsert() != null){
 					writer.write(",\"doc_as_upsert\":");
 					writer.write(String.valueOf(jdbcResultSet.getEsDocAsUpsert()));
@@ -480,7 +482,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	}
 
-	private static void serialResult( Writer writer, ESJDBC esjdbc) throws Exception {
+	private static void serialResult( Writer writer, ESJDBC esjdbc,Context context) throws Exception {
 		PoolManResultSetMetaData metaData = esjdbc.getMetaData();
 		int counts = metaData.getColumnCount();
 		writer.write("{");
@@ -491,12 +493,11 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		for(int i =0; i < counts; i++)
 		{
-			String colName = metaData.getColumnLabelUpperByIndex(i);
-			if("ROWNUM__".equals(colName))//去掉oracle的行伪列
-				continue;
+			String colName = metaData.getColumnLabelByIndex(i);
+//			if("ROWNUM__".equals(colName))//去掉oracle的行伪列
+//				continue;
 			String javaName = null;
-			FieldMeta fieldMeta = esjdbc.getMappingName(colName);
-
+			FieldMeta fieldMeta = context.getMappingName(colName);
 			if(fieldMeta != null) {
 				if(fieldMeta.getIgnore() != null && fieldMeta.getIgnore() == true)
 					continue;
@@ -563,19 +564,32 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		}
 		List<FieldMeta> fieldValueMetas = esjdbc.getFieldValues();
+		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted);
+		fieldValueMetas = context.getFieldValues();
+		appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted);
+		writer.write("}\n");
+	}
+	private static boolean appendFieldValues(Writer writer, ESJDBC esjdbc,
+										  List<FieldMeta> fieldValueMetas,boolean hasSeted) throws IOException {
 		if(fieldValueMetas != null && fieldValueMetas.size() > 0){
 			for(int i =0; i < fieldValueMetas.size(); i++)
 			{
 
 				FieldMeta fieldMeta = fieldValueMetas.get(i);
 				String javaName = fieldMeta.getEsFieldName();
-				if(hasSeted || i > 0)
+				Object value = fieldMeta.getValue();
+//				if(value == null)
+//					continue;
+				if(hasSeted)
 					writer.write(",");
+				else{
+					hasSeted = true;
+				}
 				writer.write("\"");
 				writer.write(javaName);
 				writer.write("\":");
 //			int colType = metaData.getColumnTypeByIndex(i);
-				Object value = fieldMeta.getValue();
+
 				if(value != null) {
 					if (value instanceof String) {
 						writer.write("\"");
@@ -611,7 +625,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 		}
-		writer.write("}\n");
+		return hasSeted;
 	}
 	public static final Class[] basePrimaryTypes = new Class[]{Integer.TYPE, Long.TYPE,
 								Boolean.TYPE, Float.TYPE, Short.TYPE, Double.TYPE,

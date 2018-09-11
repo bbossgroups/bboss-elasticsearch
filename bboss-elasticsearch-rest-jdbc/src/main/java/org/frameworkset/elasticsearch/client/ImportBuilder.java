@@ -258,7 +258,7 @@ public class ImportBuilder {
 		return fieldMeta;
 	}
 
-	private FieldMeta buildIgnoreFieldMeta(String dbColumnName){
+	private static FieldMeta buildIgnoreFieldMeta(String dbColumnName){
 		FieldMeta fieldMeta = new FieldMeta();
 		fieldMeta.setDbColumnName(dbColumnName);
 
@@ -274,22 +274,26 @@ public class ImportBuilder {
 		return fieldMeta;
 	}
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName){
-		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildFieldMeta(  dbColumnName,  esFieldName,null ));
+		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName,null ));
 		return this;
 	}
 
 	public ImportBuilder addIgnoreFieldMapping(String dbColumnName){
-		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildIgnoreFieldMeta(  dbColumnName));
+		addIgnoreFieldMapping(fieldMetaMap, dbColumnName);
 		return this;
 	}
 
+	public static void addIgnoreFieldMapping(Map<String,FieldMeta> fieldMetaMap,String dbColumnName){
+		fieldMetaMap.put(dbColumnName,buildIgnoreFieldMeta(  dbColumnName));
+	}
+
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat){
-		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat));
+		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat));
 		return this;
 	}
 
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
-		this.fieldMetaMap.put(dbColumnName.toUpperCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
+		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
 		return this;
 	}
 
@@ -572,10 +576,7 @@ public class ImportBuilder {
 	 * @return
 	 */
 	public ImportBuilder addFieldValue(String fieldName,Object value){
-		FieldMeta fieldMeta = new FieldMeta();
-		fieldMeta.setEsFieldName(fieldName);
-		fieldMeta.setValue(value);
-		this.fieldValues.add(fieldMeta);
+		addFieldValue(  fieldValues,  fieldName,  value);
 		return this;
 	}
 
@@ -587,27 +588,41 @@ public class ImportBuilder {
 	 * @return
 	 */
 	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value){
-		FieldMeta fieldMeta = new FieldMeta();
-		fieldMeta.setEsFieldName(fieldName);
-		fieldMeta.setValue(value);
-		fieldMeta.setDateFormateMeta(buildDateFormateMeta( dateFormat));
-		this.fieldValues.add(fieldMeta);
+		addFieldValue(  fieldValues,  fieldName,  dateFormat,  value,  locale,  timeZone);
 		return this;
 	}
 	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone){
+		addFieldValue(  fieldValues,  fieldName,  dateFormat,  value,  locale,  timeZone);
+		return this;
+	}
+	/**
+	 * 补充额外的字段和值
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 */
+	public static void addFieldValue(List<FieldMeta> fieldValues,String fieldName,Object value){
+		FieldMeta fieldMeta = new FieldMeta();
+		fieldMeta.setEsFieldName(fieldName);
+		fieldMeta.setValue(value);
+		fieldValues.add(fieldMeta);
+	}
+
+
+	public static void addFieldValue(List<FieldMeta> fieldValues,String fieldName,String dateFormat,Object value,String locale,String timeZone){
 		FieldMeta fieldMeta = new FieldMeta();
 		fieldMeta.setEsFieldName(fieldName);
 		fieldMeta.setValue(value);
 		fieldMeta.setDateFormateMeta(buildDateFormateMeta( dateFormat,  locale,  timeZone));
-		this.fieldValues.add(fieldMeta);
-		return this;
+		fieldValues.add(fieldMeta);
+
 	}
 
 	public DateFormateMeta buildDateFormateMeta(String dateFormat){
 		return dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone);
 	}
 
-	public DateFormateMeta buildDateFormateMeta(String dateFormat,String locale,String timeZone){
+	public static DateFormateMeta buildDateFormateMeta(String dateFormat,String locale,String timeZone){
 		return dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone);
 	}
 

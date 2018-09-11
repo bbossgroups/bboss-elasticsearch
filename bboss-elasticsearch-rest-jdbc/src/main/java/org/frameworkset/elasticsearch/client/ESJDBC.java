@@ -456,10 +456,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		return value;
 	}
 
-	public void refactorData() throws Exception {
+	public void refactorData(Context context) throws Exception {
 		if(this.dataRefactor != null){
 
-			dataRefactor.refactor(this);
+			dataRefactor.refactor(context);
 
 		}
 	}
