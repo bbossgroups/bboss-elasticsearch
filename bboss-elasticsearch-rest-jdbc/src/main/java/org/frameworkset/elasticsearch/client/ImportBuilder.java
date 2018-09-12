@@ -32,7 +32,19 @@ public class ImportBuilder {
 	/**抽取数据的sql语句*/
 	private String sql;
 	private String sqlFilepath;
-	private Long jdbcFetchSize;
+	private Integer jdbcFetchSize;
+	
+	/**是否启用sql日志，true启用，false 不启用，*/
+	private boolean showSql;
+
+	public boolean isShowSql() {
+		return showSql;
+	}
+
+	public ImportBuilder setShowSql(boolean showSql) {
+		this.showSql = showSql;
+		return this;
+	}
 	/**抽取数据的sql语句*/
 	private String dbName;
 	/**抽取数据的sql语句*/
@@ -385,6 +397,16 @@ public class ImportBuilder {
 			if(_usePool != null && !_usePool.equals(""))
 				this.usePool  = Boolean.parseBoolean(_usePool);
 			this.validateSQL  = propertiesContainer.getProperty("db.validateSQL");
+			
+			String _showSql = propertiesContainer.getProperty("db.showsql");
+			if(_showSql != null && !_showSql.equals(""))
+				this.showSql  = Boolean.parseBoolean(_showSql);
+			
+			String _jdbcFetchSize = propertiesContainer.getProperty("db.jdbcFetchSize");
+			if(_jdbcFetchSize != null && !_jdbcFetchSize.equals(""))
+				this.jdbcFetchSize  = Integer.parseInt(_jdbcFetchSize);
+			
+			 
 
 		}
 	}
@@ -414,8 +436,10 @@ public class ImportBuilder {
 		esjdbcResultSet.setDataRefactor(this.dataRefactor);
 		esjdbcResultSet.setSql(this.sql);
 		esjdbcResultSet.setDbName(dbName);
+		esjdbcResultSet.setShowSql(showSql);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
 		esjdbcResultSet.setBatchSize(this.batchSize);
+		esjdbcResultSet.setJdbcFetchSize(this.jdbcFetchSize);
 		esjdbcResultSet.setIndex(index);
 		esjdbcResultSet.setIndexType(indexType);
 		esjdbcResultSet.setDbDriver(this.dbDriver);
@@ -780,7 +804,7 @@ public class ImportBuilder {
 		return this;
 	}
 
-	public ImportBuilder setJdbcFetchSize(Long jdbcFetchSize) {
+	public ImportBuilder setJdbcFetchSize(Integer jdbcFetchSize) {
 		this.jdbcFetchSize = jdbcFetchSize;
 		return  this;
 	}

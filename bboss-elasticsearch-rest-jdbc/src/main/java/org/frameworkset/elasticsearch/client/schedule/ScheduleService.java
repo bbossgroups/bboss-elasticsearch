@@ -61,6 +61,10 @@ public class ScheduleService {
 	private String statusTableName;
 	private StoreStatusTask storeStatusTask;
 	private SQLInfo sqlInfo;
+	public SQLInfo getSqlInfo() {
+		return sqlInfo;
+	}
+
 	private Timer timer ;
 	public void addStatus(Status currentStatus) throws Exception {
 		SQLExecutor.insertWithDBName(dbname,insertSQL,currentStatus.getId(),currentStatus.getTime(),currentStatus.getLastValue(),lastValueType);
@@ -95,6 +99,11 @@ public class ScheduleService {
 		logger.info("init LastValue Status: "+currentStatus.toString());
 	}
 	private void scheduleImportData(final int batchSize) throws Exception {
+		if(!esjdbc.assertCondition()) {
+			if(logger.isWarnEnabled())
+				logger.warn(new StringBuilder().append("Task Assert Execute Condition Failed, Ignore").toString());
+			return;
+		}
 		SQLInfo sqlInfo = getLastValueSQL();
 		ResultSetHandler resultSetHandler = new ResultSetHandler() {
 			@Override
@@ -214,11 +223,18 @@ public class ScheduleService {
 		catch (Exception e){
 			throw new ESDataImportException(e);
 		}
-		if(esjdbc.getImportIncreamentConfig().getLastValue() == null) {
-			this.lastValueType = esjdbc.getImportIncreamentConfig().getDateLastValueColumn() == null ? 0 : 1;
+		if(esjdbc.getImportIncreamentConfig().getDateLastValueColumn() != null) {
+			this.lastValueType = ImportIncreamentConfig.TIMESTAMP_TYPE;
+		}
+		else if(esjdbc.getImportIncreamentConfig().getNumberLastValueColumn() != null) {
+			this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
+			
+		}
+		else if(esjdbc.getImportIncreamentConfig().getLastValueType() != null) { 
+			this.lastValueType = esjdbc.getImportIncreamentConfig().getLastValueType();
 		}
 		else{
-			this.lastValueType = esjdbc.getImportIncreamentConfig().getLastValueType();
+			this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
 		}
 
 		existSQL = new StringBuilder().append("select 1 from ").append(statusTableName).toString();
@@ -288,6 +304,7 @@ public class ScheduleService {
 		this.assertCondition();
 		initDatasource();
 		initTableAndStatus();
+		this.esjdbc.setScheduleService(this);
 //		startStoreStatusTask();
 	}
 
@@ -322,7 +339,7 @@ public class ScheduleService {
 
 	public Map getParamValue(){
 		Map params = new HashMap();
-		if(this.lastValueType == 0) {
+		if(this.lastValueType == ImportIncreamentConfig.NUMBER_TYPE) {
 			params.put(this.sqlInfo.getLastValueVarName(), this.currentStatus.getLastValue());
 		}
 		else{

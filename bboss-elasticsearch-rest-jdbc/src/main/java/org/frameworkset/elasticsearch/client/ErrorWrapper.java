@@ -38,6 +38,7 @@ public abstract class ErrorWrapper {
 				lock.lock();
 				if (this.error == null) {//only set the first exception
 					this.error = error;
+					this.getESJDBC().setErrorWrapper(this);
 				}
 			} finally {
 				lock.unlock();

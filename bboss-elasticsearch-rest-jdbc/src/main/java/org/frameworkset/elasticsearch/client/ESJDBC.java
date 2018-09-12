@@ -35,6 +35,35 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
+	private ErrorWrapper errorWrapper;
+	public ErrorWrapper getErrorWrapper() {
+		return errorWrapper;
+	}
+
+	public void setErrorWrapper(ErrorWrapper errorWrapper) {
+		this.errorWrapper = errorWrapper;
+	}
+	
+	/**
+	 * 判断执行条件是否成立，成立返回true，否则返回false
+	 * @return
+	 */
+	public boolean assertCondition(){
+		if(errorWrapper != null)
+			return errorWrapper.assertCondition();
+		return true;
+	}
+
+	/**
+	 * 判断执行条件是否成立，成立返回true，否则返回false
+	 * @return
+	 */
+	public boolean assertCondition(Exception e){
+		if(errorWrapper != null)
+			return errorWrapper.assertCondition(e);
+		return true;
+	}
+
 	public String getApplicationPropertiesFile() {
 		return applicationPropertiesFile;
 	}
@@ -80,7 +109,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private DataRefactor dataRefactor;
 	private String sql;
 	private String sqlFilepath;
-	private Long jdbcFetchSize;
+	private Integer jdbcFetchSize;
 	private String dbName;
 
 	private String refreshOption;
@@ -108,7 +137,16 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	/**是否调试bulk响应日志，true启用，false 不启用，*/
 	private boolean debugResponse;
 
+	/**是否启用sql日志，true启用，false 不启用，*/
+	private boolean showSql;
 
+	public boolean isShowSql() {
+		return showSql;
+	}
+
+	public void setShowSql(boolean showSql) {
+		this.showSql = showSql;
+	}
 	private ScheduleConfig scheduleConfig;
 	private ImportIncreamentConfig importIncreamentConfig;
 
@@ -585,11 +623,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.sqlFilepath = sqlFilepath;
 	}
 
-	public Long getJdbcFetchSize() {
+	public Integer getJdbcFetchSize() {
 		return jdbcFetchSize;
 	}
 
-	public void setJdbcFetchSize(Long jdbcFetchSize) {
+	public void setJdbcFetchSize(Integer jdbcFetchSize) {
 		this.jdbcFetchSize = jdbcFetchSize;
 	}
 
@@ -613,8 +651,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		if(scheduleService != null) {
 			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
 				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
-			} else {
+			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
 				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
+			}
+			else if (this.scheduleService.getSqlInfo().getLastValueVarName() != null) {
+				return this.getValue(this.scheduleService.getSqlInfo().getLastValueVarName());
 			}
 
 		}

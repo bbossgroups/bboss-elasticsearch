@@ -26,6 +26,8 @@ package org.frameworkset.elasticsearch.client.schedule;
 public class ImportIncreamentConfig {
 	private String dateLastValueColumn;
 	private String numberLastValueColumn;
+	public static final int NUMBER_TYPE = 0;
+	public static final int TIMESTAMP_TYPE = 1;
 	/**
 	 * 设置起始值，如果lastValueType为
 	 */
@@ -33,7 +35,7 @@ public class ImportIncreamentConfig {
 	/**
 	 * 设置其实值类型：0 数字  1 日期
 	 */
-	private int lastValueType;
+	private Integer lastValueType;
 	private String lastValueStorePath;
 	private String lastValueStoreTableName;
 	private boolean fromFirst;//true 每次都重新从开始导入数据
@@ -86,11 +88,11 @@ public class ImportIncreamentConfig {
 		this.lastValue = lastValue;
 	}
 
-	public int getLastValueType() {
+	public Integer getLastValueType() {
 		return lastValueType;
 	}
 
-	public void setLastValueType(int lastValueType) {
+	public void setLastValueType(Integer lastValueType) {
 		this.lastValueType = lastValueType;
 	}
 }

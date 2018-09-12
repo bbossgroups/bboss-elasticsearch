@@ -62,23 +62,22 @@ public class DataStream {
 		}
 	}
 	private void initDS(){
-		if(SimpleStringUtil.isNotEmpty(esjdbc.getDbDriver()) && SimpleStringUtil.isNotEmpty(esjdbc.getDbUrl())) {
-			if(!esjdbc.isUsePool()) {
-				SQLUtil.startNoPool(esjdbc.getDbName(),//数据源名称
-						esjdbc.getDbDriver(),//oracle驱动
-						esjdbc.getDbUrl(),//mysql链接串
-						esjdbc.getDbUser(), esjdbc.getDbPassword(),//数据库账号和口令
-						esjdbc.getValidateSQL()//数据库连接校验sql
-				);
-			}
-			else{
-				SQLUtil.startPool(esjdbc.getDbName(),//数据源名称
-						esjdbc.getDbDriver(),//oracle驱动
-						esjdbc.getDbUrl(),//mysql链接串
-						esjdbc.getDbUser(), esjdbc.getDbPassword(),//数据库账号和口令
-						esjdbc.getValidateSQL()//数据库连接校验sql
-				);
-			}
+		if(SimpleStringUtil.isNotEmpty(esjdbc.getDbDriver()) && SimpleStringUtil.isNotEmpty(esjdbc.getDbUrl())) {			 
+			SQLUtil.startPool(esjdbc.getDbName(),//数据源名称
+					esjdbc.getDbDriver(),//oracle驱动
+					esjdbc.getDbUrl(),//mysql链接串
+					esjdbc.getDbUser(), esjdbc.getDbPassword(),//数据库账号和口令
+					null,//"false",
+					null,// "READ_UNCOMMITTED",
+					esjdbc.getValidateSQL(),//数据库连接校验sql
+					esjdbc.getDbName()+"_jndi",
+					10,
+					10,
+					20,
+					esjdbc.isUsePool(),
+					false,
+					null, esjdbc.isShowSql(), false,esjdbc.getJdbcFetchSize() == null?0:esjdbc.getJdbcFetchSize()
+			);			 
 		}
 	}
 
