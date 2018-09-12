@@ -663,7 +663,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	}
 
 	public void flushLastValue(Object lastValue) {
-		if(scheduleService != null)
+		if(scheduleService != null && lastValue != null)
 			this.scheduleService.flushLastValue(lastValue);
 	}
 }
