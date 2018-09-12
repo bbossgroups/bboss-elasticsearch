@@ -192,10 +192,10 @@ public class ScheduleService {
 		if(this.esjdbc.getImportIncreamentConfig().getLastValueStorePath() == null )
 			throw new ESDataImportException("Must set lastValueStorePath by ImportBuilder.");
 
-		if(this.esjdbc.getImportIncreamentConfig().getDateLastValueColumn() == null
-				&& this.esjdbc.getImportIncreamentConfig().getNumberLastValueColumn() == null
-				)
-			throw new ESDataImportException("Must set dateLastValueColumn or numberLastValueColumn by ImportBuilder.");
+//		if(this.esjdbc.getImportIncreamentConfig().getDateLastValueColumn() == null
+//				&& this.esjdbc.getImportIncreamentConfig().getNumberLastValueColumn() == null
+//				)
+//			throw new ESDataImportException("Must set dateLastValueColumn or numberLastValueColumn by ImportBuilder.");
 
 	}
 	private void initDatasource()  {
