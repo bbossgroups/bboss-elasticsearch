@@ -123,7 +123,7 @@ public class ScheduleService {
 
 	}
 	public void timeSchedule() throws Exception {
-		scheduleImportData(esjdbc.getBatchSize());
+//		scheduleImportData(esjdbc.getBatchSize());
 		timer = new Timer();
 		TimerTask timerTask = new TimerTask() {
 			@Override
@@ -187,8 +187,10 @@ public class ScheduleService {
 	}
 	private void assertCondition(){
 		statusTableName = this.esjdbc.getImportIncreamentConfig().getLastValueStoreTableName();
-		if(statusTableName == null )
-			throw new ESDataImportException("Must set lastValueStoreTableName by ImportBuilder.");
+		if(statusTableName == null ){
+			statusTableName = "increament_tab";
+		}
+//			throw new ESDataImportException("Must set lastValueStoreTableName by ImportBuilder.");
 		if(this.esjdbc.getImportIncreamentConfig().getLastValueStorePath() == null )
 			throw new ESDataImportException("Must set lastValueStorePath by ImportBuilder.");
 
