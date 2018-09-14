@@ -175,7 +175,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 		finally {
 			if(exception != null && !getESJDBC().isContinueOnError()){
-				getESJDBC().getScheduleService().stop();
+				getESJDBC().stop();
 			}
 			try {
 				writer.close();
@@ -217,7 +217,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 			finally {
 				if(exception != null && !getESJDBC().isContinueOnError()){
-					getESJDBC().getScheduleService().stop();
+					getESJDBC().stop();
 				}
 			}
 
@@ -245,7 +245,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 			else{
 				service.shutdown();
-				this.getESJDBC().getScheduleService().stop();
+				this.getESJDBC().stop();
 			}
 		}
 	}

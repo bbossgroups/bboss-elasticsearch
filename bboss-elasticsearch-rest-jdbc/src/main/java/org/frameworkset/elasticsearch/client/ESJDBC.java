@@ -666,4 +666,9 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		if(scheduleService != null && lastValue != null)
 			this.scheduleService.flushLastValue(lastValue);
 	}
+	public void stop(){
+		if(scheduleService != null) {
+			scheduleService.stop();
+		}
+	}
 }
