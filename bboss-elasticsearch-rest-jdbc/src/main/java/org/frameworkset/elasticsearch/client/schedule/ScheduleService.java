@@ -143,7 +143,13 @@ public class ScheduleService {
 
 				timer.scheduleAtFixedRate(timerTask, scheduleDate, esjdbc.getScheduleConfig().getPeriod());
 			} else {
-				timer.schedule(timerTask, scheduleDate, esjdbc.getScheduleConfig().getPeriod());
+				if(esjdbc.getScheduleConfig().getPeriod() != null) {
+					timer.schedule(timerTask, scheduleDate, esjdbc.getScheduleConfig().getPeriod());
+				}
+				else{
+					timer.schedule(timerTask, scheduleDate);
+				}
+
 			}
 		}
 		else  {
@@ -154,7 +160,13 @@ public class ScheduleService {
 
 				timer.scheduleAtFixedRate(timerTask, delay, esjdbc.getScheduleConfig().getPeriod());
 			} else {
-				timer.schedule(timerTask, delay, esjdbc.getScheduleConfig().getPeriod());
+				if(esjdbc.getScheduleConfig().getPeriod() != null) {
+					timer.schedule(timerTask, delay, esjdbc.getScheduleConfig().getPeriod());
+				}
+				else{
+					timer.schedule(timerTask, delay);
+				}
+
 			}
 		}
 
