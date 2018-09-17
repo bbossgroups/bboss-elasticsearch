@@ -165,6 +165,36 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public <T> List<T> sql(Class<T> beanType, String entity, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> sql(Class<T> beanType, String entity, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> sql(Class<T> beanType, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T sqlObject(Class<T> beanType, String entity, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T sqlObject(Class<T> beanType, String entity, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T sqlObject(Class<T> beanType, String entity) throws ElasticSearchException {
+		return null;
+	}
+
 	public void addEvent(Event event,ElasticSearchEventSerializer  elasticSearchEventSerializer) throws ElasticSearchException {
 		init();
 

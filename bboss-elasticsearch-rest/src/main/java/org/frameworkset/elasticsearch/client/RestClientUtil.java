@@ -9,6 +9,8 @@ import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
+import org.frameworkset.elasticsearch.entity.sql.SQLRestResponseHandler;
 import org.frameworkset.elasticsearch.entity.suggest.*;
 import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.scroll.DefualtScrollHandler;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @see https://my.oschina.net/bboss/blog/1556866
+ * @see <p>https://my.oschina.net/bboss/blog/1556866</p>
  */
 public class RestClientUtil extends ClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(RestClientUtil.class);
@@ -1106,6 +1108,79 @@ public class RestClientUtil extends ClientUtil{
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return this.client.executeRequest(path,entity,  responseHandler);
+	}
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T>  sql(Class<T> beanType , String entity ,Map params) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  <T> List<T>  sql(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> List<T>  sql(Class<T> beanType,  String entity) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		return ResultUtil.buildSQLResult(result,beanType);
+	}
+
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   <T> T  sqlObject(Class<T> beanType , String entity ,Map params) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   <T> T  sqlObject(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		return ResultUtil.buildSQLObject(result,beanType);
 	}
 
 	/**

@@ -14,21 +14,28 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.util.ColumnEditorInf;
+import com.frameworkset.util.FieldToColumnEditor;
+import com.frameworkset.util.NoSupportTypeCastException;
 import com.frameworkset.util.ValueObjectUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
+import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
+import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.spi.remote.http.HttpRuntimeException;
+import org.frameworkset.util.BigFile;
 import org.frameworkset.util.ClassUtil;
+import org.frameworkset.util.annotations.DateFormateMeta;
+import org.frameworkset.util.annotations.wraper.ColumnWraper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.util.*;
 
 public abstract class ResultUtil {
 	private static Logger logger = LoggerFactory.getLogger(ResultUtil.class);
@@ -930,6 +937,261 @@ public abstract class ResultUtil {
 		}
 
 
+	}
+
+	/**
+	 * 构建sql查询多条记录对象集合结果
+	 * @param result
+	 * @param type
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> List<T> buildSQLResult(SQLRestResponse result,Class<T> type){
+		if(result == null)
+			return null;
+		if(result.getRows() != null && result.getRows().size() > 0) {
+			List<Object[]> rows = result.getRows();
+			List<T> datas = new ArrayList<>(rows.size());
+			ColumnMeta[] metas = result.getColumns();
+			if (Map.class.isAssignableFrom(type)) {
+				Map<String,Object> data = null;
+				for(int i = 0; i < rows.size(); i ++) {
+					Object[] row = rows.get(i);
+					data = new HashMap<String,Object>(metas.length);
+					for (int j = 0; j < metas.length; j++) {
+						data.put(metas[j].getName(),row[j]);
+					}
+					datas.add((T)data);
+				}
+
+			} else {
+				DateFormat defaultDateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
+				T valueObject = null;
+				for(int i = 0; i < rows.size(); i ++) {
+					Object[] row = rows.get(i);
+					valueObject = buildObject(type,  metas,  row,defaultDateFormat);
+					datas.add(valueObject);
+				}
+			}
+			return datas;
+		}
+		else {
+			return null;
+		}
+
+	}
+
+	/**
+	 * 构建sql查询单条记录对象结果
+	 * @param result
+	 * @param type
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> T buildSQLObject(SQLRestResponse result,Class<T> type){
+		if(result == null)
+			return null;
+		if(result.getRows() != null && result.getRows().size() > 0) {
+			List<Object[]> rows = result.getRows();
+
+			ColumnMeta[] metas = result.getColumns();
+			if (Map.class.isAssignableFrom(type)) {
+				Map<String,Object> data = null;
+
+					Object[] row = rows.get(0);
+					data = new HashMap<String,Object>(metas.length);
+					for (int j = 0; j < metas.length; j++) {
+						data.put(metas[j].getName(),row[j]);
+					}
+					return (T)data;
+
+
+			} else {
+				T valueObject = null;
+				Object[] row = rows.get(0);
+				DateFormat defaultDateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
+				valueObject = buildObject(type,  metas,  row,defaultDateFormat);
+				return valueObject;
+			}
+
+		}
+		else {
+			return null;
+		}
+
+	}
+
+	private static <T> T buildObject(Class<T> valueObjectType,ColumnMeta[] meta,Object[] row,DateFormat defaultDateFormat){
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(valueObjectType);
+		T valueObject = null;
+		if(!beanInfo.isPrimary())
+		{
+			try {
+				valueObject = valueObjectType.newInstance();
+			} catch (InstantiationException e1) {
+				throw new ElasticSearchException(e1);
+			} catch (IllegalAccessException e1) {
+				throw new ElasticSearchException(e1);
+			}
+			//			BeanInfo beanInfo;
+			//			try {
+			//
+			//				beanInfo = Introspector.getBeanInfo(valueObjectType);
+			//			} catch (IntrospectionException e1) {
+			//				throw new NestedSQLException(e1);
+			//			}
+
+			List<ClassUtil.PropertieDescription> attributes = beanInfo.getPropertyDescriptors();
+
+			for (int n = 0; attributes != null && n < attributes.size(); n++) {
+				ClassUtil.PropertieDescription attribute = attributes.get(n);
+				ColumnWraper cl = attribute.getColumn();
+				if(attribute.getIgnoreORMapping() != null || (cl != null && cl.ignorebind()))
+					continue;
+				String attrName = attribute.getName();
+
+
+				//				if(attrName.equals("class"))
+				//					continue;
+				String annotationName = null;
+				if(BigFile.class.isAssignableFrom(attribute.getPropertyType()) )//不支持大字段转换为BigFile接口
+					continue;
+
+				ColumnEditorInf editor = null;
+
+				try {
+					if(cl != null)
+					{
+						editor = cl.editor();
+						annotationName = cl.name();
+						if(annotationName != null && !annotationName.equals(""))
+						{
+							attrName = annotationName;
+						}
+					}
+				} catch (Exception e1) {
+					logger.info(attribute.getName() + " is not a field of bean[" +valueObjectType.getClass().getCanonicalName() + "].");
+				}
+				for (int i = 0; i < meta.length; i++) {
+					ColumnMeta columnMeta = meta[i];
+					String columnName = columnMeta.getName();
+					if(!attrName.equals(columnName))
+						continue;
+					Class type = attribute.getPropertyType();
+					Object propsVal = null;
+					Object rowValue = row[i];
+					try {
+						//					propsVal = ValueExchange.getValueFromResultSet(rs, columnName,
+						//														stmtInfo.getMeta().getColumnType(i + 1),
+						//														type,
+						//														stmtInfo.getDbname());
+						propsVal = getValueFromRow(rowValue,
+								type,
+								editor,cl,columnMeta,defaultDateFormat);
+
+					} catch (Exception e) {
+						StringBuilder err = new StringBuilder(
+								"Build ValueObject for ResultSet Get Column[")
+								.append(columnName).append("] from  ResultSet to ").append(valueObjectType.getClass().getCanonicalName()).append(".")
+								.append(attrName).append("[")
+								.append(type.getName()).append("] failed:").append(
+										e.getMessage());
+						logger.error(err.toString(), e);
+						break;
+					}
+
+					try {
+						if(attribute.canwrite())
+						{
+							attribute.setValue(valueObject, propsVal);
+						}
+						//						attribute.getWriteMethod().invoke(valueObject,
+						//								new Object[] { propsVal });
+						break;
+					} catch (Exception e) {
+						StringBuilder err = new StringBuilder(
+								"Build ValueObject for ResultSet Get Column[")
+								.append(columnName).append("] from  ResultSet to ").append(valueObject).append(".")
+								.append(attrName).append("[")
+								.append(type.getName()).append("] failed:").append(
+										e.getMessage());
+						//						System.out.println(err);
+						logger.error(err.toString(), e);
+						break;
+					}
+
+				}
+
+			}
+		}
+		else
+		{
+
+			valueObject = (T)getValueFromRow(row[0],
+					valueObjectType,
+					 (ColumnEditorInf)null,(ColumnWraper)null,meta[0],defaultDateFormat);
+		}
+		return valueObject;
+	}
+
+	public static Object getValueFromRow(Object value, Class javaType,ColumnEditorInf editor,ColumnWraper columnWraper,ColumnMeta columnMeta,DateFormat defaultDateFormat) {
+
+
+		if(editor == null  || editor instanceof FieldToColumnEditor)
+		{
+			if(value == null)
+				return ValueObjectUtil.getDefaultValue(javaType);
+
+			return convert(value, value.getClass(), javaType,  columnWraper,  columnMeta,  defaultDateFormat);
+		}
+		else
+		{
+			return editor.getValueFromObject(columnWraper,value);
+		}
+
+
+	}
+
+	public static boolean isDateType(ColumnMeta columnMeta){
+		return columnMeta.getType().equals("date");
+	}
+	private static Object convert(Object value, Class type, Class javaType,ColumnWraper columnWraper,ColumnMeta columnMeta,DateFormat defaultDateFormat) {
+		try {
+			if(javaType == null || value == null)
+				return ValueObjectUtil.getDefaultValue(javaType);
+			if(columnWraper == null){
+				if(!isDateType(columnMeta)) {
+					return ValueObjectUtil.typeCast(value, value.getClass(), javaType);
+				}
+				else{
+					return ValueObjectUtil.typeCastWithDateformat(value, value.getClass(), javaType,defaultDateFormat);
+				}
+			}
+			else {
+				if(!isDateType(columnMeta)) {
+					return ValueObjectUtil.typeCast(value, value.getClass(), javaType);
+				}
+				else{
+					if(columnWraper.getDateFormateMeta() == null){
+						return ValueObjectUtil.typeCastWithDateformat(value, value.getClass(), javaType,defaultDateFormat);
+					}
+					else{
+						DateFormateMeta dateFormateMeta = columnWraper.getDateFormateMeta();
+						return ValueObjectUtil.typeCastWithDateformat(value, value.getClass(), javaType, dateFormateMeta.toDateFormat());
+					}
+				}
+
+			}
+		} catch (NumberFormatException e) {
+			throw new ElasticSearchException(e);
+		} catch (IllegalArgumentException e) {
+			throw new ElasticSearchException(e);
+		} catch (NoSupportTypeCastException e) {
+			throw new ElasticSearchException(e);
+		} catch (Exception e) {
+			throw new ElasticSearchException(e);
+		}
+//		return null;
 	}
 	public static <T> ESDatas<T> buildESDatas(RestResponse result,Class<T> type){
 //		if(result instanceof ErrorResponse){

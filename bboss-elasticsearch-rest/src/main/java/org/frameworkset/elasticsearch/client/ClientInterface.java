@@ -954,6 +954,8 @@ public interface ClientInterface {
 	 */
 	public abstract <T> T  executeHttp(String path, String entity,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
+
+
 	/**
 	 * 发送es restful请求，获取String类型json报文
 	 * @param path
@@ -1778,4 +1780,65 @@ public interface ClientInterface {
 	 * @return
 	 */
 	public String removeAlias(String indice,String alias);
+
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> List<T>  sql(Class<T> beanType , String entity ,Map params) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> List<T>  sql(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> List<T>  sql(Class<T> beanType,  String entity ) throws ElasticSearchException ;
+
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T  sqlObject(Class<T> beanType , String entity ,Map params) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T  sqlObject(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException ;
+
 }
