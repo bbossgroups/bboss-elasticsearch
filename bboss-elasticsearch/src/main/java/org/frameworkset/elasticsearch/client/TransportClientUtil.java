@@ -11,6 +11,8 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.EventDeliveryException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
+import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
@@ -166,6 +168,31 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> SQLResult<T> fetchQuery(Class<T> beanType, String entity, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> SQLResult<T> fetchQuery(Class<T> beanType, String entity, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> SQLResult<T> fetchQuery(Class<T> beanType, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType, String cursor, ColumnMeta[] metas) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType,  SQLResult<T> oldPage) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> List<T> sql(Class<T> beanType, String entity, Map params) throws ElasticSearchException {
 		return null;
 	}
@@ -192,6 +219,11 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public <T> T sqlObject(Class<T> beanType, String entity) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String closeSQLCursor(String cursor) throws ElasticSearchException {
 		return null;
 	}
 

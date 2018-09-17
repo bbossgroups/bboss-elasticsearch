@@ -9,8 +9,10 @@ import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponseHandler;
+import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.entity.suggest.*;
 import org.frameworkset.elasticsearch.handler.*;
 import org.frameworkset.elasticsearch.scroll.DefualtScrollHandler;
@@ -1146,6 +1148,45 @@ public class RestClientUtil extends ClientUtil{
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T>  fetchQuery(Class<T> beanType , String entity ,Map params) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  <T> SQLResult<T> fetchQuery(Class<T> beanType , String entity , Object bean) throws ElasticSearchException {
+		return null;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param entity
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String entity) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
+		datas.setClientInterface(this);
+		return datas;
+	}
+
+
 
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
@@ -1181,6 +1222,55 @@ public class RestClientUtil extends ClientUtil{
 	public <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException {
 		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
+	}
+	public String closeSQLCursor(String cursor) throws ElasticSearchException {
+		return this.client.executeRequest("/_xpack/sql/close",
+				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
+				new ESStringResponseHandler(),HTTP_POST);
+	}
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param oldPage
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType, SQLResult<T> oldPage ) throws ElasticSearchException {
+		if(oldPage.getCursor() == null ){
+			return null;
+		}
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",
+														new StringBuilder().append("{\"cursor\": \"").append(oldPage.getCursor()).append("\"}").toString(),
+														new SQLRestResponseHandler());
+
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  oldPage);
+		datas.setClientInterface(this);
+		return datas;
+	}
+
+	/**
+	 * 发送es restful sql请求下一页数据，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType
+	 * @param cursor
+	 * @param metas
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType, String cursor, ColumnMeta[] metas) throws ElasticSearchException{
+		if(cursor == null ){
+			return null;
+		}
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",
+				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
+				new SQLRestResponseHandler());
+
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  metas);
+		datas.setClientInterface(this);
+		return datas;
 	}
 
 	/**

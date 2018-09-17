@@ -6,6 +6,7 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponseHandler;
+import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
@@ -444,6 +445,50 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public <T> List<T>  sql(Class<T> beanType,  String templateName) throws ElasticSearchException {
 		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(esUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
+	}
+
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param templateName
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Map params) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(esUtil,templateName, params),   new SQLRestResponseHandler());
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
+		datas.setClientInterface(this);
+		return datas;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param templateName
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Object bean) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(esUtil,templateName, bean),   new SQLRestResponseHandler());
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
+		datas.setClientInterface(this);
+		return datas;
+	}
+	/**
+	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * @param beanType
+	 * @param templateName
+
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String templateName) throws ElasticSearchException {
+		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(esUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
+		datas.setClientInterface(this);
+		return datas;
 	}
 
 	/**

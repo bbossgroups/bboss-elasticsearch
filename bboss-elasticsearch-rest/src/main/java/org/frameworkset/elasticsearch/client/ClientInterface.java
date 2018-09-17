@@ -3,6 +3,8 @@ package org.frameworkset.elasticsearch.client;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
+import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
+import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.entity.suggest.CompleteRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.PhraseRestResponse;
 import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @see https://my.oschina.net/bboss/blog/1556866
+ * @see <url>https://my.oschina.net/bboss/blog/1556866</url>
  */
 @ThreadSafe
 public interface ClientInterface {
@@ -1780,10 +1782,63 @@ public interface ClientInterface {
 	 * @return
 	 */
 	public String removeAlias(String indice,String alias);
+	/**
+	 * 发送es restful sql 分页查询请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType 返回的对象类型
+	 * @param entity dsl
+	 * @param params 查询参数
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> SQLResult<T>  fetchQuery(Class<T> beanType , String entity ,Map params) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql 分页查询请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> SQLResult<T>  fetchQuery(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql 分页查询请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType
+	 * @param entity
 
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> SQLResult<T> fetchQuery(Class<T> beanType, String entity ) throws ElasticSearchException ;
+	/**
+	 * 发送es restful sql请求下一页数据，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType
+	 * @param cursor
+	 * @param metas
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType, String cursor, ColumnMeta[] metas) throws ElasticSearchException;
+	/**
+	 * 发送es restful sql请求下一页数据，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
+	 * @param beanType
+	 * @param oldPage
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> SQLResult<T> fetchQueryByCursor(Class<T> beanType, SQLResult<T> oldPage ) throws ElasticSearchException;
 
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 	 * @param <T>
@@ -1793,6 +1848,7 @@ public interface ClientInterface {
 	public abstract <T> List<T>  sql(Class<T> beanType , String entity ,Map params) throws ElasticSearchException ;
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 	 * @param <T>
@@ -1802,6 +1858,7 @@ public interface ClientInterface {
 	public abstract <T> List<T>  sql(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException ;
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 
@@ -1814,6 +1871,7 @@ public interface ClientInterface {
 
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 	 * @param <T>
@@ -1823,6 +1881,7 @@ public interface ClientInterface {
 	public abstract <T> T  sqlObject(Class<T> beanType , String entity ,Map params) throws ElasticSearchException ;
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 	 * @param <T>
@@ -1832,6 +1891,7 @@ public interface ClientInterface {
 	public abstract <T> T  sqlObject(Class<T> beanType , String entity ,Object bean) throws ElasticSearchException ;
 	/**
 	 * 发送es restful sql请求/_xpack/sql，获取返回值，返回值类型由beanType决定
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/sql-rest.html
 	 * @param beanType
 	 * @param entity
 
@@ -1840,5 +1900,5 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException ;
-
+	public String closeSQLCursor(String cursor) throws ElasticSearchException ;
 }

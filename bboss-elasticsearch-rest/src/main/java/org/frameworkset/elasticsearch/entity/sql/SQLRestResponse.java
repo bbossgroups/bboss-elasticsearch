@@ -2,11 +2,11 @@ package org.frameworkset.elasticsearch.entity.sql;
 
 import java.util.List;
 
-public class SQLRestResponse<T> {
+public class SQLRestResponse {
 	private ColumnMeta[] columns;
 	private List<Object[]> rows;
 	private String cursor;
-	private List<T> datas;
+
 	public SQLRestResponse() {
 		// TODO Auto-generated constructor stub
 	}
@@ -34,11 +34,4 @@ public class SQLRestResponse<T> {
 		this.cursor = cursor;
 	}
 
-	public List<T> getDatas() {
-		return datas;
-	}
-
-	public void setDatas(List<T> datas) {
-		this.datas = datas;
-	}
 }

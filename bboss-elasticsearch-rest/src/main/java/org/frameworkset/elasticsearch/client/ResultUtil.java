@@ -22,6 +22,7 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
+import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
@@ -939,6 +940,31 @@ public abstract class ResultUtil {
 
 	}
 
+	public static <T> SQLResult<T> buildFetchSQLResult(SQLRestResponse result,Class<T> beanType,SQLResult<T> oldPage) {
+		if(oldPage != null)
+			result.setColumns(oldPage.getColumns());
+		List<T> datas = ResultUtil.buildSQLResult(result, beanType);
+		SQLResult<T> _result = new SQLResult<T>();
+		_result.setColumns(result.getColumns());
+		_result.setRows(result.getRows());
+		_result.setCursor(result.getCursor());
+		_result.setDatas(datas);
+		_result.setBeanType(beanType);
+		return _result;
+	}
+
+	public static <T> SQLResult<T> buildFetchSQLResult(SQLRestResponse result,Class<T> beanType,ColumnMeta[] metas) {
+
+		result.setColumns(metas);
+		List<T> datas = ResultUtil.buildSQLResult(result, beanType);
+		SQLResult<T> _result = new SQLResult<T>();
+		_result.setColumns(result.getColumns());
+		_result.setRows(result.getRows());
+		_result.setCursor(result.getCursor());
+		_result.setDatas(datas);
+		_result.setBeanType(beanType);
+		return _result;
+	}
 	/**
 	 * 构建sql查询多条记录对象集合结果
 	 * @param result
@@ -947,7 +973,7 @@ public abstract class ResultUtil {
 	 * @return
 	 */
 	public static <T> List<T> buildSQLResult(SQLRestResponse result,Class<T> type){
-		if(result == null)
+		if(result == null || result.getRows() == null || result.getRows().size() == 0)
 			return null;
 		if(result.getRows() != null && result.getRows().size() > 0) {
 			List<Object[]> rows = result.getRows();
