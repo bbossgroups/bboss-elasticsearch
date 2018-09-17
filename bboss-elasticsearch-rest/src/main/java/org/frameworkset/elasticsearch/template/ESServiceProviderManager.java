@@ -23,20 +23,21 @@ import org.frameworkset.spi.assemble.ServiceProviderManager;
 public class ESServiceProviderManager extends ServiceProviderManager {
 	public static String var_pre = "@{";
 	public static String var_end = "}";
+	/**
+	 * json转义指示符
+	 */
 	public static String jsonEscapePre = "@\"\"\"";
 	public static String jsonEscapeEnd = "\"\"\"";
+	/**
+	 * 回车换行转义指示符：转义为空格
+	 */
+	public static String escapeRNPre = "#\"\"\"";
+	public static String escapeRNEnd = "\"\"\"";
 	public ESServiceProviderManager(BaseApplicationContext applicationContext, String charset) {
 		super(applicationContext, charset);
 		// TODO Auto-generated constructor stub
 	}
-	@Override
-	public String getEscapePre(){
-		return jsonEscapePre;
-	}
-	@Override
-	public String getEscapeEnd(){
-		return jsonEscapeEnd;
-	}
+
 
 	public ESServiceProviderManager(BaseApplicationContext applicationContext) {
 		super(applicationContext);
@@ -55,9 +56,31 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 		return true;
 	}
 	@Override
+	public String getEscapePre(){
+		return jsonEscapePre;
+	}
+	@Override
+	public String getEscapeEnd(){
+		return jsonEscapeEnd;
+	}
+
+	@Override
+	public String getEscapeRNPre(){
+		return escapeRNPre;
+	}
+	@Override
+	public String getEscapeRNEnd(){
+		return escapeRNEnd;
+	}
+	@Override
 	public void escapeValue(String value,StringBuilder builder){
 		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
 		charEscapeUtil.writeString(value,true);
+	}
+
+	@Override
+	public void escapeRN(String value,StringBuilder builder){
+		builder.append(value.replaceAll("\r|\n+"," "));
 	}
 
 }
