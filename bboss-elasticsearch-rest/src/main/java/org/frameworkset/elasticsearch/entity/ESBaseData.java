@@ -11,7 +11,7 @@ public abstract class ESBaseData implements Serializable{
 	private String  type;
 	private String  id;
 	private Map<String,List<Object>> fields;
-	private int version;
+	private long version;
 	private String index;//"_index": "trace-2017.09.01",
 	private Map<String,List<Object>> highlight;
 	private Object[] sort;
@@ -45,11 +45,11 @@ public abstract class ESBaseData implements Serializable{
 		this.fields = fields;
 	}
 
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(long version) {
 		this.version = version;
 	}
 

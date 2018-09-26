@@ -17,7 +17,7 @@ public class BaseSearchHit implements Serializable {
 	private Double  score;
 	private Map<String,List<Object>> fields;
 	@JsonProperty("_version")
-	private int version;
+	private long version;
 	@JsonProperty("_routing")
 	private Object routing;
 	@JsonProperty("_parent")
@@ -120,11 +120,11 @@ public class BaseSearchHit implements Serializable {
 		this.fields = fields;
 	}
 
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(long version) {
 		this.version = version;
 	}
 
