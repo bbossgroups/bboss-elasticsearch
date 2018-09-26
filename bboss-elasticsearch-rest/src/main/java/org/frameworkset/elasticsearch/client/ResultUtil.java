@@ -342,7 +342,7 @@ public abstract class ResultUtil {
 
 			if(_buckets instanceof List) {
 				List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<>(buckets.size());
+				List<T> datas = new ArrayList<T>(buckets.size());
 				ret.setAggDatas(datas);
 				for (Map<String, Object> bucket : buckets) {
 					try {
@@ -378,7 +378,7 @@ public abstract class ResultUtil {
 			else
 			{
 				Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<>(buckets.size());
+				List<T> datas = new ArrayList<T>(buckets.size());
 				ret.setAggDatas(datas);
 				Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
 				Map<String, Object> bucket = null;
@@ -977,7 +977,7 @@ public abstract class ResultUtil {
 			return null;
 		if(result.getRows() != null && result.getRows().size() > 0) {
 			List<Object[]> rows = result.getRows();
-			List<T> datas = new ArrayList<>(rows.size());
+			List<T> datas = new ArrayList<T>(rows.size());
 			ColumnMeta[] metas = result.getColumns();
 			if (Map.class.isAssignableFrom(type)) {
 				Map<String,Object> data = null;

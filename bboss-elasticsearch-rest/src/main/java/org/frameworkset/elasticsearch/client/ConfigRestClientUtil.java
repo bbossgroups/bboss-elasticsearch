@@ -1052,7 +1052,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	private <T> ESDatas<T> _scrollSliceParallel(String path,final String dslTemplate,Map params ,
 									  final String scroll  ,final Class<T> type,
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		final List<String> scrollIds = new ArrayList<>();
+		final List<String> scrollIds = new ArrayList<String>();
 		long starttime = System.currentTimeMillis();
 		//scroll slice分页检索
 		Integer mx = (Integer) params.get("sliceMax");
@@ -1064,7 +1064,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		final String _path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
 				new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
 		ExecutorService executorService = this.client.getSliceScrollQueryExecutorService();
-		List<Future> tasks = new ArrayList<>();
+		List<Future> tasks = new ArrayList<Future>();
 		//辅助方法，用来累计每次scroll获取到的记录数
 		final ParallelSliceScrollResult sliceScrollResult = new ParallelSliceScrollResult();
 		if(scrollHandler != null)
@@ -1120,7 +1120,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	private <T> ESDatas<T> _scrollSlice(String path,final String dslTemplate,Map params ,
 									   final String scroll  ,final Class<T> type,
 									   ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		List<String> scrollIds = new ArrayList<>();
+		List<String> scrollIds = new ArrayList<String>();
 		long starttime = System.currentTimeMillis();
 		//scroll slice分页检索
 		Integer mx = (Integer) params.get("sliceMax");

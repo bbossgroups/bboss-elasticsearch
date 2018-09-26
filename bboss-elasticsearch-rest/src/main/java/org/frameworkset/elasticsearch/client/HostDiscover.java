@@ -144,7 +144,7 @@ public class HostDiscover extends Thread{
 					}
 				}
 			}
-		} catch (Throwable var16) {
+		} catch (IOException var16) {
 			var3 = var16;
 			throw var16;
 		} finally {

@@ -211,17 +211,19 @@ public class BucketPath {
     String replacementString = "";
     try {
       InetAddress addr = InetAddress.getLocalHost();
-      switch (key.toLowerCase()) {
-        case "localhost":
-          replacementString = addr.getHostName();
-          break;
-        case "ip":
+      String lkey = key.toLowerCase();
+      if(lkey.equals("localhost")) {
+
+        replacementString = addr.getHostName();
+      }
+      else if(lkey.equals("ip")) {
           replacementString = addr.getHostAddress();
-          break;
-        case "fqdn":
+      }
+      else if(lkey.equals("fqdn")) {
+
           replacementString = addr.getCanonicalHostName();
-          break;
-        default:
+      }
+      else {
           throw new RuntimeException("The static escape string '" + key + "'"
                   + " was provided but does not match any of (localhost,IP,FQDN)");
       }

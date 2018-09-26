@@ -1734,7 +1734,7 @@ public class RestClientUtil extends ClientUtil{
 			}
 			List<T> datas = response.getDatas();//第一页数据
 
-			List<String> scrollIds = new ArrayList<>();//用于记录每次scroll的scrollid，便于检索完毕后清除
+			List<String> scrollIds = new ArrayList<String>();//用于记录每次scroll的scrollid，便于检索完毕后清除
 //			long totalSize = response.getTotalSize();//总记录数
 			String scrollId = response.getScrollId();//第一次的scrollid
 			if (scrollId != null)

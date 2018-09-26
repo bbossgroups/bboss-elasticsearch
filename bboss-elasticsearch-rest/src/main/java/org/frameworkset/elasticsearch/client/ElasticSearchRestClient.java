@@ -68,7 +68,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected long healthCheckInterval = -1l;
 	protected RestSeachExecutor restSeachExecutor;
 //	private HttpClient httpClient;
-	protected Map<String, String> headers = new HashMap<>();
+	protected Map<String, String> headers = new HashMap<String, String>();
 	protected boolean showTemplate = false;
 
 	protected List<ESAddress> addressList;
