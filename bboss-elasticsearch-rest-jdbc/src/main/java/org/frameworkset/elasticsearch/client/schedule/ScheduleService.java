@@ -362,6 +362,9 @@ public class ScheduleService {
 			else
 				params.put(this.sqlInfo.getLastValueVarName(), new Date((Long)this.currentStatus.getLastValue()));
 		}
+		if(logger.isInfoEnabled()){
+			logger.info(new StringBuilder().append("Current values: ").append(params).toString());
+		}
 		return params;
 	}
 	public void stop(){
