@@ -35,7 +35,8 @@ public class DefualtScrollHandler<T> implements ScrollHandler<T> {
 	@Override
 	public void handle(ESDatas<T> response) throws Exception {
 		List<T> datas = firstResponse.getDatas();
-		datas.addAll(response.getDatas());
+		if(datas != null)
+			datas.addAll(response.getDatas());
 	}
 
 }

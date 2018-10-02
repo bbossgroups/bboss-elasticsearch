@@ -38,12 +38,13 @@ public class ParallelSliceScrollHandler<T> extends DefualtSliceScrollHandler<T> 
 	public void handle(ESDatas<T> response) throws Exception {
 
 		List<T> datas = firstResponse.getDatas();
-		try {
-			lockSetSliceResponse.lock();
-			datas.addAll(response.getDatas());
-		}
-		finally {
-			lockSetSliceResponse.unlock();
+		if(datas != null) {
+			try {
+				lockSetSliceResponse.lock();
+				datas.addAll(response.getDatas());
+			} finally {
+				lockSetSliceResponse.unlock();
+			}
 		}
 	}
 }

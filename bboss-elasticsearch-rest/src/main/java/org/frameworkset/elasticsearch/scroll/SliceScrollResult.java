@@ -42,6 +42,8 @@ public class SliceScrollResult<T> implements SliceScrollResultInf<T> {
 		return sliceResponse;
 	}
 	public void complete(){
+		if(sliceResponse == null)
+			return ;
 		this.sliceResponse.setTotalSize(this.realTotalSize);
 		if(!useDefaultScrollHandler)//结果自行处理，所以清空默认结果
 			this.sliceResponse.setDatas(null);

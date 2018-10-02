@@ -30,6 +30,8 @@ import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +67,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected final Pattern pattern = Pattern.compile(TTL_REGEX,
 			Pattern.CASE_INSENSITIVE);
 
-
+	private ClientInterface detaultClientInterface;
 
 
 
@@ -138,18 +140,47 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		return indexNameBuilder;
 	}
 
+	/**
+	 * 返回默认的elasticsearch客户端工具api，单例模式，多线程安全
+	 * @return
+	 */
 	public ClientInterface getRestClientUtil() {
-		if(restClient != null)
-			return this.restClient.getClientUtil(this.indexNameBuilder);
-		else
-			return null;
-	}
 
+		if(detaultClientInterface == null) {
+			if (restClient != null) {
+				synchronized (this) {
+					if(detaultClientInterface != null)
+						return detaultClientInterface;
+					return detaultClientInterface = this.restClient.getClientUtil(this.indexNameBuilder);
+				}
+			}
+			else
+				return null;
+		}
+		else {
+			return detaultClientInterface;
+		}
+	}
+	private Map<String,ClientInterface> configClientUtis = new HashMap<String,ClientInterface>();
 	public ClientInterface getConfigRestClientUtil(String configFile) {
-		if(restClient != null)
-			return this.restClient.getConfigClientUtil(this.indexNameBuilder,configFile);
-		else
-			return null;
+		ClientInterface clientInterface = configClientUtis.get(configFile);
+		if(clientInterface != null)
+			return clientInterface;
+		else {
+			if (restClient != null) {
+				synchronized (configClientUtis) {
+					clientInterface = configClientUtis.get(configFile);
+					if(clientInterface != null)
+						return clientInterface;
+					clientInterface = this.restClient.getConfigClientUtil(this.indexNameBuilder, configFile);
+					configClientUtis.put(configFile,clientInterface);
+					return clientInterface;
+				}
+			}
+			else {
+				return null;
+			}
+		}
 	} 
  
 
@@ -308,6 +339,8 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if (restClient != null) {
 			restClient.close();
 		}
+		this.configClientUtis.clear();
+		this.detaultClientInterface = null;
 		if(this.sliceScrollQueryExecutorService != null){
 			this.sliceScrollQueryExecutorService.shutdown();
 		}

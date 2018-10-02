@@ -36,7 +36,8 @@ public class DefualtSliceScrollHandler<T> implements ScrollHandler<T> {
 	public void handle(ESDatas<T> response) throws Exception {
 
 		List<T> datas = firstResponse.getDatas();
-		datas.addAll(response.getDatas());
+		if(datas != null)
+			datas.addAll(response.getDatas());
 
 	}
 }

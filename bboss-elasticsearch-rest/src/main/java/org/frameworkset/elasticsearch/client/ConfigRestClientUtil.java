@@ -1174,21 +1174,23 @@ public class ConfigRestClientUtil extends RestClientUtil {
 									SliceScrollResultInf<T> sliceScrollResult) throws Exception {
 		try{
 			ESDatas<T> sliceResponse = searchList(path, dslTemplate, params, type);
-			ScrollHandler<T> _scrollHandler = sliceScrollResult.getScrollHandler();
-			if (_scrollHandler == null) {
-				_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse);
-			}
-			else {
-				_scrollHandler.handle(sliceResponse);
-				sliceScrollResult.setSliceResponse(sliceResponse);
-			}
+
 			List<T> sliceDatas = sliceResponse.getDatas();
 			String scrollId = sliceResponse.getScrollId();
+//			System.out.println("sliceDatas:"+i+":" + sliceDatas);
+//			System.out.println("scrollId:"+i+":" + scrollId);
 			if (scrollId != null)
 				scrollIds.add(scrollId);
-	//					System.out.println("totalSize:" + totalSize);
-	//					System.out.println("scrollId:" + scrollId);
+
 			if (sliceDatas != null && sliceDatas.size() > 0) {//每页100条记录，迭代scrollid，遍历scroll分页结果
+				ScrollHandler<T> _scrollHandler = sliceScrollResult.getScrollHandler();
+				if (_scrollHandler == null) {
+					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse);
+				}
+				else {
+					_scrollHandler.handle(sliceResponse);
+					sliceScrollResult.setSliceResponse(sliceResponse);
+				}
 				sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
 				ESDatas<T> _sliceResponse = null;
 				List<T> _sliceDatas = null;

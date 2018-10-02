@@ -37,6 +37,9 @@ public class ParallelSliceScrollResult<T> implements SliceScrollResultInf<T> {
 	private ScrollHandler<T> scrollHandler;
 	private boolean useDefaultScrollHandler = false;
 
+	public ParallelSliceScrollResult(){
+	}
+
 	//辅助方法，用来累计每次scroll获取到的记录数
 	public void incrementSize(int size){
 		try {
@@ -52,6 +55,9 @@ public class ParallelSliceScrollResult<T> implements SliceScrollResultInf<T> {
 		return sliceResponse;
 	}
 	public void complete(){
+		if(sliceResponse == null){
+			return;
+		}
 		this.sliceResponse.setTotalSize(this.realTotalSize);
 		if(!useDefaultScrollHandler)//结果自行处理，所以清空默认结果
 			this.sliceResponse.setDatas(null);
