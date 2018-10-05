@@ -68,6 +68,7 @@ public class ESUtil {
 	protected boolean hasrefs;
 	protected String templateFile;
 	protected String realTemplateFile;
+	protected boolean destroyed = false;
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
@@ -728,6 +729,7 @@ public class ESUtil {
 	
 	void _destroy()
 	{
+		destroyed = true;
 		if(esInfos != null)
 		{
 			this.esInfos.clear();
@@ -748,6 +750,7 @@ public class ESUtil {
 	           
 	void reinit()
 	{
+
 		if(esInfos != null)
 		{
 			this.esInfos.clear();
@@ -764,7 +767,7 @@ public class ESUtil {
 		templatecontext = new ESSOAFileApplicationContext(file);		
 		 trimValues();
 
-		
+		destroyed = false;
 		
 	}
 	 
@@ -889,7 +892,9 @@ public class ESUtil {
 	
 	private ESInfo getReferESInfo( String templateName)
 	{
-		ESRef ref = this.esrefs.get(templateName);
+		if(assertDestoried())
+			return null;
+		ESRef ref = this.esrefs != null ?this.esrefs.get(templateName):null;
 		if(ref != null)
 			return ref.getESInfo();
 		else
@@ -897,6 +902,8 @@ public class ESUtil {
 	}
 
 	public ESInfo getESInfo(  String templateName) {
+		if(assertDestoried())
+			return null;
 		ESInfo sql = null;
 		if(this.hasrefs)
 		{
@@ -904,9 +911,9 @@ public class ESUtil {
 			if(sql != null)
 				return sql;
 		}
-		 
-		
-		sql = this.esInfos.get(templateName);
+
+		if(esInfos != null)
+			sql = this.esInfos.get(templateName);
 		
 		return sql;
 
@@ -914,6 +921,8 @@ public class ESUtil {
 	
 	public String getPlainTemplate( String templateName) 
 	{
+		if(assertDestoried())
+			return null;
 		ESInfo sql = null;
 		if(this.hasrefs)
 		{
@@ -921,9 +930,9 @@ public class ESUtil {
 			if(sql != null)
 				return sql.getTemplate();
 		}
-	 
-		
-		sql = this.esInfos.get(templateName);
+
+		if(esInfos != null)
+			sql = this.esInfos.get(templateName);
 		 
 		if(sql != null)
 			return sql.getTemplate();
@@ -932,14 +941,21 @@ public class ESUtil {
 	}
 	private String getReferTemplate(  String templateName)
 	{
-		ESRef ref = this.esrefs.get(templateName);
+		if(assertDestoried())
+			return null;
+		ESRef ref = this.esrefs != null ?this.esrefs.get(templateName):null;
 		if(ref != null)
 			return ref.getTemplate();
 		else
 			return null;
 	}
+	private boolean assertDestoried(){
+		return this.destroyed;
+	}
+
 	public String getTemplate( String templateName) {
-		
+		if(assertDestoried())
+			return null;
 		if(this.hasrefs)
 		{
 			String sql = this.getReferTemplate(templateName);
@@ -947,7 +963,8 @@ public class ESUtil {
 				return sql;
 		}
 		 
-		ESInfo esInfo = esInfos.get(templateName);
+		ESInfo esInfo = esInfos != null?
+					esInfos.get(templateName):null;
 		 
 		 	
 		return esInfo != null?esInfo.getTemplate():null;
@@ -955,7 +972,10 @@ public class ESUtil {
 	}
 	private String getReferTemplate( String templateName,Map variablevalues)
 	{
-		ESRef ref = this.esrefs.get(templateName);
+		if(this.assertDestoried()){
+			return null;
+		}
+		ESRef ref = this.esrefs != null ?this.esrefs.get(templateName):null;
 		if(ref != null)
 			return ref.getTemplate(variablevalues);
 		else
@@ -963,6 +983,9 @@ public class ESUtil {
 	}
 	
 	public String getTemplate( String templateName,Map variablevalues) {
+		if(this.assertDestoried()){
+			return null;
+		}
 		if(this.hasrefs)
 		{
 			String sql = this.getReferTemplate(templateName,variablevalues);
@@ -971,7 +994,7 @@ public class ESUtil {
 		}
 		 
 		String newsql = null;
-		ESInfo sql =  this.esInfos.get(templateName);
+		ESInfo sql =  this.esInfos != null ?this.esInfos.get(templateName):null;
 		
 		
 		if(sql != null )
