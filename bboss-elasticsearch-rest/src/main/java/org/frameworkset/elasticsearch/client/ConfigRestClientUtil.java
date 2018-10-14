@@ -1049,7 +1049,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		Integer mx = (Integer) params.get("sliceMax");
 		if(mx == null)
-			throw new ElasticSearchException("Slice parameters exception: must set max in params!");
+			throw new ElasticSearchException("Slice parameters exception: must set sliceMax in params!");
 		final int max = mx.intValue();
 		SliceScroll sliceScroll = new SliceScroll() {
 			@Override
@@ -1134,7 +1134,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		//scroll slice分页检索
 		Integer mx = (Integer) params.get("sliceMax");
 		if(mx == null)
-			throw new ElasticSearchException("Slice parameters exception: must set max in params!");
+			throw new ElasticSearchException("Slice parameters exception: must set sliceMax in params!");
 		final int max = mx.intValue();
 //		final CountDownLatch countDownLatch = new CountDownLatch(max);//线程任务完成计数器，每个线程对应一个sclice,每运行完一个slice任务,countDownLatch计数减去1
 
