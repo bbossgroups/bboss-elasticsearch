@@ -1466,11 +1466,53 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchAll(String index,  Class<T> type) throws ElasticSearchException{
-		String queryAll = "{\"query\": {\"match_all\": {}}}";
-//		return this.searchList(new StringBuilder().append(index).append("/_search").toString(),queryAll,type);
 
-		RestResponse result = this.client.executeRequest(new StringBuilder().append(index).append("/_search").toString(),queryAll,   new ElasticSearchResponseHandler( type));
-		return ResultUtil.buildESDatas(result,type);
+		return searchAll(  index,    DEFAULT_FETCHSIZE , type) ;
+//		return this.searchList(new StringBuilder().append(index).append("/_search").toString(),queryAll,type);
+//
+//		RestResponse result = this.client.executeRequest(new StringBuilder().append(index).append("/_search").toString(),queryAll,   new ElasticSearchResponseHandler( type));
+//		return ResultUtil.buildESDatas(result,type);
+	}
+
+	/**
+	 * 检索索引所有数据
+	 * @param index
+	 * @param fetchSize
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  <T> ESDatas<T> searchAll(String index,  int fetchSize ,Class<T> type) throws ElasticSearchException{
+		return searchAll(index,  fetchSize ,(ScrollHandler<T>) null,type);
+	}
+
+	/**
+	 * 检索索引所有数据
+	 * @param index
+	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type) throws ElasticSearchException{
+		String queryAll = "{ \"size\":"+fetchSize+",\"query\": {\"match_all\": {}}}";
+		return this.scroll(index+"/_search",queryAll,"1m",type,scrollHandler);
+	}
+
+	/**
+	 * 检索索引所有数据,每批次返回默认为5000条数据，
+	 * @param index
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler , Class<T> type) throws ElasticSearchException{
+		return searchAll(  index,  DEFAULT_FETCHSIZE ,  scrollHandler,type);
 	}
 
 

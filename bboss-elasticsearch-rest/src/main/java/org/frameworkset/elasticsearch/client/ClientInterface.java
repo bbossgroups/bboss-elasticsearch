@@ -30,6 +30,7 @@ public interface ClientInterface {
 	public final String VERSION_TYPE_EXTERNAL = "external";
 	public final String VERSION_TYPE_EXTERNAL_GT = "external_gt";
 	public final String VERSION_TYPE_EXTERNAL_GTE = "external_gte";
+	public final int DEFAULT_FETCHSIZE = 5000;
 
 	/**
 	 * 获取动态索引表名称
@@ -1225,12 +1226,45 @@ public interface ClientInterface {
 	/**
 	 * 检索索引所有数据
 	 * @param index
+	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,Class<T> type) throws ElasticSearchException;
+
+	/**
+	 * 检索索引所有数据,每批次返回默认为5000条数据，
+	 * @param index
 	 * @param type
 	 * @param <T>
 	 * @return
 	 * @throws ElasticSearchException
 	 */
 	public abstract <T> ESDatas<T> searchAll(String index,  Class<T> type) throws ElasticSearchException;
+	/**
+	 * 检索索引所有数据
+	 * @param index
+	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type) throws ElasticSearchException;
+
+	/**
+	 * 检索索引所有数据,每批次返回默认为5000条数据，
+	 * @param index
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type) throws ElasticSearchException;
 
 	/**
 	 * scroll search
