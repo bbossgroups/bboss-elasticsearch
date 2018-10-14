@@ -1266,6 +1266,53 @@ public interface ClientInterface {
 	 */
 	public abstract <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type) throws ElasticSearchException;
 
+	/***************************slice searchAll start****************************/
+
+	/**
+	 * 并行检索索引所有数据
+	 * @param index
+	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,Class<T> type,int thread) throws ElasticSearchException;
+
+	/**
+	 * 并行检索索引所有数据,每批次返回默认为5000条数据，
+	 * @param index
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,  Class<T> type,int thread) throws ElasticSearchException;
+	/**
+	 * 并行检索索引所有数据
+	 * @param index
+	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type,int thread) throws ElasticSearchException;
+
+	/**
+	 * 并行检索索引所有数据,每批次返回默认为5000条数据，
+	 * @param index
+	 * @param scrollHandler 每批数据处理方法
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException;
+
+	/************************************slice searchAll end*****************************/
+
 	/**
 	 * scroll search
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
@@ -1280,6 +1327,7 @@ public interface ClientInterface {
 
 	/**
 	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate
 	 * @param scroll
@@ -1292,6 +1340,7 @@ public interface ClientInterface {
 	public abstract <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 	/**
 	 * 一次性返回scroll检索结果
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate
 	 * @param scroll
@@ -1305,6 +1354,7 @@ public interface ClientInterface {
 
 	/**
 	 * 一次性返回scroll检索结果
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate
 	 * @param scroll
@@ -1320,6 +1370,7 @@ public interface ClientInterface {
 
 	/**
 	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate
 	 * @param scroll
@@ -1334,6 +1385,7 @@ public interface ClientInterface {
 
 	/**
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate here is a example dsltemplate: must contain sliceId,sliceMax varialbe
 	 * 	 *    <property name="scrollSliceQuery">
@@ -1366,6 +1418,7 @@ public interface ClientInterface {
 
 	/**
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param dslTemplate here is a example dsltemplate: must contain sliceId,sliceMax varialbe
 	 *    <property name="scrollSliceQuery">
@@ -1396,6 +1449,7 @@ public interface ClientInterface {
 
 	/**
 	 * 一次性返回scroll检索结果
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param entity
 	 * @param scroll
@@ -1409,6 +1463,7 @@ public interface ClientInterface {
 
 	/**
 	 * scroll检索,每次检索结果列表交给scrollHandler回调函数处理
+	 * https://my.oschina.net/bboss/blog/1942562
 	 * @param path
 	 * @param entity
 	 * @param scroll
@@ -1425,6 +1480,7 @@ public interface ClientInterface {
 	/**
 	 * scroll search
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-scroll.html
+	 *
 	 * @param scroll
 	 * @param scrollId
 

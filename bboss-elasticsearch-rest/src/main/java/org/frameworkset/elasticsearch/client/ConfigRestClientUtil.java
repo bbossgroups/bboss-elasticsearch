@@ -13,10 +13,8 @@ import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.handler.ESMapResponseHandler;
 import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
-import org.frameworkset.elasticsearch.scroll.ParallelSliceScrollResult;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.scroll.SliceScrollResult;
-import org.frameworkset.elasticsearch.scroll.SliceScrollResultInf;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESTemplateHelper;
 import org.frameworkset.elasticsearch.template.ESUtil;
@@ -28,9 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 /**
  * 通过配置文件加载dsl模板组件
@@ -1049,75 +1044,89 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 
 
-	private <T> ESDatas<T> _scrollSliceParallel(String path,final String dslTemplate,Map params ,
+	private <T> ESDatas<T> _scrollSliceParallel(String path,final String dslTemplate,final Map params ,
 									  final String scroll  ,final Class<T> type,
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		final List<String> scrollIds = new ArrayList<String>();
-		long starttime = System.currentTimeMillis();
-		//scroll slice分页检索
 		Integer mx = (Integer) params.get("sliceMax");
 		if(mx == null)
 			throw new ElasticSearchException("Slice parameters exception: must set max in params!");
 		final int max = mx.intValue();
-//		final CountDownLatch countDownLatch = new CountDownLatch(max);//线程任务完成计数器，每个线程对应一个sclice,每运行完一个slice任务,countDownLatch计数减去1
-
-		final String _path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
-				new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
-		ExecutorService executorService = this.client.getSliceScrollQueryExecutorService();
-		List<Future> tasks = new ArrayList<Future>();
-		//辅助方法，用来累计每次scroll获取到的记录数
-		final ParallelSliceScrollResult sliceScrollResult = new ParallelSliceScrollResult();
-		if(scrollHandler != null)
-			sliceScrollResult.setScrollHandler(scrollHandler);
-
-		try {
-			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
-				final int i = j;
+		SliceScroll sliceScroll = new SliceScroll() {
+			@Override
+			public String buildSliceDsl(int sliceId, int max) {
 				final Map _params = new HashMap();
 				_params.putAll(params);
-				_params.put("sliceId", i);
-				tasks.add(executorService.submit(new Runnable() {//多线程并行执行scroll操作做，每个线程对应一个sclice
-					@Override
-					public void run() {
-
-						try {
-
-							_doSliceScroll( i, _path,
-									dslTemplate,_params,
-									scroll, type,
-									scrollIds,
-									sliceScrollResult);
-
-						} catch (ElasticSearchException e) {
-							throw e;
-						} catch (Exception e) {
-							throw new ElasticSearchException("slice query task["+i+"] failed:",e);
-						}
-					}
-
-				}));
+				_params.put("sliceId", sliceId);
+				String sliceDsl = ESTemplateHelper.evalTemplate(esUtil,dslTemplate, _params);
+				return sliceDsl;
+//				return buildSliceDsl(i,max, params, dslTemplate);
 			}
-		}
-		finally {
-			waitTasksComplete(tasks);
-		}
-
-		//打印处理耗时和实际检索到的数据
-		if(logger.isDebugEnabled()) {
-			long endtime = System.currentTimeMillis();
-			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
-		}
-
-		//处理完毕后清除scroll上下文信息
-		if(scrollIds.size() > 0) {
-			deleteScrolls(scrollIds);
-//			System.out.println(scrolls);
-		}
-		sliceScrollResult.complete();
-		return sliceScrollResult.getSliceResponse();
+		};
+		return _slice(path,  scrollHandler,type,max, scroll, sliceScroll);
+//		final List<String> scrollIds = new ArrayList<String>();
+//		long starttime = System.currentTimeMillis();
+//		//scroll slice分页检索
+//
+////		final CountDownLatch countDownLatch = new CountDownLatch(max);//线程任务完成计数器，每个线程对应一个sclice,每运行完一个slice任务,countDownLatch计数减去1
+//
+//		final String _path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
+//				new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
+//		ExecutorService executorService = this.client.getSliceScrollQueryExecutorService();
+//		List<Future> tasks = new ArrayList<Future>();
+//		//辅助方法，用来累计每次scroll获取到的记录数
+//		final ParallelSliceScrollResult sliceScrollResult = new ParallelSliceScrollResult();
+//		if(scrollHandler != null)
+//			sliceScrollResult.setScrollHandler(scrollHandler);
+//
+//		try {
+//			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
+//				final int i = j;
+//				final String sliceDsl = sliceScroll.buildSliceDsl(i,max);
+////				final Map _params = new HashMap();
+////				_params.putAll(params);
+////				_params.put("sliceId", i);
+//				tasks.add(executorService.submit(new Runnable() {//多线程并行执行scroll操作做，每个线程对应一个sclice
+//					@Override
+//					public void run() {
+//
+//						try {
+//
+//							_doSliceScroll( i, _path,
+//									sliceDsl,
+//									scroll, type,
+//									scrollIds,
+//									sliceScrollResult);
+//
+//						} catch (ElasticSearchException e) {
+//							throw e;
+//						} catch (Exception e) {
+//							throw new ElasticSearchException("slice query task["+i+"] failed:",e);
+//						}
+//					}
+//
+//				}));
+//			}
+//		}
+//		finally {
+//			waitTasksComplete(tasks);
+//		}
+//
+//		//打印处理耗时和实际检索到的数据
+//		if(logger.isDebugEnabled()) {
+//			long endtime = System.currentTimeMillis();
+//			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
+//		}
+//
+//		//处理完毕后清除scroll上下文信息
+//		if(scrollIds.size() > 0) {
+//			deleteScrolls(scrollIds);
+////			System.out.println(scrolls);
+//		}
+//		sliceScrollResult.complete();
+//		return sliceScrollResult.getSliceResponse();
 	}
 
-	private <T> ESDatas<T> _scrollSlice(String path,final String dslTemplate,Map params ,
+	private <T> ESDatas<T> _scrollSlice(final String path,final String dslTemplate,final Map params ,
 									   final String scroll  ,final Class<T> type,
 									   ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		List<String> scrollIds = new ArrayList<String>();
@@ -1139,8 +1148,9 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			int i = j;
 			try {
 				params.put("sliceId", i);
+
 				_doSliceScroll( i, _path,
-						dslTemplate,params,
+						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
 						scrollIds,
 						sliceScrollResult);
@@ -1166,7 +1176,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
 	}
-
+/**
 	private <T> void _doSliceScroll(int i,String path,
 									String dslTemplate,Map params,
 									String scroll,Class<T> type,
@@ -1214,22 +1224,10 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			throw new ElasticSearchException("slice query task["+i+"] failed:",e);
 		}
 	}
+*/
 
 
 
-	private void waitTasksComplete(final List<Future> tasks){
-
-			for (Future future : tasks) {
-				try {
-					future.get();
-				} catch (ExecutionException e) {
-					logger.error("",e);
-				}catch (Exception e) {
-					logger.error("",e);
-				}
-			}
-
-	}
 
 	/**
 	 * 一次性返回scroll检索结果

@@ -860,6 +860,26 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> ESDatas<T> searchAll(String index, int fetchSize, Class<T> type, int thread) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchAll(String index, Class<T> type, int thread) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchAll(String index, int fetchSize, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchAll(String index, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> ESDatas<T> searchScroll(String scroll, String scrollId, Class<T> type) throws ElasticSearchException {
 		return null;
 	}
