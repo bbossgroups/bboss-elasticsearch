@@ -1498,8 +1498,10 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type) throws ElasticSearchException{
-		String queryAll = "{ \"size\":"+fetchSize+",\"query\": {\"match_all\": {}}}";
-		return this.scroll(index+"/_search",queryAll,"1m",type,scrollHandler);
+		StringBuilder builder = new StringBuilder();
+		String queryAll = builder.append("{ \"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
+		builder.setLength(0);
+		return this.scroll(builder.append(index).append("/_search").toString(),queryAll,"1m",type,scrollHandler);
 	}
 
 	/**
