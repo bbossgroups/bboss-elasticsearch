@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.schedule;
+package org.frameworkset.elasticsearch.client;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,29 +15,33 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/9 15:35
+ * @Date 2018/10/15 19:20
  * @author biaoping.yin
  * @version 1.0
- * @deprecated  未使用
  */
-public class StoreStatusTask extends Thread {
-	private ScheduleService scheduleService;
-	public StoreStatusTask(ScheduleService scheduleService){
-		super();
-		this.setDaemon(true);
+public class ImportCount {
+	private ReentrantLock lock = new ReentrantLock();
+	public long getTotalCount() {
+		return totalCount;
 	}
-	public void run(){
-		while(true){
-			try {
-				sleep(2000L);
-			} catch (InterruptedException e) {
-				break;
-			}
-			scheduleService.storeStatus();
+
+	public long increamentTotalCount(long count) {
+		try {
+			lock.lock();
+			this.totalCount += count;
+			return totalCount;
+		}finally {
+			lock.unlock();
 		}
+
 	}
+
+	private long totalCount;
+
 }

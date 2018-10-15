@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
@@ -36,6 +37,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
 	private ErrorWrapper errorWrapper;
+	/**
+	 * 定时任务拦截器
+	 */
+	private List<CallInterceptor> callInterceptors;
 	public ErrorWrapper getErrorWrapper() {
 		return errorWrapper;
 	}
@@ -648,7 +653,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	}
 
 	public Object getLastValue() throws Exception {
+
 		if(scheduleService != null) {
+			if(!scheduleService.isIncreamentImport()){
+				return null;
+			}
 			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
 				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
 			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
@@ -670,5 +679,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		if(scheduleService != null) {
 			scheduleService.stop();
 		}
+	}
+
+	public List<CallInterceptor> getCallInterceptors() {
+		return callInterceptors;
+	}
+
+	public void setCallInterceptors(List<CallInterceptor> callInterceptors) {
+		this.callInterceptors = callInterceptors;
 	}
 }

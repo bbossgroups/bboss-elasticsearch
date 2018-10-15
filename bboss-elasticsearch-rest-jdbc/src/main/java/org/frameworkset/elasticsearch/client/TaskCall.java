@@ -34,12 +34,16 @@ public class TaskCall implements Runnable {
 	private String datas;
 	private ErrorWrapper errorWrapper;
 	private int taskNo;
-	public TaskCall(String refreshOption ,String datas,ErrorWrapper errorWrapper,int taskNo){
+	private ImportCount totalCount;
+	private int currentSize;
+	public TaskCall(String refreshOption ,String datas,ErrorWrapper errorWrapper,int taskNo,ImportCount totalCount,int currentSize){
 		this.refreshOption = refreshOption;
 		this.clientInterface = errorWrapper.getClientInterface();
 		this.datas = datas;
 		this.errorWrapper = errorWrapper;
 		this.taskNo = taskNo;
+		this.currentSize = currentSize;
+		this.totalCount = totalCount;
 	}
 
 	public static String call(String refreshOption,ClientInterface clientInterface,String datas,ESJDBC esjdbc){
@@ -52,6 +56,7 @@ public class TaskCall implements Runnable {
 				data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
 				logger.info(data);
 			}
+
 			return data;
 		}
 		else{
@@ -89,9 +94,12 @@ public class TaskCall implements Runnable {
 		}
 		long start = System.currentTimeMillis();
 		StringBuilder info = null;
+		if(logger.isDebugEnabled()) {
+			info = new StringBuilder();
+		}
+		long totalSize = 0;
 		try {
 			if(logger.isDebugEnabled()) {
-				info = new StringBuilder();
 				info.append("Task[").append(this.taskNo).append("] starting ......");
 				logger.debug(info.toString());
 			}
@@ -112,7 +120,7 @@ public class TaskCall implements Runnable {
 //				}
 //			}
 			call(refreshOption,clientInterface,datas,errorWrapper.getESJDBC());
-
+			totalSize = totalCount.increamentTotalCount((long)currentSize);
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
@@ -122,6 +130,7 @@ public class TaskCall implements Runnable {
 				info.append("Task[").append(this.taskNo).append("] failed,take ").append((end - start)).append("毫秒");
 				logger.debug(info.toString());
 			}
+
 			if(!errorWrapper.getESJDBC().isContinueOnError())
 				throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed").toString(),e);
 			else
@@ -133,7 +142,7 @@ public class TaskCall implements Runnable {
 		if(logger.isDebugEnabled()) {
 			long end = System.currentTimeMillis();
 			info.setLength(0);
-			info.append("Task[").append(this.taskNo).append("] completed,take ").append((end - start)).append("毫秒");
+			info.append("Task[").append(this.taskNo).append("] finish,import data ").append(this.currentSize).append("条,Total import data ").append(totalSize).append("条,Take ").append((end - start)).append("毫秒");
 			logger.debug(info.toString());
 		}
 

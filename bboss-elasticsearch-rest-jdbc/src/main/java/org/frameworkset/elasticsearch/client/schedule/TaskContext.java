@@ -15,29 +15,23 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ESJDBC;
+
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/9 15:35
+ * @Date 2018/10/15 20:56
  * @author biaoping.yin
  * @version 1.0
- * @deprecated  未使用
  */
-public class StoreStatusTask extends Thread {
-	private ScheduleService scheduleService;
-	public StoreStatusTask(ScheduleService scheduleService){
-		super();
-		this.setDaemon(true);
+public class TaskContext {
+	public TaskContext(ESJDBC esjdbc){
+		this.esjdbc = esjdbc;
 	}
-	public void run(){
-		while(true){
-			try {
-				sleep(2000L);
-			} catch (InterruptedException e) {
-				break;
-			}
-			scheduleService.storeStatus();
-		}
+	private ESJDBC esjdbc;
+
+	public ESJDBC getEsjdbc() {
+		return esjdbc;
 	}
 }

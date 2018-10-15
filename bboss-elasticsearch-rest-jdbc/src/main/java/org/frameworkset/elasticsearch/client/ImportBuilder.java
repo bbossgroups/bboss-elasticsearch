@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.StatementInfo;
+import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.spi.assemble.PropertiesContainer;
@@ -27,6 +28,10 @@ public class ImportBuilder {
 	private ImportBuilder(){
 
 	}
+	/**
+	 * 定时任务拦截器
+	 */
+	private List<CallInterceptor> callInterceptors;
 	private String applicationPropertiesFile;
 	private boolean freezen;
 	/**抽取数据的sql语句*/
@@ -468,6 +473,7 @@ public class ImportBuilder {
 			esjdbcResultSet.setScheduleBatchSize(this.scheduleBatchSize);
 		else
 			esjdbcResultSet.setScheduleBatchSize(this.batchSize);
+		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -815,6 +821,13 @@ public class ImportBuilder {
 
 	public ImportBuilder setScheduleBatchSize(Integer scheduleBatchSize) {
 		this.scheduleBatchSize = scheduleBatchSize;
+		return this;
+	}
+	public ImportBuilder addCallInterceptor(CallInterceptor interceptor){
+		if(this.callInterceptors == null){
+			this.callInterceptors = new ArrayList<CallInterceptor>();
+		}
+		this.callInterceptors.add(interceptor);
 		return this;
 	}
 }

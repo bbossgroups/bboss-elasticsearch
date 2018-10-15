@@ -101,7 +101,6 @@ public class DataStream {
 			firstImportData();
 		}
 		else{//定时增量导入数据操作
-
 			scheduleService.timeSchedule();
 		}
 	}

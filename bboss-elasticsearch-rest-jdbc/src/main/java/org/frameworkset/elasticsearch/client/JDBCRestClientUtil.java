@@ -58,6 +58,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		ExecutorService	service = jdbcResultSet.buildThreadPool();
 		List<Future> tasks = new ArrayList<Future>();
 		int taskNo = 0;
+		ImportCount totalCount = new ImportCount();
 		Exception exception = null;
 		Object lastValue = null;
 		try {
@@ -76,7 +77,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
-					tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo)));
+					tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo,totalCount,batchsize)));
+
 					taskNo ++;
 
 				}
@@ -88,13 +90,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				}
 				writer.flush();
 				String datas = builder.toString();
-				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo)));
+				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo,totalCount,count)));
+				taskNo ++;
 				if(logger.isInfoEnabled())
-					logger.info("submit tasks:"+(taskNo+1));
+					logger.info(new StringBuilder().append("submit tasks:").append((taskNo)).toString());
 			}
 			else{
 				if(logger.isInfoEnabled())
-					logger.info("submit tasks:"+(taskNo));
+					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
 			}
 
 		} catch (SQLException e) {
@@ -109,7 +112,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			waitTasksComplete(  jdbcResultSet, tasks,  service,exception,  lastValue );
+			waitTasksComplete(  jdbcResultSet, tasks,  service,exception,  lastValue,totalCount );
 			try {
 				writer.close();
 			} catch (Exception e) {
@@ -250,7 +253,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 	}
 
-	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,final ExecutorService service,Exception exception,Object lastValue  ){
+	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,
+								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount  ){
 		if(!jdbcResultSet.isAsyn() || jdbcResultSet.getScheduleService() != null) {
 			int count = 0;
 			for (Future future : tasks) {
@@ -270,7 +274,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					logger.error("",e);
 				}
 			}
-			logger.info("complete tasks:"+count);
+			if(logger.isInfoEnabled())
+				logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
+
 			jobComplete(  service,exception,lastValue );
 		}
 		else{
@@ -291,7 +297,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 							logger.error("",e);
 						}
 					}
-					logger.info("complete tasks:"+count);
+					if(logger.isInfoEnabled())
+						logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
+
 					jobComplete(  service,null,null);
 				}
 			});
