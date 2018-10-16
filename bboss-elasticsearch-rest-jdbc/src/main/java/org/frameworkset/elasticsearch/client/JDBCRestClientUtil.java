@@ -527,7 +527,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					javaName = metaData.getColumnJavaNameByIndex(i);
 				}
 				else{
-					javaName =  !useLowcase ?colName:colName.toLowerCase();
+					javaName =  !useLowcase ?colName:metaData.getColumnLabelLowerByIndex(i);
 				}
 			}
 			if(javaName == null){
