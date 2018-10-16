@@ -50,6 +50,16 @@ public class ImportBuilder {
 		this.showSql = showSql;
 		return this;
 	}
+	public Boolean getUseLowcase() {
+		return useLowcase;
+	}
+
+	public ImportBuilder setUseLowcase(Boolean useLowcase) {
+		this.useLowcase = useLowcase;
+		return this;
+	}
+
+	private Boolean useLowcase;
 	/**抽取数据的sql语句*/
 	private String dbName;
 	/**抽取数据的sql语句*/
@@ -474,6 +484,7 @@ public class ImportBuilder {
 		else
 			esjdbcResultSet.setScheduleBatchSize(this.batchSize);
 		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
+		esjdbcResultSet.setUseLowcase(this.useLowcase);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){

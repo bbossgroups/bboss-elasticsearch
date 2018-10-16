@@ -497,6 +497,17 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Boolean useJavaName = esjdbc.getUseJavaName();
 		if(useJavaName == null)
 			useJavaName = true;
+
+		Boolean useLowcase = esjdbc.getUseLowcase();
+
+
+		if(useJavaName == null) {
+			useJavaName = false;
+		}
+		if(useLowcase == null)
+		{
+			useLowcase = false;
+		}
 		boolean hasSeted = false;
 
 		for(int i =0; i < counts; i++)
@@ -511,8 +522,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					continue;
 				javaName = fieldMeta.getEsFieldName();
 			}
-			else
-				javaName = useJavaName ?metaData.getColumnJavaNameByIndex(i):colName;
+			else {
+				if(useJavaName) {
+					javaName = metaData.getColumnJavaNameByIndex(i);
+				}
+				else{
+					javaName =  !useLowcase ?colName:colName.toLowerCase();
+				}
+			}
 			if(javaName == null){
 				javaName = colName;
 			}

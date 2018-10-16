@@ -61,16 +61,26 @@ public class ScheduleService {
 	private String dbname;
 	private String statusTableName;
 	private String statusStorePath;
+	private String lastValueClumnName;
+
 //	private StoreStatusTask storeStatusTask;
 
 	public void setIncreamentImport(boolean increamentImport) {
 		this.increamentImport = increamentImport;
 	}
 
+	public String getLastValueClumnName(){
+		return this.lastValueClumnName;
+	}
+
 	private boolean increamentImport = true;
 	private SQLInfo sqlInfo;
 	public SQLInfo getSqlInfo() {
 		return sqlInfo;
+	}
+
+	public String getLastValueVarName(){
+		return this.sqlInfo != null?this.sqlInfo.getLastValueVarName():null;
 	}
 
 	private Timer timer ;
@@ -87,9 +97,9 @@ public class ScheduleService {
 		if(lastValueType == 1) {
 			currentStatus.setLastValue(initLastDate.getTime());
 		}
-		else if(esjdbc.getImportIncreamentConfig().getLastValue() != null){
+		else if(esjdbc.getConfigLastValue() != null){
 
-			currentStatus.setLastValue(esjdbc.getImportIncreamentConfig().getLastValue());
+			currentStatus.setLastValue(esjdbc.getConfigLastValue());
 		}
 		else{
 			currentStatus.setLastValue(0);
@@ -112,7 +122,7 @@ public class ScheduleService {
 				logger.warn(new StringBuilder().append("Task Assert Execute Condition Failed, Ignore").toString());
 			return;
 		}
-		SQLInfo sqlInfo = getLastValueSQL();
+//		SQLInfo sqlInfo = getLastValueSQL();
 		ResultSetHandler resultSetHandler = new ResultSetHandler() {
 			@Override
 			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
@@ -128,7 +138,7 @@ public class ScheduleService {
 		}
 		else {
 			 if(!this.isIncreamentImport()){
-				throw new TaskFailedException("非增量导入sql语句中不能设置参数变量："+esjdbc.getSql());
+			 	esjdbc.setForceStop();
 			 }
 			 else {
 				 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
@@ -184,6 +194,7 @@ public class ScheduleService {
 	}
 	public void timeSchedule() throws Exception {
 //		scheduleImportData(esjdbc.getBatchSize());
+
 		timer = new Timer();
 		TimerTask timerTask = new TimerTask() {
 			@Override
@@ -262,24 +273,22 @@ public class ScheduleService {
 
 	}
 
-	private void assertCondition(){
-		if(this.esjdbc.getImportIncreamentConfig() != null) {
-			statusTableName = this.esjdbc.getImportIncreamentConfig().getLastValueStoreTableName();
+	private void initStatusStore(){
+		if(this.isIncreamentImport()) {
+			statusTableName = this.esjdbc.getLastValueStoreTableName();
 			if (statusTableName == null) {
 				statusTableName = "increament_tab";
 			}
 //			throw new ESDataImportException("Must set lastValueStoreTableName by ImportBuilder.");
-			if (this.esjdbc.getImportIncreamentConfig().getLastValueStorePath() == null || this.esjdbc.getImportIncreamentConfig().getLastValueStorePath().equals("")) {
+			if (this.esjdbc.getLastValueStorePath() == null || this.esjdbc.getLastValueStorePath().equals("")) {
 //				throw new ESDataImportException("Must set lastValueStorePath by ImportBuilder.");
 				statusStorePath = "StatusStoreDB";
-			}
-			else{
-				statusStorePath = this.esjdbc.getImportIncreamentConfig().getLastValueStorePath();
+			} else {
+				statusStorePath = this.esjdbc.getLastValueStorePath();
 			}
 		}
-		else{
-			increamentImport = false;
-		}
+
+
 
 //		if(this.esjdbc.getImportIncreamentConfig().getDateLastValueColumn() == null
 //				&& this.esjdbc.getImportIncreamentConfig().getNumberLastValueColumn() == null
@@ -316,18 +325,18 @@ public class ScheduleService {
 			} catch (Exception e) {
 				throw new ESDataImportException(e);
 			}
-			if (esjdbc.getImportIncreamentConfig() != null) {
-				if (esjdbc.getImportIncreamentConfig().getDateLastValueColumn() != null) {
-					this.lastValueType = ImportIncreamentConfig.TIMESTAMP_TYPE;
-				} else if (esjdbc.getImportIncreamentConfig().getNumberLastValueColumn() != null) {
-					this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
 
-				} else if (esjdbc.getImportIncreamentConfig().getLastValueType() != null) {
-					this.lastValueType = esjdbc.getImportIncreamentConfig().getLastValueType();
-				} else {
-					this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
-				}
+			if (esjdbc.getDateLastValueColumn() != null) {
+				this.lastValueType = ImportIncreamentConfig.TIMESTAMP_TYPE;
+			} else if (esjdbc.getNumberLastValueColumn() != null) {
+				this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
+
+			} else if (esjdbc.getLastValueType() != null) {
+				this.lastValueType = esjdbc.getLastValueType();
+			} else {
+				this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
 			}
+
 
 			existSQL = new StringBuilder().append("select 1 from ").append(statusTableName).toString();
 			selectSQL = new StringBuilder().append("select id,lasttime,lastvalue,lastvaluetype from ")
@@ -377,7 +386,7 @@ public class ScheduleService {
 				if (currentStatus == null) {
 					initLastValueStatus(false);
 				} else {
-					if (this.esjdbc.getImportIncreamentConfig().isFromFirst()) {
+					if (this.esjdbc.isFromFirst()) {
 						initLastValueStatus(true);
 					} else {
 						this.firstStatus = (Status) currentStatus.clone();
@@ -409,39 +418,77 @@ public class ScheduleService {
 //	}
 	public void init(ESJDBC esjdbc){
 		this.esjdbc = esjdbc;
-		this.assertCondition();
+		initSQLInfo();
+		initLastValueClumnName();
+		if(sqlInfo != null
+				&& sqlInfo.getParamSize() > 0
+				&& !this.isIncreamentImport()){
+			throw new TaskFailedException("非增量导入sql语句中不能设置参数变量："+esjdbc.getSql());
+		}
+		initStatusStore();
 		initDatasource();
 		initTableAndStatus();
+
 		this.esjdbc.setScheduleService(this);
 //		startStoreStatusTask();
 	}
 
-	public SQLInfo getLastValueSQL(){
-		if(this.sqlInfo == null){
-			String originSQL = esjdbc.getSql();
-			List<TextGrammarParser.GrammarToken> tokens =
-					TextGrammarParser.parser(originSQL, "#[", "]");
-			SQLInfo _sqlInfo = new SQLInfo();
-			int paramSize = 0;
-			StringBuilder builder = new StringBuilder();
-			for(int i = 0; i < tokens.size(); i ++){
-				TextGrammarParser.GrammarToken token = tokens.get(i);
-				if(token.texttoken()){
-					builder.append(token.getText());
-				}
-				else {
-					builder.append("?");
-					if(paramSize == 0){
-						_sqlInfo.setLastValueVarName(token.getText());
-					}
-					paramSize ++;
-
-				}
-			}
-			_sqlInfo.setParamSize(paramSize);
-			_sqlInfo.setSql(builder.toString());
-			this.sqlInfo = _sqlInfo;
+	public void initLastValueClumnName(){
+		if(lastValueClumnName != null){
+			return ;
 		}
+
+		if (esjdbc.getDateLastValueColumn() != null) {
+			lastValueClumnName = esjdbc.getDateLastValueColumn();
+		} else if (esjdbc.getNumberLastValueColumn() != null) {
+			lastValueClumnName = esjdbc.getNumberLastValueColumn();
+		} else if (this.getLastValueVarName() != null) {
+			if(logger.isInfoEnabled())
+				logger.info(new StringBuilder().append("NumberLastValueColumn and DateLastValueColumn not setted,use LastValueVarName[")
+						.append(this. getLastValueVarName())
+						.append("] in sql[ ").append(esjdbc.getSql()).append("]").toString());
+			lastValueClumnName =  getLastValueVarName();
+		}
+
+		if (lastValueClumnName == null){
+			setIncreamentImport(false);
+		}
+
+
+	}
+
+	private void initSQLInfo(){
+		String originSQL = esjdbc.getSql();
+		List<TextGrammarParser.GrammarToken> tokens =
+				TextGrammarParser.parser(originSQL, "#[", "]");
+		SQLInfo _sqlInfo = new SQLInfo();
+		int paramSize = 0;
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < tokens.size(); i ++){
+			TextGrammarParser.GrammarToken token = tokens.get(i);
+			if(token.texttoken()){
+				builder.append(token.getText());
+			}
+			else {
+				builder.append("?");
+				if(paramSize == 0){
+					_sqlInfo.setLastValueVarName(token.getText());
+				}
+				paramSize ++;
+
+			}
+		}
+		_sqlInfo.setParamSize(paramSize);
+		_sqlInfo.setSql(builder.toString());
+		this.sqlInfo = _sqlInfo;
+
+
+	}
+
+
+
+	public SQLInfo getLastValueSQL(){
+
 		return this.sqlInfo;
 	}
 

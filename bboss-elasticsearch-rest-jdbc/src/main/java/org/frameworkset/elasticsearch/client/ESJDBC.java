@@ -37,6 +37,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
 	private ErrorWrapper errorWrapper;
+	private volatile boolean forceStop = false;
+	public void setForceStop(){
+		this.forceStop = true;
+	}
 	/**
 	 * 定时任务拦截器
 	 */
@@ -54,6 +58,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * @return
 	 */
 	public boolean assertCondition(){
+		if(forceStop)
+			return false;
 		if(errorWrapper != null)
 			return errorWrapper.assertCondition();
 		return true;
@@ -102,6 +108,16 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private Object esVersionValue;
 	private String esVersionType;
 	private Boolean useJavaName;
+
+	public Boolean getUseLowcase() {
+		return useLowcase;
+	}
+
+	public void setUseLowcase(Boolean useLowcase) {
+		this.useLowcase = useLowcase;
+	}
+
+	private Boolean useLowcase;
 	private String dateFormat;
 	private String locale;
 	private String timeZone;
@@ -144,6 +160,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	/**是否启用sql日志，true启用，false 不启用，*/
 	private boolean showSql;
+
 
 	public boolean isShowSql() {
 		return showSql;
@@ -616,8 +633,34 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		return importIncreamentConfig;
 	}
 
+	public String getLastValueStoreTableName() {
+		return importIncreamentConfig != null?importIncreamentConfig.getLastValueStoreTableName():null;
+	}
+
+	public String getLastValueStorePath() {
+		return importIncreamentConfig != null?importIncreamentConfig.getLastValueStorePath():null;
+	}
+
+	public String getDateLastValueColumn() {
+		return importIncreamentConfig != null?importIncreamentConfig.getDateLastValueColumn():null;
+	}
+	public String getNumberLastValueColumn() {
+		return importIncreamentConfig != null?importIncreamentConfig.getNumberLastValueColumn():null;
+	}
+
+	public Integer getLastValueType() {
+		return importIncreamentConfig != null?importIncreamentConfig.getLastValueType():null;
+	}
 	public void setImportIncreamentConfig(ImportIncreamentConfig importIncreamentConfig) {
 		this.importIncreamentConfig = importIncreamentConfig;
+	}
+
+	public boolean isFromFirst() {
+		return importIncreamentConfig != null?importIncreamentConfig.isFromFirst():false;
+	}
+
+	public Long getConfigLastValue() {
+		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
 	}
 
 	public String getSqlFilepath() {
@@ -652,20 +695,26 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.scheduleBatchSize = scheduleBatchSize;
 	}
 
+
+
 	public Object getLastValue() throws Exception {
 
 		if(scheduleService != null) {
-			if(!scheduleService.isIncreamentImport()){
+
+			if(scheduleService.getLastValueClumnName() == null){
 				return null;
 			}
-			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
-				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
-			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
-				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
-			}
-			else if (this.scheduleService.getSqlInfo().getLastValueVarName() != null) {
-				return this.getValue(this.scheduleService.getSqlInfo().getLastValueVarName());
-			}
+
+//			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
+//				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
+//			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
+//				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
+//			}
+//			else if (this.scheduleService.getSqlInfo().getLastValueVarName() != null) {
+//				return this.getValue(this.scheduleService.getSqlInfo().getLastValueVarName());
+//			}
+
+			return this.getValue(scheduleService.getLastValueClumnName());
 
 		}
 		return null;
