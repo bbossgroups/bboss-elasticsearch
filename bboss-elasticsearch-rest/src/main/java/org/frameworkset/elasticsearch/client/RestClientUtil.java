@@ -411,19 +411,7 @@ public class RestClientUtil extends ClientUtil{
 		Object parentId = BuildTool.getParentId(bean,beanInfo);
 
 		return addDocument(indexName, indexType, bean,id,parentId,refreshOption);
-//		StringBuilder builder = new StringBuilder();
-//		Object id = this.getId(bean);
-//		builder.append(indexName).append("/").append(indexType);
-//		if(id != null){
-//			builder.append("/").append(id);
-//		}
-//		if(refreshOption != null ){
-//			builder.append("?").append(refreshOption);
-//		}
-//		String path = builder.toString();
-//		builder = null;
-//		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
-//		return path;
+
 	}
 
 	/**
@@ -1473,10 +1461,7 @@ public class RestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchAll(String index,  Class<T> type) throws ElasticSearchException{
 
 		return searchAll(  index,    DEFAULT_FETCHSIZE , type) ;
-//		return this.searchList(new StringBuilder().append(index).append("/_search").toString(),queryAll,type);
-//
-//		RestResponse result = this.client.executeRequest(new StringBuilder().append(index).append("/_search").toString(),queryAll,   new ElasticSearchResponseHandler( type));
-//		return ResultUtil.buildESDatas(result,type);
+
 	}
 
 	/**
@@ -1574,67 +1559,7 @@ public class RestClientUtil extends ClientUtil{
 		};
 
 		return _slice(index+"/_search",  scrollHandler,type,max,"1m",sliceScroll);
-//		final List<String> scrollIds = new ArrayList<String>();
-//		long starttime = System.currentTimeMillis();
-//		//scroll slice分页检索
-//
-////		final CountDownLatch countDownLatch = new CountDownLatch(max);//线程任务完成计数器，每个线程对应一个sclice,每运行完一个slice任务,countDownLatch计数减去1
-//
-//		final String _path =  new StringBuilder().append(index).append("/_search").append("?scroll=1m").toString() ;
-//
-//		ExecutorService executorService = this.client.getSliceScrollQueryExecutorService();
-//		List<Future> tasks = new ArrayList<Future>();
-//		//辅助方法，用来累计每次scroll获取到的记录数
-//		final ParallelSliceScrollResult sliceScrollResult = new ParallelSliceScrollResult();
-//		if(scrollHandler != null)
-//			sliceScrollResult.setScrollHandler(scrollHandler);
-//
-//		try {
-//
-//			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
-//				final int i = j;
-//				final String sliceDsl = sliceScroll.buildSliceDsl(i,max);
-////				final String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(i).append(",\"max\": ")
-////									.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
-//				tasks.add(executorService.submit(new Runnable() {//多线程并行执行scroll操作做，每个线程对应一个sclice
-//					@Override
-//					public void run() {
-//
-//						try {
-//
-//							_doSliceScroll( i, _path,
-//									sliceDsl,
-//									"1m", type,
-//									scrollIds,
-//									sliceScrollResult);
-//
-//						} catch (ElasticSearchException e) {
-//							throw e;
-//						} catch (Exception e) {
-//							throw new ElasticSearchException("slice query task["+i+"] failed:",e);
-//						}
-//					}
-//
-//				}));
-//			}
-//		}
-//		finally {
-//			waitTasksComplete(tasks);
-//		}
-//
-//		//打印处理耗时和实际检索到的数据
-//		if(logger.isDebugEnabled()) {
-//			long endtime = System.currentTimeMillis();
-//			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
-//		}
-//
-//		//处理完毕后清除scroll上下文信息
-//		if(scrollIds.size() > 0) {
-//			deleteScrolls(scrollIds);
-////			System.out.println(scrolls);
-//		}
-//		sliceScrollResult.complete();
-//		return sliceScrollResult.getSliceResponse();
+
 	}
 	/**
 	 * 并行检索索引所有数据
@@ -2772,22 +2697,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption) throws ElasticSearchException{
-//		StringBuilder path = new StringBuilder();
-//		if(indexType == null || indexType.equals(""))
-//			path.append(index).append("/").append(id).append("/_update");
-//		else
-//			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
-//		if(refreshOption != null){
-//			path.append("?").append(refreshOption);
-//		}
-//		StringBuilder builder = new StringBuilder();
-//		builder.append(" {\"doc\":");
-//		Writer writer = new BBossStringWriter(builder);
-//		SerialUtil.object2json(params,writer);
-//		builder.append("}");
-//		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
-//
-//		return searchResult;
+
 		return updateDocument(index,indexType,id,params,refreshOption,(Boolean)null,(Boolean)null);
 	}
 
@@ -2815,22 +2725,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption) throws ElasticSearchException{
-//		StringBuilder path = new StringBuilder();
-//		if(indexType == null || indexType.equals(""))
-//			path.append(index).append("/").append(id).append("/_update");
-//		else
-//			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
-//		if(refreshOption != null){
-//			path.append("?").append(refreshOption);
-//		}
-//		StringBuilder builder = new StringBuilder();
-//		builder.append(" {\"doc\":");
-//		Writer writer = new BBossStringWriter(builder);
-//		SerialUtil.object2json(params,writer);
-//		builder.append("}");
-//		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
-//
-//		return searchResult;
+
 		return updateDocument(index,indexType,id,params,refreshOption,(Boolean)null,(Boolean)null);
 	}
 

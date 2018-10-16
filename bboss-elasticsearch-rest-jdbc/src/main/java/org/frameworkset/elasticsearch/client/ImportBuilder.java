@@ -15,16 +15,24 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.StatementInfo;
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.util.*;
 
 public class ImportBuilder {
+	private static Logger logger = LoggerFactory.getLogger(ImportBuilder.class);
+	/**
+	 * 打印任务日志
+	 */
+	private boolean printTaskLog = false;
 	private ImportBuilder(){
 
 	}
@@ -485,10 +493,19 @@ public class ImportBuilder {
 			esjdbcResultSet.setScheduleBatchSize(this.batchSize);
 		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
 		esjdbcResultSet.setUseLowcase(this.useLowcase);
+		esjdbcResultSet.setPrintTaskLog(this.printTaskLog);
+
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
 		this.buildDBConfig();
+		try {
+			logger.info("DB2ES Import Configs:");
+			logger.info(this.toString());
+		}
+		catch (Exception e){
+
+		}
 		ESJDBC esjdbcResultSet = this.buildESConfig();
 		DataStream dataStream = new DataStream();
 		dataStream.setEsjdbc(esjdbcResultSet);
@@ -840,5 +857,20 @@ public class ImportBuilder {
 		}
 		this.callInterceptors.add(interceptor);
 		return this;
+	}
+
+	public boolean isPrintTaskLog() {
+		return printTaskLog;
+	}
+
+	public ImportBuilder setPrintTaskLog(boolean printTaskLog) {
+		this.printTaskLog = printTaskLog;
+		return this;
+	}
+
+	public String toString(){
+		StringBuilder ret = new StringBuilder();
+		ret.append(SimpleStringUtil.object2json(this));
+		return ret.toString();
 	}
 }

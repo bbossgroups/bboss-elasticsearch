@@ -38,6 +38,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private ScheduleService scheduleService;
 	private ErrorWrapper errorWrapper;
 	private volatile boolean forceStop = false;
+	/**
+	 * 打印任务日志
+	 */
+	private boolean printTaskLog = false;
 	public void setForceStop(){
 		this.forceStop = true;
 	}
@@ -736,5 +740,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setCallInterceptors(List<CallInterceptor> callInterceptors) {
 		this.callInterceptors = callInterceptors;
+	}
+
+	public boolean isPrintTaskLog() {
+		return printTaskLog;
+	}
+
+	public void setPrintTaskLog(boolean printTaskLog) {
+		this.printTaskLog = printTaskLog;
 	}
 }

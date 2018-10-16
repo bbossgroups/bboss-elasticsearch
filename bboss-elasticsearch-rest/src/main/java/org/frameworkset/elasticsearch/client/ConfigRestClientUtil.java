@@ -1063,67 +1063,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			}
 		};
 		return _slice(path,  scrollHandler,type,max, scroll, sliceScroll);
-//		final List<String> scrollIds = new ArrayList<String>();
-//		long starttime = System.currentTimeMillis();
-//		//scroll slice分页检索
-//
-////		final CountDownLatch countDownLatch = new CountDownLatch(max);//线程任务完成计数器，每个线程对应一个sclice,每运行完一个slice任务,countDownLatch计数减去1
-//
-//		final String _path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
-//				new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
-//		ExecutorService executorService = this.client.getSliceScrollQueryExecutorService();
-//		List<Future> tasks = new ArrayList<Future>();
-//		//辅助方法，用来累计每次scroll获取到的记录数
-//		final ParallelSliceScrollResult sliceScrollResult = new ParallelSliceScrollResult();
-//		if(scrollHandler != null)
-//			sliceScrollResult.setScrollHandler(scrollHandler);
-//
-//		try {
-//			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
-//				final int i = j;
-//				final String sliceDsl = sliceScroll.buildSliceDsl(i,max);
-////				final Map _params = new HashMap();
-////				_params.putAll(params);
-////				_params.put("sliceId", i);
-//				tasks.add(executorService.submit(new Runnable() {//多线程并行执行scroll操作做，每个线程对应一个sclice
-//					@Override
-//					public void run() {
-//
-//						try {
-//
-//							_doSliceScroll( i, _path,
-//									sliceDsl,
-//									scroll, type,
-//									scrollIds,
-//									sliceScrollResult);
-//
-//						} catch (ElasticSearchException e) {
-//							throw e;
-//						} catch (Exception e) {
-//							throw new ElasticSearchException("slice query task["+i+"] failed:",e);
-//						}
-//					}
-//
-//				}));
-//			}
-//		}
-//		finally {
-//			waitTasksComplete(tasks);
-//		}
-//
-//		//打印处理耗时和实际检索到的数据
-//		if(logger.isDebugEnabled()) {
-//			long endtime = System.currentTimeMillis();
-//			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
-//		}
-//
-//		//处理完毕后清除scroll上下文信息
-//		if(scrollIds.size() > 0) {
-//			deleteScrolls(scrollIds);
-////			System.out.println(scrolls);
-//		}
-//		sliceScrollResult.complete();
-//		return sliceScrollResult.getSliceResponse();
+
 	}
 
 	private <T> ESDatas<T> _scrollSlice(final String path,final String dslTemplate,final Map params ,
@@ -1176,58 +1116,6 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
 	}
-/**
-	private <T> void _doSliceScroll(int i,String path,
-									String dslTemplate,Map params,
-									String scroll,Class<T> type,
-									List<String> scrollIds,
-									SliceScrollResultInf<T> sliceScrollResult) throws Exception {
-		try{
-			ESDatas<T> sliceResponse = searchList(path, dslTemplate, params, type);
-
-			List<T> sliceDatas = sliceResponse.getDatas();
-			String scrollId = sliceResponse.getScrollId();
-//			System.out.println("sliceDatas:"+i+":" + sliceDatas);
-//			System.out.println("scrollId:"+i+":" + scrollId);
-			if (scrollId != null)
-				scrollIds.add(scrollId);
-
-			if (sliceDatas != null && sliceDatas.size() > 0) {//每页100条记录，迭代scrollid，遍历scroll分页结果
-				ScrollHandler<T> _scrollHandler = sliceScrollResult.getScrollHandler();
-				if (_scrollHandler == null) {
-					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse);
-				}
-				else {
-					_scrollHandler.handle(sliceResponse);
-					sliceScrollResult.setSliceResponse(sliceResponse);
-				}
-				sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
-				ESDatas<T> _sliceResponse = null;
-				List<T> _sliceDatas = null;
-				do {
-					_sliceResponse = searchScroll(scroll, scrollId, type);
-					String sliceScrollId = _sliceResponse.getScrollId();
-					if (sliceScrollId != null)
-						scrollIds.add(sliceScrollId);
-					_sliceDatas = _sliceResponse.getDatas();
-					if (_sliceDatas == null || _sliceDatas.size() == 0) {
-						break;
-					}
-					_scrollHandler.handle(_sliceResponse);
-					sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
-				} while (true);
-			}
-
-		} catch (ElasticSearchException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new ElasticSearchException("slice query task["+i+"] failed:",e);
-		}
-	}
-*/
-
-
-
 
 	/**
 	 * 一次性返回scroll检索结果

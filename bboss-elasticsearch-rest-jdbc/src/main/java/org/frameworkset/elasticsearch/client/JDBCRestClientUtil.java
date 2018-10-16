@@ -77,7 +77,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
-					tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo,totalCount,batchsize)));
+					tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo,totalCount,batchsize,jdbcResultSet.isPrintTaskLog())));
 
 					taskNo ++;
 
@@ -90,13 +90,13 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				}
 				writer.flush();
 				String datas = builder.toString();
-				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo,totalCount,count)));
+				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo,totalCount,count,jdbcResultSet.isPrintTaskLog())));
 				taskNo ++;
-				if(logger.isInfoEnabled())
-					logger.info(new StringBuilder().append("submit tasks:").append((taskNo)).toString());
+				if(isPrintTaskLog())
+					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
 			}
 			else{
-				if(logger.isInfoEnabled())
+				if(isPrintTaskLog())
 					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
 			}
 
@@ -138,8 +138,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		int taskNo = 0;
 		Exception exception = null;
 		Object lastValue = null;
+		long start = System.currentTimeMillis();
+		long istart = 0;
+		long end = 0;
+		long totalCount = 0;
 		try {
-
+			istart = start;
 			while (jdbcResultSet.next()) {
 				lastValue = jdbcResultSet.getLastValue();
 				evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
@@ -155,15 +159,39 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 					ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
 					jdbcResultSet.flushLastValue(lastValue);
+
+
+					if(isPrintTaskLog())  {
+						end = System.currentTimeMillis();
+						logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take ").append((end - istart)).append("毫秒")
+								.append(",import ").append(batchsize).append("条记录").toString());
+						istart = end;
+					}
+					totalCount += batchsize;
+
+
 				}
 
 			}
 			if (count > 0) {
 				writer.flush();
 				String datas = builder.toString();
-
+				taskNo ++;
 				ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
 				jdbcResultSet.flushLastValue(lastValue);
+				if(isPrintTaskLog())  {
+					end = System.currentTimeMillis();
+					logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take ").append((end - istart)).append("毫秒")
+							.append(",import ").append(count).append("条记录").toString());
+
+				}
+				totalCount += count;
+			}
+			if(isPrintTaskLog()) {
+				end = System.currentTimeMillis();
+				logger.info(new StringBuilder().append("Execute Tasks:").append(taskNo).append(",All Take ").append((end - start)).append("毫秒")
+						.append(",Import total records:").append(totalCount).append("条记录").toString());
+
 			}
 		} catch (SQLException e) {
 			exception = e;
@@ -189,42 +217,58 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		return ret;
 	}
+	private String serialExecute(String indexName, String indexType, ESJDBC jdbcResultSet, String refreshOption, int batchsize){
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		Object lastValue = null;
+		Exception exception = null;
+		long start = System.currentTimeMillis();
+
+		long totalCount = 0;
+		try {
+
+			while (jdbcResultSet.next()) {
+				try {
+					lastValue = jdbcResultSet.getLastValue();
+					evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+					totalCount ++;
+				} catch (Exception e) {
+					throw new ElasticSearchException(e);
+				}
+
+			}
+			writer.flush();
+			String ret = TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
+			jdbcResultSet.flushLastValue(lastValue);
+			if(isPrintTaskLog()) {
+
+				long end = System.currentTimeMillis();
+				logger.info(new StringBuilder().append("All Take ").append((end - start)).append("毫秒")
+						.append(",Import total records:").append(totalCount).append("条记录").toString());
+
+			}
+			return ret;
+		} catch (Exception e) {
+			exception = e;
+			throw new ElasticSearchException(e);
+		}
+		finally {
+			if(exception != null && !getESJDBC().isContinueOnError()){
+				getESJDBC().stop();
+			}
+		}
+	}
 	public String addDocuments(String indexName, String indexType, ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException {
 		if(jdbcResultSet == null || jdbcResultSet.getResultSet() == null)
 			return null;
 		this.jdbcResultSet = jdbcResultSet;
-
+		if(isPrintTaskLog()) {
+			logger.info(new StringBuilder().append("AddDocuments to IndexName[").append(indexName)
+							.append("] IndexType[").append(indexType)
+							.append("] start.").toString());
+		}
 		if (batchsize <= 0) {
-			StringBuilder builder = new StringBuilder();
-			BBossStringWriter writer = new BBossStringWriter(builder);
-			Object lastValue = null;
-			Exception exception = null;
-			try {
-
-				while (jdbcResultSet.next()) {
-					try {
-						lastValue = jdbcResultSet.getLastValue();
-						evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
-					} catch (Exception e) {
-						throw new ElasticSearchException(e);
-					}
-
-				}
-				writer.flush();
-				String ret = TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
-				jdbcResultSet.flushLastValue(lastValue);
-				return ret;
-			} catch (Exception e) {
-				exception = e;
-				throw new ElasticSearchException(e);
-			}
-			finally {
-				if(exception != null && !getESJDBC().isContinueOnError()){
-					getESJDBC().stop();
-				}
-			}
-
-
+			return serialExecute(  indexName,   indexType,   jdbcResultSet,   refreshOption,   batchsize);
 		} else {
 			if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
 				return this.parallelBatchExecute(indexName,indexType,batchsize,refreshOption);
@@ -234,8 +278,6 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 
 		}
-
-
 
 	}
 	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ){
@@ -252,7 +294,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 		}
 	}
-
+	private boolean isPrintTaskLog(){
+		return getESJDBC().isPrintTaskLog() && logger.isInfoEnabled();
+	}
 	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,
 								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount  ){
 		if(!jdbcResultSet.isAsyn() || jdbcResultSet.getScheduleService() != null) {
@@ -274,9 +318,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					logger.error("",e);
 				}
 			}
-			if(logger.isInfoEnabled())
+			if(isPrintTaskLog()) {
 				logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
-
+			}
 			jobComplete(  service,exception,lastValue );
 		}
 		else{
@@ -297,9 +341,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 							logger.error("",e);
 						}
 					}
-					if(logger.isInfoEnabled())
+					if(isPrintTaskLog()) {
 						logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
-
+					}
 					jobComplete(  service,null,null);
 				}
 			});

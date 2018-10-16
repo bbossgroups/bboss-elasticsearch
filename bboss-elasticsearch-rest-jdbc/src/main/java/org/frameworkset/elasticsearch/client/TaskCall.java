@@ -35,8 +35,9 @@ public class TaskCall implements Runnable {
 	private ErrorWrapper errorWrapper;
 	private int taskNo;
 	private ImportCount totalCount;
+	private boolean printTaskLog;
 	private int currentSize;
-	public TaskCall(String refreshOption ,String datas,ErrorWrapper errorWrapper,int taskNo,ImportCount totalCount,int currentSize){
+	public TaskCall(String refreshOption ,String datas,ErrorWrapper errorWrapper,int taskNo,ImportCount totalCount,int currentSize,boolean printTaskLog){
 		this.refreshOption = refreshOption;
 		this.clientInterface = errorWrapper.getClientInterface();
 		this.datas = datas;
@@ -44,6 +45,7 @@ public class TaskCall implements Runnable {
 		this.taskNo = taskNo;
 		this.currentSize = currentSize;
 		this.totalCount = totalCount;
+		this.printTaskLog = printTaskLog;
 	}
 
 	public static String call(String refreshOption,ClientInterface clientInterface,String datas,ESJDBC esjdbc){
@@ -94,14 +96,14 @@ public class TaskCall implements Runnable {
 		}
 		long start = System.currentTimeMillis();
 		StringBuilder info = null;
-		if(logger.isDebugEnabled()) {
+		if(printTaskLog) {
 			info = new StringBuilder();
 		}
 		long totalSize = 0;
 		try {
-			if(logger.isDebugEnabled()) {
+			if(printTaskLog) {
 				info.append("Task[").append(this.taskNo).append("] starting ......");
-				logger.debug(info.toString());
+				logger.info(info.toString());
 			}
 //			if(logger.isDebugEnabled()) {
 //				if (refreshOption == null) {
@@ -124,11 +126,11 @@ public class TaskCall implements Runnable {
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
-			if(logger.isDebugEnabled()) {
+			if(printTaskLog) {
 				long end = System.currentTimeMillis();
 				info.setLength(0);
 				info.append("Task[").append(this.taskNo).append("] failed,take ").append((end - start)).append("毫秒");
-				logger.debug(info.toString());
+				logger.info(info.toString());
 			}
 
 			if(!errorWrapper.getESJDBC().isContinueOnError())
@@ -139,7 +141,7 @@ public class TaskCall implements Runnable {
 					logger.error(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed,but continue On Error!").toString(),e);
 			}
 		}
-		if(logger.isDebugEnabled()) {
+		if(printTaskLog) {
 			long end = System.currentTimeMillis();
 			info.setLength(0);
 			info.append("Task[").append(this.taskNo).append("] finish,import data ").append(this.currentSize).append("条,Total import data ").append(totalSize).append("条,Take ").append((end - start)).append("毫秒");
