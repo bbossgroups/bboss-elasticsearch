@@ -23,6 +23,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.ConnectTimeoutException;
@@ -261,6 +262,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    if(httpPool == null || httpPool.equals("")){
 			httpPool = "default";
 		}
+		this.httpPool = httpPool;
 	    if(showTemplate_ != null && showTemplate_.equals("true")){
 	    	this.showTemplate = true;
 	    }
@@ -370,6 +372,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (NoHttpResponseException ex) {
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(ex);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+
+			}
             catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(connectTimeoutException);
@@ -558,6 +571,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
 
 			}
+			catch (NoHttpResponseException ex) {
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(ex);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+
+			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(connectTimeoutException);
@@ -678,6 +702,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (NoHttpResponseException ex) {
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(ex);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+
+			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(connectTimeoutException);
@@ -787,6 +822,17 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				}
                  
             }
+			catch (NoHttpResponseException ex) {
+				host.setStatus(1);
+				e = new NoServerElasticSearchException(ex);
+				if (triesCount < serversList.size()) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+
+			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(connectTimeoutException);
