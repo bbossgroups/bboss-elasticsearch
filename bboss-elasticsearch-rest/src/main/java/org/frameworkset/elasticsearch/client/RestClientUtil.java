@@ -1576,7 +1576,7 @@ public class RestClientUtil extends ClientUtil{
 								  final String scroll,SliceScroll sliceScroll) throws ElasticSearchException{
 
 
-		final List<String> scrollIds = new ArrayList<String>();
+
 		long starttime = System.currentTimeMillis();
 		//scroll slice分页检索
 
@@ -1608,7 +1608,7 @@ public class RestClientUtil extends ClientUtil{
 							_doSliceScroll( i, _path,
 									sliceDsl,
 									scroll, type,
-									scrollIds,
+
 									sliceScrollResult);
 
 						} catch (ElasticSearchException e) {
@@ -1631,11 +1631,7 @@ public class RestClientUtil extends ClientUtil{
 			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
 		}
 
-		//处理完毕后清除scroll上下文信息
-		if(scrollIds.size() > 0) {
-			deleteScrolls(scrollIds);
-//			System.out.println(scrolls);
-		}
+
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
 	}
@@ -1665,11 +1661,24 @@ public class RestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException{
 		return searchAll(index,  DEFAULT_FETCHSIZE,scrollHandler,type,thread);
 	}
+	private void _clear(List<String> scrollIds){
+		if(scrollIds == null)
+			return;
+		//处理完毕后清除scroll上下文信息
+		if(scrollIds.size() > 20) {
+			try {
+				deleteScrolls(scrollIds);
+				scrollIds.clear();
+			}
+			catch (Exception e){
+			}
+		}
+	}
 
 	protected  <T> void _doSliceScroll(int i,String path,
 									String entity,
 									String scroll,Class<T> type,
-									List<String> scrollIds,
+
 									SliceScrollResultInf<T> sliceScrollResult) throws Exception {
 		try{
 			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
@@ -1679,8 +1688,11 @@ public class RestClientUtil extends ClientUtil{
 			String scrollId = sliceResponse.getScrollId();
 //			System.out.println("sliceDatas:"+i+":" + sliceDatas);
 //			System.out.println("scrollId:"+i+":" + scrollId);
-			if (scrollId != null)
+			List<String> scrollIds = null;
+			if (scrollId != null) {
+				scrollIds = new ArrayList<String>(21);
 				scrollIds.add(scrollId);
+			}
 
 			if (sliceDatas != null && sliceDatas.size() > 0) {//每页100条记录，迭代scrollid，遍历scroll分页结果
 				ScrollHandler<T> _scrollHandler = sliceScrollResult.getScrollHandler();
@@ -1699,6 +1711,8 @@ public class RestClientUtil extends ClientUtil{
 					String sliceScrollId = _sliceResponse.getScrollId();
 					if (sliceScrollId != null)
 						scrollIds.add(sliceScrollId);
+					//处理完毕后清除scroll上下文信息
+					_clear(scrollIds);
 					_sliceDatas = _sliceResponse.getDatas();
 					if (_sliceDatas == null || _sliceDatas.size() == 0) {
 						break;
@@ -1706,6 +1720,16 @@ public class RestClientUtil extends ClientUtil{
 					_scrollHandler.handle(_sliceResponse);
 					sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
 				} while (true);
+			}
+			//处理完毕后清除scroll上下文信息
+			if(scrollIds != null && scrollIds.size() > 0) {
+				try {
+					deleteScrolls(scrollIds);
+				}
+				catch (Exception e){
+
+				}
+//			System.out.println(scrolls);
 			}
 
 		} catch (ElasticSearchException e) {
@@ -1978,11 +2002,13 @@ public class RestClientUtil extends ClientUtil{
 			}
 			List<T> datas = response.getDatas();//第一页数据
 
-			List<String> scrollIds = new ArrayList<String>();//用于记录每次scroll的scrollid，便于检索完毕后清除
+			List<String> scrollIds = null;//用于记录每次scroll的scrollid，便于检索完毕后清除
 //			long totalSize = response.getTotalSize();//总记录数
 			String scrollId = response.getScrollId();//第一次的scrollid
-			if (scrollId != null)
+			if (scrollId != null) {
+				scrollIds = new ArrayList<String>(21);
 				scrollIds.add(scrollId);
+			}
 //		System.out.println("totalSize:"+totalSize);
 //		System.out.println("scrollId:"+scrollId);
 			if (datas != null && datas.size() > 0) {//每页1000条记录，通过迭代scrollid，遍历scroll分页结果
@@ -1994,19 +2020,26 @@ public class RestClientUtil extends ClientUtil{
 					scrollId = _response.getScrollId();//每页的scrollid
 					if (scrollId != null)
 						scrollIds.add(scrollId);
+
 					_datas = _response.getDatas();//每页的纪录数
 					if (_datas == null || _datas.size() == 0) {
 						break;
 					} else {
 						scrollHandler.handle(_response);
 					}
+					this._clear(scrollIds);
 				} while (true);
 			}
 
 			//清除scroll上下文信息,虽然说超过1分钟后，scrollid会自动失效，
 			//但是手动删除不用的scrollid，是一个好习惯
-			if (scrollIds.size() > 0) {
-				deleteScrolls(scrollIds);
+			if (scrollIds != null && scrollIds.size() > 0) {
+				try {
+					deleteScrolls(scrollIds);
+				}
+				catch (Exception e){
+
+				}
 			}
 			if(!useDefaultScrollHandler)//结果自行处理，所以清空默认结果
 				response.setDatas(null);
@@ -2019,6 +2052,8 @@ public class RestClientUtil extends ClientUtil{
 			throw new ElasticSearchException(e);
 		}
 	}
+
+
 	/**
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
 	 * @param path

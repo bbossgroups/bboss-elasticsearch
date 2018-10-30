@@ -22,7 +22,6 @@ import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1069,7 +1068,6 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	private <T> ESDatas<T> _scrollSlice(final String path,final String dslTemplate,final Map params ,
 									   final String scroll  ,final Class<T> type,
 									   ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		List<String> scrollIds = new ArrayList<String>();
 		long starttime = System.currentTimeMillis();
 		//scroll slice分页检索
 		Integer mx = (Integer) params.get("sliceMax");
@@ -1092,7 +1090,6 @@ public class ConfigRestClientUtil extends RestClientUtil {
 				_doSliceScroll( i, _path,
 						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
-						scrollIds,
 						sliceScrollResult);
 
 			} catch (ElasticSearchException e) {
@@ -1108,11 +1105,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			logger.debug("Slice scroll query耗时：" + (endtime - starttime) + ",realTotalSize：" + sliceScrollResult.getRealTotalSize());
 		}
 
-		//处理完毕后清除scroll上下文信息
-		if(scrollIds.size() > 0) {
-			deleteScrolls(scrollIds);
-//			System.out.println(scrolls);
-		}
+
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
 	}
