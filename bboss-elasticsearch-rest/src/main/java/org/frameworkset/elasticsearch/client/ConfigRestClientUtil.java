@@ -1086,7 +1086,6 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			int i = j;
 			try {
 				params.put("sliceId", i);
-
 				_doSliceScroll( i, _path,
 						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
