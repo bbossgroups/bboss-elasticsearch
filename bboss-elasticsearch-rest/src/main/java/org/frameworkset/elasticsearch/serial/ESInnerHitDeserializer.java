@@ -14,6 +14,13 @@ package org.frameworkset.elasticsearch.serial;/*
  *  limitations under the License.
  */
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import org.frameworkset.elasticsearch.entity.InnerSearchHit;
+
+import java.io.IOException;
+
 public class ESInnerHitDeserializer  extends BaseESHitDeserializer {
 	public ESInnerHitDeserializer(){
 
@@ -22,6 +29,33 @@ public class ESInnerHitDeserializer  extends BaseESHitDeserializer {
 	@Override
 	protected ESClass getESInnerTypeReferences() {
 		return ESInnerHitSerialThreadLocal.getESInnerTypeReferences();
+	}
+
+	protected ESClass getESInnerTypeReferences(String type) {
+		return ESInnerHitSerialThreadLocal.getESInnerTypeReferences(type);
+	}
+
+
+	@Override
+	public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+		InnerSearchHit hit = (InnerSearchHit) p.getParsingContext().getParent().getCurrentValue();
+		ESClass refs = getESInnerTypeReferences(hit.getType());
+		if(refs == null){
+			return ctxt.findRootValueDeserializer(ESSerialThreadLocal.getMapObjectType()).deserialize(p,ctxt);
+		}
+		else
+		{
+			if(refs instanceof ESTypeReferences)
+				return ctxt.findRootValueDeserializer(ESSerialThreadLocal.getJavaType(((ESTypeReferences)refs).getHitType())).deserialize(p,ctxt);
+			else
+			{
+				ESClassType classType = (ESClassType)refs;
+				return ctxt.findRootValueDeserializer(ESSerialThreadLocal.getJavaType(classType.getHitClass())).deserialize(p,ctxt);
+
+			}
+		}
+
+
 	}
 
 

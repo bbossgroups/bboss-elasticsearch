@@ -13,12 +13,12 @@ import java.util.Map;
 public class HealthCheckTest {
 	@Test
 	public void testCheck(){
-		final List<ESAddress> esAddresses = new ArrayList<>();
+		final List<ESAddress> esAddresses = new ArrayList<ESAddress>();
 		esAddresses.add(new ESAddress("localhost:9200"));
 //		esAddresses.add(new ESAddress("localhost2:9200"));
 //		esAddresses.add(new ESAddress("localhost3:9200"));
 		String elasticUser = "elastic", elasticPassword = "changeme";
-		Map<String,String> headers = new HashMap<>();
+		Map<String,String> headers = new HashMap<String,String>();
 		headers.put("Authorization", ElasticSearchRestClient.getHeader(elasticUser, elasticPassword));
 		final HealthCheck healthCheck = new HealthCheck(esAddresses,5000, headers);
 		healthCheck.run();

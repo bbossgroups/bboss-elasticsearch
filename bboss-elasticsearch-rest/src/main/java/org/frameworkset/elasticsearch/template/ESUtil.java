@@ -651,7 +651,96 @@ public class ESUtil {
 //	private Map<String,SQLTemplate> sqlVelocityTemplates;
 //	
 	
-	private static DaemonThread damon = null; 
+	private static DaemonThread damon = null;
+
+	/**
+	 * Returns a string whose value is this string, with any leading and trailing
+	 * whitespace removed.
+	 * <p>
+	 * If this {@code String} object represents an empty character
+	 * sequence, or the first and last characters of character sequence
+	 * represented by this {@code String} object both have codes
+	 * greater than {@code '\u005Cu0020'} (the space character), then a
+	 * reference to this {@code String} object is returned.
+	 * <p>
+	 * Otherwise, if there is no character with a code greater than
+	 * {@code '\u005Cu0020'} in the string, then a
+	 * {@code String} object representing an empty string is
+	 * returned.
+	 * <p>
+	 * Otherwise, let <i>k</i> be the index of the first character in the
+	 * string whose code is greater than {@code '\u005Cu0020'}, and let
+	 * <i>m</i> be the index of the last character in the string whose code
+	 * is greater than {@code '\u005Cu0020'}. A {@code String}
+	 * object is returned, representing the substring of this string that
+	 * begins with the character at index <i>k</i> and ends with the
+	 * character at index <i>m</i>-that is, the result of
+	 * {@code this.substring(k, m + 1)}.
+	 * <p>
+	 * This method may be used to trim whitespace (as defined above) from
+	 * the beginning and end of a string.
+	 *
+	 * @return  A string whose value is this string, with any leading and trailing white
+	 *          space removed, or this string if it has no leading or
+	 *          trailing white space.
+	 */
+	public static String ltrim(String value) {
+
+		int len = value.length();
+		int st = 0;
+
+
+		while ((st < len) && (value.charAt(st) <= ' ')) {
+			st++;
+		}
+
+		return (st > 0)  ? value.substring(st,len) : value;
+	}
+
+	/**
+	 * Returns a string whose value is this string, with any leading and trailing
+	 * whitespace removed.
+	 * <p>
+	 * If this {@code String} object represents an empty character
+	 * sequence, or the first and last characters of character sequence
+	 * represented by this {@code String} object both have codes
+	 * greater than {@code '\u005Cu0020'} (the space character), then a
+	 * reference to this {@code String} object is returned.
+	 * <p>
+	 * Otherwise, if there is no character with a code greater than
+	 * {@code '\u005Cu0020'} in the string, then a
+	 * {@code String} object representing an empty string is
+	 * returned.
+	 * <p>
+	 * Otherwise, let <i>k</i> be the index of the first character in the
+	 * string whose code is greater than {@code '\u005Cu0020'}, and let
+	 * <i>m</i> be the index of the last character in the string whose code
+	 * is greater than {@code '\u005Cu0020'}. A {@code String}
+	 * object is returned, representing the substring of this string that
+	 * begins with the character at index <i>k</i> and ends with the
+	 * character at index <i>m</i>-that is, the result of
+	 * {@code this.substring(k, m + 1)}.
+	 * <p>
+	 * This method may be used to trim whitespace (as defined above) from
+	 * the beginning and end of a string.
+	 *
+	 * @return  A string whose value is this string, with any leading and trailing white
+	 *          space removed, or this string if it has no leading or
+	 *          trailing white space.
+	 */
+	public static String rtrim(String value) {
+
+		int len = value.length();
+		int st = 0;
+
+
+		while ((st < len) && (value.charAt(len - 1) <= ' ')) {
+			len--;
+		}
+		return ((len < value.length())) ? value.substring(st, len) : value;
+	}
+
+
 	/**
 	 * 
 	 */
@@ -685,7 +774,7 @@ public class ESUtil {
 							boolean istpl = pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
 							boolean multiparser = pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
 							ESTemplate sqltpl = null;
-							value = value.trim();
+							value = ESUtil.ltrim(value);
 							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro);
 							sqlinfo.setEsUtil(this);
 							if(istpl)

@@ -265,7 +265,7 @@ public class ESTest {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
-		List<Demo> demos = new ArrayList<>();
+		List<Demo> demos = new ArrayList<Demo>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
 		demo.setAgentStarttime(new Date());
@@ -307,7 +307,7 @@ public class ESTest {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		List<Demo> demos = new ArrayList<>();
+		List<Demo> demos = new ArrayList<Demo>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
 		demo.setAgentStarttime(new Date());
@@ -348,7 +348,7 @@ public class ESTest {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		List<Demo> demos = new ArrayList<>();
+		List<Demo> demos = new ArrayList<Demo>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
 		demo.setAgentStarttime(new Date());
@@ -490,7 +490,7 @@ public class ESTest {
 		testCreateDemoMapping();
 		String response = null;
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
-		List<Demo> demos = new ArrayList<>();
+		List<Demo> demos = new ArrayList<Demo>();
 		long starttime = System.currentTimeMillis();
 		for(int j = 0 ; j < 1 ; j ++){
 			int start = j * 10000;
