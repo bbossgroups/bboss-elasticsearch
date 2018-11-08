@@ -16,19 +16,17 @@ package org.frameworkset.elasticsearch.client.schedule;
  */
 
 import com.frameworkset.common.poolman.SQLExecutor;
-import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
+import org.frameworkset.elasticsearch.client.DefaultResultSetHandler;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.ESJDBC;
-import org.frameworkset.elasticsearch.client.JDBCRestClientUtil;
 import org.frameworkset.elasticsearch.client.TaskFailedException;
 import org.frameworkset.util.tokenizer.TextGrammarParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -123,25 +121,41 @@ public class ScheduleService {
 			return;
 		}
 //		SQLInfo sqlInfo = getLastValueSQL();
-		ResultSetHandler resultSetHandler = new ResultSetHandler() {
-			@Override
-			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-				esjdbc.setResultSet(resultSet);
-				esjdbc.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-				jdbcRestClientUtil.addDocuments(esjdbc.getIndex(), esjdbc.getIndexType(), esjdbc, esjdbc.getRefreshOption(), batchSize);
-			}
-		};
+		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,batchSize);
+//		ResultSetHandler resultSetHandler = new ResultSetHandler() {
+//			@Override
+//			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
+//				esjdbc.setResultSet(resultSet);
+//				esjdbc.setMetaData(statementInfo.getMeta());
+//				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
+//				jdbcRestClientUtil.addDocuments(esjdbc.getIndex(), esjdbc.getIndexType(), esjdbc, esjdbc.getRefreshOption(), batchSize);
+//			}
+//		};
 
 		if(sqlInfo.getParamSize() == 0) {
-			SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql());
+			if(esjdbc.getExecutor() == null) {
+				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql());
+			}
+			else
+			{
+				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName());
+			}
+
 		}
 		else {
 			 if(!this.isIncreamentImport()){
 			 	esjdbc.setForceStop();
 			 }
 			 else {
-				 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
+				 if(esjdbc.getExecutor() == null) {
+					 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
+				 }
+				 else
+				 {
+					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
+
+				 }
+
 			 }
 		}
 

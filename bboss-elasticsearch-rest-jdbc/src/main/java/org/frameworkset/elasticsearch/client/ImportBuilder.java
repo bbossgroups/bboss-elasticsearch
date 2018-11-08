@@ -14,17 +14,20 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
+import org.frameworkset.persitent.util.SQLInfo;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ImportBuilder {
@@ -45,6 +48,7 @@ public class ImportBuilder {
 	/**抽取数据的sql语句*/
 	private String sql;
 	private String sqlFilepath;
+	private String sqlName;
 	private Integer jdbcFetchSize;
 	
 	/**是否启用sql日志，true启用，false 不启用，*/
@@ -457,7 +461,19 @@ public class ImportBuilder {
 		esjdbcResultSet.setFieldMetaMap(this.fieldMetaMap);
 		esjdbcResultSet.setFieldValues(fieldValues);
 		esjdbcResultSet.setDataRefactor(this.dataRefactor);
-		esjdbcResultSet.setSql(this.sql);
+		if(SimpleStringUtil.isNotEmpty(sql))
+			esjdbcResultSet.setSql(this.sql);
+		else{
+			ConfigSQLExecutor executor = new ConfigSQLExecutor(this.sqlFilepath);
+			try {
+				SQLInfo sqlInfo = executor.getSqlInfo(this.sqlName);
+				esjdbcResultSet.setSql(sqlInfo.getSql());
+			}
+			catch (SQLException e){
+				throw new ESDataImportException(e);
+			}
+			esjdbcResultSet.setExecutor(executor);
+		}
 		esjdbcResultSet.setDbName(dbName);
 		esjdbcResultSet.setShowSql(showSql);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
@@ -494,6 +510,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
 		esjdbcResultSet.setUseLowcase(this.useLowcase);
 		esjdbcResultSet.setPrintTaskLog(this.printTaskLog);
+		esjdbcResultSet.setSqlName(sqlName);
 
 		return esjdbcResultSet;
 	}
@@ -872,5 +889,14 @@ public class ImportBuilder {
 		StringBuilder ret = new StringBuilder();
 		ret.append(SimpleStringUtil.object2json(this));
 		return ret.toString();
+	}
+
+	public String getSqlName() {
+		return sqlName;
+	}
+
+	public ImportBuilder setSqlName(String sqlName) {
+		this.sqlName = sqlName;
+		return this;
 	}
 }

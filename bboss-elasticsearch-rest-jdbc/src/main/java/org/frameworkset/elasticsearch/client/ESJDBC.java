@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -134,8 +135,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private DataRefactor dataRefactor;
 	private String sql;
 	private String sqlFilepath;
+	private String sqlName;
 	private Integer jdbcFetchSize;
 	private String dbName;
+	private ConfigSQLExecutor executor;
 
 	private String refreshOption;
 	private int batchSize = 1000;
@@ -748,5 +751,21 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setPrintTaskLog(boolean printTaskLog) {
 		this.printTaskLog = printTaskLog;
+	}
+
+	public String getSqlName() {
+		return sqlName;
+	}
+
+	public void setSqlName(String sqlName) {
+		this.sqlName = sqlName;
+	}
+
+	public ConfigSQLExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(ConfigSQLExecutor executor) {
+		this.executor = executor;
 	}
 }

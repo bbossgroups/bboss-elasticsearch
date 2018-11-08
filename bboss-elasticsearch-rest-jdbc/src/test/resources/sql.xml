@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+	配置数据导入的sql
+ ]]>
+    </description>
+    <property name="demoexport"><![CDATA[select * from td_sm_log where log_id > #[log_id]]]></property>
+
+</properties>

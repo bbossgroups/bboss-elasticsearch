@@ -15,7 +15,6 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.SQLExecutor;
-import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
@@ -23,8 +22,6 @@ import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.ResultSet;
 
 public class DataStream {
 	private ESJDBC esjdbc;
@@ -83,15 +80,14 @@ public class DataStream {
 
 
 	private void firstImportData() throws Exception {
-		SQLExecutor.queryWithDBNameByNullRowHandler(new ResultSetHandler() {
-			@Override
-			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-				esjdbc.setResultSet(resultSet);
-				esjdbc.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-				jdbcRestClientUtil.addDocuments(esjdbc.getIndex(), esjdbc.getIndexType(), esjdbc, esjdbc.getRefreshOption(), esjdbc.getBatchSize());
-			}
-		}, esjdbc.getDbName(), esjdbc.getSql());
+		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,esjdbc.getBatchSize());
+		if(esjdbc.getExecutor() == null) {
+			SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql());
+		}
+		else
+		{
+			esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName());
+		}
 	}
 
 
