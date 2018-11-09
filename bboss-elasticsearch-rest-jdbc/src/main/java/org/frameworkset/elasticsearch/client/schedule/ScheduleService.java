@@ -138,7 +138,7 @@ public class ScheduleService {
 			}
 			else
 			{
-				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName());
+				esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName(),(Map)null);
 			}
 
 		}
@@ -152,7 +152,7 @@ public class ScheduleService {
 				 }
 				 else
 				 {
-					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
+					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName(), getParamValue());
 
 				 }
 

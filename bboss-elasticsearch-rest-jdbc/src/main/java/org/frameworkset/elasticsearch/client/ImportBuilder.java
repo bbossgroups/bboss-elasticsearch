@@ -461,19 +461,11 @@ public class ImportBuilder {
 		esjdbcResultSet.setFieldMetaMap(this.fieldMetaMap);
 		esjdbcResultSet.setFieldValues(fieldValues);
 		esjdbcResultSet.setDataRefactor(this.dataRefactor);
+		esjdbcResultSet.setSqlFilepath(this.sqlFilepath);
+		esjdbcResultSet.setSqlName(sqlName);
 		if(SimpleStringUtil.isNotEmpty(sql))
 			esjdbcResultSet.setSql(this.sql);
-		else{
-			ConfigSQLExecutor executor = new ConfigSQLExecutor(this.sqlFilepath);
-			try {
-				SQLInfo sqlInfo = executor.getSqlInfo(this.sqlName);
-				esjdbcResultSet.setSql(sqlInfo.getSql());
-			}
-			catch (SQLException e){
-				throw new ESDataImportException(e);
-			}
-			esjdbcResultSet.setExecutor(executor);
-		}
+
 		esjdbcResultSet.setDbName(dbName);
 		esjdbcResultSet.setShowSql(showSql);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
@@ -502,7 +494,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setDebugResponse(this.debugResponse);
 		esjdbcResultSet.setScheduleConfig(this.scheduleConfig);//定时任务配置
 		esjdbcResultSet.setImportIncreamentConfig(this.importIncreamentConfig);//增量数据配置
-		esjdbcResultSet.setSqlFilepath(this.sqlFilepath);
+
 		if(this.scheduleBatchSize != null)
 			esjdbcResultSet.setScheduleBatchSize(this.scheduleBatchSize);
 		else
@@ -510,7 +502,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
 		esjdbcResultSet.setUseLowcase(this.useLowcase);
 		esjdbcResultSet.setPrintTaskLog(this.printTaskLog);
-		esjdbcResultSet.setSqlName(sqlName);
+
 
 		return esjdbcResultSet;
 	}

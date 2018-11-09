@@ -14,14 +14,18 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
+import org.frameworkset.persitent.util.SQLInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
 
 public class DataStream {
 	private ESJDBC esjdbc;
@@ -35,6 +39,7 @@ public class DataStream {
 		try {
 			initES();
 			initDS();
+			initSQLInfo();
 			this.initSchedule();
 			importData();
 		}
@@ -42,6 +47,22 @@ public class DataStream {
 			throw new ESDataImportException(e);
 		}
 		finally{
+
+		}
+	}
+	private void initSQLInfo(){
+
+		if(esjdbc.getSql() == null || esjdbc.getSql().equals("")){
+
+			try {
+				ConfigSQLExecutor executor = new ConfigSQLExecutor(esjdbc.getSqlFilepath());
+				SQLInfo sqlInfo = executor.getSqlInfo(esjdbc.getSqlName());
+				esjdbc.setSql(sqlInfo.getSql());
+				esjdbc.setExecutor(executor);
+			}
+			catch (SQLException e){
+				throw new ESDataImportException(e);
+			}
 
 		}
 	}
