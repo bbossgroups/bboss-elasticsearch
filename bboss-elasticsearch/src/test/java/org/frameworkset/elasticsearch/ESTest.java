@@ -253,7 +253,7 @@ public class ESTest {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesMapper.xml");
-		List<Demo> demos = new ArrayList<>();
+		List<Demo> demos = new ArrayList<Demo>();
 		Demo demo = new Demo();
 		demo.setDemoId(2l);
 		demo.setAgentStarttime(new Date());
