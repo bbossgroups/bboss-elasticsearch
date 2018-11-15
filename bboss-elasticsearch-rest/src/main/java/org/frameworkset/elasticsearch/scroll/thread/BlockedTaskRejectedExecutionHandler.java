@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,7 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHandler {
 	private static Logger logger = LoggerFactory.getLogger(BlockedTaskRejectedExecutionHandler.class);
 	private AtomicInteger rejectCounts = new AtomicInteger();
-	public BlockedTaskRejectedExecutionHandler(){
+	private long sliceScrollBlockedWaitTimeout;
+	public BlockedTaskRejectedExecutionHandler(long sliceScrollBlockedWaitTimeout){
+		this.sliceScrollBlockedWaitTimeout = sliceScrollBlockedWaitTimeout;
 	}
 
 	/**
@@ -48,12 +51,21 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 		if(logger.isWarnEnabled()) {
 			int t = counts % 100;
 			if (t == 0) {
-					logger.warn(new StringBuilder().append("Task[Slice Scroll Query] rejected  ").append(counts).append(" times.").toString());
+					logger.warn(new StringBuilder().append("Task[Slice Scroll Query] blocked ").append(counts).append(" times.").toString());
 			}
 		}
 //
 		try {
-			executor.getQueue().put(r);
+			if(sliceScrollBlockedWaitTimeout <= 0) {
+				executor.getQueue().put(r);
+			}
+			else {
+				boolean result = executor.getQueue().offer(r, this.sliceScrollBlockedWaitTimeout, TimeUnit.MILLISECONDS);
+				if(!result){
+					throw new RejectedExecutionException(new StringBuilder().append("Task[Slice Scroll Query] rejected: wait timeout after ")
+							.append(sliceScrollBlockedWaitTimeout).append(" MILLISECONDS.").toString());
+				}
+			}
 		} catch (InterruptedException e1) {
 			throw new RejectedExecutionException(e1);
 		}

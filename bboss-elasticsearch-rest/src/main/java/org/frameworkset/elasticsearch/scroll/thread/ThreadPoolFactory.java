@@ -26,7 +26,7 @@ import java.util.concurrent.*;
  * @version 1.0
  */
 public class ThreadPoolFactory {
-	public static ExecutorService buildThreadPool(int sliceScrollThreadCount,int sliceScrollThreadQueue){
+	public static ExecutorService buildThreadPool(int sliceScrollThreadCount,int sliceScrollThreadQueue,long sliceScrollBlockedWaitTimeout){
 //		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
 //			@Override
 //			public Thread newThread(Runnable r) {
@@ -42,7 +42,7 @@ public class ThreadPoolFactory {
 					public Thread newThread(Runnable r) {
 						return new ESSliceScrollThread(r);
 					}
-				},new BlockedTaskRejectedExecutionHandler());
+				},new BlockedTaskRejectedExecutionHandler(  sliceScrollBlockedWaitTimeout));
 		return blockedExecutor;
 	}
 }

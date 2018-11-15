@@ -98,6 +98,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected ExecutorService sliceScrollQueryExecutorService;
 	protected int sliceScrollThreadCount = 500;
 	protected int sliceScrollThreadQueue = 500;
+	protected long sliceScrollBlockedWaitTimeout = 0l;
 
 	protected IndexNameBuilder indexNameBuilder;
 
@@ -242,6 +243,15 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			}
 			catch (Exception e){
 				logger.warn(_sliceScrollThreadCount,e);
+			}
+		}
+		String _sliceScrollBlockedWaitTimeout = elasticsearchPropes.getProperty(CLIENT_sliceScrollBlockedWaitTimeout);
+		if (SimpleStringUtil.isNotEmpty(_sliceScrollBlockedWaitTimeout)) {
+			try {
+				this.sliceScrollBlockedWaitTimeout = Long.parseLong(_sliceScrollBlockedWaitTimeout);
+			}
+			catch (Exception e){
+				logger.warn(_sliceScrollBlockedWaitTimeout,e);
 			}
 		}
 		String _sliceScrollThreadQueue = elasticsearchPropes.getProperty(CLIENT_sliceScrollThreadQueue);
@@ -404,7 +414,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			if(sliceScrollQueryExecutorService != null)
 				return sliceScrollQueryExecutorService;
 			if (this.sliceScrollQueryExecutorService == null) {
-				sliceScrollQueryExecutorService = ThreadPoolFactory.buildThreadPool(this.sliceScrollThreadCount, this.sliceScrollThreadQueue);
+				sliceScrollQueryExecutorService = ThreadPoolFactory.buildThreadPool(this.sliceScrollThreadCount, this.sliceScrollThreadQueue,this.sliceScrollBlockedWaitTimeout);
 			}
 		}
 		return this.sliceScrollQueryExecutorService;
