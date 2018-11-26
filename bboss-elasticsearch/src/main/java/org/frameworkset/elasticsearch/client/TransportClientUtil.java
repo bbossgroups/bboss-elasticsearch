@@ -20,6 +20,7 @@ import org.frameworkset.elasticsearch.event.Event;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.elasticsearch.template.ESInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -1232,5 +1233,7 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
-
+	public ESInfo getESInfo(String templateName){
+		return  null;
+	}
 }

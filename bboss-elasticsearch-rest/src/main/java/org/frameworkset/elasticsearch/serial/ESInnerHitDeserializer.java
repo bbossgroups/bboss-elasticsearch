@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.serial;/*
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import org.frameworkset.elasticsearch.entity.InnerSearchHit;
 
@@ -34,12 +35,22 @@ public class ESInnerHitDeserializer  extends BaseESHitDeserializer {
 	protected ESClass getESInnerTypeReferences(String type) {
 		return ESInnerHitSerialThreadLocal.getESInnerTypeReferences(type);
 	}
-
+	private String getTypeName(JsonParser p){
+		return p.getParsingContext().getParent().getParent().getParent().getParent().getParent().getCurrentName();
+	}
 
 	@Override
 	public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		InnerSearchHit hit = (InnerSearchHit) p.getParsingContext().getParent().getCurrentValue();
-		ESClass refs = getESInnerTypeReferences(hit.getType());
+		JsonStreamContext jsonStreamContext = p.getParsingContext().getParent();
+		InnerSearchHit hit = (InnerSearchHit) jsonStreamContext.getCurrentValue();
+		ESClass refs = null;
+		if(hit.getIndex() == null) {
+			refs = getESInnerTypeReferences(hit.getType());
+		}
+		else
+		{
+			refs = getESInnerTypeReferences(getTypeName(  p));
+		}
 		if(refs == null){
 			return ctxt.findRootValueDeserializer(ESSerialThreadLocal.getMapObjectType()).deserialize(p,ctxt);
 		}

@@ -21,6 +21,7 @@ import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.scroll.SliceScrollResultInf;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
+import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.json.JsonTypeReference;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.ClassUtil;
@@ -2972,6 +2973,8 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp("_aliases",removeAlias,ClientUtil.HTTP_POST);
 	}
 
-
+	public ESInfo getESInfo(String templateName){
+		return  null;
+	}
 
 }

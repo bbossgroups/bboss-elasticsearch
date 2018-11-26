@@ -11,6 +11,7 @@ import org.frameworkset.elasticsearch.entity.suggest.TermRestResponse;
 import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.util.annotations.ThreadSafe;
 
 import java.util.List;
@@ -1991,4 +1992,11 @@ public interface ClientInterface {
 	 */
 	public abstract <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException ;
 	public String closeSQLCursor(String cursor) throws ElasticSearchException ;
+
+	/**
+	 * 获取从配置文件定义的dsl元数据
+	 * @param templateName
+	 * @return
+	 */
+	public ESInfo getESInfo(String templateName);
 }

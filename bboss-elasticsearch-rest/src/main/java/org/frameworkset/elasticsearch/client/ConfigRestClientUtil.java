@@ -16,6 +16,7 @@ import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.scroll.SliceScrollResult;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.elasticsearch.template.ESTemplateHelper;
 import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.util.ClassUtil;
@@ -1041,7 +1042,9 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 
-
+	public ESInfo getESInfo(String templateName){
+		return  esUtil.getESInfo(templateName);
+	}
 
 	private <T> ESDatas<T> _scrollSliceParallel(String path,final String dslTemplate,final Map params ,
 									  final String scroll  ,final Class<T> type,
