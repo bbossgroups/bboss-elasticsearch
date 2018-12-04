@@ -376,10 +376,11 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		return value;
 	}
 
-	private static Object getEsId(ESJDBC jdbcResultSet) throws Exception {
-		if(jdbcResultSet.getEsIdField() != null)
-			return jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
-		return null;
+	private static Object getEsId(Context context) throws Exception {
+//		if(jdbcResultSet.getEsIdField() != null)
+//			return jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
+//		return null;
+		return context.getEsId();
 	}
 	private static Object getEsParentId(ESJDBC jdbcResultSet) throws Exception {
 		if(jdbcResultSet.getEsParentIdField() != null) {
@@ -389,9 +390,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			return jdbcResultSet.getEsParentIdValue();
 	}
 
-	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
+	public static void buildMeta(Context context,Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
 
-		Object id = getEsId(jdbcResultSet) ;
+		Object id = getEsId(context) ;
 		Object parentId = getEsParentId(  jdbcResultSet);
 		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
 		if(routing == null)
@@ -505,7 +506,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		if (jdbcResultSet != null) {
 			Context context = new ContextImpl(jdbcResultSet);
 			jdbcResultSet.refactorData(context);
-			buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,action);
+			buildMeta( context, writer ,  indexType,  indexName,   jdbcResultSet,action);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);

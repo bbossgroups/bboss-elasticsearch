@@ -39,6 +39,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private ScheduleService scheduleService;
 	private ErrorWrapper errorWrapper;
 	private volatile boolean forceStop = false;
+	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
+	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 	/**
 	 * 打印任务日志
 	 */
@@ -767,5 +769,14 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setExecutor(ConfigSQLExecutor executor) {
 		this.executor = executor;
+	}
+
+	public EsIdGenerator getEsIdGenerator() {
+		return esIdGenerator;
+	}
+
+	public void setEsIdGenerator(EsIdGenerator esIdGenerator) {
+		if(esIdGenerator != null)
+			this.esIdGenerator = esIdGenerator;
 	}
 }

@@ -14,20 +14,17 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
-import org.frameworkset.persitent.util.SQLInfo;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 public class ImportBuilder {
@@ -50,6 +47,7 @@ public class ImportBuilder {
 	private String sqlFilepath;
 	private String sqlName;
 	private Integer jdbcFetchSize;
+	private EsIdGenerator esIdGenerator = ESJDBC.DEFAULT_EsIdGenerator;
 	
 	/**是否启用sql日志，true启用，false 不启用，*/
 	private boolean showSql;
@@ -502,8 +500,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setCallInterceptors(this.callInterceptors);
 		esjdbcResultSet.setUseLowcase(this.useLowcase);
 		esjdbcResultSet.setPrintTaskLog(this.printTaskLog);
-
-
+		esjdbcResultSet.setEsIdGenerator(esIdGenerator);
 		return esjdbcResultSet;
 	}
 	public DataStream builder(){
@@ -889,6 +886,12 @@ public class ImportBuilder {
 
 	public ImportBuilder setSqlName(String sqlName) {
 		this.sqlName = sqlName;
+		return this;
+	}
+
+	public ImportBuilder setEsIdGenerator(EsIdGenerator esIdGenerator) {
+		if(esIdGenerator != null)
+			this.esIdGenerator = 	esIdGenerator;
 		return this;
 	}
 }

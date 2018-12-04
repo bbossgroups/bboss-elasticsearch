@@ -15,26 +15,14 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/11 17:48
+ * @Date 2018/12/4 11:26
  * @author biaoping.yin
  * @version 1.0
  */
-public interface Context {
-	public Context addFieldValue(String fieldName,Object value);
-	public Context addFieldValue(String fieldName,String dateFormat,Object value);
-	public Context addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone);
-	public Context addIgnoreFieldMapping(String dbColumnName);
-	public ESJDBC getEsjdbc();
-	public Object getValue(String fieldName) throws Exception;
-	public List<FieldMeta> getFieldValues();
-	public Map<String,FieldMeta> getFieldMetaMap();
-	public FieldMeta getMappingName(String colName);
-	Object getEsId() throws Exception;
+public interface EsIdGenerator {
+	public Object genId(Context context)  throws Exception;
 }

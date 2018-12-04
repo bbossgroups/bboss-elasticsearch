@@ -89,4 +89,12 @@ public class ContextImpl implements Context {
 		}
 		return esjdbc.getMappingName(colName);
 	}
+
+	@Override
+	public Object getEsId() throws Exception {
+//		if(esjdbc.getEsIdField() != null)
+//			return esjdbc.getValue(esjdbc.getEsIdField());
+//		return null;
+		return esjdbc.getEsIdGenerator().genId(this);
+	}
 }
