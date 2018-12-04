@@ -738,6 +738,10 @@ public abstract class ResultUtil {
 
 	public static  void injectInnerHitBaseData(Map<String, Map<String,InnerSearchHits>> innerHits){
 		Iterator<Map.Entry<String, Map<String, InnerSearchHits>>> iterator = innerHits.entrySet().iterator();
+		ClassUtil.ClassInfo classInfo = null;
+
+		ClassUtil.PropertieDescription  injectAnnotationESId = null;
+		ClassUtil.PropertieDescription  injectAnnotationESParentId = null;
 		while(iterator.hasNext()){
 			Map.Entry<String, Map<String, InnerSearchHits>> entry = iterator.next();
 			Map<String, InnerSearchHits> value = entry.getValue();
@@ -746,21 +750,27 @@ public abstract class ResultUtil {
 				List<InnerSearchHit> innerSearchHits = hitsEntryValue.getHits();
 				if(innerSearchHits != null && innerSearchHits.size() > 0){
 					Object source = innerSearchHits.get(0).getSource();
-					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(source.getClass());
+					classInfo = ClassUtil.getClassInfo(source.getClass());
 
+					injectAnnotationESId = classInfo.getEsIdProperty();
+					injectAnnotationESParentId = classInfo.getEsParentProperty();
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
 						isESId = ESId.class.isAssignableFrom(source.getClass());
 					}
-					if(isESBaseData || isESId) {
+					if(isESBaseData || isESId || (injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+							|| (injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())) {
 						for (int i = 0; i < innerSearchHits.size(); i++) {
 							InnerSearchHit innerSearchHit = innerSearchHits.get(i);
 							source = innerSearchHit.getSource();
 							if (source != null) {
-								injectAnnotationESId(classInfo,  source,innerSearchHit);
-								injectAnnotationESParentId(classInfo,  source,innerSearchHit);
-								injectBaseData(source, innerSearchHit, isESBaseData, isESId);
+								if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+									injectAnnotationESId(injectAnnotationESId,  source,innerSearchHit);
+								if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
+									injectAnnotationESParentId(injectAnnotationESParentId,  source,innerSearchHit);
+								if(isESBaseData || isESId)
+									injectBaseData(source, innerSearchHit, isESBaseData, isESId);
 							}
 						}
 					}
@@ -775,12 +785,12 @@ public abstract class ResultUtil {
 	 * 如果对象有ESId注解标识的字段，则注入parent和
 	 * @param data
 	 */
-	private static void injectAnnotationESId(ClassUtil.ClassInfo classInfo,Object data ,BaseSearchHit hit){
+	private static void injectAnnotationESId(ClassUtil.PropertieDescription  injectAnnotationESId,Object data ,BaseSearchHit hit){
 		if(data == null)
 			return;
 		Object id = hit.getId();
-		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsIdProperty() ;
-		_injectAnnotationES( propertieDescription,  data ,  hit,id );
+//		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsIdProperty() ;
+		_injectAnnotationES( injectAnnotationESId,  data ,  hit,id );
 
 	}
 
@@ -788,12 +798,12 @@ public abstract class ResultUtil {
 	 * 如果对象有ESId注解标识的字段，则注入parent和
 	 * @param data
 	 */
-	private static void injectAnnotationESParentId(ClassUtil.ClassInfo classInfo,Object data ,BaseSearchHit hit){
+	private static void injectAnnotationESParentId(ClassUtil.PropertieDescription  injectAnnotationESParentId,Object data ,BaseSearchHit hit){
 		if(data == null)
 			return;
 		Object id = hit.getParent();
-		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsParentProperty() ;
-		_injectAnnotationES( propertieDescription,  data ,  hit,id);
+//		ClassUtil.PropertieDescription propertieDescription = classInfo.getEsParentProperty() ;
+		_injectAnnotationES( injectAnnotationESParentId,  data ,  hit,id);
 
 	}
 	/**
@@ -827,8 +837,13 @@ public abstract class ResultUtil {
 				Object data =  hit.getSource();
 				if(data != null) {
 					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
-					injectAnnotationESId(classInfo,  data,hit);
-					injectAnnotationESParentId(classInfo,  data,hit);
+
+					ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+					ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+					if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+						injectAnnotationESId(injectAnnotationESId,  data,hit);
+					if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
+						injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
@@ -845,14 +860,18 @@ public abstract class ResultUtil {
 			}
 			else{
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
+				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				boolean isESId = false;
 				if(!isESBaseData){
 					isESId = ESId.class.isAssignableFrom(type);
 				}
 				T data = (T) hit.getSource();
-				injectAnnotationESId(classInfo,  data,hit);
-				injectAnnotationESParentId(classInfo,  data,hit);
+				if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+					injectAnnotationESId(injectAnnotationESId,  data,hit);
+				if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isEsIdReadSet())
+					injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 				if (isESBaseData) {
 					buildESBaseData(hit, (ESBaseData) data);
 				}
@@ -895,8 +914,13 @@ public abstract class ResultUtil {
 			Object data =  result.getSource();
 			if(data != null) {
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
-				injectAnnotationESId(classInfo,  data,result);
-				injectAnnotationESParentId(classInfo,  data,result);
+				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+
+				if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+					injectAnnotationESId(injectAnnotationESId,  data,result);
+				if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
+					injectAnnotationESParentId(injectAnnotationESParentId,  data,result);
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if(!isESBaseData){
@@ -922,8 +946,12 @@ public abstract class ResultUtil {
 
 			T data = (T) hit.getSource();
 			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
-			injectAnnotationESId(classInfo,  data,hit);
-			injectAnnotationESParentId(classInfo,  data,hit);
+			ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+			ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+			if(injectAnnotationESId != null  && injectAnnotationESId.isEsIdReadSet())
+				injectAnnotationESId(injectAnnotationESId,  data,hit);
+			if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isEsIdReadSet())
+				injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 			if (isESBaseData) {
 				buildESBaseData(hit, (ESBaseData) data);
 			}
@@ -1238,6 +1266,8 @@ public abstract class ResultUtil {
 			if(searchHits != null && searchHits.size() > 0) {
 				Object obj = searchHits.get(0).getSource();
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(obj.getClass());
+				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if (!isESBaseData) {
@@ -1250,9 +1280,10 @@ public abstract class ResultUtil {
 					//处理源对象
 					Object data = hit.getSource();
 					if (data != null) {
-
-						injectAnnotationESId(classInfo,  data,hit);
-						injectAnnotationESParentId(classInfo,  data,hit);
+						if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+							injectAnnotationESId(injectAnnotationESId,  data,hit);
+						if(injectAnnotationESParentId != null&& injectAnnotationESParentId.isEsIdReadSet())
+							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 
@@ -1270,6 +1301,8 @@ public abstract class ResultUtil {
 				List<T> hits = new ArrayList<T>(searchHits.size());
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
+				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESId = false;
 				if (!isESBaseData) {
 					isESId = ESId.class.isAssignableFrom(type);
@@ -1279,8 +1312,10 @@ public abstract class ResultUtil {
 					data = (T) hit.getSource();
 					hits.add(data);
 					if (data != null) {
-						injectAnnotationESId(classInfo,  data,hit);
-						injectAnnotationESParentId(classInfo,  data,hit);
+						if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
+							injectAnnotationESId(injectAnnotationESId,  data,hit);
+						if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
+							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 					//处理InnerHit对象
