@@ -92,9 +92,12 @@ public class ContextImpl implements Context {
 
 	@Override
 	public Object getEsId() throws Exception {
-//		if(esjdbc.getEsIdField() != null)
-//			return esjdbc.getValue(esjdbc.getEsIdField());
-//		return null;
+
 		return esjdbc.getEsIdGenerator().genId(this);
+	}
+
+	@Override
+	public String getEsIdField() {
+		return esjdbc.getEsIdField();
 	}
 }

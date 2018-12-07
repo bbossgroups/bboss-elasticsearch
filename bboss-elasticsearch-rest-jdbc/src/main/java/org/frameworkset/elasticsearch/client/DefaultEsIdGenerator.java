@@ -19,13 +19,17 @@ package org.frameworkset.elasticsearch.client;
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/12/4 11:35
+ *
  * @author biaoping.yin
  * @version 1.0
+ * @Date 2018/12/4 11:35
  */
 public class DefaultEsIdGenerator implements EsIdGenerator {
 	@Override
 	public Object genId(Context context) throws Exception {
+		String esIdField = context.getEsIdField();
+		if (esIdField != null)
+			return context.getValue(esIdField);
 		return null;
 	}
 }

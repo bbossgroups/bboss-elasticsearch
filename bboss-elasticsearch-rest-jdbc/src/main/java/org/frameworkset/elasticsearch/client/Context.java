@@ -37,4 +37,6 @@ public interface Context {
 	public Map<String,FieldMeta> getFieldMetaMap();
 	public FieldMeta getMappingName(String colName);
 	Object getEsId() throws Exception;
+
+	String getEsIdField();
 }

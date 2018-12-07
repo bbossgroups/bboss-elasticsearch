@@ -376,12 +376,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		return value;
 	}
 
-	private static Object getEsId(Context context) throws Exception {
-//		if(jdbcResultSet.getEsIdField() != null)
-//			return jdbcResultSet.getValue(jdbcResultSet.getEsIdField());
-//		return null;
-		return context.getEsId();
-	}
+
 	private static Object getEsParentId(ESJDBC jdbcResultSet) throws Exception {
 		if(jdbcResultSet.getEsParentIdField() != null) {
 			return jdbcResultSet.getValue(jdbcResultSet.getEsParentIdField());
@@ -392,7 +387,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	public static void buildMeta(Context context,Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
 
-		Object id = getEsId(context) ;
+		Object id = context.getEsId();
 		Object parentId = getEsParentId(  jdbcResultSet);
 		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
 		if(routing == null)
