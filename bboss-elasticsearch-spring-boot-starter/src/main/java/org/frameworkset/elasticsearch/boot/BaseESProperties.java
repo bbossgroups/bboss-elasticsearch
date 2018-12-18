@@ -173,6 +173,21 @@ public abstract class BaseESProperties {
 		private String soReuseAddress;
 		private String soKeepAlive;
 		private String timeToLive;
+		private String validateAfterInactivity;
+		/**
+		 * 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+		 * validateAfterInactivity来控制连接是否有效
+		 * 默认值false
+		 */
+		private String staleConnectionCheckEnabled = "false";
+		/**
+		 * 自定义重试控制接口，必须实现接口方法
+		 * public interface CustomHttpRequestRetryHandler  {
+		 * 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+		 * }
+		 * 方法返回true，进行重试，false不重试
+		 */
+		private String customHttpRequestRetryHandler;
 
 		public String getTimeoutConnection() {
 			return timeoutConnection;
@@ -299,8 +314,29 @@ public abstract class BaseESProperties {
 		}
 
 
+		public String getValidateAfterInactivity() {
+			return validateAfterInactivity;
+		}
 
+		public void setValidateAfterInactivity(String validateAfterInactivity) {
+			this.validateAfterInactivity = validateAfterInactivity;
+		}
 
+		public String getCustomHttpRequestRetryHandler() {
+			return customHttpRequestRetryHandler;
+		}
+
+		public void setCustomHttpRequestRetryHandler(String customHttpRequestRetryHandler) {
+			this.customHttpRequestRetryHandler = customHttpRequestRetryHandler;
+		}
+
+		public String isStaleConnectionCheckEnabled() {
+			return staleConnectionCheckEnabled;
+		}
+
+		public void setStaleConnectionCheckEnabled(String staleConnectionCheckEnabled) {
+			this.staleConnectionCheckEnabled = staleConnectionCheckEnabled;
+		}
 	}
 
 	public static class Elasticsearch{
@@ -533,6 +569,12 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.keyPassword",this.getHttp().getKeyPassword());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getHostnameVerifier()))
 				properties.put(_name+"http.hostnameVerifier",this.getHttp().getHostnameVerifier());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getValidateAfterInactivity() ))
+				properties.put(_name+"http.validateAfterInactivity",this.getHttp().getValidateAfterInactivity());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().isStaleConnectionCheckEnabled()))
+				properties.put(_name+"http.staleConnectionCheckEnabled",this.getHttp().isStaleConnectionCheckEnabled());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getCustomHttpRequestRetryHandler()))
+				properties.put(_name+"http.customHttpRequestRetryHandler",this.getHttp().getCustomHttpRequestRetryHandler());
 		}
 
 		if(dslfile != null){

@@ -11,6 +11,9 @@
 			f:soKeepAlive="false"
 			f:soReuseAddress="false"
 			f:timeToLive="10000"
+			  f:validateAfterInactivity="2000"
+			  f:staleConnectionCheckEnabled="false"
+			  f:customHttpRequestRetryHandler="org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler"
 		class="org.frameworkset.spi.remote.http.ClientConfiguration">		      
 	</property>
 	

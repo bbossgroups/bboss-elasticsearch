@@ -1492,7 +1492,7 @@ public class RestClientUtil extends ClientUtil{
 		StringBuilder builder = new StringBuilder();
 		String queryAll = builder.append("{ \"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
 		builder.setLength(0);
-		return this.scroll(builder.append(index).append("/_search").toString(),queryAll,"1m",type,scrollHandler);
+		return this.scroll(builder.append(index).append("/_search").toString(),queryAll,"10m",type,scrollHandler);
 	}
 
 
