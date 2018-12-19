@@ -27,7 +27,13 @@ https://github.com/bbossgroups/elasticsearchdemo
 https://www.oschina.net/p/bboss-elastic
 
 # 模块功能说明
-一个数据库导入工具
+一个数据库导入Elasticsearch工具，支持的数据库：
+mysql,maridb，postgress,oracle ,sqlserver,db2
+
+支持的Elasticsearch版本：
+1.x,2.x,5.x,6.x,+
+
+
 
 ## License
 
