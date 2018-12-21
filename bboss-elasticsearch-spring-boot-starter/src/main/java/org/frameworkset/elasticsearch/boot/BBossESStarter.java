@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,57 @@ public class BBossESStarter  extends BaseESProperties{
 				log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 			}
 		}
+
+	}
+
+	private ClientInterface restClient;
+
+	/**
+	 * Get default elasticsearch server ClientInterface
+	 * @return
+	 */
+	public ClientInterface getRestClient(){
+		if(restClient == null) {
+			synchronized (this) {
+				if(restClient == null) {
+					restClient = ElasticSearchHelper.getRestClientUtil();
+				}
+			}
+		}
+		return restClient;
+	}
+
+	/**
+	 * Get Special elasticsearch server ConfigFile ClientInterface
+	 * @param elasticsearchName elasticsearch server name which defined in bboss spring boot application configfile
+	 * @param configFile
+	 * @return
+	 */
+	public ClientInterface getConfigRestClient(String elasticsearchName,String configFile){
+
+		return ElasticSearchHelper.getConfigRestClientUtil(elasticsearchName,configFile);
+
+	}
+
+	/**
+	 *  Get Special elasticsearch server ClientInterface
+	 * @param elasticsearchName elasticsearch server name which defined in bboss spring boot application configfile
+	 * @return
+	 */
+	public ClientInterface getRestClient(String elasticsearchName){
+
+		return ElasticSearchHelper.getRestClientUtil(elasticsearchName);
+
+	}
+
+	/**
+	 * Get default elasticsearch server ConfigFile ClientInterface
+	 * @param configFile
+	 * @return
+	 */
+	public ClientInterface getConfigRestClient(String configFile){
+
+		return ElasticSearchHelper.getConfigRestClientUtil(configFile);
 
 	}
 }

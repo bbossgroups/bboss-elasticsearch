@@ -1,10 +1,12 @@
-# bboss-elastic
+# bboss-elastic-spring-boot-starter
 
 不错的elasticsearch客户端工具包,bboss es开发套件采用类似于mybatis的方式操作elasticsearch
 
-jdk要求： jdk 1.6+
+jdk要求： jdk 1.7+
 
 elasticsearch版本要求：2.x,5.x,6.x,+
+
+
 
 ## 快速集成和应用 
 非spring boot项目：
@@ -18,10 +20,12 @@ https://my.oschina.net/bboss/blog/1556866
 # elastic search配置和使用
 
 elastic search配置和使用参考文档
- 
+
 https://my.oschina.net/bboss/blog/1556866 
-# 完整的demo
-https://github.com/bbossgroups/elasticsearchdemo
+# 完整的spring boot demo
+https://gitee.com/bbossgroups/eshelloword-spring-boot-starter
+
+<https://github.com/bbossgroups/eshelloword-spring-boot-starter>
 
 # bboss elastic特点
 https://www.oschina.net/p/bboss-elastic
