@@ -8,6 +8,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.SliceRunTask;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
@@ -1521,8 +1522,8 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> ESDatas<T> searchAll(String index,  int fetchSize ,Class<T> type,int thread) throws ElasticSearchException{
-		return searchAll(index,  fetchSize,(ScrollHandler<T>)null,type,thread);
+	public <T> ESDatas<T> searchAllParallel(String index,  int fetchSize ,Class<T> type,int thread) throws ElasticSearchException{
+		return searchAllParallel(index,  fetchSize,(ScrollHandler<T>)null,type,thread);
 	}
 
 	/**
@@ -1533,8 +1534,8 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> ESDatas<T> searchAll(String index,  Class<T> type,int thread) throws ElasticSearchException{
-			return searchAll(index,  ClientInterface.DEFAULT_FETCHSIZE,type,thread);
+	public <T> ESDatas<T> searchAllParallel(String index,  Class<T> type,int thread) throws ElasticSearchException{
+			return searchAllParallel(index,  ClientInterface.DEFAULT_FETCHSIZE,type,thread);
 	}
 
 	/**
@@ -1547,7 +1548,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> ESDatas<T> searchAll(String index,  final int fetchSize ,ScrollHandler<T> scrollHandler,final Class<T> type,int max) throws ElasticSearchException{
+	public <T> ESDatas<T> searchAllParallel(String index,  final int fetchSize ,ScrollHandler<T> scrollHandler,final Class<T> type,int max) throws ElasticSearchException{
 		SliceScroll sliceScroll = new SliceScroll() {
 			@Override
 			public String buildSliceDsl(int sliceId, int max) {
@@ -1594,32 +1595,14 @@ public class RestClientUtil extends ClientUtil{
 			sliceScrollResult.setScrollHandler(scrollHandler);
 
 		try {
-
+			SliceRunTask<T> sliceRunTask = null;
 			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
-				final int i = j;
-				final String sliceDsl = sliceScroll.buildSliceDsl(i,max);
+				String sliceDsl = sliceScroll.buildSliceDsl(j,max);
 //				final String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(i).append(",\"max\": ")
 //									.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
-				tasks.add(executorService.submit(new Runnable() {//多线程并行执行scroll操作做，每个线程对应一个sclice
-					@Override
-					public void run() {
 
-						try {
-
-							_doSliceScroll( i, _path,
-									sliceDsl,
-									scroll, type,
-
-									sliceScrollResult);
-
-						} catch (ElasticSearchException e) {
-							throw e;
-						} catch (Exception e) {
-							throw new ElasticSearchException("slice query task["+i+"] failed:",e);
-						}
-					}
-
-				}));
+				runSliceTask(j,_path,sliceDsl,scroll,type,sliceScrollResult,
+						executorService,tasks );
 			}
 		}
 		finally {
@@ -1635,6 +1618,10 @@ public class RestClientUtil extends ClientUtil{
 
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
+	}
+	public <T> void runSliceTask(int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,  ParallelSliceScrollResult sliceScrollResult,ExecutorService executorService,List<Future> tasks ){
+		SliceRunTask<T> sliceRunTask = new SliceRunTask<T>(this,sliceId,path,sliceDsl,scroll,type,sliceScrollResult);
+		tasks.add(executorService.submit(sliceRunTask));
 	}
 	protected void waitTasksComplete(final List<Future> tasks){
 
@@ -1659,11 +1646,11 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException{
-		return searchAll(index,  DEFAULT_FETCHSIZE,scrollHandler,type,thread);
+	public <T> ESDatas<T> searchAllParallel(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException{
+		return searchAllParallel(index,  DEFAULT_FETCHSIZE,scrollHandler,type,thread);
 	}
 
-	protected  <T> void _doSliceScroll(int i,String path,
+	public  <T> void _doSliceScroll(int i,String path,
 									String entity,
 									String scroll,Class<T> type,
 
@@ -2069,10 +2056,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
-									  final String scroll  ,final Class<T> type,boolean parallel) throws ElasticSearchException{
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException{
 		throw new java.lang.UnsupportedOperationException();
 	}
-
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
 
 	/**
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
@@ -2103,7 +2093,13 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
 									  final String scroll  ,final Class<T> type,
-									  ScrollHandler<T> scrollHandler,boolean parallel) throws ElasticSearchException{
+									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type,
+									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		throw new java.lang.UnsupportedOperationException();
 	}
 

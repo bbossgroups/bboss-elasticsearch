@@ -861,24 +861,26 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public <T> ESDatas<T> searchAll(String index, int fetchSize, Class<T> type, int thread) throws ElasticSearchException {
+	public <T> ESDatas<T> searchAllParallel(String index, int fetchSize, Class<T> type, int thread) throws ElasticSearchException {
 		return null;
 	}
 
 	@Override
-	public <T> ESDatas<T> searchAll(String index, Class<T> type, int thread) throws ElasticSearchException {
+	public <T> ESDatas<T> searchAllParallel(String index, Class<T> type, int thread) throws ElasticSearchException {
 		return null;
 	}
 
 	@Override
-	public <T> ESDatas<T> searchAll(String index, int fetchSize, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
+	public <T> ESDatas<T> searchAllParallel(String index, int fetchSize, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
 		return null;
 	}
 
 	@Override
-	public <T> ESDatas<T> searchAll(String index, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
+	public <T> ESDatas<T> searchAllParallel(String index, ScrollHandler<T> scrollHandler, Class<T> type, int thread) throws ElasticSearchException {
 		return null;
 	}
+
+
 
 	@Override
 	public <T> ESDatas<T> searchScroll(String scroll, String scrollId, Class<T> type) throws ElasticSearchException {
@@ -901,19 +903,30 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollSliceParallel(String path, String dslTemplate, Map params, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollSliceParallel(String path, String dslTemplate, Map params, String scroll, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Object params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
 		return null;
 	}
 
-	@Override
-	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, ScrollHandler<T> scrollHandler, boolean parallel) throws ElasticSearchException {
-		return null;
-	}
-
-	@Override
-	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, boolean parallel) throws ElasticSearchException {
-		return null;
-	}
 
 	@Override
 	public <T> ESDatas<T> scroll(String path, String entity, String scroll, Class<T> type) throws ElasticSearchException {

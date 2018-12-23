@@ -1278,7 +1278,7 @@ public interface ClientInterface {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,Class<T> type,int thread) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> searchAllParallel(String index,  int fetchSize ,Class<T> type,int thread) throws ElasticSearchException;
 
 	/**
 	 * 并行检索索引所有数据,每批次返回默认为5000条数据，
@@ -1288,7 +1288,7 @@ public interface ClientInterface {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> ESDatas<T> searchAll(String index,  Class<T> type,int thread) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> searchAllParallel(String index,  Class<T> type,int thread) throws ElasticSearchException;
 	/**
 	 * 并行检索索引所有数据
 	 * @param index
@@ -1299,7 +1299,7 @@ public interface ClientInterface {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type,int thread) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> searchAllParallel(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type,int thread) throws ElasticSearchException;
 
 	/**
 	 * 并行检索索引所有数据,每批次返回默认为5000条数据，
@@ -1310,7 +1310,7 @@ public interface ClientInterface {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> ESDatas<T> searchAll(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> searchAllParallel(String index,ScrollHandler<T> scrollHandler,  Class<T> type,int thread) throws ElasticSearchException;
 
 	/************************************slice searchAll end*****************************/
 
@@ -1414,9 +1414,11 @@ public interface ClientInterface {
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
 									  final String scroll  ,final Class<T> type,
-									  ScrollHandler<T> scrollHandler,boolean parallel) throws ElasticSearchException;
+									  ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 
-
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type,
+									  ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 	/**
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
 	 * https://my.oschina.net/bboss/blog/1942562
@@ -1445,9 +1447,10 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
-									  final String scroll  ,final Class<T> type,boolean parallel) throws ElasticSearchException;
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException;
 
-
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException;
 	/**
 	 * 一次性返回scroll检索结果
 	 * https://my.oschina.net/bboss/blog/1942562

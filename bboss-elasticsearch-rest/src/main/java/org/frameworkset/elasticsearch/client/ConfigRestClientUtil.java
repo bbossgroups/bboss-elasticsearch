@@ -1046,7 +1046,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		return  esUtil.getESInfo(templateName);
 	}
 
-	private <T> ESDatas<T> _scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
 									  final String scroll  ,final Class<T> type,
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		Integer mx = (Integer) params.get("sliceMax");
@@ -1200,8 +1200,13 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,final Map params ,
-									  final String scroll  ,final Class<T> type,boolean parallel) throws ElasticSearchException{
-		return scrollSlice(  path,  dslTemplate, params, scroll ,    type,(ScrollHandler<T>)null,  parallel);
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException{
+		return scrollSlice(  path,  dslTemplate, params, scroll ,    type,(ScrollHandler<T>)null);
+	}
+
+	public <T> ESDatas<T> scrollSliceParallel(String path,final String dslTemplate,final Map params ,
+									  final String scroll  ,final Class<T> type) throws ElasticSearchException{
+		return scrollSliceParallel(  path,  dslTemplate, params, scroll ,    type,(ScrollHandler<T>)null);
 	}
 
 
@@ -1235,19 +1240,12 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,Map params ,
 									  final String scroll  ,final Class<T> type,
-									  ScrollHandler<T> scrollHandler,boolean parallel) throws ElasticSearchException{
+									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 
-		if(parallel){
-			return  _scrollSliceParallel( path, dslTemplate,  params ,
-					scroll  ,  type,
-					scrollHandler);
-		}
-		else
-		{
 			return  _scrollSlice( path, dslTemplate,  params ,
 					scroll  ,  type,
 					scrollHandler);
-		}
+
 	}
 
 

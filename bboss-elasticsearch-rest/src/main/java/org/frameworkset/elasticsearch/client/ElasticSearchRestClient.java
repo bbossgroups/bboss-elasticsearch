@@ -496,7 +496,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		T response = null;
 		Throwable e = null;
-		if(this.showTemplate ){
+		if(this.showTemplate && !discoverHost ){
 			if(logger.isInfoEnabled()) {
 				if(entity != null)
 					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
