@@ -3,6 +3,8 @@ package org.frameworkset.elasticsearch.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * health status index    uuid                   pri rep docs.count docs.deleted store.size pri.store.size
@@ -27,6 +29,7 @@ public class ESIndice {
     @JsonProperty("pri.store.size")
     private String priStoreSize;
     private Date genDate;
+    private Map<String,String> otherDatas;
 
     public String getHealth() {
         return health;
@@ -123,4 +126,12 @@ public class ESIndice {
 	public void setIndexName(String indexName) {
 		this.indexName = indexName;
 	}
+    public void addOtherData(String name,String value){
+        if(otherDatas == null)
+            otherDatas = new HashMap<String, String>();
+        otherDatas.put(name,value);
+    }
+    public Map<String, String> getOtherDatas() {
+        return otherDatas;
+    }
 }

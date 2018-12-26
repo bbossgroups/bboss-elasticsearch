@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client;/*
 
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
+import org.frameworkset.elasticsearch.entity.IndiceHeader;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
@@ -24,13 +25,109 @@ import org.frameworkset.util.ClassUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BuildTool {
-	public static ESIndice buildESIndice(String line, SimpleDateFormat format)
+	/**
+	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * @param lineHeader
+	 * @return
+	 */
+	public static Map<Integer,IndiceHeader> buildIndiceHeaders(String lineHeader){
+		if(lineHeader == null)
+			return null;
+		lineHeader = lineHeader.trim();
+		Map<Integer,IndiceHeader> indiceHeaders = new HashMap<Integer,IndiceHeader>();
+		int k = 0;
+		IndiceHeader indiceHeader = null;
+		StringBuilder token = new StringBuilder();
+		for(int j = 0; j < lineHeader.length(); j ++){
+			char c = lineHeader.charAt(j);
+			if(c != ' '){
+				token.append(c);
+			}
+			else {
+				if(token.length() == 0)
+					continue;
+				indiceHeader = new IndiceHeader();
+				indiceHeader.setHeaderName(token.toString());
+				indiceHeader.setPosition(k);
+				indiceHeaders.put(k,indiceHeader);
+				token.setLength(0);
+				k ++;
+			}
+		}
+		if(token.length() > 0){
+			indiceHeader = new IndiceHeader();
+			indiceHeader.setHeaderName(token.toString());
+			indiceHeader.setPosition(k);
+			indiceHeaders.put(k,indiceHeader);
+			token.setLength(0);
+		}
+		return indiceHeaders;
+
+	}
+
+	/**
+	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * @param esIndice
+	 * @param indiceHeaders
+	 * @param position
+	 * @param token
+	 * @param format
+	 */
+	private static void putField(ESIndice esIndice,Map<Integer,IndiceHeader> indiceHeaders,int position,StringBuilder token,SimpleDateFormat format){
+		IndiceHeader indiceHeader = indiceHeaders.get(position);
+		if(indiceHeader.getHeaderName().equals("health")) {
+			esIndice.setHealth(token.toString());
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("status")) {
+			esIndice.setStatus(token.toString());
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("index")) {
+			esIndice.setIndex(token.toString());
+			putGendate(  esIndice,  format);
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("uuid")) {
+			esIndice.setUuid(token.toString());
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("pri")) {
+			esIndice.setPri(Integer.parseInt(token.toString()));
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("rep")) {
+			esIndice.setRep(Integer.parseInt(token.toString()));
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("docs.count")) {
+			esIndice.setDocsCcount(Long.parseLong(token.toString()));
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("docs.deleted")) {
+			esIndice.setDocsDeleted(Long.parseLong(token.toString()));
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("store.size")) {
+			esIndice.setStoreSize(token.toString());
+			token.setLength(0);
+		}
+		else if(indiceHeader.getHeaderName().equals("pri.store.size")) {
+			esIndice.setPriStoreSize(token.toString());
+			token.setLength(0);
+		}
+		else{
+			esIndice.addOtherData(indiceHeader.getHeaderName(),token.toString());
+			token.setLength(0);
+		}
+
+
+	}
+	public static ESIndice buildESIndice(String line, SimpleDateFormat format,
+										 Map<Integer,IndiceHeader> indiceHeaders)
 	{
 		StringBuilder token = new StringBuilder();
 		ESIndice esIndice = new ESIndice();
@@ -44,65 +141,70 @@ public abstract class BuildTool {
 			else {
 				if(token.length() == 0)
 					continue;
-				switch (k ){
-					case 0:
-						esIndice.setHealth(token.toString());
-						token.setLength(0);
-						k ++;
-						break;
-					case 1:
-						esIndice.setStatus(token.toString());
-						token.setLength(0);
-						k ++;
-						break;
-					case 2:
-						esIndice.setIndex(token.toString());
-						putGendate(  esIndice,  format);
-						token.setLength(0);
-						k ++;
-						break;
-					case 3:
-						esIndice.setUuid(token.toString());
-						token.setLength(0);
-						k ++;
-						break;
-					case 4:
-						esIndice.setPri(Integer.parseInt(token.toString()));
-						token.setLength(0);
-						k ++;
-						break;
-					case 5:
-						esIndice.setRep(Integer.parseInt(token.toString()));
-						token.setLength(0);
-						k ++;
-						break;
-					case 6:
-						esIndice.setDocsCcount(Long.parseLong(token.toString()));
-						token.setLength(0);
-						k ++;
-						break;
-					case 7:
-						esIndice.setDocsDeleted(Long.parseLong(token.toString()));
-						token.setLength(0);
-						k ++;
-						break;
-					case 8:
-						esIndice.setStoreSize(token.toString());
-						token.setLength(0);
-						k ++;
-						break;
-					case 9:
-						esIndice.setPriStoreSize(token.toString());
-						token.setLength(0);
-						k ++;
-						break;
-					default:
-						break;
+				putField(esIndice,indiceHeaders,k,token,format);
+				k ++;
+//				switch (k ){
+//					case 0:
+//						esIndice.setHealth(token.toString());
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 1:
+//						esIndice.setStatus(token.toString());
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 2:
+//						esIndice.setIndex(token.toString());
+//						putGendate(  esIndice,  format);
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 3:
+//						esIndice.setUuid(token.toString());
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 4:
+//						esIndice.setPri(Integer.parseInt(token.toString()));
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 5:
+//						esIndice.setRep(Integer.parseInt(token.toString()));
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 6:
+//						esIndice.setDocsCcount(Long.parseLong(token.toString()));
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 7:
+//						esIndice.setDocsDeleted(Long.parseLong(token.toString()));
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 8:
+//						esIndice.setStoreSize(token.toString());
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					case 9:
+//						esIndice.setPriStoreSize(token.toString());
+//						token.setLength(0);
+//						k ++;
+//						break;
+//					default:
+//						break;
 
-				}
+//				}
 			}
 		}
-		esIndice.setPriStoreSize(token.toString());
+		if(token.length() > 0){
+			putField(esIndice,indiceHeaders,k,token,format);
+		}
+//		esIndice.setPriStoreSize(token.toString());
 		return esIndice;
 	}
 	public static void putGendate(ESIndice esIndice,SimpleDateFormat format){

@@ -2367,6 +2367,12 @@ public class RestClientUtil extends ClientUtil{
 //		 return response;
 		 return this.getIndexMapping(index,true);
 	 }
+
+	/**
+	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	 public List<ESIndice> getIndexes() throws ElasticSearchException{
 		 String data = this.client.executeHttp("_cat/indices?v",HTTP_GET);
          logger.debug(data);
@@ -2392,16 +2398,18 @@ public class RestClientUtil extends ClientUtil{
 		        List<ESIndice> indices = new ArrayList<ESIndice>();
 		        int i = 0;
 		        SimpleDateFormat format = new SimpleDateFormat(client.getDateFormat());
+				Map<Integer,IndiceHeader> indiceHeaders = null;
 		        while(true){
 		            String line = br.readLine();
 		            if(line == null)
 		                break;
 		            if(i == 0){
+						indiceHeaders = BuildTool.buildIndiceHeaders(line);
 		                i ++;
 		                continue;
 		            }
 		            
-		            ESIndice esIndice = BuildTool.buildESIndice(  line,  format);
+		            ESIndice esIndice = BuildTool.buildESIndice(  line,  format,indiceHeaders);
 		            //如果索引已经过时，则清除过时索引数据
 //		            if(esIndice.getGenDate() != null && esIndice.getGenDate().before(deadLine)){
 		                indices.add(esIndice);
