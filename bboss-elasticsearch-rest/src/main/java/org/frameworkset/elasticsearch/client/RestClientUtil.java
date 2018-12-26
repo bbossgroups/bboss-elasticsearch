@@ -2370,6 +2370,7 @@ public class RestClientUtil extends ClientUtil{
 
 	/**
 	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * 获取elasticsearch索引监控数据
 	 * @return
 	 * @throws ElasticSearchException
 	 */

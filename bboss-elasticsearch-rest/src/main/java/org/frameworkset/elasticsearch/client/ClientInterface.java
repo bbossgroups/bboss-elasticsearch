@@ -1198,6 +1198,21 @@ public interface ClientInterface {
 	 */
 	public abstract String createIndiceMapping(String indexName, String templateName, Map parameter) throws ElasticSearchException;
 
+	/**
+	 * 获取elasticsearch索引监控数据，包含以下信息：
+	 * health
+	 * status
+	 * index
+	 * uuid
+	 * pri
+	 * rep
+	 * docs.count
+	 * docs.deleted
+	 * store.size
+	 * pri.store.size
+	 * @return
+	 * @throws ElasticSearchException
+	 */
 	public abstract List<ESIndice> getIndexes() throws ElasticSearchException;
 
 	public abstract String refreshIndexInterval(String indexName, int interval) throws ElasticSearchException;
