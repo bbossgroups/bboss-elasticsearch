@@ -18,6 +18,9 @@ public class ESInfo {
 		this.multiparser = multiparser;
 		this.templatePro = templatePro;
 	}
+	public String getDslFile(){
+		return this.esUtil.templateFile;
+	}
 	public String getTemplate() {
 		return template;
 	}
@@ -96,6 +99,10 @@ public class ESInfo {
 
 	public VariableHandler.URLStruction getTemplateStruction(String template){
 		return this.esUtil.getTempateStruction(this,template);
+	}
+
+	public int hashCode(){
+		return this.getTemplate().hashCode();
 	}
 
 

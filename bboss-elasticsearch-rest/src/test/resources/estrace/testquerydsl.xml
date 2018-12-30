@@ -16,7 +16,7 @@
                     "bool": {
                         "filter": {
                             "term": {
-                                "applicationName": #[application]
+                                "applicationName": $application
                             },
                              "term": {
                                 "applicationNames": "asdfaf#[application,quoted=false]s"

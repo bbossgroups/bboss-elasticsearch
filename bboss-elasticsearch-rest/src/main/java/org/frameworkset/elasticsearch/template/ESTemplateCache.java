@@ -2,6 +2,8 @@ package org.frameworkset.elasticsearch.template;
 
 import com.frameworkset.util.SimpleStringUtil;
 import com.frameworkset.util.VariableHandler;
+import org.frameworkset.cache.EdenConcurrentCache;
+import org.frameworkset.cache.MissingStaticCache;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,20 @@ public class ESTemplateCache {
 	private Lock lock = new ReentrantLock();
 	private Lock vtplLock = new ReentrantLock();
 	private Map<String,VariableHandler.URLStruction> parserTempateStructions = new java.util.HashMap<String,VariableHandler.URLStruction>();
-	private Map<String,Map<String,VariableHandler.URLStruction>> parserVTPLTempateStructions = new java.util.HashMap<String,Map<String,VariableHandler.URLStruction>>();
+	private Map<String, EdenConcurrentCache<String,VariableHandler.URLStruction>> parserVTPLTempateStructions;
+	private Map<String, MissingStaticCache<String,VariableHandler.URLStruction>> parserVTPLTempateStructionsMissingCache;
 	private static TempateStructionBuiler tempateStructionBuiler = new TempateStructionBuiler();
-	public ESTemplateCache() {
-		// TODO Auto-generated constructor stub
+	private int perKeyDSLStructionCacheSize;
+	private boolean alwaysCacheDslStruction = false;
+	public ESTemplateCache(int perKeyDSLStructionCacheSize,boolean alwaysCacheDslStruction) {
+		this.perKeyDSLStructionCacheSize = perKeyDSLStructionCacheSize;
+		this.alwaysCacheDslStruction = alwaysCacheDslStruction;
+		if(this.alwaysCacheDslStruction) {
+			parserVTPLTempateStructions = new java.util.HashMap<String, EdenConcurrentCache<String, VariableHandler.URLStruction>>();
+		}
+		else{
+			parserVTPLTempateStructionsMissingCache = new java.util.HashMap<String,MissingStaticCache<String,VariableHandler.URLStruction>>();
+		}
 	}
 
 
@@ -34,31 +46,19 @@ public class ESTemplateCache {
 	{
 		if(sqlinfo.isTpl() )
 		{
-			return this._getVTPLTemplateStruction(sqlinfo,template);
+			if(this.alwaysCacheDslStruction) {
+				return this._getVTPLTemplateStructionAlwaysCache(sqlinfo, template);
+			}
+			else {
+				return this._getVTPLTemplateStructionStopCache(sqlinfo,template);
+			}
 		}
 		else
 		{
 			return _getTemplateStruction(sqlinfo, template);
 		}
 
-//		VariableHandler.URLStruction sqlstruction =  _parserTempateStructions.get(key);
-//		if(sqlstruction == null)
-//		{
-//			try
-//			{
-//				_lock.lock();
-//				sqlstruction =  _parserTempateStructions.get(key);
-//				if(sqlstruction == null)
-//				{
-//					sqlstruction = VariableHandler.parserTempateStruction(template);
-//					_parserTempateStructions.put(key,sqlstruction);
-//				}
-//			}
-//			finally {
-//				_lock.unlock();
-//			}
-//		}
-//		return sqlstruction;
+
 	}
 
 	public static class TempateVariable extends VariableHandler.Variable{
@@ -113,74 +113,7 @@ public class ESTemplateCache {
 			}
 			return pad;
 		}
-//		public void after(){
-//			super.after();
-//			if(this.variableName != null) {
-//				int pos = this.variableName.indexOf(",");
-//				if (pos > 0) {
-//					String[] ts = variableName.split(",");
-//					this.variableName = ts[0];
-//					for (int i = 1; i < ts.length; i ++) {
-//						String t = ts[i];
-//						if (t.startsWith("quoted=")) {
-//							String q = t.substring("quoted=".length()).trim();
-//							if(q.equals("false"))
-//								quoted = false;
-//						}
-//						else if(t.startsWith("dateformat=")){
-//							dateFormat= t.substring("dateformat=".length()).trim();
-//						}
-//						else if(t.startsWith("locale=")){
-//							locale= t.substring("locale=".length()).trim();
-//						}
-//						else if(t.startsWith("timezone=")){
-//							timeZone = t.substring("timezone=".length()).trim();
-//						}
-//						else if(t.startsWith("lpad=")){
-//							String lpad_= t.substring("lpad=".length()).trim();
-//							this.lpad = handlePad(lpad_);
-//
-//						}
-//						else if(t.startsWith("rpad=")){
-//							String rpad_ = t.substring("rpad=".length()).trim();
-//							this.rpad = handlePad(rpad_);
-//						}
-//						else if(t.startsWith("escape=")){
-//							String escape_ = t.substring("escape=".length()).trim();
-//							if(escape_.equals("false"))
-//								escape = new Boolean(false);
-//							else if(escape_.equals("true"))
-//								escape = new Boolean(true);
-//
-//						}
-//						else if(t.startsWith("serialJson=")){
-//							String serialJson_ = t.substring("serialJson=".length()).trim();
-//							if(serialJson_.equals("false"))
-//								serialJson = new Boolean(false);
-//							else if(serialJson_.equals("true"))
-//								serialJson = new Boolean(true);
-//
-//						}else if(t.startsWith("escapeCount=")){
-//							String escapeCount_ = t.substring("escapeCount=".length()).trim();
-//							if(SimpleStringUtil.isNotEmpty(escapeCount_)) {
-//								try {
-//									escapeCount = Integer.parseInt(escapeCount_);
-//								}
-//								catch (Exception e){
-//									logger.error("escapeCount must be a nummber:"+escapeCount_,e);
-//								}
-//							}
-//						}
-//
-//					}
-//
-//					if(this.dateFormat != null){
-//						this.dateFormateMeta = DateFormateMeta.buildDateFormateMeta(this.dateFormat,this.locale);
-//					}
-//
-//				}
-//			}
-//		}
+
 
 		public void after(){
 			super.after();
@@ -335,31 +268,37 @@ public class ESTemplateCache {
 
 	/**
 	 * vtpl需要进行分级缓存
-	 * @param sqlinfo
-	 * @param template
+	 * @param dslinfo
+	 * @param dsl
 	 * @return
 	 */
-	private VariableHandler.URLStruction _getVTPLTemplateStruction(ESInfo sqlinfo, String template)
+	private VariableHandler.URLStruction _getVTPLTemplateStructionStopCache(ESInfo dslinfo, String dsl)
 	{
 
-		String ikey = template;
-		String okey = sqlinfo.getTemplateName();
-		Map<String,VariableHandler.URLStruction> sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
+		String ikey = dsl;
+		String okey = dslinfo.getTemplateName();
+		MissingStaticCache<String,VariableHandler.URLStruction> sqlstructionMap =  this.parserVTPLTempateStructionsMissingCache.get(okey);
 		if(sqlstructionMap == null)
 		{
 			try
 			{
 				this.vtplLock.lock();
-				sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
+				sqlstructionMap =  this.parserVTPLTempateStructionsMissingCache.get(okey);
 				if(sqlstructionMap == null)
 				{
-					sqlstructionMap = new   java.util.WeakHashMap<String,VariableHandler.URLStruction>();
-					parserVTPLTempateStructions.put(okey,sqlstructionMap);
+					sqlstructionMap = new MissingStaticCache<String,VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
+					parserVTPLTempateStructionsMissingCache.put(okey,sqlstructionMap);
 				}
 			}
 			finally {
 				vtplLock.unlock();
 			}
+		}
+		if(sqlstructionMap.stopCache()){
+			if(logger.isWarnEnabled()){
+				logDslStructionWarn(dslinfo,dsl,okey,sqlstructionMap.getMissesMax());
+			}
+			return VariableHandler.parserStruction(dsl,tempateStructionBuiler);
 		}
 		VariableHandler.URLStruction urlStruction = sqlstructionMap.get(ikey);
 		if(urlStruction == null){
@@ -368,15 +307,106 @@ public class ESTemplateCache {
 				this.vtplLock.lock();
 				urlStruction = sqlstructionMap.get(ikey);
 				if(urlStruction == null){
-					urlStruction = VariableHandler.parserStruction(template,tempateStructionBuiler);
-					sqlstructionMap.put(ikey,urlStruction);
+					sqlstructionMap.increamentMissing();
+					urlStruction = VariableHandler.parserStruction(dsl,tempateStructionBuiler);
+					if(!sqlstructionMap.stopCache()){
+						sqlstructionMap.put(ikey,urlStruction);
+					}
+					else{
+						if(logger.isWarnEnabled()){
+							logDslStructionWarn(dslinfo,dsl,okey,sqlstructionMap.getMissesMax());
+						}
+					}
+
 				}
 			}
 			finally {
 				this.vtplLock.unlock();
 			}
 		}
+//		System.out.println("before gc longtermSize:"+sqlstructionMap.longtermSize());
+//		System.out.println("before gc edensize:"+sqlstructionMap.edenSize());
+//		System.gc();
+//		System.out.println("after gc edensize:"+sqlstructionMap.edenSize());
+//		System.out.println("after gc longtermSize:"+sqlstructionMap.longtermSize());
 		return urlStruction;
+	}
+
+	/**
+	 * vtpl需要进行分级缓存
+	 * @param dslinfo
+	 * @param dsl
+	 * @return
+	 */
+	private VariableHandler.URLStruction _getVTPLTemplateStructionAlwaysCache(ESInfo dslinfo, String dsl)
+	{
+
+		String ikey = dsl;
+		String okey = dslinfo.getTemplateName();
+		EdenConcurrentCache<String,VariableHandler.URLStruction> sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
+		if(sqlstructionMap == null)
+		{
+			try
+			{
+				this.vtplLock.lock();
+				sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
+				if(sqlstructionMap == null)
+				{
+					sqlstructionMap = new EdenConcurrentCache<String,VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
+					parserVTPLTempateStructions.put(okey,sqlstructionMap);
+				}
+			}
+			finally {
+				vtplLock.unlock();
+			}
+		}
+
+		VariableHandler.URLStruction urlStruction = sqlstructionMap.get(ikey);
+		boolean outOfSize = false;
+		if(urlStruction == null){
+			try
+			{
+				this.vtplLock.lock();
+				urlStruction = sqlstructionMap.get(ikey);
+				if(urlStruction == null){
+					urlStruction = VariableHandler.parserStruction(dsl,tempateStructionBuiler);
+
+					outOfSize =	sqlstructionMap.put(ikey,urlStruction);
+
+
+				}
+			}
+			finally {
+				this.vtplLock.unlock();
+			}
+			if(outOfSize && logger.isWarnEnabled()){
+				logDslStructionWarn(dslinfo,dsl ,okey,sqlstructionMap.getMaxSize());
+			}
+		}
+
+		return urlStruction;
+	}
+
+	private void logDslStructionWarn(ESInfo dslinfo,String dsl,String okey,int maxSize){
+		StringBuilder info = new StringBuilder();
+
+		info.append("\n\r**********************************************************************\r\n")
+				.append("*********************************警告:dsl ").append(okey).append("@file[").append(dslinfo.getDslFile()).append("]*********************************\r\n")
+				.append("**********************************************************************\r\n")
+				.append("调用方法_getVTPLTemplateStruction从dsl struction cache获取[")
+				.append(dsl).append("]dsl struction 信息时,检测到缓冲区信息记录数超出DSLStructionCache允许的最大cache size:")
+				.append(maxSize)
+				.append(",\r\n导致告警原因分析:")
+				.append("\r\n本条dsl可能存在不断变化的值参数;")
+				.append("\r\n本条dsl可能存在的$var模式的变量并且$var的值不断变化;")
+				.append("\r\n优化建议：\r\n将本条dsl中可能存在不断变化的值参数转化#[variable]变量，或将dsl中可能存在的$var模式的变量转换为#[varibale]模式的变量，以提升系统性能!")
+				.append("\r\n如果需要做数组或者list的转换处理，优先使用变量#[variable]并设置serialJson属性：#[variable,serialJson=true]，以提升系统性能!")
+				.append("\r\nforeach循环中使用#[varibale]模式变量可以参考文档中的章节[5.3.3 逻辑判断和foreach循环示例]：https://my.oschina.net/bboss/blog/1556866")
+				.append("\n\r**********************************************************************")
+				.append("\n\r**********************************************************************");
+
+		logger.warn(info.toString());
+
 	}
 
 }

@@ -43,6 +43,27 @@ public class TestQueryDslTemplate {
 		params.setEndTime(456789);
 		params.setDate(new Date());
 		System.out.println(ESTemplateHelper.evalTemplate(esUtil,"querySqlTraces",params));
+
+		params = new DSLParma();
+		params.setApplication("testweb1");
+		params.setStartTime(123456);
+		params.setEndTime(456789);
+		params.setDate(new Date());
+		System.out.println(ESTemplateHelper.evalTemplate(esUtil,"querySqlTraces",params));
+
+		params = new DSLParma();
+		params.setApplication("testweb2");
+		params.setStartTime(123456);
+		params.setEndTime(456789);
+		params.setDate(new Date());
+		System.out.println(ESTemplateHelper.evalTemplate(esUtil,"querySqlTraces",params));
+
+		params = new DSLParma();
+		params.setApplication("testweb3");
+		params.setStartTime(123456);
+		params.setEndTime(456789);
+		params.setDate(new Date());
+		System.out.println(ESTemplateHelper.evalTemplate(esUtil,"querySqlTraces",params));
 	}
 
 

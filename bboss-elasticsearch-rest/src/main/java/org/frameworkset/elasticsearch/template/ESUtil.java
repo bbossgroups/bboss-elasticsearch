@@ -62,7 +62,11 @@ public class ESUtil {
 	private static Logger log = LoggerFactory.getLogger(ESUtil.class);
 	protected static Map<String,ESUtil> esutils = new HashMap<String,ESUtil>(); 
 	protected static long refresh_interval = 5000;
-	protected  ESTemplateCache templateCache = new ESTemplateCache();
+	public static final int defaultPerKeyDSLStructionCacheSize = 2000;
+	public static final boolean defaultAlwaysCacheDslStruction = false;
+	protected int perKeyDSLStructionCacheSize;
+	protected boolean alwaysCacheDslStruction;
+	protected  final ESTemplateCache templateCache ;
 	protected Map<String,ESInfo> esInfos;
 	protected Map<String,ESRef> esrefs;
 	protected boolean hasrefs;
@@ -781,7 +785,7 @@ public class ESUtil {
 							{
 								sqltpl = new ESTemplate(sqlinfo);
 								sqlinfo.setEstpl(sqltpl);
-								BBossVelocityUtil.initTemplate(sqltpl);
+								BBossVelocityUtil.initElasticTemplate(sqltpl);
 								try {
 									sqltpl.process();
 								}
@@ -929,7 +933,10 @@ public class ESUtil {
 	}
 	private ESUtil(String templatefile) {
 		this.templateFile = templatefile;
-		this.templatecontext = new ESSOAFileApplicationContext(templatefile);		
+		this.templatecontext = new ESSOAFileApplicationContext(templatefile);
+		this.perKeyDSLStructionCacheSize = templatecontext.getIntProperty("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
+		this.alwaysCacheDslStruction  = templatecontext.getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
+		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
 		this.realTemplateFile = this.templatecontext.getConfigfile();
 		this.trimValues();
 		
@@ -939,9 +946,6 @@ public class ESUtil {
 	}
 	
 
-	public ESUtil() {
-		// TODO Auto-generated constructor stub
-	}
 
 	
 
