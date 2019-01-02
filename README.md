@@ -21,6 +21,8 @@ elastic search配置和使用参考文档
  
 https://my.oschina.net/bboss/blog/1556866 
 # 完整的demo
+https://github.com/bbossgroups/eshelloword-booter
+https://github.com/bbossgroups/eshelloword-spring-boot-starter
 https://github.com/bbossgroups/elasticsearchdemo
 
 # bboss elastic特点
