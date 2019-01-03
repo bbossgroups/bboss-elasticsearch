@@ -62,7 +62,7 @@ public class SerialUtil {
 
 
 		} catch (Exception e) {
-			throw new IllegalArgumentException("错误的json序列化操作",e);
+			throw new IllegalArgumentException("Error JSON serialization operation",e);
 		}
 	}
 
@@ -80,7 +80,7 @@ public class SerialUtil {
 				 normaMapper.writeValue(writer,bean);
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("错误的json序列化操作",e);
+			throw new IllegalArgumentException("Error JSON serialization operation",e);
 		}
 
 

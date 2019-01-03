@@ -51,7 +51,7 @@ import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.*;
  * easier management of the index</p>
  * <p>
  * This sink must be configured with with mandatory parameters detailed in
- * {@link ElasticSearchSinkConstants}</p> It is recommended as a secondary step
+ * {@link ElasticSearch}</p> It is recommended as a secondary step
  * the ElasticSearch indexes are optimized for the specified serializer. This is
  * not handled by the sink but is typically done by deploying a config template
  * alongside the ElasticSearch deploy</p>

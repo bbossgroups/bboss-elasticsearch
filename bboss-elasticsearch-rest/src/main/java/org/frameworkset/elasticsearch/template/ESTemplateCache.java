@@ -38,7 +38,11 @@ public class ESTemplateCache {
 	public void clear()
 	{
 		parserTempateStructions.clear();
-		parserVTPLTempateStructions.clear();
+		if(parserVTPLTempateStructions != null)
+			parserVTPLTempateStructions.clear();
+		if(parserVTPLTempateStructionsMissingCache != null)
+			parserVTPLTempateStructionsMissingCache.clear();
+
 	}
 
 
@@ -391,17 +395,20 @@ public class ESTemplateCache {
 		StringBuilder info = new StringBuilder();
 
 		info.append("\n\r**********************************************************************\r\n")
-				.append("*********************************警告:dsl ").append(okey).append("@file[").append(dslinfo.getDslFile()).append("]*********************************\r\n")
-				.append("**********************************************************************\r\n")
-				.append("调用方法_getVTPLTemplateStruction从dsl struction cache获取[")
-				.append(dsl).append("]dsl struction 信息时,检测到缓冲区信息记录数超出DSLStructionCache允许的最大cache size:")
+				.append("*********************************WARNING:DSL [").append(okey).append("@").append(dslinfo.getDslFile()).append("]*********************************\r\n")
+				.append(dslinfo.getTemplate())
+				.append("\r\n**********************************************************************\r\n")
+				.append("When calling method _getVTPLTemplateStruction to obtain [")
+				.append(dsl).append("]'s DSL structure information from DSL construction cache, ")
+				.append("it was detected that the number of real dsl cache records exceeded the maximum cache size ")
 				.append(maxSize)
-				.append(",\r\n导致告警原因分析:")
-				.append("\r\n本条dsl可能存在不断变化的值参数;")
-				.append("\r\n本条dsl可能存在的$var模式的变量并且$var的值不断变化;")
-				.append("\r\n优化建议：\r\n将本条dsl中可能存在不断变化的值参数转化#[variable]变量，或将dsl中可能存在的$var模式的变量转换为#[varibale]模式的变量，以提升系统性能!")
-				.append("\r\n如果需要做数组或者list的转换处理，优先使用变量#[variable]并设置serialJson属性：#[variable,serialJson=true]，以提升系统性能!")
-				.append("\r\nforeach循环中使用#[varibale]模式变量可以参考文档中的章节[5.3.3 逻辑判断和foreach循环示例]：https://my.oschina.net/bboss/blog/1556866")
+				.append(" allowed by DSL structure cache.")
+				.append("\r\nCause analysis of WARNING:")
+				.append("\r\n1.Frequently varying value parameters may exist in this DSL;")
+				.append("\r\n2.Variables of the $var pattern that may exist in this DSL and the value of $var changes frequently;")
+				.append("\r\nOptimization suggestion：\r\nIn order to improve the system performance, we can convert the value parameters that may change frequently in this DSL into #[variable] variables or the variables that may exist in the $var mode in DSL into #[varibale] mode variables.")
+				.append("\r\nIf you need to convert an array or a list, use the variable #[variable] first and set the serialJson attribute: #[variable, serialJson = true] to improve system performance!")
+				.append("\r\nHow to use of #[varibale] pattern variables in foreach loops refers to the section [5.3.3 Logical Judgment and Foreach Loop Example] in the document: https://my.oschina.net/bboss/blog/1556866.")
 				.append("\n\r**********************************************************************")
 				.append("\n\r**********************************************************************");
 

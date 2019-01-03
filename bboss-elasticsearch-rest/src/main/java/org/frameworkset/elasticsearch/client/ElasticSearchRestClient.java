@@ -67,7 +67,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected String elasticUser;
 	protected String elasticPassword;
 	protected long healthCheckInterval = -1l;
-	protected RestSeachExecutor restSeachExecutor;
+	protected RestSearchExecutor restSeachExecutor;
 //	private HttpClient httpClient;
 	protected Map<String, String> headers = new HashMap<String, String>();
 	protected boolean showTemplate = false;
@@ -219,7 +219,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		//Authorization
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
-		restSeachExecutor = new RestSeachExecutor(headers,this.httpPool,this);
+		restSeachExecutor = new RestSearchExecutor(headers,this.httpPool,this);
 		initVersionInfo();
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");

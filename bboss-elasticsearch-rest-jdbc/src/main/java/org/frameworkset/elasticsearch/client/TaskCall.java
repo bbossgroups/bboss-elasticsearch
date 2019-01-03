@@ -129,7 +129,7 @@ public class TaskCall implements Runnable {
 			if(printTaskLog) {
 				long end = System.currentTimeMillis();
 				info.setLength(0);
-				info.append("Task[").append(this.taskNo).append("] failed,take ").append((end - start)).append("毫秒");
+				info.append("Task[").append(this.taskNo).append("] failed,take time:").append((end - start)).append("ms");
 				logger.info(info.toString());
 			}
 
@@ -144,7 +144,7 @@ public class TaskCall implements Runnable {
 		if(printTaskLog) {
 			long end = System.currentTimeMillis();
 			info.setLength(0);
-			info.append("Task[").append(this.taskNo).append("] finish,import data ").append(this.currentSize).append("条,Total import data ").append(totalSize).append("条,Take ").append((end - start)).append("毫秒");
+			info.append("Task[").append(this.taskNo).append("] finish,import ").append(this.currentSize).append(" records,Total import ").append(totalSize).append(" records,Take time:").append((end - start)).append("ms");
 			logger.debug(info.toString());
 		}
 

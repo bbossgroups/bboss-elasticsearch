@@ -30,11 +30,11 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class RestSeachExecutor {
+public class RestSearchExecutor {
 	private Map<String, String> headers;
 	private String httpPool;
 	private ElasticSearchClient elasticSearchClient;
-	public RestSeachExecutor(Map<String, String> headers,String httpPool,ElasticSearchClient elasticSearchClient){
+	public RestSearchExecutor(Map<String, String> headers,String httpPool,ElasticSearchClient elasticSearchClient){
 		this.headers = headers;
 		this.httpPool = httpPool;
 		this.elasticSearchClient = elasticSearchClient;

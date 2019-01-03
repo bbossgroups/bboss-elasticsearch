@@ -111,9 +111,9 @@ public class ESUtil {
 					try {
 						value = property.getValue(bean);
 					} catch (InvocationTargetException e1) {
-						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1.getTargetException());
+						log.error("Failed to get attribute[" + beanInfo.getClazz().getName() + "." + property.getName() + "] value:", e1.getTargetException());
 					} catch (Exception e1) {
-						log.error("获取属性[" + beanInfo.getClazz().getName() + "." + property.getName() + "]值失败：", e1);
+						log.error("Failed to get attribute[" + beanInfo.getClazz().getName() + "." + property.getName() + "] value:", e1);
 					}
 
 					name = property.getName();
@@ -378,10 +378,10 @@ public class ESUtil {
 					try {
 						value = property.getValue(bean);
 					} catch (InvocationTargetException e1) {
-						log.error(new StringBuilder().append("获取属性[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "]值失败：请检查模板定义").append("[")
+						log.error(new StringBuilder().append("Failed to get attribute[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "] value:Check the template definition").append("[")
 								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1.getTargetException());
 					} catch (Exception e1) {
-						log.error(new StringBuilder().append("获取属性[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "]值失败：请检查模板定义").append("[")
+						log.error(new StringBuilder().append("Failed to get attribute[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "] value:Check the template definition").append("[")
 								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1);
 					}
 
@@ -402,8 +402,13 @@ public class ESUtil {
 						} else {
 							Object cv = editor.toColumnValue(column, value);
 							if (cv == null)
-								throw new ElasticSearchException(new StringBuilder().append("转换属性[" ).append( beanInfo.getClazz().getName() ).append( "." ).append( property.getName() ).append( "]值失败：值为null时，转换器必须返回ColumnType类型的对象,用来指示表字段对应的java类型。请检查模板定义").append("[")
-										.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString());
+								throw new ElasticSearchException(new StringBuilder().append("Transform property[" )
+										.append( beanInfo.getClazz().getName() ).append( "." )
+										.append( property.getName() )
+										.append( "] value failed: When the value is null, the converter must return an object of ColumnType type to indicate the Java type corresponding to the table field. Check the template definition")
+										.append("[")
+      										.append(template).append("]@")
+										.append(this.templatecontext.getConfigfile()).toString());
 
 							if (!(cv instanceof ColumnType)) {
 								value = cv;
@@ -459,10 +464,10 @@ public class ESUtil {
 				return;
 
 			} catch (SecurityException e) {
-				throw new ElasticSearchException(new StringBuilder().append("转换属性值失败：请检查模板定义").append("[")
+				throw new ElasticSearchException(new StringBuilder().append("Failed to convert attribute values: Check template definitions").append("[")
 						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
 			} catch (IllegalArgumentException e) {
-				throw new ElasticSearchException(new StringBuilder().append("转换属性值失败：请检查模板定义").append("[")
+				throw new ElasticSearchException(new StringBuilder().append("Failed to convert attribute values: Check template definitions").append("[")
 						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
 			}
 //			catch (InvocationTargetException e) {
@@ -476,9 +481,9 @@ public class ESUtil {
 
 
 		}
-		throw new ElasticsearchParseException(new StringBuilder().append(beanInfo.getClazz().getName()).append("没有为elasticsearch模板[")
+		throw new ElasticsearchParseException(new StringBuilder().append(beanInfo.getClazz().getName()).append("No value are specified for variable").append("[").append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
 				.append(template).append("]@").append(this.templatecontext.getConfigfile())
-				.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+				.toString());
 
 
 
@@ -514,9 +519,9 @@ public class ESUtil {
 					if (bean.containsKey(variable.getVariableName()))
 						builder.append("null");
 					else {
-						throw new ElasticsearchParseException(new StringBuilder().append("没有为elasticsearch模板[")
+						throw new ElasticsearchParseException(new StringBuilder().append("No value are specified for variable").append("[").append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
 								.append(template).append("]@").append(this.templatecontext.getConfigfile())
-								.append("指定变量值[").append(variable.getVariableName()).append("]").toString());
+								.toString());
 					}
 				} else {
 					Object value = data;//bean.get(variable.getVariableName());
@@ -803,7 +808,15 @@ public class ESUtil {
 					String templateName = (String)pro.getExtendAttribute("templateName");
 					if(templateName == null)
 					{
-						log.warn(templatecontext.getConfigfile()+"中name="+key+"的es template被配置为对"+templateFile+"中的templatename引用，但是没有通过templateName设置要引用的es template语句!");
+						log.warn(new StringBuilder().append("The DSL template ")
+													 .append(key).append(" in the DSl file ")
+											.append(templatecontext.getConfigfile())
+											.append(" is defined as a reference to the DSL template in another configuration file ")
+											.append(templateFile)
+											.append(", but the name of the DSL template statement to be referenced is not specified by the templateName attribute, for example:\r\n")
+											.append("<property name= \"querySqlTraces\"\r\n")
+											.append("templateFile= \"esmapper/estrace/ESTracesMapper.xml\"\r\n")
+											.append("templateName= \"queryTracesByCriteria\"/>").toString());
 					}
 					else
 					{

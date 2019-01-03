@@ -381,13 +381,13 @@ public class ScheduleService {
 			} catch (Exception e) {
 				String tsql = "create table " + statusTableName
 						+ " (ID number(2),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))";
-				logger.info(statusTableName + " table 不存在，" + statusTableName + "：" + tsql + "。");
+				logger.info(statusTableName + " table not exist，" + statusTableName + "：" + tsql + ".");
 				try {
 					SQLExecutor.updateWithDBName(dbname, tsql);
-					logger.info("创建" + statusTableName + "表成功：" + tsql + "。");
+					logger.info("table " + statusTableName + " create success：" + tsql + ".");
 
 				} catch (Exception e1) {
-					logger.info("创建" + statusTableName + "表失败：" + tsql + "。", e1);
+					logger.info("table " + statusTableName + " create success：" + tsql + ".", e1);
 					throw new ESDataImportException(e1);
 
 				}
@@ -437,7 +437,7 @@ public class ScheduleService {
 		if(sqlInfo != null
 				&& sqlInfo.getParamSize() > 0
 				&& !this.isIncreamentImport()){
-			throw new TaskFailedException("非增量导入sql语句中不能设置参数变量："+esjdbc.getSql());
+			throw new TaskFailedException("Parameter variables cannot be set in non-incremental import SQL statements："+esjdbc.getSql());
 		}
 		initStatusStore();
 		initDatasource();

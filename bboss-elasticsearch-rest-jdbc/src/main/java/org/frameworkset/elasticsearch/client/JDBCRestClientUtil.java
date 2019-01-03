@@ -163,8 +163,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 					if(isPrintTaskLog())  {
 						end = System.currentTimeMillis();
-						logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take ").append((end - istart)).append("毫秒")
-								.append(",import ").append(batchsize).append("条记录").toString());
+						logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take time:").append((end - istart)).append("ms")
+								.append(",import ").append(batchsize).append(" records.").toString());
 						istart = end;
 					}
 					totalCount += batchsize;
@@ -181,16 +181,16 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				jdbcResultSet.flushLastValue(lastValue);
 				if(isPrintTaskLog())  {
 					end = System.currentTimeMillis();
-					logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take ").append((end - istart)).append("毫秒")
-							.append(",import ").append(count).append("条记录").toString());
+					logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take time:").append((end - istart)).append("ms")
+							.append(",import ").append(count).append(" records.").toString());
 
 				}
 				totalCount += count;
 			}
 			if(isPrintTaskLog()) {
 				end = System.currentTimeMillis();
-				logger.info(new StringBuilder().append("Execute Tasks:").append(taskNo).append(",All Take ").append((end - start)).append("毫秒")
-						.append(",Import total records:").append(totalCount).append("条记录").toString());
+				logger.info(new StringBuilder().append("Execute Tasks:").append(taskNo).append(",All Take time:").append((end - start)).append("ms")
+						.append(",Import total ").append(totalCount).append(" records.").toString());
 
 			}
 		} catch (SQLException e) {
@@ -243,8 +243,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if(isPrintTaskLog()) {
 
 				long end = System.currentTimeMillis();
-				logger.info(new StringBuilder().append("All Take ").append((end - start)).append("毫秒")
-						.append(",Import total records:").append(totalCount).append("条记录").toString());
+				logger.info(new StringBuilder().append("All Take time:").append((end - start)).append("ms")
+						.append(",Import total ").append(totalCount).append(" records.").toString());
 
 			}
 			return ret;
@@ -319,7 +319,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				}
 			}
 			if(isPrintTaskLog()) {
-				logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
+				logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import ").append(totalCount.getTotalCount()).append(" records.").toString());
 			}
 			jobComplete(  service,exception,lastValue );
 		}
@@ -342,7 +342,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 						}
 					}
 					if(isPrintTaskLog()) {
-						logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import data ").append(totalCount.getTotalCount()).append("条").toString());
+						logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import ").append(totalCount.getTotalCount()).append(" records.").toString());
 					}
 					jobComplete(  service,null,null);
 				}
