@@ -263,7 +263,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			return null;
 		this.jdbcResultSet = jdbcResultSet;
 		if(isPrintTaskLog()) {
-			logger.info(new StringBuilder().append("AddDocuments to IndexName[").append(indexName)
+			logger.info(new StringBuilder().append("import data to IndexName[").append(indexName)
 							.append("] IndexType[").append(indexType)
 							.append("] start.").toString());
 		}

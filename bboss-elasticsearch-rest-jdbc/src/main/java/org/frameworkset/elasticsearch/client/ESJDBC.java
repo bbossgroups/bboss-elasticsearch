@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -37,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
+	private String indexType;
 	private ErrorWrapper errorWrapper;
 	private volatile boolean forceStop = false;
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
@@ -146,6 +149,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private int batchSize = 1000;
 	private Integer scheduleBatchSize ;
 	private String index;
+	private IndexPattern indexPattern;
 	private String dbDriver;
 	private String dbUrl;
 	private String dbUser;
@@ -270,7 +274,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.indexType = indexType;
 	}
 
-	private String indexType;
+
 
 	public String getDateFormat() {
 		return dateFormat;
@@ -778,5 +782,27 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public void setEsIdGenerator(EsIdGenerator esIdGenerator) {
 		if(esIdGenerator != null)
 			this.esIdGenerator = esIdGenerator;
+	}
+
+	public IndexPattern getIndexPattern() {
+		return indexPattern;
+	}
+
+	public void setIndexPattern(IndexPattern indexPattern) {
+		this.indexPattern = indexPattern;
+	}
+
+	public String buildIndexName(){
+		if(this.indexPattern == null){
+			return this.index;
+		}
+		SimpleDateFormat dateFormat = new SimpleDateFormat(this.indexPattern.getDateFormat());
+		String date = dateFormat.format(new Date());
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexPattern.getIndexPrefix()).append(date);
+		if(indexPattern.getIndexEnd() != null){
+			builder.append(indexPattern.getIndexEnd());
+		}
+		return builder.toString();
 	}
 }

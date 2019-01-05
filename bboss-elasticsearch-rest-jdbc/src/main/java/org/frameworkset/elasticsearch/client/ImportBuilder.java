@@ -470,6 +470,7 @@ public class ImportBuilder {
 		esjdbcResultSet.setBatchSize(this.batchSize);
 		esjdbcResultSet.setJdbcFetchSize(this.jdbcFetchSize);
 		esjdbcResultSet.setIndex(index);
+		esjdbcResultSet.setIndexPattern(this.splitIndexName(index));
 		esjdbcResultSet.setIndexType(indexType);
 		esjdbcResultSet.setDbDriver(this.dbDriver);
 		esjdbcResultSet.setDbUrl(this.dbUrl);
@@ -893,5 +894,23 @@ public class ImportBuilder {
 		if(esIdGenerator != null)
 			this.esIdGenerator = 	esIdGenerator;
 		return this;
+	}
+
+	private IndexPattern splitIndexName(String indexPattern){
+		int idx = indexPattern.indexOf("{");
+		int end = -1;
+		if(idx > 0){
+			end = indexPattern.indexOf("}");
+			IndexPattern _indexPattern = new IndexPattern();
+			_indexPattern.setIndexPrefix(indexPattern.substring(0,idx));
+			_indexPattern.setDateFormat(indexPattern.substring(idx + 1,end));
+			if(end < indexPattern.length()){
+				_indexPattern.setIndexEnd(indexPattern.substring(end+1));
+			}
+			return _indexPattern;
+		}
+		return null;
+
+
 	}
 }
