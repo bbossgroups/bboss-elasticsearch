@@ -311,7 +311,7 @@ public class ImportBuilder {
 		return fieldMeta;
 	}
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName){
-		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName,null ));
+		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName,null ));
 		return this;
 	}
 
@@ -321,16 +321,16 @@ public class ImportBuilder {
 	}
 
 	public static void addIgnoreFieldMapping(Map<String,FieldMeta> fieldMetaMap,String dbColumnName){
-		fieldMetaMap.put(dbColumnName,buildIgnoreFieldMeta(  dbColumnName));
+		fieldMetaMap.put(dbColumnName.toLowerCase(),buildIgnoreFieldMeta(  dbColumnName));
 	}
 
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat){
-		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat));
+		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat));
 		return this;
 	}
 
 	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
-		this.fieldMetaMap.put(dbColumnName,buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
+		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
 		return this;
 	}
 

@@ -425,7 +425,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public FieldMeta getMappingName(String colName){
 		if(fieldMetaMap != null)
-			return this.fieldMetaMap.get(colName);
+			return this.fieldMetaMap.get(colName.toLowerCase());
 		return null;
 	}
 

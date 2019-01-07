@@ -82,7 +82,7 @@ public class ContextImpl implements Context {
 	}
 	public FieldMeta getMappingName(String colName){
 		if(fieldMetaMap != null) {
-			FieldMeta fieldMeta = this.fieldMetaMap.get(colName);
+			FieldMeta fieldMeta = this.fieldMetaMap.get(colName.toLowerCase());
 			if (fieldMeta != null) {
 				return fieldMeta;
 			}
