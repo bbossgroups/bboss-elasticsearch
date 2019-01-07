@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.entity.geo;
  * limitations under the License.
  */
 
+import java.io.Serializable;
+
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/geo-shape.html
  * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-geo-shape-query.html
@@ -25,7 +27,7 @@ package org.frameworkset.elasticsearch.entity.geo;
  * @author biaoping.yin
  * @version 1.0
  */
-public class GeoShape {
+public class GeoShape implements Serializable {
 	/**
 	 * type取值范围，参考文档：
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.2/geo-shape.html
