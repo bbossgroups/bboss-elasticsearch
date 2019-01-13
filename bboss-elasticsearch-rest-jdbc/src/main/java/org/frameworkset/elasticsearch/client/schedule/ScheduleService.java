@@ -134,11 +134,11 @@ public class ScheduleService {
 
 		if(sqlInfo.getParamSize() == 0) {
 			if(esjdbc.getExecutor() == null) {
-				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql());
+				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
 			}
 			else
 			{
-				esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName(),(Map)null);
+				esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(),(Map)null);
 			}
 
 		}
@@ -148,11 +148,11 @@ public class ScheduleService {
 			 }
 			 else {
 				 if(esjdbc.getExecutor() == null) {
-					 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSql(), getParamValue());
+					 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
 				 }
 				 else
 				 {
-					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbName(), esjdbc.getSqlName(), getParamValue());
+					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
 
 				 }
 
@@ -316,8 +316,8 @@ public class ScheduleService {
 	 */
 	private void initDatasource()  {
 		if(this.isIncreamentImport()) {
-			dbname = this.esjdbc.getDbName() + "_config";
-			String dbJNDIName = this.esjdbc.getDbName() + "_config";
+			dbname = this.esjdbc.getDbConfig().getDbName() + "_config";
+			String dbJNDIName = this.esjdbc.getDbConfig().getDbName() + "_config";
 			try {
 				File dbpath = new File(statusStorePath);
 				logger.info("initDatasource dbpath:" + dbpath.getCanonicalPath());

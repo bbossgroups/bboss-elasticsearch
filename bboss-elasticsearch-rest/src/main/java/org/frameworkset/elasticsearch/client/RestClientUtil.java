@@ -2982,4 +2982,16 @@ public class RestClientUtil extends ClientUtil{
 		return  null;
 	}
 
+	@Override
+	public String closeIndex(String index) {
+		String closeIndex = new StringBuilder().append("/").append(index).append("/_close").toString();
+		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
+	}
+
+	@Override
+	public String openIndex(String index) {
+		String closeIndex = new StringBuilder().append("/").append(index).append("/_open").toString();
+		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
+	}
+
 }

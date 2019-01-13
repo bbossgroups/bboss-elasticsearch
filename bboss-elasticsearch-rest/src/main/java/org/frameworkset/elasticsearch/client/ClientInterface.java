@@ -2017,4 +2017,13 @@ public interface ClientInterface {
 	 * @return
 	 */
 	public ESInfo getESInfo(String templateName);
+
+	/**
+	 * POST /my_index/_close
+	 *
+	 * POST /my_index/_open
+	 */
+	public String closeIndex(String index);
+	public String openIndex(String index);
+
 }

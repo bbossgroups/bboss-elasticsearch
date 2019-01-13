@@ -1249,4 +1249,14 @@ public class TransportClientUtil  implements EventClientUtil{
 	public ESInfo getESInfo(String templateName){
 		return  null;
 	}
+
+	@Override
+	public String closeIndex(String index) {
+		return null;
+	}
+
+	@Override
+	public String openIndex(String index) {
+		return null;
+	}
 }

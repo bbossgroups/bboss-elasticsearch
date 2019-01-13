@@ -19,7 +19,6 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
-import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,31 +26,15 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.util.*;
 
-public class ImportBuilder {
+public class ImportBuilder extends BaseBuilder{
 	private static Logger logger = LoggerFactory.getLogger(ImportBuilder.class);
-	/**
-	 * 打印任务日志
-	 */
-	private boolean printTaskLog = false;
+	protected String sqlFilepath;
 	private ImportBuilder(){
 
 	}
-	/**
-	 * 定时任务拦截器
-	 */
-	private List<CallInterceptor> callInterceptors;
-	private String applicationPropertiesFile;
-	private boolean freezen;
-	/**抽取数据的sql语句*/
-	private String sql;
-	private String sqlFilepath;
-	private String sqlName;
-	private Integer jdbcFetchSize;
-	private EsIdGenerator esIdGenerator = ESJDBC.DEFAULT_EsIdGenerator;
-	
-	/**是否启用sql日志，true启用，false 不启用，*/
-	private boolean showSql;
 
+
+	protected EsIdGenerator esIdGenerator = ESJDBC.DEFAULT_EsIdGenerator;
 	public boolean isShowSql() {
 		return showSql;
 	}
@@ -71,23 +54,7 @@ public class ImportBuilder {
 
 	private Boolean useLowcase;
 	/**抽取数据的sql语句*/
-	private String dbName;
-	/**抽取数据的sql语句*/
-	private String dbDriver;
-	/**抽取数据的sql语句*/
-	private String dbUrl;
-	/**抽取数据的sql语句*/
-	private String dbUser;
-	/**抽取数据的sql语句*/
-	private String dbPassword;
-	/**抽取数据的sql语句*/
-	private String validateSQL;
-	/**抽取数据的sql语句*/
-	private boolean usePool = false;
-	/**抽取数据的sql语句*/
 	private String refreshOption;
-	/**抽取数据的sql语句*/
-	private int batchSize = 1000;
 	private Integer scheduleBatchSize ;
 	private String index;
 	/**抽取数据的sql语句*/
@@ -252,28 +219,7 @@ public class ImportBuilder {
 
 	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
 	private DataRefactor dataRefactor;
-	/**
-	 * use parallel import:
-	 *  true yes
-	 *  false no
-	 */
-	private boolean parallel;
-	/**
-	 * parallel import work thread nums,default 200
-	 */
-	private int threadCount = 200;
-	/**
-	 * 并行队列大小，默认1000
-	 */
-	private int queue = 1000;
-	/**
-	 * 是否同步等待批处理作业结束，true 等待 false 不等待
-	 */
-	private boolean asyn;
-	/**
-	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
-	 */
-	private boolean continueOnError;
+
 	public static ImportBuilder newInstance(){
 		return new ImportBuilder();
 	}
@@ -404,38 +350,8 @@ public class ImportBuilder {
 		return this;
 	}
 
-	private void buildDBConfig(){
-		if(!this.freezen) {
-			PropertiesContainer propertiesContainer = new PropertiesContainer();
-			if(this.applicationPropertiesFile == null) {
-				propertiesContainer.addConfigPropertiesFile("application.properties");
-			}
-			else{
-				propertiesContainer.addConfigPropertiesFile(applicationPropertiesFile);
-			}
-			this.dbName  = propertiesContainer.getProperty("db.name");
-			this.dbUser  = propertiesContainer.getProperty("db.user");
-			this.dbPassword  = propertiesContainer.getProperty("db.password");
-			this.dbDriver  = propertiesContainer.getProperty("db.driver");
-			this.dbUrl  = propertiesContainer.getProperty("db.url");
-			String _usePool = propertiesContainer.getProperty("db.usePool");
-			if(_usePool != null && !_usePool.equals(""))
-				this.usePool  = Boolean.parseBoolean(_usePool);
-			this.validateSQL  = propertiesContainer.getProperty("db.validateSQL");
-			
-			String _showSql = propertiesContainer.getProperty("db.showsql");
-			if(_showSql != null && !_showSql.equals(""))
-				this.showSql  = Boolean.parseBoolean(_showSql);
-			
-			String _jdbcFetchSize = propertiesContainer.getProperty("db.jdbcFetchSize");
-			if(_jdbcFetchSize != null && !_jdbcFetchSize.equals(""))
-				this.jdbcFetchSize  = Integer.parseInt(_jdbcFetchSize);
-			
-			 
 
-		}
-	}
-	private ESJDBC buildESConfig(){
+	private ESJDBC buildESJDBCConfig(){
 		ESJDBC esjdbcResultSet = new ESJDBC();
 		esjdbcResultSet.setImportBuilder(this);
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());
@@ -463,21 +379,22 @@ public class ImportBuilder {
 		esjdbcResultSet.setSqlName(sqlName);
 		if(SimpleStringUtil.isNotEmpty(sql))
 			esjdbcResultSet.setSql(this.sql);
-
-		esjdbcResultSet.setDbName(dbName);
-		esjdbcResultSet.setShowSql(showSql);
+		DBConfig dbConfig = new DBConfig();
+		esjdbcResultSet.setDbConfig(dbConfig);
+		dbConfig.setDbName(dbName);
+		dbConfig.setShowSql(showSql);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
 		esjdbcResultSet.setBatchSize(this.batchSize);
-		esjdbcResultSet.setJdbcFetchSize(this.jdbcFetchSize);
+		dbConfig.setJdbcFetchSize(this.jdbcFetchSize);
 		esjdbcResultSet.setIndex(index);
 		esjdbcResultSet.setIndexPattern(this.splitIndexName(index));
 		esjdbcResultSet.setIndexType(indexType);
-		esjdbcResultSet.setDbDriver(this.dbDriver);
-		esjdbcResultSet.setDbUrl(this.dbUrl);
-		esjdbcResultSet.setDbUser(this.dbUser);
-		esjdbcResultSet.setDbPassword(this.dbPassword);
-		esjdbcResultSet.setValidateSQL(this.validateSQL);
-		esjdbcResultSet.setUsePool(this.usePool);
+		dbConfig.setDbDriver(this.dbDriver);
+		dbConfig.setDbUrl(this.dbUrl);
+		dbConfig.setDbUser(this.dbUser);
+		dbConfig.setDbPassword(this.dbPassword);
+		dbConfig.setValidateSQL(this.validateSQL);
+		dbConfig.setUsePool(this.usePool);
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		esjdbcResultSet.setParallel(this.parallel);
 		esjdbcResultSet.setThreadCount(this.threadCount);
@@ -504,6 +421,8 @@ public class ImportBuilder {
 		esjdbcResultSet.setEsIdGenerator(esIdGenerator);
 		return esjdbcResultSet;
 	}
+
+
 	public DataStream builder(){
 		this.buildDBConfig();
 		try {
@@ -513,11 +432,12 @@ public class ImportBuilder {
 		catch (Exception e){
 
 		}
-		ESJDBC esjdbcResultSet = this.buildESConfig();
-		DataStream dataStream = new DataStream();
+		ESJDBC esjdbcResultSet = this.buildESJDBCConfig();
+		DataStreamImpl dataStream = new DataStreamImpl();
 		dataStream.setEsjdbc(esjdbcResultSet);
 		return dataStream;
 	}
+
 
 	public ImportBuilder setIndexType(String indexType) {
 		this.indexType = indexType;
@@ -913,4 +833,6 @@ public class ImportBuilder {
 
 
 	}
+
+
 }

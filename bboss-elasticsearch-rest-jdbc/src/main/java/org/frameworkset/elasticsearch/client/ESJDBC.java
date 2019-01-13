@@ -44,6 +44,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private volatile boolean forceStop = false;
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
+	private DBConfig dbConfig;
 	/**
 	 * 打印任务日志
 	 */
@@ -105,7 +106,6 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private int threadCount = 200;
 	private int queue = Integer.MAX_VALUE;
 	private String applicationPropertiesFile;
-	private boolean usePool = false;
 	private String esIdField;
 	private String esParentIdField;
 	private String esParentIdValue;
@@ -141,8 +141,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private String sql;
 	private String sqlFilepath;
 	private String sqlName;
-	private Integer jdbcFetchSize;
-	private String dbName;
+
 	private ConfigSQLExecutor executor;
 
 	private String refreshOption;
@@ -150,12 +149,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private Integer scheduleBatchSize ;
 	private String index;
 	private IndexPattern indexPattern;
-	private String dbDriver;
-	private String dbUrl;
-	private String dbUser;
 
-	private String dbPassword;
-	private String validateSQL;
+
 	private AtomicInteger rejectCounts = new AtomicInteger();
 	private boolean asyn;
 	/**
@@ -171,59 +166,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	/**是否调试bulk响应日志，true启用，false 不启用，*/
 	private boolean debugResponse;
 
-	/**是否启用sql日志，true启用，false 不启用，*/
-	private boolean showSql;
 
-
-	public boolean isShowSql() {
-		return showSql;
-	}
-
-	public void setShowSql(boolean showSql) {
-		this.showSql = showSql;
-	}
 	private ScheduleConfig scheduleConfig;
 	private ImportIncreamentConfig importIncreamentConfig;
 
-	public String getDbDriver() {
-		return dbDriver;
-	}
-
-	public void setDbDriver(String dbDriver) {
-		this.dbDriver = dbDriver;
-	}
-
-	public String getDbUrl() {
-		return dbUrl;
-	}
-
-	public void setDbUrl(String dbUrl) {
-		this.dbUrl = dbUrl;
-	}
-
-	public String getDbUser() {
-		return dbUser;
-	}
-
-	public void setDbUser(String dbUser) {
-		this.dbUser = dbUser;
-	}
-
-	public String getDbPassword() {
-		return dbPassword;
-	}
-
-	public void setDbPassword(String dbPassword) {
-		this.dbPassword = dbPassword;
-	}
-
-	public String getValidateSQL() {
-		return validateSQL;
-	}
-
-	public void setValidateSQL(String validateSQL) {
-		this.validateSQL = validateSQL;
-	}
 
 	public String getSql() {
 		return sql;
@@ -234,13 +180,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.sql = sql;
 	}
 
-	public String getDbName() {
-		return dbName;
-	}
 
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
-	}
 
 	public String getRefreshOption() {
 		return refreshOption;
@@ -429,13 +369,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		return null;
 	}
 
-	public boolean isUsePool() {
-		return usePool;
-	}
 
-	public void setUsePool(boolean usePool) {
-		this.usePool = usePool;
-	}
 
 	public boolean isParallel() {
 		return parallel;
@@ -684,13 +618,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.sqlFilepath = sqlFilepath;
 	}
 
-	public Integer getJdbcFetchSize() {
-		return jdbcFetchSize;
-	}
 
-	public void setJdbcFetchSize(Integer jdbcFetchSize) {
-		this.jdbcFetchSize = jdbcFetchSize;
-	}
 
 	public ScheduleService getScheduleService() {
 		return scheduleService;
@@ -804,5 +732,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 			builder.append(indexPattern.getIndexEnd());
 		}
 		return builder.toString();
+	}
+
+	public DBConfig getDbConfig() {
+		return dbConfig;
+	}
+
+	public void setDbConfig(DBConfig dbConfig) {
+		this.dbConfig = dbConfig;
 	}
 }
