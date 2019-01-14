@@ -1022,6 +1022,37 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Map params, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Object params, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Map params, Class<T> type, String aggs) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Object params, Class<T> type, String aggs) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Class<T> type, String aggs) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public String createTempate(String template, String entity) throws ElasticSearchException {
 		// TODO Auto-generated method stub

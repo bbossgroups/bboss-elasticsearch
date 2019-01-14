@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch;
 
 import org.frameworkset.elasticsearch.client.RestClientUtil;
 import org.frameworkset.elasticsearch.scroll.ParallelSliceScrollResult;
+import org.frameworkset.elasticsearch.serial.SerialContext;
 
 /**
  * <p>Description: </p>
@@ -34,7 +35,9 @@ public class SliceRunTask<T> implements Runnable {
 	private   Class<T> type;
 	private   ParallelSliceScrollResult sliceScrollResult;
 	private RestClientUtil restClientUtil;
-	public SliceRunTask(RestClientUtil restClientUtil,int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,  ParallelSliceScrollResult sliceScrollResult){
+	private SerialContext serialContext ;
+	public SliceRunTask(RestClientUtil restClientUtil,int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,
+						ParallelSliceScrollResult sliceScrollResult, SerialContext serialContext){
 		this.restClientUtil = restClientUtil;
 		this.sliceId = sliceId;
 		this.path = path;
@@ -42,10 +45,14 @@ public class SliceRunTask<T> implements Runnable {
 		this.scroll = scroll;
 		this.type = type;
 		this.sliceScrollResult = sliceScrollResult;
+		this.serialContext = serialContext;
 	}
 	@Override
 	public void run() {
 		try {
+			if(serialContext != null){
+				this.serialContext.continueSerialTypes();
+			}
 			restClientUtil._doSliceScroll( sliceId, path,
 					sliceDsl,
 					scroll, type,
@@ -55,6 +62,11 @@ public class SliceRunTask<T> implements Runnable {
 			throw e;
 		} catch (Exception e) {
 			throw new ElasticSearchException("slice query task["+sliceId+"] failed:",e);
+		}
+		finally {
+			if(serialContext != null){
+				this.serialContext.clean();
+			}
 		}
 	}
 }

@@ -20,7 +20,9 @@ import org.frameworkset.elasticsearch.scroll.DefualtScrollHandler;
 import org.frameworkset.elasticsearch.scroll.ParallelSliceScrollResult;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.scroll.SliceScrollResultInf;
+import org.frameworkset.elasticsearch.serial.ESInnerHitSerialThreadLocal;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.elasticsearch.serial.SerialContext;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.json.JsonTypeReference;
@@ -1595,14 +1597,15 @@ public class RestClientUtil extends ClientUtil{
 			sliceScrollResult.setScrollHandler(scrollHandler);
 
 		try {
-			SliceRunTask<T> sliceRunTask = null;
+//			SliceRunTask<T> sliceRunTask = null;
+			SerialContext serialContext = ESInnerHitSerialThreadLocal.buildSerialContext();
 			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
 				String sliceDsl = sliceScroll.buildSliceDsl(j,max);
 //				final String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(i).append(",\"max\": ")
 //									.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
 
 				runSliceTask(j,_path,sliceDsl,scroll,type,sliceScrollResult,
-						executorService,tasks );
+						executorService,tasks,serialContext );
 			}
 		}
 		finally {
@@ -1619,8 +1622,8 @@ public class RestClientUtil extends ClientUtil{
 		sliceScrollResult.complete();
 		return sliceScrollResult.getSliceResponse();
 	}
-	public <T> void runSliceTask(int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,  ParallelSliceScrollResult sliceScrollResult,ExecutorService executorService,List<Future> tasks ){
-		SliceRunTask<T> sliceRunTask = new SliceRunTask<T>(this,sliceId,path,sliceDsl,scroll,type,sliceScrollResult);
+	public <T> void runSliceTask(int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,  ParallelSliceScrollResult sliceScrollResult,ExecutorService executorService,List<Future> tasks,SerialContext serialContext ){
+		SliceRunTask<T> sliceRunTask = new SliceRunTask<T>(this,sliceId,path,sliceDsl,scroll,type,sliceScrollResult,   serialContext);
 		tasks.add(executorService.submit(sliceRunTask));
 	}
 	protected void waitTasksComplete(final List<Future> tasks){
@@ -2230,6 +2233,33 @@ public class RestClientUtil extends ClientUtil{
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return ResultUtil.buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
+	}
+
+	/****************/
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs) throws ElasticSearchException{
+
+		return null;
+	}
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Object params,Class<T> type,String aggs) throws ElasticSearchException{
+		return null;
+	}
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
+
+		return null;
+	}
+
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Object params,Class<T> type,String aggs,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
+		return null;
+	}
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs) throws ElasticSearchException{
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+		return ResultUtil.buildESAggDatas(result,type,aggs,null,(ESAggBucketHandle<T>)null);
+	}
+	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
+		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+		return ResultUtil.buildESAggDatas(result,type,aggs,null,aggBucketHandle);
 	}
 
 	@Override

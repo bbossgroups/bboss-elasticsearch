@@ -1565,6 +1565,31 @@ public interface ClientInterface {
 	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Object params, Class<T> type, String aggs, String stats) throws ElasticSearchException;
 
 	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Class<T> type, String aggs, String stats) throws ElasticSearchException;
+
+	/**
+	 * 聚合查询方法
+	 *
+	 * @param path   es查询请求相对地址
+	 * @param entity es聚合查询模板
+	 * @param params es聚合查询参数
+	 * @param type   es聚合查询结果类
+	 * @param aggs   es聚合查询结果名称
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Map params, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException;
+
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Object params, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException;
+
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Class<T> type, String aggs, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException;
+
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Map params, Class<T> type, String aggs) throws ElasticSearchException;
+
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Object params, Class<T> type, String aggs) throws ElasticSearchException;
+
+	public abstract <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Class<T> type, String aggs) throws ElasticSearchException;
+
 	public abstract String createTempate(String template,String entity)  throws ElasticSearchException;
 
 	public abstract String createTempate(String template, String templateName,Object params) throws ElasticSearchException ;

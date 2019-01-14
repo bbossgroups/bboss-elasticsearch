@@ -269,6 +269,8 @@ public abstract class ResultUtil {
 	public static void buildLongAggHit(LongAggHit longRangeHit, Map<String,Object> bucket, String stats){
 		longRangeHit.setKey((String)bucket.get("key"));
 		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		longRangeHit.setMax(longValue(stats_.get("max"),0l));
 		longRangeHit.setMin(longValue(stats_.get("min"),0l));
@@ -278,6 +280,8 @@ public abstract class ResultUtil {
 	public static void buildFloatAggHit(FloatAggHit floatRangeHit, Map<String,Object> bucket, String stats){
 		floatRangeHit.setKey((String)bucket.get("key"));
 		floatRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		floatRangeHit.setMax(floatValue(stats_.get("max"),0f));
 		floatRangeHit.setMin(floatValue(stats_.get("min"),0f));
@@ -288,6 +292,8 @@ public abstract class ResultUtil {
 	public static void buildDoubleAggHit(DoubleAggHit doubleAggHit, Map<String,Object> bucket, String stats){
 		doubleAggHit.setKey((String)bucket.get("key"));
 		doubleAggHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		doubleAggHit.setMax(doubleValue(stats_.get("max"),0d));
 		doubleAggHit.setMin(doubleValue(stats_.get("min"),0d));
@@ -300,6 +306,8 @@ public abstract class ResultUtil {
 		longRangeHit.setFrom(longValue(bucket.get("from"),null));
 		longRangeHit.setTo(longValue(bucket.get("to"),null));
 		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		longRangeHit.setMax(longValue(stats_.get("max"),0l));
 		longRangeHit.setMin(longValue(stats_.get("min"),0l));
@@ -311,6 +319,8 @@ public abstract class ResultUtil {
 		floatRangeHit.setFrom(floatValue(bucket.get("from"),null));
 		floatRangeHit.setTo(floatValue(bucket.get("to"),null));
 		floatRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		floatRangeHit.setMax(floatValue(stats_.get("max"),0f));
 		floatRangeHit.setMin(floatValue(stats_.get("min"),0f));
@@ -322,6 +332,8 @@ public abstract class ResultUtil {
 		doubleRangeHit.setFrom(doubleValue(bucket.get("from"),null));
 		doubleRangeHit.setTo(doubleValue(bucket.get("to"),null));
 		doubleRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
+		if(stats == null)
+			return;
 		Map<String,Object> stats_ = (Map<String,Object>)bucket.get(stats);
 		doubleRangeHit.setMax(doubleValue(stats_.get("max"),0d));
 		doubleRangeHit.setMin(doubleValue(stats_.get("min"),0d));

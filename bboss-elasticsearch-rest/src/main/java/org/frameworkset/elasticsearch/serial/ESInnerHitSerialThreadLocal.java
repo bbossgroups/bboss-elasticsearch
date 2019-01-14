@@ -11,10 +11,21 @@ public abstract class ESInnerHitSerialThreadLocal {
 	}
 	
 
-
+	public static SerialContext buildSerialContext(){
+		ESClass esClass = innerHitTypeLocals.get();
+		Map<String,ESClass> innerHitTypes = innerHitTypeLocalsByType.get();
+		if(esClass == null && innerHitTypes == null){
+			return null;
+		}
+		SerialContext serialContext = new SerialContext(esClass,innerHitTypes);
+		return serialContext;
+	}
 
 	public static void setESInnerTypeReferences(Class<?> refs){
 		innerHitTypeLocals.set(new ESClassType(refs));
+	}
+	public static void setESInnerTypeReferences(ESClass refs){
+		innerHitTypeLocals.set(refs);
 	}
 
 	/**
@@ -30,6 +41,14 @@ public abstract class ESInnerHitSerialThreadLocal {
 		}
 		typeRefs.put(type,new ESClassType(refs));
 
+	}
+	/**
+	 * 设置父子查询，子的类型信息和orm class对象
+	 * @param typeRefs
+	 */
+	public static void setESInnerTypeReferences(Map<String,ESClass> typeRefs){
+		typeRefs = new HashMap<String, ESClass>();
+		innerHitTypeLocalsByType.set(typeRefs);
 	}
 	public static ESClass getESInnerTypeReferences(){
 		return innerHitTypeLocals.get();
