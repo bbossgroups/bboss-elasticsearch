@@ -103,6 +103,34 @@ public abstract class ResultUtil {
 		}
 		return null;
 	}
+
+
+	public static  Integer integerValue(Object num,Integer defaultValue){
+		if(num == null)
+			return defaultValue;
+		if(num instanceof Long)
+		{
+			return ((Long)num).intValue();
+		}
+		else if(num instanceof Double)
+		{
+			return ((Double)num).intValue();
+		}else if(num instanceof Integer){
+			return (Integer)num;
+		}
+		else if(num instanceof Float)
+		{
+			return ((Float)num).intValue();
+		}
+		else  if(num instanceof Short)
+		{
+			return ((Short)num).intValue();
+		}
+		else
+		{
+			return Integer.parseInt(num.toString());
+		}
+	}
 	public static  Long longValue(Object num,Long defaultValue){
 		if(num == null)
 			return defaultValue;
@@ -340,6 +368,35 @@ public abstract class ResultUtil {
 		doubleRangeHit.setAvg(doubleValue(stats_.get("avg"),0d));
 		doubleRangeHit.setSum(doubleValue(stats_.get("sum"),0d));
 	}
+	/**
+	 * 单值统计结果构建
+	 */
+	public static void buildSingleIntegerAggHit(SingleIntegerAggHit integerAggHit, Object bucket){
+
+		integerAggHit.setValue(integerValue(bucket,0));
+
+
+	}
+	/**
+	 * 单值统计结果构建
+	 */
+	public static void buildSingleLongAggHit(SingleLongAggHit longRangeHit, Object bucket){
+
+		longRangeHit.setValue(longValue(bucket,0l));
+
+
+	}
+	public static void buildSingleFloatAggHit(SingleFloatAggHit floatRangeHit, Object bucket){
+		floatRangeHit.setValue(floatValue(bucket,0f));
+
+	}
+
+	public static void buildSingleDoubleAggHit(SingleDoubleAggHit doubleAggHit, Object bucket){
+		doubleAggHit.setValue(doubleValue(bucket,0d));
+
+	}
+
+
 
 	public static  <T extends AggHit> ESAggDatas<T> buildESAggDatas(RestResponse searchResult,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle){
 
@@ -348,88 +405,132 @@ public abstract class ResultUtil {
 		if(aggregations != null){
 			Map<String,Object> traces = aggregations.get(aggs);
 			Object _buckets = traces.get("buckets");
-			ESAggDatas<T> ret = new ESAggDatas<T>();
-			ret.setAggregations(aggregations);
-			ret.setTotalSize(searchResult.getSearchHits().getTotal());
-
-			if(_buckets instanceof List) {
-				List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<T>(buckets.size());
-				ret.setAggDatas(datas);
-				for (Map<String, Object> bucket : buckets) {
-					try {
-						T obj = type.newInstance();
-						if(obj instanceof LongAggRangeHit){
-							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,null);
-						}else if(obj instanceof FloatAggRangeHit){
-							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,null);
-						}else if(obj instanceof DoubleAggRangeHit){
-							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,null);
-						} else if (obj instanceof LongAggHit) {
-							buildLongAggHit((LongAggHit) obj, bucket,  stats);
-						} else if(obj instanceof FloatAggHit){
-							buildFloatAggHit((FloatAggHit) obj, bucket,  stats);
-						}else if(obj instanceof DoubleAggHit){
-							buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
-						}
-						if(aggBucketHandle != null)
-						{
-							aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
-						}
-
-						datas.add(obj);
-					} catch (InstantiationException e) {
-						throw new ElasticSearchException(e);
-					} catch (IllegalAccessException e) {
-						throw new ElasticSearchException(e);
-					}
-				}
-
-
+			if(_buckets == null){
+				Object value = traces.get("value");
+				return singleValueAgg(searchResult,aggregations,
+						value,type);
 			}
-			else
-			{
-				Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
-				List<T> datas = new ArrayList<T>(buckets.size());
-				ret.setAggDatas(datas);
-				Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
-				Map<String, Object> bucket = null;
-				Map.Entry<String, Map<String, Object>> entry = null;
-				String key = null;
-				T obj = null;
-				while(iterable.hasNext()){
-					entry = iterable.next();
-					key = entry.getKey();
-					bucket = entry.getValue();
-					try {
-						obj = type.newInstance();
-
-						if (obj instanceof LongAggRangeHit) {
-							buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
-						} else if (obj instanceof DoubleAggRangeHit)
-						{
-							buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
-						}else if (obj instanceof FloatAggRangeHit)
-						{
-							buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
-						}
-						if(aggBucketHandle != null)
-						{
-							aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
-						}
-						datas.add(obj);
-					}catch (InstantiationException e) {
-						throw new ElasticSearchException(e);
-					} catch (IllegalAccessException e) {
-						throw new ElasticSearchException(e);
-					}
-				}
+			else{
+				return bulkAgg(searchResult,aggregations,
+						_buckets,type,
+						aggs,stats,
+						aggBucketHandle);
 			}
-			return ret;
+
 		}
 
 
 		return null;
+	}
+	private static  <T extends AggHit> ESAggDatas<T> singleValueAgg(RestResponse searchResult,Map<String,Map<String,Object>> aggregations,
+															 Object value,Class<T> type){
+		if(value == null)
+			return null;
+		ESAggDatas<T> ret = new ESAggDatas<T>();
+		ret.setAggregations(aggregations);
+		ret.setTotalSize(searchResult.getSearchHits().getTotal());
+		try {
+			T obj = type.newInstance();
+			if (obj instanceof SingleLongAggHit) {
+				buildSingleLongAggHit((SingleLongAggHit) obj, value);
+			}  else if (obj instanceof SingleIntegerAggHit) {
+				buildSingleIntegerAggHit((SingleIntegerAggHit) obj, value);
+			} else if (obj instanceof SingleFloatAggHit) {
+				buildSingleFloatAggHit((SingleFloatAggHit) obj, value);
+			} else if (obj instanceof SingleDoubleAggHit) {
+				buildSingleDoubleAggHit((SingleDoubleAggHit) obj, value);
+			}
+			ret.setSingleAggData(obj);
+		} catch (InstantiationException e) {
+			throw new ElasticSearchException(e);
+		} catch (IllegalAccessException e) {
+			throw new ElasticSearchException(e);
+		}
+		return ret;
+	}
+
+	private static  <T extends AggHit> ESAggDatas<T> bulkAgg(RestResponse searchResult,Map<String,Map<String,Object>> aggregations,
+															 Object _buckets,Class<T> type,
+															 String aggs,String stats,
+															 ESAggBucketHandle<T> aggBucketHandle){
+		ESAggDatas<T> ret = new ESAggDatas<T>();
+		ret.setAggregations(aggregations);
+		ret.setTotalSize(searchResult.getSearchHits().getTotal());
+
+		if(_buckets instanceof List) {
+			List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
+			List<T> datas = new ArrayList<T>(buckets.size());
+			ret.setAggDatas(datas);
+			for (Map<String, Object> bucket : buckets) {
+				try {
+					T obj = type.newInstance();
+					if(obj instanceof LongAggRangeHit){
+						buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,null);
+					}else if(obj instanceof FloatAggRangeHit){
+						buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,null);
+					}else if(obj instanceof DoubleAggRangeHit){
+						buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,null);
+					} else if (obj instanceof LongAggHit) {
+						buildLongAggHit((LongAggHit) obj, bucket,  stats);
+					} else if(obj instanceof FloatAggHit){
+						buildFloatAggHit((FloatAggHit) obj, bucket,  stats);
+					}else if(obj instanceof DoubleAggHit){
+						buildDoubleAggHit((DoubleAggHit) obj, bucket,  stats);
+					}
+					if(aggBucketHandle != null)
+					{
+						aggBucketHandle.bucketHandle(searchResult,bucket,obj,null);
+					}
+
+					datas.add(obj);
+				} catch (InstantiationException e) {
+					throw new ElasticSearchException(e);
+				} catch (IllegalAccessException e) {
+					throw new ElasticSearchException(e);
+				}
+			}
+
+
+		}
+		else
+		{
+			Map<String,Map<String, Object>> buckets = (Map<String,Map<String, Object>>) _buckets;
+			List<T> datas = new ArrayList<T>(buckets.size());
+			ret.setAggDatas(datas);
+			Iterator<Map.Entry<String, Map<String, Object>>> iterable = buckets.entrySet().iterator();
+			Map<String, Object> bucket = null;
+			Map.Entry<String, Map<String, Object>> entry = null;
+			String key = null;
+			T obj = null;
+			while(iterable.hasNext()){
+				entry = iterable.next();
+				key = entry.getKey();
+				bucket = entry.getValue();
+				try {
+					obj = type.newInstance();
+
+					if (obj instanceof LongAggRangeHit) {
+						buildLongAggRangeHit((LongAggRangeHit) obj, bucket,  stats,key);
+					} else if (obj instanceof DoubleAggRangeHit)
+					{
+						buildDoubleAggRangeHit((DoubleAggRangeHit) obj, bucket,  stats,key);
+					}else if (obj instanceof FloatAggRangeHit)
+					{
+						buildFloatAggRangeHit((FloatAggRangeHit) obj, bucket,  stats,key);
+					}
+					if(aggBucketHandle != null)
+					{
+						aggBucketHandle.bucketHandle(searchResult,bucket,obj,key);
+					}
+					datas.add(obj);
+				}catch (InstantiationException e) {
+					throw new ElasticSearchException(e);
+				} catch (IllegalAccessException e) {
+					throw new ElasticSearchException(e);
+				}
+			}
+		}
+		return ret;
 	}
 	/**
 	 * {
