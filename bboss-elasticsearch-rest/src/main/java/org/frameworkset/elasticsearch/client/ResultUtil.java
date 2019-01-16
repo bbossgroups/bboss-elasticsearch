@@ -386,6 +386,17 @@ public abstract class ResultUtil {
 
 
 	}
+
+	/**
+	 * 单值统计结果构建
+	 */
+	public static void buildSingleObjectAggHit(SingleObjectAggHit objectgRangeHit, Object bucket){
+
+		objectgRangeHit.setValue(bucket);
+
+
+	}
+
 	public static void buildSingleFloatAggHit(SingleFloatAggHit floatRangeHit, Object bucket){
 		floatRangeHit.setValue(floatValue(bucket,0f));
 
@@ -424,11 +435,12 @@ public abstract class ResultUtil {
 	}
 	private static  <T extends AggHit> ESAggDatas<T> singleValueAgg(RestResponse searchResult,Map<String,Map<String,Object>> aggregations,
 															 Object value,Class<T> type){
-		if(value == null)
-			return null;
+
 		ESAggDatas<T> ret = new ESAggDatas<T>();
 		ret.setAggregations(aggregations);
 		ret.setTotalSize(searchResult.getSearchHits().getTotal());
+		if(value == null)
+			return ret;
 		try {
 			T obj = type.newInstance();
 			if (obj instanceof SingleLongAggHit) {
@@ -439,6 +451,9 @@ public abstract class ResultUtil {
 				buildSingleFloatAggHit((SingleFloatAggHit) obj, value);
 			} else if (obj instanceof SingleDoubleAggHit) {
 				buildSingleDoubleAggHit((SingleDoubleAggHit) obj, value);
+			}
+			else if (obj instanceof SingleObjectAggHit) {
+				buildSingleObjectAggHit((SingleObjectAggHit) obj, value);
 			}
 			ret.setSingleAggData(obj);
 		} catch (InstantiationException e) {
