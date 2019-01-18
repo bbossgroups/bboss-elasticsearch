@@ -21,9 +21,7 @@ import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -31,6 +29,7 @@ import java.util.concurrent.Future;
 public class JDBCRestClientUtil extends ErrorWrapper{
 	private static Logger logger = LoggerFactory.getLogger(JDBCRestClientUtil.class);
 	private ClientInterface clientInterface;
+	private static Object dummy = new Object();
 	private ESJDBC jdbcResultSet;
 
 	public JDBCRestClientUtil( ) {
@@ -550,6 +549,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 		boolean hasSeted = false;
 
+		Map<String,Object> addedFields = new HashMap<String,Object>();
+
+		List<FieldMeta> fieldValueMetas = context.getFieldValues();//context优先级高于，全局配置，全局配置高于字段值
+		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted,addedFields);
+		fieldValueMetas = esjdbc.getFieldValues();
+		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted,addedFields);
 		for(int i =0; i < counts; i++)
 		{
 			String colName = metaData.getColumnLabelByIndex(i);
@@ -572,6 +577,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 			if(javaName == null){
 				javaName = colName;
+			}
+			if(addedFields.containsKey(javaName)){
+				continue;
 			}
 			if(hasSeted )
 				writer.write(",");
@@ -628,20 +636,23 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 
 		}
-		List<FieldMeta> fieldValueMetas = esjdbc.getFieldValues();
-		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted);
-		fieldValueMetas = context.getFieldValues();
-		appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted);
+
 		writer.write("}\n");
 	}
 	private static boolean appendFieldValues(Writer writer, ESJDBC esjdbc,
-										  List<FieldMeta> fieldValueMetas,boolean hasSeted) throws IOException {
+										  List<FieldMeta> fieldValueMetas,boolean hasSeted,Map<String,Object> addedFields) throws IOException {
 		if(fieldValueMetas != null && fieldValueMetas.size() > 0){
 			for(int i =0; i < fieldValueMetas.size(); i++)
 			{
 
 				FieldMeta fieldMeta = fieldValueMetas.get(i);
 				String javaName = fieldMeta.getEsFieldName();
+				if(addedFields.containsKey(javaName)) {
+					if(logger.isInfoEnabled()){
+						logger.info(new StringBuilder().append("Ignore adding duplicate field[").append(javaName).append("] value[").append(fieldMeta.getValue()).append("].").toString());
+					}
+					continue;
+				}
 				Object value = fieldMeta.getValue();
 //				if(value == null)
 //					continue;
@@ -650,10 +661,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				else{
 					hasSeted = true;
 				}
+
 				writer.write("\"");
 				writer.write(javaName);
 				writer.write("\":");
-//			int colType = metaData.getColumnTypeByIndex(i);
 
 				if(value != null) {
 					if (value instanceof String) {
@@ -687,6 +698,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				else{
 					writer.write("null");
 				}
+				addedFields.put(javaName,dummy);
 
 			}
 		}
