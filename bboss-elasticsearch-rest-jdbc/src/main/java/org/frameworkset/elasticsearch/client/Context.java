@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,12 @@ public interface Context {
 	public Context addIgnoreFieldMapping(String dbColumnName);
 	public ESJDBC getEsjdbc();
 	public Object getValue(String fieldName) throws Exception;
+	public long getLongValue(String fieldName) throws Exception;
+	public double getDoubleValue(String fieldName) throws Exception;
+	public float getFloatValue(String fieldName) throws Exception;
+	public int getIntegerValue(String fieldName) throws Exception;
+	public Date getDateValue(String fieldName) throws Exception;
+
 	public List<FieldMeta> getFieldValues();
 	public Map<String,FieldMeta> getFieldMetaMap();
 	public FieldMeta getMappingName(String colName);

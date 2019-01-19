@@ -15,10 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * <p>Description: </p>
@@ -77,6 +75,50 @@ public class ContextImpl implements Context {
 	public ESJDBC getEsjdbc() {
 		return esjdbc;
 	}
+
+	@Override
+	public long getLongValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.longValue(value,0l);
+
+	}
+
+	@Override
+	public double getDoubleValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.doubleValue(value,0d);
+	}
+
+	@Override
+	public float getFloatValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.floatValue(value,0f);
+	}
+
+	@Override
+	public int getIntegerValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.intValue(value,0);
+	}
+
+	@Override
+	public Date getDateValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		if(value == null)
+			return null;
+		else if(value instanceof Date){
+			return (Date)value;
+
+		}
+		else if(value instanceof BigDecimal){
+			return new Date(((BigDecimal)value).longValue());
+		}
+		else if(value instanceof Long){
+			return new Date(((Long)value).longValue());
+		}
+		throw new IllegalArgumentException("Convert date value failed:"+value );
+	}
+
 	public Object getValue(String fieldName) throws Exception{
 		return esjdbc.getValue(fieldName);
 	}

@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -106,30 +107,7 @@ public abstract class ResultUtil {
 
 
 	public static  Integer integerValue(Object num,Integer defaultValue){
-		if(num == null)
-			return defaultValue;
-		if(num instanceof Long)
-		{
-			return ((Long)num).intValue();
-		}
-		else if(num instanceof Double)
-		{
-			return ((Double)num).intValue();
-		}else if(num instanceof Integer){
-			return (Integer)num;
-		}
-		else if(num instanceof Float)
-		{
-			return ((Float)num).intValue();
-		}
-		else  if(num instanceof Short)
-		{
-			return ((Short)num).intValue();
-		}
-		else
-		{
-			return Integer.parseInt(num.toString());
-		}
+		return intValue(num,defaultValue);
 	}
 	public static  Long longValue(Object num,Long defaultValue){
 		if(num == null)
@@ -137,7 +115,12 @@ public abstract class ResultUtil {
 		if(num instanceof Long)
 		{
 			return ((Long)num);
-		}else if(num instanceof Double)
+		}
+		else  if(num instanceof BigDecimal)
+		{
+			return ((BigDecimal)num).longValue();
+		}
+		else if(num instanceof Double)
 		{
 			return ((Double)num).longValue();
 		}else if(num instanceof Integer){
@@ -167,7 +150,12 @@ public abstract class ResultUtil {
 		else if(num instanceof Long)
 		{
 			return ((Long)num).intValue();
-		}else if(num instanceof Double)
+		}
+		else  if(num instanceof BigDecimal)
+		{
+			return ((BigDecimal)num).intValue();
+		}
+		else if(num instanceof Double)
 		{
 			return ((Double)num).intValue();
 		}
@@ -191,7 +179,12 @@ public abstract class ResultUtil {
 		if(num instanceof Float)
 		{
 			return (Float)num;
-		}else if(num instanceof Double)
+		}
+		else  if(num instanceof BigDecimal)
+		{
+			return ((BigDecimal)num).floatValue();
+		}
+		else if(num instanceof Double)
 		{
 			return ((Double)num).floatValue();
 		}else if(num instanceof Integer){
@@ -217,7 +210,12 @@ public abstract class ResultUtil {
 		if(num instanceof Double)
 		{
 			return (Double)num;
-		}else if(num instanceof Float)
+		}
+		else  if(num instanceof BigDecimal)
+		{
+			return ((BigDecimal)num).doubleValue();
+		}
+		else if(num instanceof Float)
 		{
 			return ((Float)num).doubleValue();
 		}else if(num instanceof Integer){
