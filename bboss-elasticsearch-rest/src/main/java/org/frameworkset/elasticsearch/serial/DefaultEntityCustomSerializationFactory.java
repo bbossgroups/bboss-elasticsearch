@@ -14,9 +14,11 @@ package org.frameworkset.elasticsearch.serial;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.util.ClassUtil;
+
 public class DefaultEntityCustomSerializationFactory extends EntityCustomSerializationFactory{
 	@Override
-	protected String[] getFilterFields() {
+	protected String[] getFilterFields(ClassUtil.ClassInfo classInfo) {
 		return null;
 	}
 }

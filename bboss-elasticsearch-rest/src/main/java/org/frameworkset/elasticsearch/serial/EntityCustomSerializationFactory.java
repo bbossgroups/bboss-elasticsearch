@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerBuilder;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import org.frameworkset.elasticsearch.entity.ESBaseData;
+import org.frameworkset.elasticsearch.entity.ESId;
 import org.frameworkset.util.ClassUtil;
 
 import java.util.ArrayList;
@@ -21,7 +23,12 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 	protected EntityCustomSerializationFactory(SerializerFactoryConfig config) {
 		super(config);
 	}
-	protected abstract  String[] getFilterFields();
+	private String[] _getFilterFields(ClassUtil.ClassInfo classInfo){
+		if(ESBaseData.class.isAssignableFrom(classInfo.getClazz()) || ESId.class.isAssignableFrom(classInfo.getClazz()))
+			return getFilterFields(classInfo);
+		return null;
+	}
+	protected abstract  String[] getFilterFields(ClassUtil.ClassInfo classInfo);
 	private boolean isFilterField(ClassUtil.ClassInfo classInfo,String propName,String[] fs){
 		boolean find = false;
 		if(fs != null && fs.length > 0) {
@@ -70,7 +77,7 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 		List<BeanPropertyWriter> originalWriters = builder.getProperties();
 		// create actual writers
 		List<BeanPropertyWriter> writers = new ArrayList<BeanPropertyWriter>();
-		String[] fs = this.getFilterFields();
+		String[] fs = this._getFilterFields(classInfo);
 		for (BeanPropertyWriter writer : originalWriters) {
 			final String propName = writer.getName();
 			// if it isn't ignored field, add to actual writers list
