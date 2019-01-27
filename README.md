@@ -104,7 +104,7 @@ The following Demo and related documentation is compatible with Elasticsearch 2.
 ## Elasticsearch demo for Java project:
 https://github.com/bbossgroups/elasticsearch-example
 ## Elasticsearch demo for spring booter 1.x,2.x
-https://github.com/bbossgroups/elasticsearch-spring-boot-starter-example
+https://github.com/bbossgroups/elasticsearch-springboot-example
 # Fast integration bboss documentation
 [Spring boot integration ElasticSearch case sharing](https://my.oschina.net/bboss/blog/1835601)
 
