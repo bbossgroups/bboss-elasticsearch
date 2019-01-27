@@ -8,6 +8,8 @@ JDK requirement: JDK 1.7+
 
 Elasticsearch version requirements: 2. X,5. X,6. X,+
 
+Spring booter 1.x,2.x,+
+
 # How to use Elasticsearch BBoss.
 
 First add the maven dependency of BBoss to your pom.xml:
