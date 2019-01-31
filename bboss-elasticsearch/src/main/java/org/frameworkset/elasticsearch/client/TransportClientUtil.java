@@ -1198,6 +1198,26 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String addDateDocuments(String indexName, String indexType, List<Object> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, String indexType, List<Object> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateMapDocuments(String indexName, String indexType, List<Map> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addMapDocuments(String indexName, String indexType, List<Map> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;

@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ClientOptionField implements Serializable {
+public class ClientOptions implements Serializable {
 	private String parentIdField;
 	private String idField;
 	private String esRetryOnConflictField;

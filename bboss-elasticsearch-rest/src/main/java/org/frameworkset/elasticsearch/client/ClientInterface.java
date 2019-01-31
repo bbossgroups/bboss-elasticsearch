@@ -841,7 +841,10 @@ public interface ClientInterface {
 	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
-
+	public abstract String addDateDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+	public abstract String addDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+	public abstract String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+	public abstract String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
 	/**************************************创建或者修改文档结束**************************************************************/
 
 
