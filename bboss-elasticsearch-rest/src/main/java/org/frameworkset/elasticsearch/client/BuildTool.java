@@ -300,12 +300,41 @@ public abstract class BuildTool {
 //		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
 		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
 	}
+
+	public static void buildMetaWithDocIdField(Writer writer ,String indexType,String indexName, Object params,String action,String docIdField,String parentIdField) throws IOException {
+//		Object id = docIdKey != null ?params.get(docIdKey):null;
+//		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
+//		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
+//		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
+		ClientOptionField clientOption = new ClientOptionField();
+		clientOption.setIdField(docIdField);
+		clientOption.setParentIdField(parentIdField);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  clientOption);
+	}
 	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey) throws IOException {
 		Object id = docIdKey != null ?params.get(docIdKey):null;
 		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 		Object routing = routingKey != null ?params.get(routingKey):null;
 
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing);
+	}
+
+	/**
+	 * String docIdKey,String parentIdKey,String routingKey
+	 * @param writer
+	 * @param indexType
+	 * @param indexName
+	 * @param params
+	 * @param action
+	 * @throws IOException
+	 */
+	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptionField clientOption) throws IOException {
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+		Object id = clientOption.getIdField() != null ?BuildTool.getId(params,beanClassInfo,clientOption.getIdField()):null;
+		Object parentId = clientOption.getParentIdField() != null ?BuildTool.getParentId(params,beanClassInfo,clientOption.getParentIdField()):null;
+		Object routing = clientOption.getRountField() != null ?BuildTool.getRouting(params,beanClassInfo,clientOption.getRountField()):null;
+		Object esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ?BuildTool.getEsRetryOnConflict(params,beanClassInfo,clientOption.getEsRetryOnConflictField()):null;;
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
 	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing) throws IOException {
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null);
@@ -478,10 +507,29 @@ public abstract class BuildTool {
 		}
 	}
 
+
+
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey) throws IOException {
 
 		if (param != null) {
 			buildMetaWithDocIdKey(  writer ,  indexType,  indexName,   param,action,docIdKey,parentIdKey);
+			if(!action.equals("update")) {
+				SerialUtil.object2json(param,writer);
+				writer.write("\n");
+			}
+			else
+			{
+				writer.write("{\"doc\":");
+				SerialUtil.object2json(param,writer);
+				writer.write("}\n");
+			}
+		}
+
+	}
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField) throws IOException {
+
+		if (param != null) {
+			buildMetaWithDocIdField(  writer ,  indexType,  indexName,   param,action,docIdField,parentIdField);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -572,6 +620,16 @@ public abstract class BuildTool {
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
 	}
 
+	public static  Object getId(Object bean,ClassUtil.ClassInfo beanInfo,String docIdField ){
+
+//		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(docIdField == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,docIdField);
+	}
+
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ){
 		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
 //		if(pkProperty == null)
@@ -579,6 +637,15 @@ public abstract class BuildTool {
 		if(esRetryOnConflictProperty == null)
 			return null;
 		return beanInfo.getPropertyValue(bean,esRetryOnConflictProperty.getName());
+	}
+
+	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ,String esRetryOnConflictField){
+//		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(esRetryOnConflictField == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,esRetryOnConflictField);
 	}
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo ){
 		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
@@ -589,6 +656,15 @@ public abstract class BuildTool {
 		return beanInfo.getPropertyValue(bean,routingProperty.getName());
 	}
 
+	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo,String routingField ){
+//		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(routingField == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,routingField);
+	}
+
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
 		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
 //		if(pkProperty == null)
@@ -596,5 +672,14 @@ public abstract class BuildTool {
 		if(pkProperty == null)
 			return null;
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+	}
+
+	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ,String parentIdField){
+//		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(parentIdField == null)
+			return null;
+		return beanInfo.getPropertyValue(bean,parentIdField);
 	}
 }

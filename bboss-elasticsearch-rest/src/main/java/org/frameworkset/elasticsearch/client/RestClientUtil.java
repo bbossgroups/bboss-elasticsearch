@@ -315,22 +315,23 @@ public class RestClientUtil extends ClientUtil{
 		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdKey,refreshOption);
 	}
 	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException{
-		if(beans == null || beans.size() == 0)
-			return null;
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		for(Map bean:beans) {
-			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
-		}
-		writer.flush();
-		if(refreshOption == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+//		if(beans == null || beans.size() == 0)
+//			return null;
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+//		for(Map bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+//		if(refreshOption == null)
+//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+//		else
+//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		return addDocuments(  indexName,   indexType,  beans,  docIdKey,(String)null,  refreshOption);
 	}
 	public String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey) throws ElasticSearchException{
 		return addDocuments(indexName, indexType, beans,docIdKey,(String )null);
@@ -3023,5 +3024,105 @@ public class RestClientUtil extends ClientUtil{
 		String closeIndex = new StringBuilder().append("/").append(index).append("/_open").toString();
 		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
 	}
+
+	/**
+	 * 指定对象集合的文档id字段
+	 */
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Field
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentsWithIdOptions(String indexName, String indexType, List<Object> beans,String docIdField,String refreshOption) throws ElasticSearchException{
+		return addDocumentsWithIdField(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdField,refreshOption);
+	}
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField) throws ElasticSearchException{
+		return addDocumentsWithIdField(  this.indexNameBuilder.getIndexName(indexName),   indexType,    beans,  docIdField);
+	}
+	public String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String refreshOption) throws ElasticSearchException{
+//		if(beans == null || beans.size() == 0)
+//			return null;
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+//		for(Object bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdField,(String)null);
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+//		if(refreshOption == null)
+//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+//		else
+//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		return addDocumentsWithIdField(  indexName,   indexType,  beans,  docIdField,(String )null,  refreshOption);
+	}
+	public String addDocumentsWithIdField(String indexName, String indexType,  List<Object> beans,String docIdField) throws ElasticSearchException{
+		return addDocumentsWithIdField(  indexName,   indexType,   beans, docIdField,(String )null,(String )null);
+	}
+
+
+	/**********************/
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException{
+		return addDocumentsWithIdField(this.indexNameBuilder.getIndexName(indexName),   indexType,   beans,  docIdField,  parentIdField,  refreshOption);
+	}
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException
+	{
+		return addDocumentsWithIdParentField(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdField,parentIdField);
+	}
+	public  String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException{
+		if(beans == null || beans.size() == 0)
+			return null;
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Object bean:beans) {
+			try {
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdField,parentIdField);
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(refreshOption == null)
+			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
+	public   String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException{
+		return addDocumentsWithIdField(indexName, indexType, beans,docIdField, parentIdField,(String)null);
+	}
+
 
 }

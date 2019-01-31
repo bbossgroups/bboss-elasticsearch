@@ -1158,6 +1158,46 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String addDateDocumentsWithIdOptions(String indexName, String indexType, List<Object> beans, String docIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField, String parentIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField, String parentIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans, String docIdField, String parentIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdParentField(String indexName, String indexType, List<Object> beans, String docIdField, String parentIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;

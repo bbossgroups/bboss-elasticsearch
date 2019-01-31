@@ -791,6 +791,56 @@ public interface ClientInterface {
 	public abstract String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException;
 
+	/**
+	 * 指定对象集合的文档id字段
+	 */
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Field
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocumentsWithIdOptions(String indexName, String indexType, List<Object> beans,String docIdField,String refreshOption) throws ElasticSearchException;
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField) throws ElasticSearchException;
+	public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String refreshOption) throws ElasticSearchException;
+	public abstract String addDocumentsWithIdField(String indexName, String indexType,  List<Object> beans,String docIdField) throws ElasticSearchException;
+
+
+	/**********************/
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
+	/**
+	 * 批量创建索引,根据时间格式建立新的索引表
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param docIdField 对象中作为文档id的Key
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
+	public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
+	public abstract String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
 
 	/**************************************创建或者修改文档结束**************************************************************/
 
