@@ -319,11 +319,17 @@ public abstract class BuildTool {
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing);
 	}
 
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions ClientOptions) throws IOException {
-		Object id = ClientOptions.getIdField() != null ?params.get(ClientOptions.getIdField()):null;
-		Object parentId = ClientOptions.getParentIdField() != null ?params.get(ClientOptions.getParentIdField()):null;
-		Object routing = ClientOptions.getRountField() != null ?params.get(ClientOptions.getRountField()):null;
-		Object esRetryOnConflict = ClientOptions.getEsRetryOnConflictField() != null ?params.get(ClientOptions.getEsRetryOnConflictField()):null;
+	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions) throws IOException {
+		Object id = null;
+		Object parentId = null;
+		Object routing = null;
+		Object esRetryOnConflict = null;
+		if(clientOptions != null) {
+			id = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
+			parentId = clientOptions.getParentIdField() != null ? params.get(clientOptions.getParentIdField()) : null;
+			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
+		}
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
 	}
 
@@ -339,19 +345,48 @@ public abstract class BuildTool {
 	 * @throws IOException
 	 */
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptions clientOption) throws IOException {
-		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
-		Object id = clientOption.getIdField() != null ?BuildTool.getId(params,beanClassInfo,clientOption.getIdField()):null;
-		Object parentId = clientOption.getParentIdField() != null ?BuildTool.getParentId(params,beanClassInfo,clientOption.getParentIdField()):null;
-		Object routing = clientOption.getRountField() != null ?BuildTool.getRouting(params,beanClassInfo,clientOption.getRountField()):null;
-		Object esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ?BuildTool.getEsRetryOnConflict(params,beanClassInfo,clientOption.getEsRetryOnConflictField()):null;;
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
+		if(params instanceof Map){
+			buildMapMeta(  writer ,  indexType,  indexName, (Map) params,  action,  clientOption);
+			return;
+		}
+		Object id = null;
+		Object parentId = null;
+		Object routing = null;
+		Object esRetryOnConflict = null;
+		Object version = null;
+		Object versionType = null;
+		if(clientOption != null) {
+			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOption.getIdField()) : null;
+			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOption.getParentIdField()) : null;
+			routing = clientOption.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRountField()) : null;
+			esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,
+									clientOption.getEsRetryOnConflictField()) : null;
+			version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionField()) : null;
+			versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionTypeField()) : null;
+		}
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType);
 	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing) throws IOException {
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null);
 	}
-
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-							 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws IOException {
+								 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws IOException{
+		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
+		ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
+		Object version = null;
+		if (esVersionProperty != null) {
+			version = classInfo.getPropertyValue(params, esVersionProperty.getName());
+		}
+		ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
+		Object versionType = null;
+		if (esVersionTypeProperty != null)
+			versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,
+				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType);
+	}
+	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
+							 Object id,Object parentId,Object routing,Object esRetryOnConflict,Object version,Object versionType) throws IOException {
 
 		if(id != null) {
 			writer.write("{ \"");
@@ -372,32 +407,24 @@ public abstract class BuildTool {
 				buildId(routing,writer,true);
 			}
 
-//			if(action.equals("update"))
-//			{
 			if (esRetryOnConflict != null) {
 				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
-			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
-			ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
-			if (esVersionProperty != null) {
-				Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
-				if(version != null) {
-					writer.write(",\"_version\":");
 
-					writer.write(String.valueOf(version));
-				}
+			if(version != null) {
+				writer.write(",\"_version\":");
+
+				writer.write(String.valueOf(version));
 			}
-			ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
-			if (esVersionTypeProperty != null) {
-				Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
-				if(versionType != null) {
-					writer.write(",\"_version_type\":\"");
-					writer.write(String.valueOf(versionType));
-					writer.write("\"");
-				}
+
+
+			if(versionType != null) {
+				writer.write(",\"_version_type\":\"");
+				writer.write(String.valueOf(versionType));
+				writer.write("\"");
 			}
-//			}
+
 
 			writer.write(" } }\n");
 		}
@@ -418,34 +445,24 @@ public abstract class BuildTool {
 				writer.write(", \"_routing\" : ");
 				buildId(routing,writer,true);
 			}
-//			if(action.equals("update"))
-//			{
-			{
-				if (esRetryOnConflict != null) {
-					writer.write(",\"_retry_on_conflict\":");
-					writer.write(String.valueOf(esRetryOnConflict));
-				}
-				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
-				ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
-				if (esVersionProperty != null) {
-					Object version = classInfo.getPropertyValue(params,esVersionProperty.getName());
-					if(version != null) {
-						writer.write(",\"_version\":");
 
-						writer.write(String.valueOf(version));
-					}
-				}
-				ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
-				if (esVersionTypeProperty != null) {
-					Object versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
-					if(versionType != null) {
-						writer.write(",\"_version_type\":\"");
-						writer.write(String.valueOf(versionType));
-						writer.write("\"");
-					}
-				}
+			if (esRetryOnConflict != null) {
+				writer.write(",\"_retry_on_conflict\":");
+				writer.write(String.valueOf(esRetryOnConflict));
 			}
-//			}
+
+			if(version != null) {
+				writer.write(",\"_version\":");
+
+				writer.write(String.valueOf(version));
+			}
+
+			if(versionType != null) {
+				writer.write(",\"_version_type\":\"");
+				writer.write(String.valueOf(versionType));
+				writer.write("\"");
+			}
+
 			writer.write("\" } }\n");
 		}
 	}
@@ -571,10 +588,10 @@ public abstract class BuildTool {
 
 	}
 
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions ClientOptions) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions) throws IOException {
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action,ClientOptions);
+			buildMeta(  writer ,  indexType,  indexName,   param,action,clientOptions);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");

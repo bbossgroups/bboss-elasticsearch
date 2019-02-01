@@ -269,7 +269,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
-		return addDocuments(indexName, indexType,  beans,null);
+		return addDocuments(indexName, indexType,  beans,(String) null);
 	}
 	public String addDocuments(String indexName, String indexType,  List<?> beans,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
@@ -363,26 +363,26 @@ public class RestClientUtil extends ClientUtil{
 	public   String addDateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdKey,parentIdKey,refreshOption);
 	}
-	public String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException{
-		return addMapDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,  beans,  ClientOptions);
+	public String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions clientOptions) throws ElasticSearchException{
+		return addMapDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,  beans,  clientOptions);
 	}
-	public String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException{
+	public String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions clientOptions) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",ClientOptions);
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions);
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
 		}
 		writer.flush();
-		if(ClientOptions.getRefreshOption() == null)
+		if(clientOptions == null || clientOptions.getRefreshOption() == null)
 			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		else
-			return this.client.executeHttp("_bulk?"+ClientOptions.getRefreshOption(),ClientUtil.HTTP_POST);
+			return this.client.executeHttp("_bulk?"+clientOptions.getRefreshOption(),ClientUtil.HTTP_POST);
 	}
 	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
@@ -418,7 +418,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException{
-		return this.addDocument(indexName,indexType,bean,null);
+		return this.addDocument(indexName,indexType,bean,(String)null);
 	}
 
 
@@ -435,8 +435,8 @@ public class RestClientUtil extends ClientUtil{
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
 		Object id = BuildTool.getId(bean,beanInfo);
 		Object parentId = BuildTool.getParentId(bean,beanInfo);
-
-		return addDocument(indexName, indexType, bean,id,parentId,refreshOption);
+		Object routing = BuildTool.getRouting(bean,beanInfo);
+		return addDocument(indexName, indexType, bean,id,parentId,routing,refreshOption);
 
 	}
 
@@ -503,7 +503,98 @@ public class RestClientUtil extends ClientUtil{
 		Object routing = BuildTool.getRouting(bean,beanInfo);
 		return addDocument( indexName,  indexType,  bean, docId, parentId, (Object)routing, refreshOption);
 	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(String indexName, String indexType, Object params,ClientOptions clientOptions) throws ElasticSearchException{
+		if(params instanceof Map){
+			return addMapDocument(indexName,indexType,(Map)params,clientOptions);
+		}
+		Object docId = null;
+		Object parentId = null;
+		Object routing = null;
+		String refreshOption = null;
+		if(clientOptions != null) {
+			refreshOption = clientOptions.getRefreshOption();
+			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+			docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : null;
+			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : null;
+			routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
+		}
+		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
+	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateDocument(String indexName, String indexType, Object bean,ClientOptions clientOptions) throws ElasticSearchException{
+		return addDocument(  this.indexNameBuilder.getIndexName(indexName),   indexType,   bean,  clientOptions);
+	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addMapDocument(String indexName, String indexType, Map params,ClientOptions clientOptions) throws ElasticSearchException{
+		Object docId = null;
+		Object parentId = null;
+		Object routing = null;
+		String refreshOption = null;
+		if(clientOptions != null) {
+			refreshOption = clientOptions.getRefreshOption();
+			docId = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
+			parentId = clientOptions.getParentIdField() != null ? params.get( clientOptions.getParentIdField()) : null;
+			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+		}
+		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
+	}
 
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addMapDocument(String indexName, String indexType, Map bean) throws ElasticSearchException{
+		return addDocument(  indexName,   indexType,   bean,null,null,null,(String )null);
+	}
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDateMapDocument(String indexName, String indexType, Map bean) throws ElasticSearchException{
+		return addDocument(  this.indexNameBuilder.getIndexName(indexName),   indexType,   bean,null,null,null,(String )null);
+	}
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  String addDateMapDocument(String indexName, String indexType, Map params,ClientOptions clientOptions) throws ElasticSearchException{
+		return addMapDocument(this.indexNameBuilder.getIndexName(indexName),   indexType,   params,clientOptions);
+	}
 	/**
 	 *
 	 * @param indexName
@@ -558,6 +649,8 @@ public class RestClientUtil extends ClientUtil{
 		return path;
 	}
 
+
+
 	/**
 	 *
 	 * @param indexName
@@ -585,7 +678,7 @@ public class RestClientUtil extends ClientUtil{
 
 
 	public String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException{
-		return updateDocuments(indexName, indexType, beans,null);
+		return updateDocuments(indexName, indexType, beans,(String)null);
 	}
 	public String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException{
 
@@ -616,6 +709,27 @@ public class RestClientUtil extends ClientUtil{
 	public  String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException
 	{
 		return updateDocuments(  indexName,   indexType,   beans,  docIdKey,(String )null,  refreshOption);
+	}
+
+	public String updateDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for(Object bean:beans) {
+			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update");
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",clientOptions);
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+		}
+		writer.flush();
+		if(clientOptions != null && clientOptions.getRefreshOption() != null) {
+			return this.client.executeHttp(new StringBuilder().append("_bulk?")
+														.append( clientOptions.getRefreshOption()).toString(), builder.toString(), ClientUtil.HTTP_POST);
+		}
+		else {
+			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+		}
 	}
 	public String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
@@ -2867,33 +2981,35 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
-		StringBuilder path = new StringBuilder();
-		if(indexType == null || indexType.equals(""))
-			path.append(index).append("/").append(id).append("/_update");
-		else
-			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
-		if(refreshOption != null){
-			path.append("?").append(refreshOption);
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.append(" {\"doc\":");
-		Writer writer = new BBossStringWriter(builder);
-		SerialUtil.object2json(params,writer);
-		if(detect_noop != null){
-			builder.append(",\"detect_noop\":").append(detect_noop);
-		}
-		if(doc_as_upsert != null){
-			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
-		}
-		builder.append("}");
-		try {
-			String searchResult = this.client.executeHttp(path.toString(), builder.toString(), ClientUtil.HTTP_POST);
-
-			return searchResult;
-		}
-		catch(ElasticSearchException e){
-			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
-		}
+//		StringBuilder path = new StringBuilder();
+//		if(indexType == null || indexType.equals(""))
+//			path.append(index).append("/").append(id).append("/_update");
+//		else
+//			path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+//		if(refreshOption != null){
+//			path.append("?").append(refreshOption);
+//		}
+//		StringBuilder builder = new StringBuilder();
+//		builder.append(" {\"doc\":");
+//		Writer writer = new BBossStringWriter(builder);
+//		SerialUtil.object2json(params,writer);
+//		if(detect_noop != null){
+//			builder.append(",\"detect_noop\":").append(detect_noop);
+//		}
+//		if(doc_as_upsert != null){
+//			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+//		}
+//		builder.append("}");
+//		try {
+//			String searchResult = this.client.executeHttp(path.toString(), builder.toString(), ClientUtil.HTTP_POST);
+//
+//			return searchResult;
+//		}
+//		catch(ElasticSearchException e){
+//			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
+//		}
+		return _update(index,indexType,
+				id, params, refreshOption, detect_noop, doc_as_upsert);
 	}
 
 	/**
@@ -2921,7 +3037,14 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+	public String updateDocument(String index,String indexType,
+								 Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+		return _update(index,indexType,
+				 id, params, refreshOption, detect_noop, doc_as_upsert);
+	}
+
+	private String _update(String index,String indexType,
+						   Object id,Object params,String refreshOption,Object detect_noop,Object doc_as_upsert){
 		StringBuilder path = new StringBuilder();
 		if(indexType == null || indexType.equals(""))
 			path.append(index).append("/").append(id).append("/_update");
@@ -2950,6 +3073,36 @@ public class RestClientUtil extends ClientUtil{
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 		}
 	}
+
+	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException{
+		Object id = null;
+		String refreshOption = null;
+		Object detect_noop = null;
+		Object doc_as_upsert = null;
+
+		if(updateOptions != null) {
+			refreshOption = updateOptions.getRefreshOption();
+			if(!(params instanceof Map)) {
+				ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+
+				id = updateOptions.getDocIdField() != null ? BuildTool.getId(params, beanClassInfo, updateOptions.getDocIdField()) : null;
+				detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
+				doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
+			}
+			else{
+				Map _params = (Map)params;
+				id = updateOptions.getDocIdField() != null ? _params.get(updateOptions.getDocIdField()) : null;
+				detect_noop = updateOptions.getDetectNoopField() != null ? _params.get( updateOptions.getDetectNoopField()) : null;
+				doc_as_upsert = updateOptions.getDocasupsertField() != null ? _params.get(updateOptions.getDocasupsertField()) : null;
+			}
+
+		}
+		return this._update(  index,  indexType,
+				  id,  params,  refreshOption,  detect_noop,  doc_as_upsert);
+	}
+
+
+
 
 	/**
 	 *
@@ -3124,26 +3277,26 @@ public class RestClientUtil extends ClientUtil{
 		return addDocumentsWithIdParentField(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdField,parentIdField);
 	}
 
-	public String addDateDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException{
-		return addDocuments(  this.indexNameBuilder.getIndexName(indexName),   indexType,  beans,  ClientOptions);
+	public String addDateDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
+		return addDocuments(  this.indexNameBuilder.getIndexName(indexName),   indexType,  beans,  clientOptions);
 	}
-	public   String addDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException{
+	public   String addDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",ClientOptions);
+				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions);
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
 		}
 		writer.flush();
-		if(ClientOptions.getRefreshOption() == null)
+		if(clientOptions == null || clientOptions.getRefreshOption() == null)
 			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		else
-			return this.client.executeHttp("_bulk?"+ClientOptions.getRefreshOption(),builder.toString(),ClientUtil.HTTP_POST);
+			return this.client.executeHttp("_bulk?"+clientOptions.getRefreshOption(),builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public  String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)

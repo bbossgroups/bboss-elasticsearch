@@ -34,41 +34,12 @@ import java.io.Serializable;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ClientOptions implements Serializable {
-	private String parentIdField;
-	private String idField;
-	private String esRetryOnConflictField;
-	private String versionField;
-	private String versionTypeField;
-	private String rountField;
+public class UpdateOptions implements Serializable {
 	private String refreshOption;
+	private String detectNoopField;
+	private String docasupsertField;
 
-	public String getParentIdField() {
-		return parentIdField;
-	}
-
-	public void setParentIdField(String parentIdField) {
-		this.parentIdField = parentIdField;
-	}
-
-	public String getIdField() {
-		return idField;
-	}
-
-	public void setIdField(String idField) {
-		this.idField = idField;
-	}
-
-	public String getRountField() {
-		return rountField;
-	}
-
-	public void setRountField(String rountField) {
-		this.rountField = rountField;
-	}
-
-
-
+	private String docIdField;
 	public String getRefreshOption() {
 		return refreshOption;
 	}
@@ -77,27 +48,30 @@ public class ClientOptions implements Serializable {
 		this.refreshOption = refreshOption;
 	}
 
-	public String getEsRetryOnConflictField() {
-		return esRetryOnConflictField;
+	public String getDetectNoopField() {
+		return detectNoopField;
 	}
 
-	public void setEsRetryOnConflictField(String esRetryOnConflictField) {
-		this.esRetryOnConflictField = esRetryOnConflictField;
+	public void setDetectNoopField(String detectNoopField) {
+		this.detectNoopField = detectNoopField;
 	}
 
-	public String getVersionField() {
-		return versionField;
+	public String getDocasupsertField() {
+		return docasupsertField;
 	}
 
-	public void setVersionField(String versionField) {
-		this.versionField = versionField;
+	public void setDocasupsertField(String docasupsertField) {
+		this.docasupsertField = docasupsertField;
 	}
 
-	public String getVersionTypeField() {
-		return versionTypeField;
+	public String getDocIdField() {
+		return docIdField;
 	}
 
-	public void setVersionTypeField(String versionTypeField) {
-		this.versionTypeField = versionTypeField;
+	public void setDocIdField(String docIdField) {
+		this.docIdField = docIdField;
 	}
+
+
+
 }

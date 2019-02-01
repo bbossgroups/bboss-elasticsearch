@@ -389,6 +389,62 @@ public interface ClientInterface {
 	 * @param indexName
 	 * @param indexType
 	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocument(String indexName, String indexType, Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocument(String indexName, String indexType, Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addMapDocument(String indexName, String indexType, Map bean,ClientOptions clientOptions) throws ElasticSearchException;
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateMapDocument(String indexName, String indexType, Map bean) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addMapDocument(String indexName, String indexType, Map bean) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateMapDocument(String indexName, String indexType, Map bean,ClientOptions clientOptions) throws ElasticSearchException;
+
+	/**
+	 * 创建或者更新索引文档
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
 	 * @param refreshOption
 	 *    refresh=wait_for
 	 *    refresh=false
@@ -471,6 +527,16 @@ public interface ClientInterface {
 	 */
 	public abstract String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException;
 
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param clientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String updateDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
 	public abstract String updateDocuments(String indexName, String indexType, List<?> beans) throws ElasticSearchException;
 	public abstract String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException;
 	public abstract String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException;
@@ -841,10 +907,31 @@ public interface ClientInterface {
 	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
-	public abstract String addDateDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-	public abstract String addDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-	public abstract String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-	public abstract String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param ClientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+//	public abstract String addDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param beans
+	 * @param ClientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocuments(String indexName, String indexType, List<?> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+//	public abstract String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
+//	public abstract String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
 	/**************************************创建或者修改文档结束**************************************************************/
 
 
@@ -1913,6 +2000,32 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException;
+
+
+	/**
+	 * 根据路径更新文档
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+	 * @param index test/_doc/1
+	 *             test/_doc/1/_update
+	 * @param indexType
+	 * @param params
+	 * @param updateOptions 指定更新的相关参数
+
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 *
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException;
 
 	/**
 	 *
