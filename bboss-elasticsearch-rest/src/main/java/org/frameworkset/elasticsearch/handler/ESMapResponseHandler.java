@@ -39,7 +39,7 @@ public class ESMapResponseHandler  extends BaseExceptionResponseHandler implemen
 	@Override
 	public Map handleResponse(final HttpResponse response)
 			throws ClientProtocolException, IOException {
-		int status = response.getStatusLine().getStatusCode();
+		int status = initStatus(  response);
 
 		if (status >= 200 && status < 300) {
 			HttpEntity entity = response.getEntity();

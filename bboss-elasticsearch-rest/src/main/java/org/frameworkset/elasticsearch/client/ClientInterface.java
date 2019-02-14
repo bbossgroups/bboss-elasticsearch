@@ -918,7 +918,6 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-//	public abstract String addDocuments(String indexName, String indexType, List<Object> beans,ClientOptions ClientOptions) throws ElasticSearchException;
 
 	/**
 	 *
@@ -930,8 +929,6 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDocuments(String indexName, String indexType, List<?> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-//	public abstract String addDateMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
-//	public abstract String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions ClientOptions) throws ElasticSearchException;
 	/**************************************创建或者修改文档结束**************************************************************/
 
 

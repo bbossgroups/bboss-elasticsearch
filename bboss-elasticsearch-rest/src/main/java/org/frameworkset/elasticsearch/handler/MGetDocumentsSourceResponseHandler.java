@@ -32,7 +32,7 @@ public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler impl
 	}
 	@Override
 	public MGetDocs handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-		int status = response.getStatusLine().getStatusCode();
+		int status = initStatus(  response);
 		if (status >= 200 && status < 300) {
 			HttpEntity entity = response.getEntity();
 			if(entity != null) {

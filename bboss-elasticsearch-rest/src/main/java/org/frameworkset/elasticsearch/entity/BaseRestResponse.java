@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.frameworkset.elasticsearch.serial.ESTypeReference;
 
@@ -7,6 +8,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 public abstract  class BaseRestResponse implements Serializable {
+	@JsonIgnore
+	private int reponseStatus;
 	@JsonProperty("_scroll_id")
 	private String scrollId;
 	private long took;
@@ -186,5 +189,13 @@ public abstract  class BaseRestResponse implements Serializable {
 
 	public void setScrollId(String scrollId) {
 		this.scrollId = scrollId;
+	}
+
+	public int getReponseStatus() {
+		return reponseStatus;
+	}
+
+	public void setReponseStatus(int reponseStatus) {
+		this.reponseStatus = reponseStatus;
 	}
 }

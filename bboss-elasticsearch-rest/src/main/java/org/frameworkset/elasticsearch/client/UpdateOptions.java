@@ -38,7 +38,7 @@ public class UpdateOptions implements Serializable {
 	private String refreshOption;
 	private String detectNoopField;
 	private String docasupsertField;
-
+	private String parentIdField;
 	private String docIdField;
 	public String getRefreshOption() {
 		return refreshOption;
@@ -73,5 +73,11 @@ public class UpdateOptions implements Serializable {
 	}
 
 
+	public String getParentIdField() {
+		return parentIdField;
+	}
 
+	public void setParentIdField(String parentIdField) {
+		this.parentIdField = parentIdField;
+	}
 }

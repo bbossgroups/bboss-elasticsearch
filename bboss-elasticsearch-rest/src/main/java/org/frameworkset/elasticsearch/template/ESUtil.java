@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -920,7 +921,7 @@ public class ESUtil {
 			}});
 	}
 	private static Object lock = new Object();
-	private static void checkESUtil(String sqlfile,ESUtil sqlutil){
+	private static void checkESUtil(URL fileUrl, String sqlfile, ESUtil sqlutil){
 		
 		refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
 		if(refresh_interval > 0)
@@ -937,7 +938,7 @@ public class ESUtil {
 					}
 				}
 			}
-			damon.addFile(sqlfile, new ResourceTempateRefresh(sqlutil));
+			damon.addFile(fileUrl,sqlfile, new ResourceTempateRefresh(sqlutil));
 		}
 		else{
 			log.debug("ElasticSearch files Refresh Interval:"+refresh_interval+",ignore hotload dsl file["+sqlfile+"]");
@@ -953,7 +954,7 @@ public class ESUtil {
 		this.realTemplateFile = this.templatecontext.getConfigfile();
 		this.trimValues();
 		
-		 checkESUtil(templatefile,this);
+		 checkESUtil(templatecontext.getConfigFileURL(),templatefile,this);
 		
  
 	}
