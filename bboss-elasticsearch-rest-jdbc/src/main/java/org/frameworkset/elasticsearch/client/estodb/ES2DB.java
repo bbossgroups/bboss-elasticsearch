@@ -157,8 +157,14 @@ public class ES2DB {
 		else{
 			response = clientUtil.scrollSliceParallel(getQueryUrl(), getDslName(),  params, getScrollLiveTime(),Map.class, esExporterScrollHandler);
 		}
-		if(logger.isInfoEnabled())
-			logger.info("Export compoleted and export total {} records.",response.getTotalSize());
+		if(logger.isInfoEnabled()) {
+			if(response != null) {
+				logger.info("Export compoleted and export total {} records.", response.getTotalSize());
+			}
+			else{
+				logger.info("Export compoleted and export no records or failed.");
+			}
+		}
 	}
 
 	public DBConfig getDbConfig() {
