@@ -857,24 +857,28 @@ public class ESUtil {
 	           
 	void reinit()
 	{
-
-		if(esInfos != null)
-		{
-			this.esInfos.clear();
-			esInfos = null;
-		}
-		if(esrefs != null)
-		{
-			this.esrefs.clear();
-			esrefs = null;
-		}
-		this.templateCache.clear();
 		String file = templatecontext.getConfigfile();
-		templatecontext.destroy(true);
-		templatecontext = new ESSOAFileApplicationContext(file);		
-		 trimValues();
-
-		destroyed = false;
+		templatecontext.removeCacheContext();
+		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(file);
+		if(essoaFileApplicationContext.getParserError() == null) {
+			if (esInfos != null) {
+				this.esInfos.clear();
+				esInfos = null;
+			}
+			if (esrefs != null) {
+				this.esrefs.clear();
+				esrefs = null;
+			}
+			this.templateCache.clear();
+			templatecontext.destroy(false);
+			templatecontext = essoaFileApplicationContext;
+//			templatecontext = new ESSOAFileApplicationContext(file);
+			trimValues();
+			destroyed = false;
+		}
+		else{
+			templatecontext.restoreCacheContext();
+		}
 		
 	}
 	 
