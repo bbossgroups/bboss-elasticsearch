@@ -4,12 +4,15 @@ import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class ElasticSearchHelper {
+	private static Logger logger = LoggerFactory.getLogger(ElasticSearchHelper.class);
 	protected static DefaultApplicationContext context = null;
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
@@ -23,9 +26,13 @@ public class ElasticSearchHelper {
 			Class booterClass = Class.forName("org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot");
 			bootMethod = booterClass.getMethod("boot");
 		} catch (ClassNotFoundException e) {
-
+			if(logger.isWarnEnabled()){
+				logger.warn("ElasticSearch load from Boot ignore: org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot Not found!");
+			}
 		} catch (NoSuchMethodException e) {
-
+			if(logger.isWarnEnabled()){
+				logger.warn("ElasticSearch load from Boot ignore: boot method Not found in org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot!");
+			}
 		}
 	}
 	public static long getDslfileRefreshInterval(){
@@ -264,6 +271,11 @@ public class ElasticSearchHelper {
 						throw new ElasticsearchParseException("ElasticSearch load from Boot failed:",e);
 					} catch (InvocationTargetException e) {
 						throw new ElasticsearchParseException("ElasticSearch load from Boot failed:",e);
+					}
+				}
+				else{
+					if(logger.isWarnEnabled()){
+						logger.warn("ElasticSearch load from Boot warn: No booter found and bootMethod is null!");
 					}
 				}
 			}

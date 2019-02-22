@@ -45,6 +45,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 	private DBConfig dbConfig;
+	private ExecutorService blockedExecutor;
 	/**
 	 * 打印任务日志
 	 */
@@ -388,22 +389,25 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	}
 
 	public ExecutorService buildThreadPool(){
-//		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
-//			@Override
-//			public Thread newThread(Runnable r) {
-//				return new DBESThread(r);
-//			}
-//		});
+ 		if(blockedExecutor != null)
+ 			return blockedExecutor;
+ 		synchronized (this) {
+			if(blockedExecutor == null) {
 
-		ExecutorService blockedExecutor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
-				0L, TimeUnit.MILLISECONDS,
-				new ArrayBlockingQueue<Runnable>(this.getQueue()),
-				new ThreadFactory() {
-					@Override
-					public Thread newThread(Runnable r) {
-						return new DBESThread(r);
-					}
-				},new BlockedTaskRejectedExecutionHandler(rejectCounts));
+				blockedExecutor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
+						0L, TimeUnit.MILLISECONDS,
+						new ArrayBlockingQueue<Runnable>(this.getQueue()),
+						new ThreadFactory() {
+							private java.util.concurrent.atomic.AtomicInteger threadCount = new AtomicInteger(0);
+
+							@Override
+							public Thread newThread(Runnable r) {
+								int num = threadCount.incrementAndGet();
+								return new DBESThread(r, num);
+							}
+						}, new BlockedTaskRejectedExecutionHandler(rejectCounts));
+			}
+		}
 		return blockedExecutor;
 	}
 

@@ -24,8 +24,8 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public class DBESThread extends Thread {
-	public DBESThread(Runnable run){
+	public DBESThread(Runnable run,int num ){
 		super(run);
-		this.setName("DB2ESImportThread");
+		this.setName("DB2ESImportThread-"+num);
 	}
 }
