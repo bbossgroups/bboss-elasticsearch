@@ -535,6 +535,7 @@ public class ScheduleService {
 		catch (Exception e){
 			logger.error("",e);
 		}
+		this.esjdbc.destroy();
 
 	}
 

@@ -58,4 +58,6 @@ public abstract class DataStream {
 
 	public abstract void execute() throws ESDataImportException;
 
+	public abstract void stop();
+
 }

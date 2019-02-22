@@ -29,6 +29,12 @@ public class ES2DBDataStreamImpl extends DataStream{
 	public void execute() throws ESDataImportException{
 		es2db();
 	}
+
+	@Override
+	public void stop() {
+
+	}
+
 	public void es2db() throws ESDataImportException{
 		if(es2DB == null){
 			throw new ESDataImportException("es2DB is null.");

@@ -358,6 +358,9 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void destroy(){
 		this.format = null;
+		if(blockedExecutor != null){
+			blockedExecutor.shutdown();
+		}
 	}
 
 	public void setFieldMetaMap(Map<String, FieldMeta> fieldMetaMap) {

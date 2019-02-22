@@ -36,6 +36,12 @@ public class DataStreamImpl extends DataStream{
 		db2es();
 	}
 
+	@Override
+	public void stop() {
+		if(esjdbc != null)
+			this.esjdbc.stop();
+	}
+
 	/**
 	 *
 	 * @throws ESDataImportException
