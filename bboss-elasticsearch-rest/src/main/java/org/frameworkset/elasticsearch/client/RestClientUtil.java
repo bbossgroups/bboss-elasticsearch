@@ -1949,10 +1949,19 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchScroll(String scroll,String scrollId ,Class<T> type) throws ElasticSearchException{
-		StringBuilder entity = new StringBuilder();
-		entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
-		RestResponse result = this.client.executeRequest("_search/scroll",entity.toString(),   new ElasticSearchResponseHandler( type));
-		return ResultUtil.buildESDatas(result,type);
+
+		if(!this.client.isV1()) {
+			StringBuilder entity = new StringBuilder();
+			entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
+			RestResponse result = this.client.executeRequest("_search/scroll", entity.toString(), new ElasticSearchResponseHandler(type));
+			return ResultUtil.buildESDatas(result,type);
+		}
+		else {
+			StringBuilder path = new StringBuilder();
+			path.append("_search/scroll?scroll=").append( scroll ).append( "&scroll_id=" ).append( scrollId);
+			RestResponse result = this.client.executeHttp(path.toString(), ClientUtil.HTTP_GET, new ElasticSearchResponseHandler(type));
+			return ResultUtil.buildESDatas(result, type);
+		}
 	}
 
 	/**
@@ -1965,10 +1974,22 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String searchScroll(String scroll,String scrollId ) throws ElasticSearchException{
-		StringBuilder entity = new StringBuilder();
-		entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
-		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_GET);
-		return result;
+		if(!this.client.isV1()) {
+			StringBuilder entity = new StringBuilder();
+			entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
+			String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_GET);
+			return result;
+		}
+		else {
+			StringBuilder path = new StringBuilder();
+			path.append("_search/scroll?scroll=").append( scroll ).append( "&scroll_id=" ).append( scrollId);
+			String result = this.client.executeHttp(path.toString(), ClientUtil.HTTP_GET);
+			return result;
+		}
+//		StringBuilder entity = new StringBuilder();
+//		entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
+//		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_GET);
+//		return result;
 	}
 
 
@@ -1981,17 +2002,31 @@ public class RestClientUtil extends ClientUtil{
 	public String deleteScrolls(String ... scrollIds) throws ElasticSearchException{
 		if(scrollIds == null || scrollIds.length == 0)
 			return null;
-		StringBuilder entity = new StringBuilder();
-		entity.append("{\"scroll_id\" : [");
-		for(int i = 0; i < scrollIds.length; i ++){
-			String scrollId = scrollIds[i];
-			if(i > 0)
-				entity.append(",");
-			entity.append("\"").append(scrollId).append("\"");
+		if(!client.isV1()) {
+			StringBuilder entity = new StringBuilder();
+			entity.append("{\"scroll_id\" : [");
+			for (int i = 0; i < scrollIds.length; i++) {
+				String scrollId = scrollIds[i];
+				if (i > 0)
+					entity.append(",");
+				entity.append("\"").append(scrollId).append("\"");
+			}
+			entity.append("]}");
+			String result = this.client.executeHttp("_search/scroll", entity.toString(), ClientUtil.HTTP_DELETE);
+			return result;
 		}
-		entity.append("]}");
-		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_DELETE);
-		return result;
+		else{
+//			for (int i = 0; i < scrollIds.length; i++) {
+//				String scrollId = scrollIds[i];
+//				this.client.executeHttp("_search/scroll?scroll_id="+scrollId, ClientUtil.HTTP_DELETE);
+//			}
+
+			if(logger.isTraceEnabled()){
+				logger.trace(new StringBuilder().append("Elasticsearch ").append(client.getEsVersion() )
+						.append( " do not support delete scrollId.").toString());
+			}
+			return "";
+		}
 	}
 
 	/**
@@ -2001,19 +2036,35 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException{
-		if(scrollIds == null || scrollIds.size() == 0)
+		if(scrollIds == null || scrollIds.size() == 0 )
 			return null;
-		StringBuilder entity = new StringBuilder();
-		entity.append("{\"scroll_id\" : [");
-		for(int i = 0; i < scrollIds.size(); i ++){
-			String scrollId = scrollIds.get(i);
-			if(i > 0)
-				entity.append(",");
-			entity.append("\"").append(scrollId).append("\"");
+		if(!client.isV1()) {
+			StringBuilder entity = new StringBuilder();
+			entity.append("{\"scroll_id\" : [");
+			for (int i = 0; i < scrollIds.size(); i++) {
+				String scrollId = scrollIds.get(i);
+				if (i > 0)
+					entity.append(",");
+				entity.append("\"").append(scrollId).append("\"");
+			}
+			entity.append("]}");
+			String result = this.client.executeHttp("_search/scroll", entity.toString(), ClientUtil.HTTP_DELETE);
+			return result;
 		}
-		entity.append("]}");
-		String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_DELETE);
-		return result;
+		else{
+//			String result = null;
+//////			for (int i = 0; i < scrollIds.size(); i++) {
+//////				String scrollId = scrollIds.get(i);
+//////				result = this.client.executeHttp("_search/scroll?scroll_id="+scrollId, ClientUtil.HTTP_DELETE);
+//////			}
+//////			return result;
+			if(logger.isTraceEnabled()){
+				logger.trace(new StringBuilder().append("Elasticsearch ").append(client.getEsVersion() )
+						.append( " do not support delete scrollId.").toString());
+			}
+			return "";
+
+		}
 	}
 
 	/**

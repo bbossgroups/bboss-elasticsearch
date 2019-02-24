@@ -117,6 +117,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		return null;
 	}
 
+	@Override
+	public boolean isV1() {
+		return false;
+	}
+
 	// /**
 	// * Local transport client only for testing
 	// *

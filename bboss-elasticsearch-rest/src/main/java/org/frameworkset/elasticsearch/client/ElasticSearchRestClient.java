@@ -89,6 +89,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
 	private Map clusterInfo ;
+	private String esVersion;
+	private boolean v1 ;
 	private String clusterVersionInfo;
 
 	private String clusterVarcharInfo;
@@ -203,8 +205,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					}
 					clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
 					Object version = clusterInfo.get("version");
-					if(version instanceof Map)
-						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + ((Map)version).get("number");
+					if(version instanceof Map) {
+						esVersion = String.valueOf(((Map) version).get("number"));
+						if(esVersion != null){
+							if(esVersion.startsWith("1.")){
+								v1 = true;
+							}
+						}
+						clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
+					}
 					else{
 						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + version;
 					}
@@ -942,5 +951,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 	public ExecutorService getSliceScrollQueryExecutorService(){
 		return this.elasticSearch.getSliceScrollQueryExecutorService();
+	}
+
+	public boolean isV1() {
+		return v1;
+	}
+
+
+
+	public String getEsVersion() {
+		return esVersion;
+	}
+
+	public void setEsVersion(String esVersion) {
+		this.esVersion = esVersion;
 	}
 }
