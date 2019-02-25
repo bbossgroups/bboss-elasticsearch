@@ -1130,7 +1130,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 				_doSliceScroll( i, _path,
 						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
-						sliceScrollResult);
+						sliceScrollResult,false);
 
 			} catch (ElasticSearchException e) {
 				throw e;
@@ -1286,7 +1286,6 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,Map params ,
 									  final String scroll  ,final Class<T> type,
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-
 			return  _scrollSlice( path, dslTemplate,  params ,
 					scroll  ,  type,
 					scrollHandler);

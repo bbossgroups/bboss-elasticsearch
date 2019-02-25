@@ -56,7 +56,7 @@ public class SliceRunTask<T> implements Runnable {
 			restClientUtil._doSliceScroll( sliceId, path,
 					sliceDsl,
 					scroll, type,
-					sliceScrollResult);
+					sliceScrollResult,true);
 
 		} catch (ElasticSearchException e) {
 			throw e;

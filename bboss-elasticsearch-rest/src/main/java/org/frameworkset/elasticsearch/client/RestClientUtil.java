@@ -1789,7 +1789,7 @@ public class RestClientUtil extends ClientUtil{
 									String entity,
 									String scroll,Class<T> type,
 
-									SliceScrollResultInf<T> sliceScrollResult) throws Exception {
+									SliceScrollResultInf<T> sliceScrollResult,boolean parallel) throws Exception {
 		List<Future> tasks = null;
 		try{
 			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
@@ -1797,7 +1797,7 @@ public class RestClientUtil extends ClientUtil{
 			int taskId = 0;
 			List<T> sliceDatas = sliceResponse.getDatas();
 			String scrollId = sliceResponse.getScrollId();
-			ExecutorService executorService = client.getScrollQueryExecutorService();
+			ExecutorService executorService = parallel ?client.getScrollQueryExecutorService():null;
 //			System.out.println("sliceDatas:"+i+":" + sliceDatas);
 //			System.out.println("scrollId:"+i+":" + scrollId);
 			Set<String> scrollIds = null;
@@ -1820,9 +1820,13 @@ public class RestClientUtil extends ClientUtil{
 					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse,handlerInfo);
 				}
 				else {
-					scrollTask = new ScrollTask<T>(_scrollHandler,sliceResponse,handlerInfo);
-					tasks.add(executorService.submit(scrollTask));
-//					_scrollHandler.handle(sliceResponse,handlerInfo);
+					if(parallel) {
+						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+						tasks.add(executorService.submit(scrollTask));
+					}
+					else {
+						_scrollHandler.handle(sliceResponse, handlerInfo);
+					}
 					sliceScrollResult.setSliceResponse(sliceResponse);
 				}
 				sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
@@ -1845,9 +1849,14 @@ public class RestClientUtil extends ClientUtil{
 					handlerInfo.setScrollId(scrollId);
 					taskId ++;
 					scrollId = sliceScrollId;
-					if(!useDefaultHandler) {
-						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
-						tasks.add(executorService.submit(scrollTask));
+					if(!useDefaultHandler ) {
+						if(parallel) {
+							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+							tasks.add(executorService.submit(scrollTask));
+						}
+						else{
+							_scrollHandler.handle(_sliceResponse, handlerInfo);
+						}
 					}
 					else {
 						_scrollHandler.handle(_sliceResponse, handlerInfo);
