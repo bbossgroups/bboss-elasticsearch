@@ -1624,7 +1624,7 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public <T> ESDatas<T> searchAll(String index,  int fetchSize ,ScrollHandler<T> scrollHandler,Class<T> type) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
-		String queryAll = builder.append("{ \"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
+		String queryAll = builder.append("{ \"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}},\"sort\": [\"_doc\"]}").toString();
 		builder.setLength(0);
 		return this.scroll(builder.append(index).append("/_search").toString(),queryAll,"10m",type,scrollHandler);
 	}
@@ -1687,7 +1687,7 @@ public class RestClientUtil extends ClientUtil{
 			public String buildSliceDsl(int sliceId, int max) {
 				StringBuilder builder = new StringBuilder();
 				String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(sliceId).append(",\"max\": ")
-						.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
+						.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}},\"sort\": [\"_doc\"]}").toString();
 				return sliceDsl;
 //				return buildSliceDsl(i,max, params, dslTemplate);
 			}
