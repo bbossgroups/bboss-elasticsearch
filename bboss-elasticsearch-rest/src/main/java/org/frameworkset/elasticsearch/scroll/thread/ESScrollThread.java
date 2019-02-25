@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.scroll;
+package org.frameworkset.elasticsearch.scroll.thread;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,28 +15,17 @@ package org.frameworkset.elasticsearch.scroll;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.ESDatas;
-
-import java.util.List;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/4 12:33
+ * @Date 2018/8/18 12:02
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefualtScrollHandler<T> implements ScrollHandler<T> {
-	private ESDatas<T> firstResponse;
-	public DefualtScrollHandler(ESDatas<T> firstResponse){
-		this.firstResponse = firstResponse;
+public class ESScrollThread extends Thread {
+	public ESScrollThread(Runnable run, int num){
+		super(run);
+		this.setName("ESScrollThread-"+num);
 	}
-	@Override
-	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception {
-		List<T> datas = firstResponse.getDatas();
-		if(datas != null)
-			datas.addAll(response.getDatas());
-	}
-
 }

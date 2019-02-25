@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client.estodb;
 
 import com.frameworkset.common.poolman.SQLExecutor;
 import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.scroll.HandlerInfo;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class ESExporterScrollHandler<T> implements ScrollHandler<T> {
 
 	}
 
-	public void handle(ESDatas<T> response) throws Exception {//自己处理每次scroll的结果
+	public void handle(ESDatas<T> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 
 
 		long totalSize = response.getTotalSize();

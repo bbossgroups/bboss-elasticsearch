@@ -1181,7 +1181,10 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		return super.scroll(path,ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),scroll,type,scrollHandler);
 	}
 
-
+	public <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Map params,Class<T> type,ScrollHandler<T> scrollHandler)
+			throws ElasticSearchException{
+		return super.scrollParallel(path,ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),scroll,type,scrollHandler);
+	}
 	/**
 	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
 	 * @param path
@@ -1195,6 +1198,10 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	 */
 	public   <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		return super.scroll(path,ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),scroll,type,scrollHandler);
+	}
+
+	public   <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		return super.scrollParallel(path,ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),scroll,type,scrollHandler);
 	}
 	/**
 	 * 一次性返回scroll检索结果

@@ -16,10 +16,8 @@ import org.frameworkset.elasticsearch.entity.sql.SQLRestResponseHandler;
 import org.frameworkset.elasticsearch.entity.sql.SQLResult;
 import org.frameworkset.elasticsearch.entity.suggest.*;
 import org.frameworkset.elasticsearch.handler.*;
-import org.frameworkset.elasticsearch.scroll.DefualtScrollHandler;
-import org.frameworkset.elasticsearch.scroll.ParallelSliceScrollResult;
-import org.frameworkset.elasticsearch.scroll.ScrollHandler;
-import org.frameworkset.elasticsearch.scroll.SliceScrollResultInf;
+import org.frameworkset.elasticsearch.scroll.*;
+import org.frameworkset.elasticsearch.scroll.thread.ScrollTask;
 import org.frameworkset.elasticsearch.serial.ESInnerHitSerialThreadLocal;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.serial.SerialContext;
@@ -33,10 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -1773,6 +1768,7 @@ public class RestClientUtil extends ClientUtil{
 				logger.error("",e);
 			}
 		}
+		tasks.clear();
 
 	}
 
@@ -1794,27 +1790,39 @@ public class RestClientUtil extends ClientUtil{
 									String scroll,Class<T> type,
 
 									SliceScrollResultInf<T> sliceScrollResult) throws Exception {
+		List<Future> tasks = null;
 		try{
 			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 			ESDatas<T> sliceResponse = ResultUtil.buildESDatas(result,type);
-
+			int taskId = 0;
 			List<T> sliceDatas = sliceResponse.getDatas();
 			String scrollId = sliceResponse.getScrollId();
+			ExecutorService executorService = client.getScrollQueryExecutorService();
 //			System.out.println("sliceDatas:"+i+":" + sliceDatas);
 //			System.out.println("scrollId:"+i+":" + scrollId);
-			List<String> scrollIds = null;
+			Set<String> scrollIds = null;
 			if (scrollId != null) {
-				scrollIds = new ArrayList<String>();
+				scrollIds = new TreeSet<String>();
 				scrollIds.add(scrollId);
 			}
-
+			boolean useDefaultHandler = false;
 			if (sliceDatas != null && sliceDatas.size() > 0) {//每页100条记录，迭代scrollid，遍历scroll分页结果
+				tasks = new ArrayList<Future>();
 				ScrollHandler<T> _scrollHandler = sliceScrollResult.getScrollHandler();
+				HandlerInfo handlerInfo = new HandlerInfo();
+				handlerInfo.setTaskId(taskId);
+//				handlerInfo.setScrollId(scrollId);
+				handlerInfo.setSliceId(i);
+				ScrollTask<T> scrollTask = null;
+				taskId ++;
 				if (_scrollHandler == null) {
-					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse);
+					useDefaultHandler = true;
+					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse,handlerInfo);
 				}
 				else {
-					_scrollHandler.handle(sliceResponse);
+					scrollTask = new ScrollTask<T>(_scrollHandler,sliceResponse,handlerInfo);
+					tasks.add(executorService.submit(scrollTask));
+//					_scrollHandler.handle(sliceResponse,handlerInfo);
 					sliceScrollResult.setSliceResponse(sliceResponse);
 				}
 				sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
@@ -1831,10 +1839,24 @@ public class RestClientUtil extends ClientUtil{
 					if (_sliceDatas == null || _sliceDatas.size() == 0) {
 						break;
 					}
-					_scrollHandler.handle(_sliceResponse);
+					handlerInfo = new HandlerInfo();
+					handlerInfo.setTaskId(taskId);
+					handlerInfo.setSliceId(i);
+					handlerInfo.setScrollId(scrollId);
+					taskId ++;
+					scrollId = sliceScrollId;
+					if(!useDefaultHandler) {
+						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+						tasks.add(executorService.submit(scrollTask));
+					}
+					else {
+						_scrollHandler.handle(_sliceResponse, handlerInfo);
+					}
 					sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
 				} while (true);
 			}
+			if(tasks != null && tasks.size() > 0)
+				this.waitTasksComplete(tasks);
 			//处理完毕后清除scroll上下文信息
 			if(scrollIds != null && scrollIds.size() > 0) {
 				try {
@@ -1850,6 +1872,10 @@ public class RestClientUtil extends ClientUtil{
 			throw e;
 		} catch (Exception e) {
 			throw new ElasticSearchException("slice query task["+i+"] failed:",e);
+		}
+		finally {
+			if(tasks != null && tasks.size() > 0)
+				this.waitTasksComplete(tasks);
 		}
 	}
 
@@ -2028,23 +2054,24 @@ public class RestClientUtil extends ClientUtil{
 			return "";
 		}
 	}
-
-	/**
-	 * 清理scrollId
-	 * @param scrollIds
-	 * @return
-	 * @throws ElasticSearchException
-	 */
 	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException{
 		if(scrollIds == null || scrollIds.size() == 0 )
 			return null;
+		return deleteScrolls(scrollIds.iterator());
+	}
+	private String deleteScrolls(Iterator<String> scrollIds) throws ElasticSearchException{
+
 		if(!client.isV1()) {
 			StringBuilder entity = new StringBuilder();
 			entity.append("{\"scroll_id\" : [");
-			for (int i = 0; i < scrollIds.size(); i++) {
-				String scrollId = scrollIds.get(i);
+
+			int i = 0;
+			for (; scrollIds.hasNext(); ) {
+
+				String scrollId = scrollIds.next();
 				if (i > 0)
 					entity.append(",");
+				i ++;
 				entity.append("\"").append(scrollId).append("\"");
 			}
 			entity.append("]}");
@@ -2065,6 +2092,17 @@ public class RestClientUtil extends ClientUtil{
 			return "";
 
 		}
+	}
+	/**
+	 * 清理scrollId
+	 * @param scrollIds
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String deleteScrolls(Set<String> scrollIds) throws ElasticSearchException{
+		if(scrollIds == null || scrollIds.size() == 0 )
+			return null;
+		return deleteScrolls(scrollIds.iterator());
 	}
 
 	/**
@@ -2121,6 +2159,11 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 
+	public <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Map params,Class<T> type,ScrollHandler<T> scrollHandler)
+			throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
 
 
 	/**
@@ -2139,6 +2182,103 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 
+	public <T> ESDatas<T> scrollParallel(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		List<Future> tasks = null;
+		try {
+			path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
+					new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
+
+			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+			ESDatas<T> response =  ResultUtil.buildESDatas(result,type);
+			int taskId = 0;
+			boolean useDefaultScrollHandler = false;
+			ExecutorService executorService = this.client.getScrollQueryExecutorService();
+
+			ScrollTask<T> scrollTask = null;
+			if(scrollHandler == null){
+				scrollHandler = new DefualtScrollHandler<T>(response);
+				useDefaultScrollHandler = true;
+			}
+			else{
+				tasks = new ArrayList<Future>();
+				HandlerInfo handlerInfo = new HandlerInfo();
+				handlerInfo.setTaskId(taskId);
+				scrollTask = new ScrollTask<T>(scrollHandler,response,handlerInfo);
+				taskId ++;
+				tasks.add(executorService.submit(scrollTask));
+//				scrollHandler.handle(response);
+			}
+			List<T> datas = response.getDatas();//第一页数据
+
+			Set<String> scrollIds = null;//用于记录每次scroll的scrollid，便于检索完毕后清除
+//			long totalSize = response.getTotalSize();//总记录数
+			String scrollId = response.getScrollId();//第一次的scrollid
+			if (scrollId != null) {
+				scrollIds = new TreeSet<String>();
+				scrollIds.add(scrollId);
+			}
+//		System.out.println("totalSize:"+totalSize);
+//		System.out.println("scrollId:"+scrollId);
+			if (datas != null && datas.size() > 0) {//每页1000条记录，通过迭代scrollid，遍历scroll分页结果
+				ESDatas<T> _response = null;
+				List<T> _datas = null;
+				do {
+
+					_response = searchScroll(scroll, scrollId, type);
+
+					String _scrollId = _response.getScrollId();//每页的scrollid
+					if (scrollId != null)
+						scrollIds.add(_scrollId);
+					_datas = _response.getDatas();//每页的纪录数
+					if (_datas == null || _datas.size() == 0) {
+						break;
+					} else {
+						HandlerInfo handlerInfo = new HandlerInfo();
+						handlerInfo.setTaskId(taskId);
+						handlerInfo.setScrollId(scrollId);
+						taskId ++;
+						if(!useDefaultScrollHandler) {
+							scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
+							taskId++;
+							tasks.add(executorService.submit(scrollTask));
+						}
+						else {
+							scrollHandler.handle(_response,handlerInfo);
+						}
+					}
+					scrollId = _scrollId;
+
+				} while (true);
+			}
+			//等待所有异步任务执行完毕
+			if(tasks != null && tasks.size() > 0)
+				this.waitTasksComplete(tasks);
+
+			//清除scroll上下文信息,虽然说超过1分钟后，scrollid会自动失效，
+			//但是手动删除不用的scrollid，是一个好习惯
+			if (scrollIds != null && scrollIds.size() > 0) {
+				try {
+					deleteScrolls(scrollIds);
+				}
+				catch (Exception e){
+
+				}
+			}
+			if(!useDefaultScrollHandler)//结果自行处理，所以清空默认结果
+				response.setDatas(null);
+			return response;
+		}
+		catch (ElasticSearchException e){
+			throw e;
+		}
+		catch (Exception e){
+			throw new ElasticSearchException(e);
+		}
+		finally {
+			if(tasks != null && tasks.size() > 0)
+				this.waitTasksComplete(tasks);
+		}
+	}
 	/**
 	 * scroll检索,每次检索结果交给scrollHandler回调函数处理
 	 * @param path
@@ -2157,21 +2297,25 @@ public class RestClientUtil extends ClientUtil{
 
 			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 			ESDatas<T> response =  ResultUtil.buildESDatas(result,type);
+			int taskId = 0;
 			boolean useDefaultScrollHandler = false;
 			if(scrollHandler == null){
 				scrollHandler = new DefualtScrollHandler<T>(response);
 				useDefaultScrollHandler = true;
 			}
 			else{
-				scrollHandler.handle(response);
+				HandlerInfo handlerInfo = new HandlerInfo();
+				handlerInfo.setTaskId(taskId);
+				taskId ++;
+				scrollHandler.handle(response,handlerInfo);
 			}
 			List<T> datas = response.getDatas();//第一页数据
 
-			List<String> scrollIds = null;//用于记录每次scroll的scrollid，便于检索完毕后清除
+			Set<String> scrollIds = null;//用于记录每次scroll的scrollid，便于检索完毕后清除
 //			long totalSize = response.getTotalSize();//总记录数
 			String scrollId = response.getScrollId();//第一次的scrollid
 			if (scrollId != null) {
-				scrollIds = new ArrayList<String>();
+				scrollIds = new TreeSet<String>();
 				scrollIds.add(scrollId);
 			}
 //		System.out.println("totalSize:"+totalSize);
@@ -2182,16 +2326,21 @@ public class RestClientUtil extends ClientUtil{
 				do {
 
 					_response = searchScroll(scroll, scrollId, type);
-					scrollId = _response.getScrollId();//每页的scrollid
+					String _scrollId = _response.getScrollId();//每页的scrollid
 					if (scrollId != null)
-						scrollIds.add(scrollId);
+						scrollIds.add(_scrollId);
 
 					_datas = _response.getDatas();//每页的纪录数
 					if (_datas == null || _datas.size() == 0) {
 						break;
 					} else {
-						scrollHandler.handle(_response);
+						HandlerInfo handlerInfo = new HandlerInfo();
+						handlerInfo.setTaskId(taskId);
+						handlerInfo.setScrollId(scrollId);
+						taskId ++;
+						scrollHandler.handle(_response,handlerInfo);
 					}
+					scrollId = _scrollId;
 
 				} while (true);
 			}
@@ -2307,6 +2456,10 @@ public class RestClientUtil extends ClientUtil{
 	public   <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		throw new java.lang.UnsupportedOperationException();
 	}
+	public   <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+		throw new java.lang.UnsupportedOperationException();
+	}
+
 	/**
 	 * 一次性返回scroll检索结果
 	 * @param path

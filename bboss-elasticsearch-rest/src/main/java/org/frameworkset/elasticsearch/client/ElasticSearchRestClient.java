@@ -953,6 +953,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return this.elasticSearch.getSliceScrollQueryExecutorService();
 	}
 
+	public ExecutorService getScrollQueryExecutorService(){
+		return this.elasticSearch.getScrollQueryExecutorService();
+	}
+
+
 	public boolean isV1() {
 		return v1;
 	}

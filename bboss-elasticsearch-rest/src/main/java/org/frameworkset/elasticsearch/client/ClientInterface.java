@@ -16,6 +16,7 @@ import org.frameworkset.util.annotations.ThreadSafe;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @see <url>https://my.oschina.net/bboss/blog/1556866</url>
@@ -1491,6 +1492,7 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Object params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 	/**
 	 * 一次性返回scroll检索结果
 	 * https://my.oschina.net/bboss/blog/1942562
@@ -1534,6 +1536,7 @@ public interface ClientInterface {
 	 * @throws ElasticSearchException
 	 */
 	public abstract <T> ESDatas<T> scroll(String path,String dslTemplate,String scroll,Map params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
+	public abstract <T> ESDatas<T> scrollParallel(String path,String dslTemplate,String scroll,Map params,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 
 
 	/**
@@ -1666,6 +1669,8 @@ public interface ClientInterface {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
+	public String deleteScrolls(Set<String> scrollIds) throws ElasticSearchException;
+
 	public String deleteScrolls(List<String> scrollIds) throws ElasticSearchException;
 
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException;

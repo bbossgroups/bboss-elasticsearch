@@ -24,8 +24,8 @@ package org.frameworkset.elasticsearch.scroll.thread;
  * @version 1.0
  */
 public class ESSliceScrollThread extends Thread {
-	public ESSliceScrollThread(Runnable run){
+	public ESSliceScrollThread(Runnable run,int num){
 		super(run);
-		this.setName("ESSliceScrollThread");
+		this.setName("ESSliceScrollThread-"+num);
 	}
 }

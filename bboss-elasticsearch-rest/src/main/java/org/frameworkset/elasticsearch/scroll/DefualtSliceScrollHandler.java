@@ -33,7 +33,7 @@ public class DefualtSliceScrollHandler<T> implements ScrollHandler<T> {
 		this.firstResponse = firstResponse;
 	}
 	@Override
-	public void handle(ESDatas<T> response) throws Exception {
+	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception {
 
 		List<T> datas = firstResponse.getDatas();
 		if(datas != null)

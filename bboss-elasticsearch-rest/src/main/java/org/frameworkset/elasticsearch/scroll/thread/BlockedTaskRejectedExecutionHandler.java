@@ -36,8 +36,10 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 	private static Logger logger = LoggerFactory.getLogger(BlockedTaskRejectedExecutionHandler.class);
 	private AtomicInteger rejectCounts = new AtomicInteger();
 	private long sliceScrollBlockedWaitTimeout;
-	public BlockedTaskRejectedExecutionHandler(long sliceScrollBlockedWaitTimeout){
+	private String message;
+	public BlockedTaskRejectedExecutionHandler(String message,long sliceScrollBlockedWaitTimeout){
 		this.sliceScrollBlockedWaitTimeout = sliceScrollBlockedWaitTimeout;
+		this.message = message;
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 		if(logger.isWarnEnabled()) {
 			int t = counts % 100;
 			if (t == 0) {
-					logger.warn(new StringBuilder().append("Task[Slice Scroll Query] blocked ").append(counts).append(" times.").toString());
+					logger.warn(new StringBuilder().append("Task[").append(message).append("] blocked ").append(counts).append(" times.").toString());
 			}
 		}
 //
@@ -62,7 +64,7 @@ public class BlockedTaskRejectedExecutionHandler implements RejectedExecutionHan
 			else {
 				boolean result = executor.getQueue().offer(r, this.sliceScrollBlockedWaitTimeout, TimeUnit.MILLISECONDS);
 				if(!result){
-					throw new RejectedExecutionException(new StringBuilder().append("Task[Slice Scroll Query] rejected: wait timeout after ")
+					throw new RejectedExecutionException(new StringBuilder().append("Task[").append(message).append("] rejected: wait timeout after ")
 							.append(sliceScrollBlockedWaitTimeout).append(" MILLISECONDS.").toString());
 				}
 			}

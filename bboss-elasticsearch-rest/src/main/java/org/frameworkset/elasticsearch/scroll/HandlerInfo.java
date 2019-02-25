@@ -15,28 +15,42 @@ package org.frameworkset.elasticsearch.scroll;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.ESDatas;
-
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/4 12:33
+ * @Date 2019/2/25 12:56
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefualtScrollHandler<T> implements ScrollHandler<T> {
-	private ESDatas<T> firstResponse;
-	public DefualtScrollHandler(ESDatas<T> firstResponse){
-		this.firstResponse = firstResponse;
-	}
-	@Override
-	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception {
-		List<T> datas = firstResponse.getDatas();
-		if(datas != null)
-			datas.addAll(response.getDatas());
+public class HandlerInfo implements Serializable {
+	private Integer taskId;
+	private String scrollId;
+	private Integer sliceId;
+
+	public Integer getTaskId() {
+		return taskId;
 	}
 
+	public void setTaskId(Integer taskId) {
+		this.taskId = taskId;
+	}
+
+	public String getScrollId() {
+		return scrollId;
+	}
+
+	public void setScrollId(String scrollId) {
+		this.scrollId = scrollId;
+	}
+
+	public Integer getSliceId() {
+		return sliceId;
+	}
+
+	public void setSliceId(Integer sliceId) {
+		this.sliceId = sliceId;
+	}
 }

@@ -26,5 +26,5 @@ import org.frameworkset.elasticsearch.entity.ESDatas;
  * @version 1.0
  */
 public interface ScrollHandler<T> {
-	public void handle(ESDatas<T> response) throws Exception;
+	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception;
 }

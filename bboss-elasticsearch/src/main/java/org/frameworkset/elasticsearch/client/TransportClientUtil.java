@@ -25,6 +25,7 @@ import org.frameworkset.elasticsearch.template.ESInfo;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TransportClientUtil  implements EventClientUtil{
 	private ElasticSearchTransportClient client;
@@ -908,6 +909,11 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> ESDatas<T> scrollParallel(String path, String dslTemplate, String scroll, Map params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> ESDatas<T> scrollSlice(String path, String dslTemplate, Map params, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
 		return null;
 	}
@@ -929,6 +935,11 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public <T> ESDatas<T> scroll(String path, String dslTemplate, String scroll, Object params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> scrollParallel(String path, String dslTemplate, String scroll, Object params, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
 		return null;
 	}
 
@@ -955,6 +966,11 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public String deleteAllScrolls() throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteScrolls(Set<String> scrollIds) throws ElasticSearchException {
 		return null;
 	}
 

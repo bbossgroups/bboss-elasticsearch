@@ -96,9 +96,14 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	
 	protected ElasticSearchClient restClient = null;
 	protected ExecutorService sliceScrollQueryExecutorService;
-	protected int sliceScrollThreadCount = 500;
-	protected int sliceScrollThreadQueue = 500;
+	protected ExecutorService scrollQueryExecutorService;
+	protected int sliceScrollThreadCount = 100;
+	protected int sliceScrollThreadQueue = 100;
 	protected long sliceScrollBlockedWaitTimeout = 0l;
+
+	protected int scrollThreadCount = 200;
+	protected int scrollThreadQueue = 200;
+	protected long scrollBlockedWaitTimeout = 0l;
 
 	protected IndexNameBuilder indexNameBuilder;
 
@@ -263,6 +268,33 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				logger.warn(_sliceScrollThreadQueue,e);
 			}
 		}
+		String _scrollThreadCount = elasticsearchPropes.getProperty(CLIENT_scrollThreadCount);
+		if (SimpleStringUtil.isNotEmpty(_scrollThreadCount)) {
+			try {
+				this.scrollThreadCount = Integer.parseInt(_scrollThreadCount);
+			}
+			catch (Exception e){
+				logger.warn(_scrollThreadCount,e);
+			}
+		}
+		String _scrollBlockedWaitTimeout = elasticsearchPropes.getProperty(CLIENT_scrollBlockedWaitTimeout);
+		if (SimpleStringUtil.isNotEmpty(_scrollBlockedWaitTimeout)) {
+			try {
+				this.scrollBlockedWaitTimeout = Long.parseLong(_scrollBlockedWaitTimeout);
+			}
+			catch (Exception e){
+				logger.warn(_scrollBlockedWaitTimeout,e);
+			}
+		}
+		String _scrollThreadQueue = elasticsearchPropes.getProperty(CLIENT_scrollThreadQueue);
+		if (SimpleStringUtil.isNotEmpty(_scrollThreadQueue)) {
+			try {
+				this.scrollThreadQueue = Integer.parseInt(_scrollThreadQueue);
+			}
+			catch (Exception e){
+				logger.warn(_scrollThreadQueue,e);
+			}
+		}
 		String ttl = elasticsearchPropes.getProperty(TTL);
 		if (SimpleStringUtil.isNotEmpty(ttl)) {
 			this.ttlMs = parseTTL(ttl);
@@ -354,7 +386,10 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if(this.sliceScrollQueryExecutorService != null){
 			this.sliceScrollQueryExecutorService.shutdown();
 		}
-		 
+
+		if(this.scrollQueryExecutorService != null){
+			this.scrollQueryExecutorService.shutdown();
+		}
 	}
 
 	/*
@@ -414,10 +449,24 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			if(sliceScrollQueryExecutorService != null)
 				return sliceScrollQueryExecutorService;
 			if (this.sliceScrollQueryExecutorService == null) {
-				sliceScrollQueryExecutorService = ThreadPoolFactory.buildThreadPool(this.sliceScrollThreadCount, this.sliceScrollThreadQueue,this.sliceScrollBlockedWaitTimeout);
+				sliceScrollQueryExecutorService = ThreadPoolFactory.buildSliceScrollThreadPool(this.sliceScrollThreadCount, this.sliceScrollThreadQueue,this.sliceScrollBlockedWaitTimeout);
 			}
 		}
 		return this.sliceScrollQueryExecutorService;
+	}
+
+
+	public ExecutorService getScrollQueryExecutorService(){
+		if(scrollQueryExecutorService != null)
+			return scrollQueryExecutorService;
+		synchronized (this) {
+			if(scrollQueryExecutorService != null)
+				return scrollQueryExecutorService;
+			if (this.scrollQueryExecutorService == null) {
+				scrollQueryExecutorService = ThreadPoolFactory.buildScrollThreadPool(this.scrollThreadCount, this.scrollThreadQueue,this.scrollBlockedWaitTimeout);
+			}
+		}
+		return this.scrollQueryExecutorService;
 	}
 
 

@@ -128,9 +128,19 @@ public class ElasticSearchHelper {
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.discoverHost",configContext,"false"));
 
 			elasticsearchPropes.put("elasticsearch.sliceScrollThreadCount",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadCount",configContext,"500"));
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadCount",configContext,"100"));
 			elasticsearchPropes.put("elasticsearch.sliceScrollThreadQueue",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadQueue",configContext,"500"));
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadQueue",configContext,"100"));
+			elasticsearchPropes.put("elasticsearch.sliceScrollBlockedWaitTimeout",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollBlockedWaitTimeout",configContext,"0"));
+
+			elasticsearchPropes.put("elasticsearch.scrollThreadCount",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadCount",configContext,"200"));
+			elasticsearchPropes.put("elasticsearch.scrollThreadQueue",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadQueue",configContext,"200"));
+			elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollBlockedWaitTimeout",configContext,"0"));
+
 			final ElasticSearch elasticSearch = new ElasticSearch();
 			if(firstElasticSearch == null)
 				firstElasticSearch = elasticSearch;

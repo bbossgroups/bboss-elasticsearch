@@ -35,7 +35,7 @@ public class ParallelSliceScrollHandler<T> extends DefualtSliceScrollHandler<T> 
 		super(firstResponse);
 	}
 	@Override
-	public void handle(ESDatas<T> response) throws Exception {
+	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception {
 
 		List<T> datas = firstResponse.getDatas();
 		if(datas != null) {

@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.scroll.thread;
  */
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>Description: </p>
@@ -26,7 +27,7 @@ import java.util.concurrent.*;
  * @version 1.0
  */
 public class ThreadPoolFactory {
-	public static ExecutorService buildThreadPool(int sliceScrollThreadCount,int sliceScrollThreadQueue,long sliceScrollBlockedWaitTimeout){
+	public static ExecutorService buildSliceScrollThreadPool(int sliceScrollThreadCount,int sliceScrollThreadQueue,long sliceScrollBlockedWaitTimeout){
 //		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
 //			@Override
 //			public Thread newThread(Runnable r) {
@@ -38,11 +39,37 @@ public class ThreadPoolFactory {
 				0L, TimeUnit.MILLISECONDS,
 				new ArrayBlockingQueue<Runnable>(sliceScrollThreadQueue),
 				new ThreadFactory() {
+					private java.util.concurrent.atomic.AtomicInteger threadCount = new AtomicInteger(0);
+
 					@Override
 					public Thread newThread(Runnable r) {
-						return new ESSliceScrollThread(r);
+						int num = threadCount.incrementAndGet();
+						return new ESSliceScrollThread(r,num);
 					}
-				},new BlockedTaskRejectedExecutionHandler(  sliceScrollBlockedWaitTimeout));
+				},new BlockedTaskRejectedExecutionHandler("Slice Scroll Query",  sliceScrollBlockedWaitTimeout));
+		return blockedExecutor;
+	}
+
+	public static ExecutorService buildScrollThreadPool(int scrollThreadCount,int scrollThreadQueue,long scrollBlockedWaitTimeout){
+//		ExecutorService executor = Executors.newFixedThreadPool(this.getThreadCount(), new ThreadFactory() {
+//			@Override
+//			public Thread newThread(Runnable r) {
+//				return new DBESThread(r);
+//			}
+//		});
+
+		ExecutorService blockedExecutor = new ThreadPoolExecutor(scrollThreadCount, scrollThreadCount,
+				0L, TimeUnit.MILLISECONDS,
+				new ArrayBlockingQueue<Runnable>(scrollThreadQueue),
+				new ThreadFactory() {
+					private AtomicInteger threadCount = new AtomicInteger(0);
+
+					@Override
+					public Thread newThread(Runnable r) {
+						int num = threadCount.incrementAndGet();
+						return new ESScrollThread(r,num);
+					}
+				},new BlockedTaskRejectedExecutionHandler( "Scroll Query", scrollBlockedWaitTimeout));
 		return blockedExecutor;
 	}
 }

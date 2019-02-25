@@ -347,6 +347,10 @@ public abstract class BaseESProperties {
 		private String showTemplate;
 		private String sliceScrollThreadCount;
 		private String sliceScrollThreadQueue;
+		private String sliceScrollBlockedWaitTimeout;
+		private String scrollThreadCount;
+		private String scrollThreadQueue;
+		private String scrollBlockedWaitTimeout;
 		private String discoverHost;
 		public Rest getRest() {
 			return rest;
@@ -410,6 +414,38 @@ public abstract class BaseESProperties {
 
 		public void setSliceScrollThreadCount(String sliceScrollThreadCount) {
 			this.sliceScrollThreadCount = sliceScrollThreadCount;
+		}
+
+		public String getSliceScrollBlockedWaitTimeout() {
+			return sliceScrollBlockedWaitTimeout;
+		}
+
+		public void setSliceScrollBlockedWaitTimeout(String sliceScrollBlockedWaitTimeout) {
+			this.sliceScrollBlockedWaitTimeout = sliceScrollBlockedWaitTimeout;
+		}
+
+		public String getScrollBlockedWaitTimeout() {
+			return scrollBlockedWaitTimeout;
+		}
+
+		public void setScrollBlockedWaitTimeout(String scrollBlockedWaitTimeout) {
+			this.scrollBlockedWaitTimeout = scrollBlockedWaitTimeout;
+		}
+
+		public String getScrollThreadQueue() {
+			return scrollThreadQueue;
+		}
+
+		public void setScrollThreadQueue(String scrollThreadQueue) {
+			this.scrollThreadQueue = scrollThreadQueue;
+		}
+
+		public String getScrollThreadCount() {
+			return scrollThreadCount;
+		}
+
+		public void setScrollThreadCount(String scrollThreadCount) {
+			this.scrollThreadCount = scrollThreadCount;
 		}
 	}
 	public static class Dslfile{
@@ -532,6 +568,18 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadQueue()))
 				properties.put(_name+"elasticsearch.sliceScrollThreadQueue",this.getElasticsearch().getSliceScrollThreadQueue());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadQueue()))
+				properties.put(_name+"elasticsearch.sliceScrollBlockedWaitTimeout",this.getElasticsearch().getSliceScrollBlockedWaitTimeout());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadCount()))
+				properties.put(_name+"elasticsearch.scrollThreadCount",this.getElasticsearch().getScrollThreadCount());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadQueue()))
+				properties.put(_name+"elasticsearch.scrollThreadQueue",this.getElasticsearch().getScrollThreadQueue());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadQueue()))
+				properties.put(_name+"elasticsearch.scrollBlockedWaitTimeout",this.getElasticsearch().getScrollBlockedWaitTimeout());
 
 		}
 

@@ -31,6 +31,7 @@ public class SliceScrollResult<T> implements SliceScrollResultInf<T> {
 	private ESDatas<T> sliceResponse;
 	private ScrollHandler<T> scrollHandler;
 	private boolean useDefaultScrollHandler = false;
+	private HandlerInfo handlerInfo;
 
 	//辅助方法，用来累计每次scroll获取到的记录数
 	public void incrementSize(int size){
@@ -72,12 +73,14 @@ public class SliceScrollResult<T> implements SliceScrollResultInf<T> {
 		}
 		return this.scrollHandler;
 	}
-	public ScrollHandler<T> setScrollHandler(ESDatas<T> sliceResponse) {
+	public ScrollHandler<T> setScrollHandler(ESDatas<T> sliceResponse,HandlerInfo handlerInfo) {
 		if (this.scrollHandler != null)
 			return this.scrollHandler;
 		useDefaultScrollHandler = true;
 		this.scrollHandler = new DefualtSliceScrollHandler<T>(sliceResponse);
 		this.sliceResponse = sliceResponse;
+		this.handlerInfo = handlerInfo;
+
 		return this.scrollHandler;
 
 
