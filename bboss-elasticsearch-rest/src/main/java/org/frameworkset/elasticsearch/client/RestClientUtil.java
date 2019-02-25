@@ -1818,18 +1818,20 @@ public class RestClientUtil extends ClientUtil{
 				if (_scrollHandler == null) {
 					useDefaultHandler = true;
 					_scrollHandler = sliceScrollResult.setScrollHandler(sliceResponse,handlerInfo);
+					sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
 				}
 				else {
 					if(parallel) {
-						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
 						tasks.add(executorService.submit(scrollTask));
 					}
 					else {
 						_scrollHandler.handle(sliceResponse, handlerInfo);
+						sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
 					}
 					sliceScrollResult.setSliceResponse(sliceResponse);
 				}
-				sliceScrollResult.incrementSize(sliceDatas.size());//统计实际处理的文档数量
+
 				ESDatas<T> _sliceResponse = null;
 				List<T> _sliceDatas = null;
 				do {
@@ -1851,17 +1853,19 @@ public class RestClientUtil extends ClientUtil{
 					scrollId = sliceScrollId;
 					if(!useDefaultHandler ) {
 						if(parallel) {
-							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
 							tasks.add(executorService.submit(scrollTask));
 						}
 						else{
 							_scrollHandler.handle(_sliceResponse, handlerInfo);
+							sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
 						}
 					}
 					else {
 						_scrollHandler.handle(_sliceResponse, handlerInfo);
+						sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
 					}
-					sliceScrollResult.incrementSize(_sliceDatas.size());//统计实际处理的文档数量
+
 				} while (true);
 			}
 			if(tasks != null && tasks.size() > 0)

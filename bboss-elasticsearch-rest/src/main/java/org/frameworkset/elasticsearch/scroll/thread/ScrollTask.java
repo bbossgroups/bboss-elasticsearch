@@ -19,6 +19,7 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.scroll.HandlerInfo;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
+import org.frameworkset.elasticsearch.scroll.SliceScrollResultInf;
 
 /**
  * <p>Description: </p>
@@ -33,17 +34,28 @@ public class ScrollTask<T> implements Runnable {
 	private ESDatas<T> response;
 //	private int taskId;
 	private HandlerInfo handlerInfo;
+	private SliceScrollResultInf<T> sliceScrollResult;
 
 	public ScrollTask(ScrollHandler<T> scrollHandler, ESDatas<T> response, HandlerInfo handlerInfo) {
 		this.scrollHandler = scrollHandler;
 		this.response = response;
 		this.handlerInfo = handlerInfo;
+
+	}
+
+	public ScrollTask(ScrollHandler<T> scrollHandler, ESDatas<T> response, HandlerInfo handlerInfo, SliceScrollResultInf<T> sliceScrollResult) {
+		this.scrollHandler = scrollHandler;
+		this.response = response;
+		this.handlerInfo = handlerInfo;
+		this.sliceScrollResult = sliceScrollResult;
 	}
 
 	@Override
 	public void run() {
 		try {
 			scrollHandler.handle(response,handlerInfo);
+			if(sliceScrollResult != null)
+				sliceScrollResult.incrementSize(response.getDatas().size());//统计实际处理的文档数量
 		}  catch (	ElasticSearchException e) {
 			throw e;
 		} catch (Exception e) {
