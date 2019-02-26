@@ -1682,18 +1682,26 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchAllParallel(String index,  final int fetchSize ,ScrollHandler<T> scrollHandler,final Class<T> type,int max) throws ElasticSearchException{
-		SliceScroll sliceScroll = new SliceScroll() {
-			@Override
-			public String buildSliceDsl(int sliceId, int max) {
-				StringBuilder builder = new StringBuilder();
-				String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(sliceId).append(",\"max\": ")
-						.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}},\"sort\": [\"_doc\"]}").toString();
-				return sliceDsl;
+		if(!this.client.isV1()) {
+			SliceScroll sliceScroll = new SliceScroll() {
+				@Override
+				public String buildSliceDsl(int sliceId, int max) {
+					StringBuilder builder = new StringBuilder();
+					String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(sliceId).append(",\"max\": ")
+							.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}},\"sort\": [\"_doc\"]}").toString();
+					return sliceDsl;
 //				return buildSliceDsl(i,max, params, dslTemplate);
-			}
-		};
+				}
+			};
 
-		return _slice(index+"/_search",  scrollHandler,type,max,"1m",sliceScroll);
+			return _slice(index + "/_search", scrollHandler, type, max, "1m", sliceScroll);
+		}
+		else{
+			StringBuilder builder = new StringBuilder();
+			String queryAll = builder.append("{ \"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}},\"sort\": [\"_doc\"]}").toString();
+			builder.setLength(0);
+			return this.scrollParallel(builder.append(index).append("/_search").toString(),queryAll,"10m",type,scrollHandler);
+		}
 
 	}
 	/**
