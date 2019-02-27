@@ -66,6 +66,9 @@ public class BaseBuilder {
 
 	/**批量获取数据大小*/
 	protected int batchSize = 1000;
+
+
+
 	/**
 	 * use parallel import:
 	 *  true yes

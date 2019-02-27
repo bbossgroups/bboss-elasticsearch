@@ -100,6 +100,14 @@ public class ExportBuilder extends BaseBuilder{
  esjdbcResultSet.setEsIdGenerator(esIdGenerator);*/
 		return es2DB;
 	}
+	public boolean isParallel() {
+		return parallel;
+	}
+
+	public ExportBuilder setParallel(boolean parallel) {
+		this.parallel = parallel;
+		return this;
+	}
 	public DataStream builder(){
 		this.buildDBConfig();
 		try {

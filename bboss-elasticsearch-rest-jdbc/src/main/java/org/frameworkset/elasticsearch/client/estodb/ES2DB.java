@@ -62,7 +62,11 @@ public class ES2DB {
 	private int threadCount = 200;
 	private int queue = Integer.MAX_VALUE;
 	private String applicationPropertiesFile;
+	/**
+	 * 是否同步等待批处理作业结束，true 等待 false 不等待
+	 */
 	private boolean asyn;
+
 	private boolean sliceQuery;
 	private int sliceSize;
 	/**
@@ -152,7 +156,13 @@ public class ES2DB {
 		ESExporterScrollHandler esExporterScrollHandler = new ESExporterScrollHandler(this);
 		ESDatas<Map> response = null;
 		if(!this.sliceQuery) {
-			response = clientUtil.scroll(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+			if(!this.isParallel()) {
+				response = clientUtil.scroll(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+			}
+			else
+			{
+				response = clientUtil.scrollParallel(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+			}
 		}
 		else{
 			response = clientUtil.scrollSliceParallel(getQueryUrl(), getDslName(),  params, getScrollLiveTime(),Map.class, esExporterScrollHandler);
