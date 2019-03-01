@@ -43,7 +43,7 @@ public class ContextImpl implements Context {
 	public Context addFieldValue(String fieldName, Object value) {
 		if(this.fieldValues == null)
 			fieldValues = new ArrayList<FieldMeta>();
-		ImportBuilder.addFieldValue(fieldValues,fieldName,value);
+		DB2ESImportBuilder.addFieldValue(fieldValues,fieldName,value);
 		return this;
 	}
 
@@ -51,7 +51,7 @@ public class ContextImpl implements Context {
 	public Context addFieldValue(String fieldName, String dateFormat, Object value) {
 		if(this.fieldValues == null)
 			fieldValues = new ArrayList<FieldMeta>();
-		ImportBuilder.addFieldValue(fieldValues,fieldName,dateFormat,value,esjdbc.getLocale(),esjdbc.getTimeZone());
+		DB2ESImportBuilder.addFieldValue(fieldValues,fieldName,dateFormat,value,esjdbc.getLocale(),esjdbc.getTimeZone());
 		return this;
 	}
 
@@ -59,7 +59,7 @@ public class ContextImpl implements Context {
 	public Context addFieldValue(String fieldName, String dateFormat, Object value, String locale, String timeZone) {
 		if(this.fieldValues == null)
 			fieldValues = new ArrayList<FieldMeta>();
-		ImportBuilder.addFieldValue(fieldValues,fieldName,dateFormat,value,locale,timeZone);
+		DB2ESImportBuilder.addFieldValue(fieldValues,fieldName,dateFormat,value,locale,timeZone);
 		return this;
 	}
 
@@ -68,7 +68,7 @@ public class ContextImpl implements Context {
 		if(fieldMetaMap == null){
 			fieldMetaMap = new HashMap<String,FieldMeta>();
 		}
-		ImportBuilder.addIgnoreFieldMapping(fieldMetaMap,dbColumnName);
+		DB2ESImportBuilder.addIgnoreFieldMapping(fieldMetaMap,dbColumnName);
 		return this;
 	}
 

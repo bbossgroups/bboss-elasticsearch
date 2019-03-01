@@ -27,14 +27,12 @@ import java.sql.SQLException;
 /**
  * 数据库同步到Elasticsearch
  */
-public class DataStreamImpl extends DataStream{
+public class DB2ESDataStreamImpl extends DataStream{
 	private ESJDBC esjdbc;
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 
-	public void execute() throws ESDataImportException{
-		db2es();
-	}
+
 
 	@Override
 	public void stop() {
@@ -47,7 +45,7 @@ public class DataStreamImpl extends DataStream{
 	 * @throws ESDataImportException
 	 * @deprecated use execute()
 	 */
-	public void db2es() throws ESDataImportException{
+	public void execute() throws ESDataImportException{
 		if(esjdbc == null){
 			throw new ESDataImportException("ESJDBC is null.");
 		}

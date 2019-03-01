@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.util.*;
 
-public class ImportBuilder extends BaseBuilder{
-	private static Logger logger = LoggerFactory.getLogger(ImportBuilder.class);
+public class DB2ESImportBuilder extends BaseBuilder{
+	private static Logger logger = LoggerFactory.getLogger(DB2ESImportBuilder.class);
 	protected String sqlFilepath;
-	private ImportBuilder(){
+	protected DB2ESImportBuilder(){
 
 	}
 
@@ -39,7 +39,7 @@ public class ImportBuilder extends BaseBuilder{
 		return showSql;
 	}
 
-	public ImportBuilder setShowSql(boolean showSql) {
+	public DB2ESImportBuilder setShowSql(boolean showSql) {
 		this.showSql = showSql;
 		return this;
 	}
@@ -47,7 +47,7 @@ public class ImportBuilder extends BaseBuilder{
 		return useLowcase;
 	}
 
-	public ImportBuilder setUseLowcase(Boolean useLowcase) {
+	public DB2ESImportBuilder setUseLowcase(Boolean useLowcase) {
 		this.useLowcase = useLowcase;
 		return this;
 	}
@@ -220,15 +220,15 @@ public class ImportBuilder extends BaseBuilder{
 	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
 	private DataRefactor dataRefactor;
 
-	public static ImportBuilder newInstance(){
-		return new ImportBuilder();
+	public static DB2ESImportBuilder newInstance(){
+		return new DB2ESImportBuilder();
 	}
-	public ImportBuilder setResultSet(ResultSet resultSet){
+	public DB2ESImportBuilder setResultSet(ResultSet resultSet){
 		this.resultSet = resultSet;
 		return this;
 	}
 
-	public ImportBuilder setStatementInfo(StatementInfo statementInfo){
+	public DB2ESImportBuilder setStatementInfo(StatementInfo statementInfo){
 		this.statementInfo = statementInfo;
 		return this;
 	}
@@ -256,12 +256,12 @@ public class ImportBuilder extends BaseBuilder{
 		fieldMeta.setDateFormateMeta(dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone));
 		return fieldMeta;
 	}
-	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName){
+	public DB2ESImportBuilder addFieldMapping(String dbColumnName, String esFieldName){
 		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName,null ));
 		return this;
 	}
 
-	public ImportBuilder addIgnoreFieldMapping(String dbColumnName){
+	public DB2ESImportBuilder addIgnoreFieldMapping(String dbColumnName){
 		addIgnoreFieldMapping(fieldMetaMap, dbColumnName);
 		return this;
 	}
@@ -270,12 +270,12 @@ public class ImportBuilder extends BaseBuilder{
 		fieldMetaMap.put(dbColumnName.toLowerCase(),buildIgnoreFieldMeta(  dbColumnName));
 	}
 
-	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat){
+	public DB2ESImportBuilder addFieldMapping(String dbColumnName, String esFieldName, String dateFormat){
 		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat));
 		return this;
 	}
 
-	public ImportBuilder addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
+	public DB2ESImportBuilder addFieldMapping(String dbColumnName, String esFieldName, String dateFormat, String locale, String timeZone){
 		this.fieldMetaMap.put(dbColumnName.toLowerCase(),buildFieldMeta(  dbColumnName,  esFieldName ,dateFormat,  locale,  timeZone));
 		return this;
 	}
@@ -285,67 +285,67 @@ public class ImportBuilder extends BaseBuilder{
 
 
 
-	public ImportBuilder setTimeZone(String timeZone) {
+	public DB2ESImportBuilder setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 		return this;
 	}
 
-	public ImportBuilder setLocale(String locale) {
+	public DB2ESImportBuilder setLocale(String locale) {
 		this.locale = locale;
 		return this;
 	}
 
-	public ImportBuilder setDateFormat(String dateFormat) {
+	public DB2ESImportBuilder setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
 		return this;
 	}
 
-	public ImportBuilder setUseJavaName(Boolean useJavaName) {
+	public DB2ESImportBuilder setUseJavaName(Boolean useJavaName) {
 		this.useJavaName = useJavaName;
 		return this;
 	}
 
-	public ImportBuilder setEsVersionType(String esVersionType) {
+	public DB2ESImportBuilder setEsVersionType(String esVersionType) {
 		this.esVersionType = esVersionType;
 		return this;
 	}
 
-	public ImportBuilder setEsVersionField(String esVersionField) {
+	public DB2ESImportBuilder setEsVersionField(String esVersionField) {
 		this.esVersionField = esVersionField;
 		return this;
 	}
 
-	public ImportBuilder setEsReturnSource(Boolean esReturnSource) {
+	public DB2ESImportBuilder setEsReturnSource(Boolean esReturnSource) {
 		this.esReturnSource = esReturnSource;
 		return this;
 	}
 
-	public ImportBuilder setEsRetryOnConflict(Integer esRetryOnConflict) {
+	public DB2ESImportBuilder setEsRetryOnConflict(Integer esRetryOnConflict) {
 		this.esRetryOnConflict = esRetryOnConflict;
 		return this;
 	}
 
-	public ImportBuilder setEsDocAsUpsert(Boolean esDocAsUpsert) {
+	public DB2ESImportBuilder setEsDocAsUpsert(Boolean esDocAsUpsert) {
 		this.esDocAsUpsert = esDocAsUpsert;
 		return this;
 	}
 
-	public ImportBuilder setRoutingValue(String routingValue) {
+	public DB2ESImportBuilder setRoutingValue(String routingValue) {
 		this.routingValue = routingValue;
 		return this;
 	}
 
-	public ImportBuilder setRoutingField(String routingField) {
+	public DB2ESImportBuilder setRoutingField(String routingField) {
 		this.routingField = routingField;
 		return this;
 	}
 
-	public ImportBuilder setEsParentIdField(String esParentIdField) {
+	public DB2ESImportBuilder setEsParentIdField(String esParentIdField) {
 		this.esParentIdField = esParentIdField;
 		return this;
 	}
 
-	public ImportBuilder setEsIdField(String esIdField) {
+	public DB2ESImportBuilder setEsIdField(String esIdField) {
 		this.esIdField = esIdField;
 		return this;
 	}
@@ -419,6 +419,10 @@ public class ImportBuilder extends BaseBuilder{
 		esjdbcResultSet.setUseLowcase(this.useLowcase);
 		esjdbcResultSet.setPrintTaskLog(this.printTaskLog);
 		esjdbcResultSet.setEsIdGenerator(esIdGenerator);
+		if(this.exportResultHandler != null){
+			DB2ESExportResultHandler db2ESExportResultHandler = new DB2ESExportResultHandler(this.exportResultHandler);
+			esjdbcResultSet.setExportResultHandler(db2ESExportResultHandler);
+		}
 		return esjdbcResultSet;
 	}
 
@@ -433,74 +437,74 @@ public class ImportBuilder extends BaseBuilder{
 
 		}
 		ESJDBC esjdbcResultSet = this.buildESJDBCConfig();
-		DataStreamImpl dataStream = new DataStreamImpl();
+		DB2ESDataStreamImpl  dataStream = new DB2ESDataStreamImpl();
 		dataStream.setEsjdbc(esjdbcResultSet);
 		return dataStream;
 	}
 
 
-	public ImportBuilder setIndexType(String indexType) {
+	public DB2ESImportBuilder setIndexType(String indexType) {
 		this.indexType = indexType;
 		return this;
 	}
 
-	public ImportBuilder setIndex(String index) {
+	public DB2ESImportBuilder setIndex(String index) {
 		this.index = index;
 		return this;
 	}
 
-	public ImportBuilder setBatchSize(int batchSize) {
+	public DB2ESImportBuilder setBatchSize(int batchSize) {
 		this.batchSize = batchSize;
 		return this;
 	}
 
-	public ImportBuilder setRefreshOption(String refreshOption) {
+	public DB2ESImportBuilder setRefreshOption(String refreshOption) {
 		this.refreshOption = refreshOption;
 		return this;
 	}
 
-	public ImportBuilder setDbName(String dbName) {
+	public DB2ESImportBuilder setDbName(String dbName) {
 		freezen = true;
 		this.dbName = dbName;
 		return this;
 	}
 
-	public ImportBuilder setSql(String sql) {
+	public DB2ESImportBuilder setSql(String sql) {
 		this.sql = sql;
 		return this;
 	}
 
-	public ImportBuilder setDbDriver(String dbDriver) {
+	public DB2ESImportBuilder setDbDriver(String dbDriver) {
 		freezen = true;
 		this.dbDriver = dbDriver;
 		return this;
 	}
 
-	public ImportBuilder setDbUrl(String dbUrl) {
+	public DB2ESImportBuilder setDbUrl(String dbUrl) {
 		freezen = true;
 		this.dbUrl = dbUrl;
 		return this;
 	}
 
-	public ImportBuilder setDbUser(String dbUser) {
+	public DB2ESImportBuilder setDbUser(String dbUser) {
 		freezen = true;
 		this.dbUser = dbUser;
 		return this;
 	}
 
-	public ImportBuilder setDbPassword(String dbPassword) {
+	public DB2ESImportBuilder setDbPassword(String dbPassword) {
 		freezen = true;
 		this.dbPassword = dbPassword;
 		return this;
 	}
 
-	public ImportBuilder setValidateSQL(String validateSQL) {
+	public DB2ESImportBuilder setValidateSQL(String validateSQL) {
 		freezen = true;
 		this.validateSQL = validateSQL;
 		return this;
 	}
 
-	public ImportBuilder setUsePool(boolean usePool) {
+	public DB2ESImportBuilder setUsePool(boolean usePool) {
 		freezen = true;
 		this.usePool = usePool;
 		return this;
@@ -518,7 +522,7 @@ public class ImportBuilder extends BaseBuilder{
 		return parallel;
 	}
 
-	public ImportBuilder setParallel(boolean parallel) {
+	public DB2ESImportBuilder setParallel(boolean parallel) {
 		this.parallel = parallel;
 		return this;
 	}
@@ -527,7 +531,7 @@ public class ImportBuilder extends BaseBuilder{
 		return threadCount;
 	}
 
-	public ImportBuilder setThreadCount(int threadCount) {
+	public DB2ESImportBuilder setThreadCount(int threadCount) {
 		this.threadCount = threadCount;
 		return this;
 	}
@@ -544,12 +548,12 @@ public class ImportBuilder extends BaseBuilder{
 		return asyn;
 	}
 
-	public ImportBuilder setAsyn(boolean asyn) {
+	public DB2ESImportBuilder setAsyn(boolean asyn) {
 		this.asyn = asyn;
 		return this;
 	}
 
-	public ImportBuilder setContinueOnError(boolean continueOnError) {
+	public DB2ESImportBuilder setContinueOnError(boolean continueOnError) {
 		this.continueOnError = continueOnError;
 		return this;
 	}
@@ -560,7 +564,7 @@ public class ImportBuilder extends BaseBuilder{
 	 * @param value
 	 * @return
 	 */
-	public ImportBuilder addFieldValue(String fieldName,Object value){
+	public DB2ESImportBuilder addFieldValue(String fieldName, Object value){
 		addFieldValue(  fieldValues,  fieldName,  value);
 		return this;
 	}
@@ -572,11 +576,11 @@ public class ImportBuilder extends BaseBuilder{
 	 * @param value
 	 * @return
 	 */
-	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value){
+	public DB2ESImportBuilder addFieldValue(String fieldName, String dateFormat, Object value){
 		addFieldValue(  fieldValues,  fieldName,  dateFormat,  value,  locale,  timeZone);
 		return this;
 	}
-	public ImportBuilder addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone){
+	public DB2ESImportBuilder addFieldValue(String fieldName, String dateFormat, Object value, String locale, String timeZone){
 		addFieldValue(  fieldValues,  fieldName,  dateFormat,  value,  locale,  timeZone);
 		return this;
 	}
@@ -615,7 +619,7 @@ public class ImportBuilder extends BaseBuilder{
 		return dataRefactor;
 	}
 
-	public ImportBuilder setDataRefactor(DataRefactor dataRefactor) {
+	public DB2ESImportBuilder setDataRefactor(DataRefactor dataRefactor) {
 		this.dataRefactor = dataRefactor;
 		return this;
 	}
@@ -632,7 +636,7 @@ public class ImportBuilder extends BaseBuilder{
 		return esVersionValue;
 	}
 
-	public ImportBuilder setEsVersionValue(Object esVersionValue) {
+	public DB2ESImportBuilder setEsVersionValue(Object esVersionValue) {
 		this.esVersionValue = esVersionValue;
 		return this;
 	}
@@ -641,7 +645,7 @@ public class ImportBuilder extends BaseBuilder{
 		return discardBulkResponse;
 	}
 
-	public ImportBuilder setDiscardBulkResponse(boolean discardBulkResponse) {
+	public DB2ESImportBuilder setDiscardBulkResponse(boolean discardBulkResponse) {
 		this.discardBulkResponse = discardBulkResponse;
 		return this;
 	}
@@ -650,13 +654,13 @@ public class ImportBuilder extends BaseBuilder{
 		return debugResponse;
 	}
 
-	public ImportBuilder setDebugResponse(boolean debugResponse) {
+	public DB2ESImportBuilder setDebugResponse(boolean debugResponse) {
 		this.debugResponse = debugResponse;
 		return this;
 	}
 
 
-	public ImportBuilder setPeriod(Long period) {
+	public DB2ESImportBuilder setPeriod(Long period) {
 		if(scheduleConfig == null){
 			scheduleConfig = new ScheduleConfig();
 		}
@@ -665,7 +669,7 @@ public class ImportBuilder extends BaseBuilder{
 	}
 
 
-	public ImportBuilder setDeyLay(Long deyLay) {
+	public DB2ESImportBuilder setDeyLay(Long deyLay) {
 		if(scheduleConfig == null){
 			scheduleConfig = new ScheduleConfig();
 		}
@@ -675,7 +679,7 @@ public class ImportBuilder extends BaseBuilder{
 
 
 
-	public ImportBuilder setScheduleDate(Date scheduleDate) {
+	public DB2ESImportBuilder setScheduleDate(Date scheduleDate) {
 		if(scheduleConfig == null){
 			scheduleConfig = new ScheduleConfig();
 		}
@@ -683,7 +687,7 @@ public class ImportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	public ImportBuilder setFixedRate(Boolean fixedRate) {
+	public DB2ESImportBuilder setFixedRate(Boolean fixedRate) {
 		if(scheduleConfig == null){
 			scheduleConfig = new ScheduleConfig();
 		}
@@ -699,7 +703,7 @@ public class ImportBuilder extends BaseBuilder{
 		return importIncreamentConfig;
 	}
 
-	public ImportBuilder setDateLastValueColumn(String dateLastValueColumn) {
+	public DB2ESImportBuilder setDateLastValueColumn(String dateLastValueColumn) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -708,7 +712,7 @@ public class ImportBuilder extends BaseBuilder{
 	}
 
 
-	public ImportBuilder setNumberLastValueColumn(String numberLastValueColumn) {
+	public DB2ESImportBuilder setNumberLastValueColumn(String numberLastValueColumn) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -717,7 +721,7 @@ public class ImportBuilder extends BaseBuilder{
 	}
 
 
-	public ImportBuilder setLastValueStorePath(String lastValueStorePath) {
+	public DB2ESImportBuilder setLastValueStorePath(String lastValueStorePath) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -727,7 +731,7 @@ public class ImportBuilder extends BaseBuilder{
 
 
 
-	public ImportBuilder setLastValueStoreTableName(String lastValueStoreTableName) {
+	public DB2ESImportBuilder setLastValueStoreTableName(String lastValueStoreTableName) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -735,7 +739,7 @@ public class ImportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	public ImportBuilder setFromFirst(boolean fromFirst) {
+	public DB2ESImportBuilder setFromFirst(boolean fromFirst) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -743,7 +747,7 @@ public class ImportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	public ImportBuilder setLastValue(Long lastValue) {
+	public DB2ESImportBuilder setLastValue(Long lastValue) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -751,7 +755,7 @@ public class ImportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	public ImportBuilder setLastValueType(int lastValueType) {
+	public DB2ESImportBuilder setLastValueType(int lastValueType) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}
@@ -760,12 +764,12 @@ public class ImportBuilder extends BaseBuilder{
 	}
 
 
-	public ImportBuilder setSqlFilepath(String sqlFilepath) {
+	public DB2ESImportBuilder setSqlFilepath(String sqlFilepath) {
 		this.sqlFilepath = sqlFilepath;
 		return this;
 	}
 
-	public ImportBuilder setJdbcFetchSize(Integer jdbcFetchSize) {
+	public DB2ESImportBuilder setJdbcFetchSize(Integer jdbcFetchSize) {
 		this.jdbcFetchSize = jdbcFetchSize;
 		return  this;
 	}
@@ -774,11 +778,11 @@ public class ImportBuilder extends BaseBuilder{
 		return scheduleBatchSize;
 	}
 
-	public ImportBuilder setScheduleBatchSize(Integer scheduleBatchSize) {
+	public DB2ESImportBuilder setScheduleBatchSize(Integer scheduleBatchSize) {
 		this.scheduleBatchSize = scheduleBatchSize;
 		return this;
 	}
-	public ImportBuilder addCallInterceptor(CallInterceptor interceptor){
+	public DB2ESImportBuilder addCallInterceptor(CallInterceptor interceptor){
 		if(this.callInterceptors == null){
 			this.callInterceptors = new ArrayList<CallInterceptor>();
 		}
@@ -790,7 +794,7 @@ public class ImportBuilder extends BaseBuilder{
 		return printTaskLog;
 	}
 
-	public ImportBuilder setPrintTaskLog(boolean printTaskLog) {
+	public DB2ESImportBuilder setPrintTaskLog(boolean printTaskLog) {
 		this.printTaskLog = printTaskLog;
 		return this;
 	}
@@ -805,12 +809,12 @@ public class ImportBuilder extends BaseBuilder{
 		return sqlName;
 	}
 
-	public ImportBuilder setSqlName(String sqlName) {
+	public DB2ESImportBuilder setSqlName(String sqlName) {
 		this.sqlName = sqlName;
 		return this;
 	}
 
-	public ImportBuilder setEsIdGenerator(EsIdGenerator esIdGenerator) {
+	public DB2ESImportBuilder setEsIdGenerator(EsIdGenerator esIdGenerator) {
 		if(esIdGenerator != null)
 			this.esIdGenerator = 	esIdGenerator;
 		return this;
@@ -834,5 +838,12 @@ public class ImportBuilder extends BaseBuilder{
 
 	}
 
+	public ExportResultHandler getExportResultHandler() {
+		return exportResultHandler;
+	}
 
+	public DB2ESImportBuilder setExportResultHandler(ExportResultHandler exportResultHandler) {
+		this.exportResultHandler = exportResultHandler;
+		return this;
+	}
 }

@@ -35,8 +35,8 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ExportBuilder extends BaseBuilder{
-	private static Logger logger = LoggerFactory.getLogger(ExportBuilder.class);
+public class ES2DBExportBuilder extends BaseBuilder{
+	private static Logger logger = LoggerFactory.getLogger(ES2DBExportBuilder.class);
 	private Integer insertBatchSize ;
 	private String scrollLiveTime = "100m";
 	private BatchHandler<Map> batchHandler;
@@ -104,7 +104,7 @@ public class ExportBuilder extends BaseBuilder{
 		return parallel;
 	}
 
-	public ExportBuilder setParallel(boolean parallel) {
+	public ES2DBExportBuilder setParallel(boolean parallel) {
 		this.parallel = parallel;
 		return this;
 	}
@@ -127,7 +127,7 @@ public class ExportBuilder extends BaseBuilder{
 		return printTaskLog;
 	}
 
-	public ExportBuilder setPrintTaskLog(boolean printTaskLog) {
+	public ES2DBExportBuilder setPrintTaskLog(boolean printTaskLog) {
 		this.printTaskLog = printTaskLog;
 		return this;
 	}
@@ -136,7 +136,7 @@ public class ExportBuilder extends BaseBuilder{
 		return callInterceptors;
 	}
 
-	public ExportBuilder setCallInterceptors(List<CallInterceptor> callInterceptors) {
+	public ES2DBExportBuilder setCallInterceptors(List<CallInterceptor> callInterceptors) {
 		this.callInterceptors = callInterceptors;
 		return this;
 	}
@@ -145,7 +145,7 @@ public class ExportBuilder extends BaseBuilder{
 		return applicationPropertiesFile;
 	}
 
-	public ExportBuilder setApplicationPropertiesFile(String applicationPropertiesFile) {
+	public ES2DBExportBuilder setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
 		return this;
 	}
@@ -154,7 +154,7 @@ public class ExportBuilder extends BaseBuilder{
 		return freezen;
 	}
 
-	public ExportBuilder setFreezen(boolean freezen) {
+	public ES2DBExportBuilder setFreezen(boolean freezen) {
 		this.freezen = freezen;
 		return this;
 	}
@@ -163,7 +163,7 @@ public class ExportBuilder extends BaseBuilder{
 		return sql;
 	}
 
-	public ExportBuilder setSql(String sql) {
+	public ES2DBExportBuilder setSql(String sql) {
 		this.sql = sql;
 		return this;
 	}
@@ -173,7 +173,7 @@ public class ExportBuilder extends BaseBuilder{
 		return sqlName;
 	}
 
-	public ExportBuilder setSqlName(String sqlName) {
+	public ES2DBExportBuilder setSqlName(String sqlName) {
 		this.sqlName = sqlName;
 		return this;
 	}
@@ -182,7 +182,7 @@ public class ExportBuilder extends BaseBuilder{
 		return showSql;
 	}
 
-	public ExportBuilder setShowSql(boolean showSql) {
+	public ES2DBExportBuilder setShowSql(boolean showSql) {
 		this.showSql = showSql;
 		return this;
 	}
@@ -191,7 +191,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dbName;
 	}
 
-	public ExportBuilder setDbName(String dbName) {
+	public ES2DBExportBuilder setDbName(String dbName) {
 		this.dbName = dbName;
 		return this;
 	}
@@ -200,7 +200,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dbDriver;
 	}
 
-	public ExportBuilder setDbDriver(String dbDriver) {
+	public ES2DBExportBuilder setDbDriver(String dbDriver) {
 		this.dbDriver = dbDriver;
 		return this;
 	}
@@ -209,7 +209,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dbUrl;
 	}
 
-	public ExportBuilder setDbUrl(String dbUrl) {
+	public ES2DBExportBuilder setDbUrl(String dbUrl) {
 		this.dbUrl = dbUrl;
 		return this;
 	}
@@ -218,7 +218,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dbUser;
 	}
 
-	public ExportBuilder setDbUser(String dbUser) {
+	public ES2DBExportBuilder setDbUser(String dbUser) {
 		this.dbUser = dbUser;
 		return this;
 	}
@@ -227,7 +227,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dbPassword;
 	}
 
-	public ExportBuilder setDbPassword(String dbPassword) {
+	public ES2DBExportBuilder setDbPassword(String dbPassword) {
 		this.dbPassword = dbPassword;
 		return this;
 	}
@@ -236,7 +236,7 @@ public class ExportBuilder extends BaseBuilder{
 		return validateSQL;
 	}
 
-	public ExportBuilder setValidateSQL(String validateSQL) {
+	public ES2DBExportBuilder setValidateSQL(String validateSQL) {
 		this.validateSQL = validateSQL;
 		return this;
 	}
@@ -245,7 +245,7 @@ public class ExportBuilder extends BaseBuilder{
 		return usePool;
 	}
 
-	public ExportBuilder setUsePool(boolean usePool) {
+	public ES2DBExportBuilder setUsePool(boolean usePool) {
 		this.usePool = usePool;
 		return this;
 	}
@@ -256,7 +256,7 @@ public class ExportBuilder extends BaseBuilder{
 		return batchSize;
 	}
 
-	public ExportBuilder setBatchSize(int batchSize) {
+	public ES2DBExportBuilder setBatchSize(int batchSize) {
 		this.batchSize = batchSize;
 		return this;
 	}
@@ -267,7 +267,7 @@ public class ExportBuilder extends BaseBuilder{
 		return insertBatchSize;
 	}
 
-	public ExportBuilder setInsertBatchSize(Integer insertBatchSize) {
+	public ES2DBExportBuilder setInsertBatchSize(Integer insertBatchSize) {
 		this.insertBatchSize = insertBatchSize;
 		return this;
 	}
@@ -276,7 +276,7 @@ public class ExportBuilder extends BaseBuilder{
 		return queryUrl;
 	}
 
-	public ExportBuilder setQueryUrl(String queryUrl) {
+	public ES2DBExportBuilder setQueryUrl(String queryUrl) {
 		this.queryUrl = queryUrl;
 		return this;
 	}
@@ -285,7 +285,7 @@ public class ExportBuilder extends BaseBuilder{
 		return batchHandler;
 	}
 
-	public ExportBuilder setBatchHandler(BatchHandler<Map> batchHandler) {
+	public ES2DBExportBuilder setBatchHandler(BatchHandler<Map> batchHandler) {
 		this.batchHandler = batchHandler;
 		return this;
 	}
@@ -294,7 +294,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dsl2ndSqlFile;
 	}
 
-	public ExportBuilder setDsl2ndSqlFile(String dsl2ndSqlFile) {
+	public ES2DBExportBuilder setDsl2ndSqlFile(String dsl2ndSqlFile) {
 		this.dsl2ndSqlFile = dsl2ndSqlFile;
 		return this;
 	}
@@ -303,7 +303,7 @@ public class ExportBuilder extends BaseBuilder{
 		return dslName;
 	}
 
-	public ExportBuilder setDslName(String dslName) {
+	public ES2DBExportBuilder setDslName(String dslName) {
 		this.dslName = dslName;
 		return this;
 	}
@@ -312,7 +312,7 @@ public class ExportBuilder extends BaseBuilder{
 		return scrollLiveTime;
 	}
 
-	public ExportBuilder setScrollLiveTime(String scrollLiveTime) {
+	public ES2DBExportBuilder setScrollLiveTime(String scrollLiveTime) {
 		this.scrollLiveTime = scrollLiveTime;
 		return this;
 	}
@@ -321,7 +321,7 @@ public class ExportBuilder extends BaseBuilder{
 		return sliceQuery;
 	}
 
-	public ExportBuilder setSliceQuery(boolean sliceQuery) {
+	public ES2DBExportBuilder setSliceQuery(boolean sliceQuery) {
 		this.sliceQuery = sliceQuery;
 		return this;
 	}
@@ -330,14 +330,23 @@ public class ExportBuilder extends BaseBuilder{
 		return sliceSize;
 	}
 
-	public ExportBuilder setSliceSize(int sliceSize) {
+	public ES2DBExportBuilder setSliceSize(int sliceSize) {
 		this.sliceSize = sliceSize;
 		return this;
 	}
-	public ExportBuilder addParam(String key,Object value){
+	public ES2DBExportBuilder addParam(String key,Object value){
 		if(params == null)
 			params = new HashMap();
 		this.params.put(key,value);
+		return this;
+	}
+
+	public ExportResultHandler getExportResultHandler() {
+		return exportResultHandler;
+	}
+
+	public ES2DBExportBuilder setExportResultHandler(ExportResultHandler exportResultHandler) {
+		this.exportResultHandler = exportResultHandler;
 		return this;
 	}
 }

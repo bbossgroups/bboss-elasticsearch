@@ -5,7 +5,7 @@ Bboss is a good elasticsearch Java rest client. It operates and accesses elastic
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
-Elasticsearch version requirements: 2. X,5. X,6. X,+
+Elasticsearch version requirements: 1.X,2.X,5.X,6.X,+
 
 # How to use Elasticsearch BBoss.
 
@@ -15,7 +15,7 @@ First add the maven dependency of BBoss to your pom.xml:
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.3.8</version>
+            <version>5.5.2</version>
         </dependency>
 ```
 
@@ -25,7 +25,7 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.3.8</version>
+            <version>5.5.2</version>
         </dependency>
 ```
 
@@ -127,7 +127,7 @@ https://github.com/bbossgroups/elasticsearch-spring-boot-starter-example
 
 jdk要求： jdk 1.7+
 
-elasticsearch版本要求：2.x,5.x,6.x,+
+elasticsearch版本要求：1.X,2.X,5.X,6.X,+
 
 ## 快速集成和应用 
 

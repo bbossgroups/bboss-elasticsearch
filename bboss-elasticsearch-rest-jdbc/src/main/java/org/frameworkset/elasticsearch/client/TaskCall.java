@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.handler.ESVoidResponseHandler;
+import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +49,15 @@ public class TaskCall implements Runnable {
 	}
 
 	public static String call(String refreshOption,ClientInterface clientInterface,String datas,ESJDBC esjdbc){
+		TaskCommandImpl taskCommand = new TaskCommandImpl();
+		taskCommand.setClientInterface(clientInterface);
+		taskCommand.setRefreshOption(refreshOption);
+		taskCommand.setDatas(datas);
+		taskCommand.setEsjdbc(esjdbc);
+		String data = taskCommand.execute();
+		/**
 		if(esjdbc.isDebugResponse()) {
-			String data = null;
+
 			if (refreshOption == null) {
 				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
 				logger.info(data);
@@ -59,10 +66,10 @@ public class TaskCall implements Runnable {
 				logger.info(data);
 			}
 
-			return data;
+
 		}
 		else{
-			if(esjdbc.isDiscardBulkResponse()) {
+			if(esjdbc.isDiscardBulkResponse() && esjdbc.getExportResultHandler() == null) {
 				ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
 				if (refreshOption == null) {
 					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
@@ -74,18 +81,22 @@ public class TaskCall implements Runnable {
 				return null;
 			}
 			else{
-				String data = null;
+
 				if (refreshOption == null) {
 					data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
 
 				} else {
 					data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
 				}
-				return data;
+
 			}
 
 
+		}*/
+		if(esjdbc.getExportResultHandler() != null){//处理返回值
+			esjdbc.getExportResultHandler().handleResult(  taskCommand,data);
 		}
+		return data;
 	}
 	@Override
 	public void run()   {

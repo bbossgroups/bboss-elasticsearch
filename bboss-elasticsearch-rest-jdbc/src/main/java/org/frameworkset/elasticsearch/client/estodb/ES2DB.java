@@ -20,6 +20,7 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.DBConfig;
+import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ public class ES2DB {
 	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
 	 */
 	private boolean continueOnError = true;
+	private ExportResultHandler exportResultHandler;
 	private static Logger logger = LoggerFactory.getLogger(ES2DB.class);
 	public Map getParams() {
 		return params;
@@ -274,4 +276,11 @@ public class ES2DB {
 		return exportCount;
 	}
 
+	public ExportResultHandler getExportResultHandler() {
+		return exportResultHandler;
+	}
+
+	public void setExportResultHandler(ExportResultHandler exportResultHandler) {
+		this.exportResultHandler = exportResultHandler;
+	}
 }

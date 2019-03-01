@@ -57,6 +57,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * 定时任务拦截器
 	 */
 	private List<CallInterceptor> callInterceptors;
+	private DB2ESExportResultHandler exportResultHandler;
 	public ErrorWrapper getErrorWrapper() {
 		return errorWrapper;
 	}
@@ -94,7 +95,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
 	}
-	private ImportBuilder importBuilder;
+	private DB2ESImportBuilder importBuilder;
 	/**
 	 * use parallel import:
 	 *  true yes
@@ -478,11 +479,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		}
 	}
 
-	public ImportBuilder getImportBuilder() {
+	public DB2ESImportBuilder getImportBuilder() {
 		return importBuilder;
 	}
 
-	public void setImportBuilder(ImportBuilder importBuilder) {
+	public void setImportBuilder(DB2ESImportBuilder importBuilder) {
 		this.importBuilder = importBuilder;
 	}
 
@@ -747,5 +748,18 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setDbConfig(DBConfig dbConfig) {
 		this.dbConfig = dbConfig;
+	}
+
+	public DB2ESExportResultHandler getExportResultHandler() {
+		return exportResultHandler;
+	}
+
+	public void setExportResultHandler(DB2ESExportResultHandler exportResultHandler) {
+		this.exportResultHandler = exportResultHandler;
+	}
+	public int getMaxRetry(){
+		if(this.exportResultHandler != null)
+			return this.exportResultHandler.getMaxRetry();
+		return -1;
 	}
 }

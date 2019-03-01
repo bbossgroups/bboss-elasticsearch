@@ -94,6 +94,7 @@ public class BaseBuilder {
 
 
 	protected Integer jdbcFetchSize;
+	protected ExportResultHandler exportResultHandler;
 	protected void buildDBConfig(){
 		if(!this.freezen) {
 			PropertiesContainer propertiesContainer = new PropertiesContainer();
@@ -125,4 +126,6 @@ public class BaseBuilder {
 
 		}
 	}
+
+
 }
