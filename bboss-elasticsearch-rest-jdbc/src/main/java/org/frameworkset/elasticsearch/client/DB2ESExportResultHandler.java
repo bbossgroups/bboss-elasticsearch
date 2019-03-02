@@ -23,15 +23,15 @@ package org.frameworkset.elasticsearch.client;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DB2ESExportResultHandler implements ExportResultHandler{
+public class DB2ESExportResultHandler implements ExportResultHandler<String,String>{
 	private ExportResultHandler exportResultHandler;
 	public DB2ESExportResultHandler(ExportResultHandler exportResultHandler){
 		this.exportResultHandler = exportResultHandler;
 	}
-	public void success(TaskCommand taskCommand, String result){
+	public void success(TaskCommand<String,String> taskCommand, String result){
 		this.exportResultHandler.success(  taskCommand,   result);
 	}
-	public void error(TaskCommand taskCommand, String result){
+	public void error(TaskCommand<String,String> taskCommand, String result){
 		this.exportResultHandler.error(  taskCommand,   result);
 	}
 
@@ -46,10 +46,10 @@ public class DB2ESExportResultHandler implements ExportResultHandler{
 	 * @param result
 	 *
 	 */
-	public void handleResult(TaskCommand taskCommand, String result){
+	public void handleResult(TaskCommand<String,String> taskCommand, String result){
 
 		if(result == null){
-			success(  taskCommand,   result);
+			error(  taskCommand,   result);
 			return ;
 		}
 		int errorStartIdx = result.indexOf("\"errors\":");

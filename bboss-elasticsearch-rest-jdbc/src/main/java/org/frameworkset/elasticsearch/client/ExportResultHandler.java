@@ -16,15 +16,31 @@ package org.frameworkset.elasticsearch.client;
  */
 
 /**
- * <p>Description: </p>
+ * <p>Description: 任务执行结果处理接口，<DATA,RESULT>中的DATA标识处理数据的类型，RESULT标识返回结果的类型</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
  * @Date 2019/3/1 10:20
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ExportResultHandler {
-	public void success(TaskCommand taskCommand, String result);
-	public void error(TaskCommand taskCommand, String result);
+public interface ExportResultHandler<DATA,RESULT> {
+	/**
+	 * 导入任务成功时执行的回调方法，<DATA,RESULT>中的DATA标识处理数据的类型，RESULT标识返回结果的类型
+	 * @param taskCommand 导入任务相关信息：导入数据，es刷新机制，clientInterface,失败重试次数
+	 * @param result 导入结果，类型由RESULT决定
+	 */
+	public void success(TaskCommand<DATA,RESULT> taskCommand, RESULT result);
+	/**
+	 * 导入任务存在错误时执行的回调方法，<DATA,RESULT>中的DATA标识处理数据的类型，RESULT标识返回结果的类型
+	 * @param taskCommand 导入任务相关信息：导入数据，es刷新机制，clientInterface,失败重试次数
+	 * @param result 导入结果，类型由RESULT决定
+	 */
+	public void error(TaskCommand<DATA,RESULT> taskCommand, RESULT result);
+
+	/**
+	 * 如果对于执行有错误的任务，可以进行修正后重新执行，通过本方法
+	 * 返回允许的最大重试次数
+	 * @return
+	 */
 	public int getMaxRetry();
 }

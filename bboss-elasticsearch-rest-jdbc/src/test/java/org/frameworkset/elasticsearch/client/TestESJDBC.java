@@ -73,8 +73,8 @@ public class TestESJDBC {
 
 	}
 	@Test
-	public void testImportBuilder(){
-		ImportBuilder importBuilder = ImportBuilder.newInstance();
+	public void testDB2ESImportBuilder(){
+		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
 			//清除测试表
 			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");
@@ -131,8 +131,8 @@ public class TestESJDBC {
 	}
 
 	@Test
-	public void testSimpleImportBuilder(){
-		ImportBuilder importBuilder = ImportBuilder.newInstance();
+	public void testSimpleDB2ESImportBuilder(){
+		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
 			//清除测试表
 			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");
@@ -174,8 +174,8 @@ public class TestESJDBC {
 	 * 从外部application.properties文件中加载数据源配置和es配置
 	 */
 	@Test
-	public void testSimpleImportBuilderFromExternalDBConfig(){
-		ImportBuilder importBuilder = ImportBuilder.newInstance();
+	public void testSimpleDB2ESImportBuilderFromExternalDBConfig(){
+		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
 			//清除测试表
 			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");

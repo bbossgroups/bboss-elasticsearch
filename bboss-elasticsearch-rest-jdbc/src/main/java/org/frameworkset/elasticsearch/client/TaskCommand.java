@@ -23,15 +23,15 @@ package org.frameworkset.elasticsearch.client;
  * @author biaoping.yin
  * @version 1.0
  */
-public interface TaskCommand<T,R> {
+public interface TaskCommand<DATA,RESULT> {
 
-	public T getDatas() ;
-
-
-	public void setDatas(T datas) ;
+	public DATA getDatas() ;
 
 
-	public R execute();
+	public void setDatas(DATA datas) ;
+
+
+	public RESULT execute();
 
 	public int getTryCount() ;
 
