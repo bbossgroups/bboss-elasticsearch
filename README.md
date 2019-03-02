@@ -1,7 +1,7 @@
 # Elasticsearch Bboss
 
 Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
-
+https://www.oschina.net/p/bboss-elastic
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
@@ -100,11 +100,13 @@ And last  create a jsp file named testElasticsearch.jsp :
 Put the file into the web project that has been connected to pinpoint, run the program, log on pinpoint to see the execution effect of bboss plugin.
 
 # Elasticsearch Java Demos
-The following Demo and related documentation is compatible with Elasticsearch 2. X,5. X,6. X,+ versions
+The following Demo and related documentation is compatible with Elasticsearch 1.x,2.X,5.X,6.X,+ versions
 ## Elasticsearch demo for Java project:
 https://github.com/bbossgroups/elasticsearch-example
 ## Elasticsearch demo for spring booter 1.x,2.x
+https://github.com/bbossgroups/es_bboss_web
 https://github.com/bbossgroups/elasticsearch-springboot-example
+
 # Fast integration bboss documentation
 [Spring boot integration ElasticSearch case sharing](https://my.oschina.net/bboss/blog/1835601)
 
