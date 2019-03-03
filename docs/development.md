@@ -1,4 +1,4 @@
-## 高性能elasticsearch ORM开发库使用介绍
+# 高性能elasticsearch ORM开发库使用介绍
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
@@ -256,6 +256,7 @@ http.staleConnectionCheckEnabled=false
 
 
 
+
 ## 2.7 DSL配置文件热加载扫描时间间隔配置
 
 \# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
@@ -487,7 +488,6 @@ for (int i = 0; i < applicationsums .size(); i++) {
 	//获取响应时间分段统计信息
 	Map<String, Map<String, Object>> appPeriodstatic = (Map<String, Map<String, Object>>)ResultUtil.getAggBuckets(map, "elapsed_ranges");
 }
-
 ```
 
 
@@ -541,7 +541,6 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 				"demo",//索引类型
 				"3",//文档id
 				Demo.class);
-
 ```
 
 不按日期分表
@@ -590,7 +589,6 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 				"demo",//索引类型
 				"3",//文档id
 				Demo.class);
-
 ```
 
 批量删除文档的示例，这里不举例说明，请访问github [demo](https://gitee.com/bboss/elasticsearchdemo)
@@ -637,7 +635,6 @@ public class TAgentInfo implements java.io.Serializable{
 
 	
 }
-
 ```
 
 **注意事项：如果对象的属性不需要存入索引中，则在字段的定义加上@JsonIgnore注解，例如：**
@@ -645,7 +642,6 @@ public class TAgentInfo implements java.io.Serializable{
 ```
 @JsonIgnore
 private Integer sqlEndElapsed;
-
 ```
 
 
@@ -671,7 +667,6 @@ private Integer sqlEndElapsed;
 				"demo",//索引类型
 				"3",//文档id
 				Map.class);
-
 ```
 
 
@@ -706,7 +701,6 @@ private Integer sqlEndElapsed;
 				"searchWithCustomEscape",//esmapper/demo.xml中定义的dsl语句
 				params,//变量参数
 				Demo.class );
-
 ```
 
 
@@ -728,7 +722,6 @@ private Integer sqlEndElapsed;
 ```
 @ESId //ip属性作为文档唯一标识，根据ip值对应的索引文档存在与否来决定添加或者修改操作
 private String ip;
-
 ```
 
 [@E](https://my.oschina.net/u/2523458)SId同样适用于文档批量创建和修改操作
@@ -764,7 +757,6 @@ private String ip;
 	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId) throws ElasticSearchException;
 
 	public String addDateDocumentWithParentId(String indexName, String indexType, Object bean,Object parentId,String refreshOption) throws ElasticSearchException;
-
 ```
 
 - 批量文档添加和修改-指定文档id和parentId对应的对象字段名称
@@ -820,7 +812,6 @@ private String ip;
 	public abstract String addDateDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
 	public abstract String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException;
-
 ```
 
 批量bean类型导入文档，如需指定docid和parentid,必须通过[E](https://my.oschina.net/u/2523458)SId和ESParentId两个注解或者ClientOptions/UpdateOptions指定docid属性和parentid属性
@@ -834,7 +825,6 @@ public String addDateDocumentsWithIdKey(String indexName, String indexType, List
 
 public abstract String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
 public abstract String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey) throws ElasticSearchException;
-
 ```
 
 
@@ -873,7 +863,6 @@ ClientOptions:主要用于新增/修改操作，可以指定以下属性：
 	 */
 	public abstract String addDocuments(String indexName, String indexType, List<?> beans,ClientOptions ClientOptions) throws ElasticSearchException;
 	/**************************************创建或者修改文档结束**************************************************************/
-
 ```
 
 ClientOptions使用示例：
@@ -886,7 +875,6 @@ clientOption.setIdField("demoId");//设置文档id对应的字段
 String response = clientUtil.addDocuments("demo",//索引表
       "demo",//索引类型
       demos,clientOption);
-
 ```
 
 UpdateOptions：主要用户修改,可以设置以下属性
@@ -896,7 +884,6 @@ private String refreshOption;
 private String detectNoopField;
 private String docasupsertField;
 private String docIdField;
-
 ```
 
  
@@ -926,7 +913,6 @@ private String docIdField;
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException;
-
 ```
 
 
@@ -947,7 +933,6 @@ clientUtil.deleteDocument("demo",//索引表
 clientUtil.deleteDocuments("demo",//索引表
       "demo",//索引类型
       "1","2","3");//文档ids
-
 ```
 
 
@@ -964,7 +949,6 @@ public abstract String updateDocument(String indexName, String indexType, List<?
 public abstract String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
 public abstract String addDateDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException;
 public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
-
 ```
 
 bboss在相关的api增加了refreshOption参数，refreshOption参数的值为，通过指定不同的值来指定索引刷新策略：
@@ -992,7 +976,6 @@ refresh=wait_for to return.
 	false (the default)
 	Take no refresh related actions. The changes made by this request will be made visible at some 
 point after the request returns.
-
 ```
 
 refreshOption 使用实例：
@@ -1002,7 +985,6 @@ refreshOption 使用实例：
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
 				demo,"refresh=true");
-
 ```
 
 
@@ -1029,7 +1011,6 @@ refreshOption 使用实例：
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
 				demo,"version=1");
-
 ```
 
 指定文档版本号同时强制刷新：
@@ -1039,7 +1020,6 @@ refreshOption 使用实例：
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
 				demo,"refresh=true&version=1");
-
 ```
 
 
@@ -1051,7 +1031,6 @@ refreshOption 使用实例：
 ```
 @JsonProperty("max_score")
 private Double maxScore;
-
 ```
 
 
@@ -1116,7 +1095,6 @@ private Double maxScore;
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  executeHttp(String path, String templateName,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException
-
 ```
 
 通过ClientInterface 提供的这个通用http api，我们可以非常方便地实现es中所有不带请求报文的功能
@@ -1131,7 +1109,6 @@ private Double maxScore;
 	 */
 	@Override
 	public String executeHttp(String path, String action) throws ElasticSearchException
-
 ```
 
 通用api的使用案例：**path**参数为相对路径，不需要带ip和端口，在application.properties文件中统一配置
@@ -1165,7 +1142,6 @@ private Double maxScore;
 		System.out.println("HTTP_GET after delete-------------------------");
 		System.out.println(template);
 	}
-
 ```
 
 
@@ -1178,7 +1154,6 @@ private Double maxScore;
 ClientInterface clientUtil = ElasticSearchHelper
                  .getConfigRestClientUtil("logs",//指定logs对应的es集群服务器
                                           "estrace/ESTracesqlMapper.xml");
-
 ```
 
 logs对应的es集群服务器相关参数配置，请参考文档：
@@ -1236,7 +1211,6 @@ logs对应的es集群服务器相关参数配置，请参考文档：
   ctx._source.last = params.last;
   ctx._source.nick = params.nick
 """
-
 ```
 
 - **SQL语句回车换行符替换语法**
@@ -1258,7 +1232,6 @@ logs对应的es集群服务器相关参数配置，请参考文档：
      }
     ]]>
 </property>
-
 ```
 
 - **foreach循环语法**
@@ -1350,7 +1323,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
                 }
             },]]>
     </property>
-
 ```
 
 
@@ -1369,7 +1341,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 {"term": {
                             "applicationName": #[application]
                         }}
-
 ```
 
 如果变量application为String类型，值为testweb,那么替换后得到:
@@ -1378,7 +1349,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 {"term": {
                             "applicationName": "testweb"
                         }}
-
 ```
 
 如果变量application为数字类型，值为100,那么替换后得到:
@@ -1387,7 +1357,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 {"term": {
                             "applicationName": 100
                         }}
-
 ```
 
 变量格式#[aaa]所有格式： 
@@ -1446,14 +1415,12 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 ```
 "asdfaf#[application,quoted=false]s"
-
 ```
 
 变量application的值为testweb，解析后的效果如下：
 
 ```
 "asdfaftestwebs"
-
 ```
 
 - **lpad、rpad** 在通过lpad（左边追加）和rpad（右边追加）变量值两头追加字符串，同时可以通过|指定一个数字，表示追加多少次，示例如下：
@@ -1462,28 +1429,24 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 ```
 "#[application,quoted=false,lpad=#]s"
-
 ```
 
 变量的值为testweb，解析后的效果如下：
 
 ```
 "#testwebs"
-
 ```
 
 带倍数的例子
 
 ```
 "ddd#[application,quoted=false,lpad=#|2,rpad=#|3]s"
-
 ```
 
 变量的值为testweb，解析后的效果如下：
 
 ```
 "ddd##testweb###s"
-
 ```
 
 - **dateformat/locale/timezone** 一组时间相关的属性，用来对时间类型的变量进行转换和处理，示例如下：
@@ -1492,7 +1455,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 "term": {
     "startDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]
 }
-
 ```
 
 变量值设置为new Date(),那么解析后的效果如下：
@@ -1501,7 +1463,6 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
  "term": {
      "startDate": "2018-01-20 12:52:35"
   }
-
 ```
 
 注意：
@@ -1513,12 +1474,10 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
     "startDate": #[date,dateformat=yyyy-MM-dd'T'HH:mm:ss.SSS'Z',timezone=Etc/UTC],
     "endDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,timezone=Asia/Shanghai]
 }
-
 ```
 
 ```
 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC"
-
 ```
 
 \2. 在bean实体对象中日期类型field，**dateformat/locale/timezone属性优先起作用，**注解@JsonFormat，@Column 来指定自定义日期格式其次：
@@ -1527,14 +1486,12 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
 @Column(dataformat = "yyyy-MM-dd HH:mm:ss") 
 protected Date agentStarttime;
-
 ```
 
 ​     如果不指定注解@JsonFormat，@Column，最后默认为日期类型的bean属性采用utc时区的日期格式：
 
 ```
 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC"
-
 ```
 
 - **escape** 用于控制是否对参数值进行特殊字符转义处理，true 处理 false 不处理，默认为空，这时候如果是map传递的参数，默认转义；如果是bean实体传值，如果bean属性指定了@Column(escape="false"),则按照注解中设置的escape属性值来控制是否转义，如果没有在column注解中制定escape，则默认转义处理
@@ -1549,7 +1506,6 @@ protected Date agentStarttime;
 "term": {
      "applicationName": #[applicationName,escape=false,quote=false]
  }
-
 ```
 
 - **$application**
@@ -1562,7 +1518,6 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 {"term": {
                             "applicationName": "$application"
                         }}
-
 ```
 
 如果变量application为String类型，值为testweb,那么替换后得到:
@@ -1571,7 +1526,6 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 {"term": {
                             "applicationName": "testweb"
                         }}
-
 ```
 
 如果变量application为数字类型，值为100,那么替换后得到:
@@ -1580,7 +1534,6 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 {"term": {
          "applicationName": "100" ##数字100被当成String处理了，这种情况下可能会出现不可预知的问题
 }}
-
 ```
 
 $方式的变量还用于逻辑判断和foreach循环。
@@ -1593,14 +1546,12 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 ```
 #set( $hasParam = false )
-
 ```
 
 然后在dsl其他地方可以修改变量的值
 
 ```
 #set( $hasParam = true )
-
 ```
 
 案例：
@@ -1653,7 +1604,6 @@ $方式的变量还用于逻辑判断和foreach循环。
             ]
         }]]>
     </property>
-
 ```
 
 - \#[xxx]和$xxx两种模式变量的区别
@@ -1754,7 +1704,6 @@ $方式的变量还用于逻辑判断和foreach循环。
             ]
         }]]>
     </property>
-
 ```
 
 引用片段：
@@ -1791,7 +1740,6 @@ $方式的变量还用于逻辑判断和foreach循环。
                 "fragment_size": 2147483647
             }
         }]]></property>
-
 ```
 
 片段变量只是一个占位符，在系统第一次加载配置文件时候，直接被qcondition对应的片段内容替换。
@@ -1812,7 +1760,6 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
   <property name="querySqlTraces"
             templateFile="esmapper/estrace/ESTracesMapper.xml"
             templateName="queryTracesByCriteria"/>
-
 ```
 
 说明：querySqlTraces直接引用链路查询模板文件esmapper/estrace/ESTracesMapper.xml中定义的查询dsl语句queryTracesByCriteria，**注意这里只是引用，在热加载机制中，当原始定义文件对应的dsl语句被修改，引用的地方也会同时被修改**。
@@ -1838,7 +1785,6 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
      }
     ]]>
 </property>
-
 ```
 
 ![img](https://oscimg.oschina.net/oscnet/2e1115df01f4ef89faa689ce4747870db82.jpg)
@@ -1898,7 +1844,6 @@ public void testObjectSQLQueryFromDSL(){
    }while(true);
 
 }
-
 ```
 
 
@@ -1915,7 +1860,6 @@ public void testObjectSQLQueryFromDSL(){
 多行值
 
 """
-
 ```
 
 - 简单脚本案例
@@ -1934,7 +1878,6 @@ public void testObjectSQLQueryFromDSL(){
             }
         ]]>
     </property>
-
 ```
 
 以下是一个script的应用案例
@@ -1960,7 +1903,6 @@ public void testObjectSQLQueryFromDSL(){
           }
         }]]>
     </property>
-
 ```
 
 执行上述脚本的java代码示例：
@@ -1983,7 +1925,6 @@ public void testObjectSQLQueryFromDSL(){
 		System.out.println(doc);
 
 	}
-
 ```
 
 - 更加复杂的案例 
@@ -2087,7 +2028,6 @@ public void testObjectSQLQueryFromDSL(){
           }
         }]]>
     </property>
-
 ```
 
 对应的java代码：
@@ -2137,7 +2077,6 @@ public void testObjectSQLQueryFromDSL(){
 		System.out.println(doc);
 
 	}
-
 ```
 
 
@@ -2167,7 +2106,6 @@ public void testObjectSQLQueryFromDSL(){
    
 #end  
 }    
-
 ```
 
 传入一个List集合的属性ldxxbhs，包含以下元素值：
@@ -2184,7 +2122,6 @@ public void testObjectSQLQueryFromDSL(){
    "v3":33,
    "v4":"cc" 
 }
-
 ```
 
 
@@ -2193,7 +2130,6 @@ public void testObjectSQLQueryFromDSL(){
 
 ```
 "dynamic_price_template.rules":#foreach($rule in $rules)#if($velocityCount > 0),#end #[rules[$velocityCount]->id]  #end 
-
 ```
 
 
@@ -2213,7 +2149,6 @@ public void testObjectSQLQueryFromDSL(){
 		#end
 	],
 #end
-
 ```
 
 
@@ -2233,7 +2168,6 @@ public void testObjectSQLQueryFromDSL(){
         #end
    ],            
 #end                
-
 ```
 
 
@@ -2256,7 +2190,6 @@ public void testObjectSQLQueryFromDSL(){
             #end
    ],            
 #end 
-
 ```
 
 案例6：循环遍历map对象的key和值-#[xxx]模式变量 
@@ -2277,7 +2210,6 @@ public void testObjectSQLQueryFromDSL(){
             #end
    ],            
 #end 
-
 ```
 
 
@@ -2296,7 +2228,6 @@ public void testObjectSQLQueryFromDSL(){
           #end
      ]
 #end
-
 ```
 
 
@@ -2315,7 +2246,6 @@ public void testObjectSQLQueryFromDSL(){
           #end
      ]
 #end
-
 ```
 
 
@@ -2330,7 +2260,6 @@ public void testObjectSQLQueryFromDSL(){
 #else
     "fields":#[searchFields,serialJson=true]
 #end
-
 ```
 
 
@@ -2362,7 +2291,6 @@ foreach嵌套dsl脚本定义
             }
         }]]>
     </property>
-
 ```
 
 传递参数和解析上述dsl的java方法代码
@@ -2393,7 +2321,6 @@ foreach嵌套dsl脚本定义
 		System.out.println(parseResult);
 
 	}
-
 ```
 
 运行上述代码打印出来的实际dsl
@@ -2438,7 +2365,6 @@ foreach嵌套dsl脚本定义
         }
     }
 }
-
 ```
 
 
@@ -2500,7 +2426,6 @@ foreach嵌套dsl脚本定义
         }
     }
 }
-
 ```
 
 
@@ -2515,14 +2440,12 @@ bboss对于日期类型的映射处理比较简单，分为两种情况：
 "agentStarttime": {
     "type": "date"     
 }
-
 ```
 
 那么我们在对象中也只需要定义一个日期类型的字段与之对应即可： 
 
 ```
 private Date agentStarttime;
-
 ```
 
 第二种情况，定义mapping field时指定了时间格式：
@@ -2532,7 +2455,6 @@ private Date agentStarttime;
     "type": "date",
      "format":"yyyy-MM-dd HH:mm:ss"
 },
-
 ```
 
 那么我们在对象中除了定义日期类型的字段，还要为字段加上时间格式的注解： 
@@ -2541,7 +2463,6 @@ private Date agentStarttime;
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 @Column(dataformat = "yyyy-MM-dd HH:mm:ss")
 protected Date agentStarttime;
-
 ```
 
 其中的pattern和dataformat必须和mapping中指定的格式一致。
@@ -2559,7 +2480,6 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 ```
 <property name="perKeyDSLStructionCacheSize" value="2000"/>
 <property name="alwaysCacheDslStruction" value="false"/>
-
 ```
 
 
@@ -2760,7 +2680,6 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 		}
 	}
 }
-
 ```
 
 逗号放到正确的位置的技巧如下：定义一个boolean局部变量来控制，变量定义语法为：
@@ -2841,7 +2760,6 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 		}
 	}
 }
-
 ```
 
  
@@ -2861,7 +2779,6 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 > https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-term-query.html
 > https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-query.html
 > -->
-> 
 > ```
 
 
@@ -2899,7 +2816,6 @@ public void testTempate() throws ParseException{
 		System.out.println("HTTP_GET after delete-------------------------");
 		System.out.println(template);
 	}
-
 ```
 
 
@@ -2911,29 +2827,28 @@ public void testTempate() throws ParseException{
 > ```
 > public void testCreateTempate() throws ParseException{
 > 
-> ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
-> //创建模板
-> String response = clientUtil.createTempate("demotemplate_1",//模板名称
->       "demoTemplate");//模板对应的脚本名称，在estrace/ESTemplate.xml中配置
-> System.out.println("createTempate-------------------------");
-> System.out.println(response);
-> //获取模板
-> /**
+>    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
+>    //创建模板
+>    String response = clientUtil.createTempate("demotemplate_1",//模板名称
+>          "demoTemplate");//模板对应的脚本名称，在estrace/ESTemplate.xml中配置
+>    System.out.println("createTempate-------------------------");
+>    System.out.println(response);
+>    //获取模板
+>    /**
 >     * 指定模板
 >     * /_template/demoTemplate_1
 >     * /_template/demoTemplate*
 >     * 所有模板 /_template
->  *
->  */
-> String template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_GET);
-> System.out.println("HTTP_GET-------------------------");
-> System.out.println(template);
+>     *
+>     */
+>    String template = clientUtil.executeHttp("/_template/demotemplate_1",ClientUtil.HTTP_GET);
+>    System.out.println("HTTP_GET-------------------------");
+>    System.out.println(template);
 > 
 > }
-> 
 > ```
 >
-> 
+>  
 
 
 
@@ -2947,7 +2862,6 @@ public void testLicense(){
 		System.out.println(ttt);
 //		ttt = clientUtil.createTempate("tracesql_template","traceSQLTemplate");
 	}
-
 ```
 
 
@@ -2957,7 +2871,6 @@ public void testLicense(){
 ```
  ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
 String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
-
 ```
 
 
@@ -2970,16 +2883,15 @@ String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 
 > ```
 > public void testGetmapping(){
-> SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-> String date = format.format(new Date());
-> ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-> System.out.println(clientUtil.getIndexMapping("demo-*"));
-> clientUtil.dropIndice("demo-"+date);
+>    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+>    String date = format.format(new Date());
+>   ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+>    System.out.println(clientUtil.getIndexMapping("demo-*"));
+>    clientUtil.dropIndice("demo-"+date);
 > }
-> 
 > ```
 >
-> 
+>  
 
 
 
@@ -2992,7 +2904,6 @@ public void testQueryDocMapping(){
                                                               "trace");//索引类型
    System.out.println(fields.size());
 }
-
 ```
 
 
@@ -3001,48 +2912,46 @@ public void testQueryDocMapping(){
 
 > ```
 > public void testAddDateDocument() throws ParseException{
-> testGetmapping();
-> SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-> String date = format.format(new Date());
-> ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
-> Demo demo = new Demo();
-> demo.setDemoId(5l);
-> demo.setAgentStarttime(new Date());
-> demo.setApplicationName("blackcatdemo");
-> demo.setContentbody("this is content body");
-> //根据dsl脚本创建索引文档，将文档保存到当天的索引表中demo-2018.02.03
-> String response = clientUtil.addDateDocument("demo",//索引表,自动添加日期信息到索引表名称中
->       "demo",//索引类型
->       "createDemoDocument",//创建文档对应的脚本名称，在esmapper/estrace/ESTracesMapper.xml中配置
->       demo);
+>    testGetmapping();
+>    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+>    String date = format.format(new Date());
+>    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
+>    Demo demo = new Demo();
+>    demo.setDemoId(5l);
+>    demo.setAgentStarttime(new Date());
+>    demo.setApplicationName("blackcatdemo");
+>    demo.setContentbody("this is content body");
+>    //根据dsl脚本创建索引文档，将文档保存到当天的索引表中demo-2018.02.03
+>    String response = clientUtil.addDateDocument("demo",//索引表,自动添加日期信息到索引表名称中
+>          "demo",//索引类型
+>          "createDemoDocument",//创建文档对应的脚本名称，在esmapper/estrace/ESTracesMapper.xml中配置
+>          demo);
 > 
-> System.out.println("addDateDocument-------------------------");
-> System.out.println(response);
-> //根据文档id获取索引文档,返回json格式
-> response = clientUtil.getDocument("demo-"+date,//索引表，手动指定日期信息
->       "demo",//索引类型
->       "5");
-> System.out.println("getDocument-------------------------");
-> System.out.println(response);
+>    System.out.println("addDateDocument-------------------------");
+>    System.out.println(response);
+>   //根据文档id获取索引文档,返回json格式
+>    response = clientUtil.getDocument("demo-"+date,//索引表，手动指定日期信息
+>          "demo",//索引类型
+>          "5");
+>    System.out.println("getDocument-------------------------");
+>    System.out.println(response);
 > //根据文档id获取索引文档,返回Demo对象
-> demo = clientUtil.getDocument("demo-"+date,//索引表
->       "demo",//索引类型
->       "5",//索引文档ID
->       Demo.class);
+>    demo = clientUtil.getDocument("demo-"+date,//索引表
+>          "demo",//索引类型
+>          "5",//索引文档ID
+>          Demo.class);
 > }
-> 
 > ```
 >
 > 创建索引文档脚本：createDemoDocument
 >
 > ```
-> <property name="createDemoDocument">
->      <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
->  </property>
-> 
+>  <property name="createDemoDocument">
+>         <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
+>     </property>
 > ```
 >
-> 
+>  
 
 
 
@@ -3050,46 +2959,45 @@ public void testQueryDocMapping(){
 
 > ```
 > public void testBulkAddDateDocument() throws ParseException{
-> testGetmapping();
-> SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-> String date = format.format(new Date());
-> ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
-> List<Demo> demos = new ArrayList<>();
-> Demo demo = new Demo();
-> demo.setDemoId(2l);
-> demo.setAgentStarttime(new Date());
-> demo.setApplicationName("blackcatdemo2");
-> demo.setContentbody("this is content body2");
-> demos.add(demo);
+>    testGetmapping();
+>    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+>    String date = format.format(new Date());
+>    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
+>    List<Demo> demos = new ArrayList<>();
+>    Demo demo = new Demo();
+>    demo.setDemoId(2l);
+>    demo.setAgentStarttime(new Date());
+>    demo.setApplicationName("blackcatdemo2");
+>    demo.setContentbody("this is content body2");
+>    demos.add(demo);
 > 
-> demo = new Demo();
-> demo.setDemoId(3l);
-> demo.setAgentStarttime(new Date());
-> demo.setApplicationName("blackcatdemo3");
-> demo.setContentbody("this is content body3");
-> demos.add(demo);
+>    demo = new Demo();
+>    demo.setDemoId(3l);
+>    demo.setAgentStarttime(new Date());
+>    demo.setApplicationName("blackcatdemo3");
+>    demo.setContentbody("this is content body3");
+>    demos.add(demo);
 > 
-> //批量添加索引文档
-> String response = clientUtil.addDateDocuments("demo",//索引表
->       "demo",//索引类型
->       "createDemoDocument",//创建文档对应的脚本名称，在esmapper/estrace/ESTracesMapper.xml中配置
->       demos);
+>    //批量添加索引文档
+>    String response = clientUtil.addDateDocuments("demo",//索引表
+>          "demo",//索引类型
+>          "createDemoDocument",//创建文档对应的脚本名称，在esmapper/estrace/ESTracesMapper.xml中配置
+>          demos);
 > 
-> System.out.println("addDateDocument-------------------------");
-> System.out.println(response);
+>    System.out.println("addDateDocument-------------------------");
+>    System.out.println(response);
 > 
-> response = clientUtil.getDocument("demo-"+date,//索引表
->       "demo",//索引类型
->       "2");
-> System.out.println("getDocument-------------------------");
-> System.out.println(response);
+>    response = clientUtil.getDocument("demo-"+date,//索引表
+>          "demo",//索引类型
+>          "2");
+>    System.out.println("getDocument-------------------------");
+>    System.out.println(response);
 > 
-> demo = clientUtil.getDocument("demo-"+date,//索引表
->       "demo",//索引类型
->       "3",//索引文档ID
->       Demo.class);
+>    demo = clientUtil.getDocument("demo-"+date,//索引表
+>          "demo",//索引类型
+>          "3",//索引文档ID
+>          Demo.class);
 > }
-> 
 > ```
 
 
@@ -3125,7 +3033,6 @@ public void testQueryDocMapping(){
 		System.out.println(state);
 
 	}
-
 ```
 
 
@@ -3134,19 +3041,18 @@ public void testQueryDocMapping(){
 
 > ```
 > public static void main(String[] args) throws ParseException {
-> ESTest esTest = new ESTest();
-> //测试模板管理功能
-> esTest.testTempate();
-> //重新创建模板
-> esTest.testCreateTempate();
-> //向当天的索引表中添加文档
-> esTest.testAddDateDocument();
-> //批量创建文档
-> esTest.testBulkAddDateDocument();
-> //获取索引映射结构
-> esTest.testGetmapping();
+>    ESTest esTest = new ESTest();
+>    //测试模板管理功能
+>    esTest.testTempate();
+>    //重新创建模板
+>    esTest.testCreateTempate();
+>    //向当天的索引表中添加文档
+>    esTest.testAddDateDocument();
+>    //批量创建文档
+>    esTest.testBulkAddDateDocument();
+>    //获取索引映射结构
+>    esTest.testGetmapping();
 > }
-> 
 > ```
 
 
