@@ -126,5 +126,7 @@ https://github.com/bbossgroups/elasticsearch-springboot-example
 ## License
 
 The BBoss Framework is released under version 2.0 of the [Apache License][].
+E:\workspace\bbossgroups\bboss-elastic\bboss-elasticsearch-doc>docsify init .
 
+Initialization succeeded! Please run docsify serve .
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
