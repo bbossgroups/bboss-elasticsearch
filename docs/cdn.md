@@ -1,5 +1,10 @@
 # CDN
 
+```
+ln -s /opt/tool/nodejs/node-v10.9.0-linux-x64/bin/npm   /usr/local/bin/ 
+ln -s /opt/tool/nodejs/node-v10.9.0-linux-x64/bin/node   /usr/local/bin/
+```
+
 Recommended: [unpkg](//unpkg.com), which will reflect the latest version as soon as it is published to npm. You can also browse the source of the npm package at [unpkg.com/docsify/](//unpkg.com/docsify/).
 
 ## Latest version

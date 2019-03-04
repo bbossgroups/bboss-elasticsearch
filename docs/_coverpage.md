@@ -9,4 +9,4 @@
 - A dsl and sql rest client.
 
 [GitHub](https://github.com/bbossgroups/bboss-elasticsearch)
-[Getting Started](#docsify)
+[Getting Started](#搜索引擎的-orm-库-elasticsearch-bboss)

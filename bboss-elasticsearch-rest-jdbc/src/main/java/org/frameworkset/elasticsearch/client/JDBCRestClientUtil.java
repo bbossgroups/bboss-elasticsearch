@@ -67,7 +67,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					throw error;
 				}
 				lastValue = jdbcResultSet.getLastValue();
-				evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				if(context.isDrop())
+					continue;
 				count++;
 				if (count == batchsize) {
 					writer.flush();
@@ -145,7 +147,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			istart = start;
 			while (jdbcResultSet.next()) {
 				lastValue = jdbcResultSet.getLastValue();
-				evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				if(context.isDrop())
+					continue;
 				count++;
 				if (count == batchsize) {
 					writer.flush();
@@ -229,7 +233,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			while (jdbcResultSet.next()) {
 				try {
 					lastValue = jdbcResultSet.getLastValue();
-					evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+					Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+					if(context.isDrop())
+						continue;
 					totalCount ++;
 				} catch (Exception e) {
 					throw new ElasticSearchException(e);
@@ -237,7 +243,13 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 			writer.flush();
-			String ret = TaskCall.call(refreshOption,clientInterface,builder.toString(),jdbcResultSet);
+			String ret = null;
+			if(builder.length() > 0) {
+				ret = TaskCall.call(refreshOption, clientInterface, builder.toString(), jdbcResultSet);
+			}
+			else{
+				ret = "{\"took\":0,\"errors\":false}";
+			}
 			jdbcResultSet.flushLastValue(lastValue);
 			if(isPrintTaskLog()) {
 
@@ -494,12 +506,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 	}
 
-	public static void evalBuilk(Writer writer, String indexName, String indexType, ESJDBC jdbcResultSet, String action) throws Exception {
-
-
+	public static Context evalBuilk(Writer writer, String indexName, String indexType, ESJDBC jdbcResultSet, String action) throws Exception {
+		Context context = null;
 		if (jdbcResultSet != null) {
-			Context context = new ContextImpl(jdbcResultSet);
+			context = new ContextImpl(jdbcResultSet);
 			jdbcResultSet.refactorData(context);
+			if(context.isDrop()){
+				return context;
+			}
 			buildMeta( context, writer ,  indexType,  indexName,   jdbcResultSet,action);
 
 			if(!action.equals("update")) {
@@ -526,6 +540,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 		}
+		return context;
 
 	}
 

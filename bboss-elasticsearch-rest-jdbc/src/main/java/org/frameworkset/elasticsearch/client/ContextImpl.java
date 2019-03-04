@@ -30,6 +30,7 @@ public class ContextImpl implements Context {
 	private List<FieldMeta> fieldValues ;
 	private Map<String,FieldMeta> fieldMetaMap;
 	private ESJDBC esjdbc;
+	private boolean drop;
 	public ContextImpl(ESJDBC esjdbc){
 		this.esjdbc = esjdbc;
 	}
@@ -141,5 +142,13 @@ public class ContextImpl implements Context {
 	@Override
 	public String getEsIdField() {
 		return esjdbc.getEsIdField();
+	}
+
+	public boolean isDrop() {
+		return drop;
+	}
+
+	public void setDrop(boolean drop) {
+		this.drop = drop;
 	}
 }

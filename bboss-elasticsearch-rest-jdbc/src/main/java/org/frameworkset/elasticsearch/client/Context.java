@@ -46,4 +46,6 @@ public interface Context {
 	Object getEsId() throws Exception;
 
 	String getEsIdField();
+	public boolean isDrop();
+	public void setDrop(boolean drop);
 }
