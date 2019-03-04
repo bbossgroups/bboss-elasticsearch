@@ -845,7 +845,11 @@ public abstract class ResultUtil {
 		esBaseData.setRouting(hit.getRouting());
 		esBaseData.setFound(hit.isFound());
 		esBaseData.setNested(hit.getNested());
-		esBaseData.setInnerHits(hit.getInnerHits());
+		Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+		esBaseData.setInnerHits(innerHits);
+		if (innerHits != null && innerHits.size() > 0) {
+			injectInnerHitBaseData(innerHits);
+		}
 	}
 
 	public static  void buildESId(BaseSearchHit hit,ESId esBaseData){
@@ -977,10 +981,12 @@ public abstract class ResultUtil {
 					}
 					injectBaseData(data,hit,isESBaseData,isESId);
 				}
-				//处理InnerHit对象
-				Map<String, Map<String,InnerSearchHits>> innerHits = hit.getInnerHits();
-				if(innerHits != null && innerHits.size() > 0){
-					injectInnerHitBaseData(innerHits);
+				else {
+					//处理InnerHit对象
+					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+					if (innerHits != null && innerHits.size() > 0) {
+						injectInnerHitBaseData(innerHits);
+					}
 				}
 				return (T)hit;
 			}
@@ -1054,10 +1060,12 @@ public abstract class ResultUtil {
 				}
 				injectBaseData(data,result,isESBaseData,isESId);
 			}
-			//处理InnerHit对象
-			Map<String, Map<String,InnerSearchHits>> innerHits = result.getInnerHits();
-			if(innerHits != null && innerHits.size() > 0){
-				injectInnerHitBaseData(innerHits);
+			else {
+				//处理InnerHit对象
+				Map<String, Map<String, InnerSearchHits>> innerHits = result.getInnerHits();
+				if (innerHits != null && innerHits.size() > 0) {
+					injectInnerHitBaseData(innerHits);
+				}
 			}
 			return (T)result;
 		}
@@ -1412,11 +1420,13 @@ public abstract class ResultUtil {
 							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
+					else {
 
-					//处理InnerHit对象
-					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
-					if (innerHits != null && innerHits.size() > 0) {
-						ResultUtil.injectInnerHitBaseData(innerHits);
+						//处理InnerHit对象
+						Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+						if (innerHits != null && innerHits.size() > 0) {
+							ResultUtil.injectInnerHitBaseData(innerHits);
+						}
 					}
 				}
 			}
@@ -1444,10 +1454,12 @@ public abstract class ResultUtil {
 							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
-					//处理InnerHit对象
-					Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
-					if (innerHits != null && innerHits.size() > 0) {
-						ResultUtil.injectInnerHitBaseData(innerHits);
+					else {
+						//处理InnerHit对象
+						Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+						if (innerHits != null && innerHits.size() > 0) {
+							ResultUtil.injectInnerHitBaseData(innerHits);
+						}
 					}
 //					if (isESBaseData) {
 //						buildESBaseData(hit, (ESBaseData) data);
