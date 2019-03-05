@@ -8,7 +8,7 @@
 
 ​    bboss是一款高性能elasticsearch ORM开发库， 以类似于mybatis管理和配置sql的方式,采用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、dsl片段、foreach循环、逻辑判断、注释；支持在线修改、自动热加载dsl配置文件，开发和调试非常方便。bboss对原生elasticsearch restful api、elasticsearch java orm api、elasticsearch sql都提供了很好的支持。**如果喜欢直接使用query dsl（es的官方语言），但是又不想在代码里面编写冗长的dsl拼接串的话，可以考虑采用 bboss。**
 
-​    **bboss elasticsearch jdk兼容性： jdk 1.6+**
+​    **bboss elasticsearch jdk兼容性： jdk 1.7+**
 
   **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,+**   ,兼容spring boot 1.x,2,x
 
@@ -142,7 +142,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.5.2</version>
+            <version>5.5.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -171,7 +171,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.2</version>
+            <version>5.5.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

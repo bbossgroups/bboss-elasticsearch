@@ -42,7 +42,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.5.2</version>
+<version>5.5.3</version>
 </dependency>
 ```
 

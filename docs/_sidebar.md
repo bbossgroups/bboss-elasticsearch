@@ -9,6 +9,7 @@
 - Guide
 
   - [开发指南](development.md)
+  - [索引文档添加修改和删除案例](document-crud.md)
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
   - [聚合操作](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)

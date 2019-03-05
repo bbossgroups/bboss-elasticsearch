@@ -29,14 +29,14 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.2</version>
+            <version>5.5.3</version>
         </dependency>
 ```
 
 gradle工程
 
 ```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.5.2"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.5.3"
 ```
 
 
