@@ -22,8 +22,8 @@
 
 # **1** 快速集成和应用 
 
-- 所有类型项目：<https://my.oschina.net/bboss/blog/1801273> 
-- spring boot 项目：<https://my.oschina.net/bboss/blog/1835601>
+- 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
+- spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md)
 
 
 

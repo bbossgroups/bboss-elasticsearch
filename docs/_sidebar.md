@@ -9,7 +9,11 @@
 - Guide
 
   - [开发指南](development.md)
-  - [Elasticsearch SQL ORM](Elasticsearch-SQL-ORM.md)
+  - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
+  - [聚合操作](agg.md) 
+  - [数据库和Elasticsearch同步工具](db-es-tool.md)
+  - [Elasticsearch关键词高亮检索](highlight.md)
+  - [索引表和索引表模板管理](index-indextemplate.md)
 
 - [Changelog](changelog.md)
 
