@@ -17,6 +17,7 @@
   - [Elasticsearch关键词高亮检索](highlight.md)
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)
+  - [Elasticsearch地理位置维护和检索](Elasticsearch-geo.md)
 
 - [Changelog](changelog.md)
 
