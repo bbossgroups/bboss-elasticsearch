@@ -8,8 +8,8 @@
 
 - Guide
 
-  - [开发指南](development.md)
-  - [索引文档添加修改和删除案例](document-crud.md)
+  - [Elasticsearch开发指南](development.md)
+  - [Elasticsearch索引文档添加修改和删除](document-crud.md)
   - [Elasticsearch分页查询](pagine.md)
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
   - [Elasticsearch聚合操作](agg.md) 

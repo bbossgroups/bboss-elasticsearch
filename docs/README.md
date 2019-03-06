@@ -46,8 +46,8 @@ Elasticsearch BBoss Demo：
 
 # 快速集成和应用 
 
-- 各种类型项目：<https://my.oschina.net/bboss/blog/1801273> 
-- spring boot项目：<https://my.oschina.net/bboss/blog/1835601>
+- 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
+- spring boot 项目：[spring-booter-with-bboss](
 
 github源码地址：
 
@@ -55,11 +55,9 @@ github源码地址：
 
 bboss elasticsearch开发库使用文档：
 
-[How to use Elasticsearch BBoss](https://my.oschina.net/bboss/blog/2999092)
+[How to use Elasticsearch BBoss](quickstart.md)
 
-<https://my.oschina.net/bboss/blog/1556866>
-
-bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](https://my.oschina.net/bboss/blog/1574927)
+bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
 **bboss elasticsearch技术交流群：166471282**
 

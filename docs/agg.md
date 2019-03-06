@@ -23,7 +23,7 @@ Elasticsearch聚合查询案例分享
 #   **2.准备工作** 
 
 
-参考文档《[高性能elasticsearch ORM开发库使用介绍](https://my.oschina.net/bboss/blog/1556866)》中的第1章节和第2章节，在自己的工程中导入bboss es依赖包和配置es参数 
+参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》中的第1章节和第2章节，在自己的工程中导入bboss es依赖包和配置es参数 
 
 
 
@@ -499,8 +499,5 @@ java代码
 #  **4.相关资料** 
 
 
-高性能elasticsearch ORM开发库使用介绍 
-
-<https://my.oschina.net/bboss/blog/1556866> 
 
 bboss elasticsearch交流：166471282

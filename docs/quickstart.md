@@ -2,7 +2,7 @@
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
-Introduce Elasticsearch [Bboss](https://www.oschina.net/p/bboss-elastic):
+Introduce Elasticsearch [Bboss](README.md):
 
 1. A highlevel rest client.
 2. A high performence o/r mapping rest client.
@@ -113,4 +113,4 @@ The Web demo github url:
 
 bboss elasticsearch document:
 
-<https://my.oschina.net/bboss/blog/1556866>
+[Development Document](development.md)

@@ -4,7 +4,7 @@
 
  
 
-The best elasticsearch highlevel java rest api-----[bboss](https://www.oschina.net/p/bboss-elastic)
+The best elasticsearch highlevel java rest api-----[bboss](README.md)
 
 ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改、获取、删除索引Indice和IndexTemplate的方法，本文举例说明其使用方法。
 

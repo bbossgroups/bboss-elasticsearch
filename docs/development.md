@@ -12,7 +12,7 @@
 
   **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,+**   ,兼容spring boot 1.x,2,x
 
-   bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](https://my.oschina.net/bboss/blog/1574927)
+   bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
   bboss elasticsearch开发环境搭建和开发入门视频教程：[下载](https://pan.baidu.com/s/1kXjAOKn)
 
@@ -265,11 +265,13 @@ dslfile.refreshInterval = -1
 
 
 
-## 2.8 [设置slice scroll查询线程池线程数和等待队列长度](https://my.oschina.net/bboss/blog/1942562)：
+## 2.8 设置slice scroll查询线程池线程数和等待队列长度
 
 elasticsearch.sliceScrollThreadCount 默认值500
 
 elasticsearch.sliceScrollThreadQueue 默认值500
+
+ [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md) 
 
 ***完成导入和配置，接下来就可以开始使用bboss操作和访问elasticsearch了。***
 
@@ -295,7 +297,7 @@ public static ClientInterface getConfigRestClientUtil(String elasticSearch,Strin
 
 置中的逻辑es集群名称，关于多集群配置请参考文档：
 
-[快速集成Elasticsearch Restful API案例分享](https://my.oschina.net/bboss/blog/1801273)  中的章节【***2.2多集群配置***】
+[快速集成Elasticsearch Restful API案例分享](common-project-with-bboss.md)  中的章节【***2.2多集群配置***】
 
 **通过这两个方法获取到的ClientInterface实例是多线程安全的、单实例对象**
 
@@ -311,7 +313,7 @@ public static ClientInterface getRestClientUtil(String elasticSearch) //elastics
 
 置中的逻辑es集群名称，关于多集群配置请参考文档：
 
-[快速集成Elasticsearch Restful API案例分享](https://my.oschina.net/bboss/blog/1801273)  中的章节【***2.2多集群配置***】
+[快速集成Elasticsearch Restful API案例分享](common-project-with-bboss.md)  中的章节【***2.2多集群配置***】
 
 **通过这两个方法获取到的ClientInterface实例是多线程安全的、单实例对象**
 
