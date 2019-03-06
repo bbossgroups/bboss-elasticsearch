@@ -262,6 +262,11 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 		 */
 		importBuilder.setDataRefactor(new DataRefactor() {
 			public void refactor(Context context) throws Exception  {
+			    //可以根据条件定义是否丢弃当前记录				
+				//if(something is true) {
+				//	context.setDrop(true);
+				//	return;
+				//}
 				CustomObject customObject = new CustomObject();
 				customObject.setAuthor((String)context.getValue("author"));
 				customObject.setTitle((String)context.getValue("title"));
