@@ -10,11 +10,13 @@
 
   - [开发指南](development.md)
   - [索引文档添加修改和删除案例](document-crud.md)
+  - [Elasticsearch分页查询](pagine.md)
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
-  - [聚合操作](agg.md) 
+  - [Elasticsearch聚合操作](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
-  - [索引表和索引表模板管理](index-indextemplate.md)
+  - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
+  - [Elasticsearch update/delete by querey](update-delete-byquery.md)
 
 - [Changelog](changelog.md)
 

@@ -699,6 +699,9 @@ MultiESDocumentCRUD:各种增删改查操作实例，在demo工程中提供
 
 # 5.完整的demo工程
 
+
+<https://github.com/bbossgroups/es_bboss_web>
+
 <https://gitee.com/bboss/eshelloword-spring-boot-starter>
 
 <https://github.com/bbossgroups/eshelloword-spring-boot-starter>

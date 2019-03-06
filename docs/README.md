@@ -9,17 +9,17 @@
 **bboss-elastic特色：**
 
 1. 采用类似于[mybatis](https://www.oschina.net/p/mybatis)的方式配置语法配置和管理访问es的qsl脚本，简洁而直观，支持配置文件热加载功能；提供丰富的逻辑判断语法；支持qsl脚本片段和片段引用功能；
-2. 提供高效可定制的[db到elasticsearch数据导入能力](https://my.oschina.net/bboss/blog/1832212)
-3. 支持[elasticsearch sql](https://my.oschina.net/bboss/blog/2247795)，可替代es jdbc模块；引入bboss不仅可以拥有bboss的客户端自动发现和负载容灾能力、对es、jdk、spring boot的兼容性能力，还可以拥有es jdbc的所有功能，同时还解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
+2. 提供高效可定制的[db到elasticsearch数据导入能力](db-es-tool.md)
+3. 支持[elasticsearch sql](Elasticsearch-SQL-ORM.md)，可替代es jdbc模块；引入bboss不仅可以拥有bboss的客户端自动发现和负载容灾能力、对es、jdk、spring boot的兼容性能力，还可以拥有es jdbc的所有功能，同时还解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
    orm
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
    分页
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLPagineTest.java>
 4. 支持ES JDBC，参考文档：[Elasticsearch JDBC案例介绍](https://my.oschina.net/bboss/blog/2221868)
-5. 提供[创建和查询索引表配置模板api](https://my.oschina.net/bboss/blog/1807473)；提供创建和查询索引表api；提供索引文档创建、修改、删除、获取基本功能;提供索引文档批量创建、批量修改、批量删除api；
-6. 提供支持分页检索api（[from/size](https://my.oschina.net/bboss/blog/1829552),[searchafter](https://my.oschina.net/bboss/blog/1796241),scroll,[slicescroll](https://my.oschina.net/bboss/blog/1942562)）
+5. 提供[创建和查询索引表配置模板api](index-indextemplate.md)；提供创建和查询索引表api；提供索引文档创建、修改、删除、获取基本功能;提供索引文档批量创建、批量修改、批量删除api；
+6. 提供支持分页检索api（[from/size](from-size.md),[searchafter](search-after.md),[scroll](scroll.md),[slicescroll](Scroll-SliceScroll-api.md)）
 7. 支持获取索引文档字段元数据
-8. 提供简洁易用的全文检索api，[聚合检索和统计api](https://my.oschina.net/bboss/blog/1610016)；支持o/mapping功能，支持检索和聚合查询结果快速转换为java对象或者java对象列表；支持分页检索功能和[关键词高亮显示](https://my.oschina.net/bboss/blog/1811233)；支持多索引表查询；支持[父子关系](https://my.oschina.net/bboss/blog/1793290)检索；支持[地理位置检索](https://my.oschina.net/bboss/blog/1788008)；提供检索和聚合查询结果的回调处理接口，可以自定义结果封装处理逻辑。
+8. 提供简洁易用的全文检索api，[聚合检索和统计api](agg.md)；支持o/mapping功能，支持检索和聚合查询结果快速转换为java对象或者java对象列表；支持分页检索功能和[关键词高亮显示](highlight.md)；支持多索引表查询；支持[父子关系](https://my.oschina.net/bboss/blog/1793290)检索；支持[地理位置检索](https://my.oschina.net/bboss/blog/1788008)；提供检索和聚合查询结果的回调处理接口，可以自定义结果封装处理逻辑。
 9. 支持[关键字自动联想和自动纠错的api](https://gitee.com/bboss/elasticsearchdemo/tree/master/src/test/java/org/frameworkset/elasticsearch/suggest)
 10. 提供客户端自动负载均衡和容灾恢复机制，高效可靠
 11. 内置http 连接池管理
