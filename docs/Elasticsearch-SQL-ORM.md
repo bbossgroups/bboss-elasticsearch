@@ -644,7 +644,23 @@ public class SQLPagineTest {
 	}
 ```
 
+Elasticsearch-SQL插件sql转dsl功能:
 
+```java
+/**
+ * Elasticsearch-SQL插件功能:sql转dsl
+ */
+@Test
+public void testESSQLTranslate(){
+   ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+   String dsl =  //将sql转换为dsl
+         clientUtil.executeHttp("/_sql/_explain",//sql转dsl请求
+               "select operModule.keyword from dbdemo group by operModule.keyword ",ClientInterface.HTTP_POST);//返回的转换的结果
+
+   //获取总记录数
+   System.out.println(dsl);
+}
+```
 
 # 3 开发交流
 

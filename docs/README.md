@@ -47,7 +47,7 @@ Elasticsearch BBoss Demo：
 # 快速集成和应用 
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
-- spring boot 项目：[spring-booter-with-bboss](
+- spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md) 
 
 github源码地址：
 
