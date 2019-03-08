@@ -1,5 +1,7 @@
 # bboss性能基准测试（仅供参考）
 
+
+
 - 批量添加2万条数据耗时1.5秒
 - 对大索引表文档统计计数耗时10毫秒
 - 获取一条json文档耗时2毫秒
@@ -7,9 +9,19 @@
 - scroll查询并处理2万条记录：0.6s
 - scrollSlice 并行查询并处理2万条记录：0.1s
 
+# 测试环境
+
+elasticsearch： 6.5.0 单机，内存配置1G
+
+jdk 1.8
+
+测试服务器：联想ThinkPAD S5笔记本电脑，64位 Intel i7-6700HQ 4核 16G内存，1T硬盘
 
 
-性能测试代码：[DocumentCRUD](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
+
+# 性能测试代码
+
+[DocumentCRUD](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
 
 ```java
     /**

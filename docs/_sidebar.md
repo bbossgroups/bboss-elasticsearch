@@ -24,6 +24,7 @@
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)
   - [Elasticsearch地理位置维护和检索](Elasticsearch-geo.md)
+  - [Elasticsearch5父子关系维护和检索](elasticsearch5-parent-child.md) 
 
 - [Changelog](changelog.md)
 

@@ -6,6 +6,8 @@
 
 本文介绍如何采用bboss es添加/修改/查询/删除/批量删除elasticsearch索引文档，直接看代码。
 
+# 增删改查操作
+
 ```java
 添加/修改文档：
 
@@ -59,6 +61,14 @@ clientUtil.deleteDocuments("agentinfo",//索引表
       "192.168.137.1","192.168.137.2","192.168.137.3");//文档ids
 ```
 
-参考文档：
+# 执行多表查询操作
 
-<https://my.oschina.net/bboss/blog/1556866>
+```java
+//执行多表查询操作
+ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("trace1,trace2/_search",//查询操作，同时查询trace1,trace2中符合条件的数据
+                                "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
+                                traceExtraCriteria,//查询条件封装对象
+                                TAgentInfo.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+```
+

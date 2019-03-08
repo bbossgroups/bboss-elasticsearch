@@ -59,6 +59,8 @@ bboss elasticsearch开发库使用文档：
 
 bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
+# 联系我们
+
 **bboss elasticsearch技术交流群：166471282**
 
 **bboss elasticsearch微信公众号：**

@@ -662,6 +662,10 @@ public void testESSQLTranslate(){
 }
 ```
 
+
+
+官方的ES-SQL功能目前还不成熟，必须Elasticsearch 6.3以上的版本，而且收费；Elasticsearch-SQL插件功能全，免费，可以在不同的Elasticsearch版本上运行。
+
 # 3 开发交流
 
 **elasticsearch技术交流：166471282**
