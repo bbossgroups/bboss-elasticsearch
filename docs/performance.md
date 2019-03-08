@@ -9,7 +9,7 @@
 
 
 
-测试案例代码：[DocumentCRUD](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
+性能测试代码：[DocumentCRUD](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
 
 ```java
     /**
@@ -83,4 +83,3 @@
             Demo.class);
    }
 ```
-
