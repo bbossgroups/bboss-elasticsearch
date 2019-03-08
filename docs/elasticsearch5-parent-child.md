@@ -941,4 +941,4 @@ bboss公众号
 
  
 
-敬请关注：父子关系维护检索实战二 Elasticsearch 6.x 父子关系维护检
+敬请关注：父子关系维护检索实战二 Elasticsearch 6.x 父子关系维护和检索
