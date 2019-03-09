@@ -156,6 +156,8 @@ demo = clientUtil.getDocument("demo",//索引表
 
 # 4.拼音检索
 
+## 定义拼音检索dsl
+
 在之前定义的pinyin.xml文件中新增dsl配置-searchPinyinDemo
 
 ```xml
@@ -179,7 +181,7 @@ demo = clientUtil.getDocument("demo",//索引表
 }]]></property>
 ```
 
-拼音检索操作
+## 执行拼音检索操作
 
 ```java
 @Test
