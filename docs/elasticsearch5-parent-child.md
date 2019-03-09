@@ -3,7 +3,7 @@
 本次分享包括两篇文章
 
 - 父子关系维护检索实战一 Elasticsearch 5.x 父子关系维护检索实战
-- 父子关系维护检索实战二 Elasticsearch 6.x 父子关系维护检索实战
+- 父子关系维护检索实战二 [Elasticsearch 6.x 父子关系维护检索实战](elasticsearch6-parent-child.md)
 
 本文是其中第一篇
 

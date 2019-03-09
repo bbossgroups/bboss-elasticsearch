@@ -11,7 +11,7 @@
 
   - [Elasticsearch开发指南](development.md)
   - [Elasticsearch索引文档增删改查](document-crud.md)
-  - **Elasticsearch分页查询**
+  - Elasticsearch分页查询
     - [from-size](from-size.md)
     - [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md) 
     - [search-after](search-after.md) 
@@ -25,6 +25,7 @@
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)
   - [Elasticsearch地理位置维护和检索](Elasticsearch-geo.md)
   - [Elasticsearch5父子关系维护和检索](elasticsearch5-parent-child.md) 
+  - [Elasticsearch6父子关系维护和检索](elasticsearch6-parent-child.md) 
 
 - [Changelog](changelog.md)
 
