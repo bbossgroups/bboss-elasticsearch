@@ -59,5 +59,5 @@
 
 # 相关链接
 
-- bboss-elastic 的详细介绍：[点击查看](https://www.oschina.net/p/bboss-elastic)
+- bboss-elastic 的详细介绍：[点击查看](README.md)
 - bboss-elastic 的下载地址：[点击下载](https://gitee.com/bboss/bboss-elastic)
