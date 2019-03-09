@@ -150,7 +150,7 @@ System.out.println(response);
 
 demo = clientUtil.getDocument("demo",//索引表
       "demo",//索引类型
-      "3",//创建文档对应的脚本名称，在esmapper/estrace/ESTracesMapper.xml中配置
+      "3",//文档id
       Demo.class);
 ```
 
