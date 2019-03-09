@@ -6,6 +6,7 @@
 
 ik:
 https://github.com/medcl/elasticsearch-analysis-ik
+
 pinyin:
 https://github.com/medcl/elasticsearch-analysis-pinyin
 
