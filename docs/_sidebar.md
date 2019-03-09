@@ -26,7 +26,8 @@
   - [Elasticsearch地理位置维护和检索](Elasticsearch-geo.md)
   - [Elasticsearch5父子关系维护和检索](elasticsearch5-parent-child.md) 
   - [Elasticsearch6父子关系维护和检索](elasticsearch6-parent-child.md) 
-  - [Elasticsearch Mget GetDocSource 局部更新文档](Elasticsearch-Mget-GetDocSource-partupdate.md)
+  - [Elasticsearch 局部更新文档 Mget GetDocSource](Elasticsearch-Mget-GetDocSource-partupdate.md)
+  - [Elasticsearch中文拼音混合检索案例](pinyin-ik.md)
 
 - [Changelog](changelog.md)
 
