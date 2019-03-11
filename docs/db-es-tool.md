@@ -746,7 +746,9 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
 完整的数据导入demo工程
 
-<https://gitee.com/bboss/db2es-booter>
+github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)
+
+码云：<https://gitee.com/bboss/db2es-booter>
 
 **elasticsearch技术交流：166471282**
 
