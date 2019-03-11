@@ -1573,4 +1573,28 @@ public abstract class ResultUtil {
 		}
 		throw e;
 	}
+
+	public static boolean bulkResponseError(String bulkResponse){
+		if(bulkResponse == null){
+
+			return true;
+		}
+		int errorStartIdx = bulkResponse.indexOf("\"errors\":");
+		if(errorStartIdx < 0) {
+			return false;
+		}
+		int errorEndIdx = bulkResponse.indexOf(",",errorStartIdx);
+		if(errorEndIdx < 0){
+
+			return false;
+		}
+		String errorInfo = bulkResponse.substring(errorStartIdx,errorEndIdx);
+		if(errorInfo.equals("\"errors\":false")){
+			return false;
+		}
+		else{
+			return true;
+
+		}
+	}
 }

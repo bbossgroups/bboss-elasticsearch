@@ -57,6 +57,7 @@ public class DB2ESExportResultHandler implements ExportResultHandler<String,Stri
 	 */
 	public void handleResult(TaskCommand<String,String> taskCommand, String result){
 
+		/**
 		if(result == null){
 			error(  taskCommand,   result);
 			return ;
@@ -78,6 +79,13 @@ public class DB2ESExportResultHandler implements ExportResultHandler<String,Stri
 		else{
 			error(  taskCommand,   result);
 
+		}
+		 */
+		if(!ResultUtil.bulkResponseError(result)){
+			success(  taskCommand,   result);
+		}
+		else{
+			error(  taskCommand,   result);
 		}
 
 	}
