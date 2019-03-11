@@ -134,7 +134,7 @@ demo.setContentbody("四大天王，这种文化很好，中华人民共和国")
 demo.setName("张学友");
 demos.add(demo);
 
-//创建模板
+//批量添加文档
 String response = clientUtil.addDocuments("demo",//索引表
       "demo",//索引类型
       demos);

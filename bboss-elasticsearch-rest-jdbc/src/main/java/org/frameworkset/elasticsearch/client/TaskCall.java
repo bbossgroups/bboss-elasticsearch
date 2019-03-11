@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,49 +55,59 @@ public class TaskCall implements Runnable {
 		taskCommand.setRefreshOption(refreshOption);
 		taskCommand.setDatas(datas);
 		taskCommand.setEsjdbc(esjdbc);
-		String data = taskCommand.execute();
-		/**
-		if(esjdbc.isDebugResponse()) {
+		try {
+			String data = taskCommand.execute();
+			/**
+			 if(esjdbc.isDebugResponse()) {
 
-			if (refreshOption == null) {
-				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-				logger.info(data);
-			} else {
-				data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-				logger.info(data);
+			 if (refreshOption == null) {
+			 data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+			 logger.info(data);
+			 } else {
+			 data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+			 logger.info(data);
+			 }
+
+
+			 }
+			 else{
+			 if(esjdbc.isDiscardBulkResponse() && esjdbc.getExportResultHandler() == null) {
+			 ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
+			 if (refreshOption == null) {
+			 clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
+			 } else {
+			 clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
+			 }
+			 if(esVoidResponseHandler.getElasticSearchException() != null)
+			 throw esVoidResponseHandler.getElasticSearchException();
+			 return null;
+			 }
+			 else{
+
+			 if (refreshOption == null) {
+			 data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
+
+			 } else {
+			 data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
+			 }
+
+			 }
+
+
+			 }*/
+			if (esjdbc.getExportResultHandler() != null) {//处理返回值
+				esjdbc.getExportResultHandler().handleResult(taskCommand, data);
 			}
-
-
+			return data;
 		}
-		else{
-			if(esjdbc.isDiscardBulkResponse() && esjdbc.getExportResultHandler() == null) {
-				ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
-				if (refreshOption == null) {
-					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
-				} else {
-					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
-				}
-				if(esVoidResponseHandler.getElasticSearchException() != null)
-					throw esVoidResponseHandler.getElasticSearchException();
-				return null;
-			}
-			else{
-
-				if (refreshOption == null) {
-					data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-
-				} else {
-					data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-				}
-
-			}
-
-
-		}*/
-		if(esjdbc.getExportResultHandler() != null){//处理返回值
-			esjdbc.getExportResultHandler().handleResult(  taskCommand,data);
+		catch (ElasticSearchException e){
+			esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			throw e;
 		}
-		return data;
+		catch (Exception e){
+			esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			throw new ElasticSearchException(e);
+		}
 	}
 	@Override
 	public void run()   {

@@ -1041,7 +1041,7 @@ private Double maxScore;
 
 
 
-## 5.1 ClientInterface 提供的一组通用http api
+## 5.1 操作Elasticsearch通用服务API
 
 通过ClientInterface 接口提供的以下通用executeHttp api，我们可以非常方便地实现es中所有带请求报文的功能
 

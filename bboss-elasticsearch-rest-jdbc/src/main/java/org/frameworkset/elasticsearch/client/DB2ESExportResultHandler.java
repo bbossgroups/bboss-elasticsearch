@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -24,6 +27,7 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public class DB2ESExportResultHandler implements ExportResultHandler<String,String>{
+	private static Logger logger = LoggerFactory.getLogger(DB2ESExportResultHandler.class);
 	private ExportResultHandler exportResultHandler;
 	public DB2ESExportResultHandler(ExportResultHandler exportResultHandler){
 		this.exportResultHandler = exportResultHandler;
@@ -33,6 +37,11 @@ public class DB2ESExportResultHandler implements ExportResultHandler<String,Stri
 	}
 	public void error(TaskCommand<String,String> taskCommand, String result){
 		this.exportResultHandler.error(  taskCommand,   result);
+	}
+
+	@Override
+	public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+		this.exportResultHandler.exception(  taskCommand,   exception);
 	}
 
 	@Override
@@ -71,5 +80,20 @@ public class DB2ESExportResultHandler implements ExportResultHandler<String,Stri
 
 		}
 
+	}
+
+	/**
+	 * 处理导入数据结果，如果失败则可以通过重试失败数据
+	 * @param taskCommand
+	 * @param exception
+	 *
+	 */
+	public void handleException(TaskCommand<String,String> taskCommand, Exception exception){
+		try {
+			exception(taskCommand, exception);
+		}
+		catch (Exception e){
+			logger.warn("Handle Task Exception failed:",e);
+		}
 	}
 }

@@ -38,6 +38,13 @@ public interface ExportResultHandler<DATA,RESULT> {
 	public void error(TaskCommand<DATA,RESULT> taskCommand, RESULT result);
 
 	/**
+	 * 导入任务抛出Exception时执行的回调方法，<DATA,RESULT>中的DATA标识处理数据的类型，RESULT标识返回结果的类型
+	 * @param taskCommand 导入任务相关信息：导入数据，es刷新机制，clientInterface,失败重试次数
+	 * @param exception 导入异常
+	 */
+	public void exception(TaskCommand<DATA,RESULT> taskCommand, Exception exception);
+
+	/**
 	 * 如果对于执行有错误的任务，可以进行修正后重新执行，通过本方法
 	 * 返回允许的最大重试次数
 	 * @return
