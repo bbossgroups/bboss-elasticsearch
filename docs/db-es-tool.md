@@ -562,7 +562,11 @@ public static void main(String args[]){
 
 代码写好并经过调试后，就可以执行gradle指令构建发布db-elasticsearch-tool运行包，需要安装最新版本的gradle并配置好gradle环境变量。
 
+我们可以在cmd行，idea、eclipse中运行打包指令，以工程目录cmd窗口为例：
+
 ```gradle
+先切换到工程的根目录
+cd D:\workspace\bbossesdemo\db2es-booter
 gradle clean releaseVersion
 ```
 
