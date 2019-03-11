@@ -639,6 +639,11 @@ a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源
 
 b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
 
+c) 对于等待超时的异常，亦可以调整bboss的http timeout时间参数
+
+http.timeoutConnection = 5000
+http.timeoutSocket = 5000
+
 
 
 **2.任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析**
@@ -646,6 +651,12 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
 bulk拒绝记录解决办法：
 
 a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
+
+调整elasticsearch的相关线程和队列：调优elasticsearch配置参数
+
+thread_pool.bulk.queue_size: 1000   es线程等待队列长度
+
+thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
 b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
 
