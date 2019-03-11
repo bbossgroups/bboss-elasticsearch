@@ -558,6 +558,117 @@ public static void main(String args[]){
    }
 ```
 
+## 测试调试过程中异常说明
+
+**如果在运行的过程中，出现以下问题，则说明在eclipse或者idea中开发调试的时候直接运行了Dbdemo，正确的做法是运行test下面的DbdemoTest：参考**[测试调试方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=%E6%B5%8B%E8%AF%95%E4%BB%A5%E5%8F%8A%E8%B0%83%E8%AF%95%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81)
+
+```
+16:04:11.306 [main] ERROR org.frameworkset.elasticsearch.ElasticSearch - ElasticSearch Rest Client started failed
+org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.0.1:9200] can't been connected.
+	at org.frameworkset.elasticsearch.client.RoundRobinList.get(RoundRobinList.java:97) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient._executeHttp(ElasticSearchRestClient.java:522) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.discover(ElasticSearchRestClient.java:649) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.discover(ElasticSearchRestClient.java:475) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.RestClientUtil.discover(RestClientUtil.java:1448) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.initVersionInfo(ElasticSearchRestClient.java:194) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.init(ElasticSearchRestClient.java:232) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.ElasticSearch.start(ElasticSearch.java:363) [bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.booter(ElasticSearchHelper.java:170) [bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:54) [bboss-elasticsearch-rest-booter-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:28) [bboss-elasticsearch-rest-booter-5.5.3.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_162]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_162]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_162]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_162]
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.init(ElasticSearchHelper.java:279) [bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.getRestClientUtil(ElasticSearchHelper.java:334) [bboss-elasticsearch-rest-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.imp.Dbdemo.scheduleFullImportData(Dbdemo.java:779) [classes/:?]
+	at org.frameworkset.elasticsearch.imp.Dbdemo.main(Dbdemo.java:41) [classes/:?]
+
+** ERROR: Unable to parse XML file poolman.xml: java.io.FileNotFoundException: E:\workspace\bbossgroups\security\poolman.xml (系统找不到指定的文件。)
+16:04:12.781 [Timer-0] ERROR org.frameworkset.elasticsearch.client.schedule.ScheduleService - scheduleImportData failed:
+java.lang.NullPointerException: 获取默认数据源名称失败：请确保数据源正常启动，检查配置文件是否配置正确.
+	at com.frameworkset.common.poolman.util.SQLManager.getDefaultDBName(SQLManager.java:405) ~[bboss-persistent-5.2.2.jar:?]
+	at com.frameworkset.common.poolman.PreparedDBUtil.<init>(PreparedDBUtil.java:97) ~[bboss-persistent-5.2.2.jar:?]
+	at com.frameworkset.common.poolman.SQLInfoDBUtil.<init>(SQLInfoDBUtil.java:24) ~[bboss-persistent-5.2.2.jar:?]
+	at com.frameworkset.common.poolman.SQLInfoExecutor.queryWithDBNameByNullRowHandler(SQLInfoExecutor.java:1449) ~[bboss-persistent-5.2.2.jar:?]
+	at com.frameworkset.common.poolman.SQLExecutor.queryWithDBNameByNullRowHandler(SQLExecutor.java:1405) ~[bboss-persistent-5.2.2.jar:?]
+	at org.frameworkset.elasticsearch.client.schedule.ScheduleService.scheduleImportData(ScheduleService.java:137) ~[bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.schedule.ScheduleService.access$200(ScheduleService.java:44) ~[bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
+	at org.frameworkset.elasticsearch.client.schedule.ScheduleService$1.run(ScheduleService.java:219) [bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
+	at java.util.TimerThread.mainLoop(Timer.java:555) [?:1.8.0_162]
+	at java.util.TimerThread.run(Timer.java:505) [?:1.8.0_162]
+
+Process finished with exit code -1
+```
+
+
+
+## 查看任务执行详细日志
+
+如果要查看任务执行过程中的详细日志，只需设置以下参数即可：
+
+```
+importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
+```
+
+这样在任务执行的时候会打印如下日志信息：
+
+```
+15:47:45.704 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[39] finish,import 10 records,Total import 390 records,Take time:432ms
+15:47:45.704 [DB2ESImportThread-1] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[41] starting ......
+15:47:45.704 [DB2ESImportThread-2] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[40] starting ......
+15:47:46.238 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[41] finish,import 10 records,Total import 420 records,Take time:534ms
+15:47:46.238 [DB2ESImportThread-2] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[40] finish,import 10 records,Total import 410 records,Take time:534ms
+15:47:46.238 [DB2ESImportThread-1] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[42] starting ......
+15:47:46.530 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[42] finish,import 8 records,Total import 428 records,Take time:292ms
+15:47:46.530 [main] INFO  org.frameworkset.elasticsearch.client.JDBCRestClientUtil - Complete tasks:43,Total import 428 records.
+```
+
+
+
+## 数据导入不完整原因分析及处理
+
+如果在任务执行完毕后，发现es中的数据与数据库源表的数据不匹配，可能的原因如下：
+
+**1.并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析**
+
+解决办法：
+
+a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
+
+b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
+
+
+
+**2.任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析**
+
+bulk拒绝记录解决办法：
+
+a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
+
+b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
+
+数据内容不合规解决办法：拿到执行的原始批量数据，分析错误信息对应的数据记录，进行修改，然后重新导入失败的记录即可
+
+```java
+@Override
+         public void error(TaskCommand<String,String> taskCommand, String result) {
+            //任务执行完毕，但是结果中包含错误信息
+            //具体怎么处理失败数据可以自行决定,下面的示例显示重新导入失败数据的逻辑：
+            // 从result中分析出导入失败的记录，然后重新构建data，设置到taskCommand中，重新导入，
+            // 支持的导入次数由getMaxRetry方法返回的数字决定
+              String datas = taskCommand.getDatas();//拿到执行的原始批量数据，分析错误信息对应的数据记录，进行修改，然后重新导入失败的记录即可
+            // String failDatas = ...;
+            //taskCommand.setDatas(failDatas);
+            //taskCommand.execute();
+           
+//          System.out.println(result);//打印成功结果
+         }
+```
+
+
+
 ## 发布版本
 
 代码写好并经过调试后，就可以执行gradle指令构建发布db-elasticsearch-tool运行包，需要安装最新版本的gradle并配置好gradle环境变量。
