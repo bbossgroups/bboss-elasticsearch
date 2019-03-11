@@ -483,11 +483,11 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 # 4.7 设置任务执行结果回调处理函数
 
-我们通过importBuilder的setExportResultHandler方法设置任务执行结果回调处理函数，函数实现接口即可：
+我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
 org.frameworkset.elasticsearch.client.ExportResultHandler
 
-```
+```java
 //设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error方法进行相应处理
 importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
    @Override
@@ -507,7 +507,10 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
       String datas = taskCommand.getDatas();//执行的批量数据
       System.out.println(result);//打印成功结果
    }
-
+@Override
+			public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+				//任务执行抛出异常，失败处理方法
+			}
    /**
     * 如果对于执行有错误的任务，可以进行修正后重新执行，通过本方法
     * 返回允许的最大重试次数
@@ -520,9 +523,58 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
+# 5.数据导入工具使用方法
 
+上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件：
 
-# 5.作业参数配置
+## 同步代码主程序定义-Dbdemo
+
+Dbdemo-提供了上述文中提供的各种导入数据的方法，可以根据自己的要求实效自己的方法逻辑，然后在Dbdemo的main方法中指定要执行的方法即可：
+
+```java
+public static void main(String args[]){
+   Dbdemo dbdemo = new Dbdemo();
+   boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
+   dbdemo.scheduleFullImportData(  dropIndice);
+}
+```
+
+## 测试以及调试同步代码
+
+在test源码目录新增DbdemoTest类，并添加main方法，在其中添加Dbdemo执行代码即可运行调试同步代码：
+
+```java
+public static void main(String args[]){
+
+      long t = System.currentTimeMillis();
+      Dbdemo dbdemo = new Dbdemo();
+      boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
+//    dbdemo.scheduleImportData(  dropIndice);//定时增量导入
+      dbdemo.scheduleFullImportData(dropIndice);//定时全量导入
+//    dbdemo.scheduleRefactorImportData(dropIndice);//定时全量导入，在context中排除remark1字段
+
+//    dbdemo.scheduleFullAutoUUIDImportData(dropIndice);//定时全量导入，自动生成UUID
+//    dbdemo.scheduleDatePatternImportData(dropIndice);//定时增量导入，按日期分表yyyy.MM.dd
+   }
+```
+
+## 发布版本
+
+代码写好并经过调试后，就可以执行gradle指令构建发布db-elasticsearch-tool运行包，需要安装最新版本的gradle并配置好gradle环境变量。
+
+```gradle
+gradle clean releaseVersion
+```
+
+构建成功后，将会在工程目录下面生成可部署的二进制包：
+
+build/distributions/db2es-booter-1.0.0-released.zip
+
+包的目录结构如下：
+
+![img](https://esdoc.bbossgroups.com/_images/db-es-dist.png)
+
+# 6 作业参数配置
 
 在使用[db2es-booter](https://gitee.com/bboss/db2es-booter)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties
 
@@ -564,7 +616,7 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
 
 
-# 6 开发交流
+# 7 开发交流
 
 完整的数据导入demo工程
 
