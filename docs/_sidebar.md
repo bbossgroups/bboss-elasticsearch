@@ -1,11 +1,11 @@
-- [**Introduce**](README.md)
+- [**Elasticsearch bboss介绍**](README.md)
 
 - Getting started
 
   - [Quick start](quickstart.md)
-  - [Spring booter with bboss](spring-booter-with-bboss.md) 
-  - [Common project with bboss](common-project-with-bboss.md) 
-  -  [Performance](performance.md) 
+  - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
+  - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
+  - [Performance](performance.md) 
 
 - Guide
 

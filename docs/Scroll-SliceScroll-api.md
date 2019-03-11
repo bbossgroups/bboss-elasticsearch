@@ -98,7 +98,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
 		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
 		ESDatas<Map> response = clientUtil.scroll("demo/_search", "scrollQuery", "1m", params, Map.class, new ScrollHandler<Map>() {
-			public void handle(ESDatas<Map> response, HandlerInfo handlerInfo)) throws Exception {//自己处理每次scroll的结果
+			public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 				List<Map> datas = response.getDatas();
 				long totalSize = response.getTotalSize();
 				System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
@@ -193,7 +193,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 		//scroll上下文有效期1分钟,大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
 		ESDatas<Map> sliceResponse = clientUtil.scrollSlice("demo/_search",
 				"scrollSliceQuery", params,"1m",Map.class, new ScrollHandler<Map>() {
-					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo)) throws Exception {//自己处理每次scroll的结果
+					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 						List<Map> datas = response.getDatas();
 						long totalSize = response.getTotalSize();
 						System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
@@ -227,7 +227,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 		//scroll上下文有效期1分钟,大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
 		ESDatas<Map> sliceResponse = clientUtil.scrollSliceParallel("demo/_search",
 				"scrollSliceQuery", params,"1m",Map.class, new ScrollHandler<Map>() {
-					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo)) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
+					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
 						List<Map> datas = response.getDatas();
 						long totalSize = response.getTotalSize();
 						System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
