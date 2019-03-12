@@ -15,7 +15,7 @@ First add the maven dependency of BBoss to your pom.xml:
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.5.3</version>
+            <version>5.5.5</version>
         </dependency>
 ```
 
@@ -25,7 +25,7 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.3</version>
+            <version>5.5.5</version>
         </dependency>
 ```
 
@@ -52,7 +52,7 @@ And last  create a jsp file named testElasticsearch.jsp :
 <%@ page import="java.util.Map" %>
 <%@ page import="com.frameworkset.common.poolman.SQLExecutor" %>
 <%@ page language="java" pageEncoding="UTF-8"%>
-
+<%@ page import="org.frameworkset.elasticsearch.scroll.HandlerInfo" %>
 <%
 	ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 	//get elasticsearch cluster state
@@ -73,7 +73,7 @@ And last  create a jsp file named testElasticsearch.jsp :
 
 	//Get All documents of indice twitter,Set fetchsize to 10000, Using ScrollHandler to process each batch of datas.
 	clientUtil.searchAll("twitter",10000,new ScrollHandler<Map>() {
-		public void handle(ESDatas<Map> esDatas) throws Exception {
+		public void handle(ESDatas<Map> esDatas, HandlerInfo handlerInfo) throws Exception {
 			List<Map> dataList = esDatas.getDatas();
 			System.out.println("TotalSize:"+esDatas.getTotalSize());
 			if(dataList != null) {
