@@ -1,3 +1,5 @@
+# Elasticsearch Bboss源码构建
+
 # Gradle安装和配置
 
 在自己的电脑上装好gradle运行环境,下载最新的gradle版本：
@@ -19,4 +21,14 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 ![img](http://dl2.iteye.com/upload/attachment/0128/6041/40647d96-5017-3a8d-a7db-b7ba7b099463.jpg)
 
-  
+# 构建Elasticsearch bboss源码
+
+安装后gradle后，我们就可以利用gradle来构建Elasticsearch Bboss的源码了。
+
+首先从github下载Elasticsearch bboss源码工程： https://github.com/bbossgroups/bboss-elasticsearch
+
+然后在源码根目录下面执行gradle指令即可构建bboss 源码：
+
+```
+gradle install
+```
