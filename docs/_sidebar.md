@@ -28,6 +28,8 @@
   - [Elasticsearch6父子关系维护和检索](elasticsearch6-parent-child.md) 
   - [Elasticsearch 局部更新文档 Mget GetDocSource](Elasticsearch-Mget-GetDocSource-partupdate.md)
   - [Elasticsearch中文拼音混合检索案例](pinyin-ik.md)
+  - [Elasticsearch 检索所有文档API使用案例](searchAll.md)
+  - [ElasticSearch客户端注解](client-annotation.md)
 
 - [Changelog](changelog.md)
 

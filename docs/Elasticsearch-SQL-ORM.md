@@ -119,7 +119,9 @@ private String docInfoAuthor;
 
 指定属性的映射关系、日期格式和时区信息,示例如下：    
 
+```
  @Column(name="docInfo.author",dataformat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",timezone = "Etc/UTC",locale = "zh")
+```
 
 
 
@@ -619,7 +621,76 @@ public class SQLPagineTest {
 }
 ```
 
+## 1.4 sql转换为dsl
 
+可以将sql转换为dsl语句
+
+```java
+   public void testTranslate(){
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+		String json = clientUtil.executeHttp("/_xpack/sql/translate",
+				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
+				ClientInterface.HTTP_POST
+		);
+		System.out.println(json);
+
+	}
+```
+
+sql转换为dsl的结果：
+
+```json
+{
+    "size": 1000,
+    "_source": {
+        "includes": [
+            "author",
+            "content",
+            "docClass",
+            "docabstract",
+            "keywords",
+            "mediapath",
+            "newpicPath",
+            "parentDetailTpl",
+            "picPath",
+            "publishfilename",
+            "secondtitle",
+            "subtitle",
+            "title",
+            "titlecolor"
+        ],
+        "excludes": []
+    },
+    "docvalue_fields": [
+        "auditflag",
+        "channelId",
+        "count",
+        "createtime",
+        "createuser",
+        "detailtemplateId",
+        "docLevel",
+        "docsourceId",
+        "doctype",
+        "documentId",
+        "docwtime",
+        "flowId",
+        "isdeleted",
+        "isnew",
+        "ordertime",
+        "publishtime",
+        "seq",
+        "status",
+        "version"
+    ],
+    "sort": [
+        {
+            "_doc": {
+                "order": "asc"
+            }
+        }
+    ]
+}
+```
 
 # 2 Elasticsearch-sql查询
 
