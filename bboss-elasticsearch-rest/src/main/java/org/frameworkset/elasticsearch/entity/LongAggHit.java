@@ -1,18 +1,18 @@
 package org.frameworkset.elasticsearch.entity;
 
 public class LongAggHit extends AggHit{
-	private String key;
+	private Object key;
 	private Long docCount;
 	private Long min;
 	private Long max;
 	private Float avg;
 	private Long sum;
 
-	public String getKey() {
+	public Object getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Object key) {
 		this.key = key;
 	}
 

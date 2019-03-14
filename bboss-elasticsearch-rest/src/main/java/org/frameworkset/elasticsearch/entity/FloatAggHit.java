@@ -1,18 +1,18 @@
 package org.frameworkset.elasticsearch.entity;
 
 public class FloatAggHit extends AggHit{
-	private String key;
+	private Object key;
 	private Long docCount;
 	private Float min;
 	private Float max;
 	private Float avg;
 	private Float sum;
 
-	public String getKey() {
+	public Object getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Object key) {
 		this.key = key;
 	}
 

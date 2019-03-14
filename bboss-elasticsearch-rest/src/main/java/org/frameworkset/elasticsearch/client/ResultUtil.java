@@ -293,7 +293,7 @@ public abstract class ResultUtil {
 		return condition;
 	}
 	public static void buildLongAggHit(LongAggHit longRangeHit, Map<String,Object> bucket, String stats){
-		longRangeHit.setKey((String)bucket.get("key"));
+		longRangeHit.setKey(bucket.get("key"));
 		longRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
 		if(stats == null)
 			return;
@@ -304,7 +304,7 @@ public abstract class ResultUtil {
 		longRangeHit.setSum(longValue(stats_.get("sum"),0l));
 	}
 	public static void buildFloatAggHit(FloatAggHit floatRangeHit, Map<String,Object> bucket, String stats){
-		floatRangeHit.setKey((String)bucket.get("key"));
+		floatRangeHit.setKey(bucket.get("key"));
 		floatRangeHit.setDocCount(longValue(bucket.get("doc_count"),0l));
 		if(stats == null)
 			return;
@@ -316,7 +316,7 @@ public abstract class ResultUtil {
 	}
 
 	public static void buildDoubleAggHit(DoubleAggHit doubleAggHit, Map<String,Object> bucket, String stats){
-		doubleAggHit.setKey((String)bucket.get("key"));
+		doubleAggHit.setKey(bucket.get("key"));
 		doubleAggHit.setDocCount(longValue(bucket.get("doc_count"),0l));
 		if(stats == null)
 			return;

@@ -1,18 +1,18 @@
 package org.frameworkset.elasticsearch.entity;
 
 public class DoubleAggHit extends AggHit{
-	private String key;
+	private Object key;
 	private Long docCount;
 	private Double min;
 	private Double max;
 	private Double avg;
 	private Double sum;
 
-	public String getKey() {
+	public Object getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Object key) {
 		this.key = key;
 	}
 
