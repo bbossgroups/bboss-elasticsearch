@@ -5,7 +5,7 @@
   - [Quick start](quickstart.md)
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
-  - [Performance](performance.md) 
+  - [Elasticsearch bboss Performance](performance.md) 
   - [从源码构建Elasticsearch bboss](bboss-build.md)
 
 - Guide
