@@ -6,6 +6,7 @@
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
   - [Performance](performance.md) 
+  - [Gradle环境安装和配置](gradle-install.md)
 
 - Guide
 

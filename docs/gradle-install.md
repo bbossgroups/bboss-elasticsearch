@@ -1,0 +1,22 @@
+# Gradle安装和配置
+
+在自己的电脑上装好gradle运行环境,下载最新的gradle版本：
+
+[下载gradle](https://gradle.org/releases) 
+
+![img](http://dl2.iteye.com/upload/attachment/0121/1499/1e28d95c-4884-3057-a6ea-8e2f178abc0f.png)
+
+下载完毕后解压，然后配置好gradle环境变量： 
+
+GRADLE_HOME:  指定gradle安装目录
+
+GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录 
+
+![img](http://dl2.iteye.com/upload/attachment/0121/1503/e9a82561-3edf-3dd9-a6c1-b4676817a398.png)
+![img](http://dl2.iteye.com/upload/attachment/0121/1507/7f1c4f3b-783d-37bb-b7f4-274ea693b76a.png)
+
+一般还需要指定maven的本地库，这样gradle 构建的本地包才能被maven项目引用到，gradle 通过M2_HOME环境变量查找maven安装环境即可，配置M2_HOME环境变量如下图： 
+
+![img](http://dl2.iteye.com/upload/attachment/0128/6041/40647d96-5017-3a8d-a7db-b7ba7b099463.jpg)
+
+  
