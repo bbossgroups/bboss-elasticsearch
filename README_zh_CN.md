@@ -6,6 +6,14 @@ Bboss is a good elasticsearch Java rest client. It operates and accesses elastic
 
 JDK requirement: JDK 1.7+
 Elasticsearch version requirements: 1.X,2.X,5.X,6.X,+
+# Build from source code
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
 
 # How to use Elasticsearch BBoss.
 

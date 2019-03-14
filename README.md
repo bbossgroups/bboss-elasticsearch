@@ -10,6 +10,16 @@ Elasticsearch version requirements: 1.X,2.X,5.X,6.X,+
 
 Spring booter 1.x,2.x,+
 
+# Build from source code
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
+
+
 # How to use Elasticsearch BBoss.
 
 First add the maven dependency of BBoss to your pom.xml:
