@@ -62,7 +62,7 @@ ElasticSearch DSL Script使用案例分享，涉及到的功能点：
 }
 ```
 
-bboss中管理的dsl块文本和elasticsearch官方的dsl中的块文本唯一的区别就是在开头的"""前面加了个[@符号](https://my.oschina.net/uancn)
+bboss中管理的dsl块文本和elasticsearch官方的dsl中的块文本唯一的区别就是在开头的"""前面加了个@符号
 
 
 

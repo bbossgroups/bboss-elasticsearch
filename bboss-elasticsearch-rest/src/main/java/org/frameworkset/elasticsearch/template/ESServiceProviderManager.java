@@ -18,6 +18,8 @@ package org.frameworkset.elasticsearch.template;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.LinkConfigFile;
+import org.frameworkset.spi.assemble.ProviderParser;
 import org.frameworkset.spi.assemble.ServiceProviderManager;
 
 public class ESServiceProviderManager extends ServiceProviderManager {
@@ -82,5 +84,22 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 	public void escapeRN(String value,StringBuilder builder){
 		builder.append(value.replaceAll("\r|\n+"," "));
 	}
+
+//	protected ProviderParser _buildProviderParser(String url, LinkConfigFile linkconfigFile)
+//	{
+//		return new SOAProviderParser(this.getApplicationContext(),url, linkconfigFile);
+//	}
+
+	protected ProviderParser _buildProviderParser()
+	{
+		return new ESSOAProviderParser(this.getApplicationContext());
+	}
+
+	protected ProviderParser _buildProviderParser(String url,LinkConfigFile linkconfigFile)
+	{
+		return new ESSOAProviderParser(this.getApplicationContext(),url, linkconfigFile);
+	}
+
+
 
 }
