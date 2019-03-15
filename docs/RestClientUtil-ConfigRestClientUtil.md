@@ -1,4 +1,4 @@
-## RestClientUtil和ConfigRestClientUtil区别说明
+# RestClientUtil和ConfigRestClientUtil区别说明
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
@@ -16,6 +16,10 @@ RestClientUtil example:
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();//define an instanceof RestClientUtil,It's single instance, multithreaded secure.  
 List<Map> json = clientUtil.sql(Map.class,"{\\"query\\": \\"SELECT * FROM demo\\"}");  
 ```
+
+**注意**：**bboss本身没有提供querybuilder工具，可以借助第三方工具构建好了后转换为dsl，然后调用RestClientUtil的api来执行即可**
+
+
 
 ConfigRestClientUtil example:
 
