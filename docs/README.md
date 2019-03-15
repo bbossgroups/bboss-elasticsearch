@@ -6,7 +6,7 @@
 
 ​    **bboss elasticsearch以类似于mybatis的方式,使用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、foreach循环、逻辑判断、注释**；配置文件支持在线修改、自动热加载，开发和调试非常方便。
 
-**bboss-elastic特色：**
+# **bboss-elastic特色**
 
 1. 采用类似于[mybatis](https://www.oschina.net/p/mybatis)的方式配置语法配置和管理访问es的qsl脚本，简洁而直观，支持配置文件热加载功能；提供丰富的逻辑判断语法；支持qsl脚本片段和片段引用功能；
 2. 提供高效可定制的[db到elasticsearch数据导入能力](db-es-tool.md)
@@ -34,7 +34,7 @@
 20. **一个快速生成bboss es pinpoint监控插件的工具,监控效果浏览**
 21. bboss es环境搭建及开发视频教程（依赖的版本以最新的[maven中央库版本](https://search.maven.org/search?q=g:com.bbossgroups.plugins)为准）：[下载](https://pan.baidu.com/s/1kXjAOKn)
 
-Elasticsearch BBoss Demo：
+# Elasticsearch BBoss Demo
 
 [spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)
 
