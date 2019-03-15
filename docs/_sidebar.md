@@ -33,6 +33,7 @@
   - [Elasticsearch source filter检索案例](Elasticsearch-source-filter.md)
   - [ElasticSearch DSL Script使用案例](ElasticSearch-DSL-Script.md)
   - [ElasticSearch客户端注解介绍](client-annotation.md)
+  - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
 
 - [Changelog](changelog.md)
 
