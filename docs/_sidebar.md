@@ -31,6 +31,7 @@
   - [Elasticsearch中文拼音混合检索案例](pinyin-ik.md)
   - [Elasticsearch 检索所有文档API使用案例](searchAll.md)
   - [Elasticsearch source filter检索案例](Elasticsearch-source-filter.md)
+  - [ElasticSearch DSL Script使用案例](ElasticSearch-DSL-Script.md)
   - [ElasticSearch客户端注解介绍](client-annotation.md)
 
 - [Changelog](changelog.md)
