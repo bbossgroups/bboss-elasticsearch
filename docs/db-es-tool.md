@@ -633,6 +633,14 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 
 **1.并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析**
 
+```java
+ public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+//任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
+     if(need retry)
+     	taskCommand.execute();
+}
+```
+
 解决办法：
 
 a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
