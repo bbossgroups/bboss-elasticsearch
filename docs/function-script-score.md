@@ -351,6 +351,10 @@ dsl配置文件
 
 # 相关资料
 
+https://esdoc.bbossgroups.com/#/ElasticSearch-DSL-Script
+
+[bboss dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83)
+
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
