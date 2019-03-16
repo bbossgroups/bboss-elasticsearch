@@ -302,7 +302,7 @@ System.out.println("自定义评分函数检索_________________________________
 
 ## 完整的测试用例和demo工程
 
-执行上述所有功能的测试用例方法
+上述所有功能的测试用例方法
 
 ```java
 	@Test
@@ -314,9 +314,15 @@ System.out.println("自定义评分函数检索_________________________________
 	}
 ```
 
-测试用例对应的工程（可以拉取下来运行本文中的测试用例）：
+可以把测试用例对应的工程拉取下来，运行testFunctionScriptScore方法：
 
 [elasticsearch-example](https://github.com/bbossgroups/elasticsearch-example)
+
+运行之前先修改src/main/resources/application.properties文件中的es地址：
+
+```
+elasticsearch.rest.hostNames=192.168.137.1:9200
+```
 
 对应的测试java类
 

@@ -509,7 +509,9 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
    }
 @Override
 			public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
-				//任务执行抛出异常，失败处理方法
+				//任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
+     			if(need retry)
+     				taskCommand.execute();
 			}
    /**
     * 如果对于执行有错误的任务，可以进行修正后重新执行，通过本方法
