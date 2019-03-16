@@ -1,6 +1,6 @@
 ![logo](images/logo.png)
 
-# Elasticsearch BBoss <small>5.5.3</small>
+# Elasticsearch BBoss <small>5.5.6</small>
 
 > The best elasticsearch highlevel java rest api.
 
@@ -11,3 +11,4 @@
 
 [GitHub](https://github.com/bbossgroups/bboss-elasticsearch)
 [Getting Started](#搜索引擎的-orm-库-elasticsearch-bboss)
+

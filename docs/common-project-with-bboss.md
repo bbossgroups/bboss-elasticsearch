@@ -22,11 +22,11 @@
 
 maven坐标
 
-```
+```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
         </dependency>
 ```
 
@@ -38,8 +38,8 @@ maven坐标
 
 gradle坐标
 
-```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.5.5"
+```groovy
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.5.6"
 ```
 
 
@@ -52,7 +52,7 @@ bboss会在classpath下面查找并加载配置文件application.properties，�
 
 **127.0.0.1:9200**
 
-bboss支持单集群配置和多集群配置。获取操作单集群clientinferface组件方法，获取操作多集群对应集群clientinferface组件方法，请参考文档《[高性能elasticsearch ORM开发库使用介绍](https://my.oschina.net/bboss/blog/1556866)》章节：【3 bboss es操作和访问elasticsearch模式】。
+bboss支持单集群配置和多集群配置。获取操作单集群clientinferface组件方法，获取操作多集群对应集群clientinferface组件方法，请参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》章节：【3 bboss es操作和访问elasticsearch模式】。
 
 
 
@@ -103,7 +103,7 @@ http.defaultMaxPerRoute = 200
 dslfile.refreshInterval = -1
 ```
 
-这些配置的含义，可以参考文档：《[高性能elasticsearch ORM开发库使用介绍](https://my.oschina.net/bboss/blog/1556866)》章节2进行了解。
+这些配置的含义，可以参考文档：《[高性能elasticsearch ORM开发库使用介绍](development.md)》章节2进行了解。
 
 ***其他各种boot框架配置的时候，也可自行创建application.properties配置文件，在其中配置需要的参数。***
 
@@ -221,7 +221,7 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("defaul
 
 # 4.参考文档
 
-<https://my.oschina.net/bboss/blog/1556866>
+[开发指南](development.md)
 
 
 

@@ -98,7 +98,7 @@ bboss可以通过常用的日志组件输出真实的dsl语句，支持的日志
 
 log4j的配置实例：
 
-```
+```properties
 log4j.rootLogger=INFO,CONSOLE
 ##bboss需要的category配置
 log4j.category.com.frameworkset = INFO, COMMON_FILE
@@ -138,11 +138,11 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
 
 非spring boot项目
 
-```
+```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -167,11 +167,11 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
 
 ## spring boot项目
 
-```
+```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

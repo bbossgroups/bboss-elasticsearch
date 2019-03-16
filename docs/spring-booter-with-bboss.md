@@ -25,18 +25,18 @@ Spring boot整合ElasticSearch HighLevel Rest Client案例分享，本文涉及�
 
 maven工程
 
-```
+```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
         </dependency>
 ```
 
 gradle工程
 
-```
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.5.5"
+```groovy
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.5.6"
 ```
 
 
@@ -45,7 +45,7 @@ compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.5.5"
 
 新建Application类：
 
-```
+```java
 package org.bboss.elasticsearchtest.springboot;
 
 
@@ -99,7 +99,7 @@ bboss es starter配置单集群可以采用properties文件也可以采用yml进
 
 修改spring boot配置文件application.properties内容
 
-```
+```properties
 ##ES集群配置，支持x-pack和searchguard
 spring.elasticsearch.bboss.elasticUser=elastic
 spring.elasticsearch.bboss.elasticPassword=changeme
@@ -155,7 +155,7 @@ spring.elasticsearch.bboss.http.hostnameVerifier =
 
 **如果采用application.yml配置，内容如下**
 
-```
+```yml
 spring:
   elasticsearch:
     bboss:
@@ -196,7 +196,7 @@ spring:
 
 编写es单集群测试用例BBossESStarterTestCase
 
-```
+```java
 /*
  * Copyright 1999-2018 Alibaba Group Holding Ltd.
  *
@@ -297,7 +297,7 @@ public class BBossESStarterTestCase {
 
 其中
 
-```
+```properties
 BBossESStarter：由bboss提供，直接在代码中声明引用，并使用即可
 DocumentCRUD:各种增删改查操作实例，在demo工程中提供
 ```
@@ -424,7 +424,7 @@ spring.elasticsearch.bboss.logs.name = logs
 
 ### 4.1.2 yml配置（默认）
 
-```
+```yaml
 spring:
   elasticsearch:
     bboss:

@@ -10,21 +10,21 @@ Introduce Elasticsearch [Bboss](README.md):
 
 First add the maven dependency of BBoss to your pom.xml:
 
-```
+```xml
 <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
         </dependency>
 ```
 
 If it's a spring boot project, you can replace the Maven coordinate above with the following Maven coordinate:
 
-```
+```xml
 <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.5.5</version>
+            <version>5.5.6</version>
         </dependency>
 ```
 
@@ -116,3 +116,4 @@ The Web demo github url:
 bboss elasticsearch document:
 
 [Development Document](development.md)
+

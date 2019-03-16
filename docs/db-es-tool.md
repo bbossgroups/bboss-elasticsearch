@@ -38,17 +38,17 @@
 
 # 2.在工程中导入jdbc es maven坐标
 
-```
+```xml
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.5.5</version>
+<version>5.5.6</version>
 </dependency>
 ```
 
 本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标：
 
-```
+```xml
 <dependency>
 <groupId>mysql</groupId>
 <artifactId>mysql-connector-java</artifactId>
@@ -76,7 +76,7 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 ## **4.1同步批量导入**
 
-```
+```java
 	public void testSimpleImportBuilder(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
@@ -124,7 +124,7 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 ## **4.2 异步批量导入**
 
-```
+```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
@@ -193,7 +193,7 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
 ## 4.3 一个有字段属性映射的稍微复杂案例实现
 
-```
+```java
 	public void testImportBuilder(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		try {
@@ -311,7 +311,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 源码文件 <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/db2es/ScheduleImportTaskTest.java>
 
-```
+```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		//增量定时任务不要删表，但是可以通过删表来做初始化操作
@@ -383,7 +383,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 可以为同步定时任务指定执行拦截器，示例如下：
 
-```
+```java
         //设置任务执行拦截器，可以添加多个
 		importBuilder.addCallInterceptor(new CallInterceptor() {
 			@Override
@@ -422,7 +422,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 # 4.6 定时全量导入
 
-```
+```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
 		
