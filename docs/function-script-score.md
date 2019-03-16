@@ -300,6 +300,36 @@ System.out.println("自定义评分函数检索_________________________________
 
 从打印的结果可以看出，这次查询返回了我们期望的结果。
 
+## 完整的测试用例和demo工程
+
+执行上述所有功能的测试用例方法
+
+```java
+	@Test
+	public void testFunctionScriptScore(){
+		this.createUserInfoIndice();//创建通讯录索引
+		this.createUserInfoScoreScript();//创建自定义评分脚本
+		this.importUserInfoData();//导入测试数据
+		this.queryUserInfo(); //执行普票查询和自定义评分查询，并打印查询结果
+	}
+```
+
+测试用例对应的工程（可以拉取下来运行本文中的测试用例）：
+
+[elasticsearch-example](https://github.com/bbossgroups/elasticsearch-example)
+
+对应的测试java类
+
+[FunctionScriptScoreTest.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/score/FunctionScriptScoreTest.java)
+
+值对象
+
+[UserInfo.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/score/UserInfo.java)
+
+dsl配置文件
+
+[score.xml](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/score.xml)
+
 # 总结
 
 ​	如果常规方式无法得到想要的评分结果，则可以脚本方式完全自己实现评分算法，以得到预期的评分结果。
@@ -316,4 +346,17 @@ System.out.println("自定义评分函数检索_________________________________
 ​				avg 取平均值
 ​				max 取最大值
 ​				min 取最小值
+
+
+
+# 相关资料
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+
+https://elasticsearch.cn/question/1890
+评分相似度文档：https://blog.csdn.net/qq_19598855/article/details/50581945
+
+
 
