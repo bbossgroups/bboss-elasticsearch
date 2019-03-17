@@ -717,7 +717,7 @@ private Integer sqlEndElapsed;
 
 
 
-### 4.5.1 注解@[E](https://my.oschina.net/u/2523458)SId和@ESParentId
+### 4.5.1 注解@ESId和@ESParentId
 
 添加索引文档时，es会自动设置文档_id属性，如果需要人工指定_id值，只需要在对象属性上设置注解**@ESId**即可，例如：
 
@@ -726,17 +726,17 @@ private Integer sqlEndElapsed;
 private String ip;
 ```
 
-[@E](https://my.oschina.net/u/2523458)SId同样适用于文档批量创建和修改操作
+@ESId同样适用于文档批量创建和修改操作
 
 另外一个注解@ESParentId用来表示父子关系,在[父子关系检索案例](https://my.oschina.net/bboss/blog/1793290)中有介绍。
 
-[E](https://my.oschina.net/u/2523458)SId和ESParentId两个注解在添加/修改文档、批量添加/修改文档操中指定文档的_id和parent属性，如果不指定，es自动生成_id属性，parent必须手工指定。
+ESId和ESParentId两个注解在添加/修改文档、批量添加/修改文档操中指定文档的_id和parent属性，如果不指定，es自动生成_id属性，parent必须手工指定。
 
 
 
 ### 4.5.2 ClientInterface接口方法参数
 
-除了通过[E](https://my.oschina.net/u/2523458)SId和ESParentId这两个注解来指定文档id和parentid，ClientInterface接口中还提供了一组方法来提供docid和parentid两个参数来指定文档id和parentid。
+除了通过ESId和ESParentId这两个注解来指定文档id和parentid，ClientInterface接口中还提供了一组方法来提供docid和parentid两个参数来指定文档id和parentid。
 
 - 单文档添加/修改-直接指定文档id和parentid的值
 
@@ -1206,6 +1206,8 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 @{pianduan}
 
+支持引用同文件内片段和跨文件片段引用，后面专门介绍。
+
 - **script脚本封装语法**
 
 ```
@@ -1282,7 +1284,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 \#set($needComma = false)
 
-- **在dsl中使用注释**
+### **5.3.2 在dsl中使用注释**
 
 dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 单行注释：##注释内容
@@ -1329,11 +1331,9 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 
 
-### **5.3.2 变量使用** 
+### **5.3.3 #[application]变量使用** 
 
-- 
-
-  #### **#[application]**
+- #### **#[application]**
 
 变量**application**在替换值时，如果是字符串类型会在值的两边加上"",例如
 
@@ -1368,11 +1368,11 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 #[aaa[key]] 引用map对象aaa中key所对应的value数据,引用map元素的等价方法#[aaa->key] 
 #[aaa[0]] （一维数组中的第一个元素，或者list中的第一个元素,具体取决于aaa变量是一个数组还是list对象） 
-#[aaa[0][1]]（二维数组中的第一维度的第二个个元素，或者list中的第一个元素的数第二个组元素或者list第第二个元素,具体取决于aaa变量是每一维度是数组还是list对象） 
+#[aaa\[0\][1]]（二维数组中的第一维度的第二个个元素，或者list中的第一个元素的数第二个组元素或者list第第二个元素,具体取决于aaa变量是每一维度是数组还是list对象） 
 
-#[aaa[0][1]...]（多维数组中的第一维度的第二个个元素的n维元素，或者list中的第一个元素的第二个数组元素或者list第二个元素的n维元素引用,具体取决于aaa变量是每一维度是数组还是list对象） 
+#[aaa\[0][1]...]（多维数组中的第一维度的第二个个元素的n维元素，或者list中的第一个元素的第二个数组元素或者list第二个元素的n维元素引用,具体取决于aaa变量是每一维度是数组还是list对象） 
 
-#[aaa[key][0]] 引用map对象aaa中key所对应的value的第一个元素，取决于value的类型是数组还是list,等价引用方法#[aaa->key[0]] 
+#[aaa\[key][0]] 引用map对象aaa中key所对应的value的第一个元素，取决于value的类型是数组还是list,等价引用方法#[aaa->key[0]] 
 
  
 
@@ -1385,9 +1385,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 \#[aaa[0]->bb->cc[keyname]] 
 等等 
 
-- 
-
-  #### #[application]变量属性
+- #### #[application]变量属性
 
 另外，可以在#[]变量中指定escapeCount,serialJson,quoted、lpad、rpad、escape、dateformat/locale/timezone属性，属性和变量名称用逗号分隔：
 
@@ -1469,7 +1467,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 注意：
 
-\1. 在map中传递日期类型参数，则可以通过**dateformat/locale/timezone属性**在变量中指定所需要的日期格式，如果不指定则默认采用utc时区的日期格式：
+1. 在map中传递日期类型参数，则可以通过**dateformat/locale/timezone属性**在变量中指定所需要的日期格式，如果不指定则默认采用utc时区的日期格式：
 
 ```
 "term": {
@@ -1482,7 +1480,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC"
 ```
 
-\2. 在bean实体对象中日期类型field，**dateformat/locale/timezone属性优先起作用，**注解@JsonFormat，@Column 来指定自定义日期格式其次：
+2. 在bean实体对象中日期类型field，**dateformat/locale/timezone属性优先起作用，**注解@JsonFormat，@Column 来指定自定义日期格式其次：
 
 ```
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
@@ -1510,7 +1508,7 @@ protected Date agentStarttime;
  }
 ```
 
-- **$application**
+### **5.3.4 $application类型变量使用**
 
 $类型的变量，只是做值替换，所以对于""这样的类型修饰符，需要自己在query dsl中加上，在类型明确的情况下，使用$变量比较合适，举例说明：
 
@@ -1608,7 +1606,7 @@ $方式的变量还用于逻辑判断和foreach循环。
     </property>
 ```
 
-- \#[xxx]和$xxx两种模式变量的区别
+### 5.3.5 \#[xxx]和$xxx两种模式变量的区别
 
 本小节总结#[xxx]和$xxx两种模式变量的区别：
 
@@ -1621,7 +1619,7 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 **建议**:**在dsl拼接中采用#[xxx]替代$xxx模式变量，在foreach和if/else语法中使用$xxx.**
 
-- **@{pianduan}-片段引用变量**
+### **5.3.6 @{pianduan}-片段变量使用**
 
 @{}类型变量用于在query dsl中引用脚本片段。很多的dsl脚本会包含一些公共内容，比如查询条件，聚合操作脚本等待，可以把这些公共部分抽取出来定义成dsl片段；另外，一些复杂的搜索聚合查询的dsl脚本很长，由很多比较通用独立的部分组成，这样也可以将独立部分剥离形成片段，这样dsl的结构更加清晰，更加易于维护。**片段定义一定要定义在引用片段的dsl脚本前面**，片段引用变量示例如下：
 
@@ -1748,9 +1746,65 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 片段定义中同样可以引用其他片段。
 
+亦可以引用其他文件中定义的dsl片段(外部片段引用bboss 5.5.6才支持)，例如：
+
+[esmapper/pianduan.xml](https://github.com/bbossgroups/elasticsearch-example/tree/master/src/main/resources/esmapper/pianduan.xml)
+
+```xml
+<property name="pianduan">
+    <![CDATA["query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "cityId": #[cityId]
+                        }
+                    },
+                    {
+                        "terms": {
+                            "titleId": #[titleId,serialJson=true]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "should": [{
+                                "term": {
+                                    "deptId1": #[deptId1]
+                                }
+                            },
+                            {
+                                "term": {
+                                    "deptId2": #[deptId2]
+                                }
+                            },
+                            {
+                                "term": {
+                                    "deptId3": #[deptId3]
+                                }
+                            }]
+                        }
+                    }]
+                }
+            }]]>
+</property>
+```
+
+外部片段声明和引用：[esmapper/outpianduanref.xml](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/outpianduanref.xml)
+
+```xml
+<property name="outPianduanRef"
+              templateFile="esmapper/pianduan.xml"
+              templateName="pianduan"/>
+<property name="testoutPianduan">
+        <![CDATA[{ ## 最多返回1000条记录
+            size: #[size],
+            @{outPianduanRef}
+        }]]>
+    </property>
+```
 
 
-### **5.3.3 不同dsl配置文件之间的dsl语句引用**
+
+### **5.3.7 不同dsl配置文件之间的dsl语句引用**
 
 bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
@@ -1768,7 +1822,7 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 
 
-### **5.3.4 sql语句中回车换行符替换指示语法以及变量使用注意事项**
+### **5.3.8 sql语句中回车换行符替换指示语法以及变量使用注意事项**
 
 \#""" """,包含在这个中间的dsl片段中包含的回车换行符会被替换成空格，使用示例及注意事项:
 
@@ -1791,7 +1845,7 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 ![img](https://oscimg.oschina.net/oscnet/2e1115df01f4ef89faa689ce4747870db82.jpg)
 
-**变量使用注意事项**
+### **5.3.9 变量使用注意事项**
 
 bboss dsl语法支持#[channelId]和$channelId两种模式的变量定义，在sql语句中使用变量需要注意几个地方，下面的举例说明。
 
@@ -1850,7 +1904,7 @@ public void testObjectSQLQueryFromDSL(){
 
 
 
-### **5.3.5** 文本块脚本配置语法用法
+### **5.3.10** 文本块脚本配置语法用法
 
 在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，bboss提供了以下语法了对这些值进行处理：
 
@@ -2083,7 +2137,7 @@ public void testObjectSQLQueryFromDSL(){
 
 
 
-### **5.3.5 逻辑判断和foreach循环用法**
+### **5.3.11 逻辑判断和foreach循环用法**
 
 逻辑判断语法：#if-#else-#end,#if-#elseif-#else-#end
 
@@ -2432,7 +2486,7 @@ foreach嵌套dsl脚本定义
 
 
 
-### 5.3.6 日期类型使用方法
+### 5.3.12 日期类型使用方法
 
 bboss对于日期类型的映射处理比较简单，分为两种情况：
 
@@ -2471,7 +2525,7 @@ protected Date agentStarttime;
 
 
 
-### 5.3.7 dsl配置文件中关于dsl解析语法树缓存相关配置
+### 5.3.13 dsl配置文件中关于dsl解析语法树缓存相关配置
 
 可以在配置文件中直接指定dsl语法解析缓存参数（一般采用默认配置即可）
 
