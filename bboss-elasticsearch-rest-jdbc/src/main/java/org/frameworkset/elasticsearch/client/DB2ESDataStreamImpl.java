@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client;/*
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
+import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.persitent.util.SQLInfo;
 import org.slf4j.Logger;
@@ -94,12 +95,17 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 	private void firstImportData() throws Exception {
 		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,esjdbc.getBatchSize());
-		if(esjdbc.getExecutor() == null) {
-			SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
-		}
-		else
-		{
-			esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+		TransactionManager transactionManager = new TransactionManager();
+		try {
+			transactionManager.begin(TransactionManager.RW_TRANSACTION);
+			if (esjdbc.getExecutor() == null) {
+				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+			} else {
+				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+			}
+			transactionManager.commit();
+		}finally {
+			transactionManager.releasenolog();
 		}
 	}
 

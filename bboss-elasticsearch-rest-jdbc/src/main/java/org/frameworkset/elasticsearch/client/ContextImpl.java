@@ -76,6 +76,9 @@ public class ContextImpl implements Context {
 	public ESJDBC getEsjdbc() {
 		return esjdbc;
 	}
+	public String getDBName(){
+		return esjdbc.getDbConfig().getDbName();
+	}
 
 	@Override
 	public long getLongValue(String fieldName) throws Exception {

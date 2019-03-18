@@ -189,8 +189,6 @@ thread_pool.bulk.queue_size: 1000   es线程等待队列长度
 
 thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
-
-
 ## 4.3 一个有字段属性映射的稍微复杂案例实现
 
 ```java
@@ -420,7 +418,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 
 
-# 4.6 定时全量导入
+## 4.6 定时全量导入
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -479,9 +477,64 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 	}
 ```
 
+## 4.7 灵活控制文档数据结构
 
+bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，举例说明如下：
 
-# 4.7 设置任务执行结果回调处理函数
+```java
+final AtomicInteger s = new AtomicInteger(0);
+      /**
+       * 重新设置es数据结构
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+            //可以根据条件定义是否丢弃当前记录
+            //context.setDrop(true);return;
+            if(s.incrementAndGet() % 2 == 0) {
+               context.setDrop(true);
+               return;
+            }
+            //空值处理，判断字段content的值是否为空
+            if(context.getValue("content") == null){
+               context.addFieldValue("content","");//将content设置为""
+            }
+
+            CustomObject customObject = new CustomObject();
+            customObject.setAuthor((String)context.getValue("author"));
+            customObject.setTitle((String)context.getValue("title"));
+            customObject.setSubtitle((String)context.getValue("subtitle"));
+
+            customObject.setIds(new int[]{1,2,3});
+            context.addFieldValue("author",customObject);
+            long testtimestamp = context.getLongValue("testtimestamp");//将long类型的时间戳转换为Date类型
+            context.addFieldValue("testtimestamp",new Date(testtimestamp));//将long类型的时间戳转换为Date类型
+
+//          context.addIgnoreFieldMapping("title");
+            //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//          context.addIgnoreFieldMapping("author");
+            context.addIgnoreFieldMapping("title");
+            context.addIgnoreFieldMapping("subtitle");
+
+            //关联查询数据,单值查询
+            //sql中有多个条件用逗号分隔追加
+				Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+																"select * from head where billid = ? and othercondition= ?",
+																context.getIntegerValue("billid"),"otherconditionvalue");
+             
+            //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+            context.addFieldValue("headdata",headdata);
+            //关联查询数据,多值查询
+            List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+                  "select * from facedata where billid = ?",
+                  context.getIntegerValue("billid"));
+            //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+            context.addFieldValue("facedatas",facedatas);
+         }
+      });
+      //映射和转换配置结束
+```
+
+## 4.8 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 

@@ -33,6 +33,7 @@ public interface Context {
 	public Context addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone);
 	public Context addIgnoreFieldMapping(String dbColumnName);
 	public ESJDBC getEsjdbc();
+	public String getDBName();
 	public Object getValue(String fieldName) throws Exception;
 	public long getLongValue(String fieldName) throws Exception;
 	public double getDoubleValue(String fieldName) throws Exception;

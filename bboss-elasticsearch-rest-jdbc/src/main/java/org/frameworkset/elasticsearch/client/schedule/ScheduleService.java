@@ -18,6 +18,7 @@ package org.frameworkset.elasticsearch.client.schedule;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
+import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.DefaultResultSetHandler;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.ESJDBC;
@@ -133,12 +134,19 @@ public class ScheduleService {
 //		};
 
 		if(sqlInfo.getParamSize() == 0) {
-			if(esjdbc.getExecutor() == null) {
-				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
-			}
-			else
-			{
-				esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(),(Map)null);
+			TransactionManager transactionManager = new TransactionManager();
+			try {
+				transactionManager.begin(TransactionManager.RW_TRANSACTION);
+				if(esjdbc.getExecutor() == null) {
+					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+				}
+				else
+				{
+					esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(),(Map)null);
+				}
+				transactionManager.commit();
+			}finally {
+				transactionManager.releasenolog();
 			}
 
 		}
@@ -147,13 +155,17 @@ public class ScheduleService {
 			 	esjdbc.setForceStop();
 			 }
 			 else {
-				 if(esjdbc.getExecutor() == null) {
-					 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
-				 }
-				 else
-				 {
-					 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+				 TransactionManager transactionManager = new TransactionManager();
+				 try {
+					 transactionManager.begin(TransactionManager.RW_TRANSACTION);
+					 if (esjdbc.getExecutor() == null) {
+						 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+					 } else {
+						 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
 
+					 }
+				 }finally {
+					 transactionManager.releasenolog();
 				 }
 
 			 }
