@@ -436,6 +436,7 @@ public abstract class BuildTool {
 			writer.write(indexName);
 			writer.write("\", \"_type\" : \"");
 			writer.write(indexType);
+			writer.write("\"");
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
 				buildId(parentId,writer,true);
