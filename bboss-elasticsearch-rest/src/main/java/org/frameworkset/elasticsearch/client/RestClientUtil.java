@@ -2214,22 +2214,24 @@ public class RestClientUtil extends ClientUtil{
 			int taskId = 0;
 			boolean useDefaultScrollHandler = false;
 			ExecutorService executorService = this.client.getScrollQueryExecutorService();
-
+			List<T> datas = response.getDatas();//第一页数据
 			ScrollTask<T> scrollTask = null;
 			if(scrollHandler == null){
 				scrollHandler = new DefualtScrollHandler<T>(response);
 				useDefaultScrollHandler = true;
 			}
 			else{
-				tasks = new ArrayList<Future>();
-				HandlerInfo handlerInfo = new HandlerInfo();
-				handlerInfo.setTaskId(taskId);
-				scrollTask = new ScrollTask<T>(scrollHandler,response,handlerInfo);
-				taskId ++;
-				tasks.add(executorService.submit(scrollTask));
+				if (datas != null && datas.size() > 0) {
+					tasks = new ArrayList<Future>();
+					HandlerInfo handlerInfo = new HandlerInfo();
+					handlerInfo.setTaskId(taskId);
+					scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
+					taskId++;
+					tasks.add(executorService.submit(scrollTask));
 //				scrollHandler.handle(response);
+				}
 			}
-			List<T> datas = response.getDatas();//第一页数据
+
 
 			Set<String> scrollIds = null;//用于记录每次scroll的scrollid，便于检索完毕后清除
 //			long totalSize = response.getTotalSize();//总记录数

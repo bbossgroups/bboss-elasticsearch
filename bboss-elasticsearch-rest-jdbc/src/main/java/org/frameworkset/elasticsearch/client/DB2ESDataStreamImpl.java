@@ -95,17 +95,26 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 	private void firstImportData() throws Exception {
 		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,esjdbc.getBatchSize());
-		TransactionManager transactionManager = new TransactionManager();
-		try {
-			transactionManager.begin(TransactionManager.RW_TRANSACTION);
+		if(esjdbc.getDataRefactor() == null){
 			if (esjdbc.getExecutor() == null) {
 				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
 			} else {
 				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
 			}
-			transactionManager.commit();
-		}finally {
-			transactionManager.releasenolog();
+		}
+		else {
+			TransactionManager transactionManager = new TransactionManager();
+			try {
+				transactionManager.begin(TransactionManager.RW_TRANSACTION);
+				if (esjdbc.getExecutor() == null) {
+					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+				} else {
+					esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+				}
+				transactionManager.commit();
+			} finally {
+				transactionManager.releasenolog();
+			}
 		}
 	}
 

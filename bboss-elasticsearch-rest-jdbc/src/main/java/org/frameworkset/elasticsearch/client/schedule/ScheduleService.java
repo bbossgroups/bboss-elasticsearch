@@ -134,19 +134,26 @@ public class ScheduleService {
 //		};
 
 		if(sqlInfo.getParamSize() == 0) {
-			TransactionManager transactionManager = new TransactionManager();
-			try {
-				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if(esjdbc.getExecutor() == null) {
+			if(esjdbc.getDataRefactor() == null){
+				if (esjdbc.getExecutor() == null) {
 					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+				} else {
+					esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), (Map) null);
 				}
-				else
-				{
-					esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(),(Map)null);
+			}
+			else {
+				TransactionManager transactionManager = new TransactionManager();
+				try {
+					transactionManager.begin(TransactionManager.RW_TRANSACTION);
+					if (esjdbc.getExecutor() == null) {
+						SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+					} else {
+						esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), (Map) null);
+					}
+					transactionManager.commit();
+				} finally {
+					transactionManager.releasenolog();
 				}
-				transactionManager.commit();
-			}finally {
-				transactionManager.releasenolog();
 			}
 
 		}
@@ -155,17 +162,27 @@ public class ScheduleService {
 			 	esjdbc.setForceStop();
 			 }
 			 else {
-				 TransactionManager transactionManager = new TransactionManager();
-				 try {
-					 transactionManager.begin(TransactionManager.RW_TRANSACTION);
+				 if(esjdbc.getDataRefactor() == null){
 					 if (esjdbc.getExecutor() == null) {
 						 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
 					 } else {
 						 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
 
 					 }
-				 }finally {
-					 transactionManager.releasenolog();
+				 }
+				 else {
+					 TransactionManager transactionManager = new TransactionManager();
+					 try {
+						 transactionManager.begin(TransactionManager.RW_TRANSACTION);
+						 if (esjdbc.getExecutor() == null) {
+							 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+						 } else {
+							 esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+
+						 }
+					 } finally {
+						 transactionManager.releasenolog();
+					 }
 				 }
 
 			 }
