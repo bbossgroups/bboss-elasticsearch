@@ -464,7 +464,7 @@ public abstract class BuildTool {
 				writer.write("\"");
 			}
 
-			writer.write("\" } }\n");
+			writer.write(" } }\n");
 		}
 	}
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
