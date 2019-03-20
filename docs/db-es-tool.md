@@ -534,6 +534,8 @@ final AtomicInteger s = new AtomicInteger(0);
       //映射和转换配置结束
 ```
 
+***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
+
 ## 4.8 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：

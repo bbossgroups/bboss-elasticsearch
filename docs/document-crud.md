@@ -105,6 +105,10 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
                                 "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
                                 traceExtraCriteria,//查询条件封装对象
                                 TAgentInfo.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+//获取结果对象列表
+        List<TAgentInfo> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
 ```
 
 
@@ -119,6 +123,10 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
                                 "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
                                 traceExtraCriteria,//查询条件封装对象
                                 TAgentInfo.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+//获取结果对象列表
+        List<TAgentInfo> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
 ```
 
 检索文档对应的dsl语句定义：esmapper/estrace/ESTracesMapper.xml

@@ -87,6 +87,8 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 # 3.基本scroll api与自定义scorll结果集handler函数结合使用
 
+## 串行
+
 ```
 	@Test
 	public void testSimleScrollAPIHandler(){
@@ -110,7 +112,29 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 	}
 ```
 
+## 并行
 
+```java
+@Test
+public void testSimleScrollParallelAPIHandler(){
+   ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+   //scroll分页检索
+   Map params = new HashMap();
+   params.put("size", 5000);//每页5000条记录
+   //采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
+   //scroll上下文有效期1分钟
+   ESDatas<Map> response = clientUtil.scrollParallel("demo/_search", "scrollQuery", "1m", params, Map.class, new ScrollHandler<Map>() {
+      public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
+         List<Map> datas = response.getDatas();
+         long totalSize = response.getTotalSize();
+         System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+      }
+   });
+
+   System.out.println("response realzie:"+response.getTotalSize());
+
+}
+```
 
 # 4.slice api使用
 
