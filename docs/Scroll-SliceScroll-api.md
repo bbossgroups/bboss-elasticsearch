@@ -270,6 +270,42 @@ elasticsearch.sliceScrollThreadCount 默认值500
 
 elasticsearch.sliceScrollThreadQueue 默认值500
 
+## ES之间数据导入导出
+
+并行方式执行slice scroll操作：slice scroll实现ES之间数据导入导出，将一个es的数据导入另外一个es，需要在application.properties文件中定义一个es233的集群，[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
+
+```java
+/**
+ * 并行方式执行slice scroll操作：将一个es的数据导入另外一个es数据，需要在application.properties文件中定义一个es233的集群
+ */
+@Test
+public void testSimpleSliceScrollApiParralHandlerExport() {
+   ClientInterface clientUtil522 = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+
+   final ClientInterface clientUtil234 = ElasticSearchHelper.getRestClientUtil("es233");
+   //scroll slice分页检索,max对应并行度
+   int max = 6;
+   Map params = new HashMap();
+   params.put("sliceMax", max);//最多6个slice，不能大于share数，必须使用sliceMax作为变量名称
+   params.put("size", 1000);//每页1000条记录
+   //采用自定义handler函数处理每个slice scroll的结果集后，sliceResponse中只会包含总记录数，不会包含记录集合
+   //scroll上下文有效期1分钟
+   ESDatas<Map> sliceResponse = clientUtil522.scrollSliceParallel("demo/_search",
+         "scrollSliceQuery", params,"1m",Map.class, new ScrollHandler<Map>() {
+            public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
+               List<Map> datas = response.getDatas();
+               clientUtil234.addDocuments("index233","indextype233",datas);
+               long totalSize = response.getTotalSize();
+               System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+            }
+         });//并行
+
+   long totalSize = sliceResponse.getTotalSize();
+   System.out.println("totalSize:"+totalSize);
+
+}
+```
+
 
 
 # 6 开发交流

@@ -148,8 +148,8 @@ default.http.keyPassword =
 default.http.hostnameVerifier =
 
 ##logs集群配置
-default.logs.elasticUser=elastic
-default.logs.elasticPassword=changeme
+logs.elasticUser=elastic
+logs.elasticPassword=changeme
 
 #elasticsearch.rest.hostNames=10.1.236.88:9200
 logs.elasticsearch.rest.hostNames=127.0.0.1:9200
