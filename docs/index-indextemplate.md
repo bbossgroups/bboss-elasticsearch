@@ -229,9 +229,68 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 	}
 ```
 
+# 7 获取所有的索引表清单
 
+```java
+//获取索引的索引表清单
+public void testGetAllIndices(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   List<ESIndice> indices = clientInterface.getIndexes();
+}
+//获取demo索引中demo类型对应的索引字段信息
+public void testGetIndice(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   List<IndexField> indexFields = clientInterface.getIndexMappingFields("demo","demo");
+}
+```
 
-# 7 案例源码工程下载
+# 8 索引别名管理
+
+```java
+@Test
+public void testAddAlias(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   String response  = clientInterface.addAlias("demo","demoalias");
+   System.out.println(response);
+   response = clientInterface.getIndexMapping("demoalias",true);
+   System.out.println(response);
+   long count  = clientInterface.countAll("demoalias");
+   System.out.println(count);
+}
+
+@Test
+public void testRemoveAlias(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   String response  = clientInterface.removeAlias("demo","demoalias");
+   System.out.println(response);
+   try {
+      response = clientInterface.getIndexMapping("demoalias", true);
+      System.out.println(response);
+   }
+   catch (Exception e){
+      e.printStackTrace();
+   }
+   long count  = clientInterface.countAll("demo");
+   System.out.println(count);
+}
+```
+
+# 9 重建新索引
+
+```java
+@Test
+public void reIndex(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   String response  = clientInterface.reindex("demo","newdemo");
+   System.out.println(response);
+   response = clientInterface.getIndexMapping("newdemo",true);
+   System.out.println(response);
+   long count  = clientInterface.countAll("newdemo");
+   System.out.println(count);
+}
+```
+
+# 10 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -239,13 +298,13 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 
 
-# 8 参考文档
+# 11 参考文档
 
-<https://my.oschina.net/bboss/blog/1556866>
+开发指南：https://esdoc.bbossgroups.com/#/README
 
 
 
-# 9 开发交流
+# 12 开发交流
 
 **elasticsearch技术交流：166471282**
 
