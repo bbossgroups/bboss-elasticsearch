@@ -50,6 +50,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
         <![CDATA[{
             "settings": {
                 "number_of_shards": 6,
+                "number_of_replicas": 1,
                 "index.refresh_interval": "5s"
             },
             "mappings": {
@@ -298,7 +299,18 @@ clientInterface.closeIndex("demo");//关闭索引
 clientInterface.openIndex("demo");//打开索引
 ```
 
-# 11 案例源码工程下载
+# 11 索引分片离线重分配延迟时间设置
+
+```java
+ClientInterface clientInterface =  ElasticSearchHelper.getRestClientUtil();
+clientInterface.unassignedNodeLeftDelayedTimeout("2d"); //全局设置
+clientInterface.unassignedNodeLeftDelayedTimeout("cms_document","3d");//直接设置cms_document索引
+System.out.println(clientInterface.executeHttp("cms_document/_settings?pretty",ClientInterface.HTTP_GET));//获取索引cms_document配置
+clientInterface.unassignedNodeLeftDelayedTimeout("cms_document","3d");//直接设置 
+System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
+```
+
+# 12 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -306,13 +318,11 @@ clientInterface.openIndex("demo");//打开索引
 
 
 
-# 12 参考文档
+# 13 开发交流参考文档
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
 
-
-# 13 开发交流
 
 **elasticsearch技术交流：166471282**
 
