@@ -251,7 +251,9 @@ http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionRe
 空闲连接保活校验频率，单位毫秒，>0起作用
 
 http.validateAfterInactivity=3000
+
 每次获取connection时校验连接，true，校验，默认false
+
 http.staleConnectionCheckEnabled=false 
 
 

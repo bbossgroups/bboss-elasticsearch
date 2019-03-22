@@ -46,6 +46,15 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 	private DBConfig dbConfig;
 	private ExecutorService blockedExecutor;
+	public boolean isPagine() {
+		return pagine;
+	}
+
+	public void setPagine(boolean pagine) {
+		this.pagine = pagine;
+	}
+	//是否采用分页抽取数据
+	protected boolean pagine ;
 	/**
 	 * 打印任务日志
 	 */

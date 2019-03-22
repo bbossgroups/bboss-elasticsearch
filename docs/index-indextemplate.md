@@ -290,7 +290,15 @@ public void reIndex(){
 }
 ```
 
-# 10 案例源码工程下载
+# 10 打开和关闭索引
+
+```java
+ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+clientInterface.closeIndex("demo");//关闭索引
+clientInterface.openIndex("demo");//打开索引
+```
+
+# 11 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -298,13 +306,13 @@ public void reIndex(){
 
 
 
-# 11 参考文档
+# 12 参考文档
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
 
 
-# 12 开发交流
+# 13 开发交流
 
 **elasticsearch技术交流：166471282**
 

@@ -44,7 +44,6 @@ public class DB2ESDataStreamImpl extends DataStream{
 	/**
 	 *
 	 * @throws ESDataImportException
-	 * @deprecated use execute()
 	 */
 	public void execute() throws ESDataImportException{
 		if(esjdbc == null){

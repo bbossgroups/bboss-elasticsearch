@@ -3425,6 +3425,67 @@ public class RestClientUtil extends ClientUtil{
 		String closeIndex = new StringBuilder().append("/").append(index).append("/_open").toString();
 		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
 	}
+	/**
+	 * GET /_cluster/settings
+	 * @return
+	 */
+	public String getClusterSetting(){
+		return this.client.executeHttp("/_cluster/settings",ClientInterface.HTTP_GET);
+	}
+
+	/**
+	 * GET indice/_settings
+	 * PUT _all/_settings
+	 *     {
+	 *       "settings": {
+	 *         "index.unassigned.node_left.delayed_timeout": "5m"
+	 *       }
+	 *     }
+	 * @param indice
+	 * @return
+	 */
+	public String getIndiceSetting(String indice){
+
+		return getIndiceSetting(indice,(String )null);
+
+	}
+
+	public String getIndiceSetting(String indice,String params){
+
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		if(params != null && params.length() > 0){
+			builder.append("?").append(params);
+		}
+		return this.client.executeHttp(builder.toString(),ClientInterface.HTTP_GET);
+
+	}
+
+	/**
+	 * {
+	 *             "settings":{
+	 *                 "index.unassigned.node_left.delayed_timeout":"1d"
+	 *             }
+	 *         }
+	 * @param delayedTimeout
+	 * @return
+	 */
+	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout){
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{")
+				.append("\"index.unassigned.node_left.delayed_timeout\":\"").append(delayedTimeout)
+				.append("\"}}");
+		return this.client.executeHttp(builder.toString(),updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+
+	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout){
+
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{")
+				.append("\"index.unassigned.node_left.delayed_timeout\":\"").append(delayedTimeout)
+				.append("\"}}");
+		return this.client.executeHttp("_all/_settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
 
 	/**
 	 * 指定对象集合的文档id字段

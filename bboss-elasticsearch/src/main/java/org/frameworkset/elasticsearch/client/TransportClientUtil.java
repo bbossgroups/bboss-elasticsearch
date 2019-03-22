@@ -1398,4 +1398,28 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String openIndex(String index) {
 		return null;
 	}
+	/**
+	 * GET /_cluster/settings
+	 * @return
+	 */
+	public String getClusterSetting(){
+//		return this.client.executeHttp("/_cluster/settings",ClientInterface.HTTP_GET);
+		return null;
+	}
+
+	@Override
+	public String getIndiceSetting(String indice, String params) {
+		return null;
+	}
+
+	@Override
+	public String getIndiceSetting(String indice) {
+		return null;
+	}
+	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout){
+		return null;
+	}
+	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout){
+		return null;
+	}
 }

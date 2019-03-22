@@ -29,6 +29,17 @@ import java.util.*;
 public class DB2ESImportBuilder extends BaseBuilder{
 	private static Logger logger = LoggerFactory.getLogger(DB2ESImportBuilder.class);
 	protected String sqlFilepath;
+
+	public boolean isPagine() {
+		return pagine;
+	}
+
+	public DB2ESImportBuilder setPagine(boolean pagine) {
+		this.pagine = pagine;
+		return this;
+	}
+	//是否采用分页抽取数据
+	protected boolean pagine ;
 	protected DB2ESImportBuilder(){
 
 	}
@@ -423,6 +434,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 			DB2ESExportResultHandler db2ESExportResultHandler = new DB2ESExportResultHandler(this.exportResultHandler);
 			esjdbcResultSet.setExportResultHandler(db2ESExportResultHandler);
 		}
+		esjdbcResultSet.setPagine(this.pagine);
 		return esjdbcResultSet;
 	}
 

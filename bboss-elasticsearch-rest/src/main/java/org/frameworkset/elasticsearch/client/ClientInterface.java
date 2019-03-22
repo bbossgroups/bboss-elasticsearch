@@ -2219,4 +2219,36 @@ public interface ClientInterface {
 	public String closeIndex(String index);
 	public String openIndex(String index);
 
+	/**
+	 * GET /_cluster/settings
+	 * @return
+	 */
+	public String getClusterSetting();
+
+	/**
+	 * GET indice/_settings
+	 * PUT _all/_settings
+	 *     {
+	 *       "settings": {
+	 *         "index.unassigned.node_left.delayed_timeout": "5m"
+	 *       }
+	 *     }
+	 * @param indice
+	 * @return
+	 */
+	public String getIndiceSetting(String indice,String params);
+	public String getIndiceSetting(String indice);
+
+	/**
+	 * {
+	 *             "settings":{
+	 *                 "index.unassigned.node_left.delayed_timeout":"1d"
+	 *             }
+	 *         }
+	 * @param delayedTimeout
+	 * @return
+	 */
+	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout);
+	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout);
+
 }
