@@ -1422,4 +1422,14 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout){
 		return null;
 	}
+
+	@Override
+	public String updateNumberOfReplicas(String indice, int numberOfReplicas) {
+		return null;
+	}
+
+	@Override
+	public String updateNumberOfReplicas(int numberOfReplicas) {
+		return null;
+	}
 }

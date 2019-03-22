@@ -29,6 +29,7 @@ import java.util.Map;
 
 /**
  * 通过配置文件加载dsl模板组件
+ * https://esdoc.bbossgroups.com/#/development
  */
 public class ConfigRestClientUtil extends RestClientUtil {
 	private static Logger logger = LoggerFactory.getLogger(ConfigRestClientUtil.class);

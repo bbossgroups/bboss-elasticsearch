@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @see <url>https://my.oschina.net/bboss/blog/1556866</url>
+ * @see <url>https://esdoc.bbossgroups.com/#/development</url>
  */
 @ThreadSafe
 public interface ClientInterface {
@@ -2250,5 +2250,7 @@ public interface ClientInterface {
 	 */
 	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout);
 	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout);
+	public String updateNumberOfReplicas(String indice,int numberOfReplicas);
+	public String updateNumberOfReplicas(int numberOfReplicas);
 
 }

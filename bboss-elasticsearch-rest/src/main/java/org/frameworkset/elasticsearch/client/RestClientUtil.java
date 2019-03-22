@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * @see <p>https://my.oschina.net/bboss/blog/1556866</p>
+ * @see <p>https://esdoc.bbossgroups.com/#/development</p>
  */
 public class RestClientUtil extends ClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(RestClientUtil.class);
@@ -3476,6 +3476,25 @@ public class RestClientUtil extends ClientUtil{
 				.append("\"index.unassigned.node_left.delayed_timeout\":\"").append(delayedTimeout)
 				.append("\"}}");
 		return this.client.executeHttp(builder.toString(),updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+
+	@Override
+	public String updateNumberOfReplicas(String indice, int numberOfReplicas) {
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{")
+				.append("\"index.number_of_replicas\":").append(numberOfReplicas)
+				.append("}}");
+		return this.client.executeHttp(builder.toString(),updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+
+	@Override
+	public String updateNumberOfReplicas(int numberOfReplicas) {
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{")
+				.append("\"index.number_of_replicas\":").append(numberOfReplicas)
+				.append("}}");
+		return this.client.executeHttp("_all/_settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
 	}
 
 	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout){

@@ -310,7 +310,23 @@ clientInterface.unassignedNodeLeftDelayedTimeout("cms_document","3d");//直接�
 System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
 ```
 
-# 12 案例源码工程下载
+# 12 管理索引副本数
+
+```java
+@Test
+public void updateNumberOfReplicas(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+
+   clientInterface.updateNumberOfReplicas(1);
+   clientInterface.updateNumberOfReplicas("cms_document",2);
+   System.out.println(clientInterface.executeHttp("cms_document/_settings?pretty",ClientInterface.HTTP_GET));
+   clientInterface.updateNumberOfReplicas("cms_document",0);
+   System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));
+
+}
+```
+
+# 13 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -318,7 +334,7 @@ System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//
 
 
 
-# 13 开发交流参考文档
+# 14 开发交流参考文档
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
