@@ -303,6 +303,26 @@ public class TransportClientUtil  implements EventClientUtil{
 
 
 	@Override
+	public String updateAllIndicesSettings(Map<String, Object> settings) {
+		return null;
+	}
+
+	@Override
+	public String updateIndiceSettings(String indice, Map<String, Object> settings) {
+		return null;
+	}
+
+	@Override
+	public String updateAllIndicesSetting(String key, Object value) {
+		return null;
+	}
+
+	@Override
+	public String updateIndiceSetting(String indice, String key, Object value) {
+		return null;
+	}
+
+	@Override
 	public String getDynamicIndexName(String indexName) {
 		return this.indexNameBuilder.getIndexName(indexName);
 	}

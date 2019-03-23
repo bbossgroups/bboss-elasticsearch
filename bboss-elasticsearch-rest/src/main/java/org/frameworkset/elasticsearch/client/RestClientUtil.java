@@ -3497,6 +3497,78 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp("_all/_settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
 	}
 
+	@Override
+	public String updateAllIndicesSettings(Map<String,Object> settings) {
+		if(settings == null || settings.size() ==0)
+			return "";
+		return _updateIndiceSettings(  "_all/_settings",settings);
+
+	}
+	public String updateIndiceSettings(String indice,Map<String,Object> settings) {
+		if(settings == null || settings.size() ==0)
+			return "";
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		return _updateIndiceSettings(  builder.toString(),settings);
+	}
+	public String _updateIndiceSettings(String path,Map<String,Object> settings){
+		if(settings == null || settings.size() ==0)
+			return "";
+
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{");
+		Iterator<Map.Entry<String,Object>> iterator = settings.entrySet().iterator();
+		boolean seted = false;
+		while (iterator.hasNext()){
+			Map.Entry<String,Object> entry = iterator.next();
+			if(seted)
+				updateDsl.append(",");
+			else
+				seted = true;
+			Object value = entry.getValue();
+			updateDsl.append("\"").append(entry.getKey()).append("\":");
+			if(value == null){
+				updateDsl.append("null");
+			}
+			else if(value instanceof String) {
+				updateDsl.append("\"").append(value).append("\"");
+			}
+			else
+				updateDsl.append(value);
+		}
+
+		updateDsl.append("}}");
+		return this.client.executeHttp(path,updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+	public String _updateIndiceSetting(String path,String key,Object value){
+
+
+		StringBuilder updateDsl = new StringBuilder();
+		updateDsl.append("{").append("\"settings\":{");
+
+		updateDsl.append("\"").append(key).append("\":");
+		if(value == null){
+			updateDsl.append("null");
+		}
+		else if(value instanceof String) {
+			updateDsl.append("\"").append(value).append("\"");
+		}
+		else
+			updateDsl.append(value);
+
+
+		updateDsl.append("}}");
+		return this.client.executeHttp(path,updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+
+	public String updateAllIndicesSetting(String key,Object value) {
+
+		return _updateIndiceSetting(  "_all/_settings",  key,  value);
+	}
+	public String updateIndiceSetting(String indice,String key,Object value) {
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		return _updateIndiceSetting(  builder.toString(),  key,  value);
+	}
+
 	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout){
 
 		StringBuilder updateDsl = new StringBuilder();

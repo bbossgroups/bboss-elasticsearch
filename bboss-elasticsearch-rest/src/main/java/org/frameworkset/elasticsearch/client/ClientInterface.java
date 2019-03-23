@@ -33,6 +33,11 @@ public interface ClientInterface {
 	public final String VERSION_TYPE_EXTERNAL_GT = "external_gt";
 	public final String VERSION_TYPE_EXTERNAL_GTE = "external_gte";
 	public final int DEFAULT_FETCHSIZE = 5000;
+	public String updateAllIndicesSettings(Map<String,Object> settings) ;
+	public String updateIndiceSettings(String indice,Map<String,Object> settings) ;
+
+	public String updateAllIndicesSetting(String key,Object value) ;
+	public String updateIndiceSetting(String indice,String key,Object value) ;
 
 	/**
 	 * 获取动态索引表名称
