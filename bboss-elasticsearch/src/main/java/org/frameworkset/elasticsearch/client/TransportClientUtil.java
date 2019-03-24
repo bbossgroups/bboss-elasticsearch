@@ -323,6 +323,16 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String updateClusterSetting(ClusterSetting clusterSetting) {
+		return null;
+	}
+
+	@Override
+	public String updateClusterSettings(List<ClusterSetting> clusterSettings) {
+		return null;
+	}
+
+	@Override
 	public String getDynamicIndexName(String indexName) {
 		return this.indexNameBuilder.getIndexName(indexName);
 	}
@@ -1422,8 +1432,13 @@ public class TransportClientUtil  implements EventClientUtil{
 	 * GET /_cluster/settings
 	 * @return
 	 */
-	public String getClusterSetting(){
+	public String getClusterSettings(){
 //		return this.client.executeHttp("/_cluster/settings",ClientInterface.HTTP_GET);
+		return null;
+	}
+
+	@Override
+	public String getClusterSettings(boolean includeDefault) {
 		return null;
 	}
 

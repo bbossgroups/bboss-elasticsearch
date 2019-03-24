@@ -3429,8 +3429,16 @@ public class RestClientUtil extends ClientUtil{
 	 * GET /_cluster/settings
 	 * @return
 	 */
-	public String getClusterSetting(){
-		return this.client.executeHttp("/_cluster/settings",ClientInterface.HTTP_GET);
+	public String getClusterSettings(){
+		return getClusterSettings(true);
+	}
+	public String getClusterSettings(boolean includeDefault){
+		if(includeDefault) {
+			return this.client.executeHttp("/_cluster/settings?include_defaults=true", ClientInterface.HTTP_GET);
+		}
+		else{
+			return this.client.executeHttp("/_cluster/settings",ClientInterface.HTTP_GET);
+		}
 	}
 
 	/**
@@ -3510,6 +3518,8 @@ public class RestClientUtil extends ClientUtil{
 		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
 		return _updateIndiceSettings(  builder.toString(),settings);
 	}
+
+
 	public String _updateIndiceSettings(String path,Map<String,Object> settings){
 		if(settings == null || settings.size() ==0)
 			return "";
@@ -3697,6 +3707,259 @@ public class RestClientUtil extends ClientUtil{
 	}
 	public   String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException{
 		return addDocumentsWithIdField(indexName, indexType, beans,docIdField, parentIdField,(String)null);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html
+	 *
+	 Cluster Update Settingsedit
+	 Use this API to review and change cluster-wide settings.
+
+	 To review cluster settings:
+
+	 GET /_cluster/settings
+	 COPY AS CURLVIEW IN CONSOLE
+	 By default, this API call only returns settings that have been explicitly defined, but can also include the default settings.
+
+	 Updates to settings can be persistent, meaning they apply across restarts, or transient, where they don’t survive a full cluster restart. Here is an example of a persistent update:
+
+	 PUT /_cluster/settings
+	 {
+	 "persistent" : {
+	 "indices.recovery.max_bytes_per_sec" : "50mb"
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 This update is transient:
+
+	 PUT /_cluster/settings?flat_settings=true
+	 {
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 The response to an update returns the changed setting, as in this response to the transient example:
+
+	 {
+	 ...
+	 "persistent" : { },
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 }
+	 }
+	 You can reset persistent or transient settings by assigning a null value. If a transient setting is reset, the first one of these values that is defined is applied:
+
+	 the persistent setting
+	 the setting in the configuration file
+	 the default value.
+	 This example resets a setting:
+
+	 PUT /_cluster/settings
+	 {
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : null
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 The response does not include settings that have been reset:
+
+	 {
+	 ...
+	 "persistent" : {},
+	 "transient" : {}
+	 }
+	 You can also reset settings using wildcards. For example, to reset all dynamic indices.recovery settings:
+
+	 PUT /_cluster/settings
+	 {
+	 "transient" : {
+	 "indices.recovery.*" : null
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 Order of Precedenceedit
+	 The order of precedence for cluster settings is:
+
+	 transient cluster settings
+	 persistent cluster settings
+	 settings in the elasticsearch.yml configuration file.
+	 It’s best to set all cluster-wide settings with the settings API and use the elasticsearch.yml file only for local configurations. This way you can be sure that the setting is the same on all nodes. If, on the other hand, you define different settings on different nodes by accident using the configuration file, it is very difficult to notice these discrepancies.
+
+	 You can find the list of settings that you can dynamically update in Modules.
+	 * @param clusterSetting
+	 * @return
+	 */
+	public String updateClusterSetting(ClusterSetting clusterSetting){
+		StringBuilder updateDsl = new StringBuilder();
+		if(clusterSetting.isPersistent()) {
+			updateDsl.append("{").append("\"persistent\":{");
+		}
+		else {
+			updateDsl.append("{").append("\"transient\":{");
+		}
+
+		updateDsl.append("\"").append(clusterSetting.getKey()).append("\":");
+		if(clusterSetting.getValue() == null){
+			updateDsl.append("null");
+		}
+		else if(clusterSetting.getValue() instanceof String) {
+			updateDsl.append("\"").append(clusterSetting.getValue()).append("\"");
+		}
+		else{
+			updateDsl.append(clusterSetting.getValue());
+		}
+		updateDsl.append("}}");
+		return this.client.executeHttp("_cluster/settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html
+	 *
+	 Cluster Update Settingsedit
+	 Use this API to review and change cluster-wide settings.
+
+	 To review cluster settings:
+
+	 GET /_cluster/settings
+	 COPY AS CURLVIEW IN CONSOLE
+	 By default, this API call only returns settings that have been explicitly defined, but can also include the default settings.
+
+	 Updates to settings can be persistent, meaning they apply across restarts, or transient, where they don’t survive a full cluster restart. Here is an example of a persistent update:
+
+	 PUT /_cluster/settings
+	 {
+	 "persistent" : {
+	 "indices.recovery.max_bytes_per_sec" : "50mb"
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 This update is transient:
+
+	 PUT /_cluster/settings?flat_settings=true
+	 {
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 The response to an update returns the changed setting, as in this response to the transient example:
+
+	 {
+	 ...
+	 "persistent" : { },
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 }
+	 }
+	 You can reset persistent or transient settings by assigning a null value. If a transient setting is reset, the first one of these values that is defined is applied:
+
+	 the persistent setting
+	 the setting in the configuration file
+	 the default value.
+	 This example resets a setting:
+
+	 PUT /_cluster/settings
+	 {
+	 "transient" : {
+	 "indices.recovery.max_bytes_per_sec" : null
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 The response does not include settings that have been reset:
+
+	 {
+	 ...
+	 "persistent" : {},
+	 "transient" : {}
+	 }
+	 You can also reset settings using wildcards. For example, to reset all dynamic indices.recovery settings:
+
+	 PUT /_cluster/settings
+	 {
+	 "transient" : {
+	 "indices.recovery.*" : null
+	 }
+	 }
+	 COPY AS CURLVIEW IN CONSOLE
+	 Order of Precedenceedit
+	 The order of precedence for cluster settings is:
+
+	 transient cluster settings
+	 persistent cluster settings
+	 settings in the elasticsearch.yml configuration file.
+	 It’s best to set all cluster-wide settings with the settings API and use the elasticsearch.yml file only for local configurations. This way you can be sure that the setting is the same on all nodes. If, on the other hand, you define different settings on different nodes by accident using the configuration file, it is very difficult to notice these discrepancies.
+
+	 You can find the list of settings that you can dynamically update in Modules.
+	 * @param clusterSettings
+	 * @return
+	 */
+	public String updateClusterSettings(List<ClusterSetting> clusterSettings){
+		if(clusterSettings == null || clusterSettings.size() ==0)
+			return "";
+		StringBuilder updateDsl = new StringBuilder();
+		StringBuilder persistentDsl = new StringBuilder();
+		StringBuilder transientDsl = new StringBuilder();
+		boolean persistentSet = false;
+		boolean transientSet = false;
+
+		updateDsl.append("{");
+		for(int i =0; i < clusterSettings.size() ; i ++) {
+			ClusterSetting clusterSetting = clusterSettings.get(i);
+			if (clusterSetting.isPersistent()) {
+				if(!persistentSet) {
+					persistentSet = true;
+					persistentDsl.append("\"persistent\":{");
+				}
+				else{
+					persistentDsl.append(",");
+				}
+
+				persistentDsl.append("\"").append(clusterSetting.getKey()).append("\":");
+				if(clusterSetting.getValue() == null){
+					persistentDsl.append("null");
+				}
+				else if (clusterSetting.getValue() instanceof String) {
+					persistentDsl.append("\"").append(clusterSetting.getValue()).append("\"");
+				} else {
+					persistentDsl.append(clusterSetting.getValue());
+				}
+
+			} else {
+				if(!transientSet) {
+					transientSet = true;
+					transientDsl.append("\"transient\":{");
+				}
+				else{
+					transientDsl.append(",");
+				}
+				transientDsl.append("\"").append(clusterSetting.getKey()).append("\":");
+				if(clusterSetting.getValue() == null){
+					transientDsl.append("null");
+				}
+				else if (clusterSetting.getValue() instanceof String) {
+					transientDsl.append("\"").append(clusterSetting.getValue()).append("\"");
+				} else {
+					transientDsl.append(clusterSetting.getValue());
+				}
+			}
+		}
+		if(persistentDsl.length() > 0){
+			persistentDsl.append("}");
+			updateDsl.append(persistentDsl.toString());
+		}
+		if(transientDsl.length() > 0 && persistentDsl.length() > 0)
+		{
+			updateDsl.append(",");
+		}
+		if(transientDsl.length() > 0)
+		{
+			transientDsl.append("}");
+			updateDsl.append(transientDsl.toString());
+		}
+		updateDsl.append("}");
+		return this.client.executeHttp("_cluster/settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
+
 	}
 
 

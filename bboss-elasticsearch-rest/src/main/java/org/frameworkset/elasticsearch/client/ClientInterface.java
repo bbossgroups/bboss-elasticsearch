@@ -40,6 +40,170 @@ public interface ClientInterface {
 	public String updateIndiceSetting(String indice,String key,Object value) ;
 
 	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html
+	 * Cluster Update Settingsedit
+	 * 	 Use this API to review and change cluster-wide settings.
+	 *
+	 * 	 To review cluster settings:
+	 *
+	 * 	 GET /_cluster/settings
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 By default, this API call only returns settings that have been explicitly defined, but can also include the default settings.
+	 *
+	 * 	 Updates to settings can be persistent, meaning they apply across restarts, or transient, where they don’t survive a full cluster restart. Here is an example of a persistent update:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *          {
+	 * 	 "persistent" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "50mb"
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 This update is transient:
+	 *
+	 * 	 PUT /_cluster/settings?flat_settings=true
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 The response to an update returns the changed setting, as in this response to the transient example:
+	 *
+	 *     {
+	 * 	 ...
+	 * 	 "persistent" : { },
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 *     }
+	 *     }
+	 * 	 You can reset persistent or transient settings by assigning a null value. If a transient setting is reset, the first one of these values that is defined is applied:
+	 *
+	 * 	 the persistent setting
+	 * 	 the setting in the configuration file
+	 * 	 the default value.
+	 * 	 This example resets a setting:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : null
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 The response does not include settings that have been reset:
+	 *
+	 *     {
+	 * 	 ...
+	 * 	 "persistent" : {},
+	 * 	 "transient" : {}
+	 *     }
+	 * 	 You can also reset settings using wildcards. For example, to reset all dynamic indices.recovery settings:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.*" : null
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 Order of Precedenceedit
+	 * 	 The order of precedence for cluster settings is:
+	 *
+	 * 	 transient cluster settings
+	 * 	 persistent cluster settings
+	 * 	 settings in the elasticsearch.yml configuration file.
+	 * 	 It’s best to set all cluster-wide settings with the settings API and use the elasticsearch.yml file only for local configurations. This way you can be sure that the setting is the same on all nodes. If, on the other hand, you define different settings on different nodes by accident using the configuration file, it is very difficult to notice these discrepancies.
+	 *
+	 * 	 You can find the list of settings that you can dynamically update in Modules.
+	 * @param clusterSetting
+	 * @return
+	 */
+	public String updateClusterSetting(ClusterSetting clusterSetting);
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html
+	 * Cluster Update Settingsedit
+	 * 	 Use this API to review and change cluster-wide settings.
+	 *
+	 * 	 To review cluster settings:
+	 *
+	 * 	 GET /_cluster/settings
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 By default, this API call only returns settings that have been explicitly defined, but can also include the default settings.
+	 *
+	 * 	 Updates to settings can be persistent, meaning they apply across restarts, or transient, where they don’t survive a full cluster restart. Here is an example of a persistent update:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *          {
+	 * 	 "persistent" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "50mb"
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 This update is transient:
+	 *
+	 * 	 PUT /_cluster/settings?flat_settings=true
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 The response to an update returns the changed setting, as in this response to the transient example:
+	 *
+	 *     {
+	 * 	 ...
+	 * 	 "persistent" : { },
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : "20mb"
+	 *     }
+	 *     }
+	 * 	 You can reset persistent or transient settings by assigning a null value. If a transient setting is reset, the first one of these values that is defined is applied:
+	 *
+	 * 	 the persistent setting
+	 * 	 the setting in the configuration file
+	 * 	 the default value.
+	 * 	 This example resets a setting:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.max_bytes_per_sec" : null
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 The response does not include settings that have been reset:
+	 *
+	 *     {
+	 * 	 ...
+	 * 	 "persistent" : {},
+	 * 	 "transient" : {}
+	 *     }
+	 * 	 You can also reset settings using wildcards. For example, to reset all dynamic indices.recovery settings:
+	 *
+	 * 	 PUT /_cluster/settings
+	 *     {
+	 * 	 "transient" : {
+	 * 	 "indices.recovery.*" : null
+	 *     }
+	 *     }
+	 * 	 COPY AS CURLVIEW IN CONSOLE
+	 * 	 Order of Precedenceedit
+	 * 	 The order of precedence for cluster settings is:
+	 *
+	 * 	 transient cluster settings
+	 * 	 persistent cluster settings
+	 * 	 settings in the elasticsearch.yml configuration file.
+	 * 	 It’s best to set all cluster-wide settings with the settings API and use the elasticsearch.yml file only for local configurations. This way you can be sure that the setting is the same on all nodes. If, on the other hand, you define different settings on different nodes by accident using the configuration file, it is very difficult to notice these discrepancies.
+	 *
+	 * 	 You can find the list of settings that you can dynamically update in Modules.
+	 * @param clusterSettings
+	 * @return
+	 */
+	public String updateClusterSettings(List<ClusterSetting> clusterSettings);
+
+	/**
 	 * 获取动态索引表名称
 	 * @param indexName
 	 * @return
@@ -2228,7 +2392,9 @@ public interface ClientInterface {
 	 * GET /_cluster/settings
 	 * @return
 	 */
-	public String getClusterSetting();
+	public String getClusterSettings();
+
+	public String getClusterSettings(boolean includeDefault);
 
 	/**
 	 * GET indice/_settings
