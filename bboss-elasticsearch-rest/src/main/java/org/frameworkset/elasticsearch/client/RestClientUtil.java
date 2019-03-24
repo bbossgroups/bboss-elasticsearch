@@ -3962,5 +3962,23 @@ public class RestClientUtil extends ClientUtil{
 
 	}
 
+	public String disableClusterRoutingAllocation(){
+		ClusterSetting clusterSetting = new ClusterSetting();
+		clusterSetting.setPersistent(true);
+		clusterSetting.setKey("cluster.routing.allocation.enable");
+		clusterSetting.setValue("none");
+		return this.updateClusterSetting(clusterSetting);
+	}
+	public String enableClusterRoutingAllocation(){
+		ClusterSetting clusterSetting = new ClusterSetting();
+		clusterSetting.setPersistent(true);
+		clusterSetting.setKey("cluster.routing.allocation.enable");
+		clusterSetting.setValue(null);
+		return this.updateClusterSetting(clusterSetting);
+	}
+	public String flushSynced(){
+		return this.client.executeHttp("_flush/synced",ClientInterface.HTTP_POST);
+	}
+
 
 }

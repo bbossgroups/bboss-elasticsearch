@@ -1467,4 +1467,19 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String updateNumberOfReplicas(int numberOfReplicas) {
 		return null;
 	}
+
+	@Override
+	public String disableClusterRoutingAllocation() {
+		return null;
+	}
+
+	@Override
+	public String enableClusterRoutingAllocation() {
+		return null;
+	}
+
+	@Override
+	public String flushSynced() {
+		return null;
+	}
 }

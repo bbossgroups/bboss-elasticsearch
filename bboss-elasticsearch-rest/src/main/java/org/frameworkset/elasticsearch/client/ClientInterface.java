@@ -2424,4 +2424,22 @@ public interface ClientInterface {
 	public String updateNumberOfReplicas(String indice,int numberOfReplicas);
 	public String updateNumberOfReplicas(int numberOfReplicas);
 
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+	 * @return
+	 */
+	public String disableClusterRoutingAllocation();
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+	 * @return
+	 */
+	public String enableClusterRoutingAllocation();
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+	 * @return
+	 */
+	public String flushSynced();
+
 }
