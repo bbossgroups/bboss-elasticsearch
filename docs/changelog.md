@@ -11,6 +11,17 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.5.7 功能改进：
+1.修复bug：处理构建文档时，可能存在的格式不正确的问题
+
+2.修复bug：scrollParallel查询时，没有数据记录报任务存在空指针问题 
+
+3.api改进：增加管理索引副本的方法
+
+4.数据同步：处理持久层检索map对象时，clob或者blob对象自动转换为String的功能
+
+5.数据同步：数据同步工具开启全局db connection共享事务，在数据导入任务执行过程中，开启共享连接功能，避免重复从连接池中申请连接，提升导入性能
+
 # v5.5.6 功能改进：
 
 1. agg统计：将Integer类型key强制转换String类型错误bug
