@@ -35,6 +35,7 @@
   - [ElasticSearch客户端注解介绍](client-annotation.md)
   - [Elasticsearch控制搜索相关度评分案例](function-script-score.md)
   - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
+  - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
 
 - [Changelog](changelog.md)
 
