@@ -20,3 +20,33 @@
  </bean>
 ```
 
+
+
+# 配置默认Elasticsearch集群mapper实例
+
+```xml
+<bean id="clientInterfaceMapper" 
+     class="org.frameworkset.elasticsearch.ElasticSearchHelper"
+     factory-method="getConfigRestClient">    
+    <constructor-arg value="esmapper/demo.xml"></constructor-arg>
+ </bean>
+```
+
+# 配置指定Elasticsearch集群mapper实例
+
+```xml
+<bean id="clientInterfaceMapperWood" 
+     class="org.frameworkset.elasticsearch.ElasticSearchHelper"
+     factory-method="getConfigRestClient">
+     <constructor-arg value="wood"></constructor-arg>
+    <constructor-arg value="esmapper/demo.xml"></constructor-arg>
+ </bean>
+```
+
+
+
+# 参考资料
+
+- 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
+- spring boot 项目：[spring-booter-with-bboss][spring-booter-with-bboss](spring-booter-with-bboss.md)
+
