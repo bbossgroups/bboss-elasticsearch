@@ -1482,4 +1482,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String flushSynced() {
 		return null;
 	}
+	public String flushSynced(String indice){
+		return null;
+	}
 }

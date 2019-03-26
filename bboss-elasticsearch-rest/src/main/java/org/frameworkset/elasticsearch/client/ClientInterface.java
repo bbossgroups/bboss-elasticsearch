@@ -2437,9 +2437,18 @@ public interface ClientInterface {
 	public String enableClusterRoutingAllocation();
 
 	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
 	 * @return
 	 */
 	public String flushSynced();
+	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+	 * @return
+	 */
+	public String flushSynced(String indice);
 
 }

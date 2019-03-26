@@ -3979,6 +3979,15 @@ public class RestClientUtil extends ClientUtil{
 	public String flushSynced(){
 		return this.client.executeHttp("_flush/synced",ClientInterface.HTTP_POST);
 	}
+	/**
+	 *
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+	 * @return
+	 */
+	public String flushSynced(String indice){
+		return this.client.executeHttp(new StringBuilder().append(indice).append("/_flush/synced").toString(),ClientInterface.HTTP_POST);
+	}
 
 
 }

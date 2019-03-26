@@ -326,7 +326,123 @@ System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//
 	}
 ```
 
-# 13 案例源码工程下载
+# 13 禁用/启用shared迁移
+
+```java
+/**
+    * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/rolling-upgrades.html
+    */
+   @Test
+   public void enableShared(){
+      ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+//    System.out.println(clientInterface.flushSynced("cms_document"));//https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html
+      System.out.println(clientInterface.flushSynced());//https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html
+      System.out.println(clientInterface.disableClusterRoutingAllocation());//禁用share allocation
+      System.out.println(clientInterface.getClusterSettings(false));//获取人工设置的集群配置，看看刚才的修改是否生效
+      System.out.println(clientInterface.enableClusterRoutingAllocation());//启用share allocation
+      System.out.println(clientInterface.getClusterSettings(false));//获取人工设置的集群配置，看看刚才的修改是否生效
+
+   }
+```
+
+# 14 通用修改索引配置的方法
+
+```java
+@Test
+public void testSetting(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   clientInterface.updateIndiceSetting("cms_document","index.unassigned.node_left.delayed_timeout","1d");
+   System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
+   clientInterface.updateAllIndicesSetting("index.unassigned.node_left.delayed_timeout","2d");
+   System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
+   Map<String,Object> settings = new HashMap<String,Object>();
+   settings.put("index.unassigned.node_left.delayed_timeout","5d");
+   settings.put("index.number_of_replicas",5);
+   clientInterface.updateAllIndicesSettings(settings);
+   System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
+   settings.put("index.unassigned.node_left.delayed_timeout","3d");
+   settings.put("index.number_of_replicas",6);
+   clientInterface.updateIndiceSettings("cms_document",settings);
+   System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
+
+}
+```
+
+# 15 通用修改集群配置的方法
+
+
+
+```java
+//简单修改
+@Test
+public void updateClusterSetting(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   ClusterSetting clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("indices.recovery.max_bytes_per_sec");
+   clusterSetting.setValue("50mb");
+   clusterSetting.setPersistent(true);
+   clientInterface.updateClusterSetting(clusterSetting);
+   System.out.println(clientInterface.getClusterSettings());
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("indices.recovery.max_bytes_per_sec");
+   clusterSetting.setValue(null);
+   clusterSetting.setPersistent(true);
+   clientInterface.updateClusterSetting(clusterSetting);
+   System.out.println(clientInterface.getClusterSettings());
+}
+
+//批量修改
+@Test
+public void updateClusterSettings(){
+   ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+   List<ClusterSetting> clusterSettingList = new ArrayList<ClusterSetting>();
+
+   ClusterSetting clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("indices.recovery.max_bytes_per_sec");
+   clusterSetting.setValue("50mb");
+   clusterSetting.setPersistent(true);
+   clusterSettingList.add(clusterSetting);
+
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("xpack.monitoring.collection.enabled");
+   clusterSetting.setValue("true");
+   clusterSetting.setPersistent(true);
+   clusterSettingList.add(clusterSetting);
+
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("xpack.monitoring.collection.enabled");
+   clusterSetting.setValue("true");
+   clusterSetting.setPersistent(false);
+   clusterSettingList.add(clusterSetting);
+
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("indices.recovery.max_bytes_per_sec");
+   clusterSetting.setValue("50mb");
+   clusterSetting.setPersistent(false);
+   clusterSettingList.add(clusterSetting);
+
+   clientInterface.updateClusterSettings(clusterSettingList);
+   System.out.println(clientInterface.getClusterSettings(false));
+   clusterSettingList = new ArrayList<ClusterSetting>();
+
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("xpack.monitoring.collection.enabled");
+   clusterSetting.setValue(null);
+   clusterSetting.setPersistent(true);
+   clusterSettingList.add(clusterSetting);
+
+   clusterSetting = new ClusterSetting();
+   clusterSetting.setKey("indices.recovery.max_bytes_per_sec");
+   clusterSetting.setValue(null);
+   clusterSetting.setPersistent(false);
+   clusterSettingList.add(clusterSetting);
+
+   clientInterface.updateClusterSettings(clusterSettingList);
+   System.out.println(clientInterface.getClusterSettings(false));
+}
+```
+
+# 16 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -334,7 +450,7 @@ System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//
 
 
 
-# 14 开发交流参考文档
+# 17 开发交流
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
