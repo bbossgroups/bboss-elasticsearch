@@ -4,7 +4,7 @@
 
  bboss elasticsearch是一套基于query dsl语法操作和访问分布式搜索引擎elasticsearch的o/r mapping高性能开发库，底层基于es restful api。基于bboss elasticsearch，可以快速编写出访问和操作elasticsearch的程序代码，简单、高效、可靠、安全。
 
-​    **bboss elasticsearch以类似于mybatis的方式,使用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、foreach循环、逻辑判断、注释**；配置文件支持在线修改、自动热加载，开发和调试非常方便。
+​    **bboss elasticsearch以类似于mybatis的方式,使用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、脚本片段、foreach循环、逻辑判断、注释**；配置文件支持在线修改、自动热加载，开发和调试非常方便。
 
 # **bboss-elastic特色**
 

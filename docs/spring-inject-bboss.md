@@ -48,5 +48,5 @@
 # 参考资料
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
-- spring boot 项目：[spring-booter-with-bboss][spring-booter-with-bboss](spring-booter-with-bboss.md)
+- spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md)
 
