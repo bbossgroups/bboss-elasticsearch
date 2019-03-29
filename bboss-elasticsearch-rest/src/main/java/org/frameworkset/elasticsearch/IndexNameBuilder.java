@@ -38,4 +38,5 @@ public interface IndexNameBuilder  {
   public void configure(Properties elasticsearchPropes);
 
   public FastDateFormat getFastDateFormat();
+  public String getCurrentDateString();
 }

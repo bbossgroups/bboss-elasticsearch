@@ -50,13 +50,16 @@ public class TimeBasedIndexNameBuilder implements
     return fastDateFormat;
   }
 
+  public String getCurrentDateString(){
+      return fastDateFormat.format(new Date());
+  }
    
 
   @Override
   public String getIndexName(String index) {
 
     String indexName = new StringBuilder(index).append('-')
-            .append(fastDateFormat.format(new Date())).toString();
+            .append(getCurrentDateString()).toString();
     return indexName;
   }
 

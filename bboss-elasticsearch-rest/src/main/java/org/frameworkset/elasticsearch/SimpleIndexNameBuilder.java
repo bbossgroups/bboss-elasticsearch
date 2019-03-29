@@ -37,6 +37,11 @@ public class SimpleIndexNameBuilder implements IndexNameBuilder {
   }
 
   @Override
+  public String getCurrentDateString() {
+    return null;
+  }
+
+  @Override
 public String getIndexName(String index) {
 	// TODO Auto-generated method stub
 	return index;

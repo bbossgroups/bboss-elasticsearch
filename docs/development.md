@@ -1045,6 +1045,8 @@ private Double maxScore;
 
 ## 5.1 操作Elasticsearch通用服务API
 
+### 5.1.1 通用服务API
+
 通过ClientInterface 接口提供的以下通用executeHttp api，我们可以非常方便地实现es中所有带请求报文的功能
 
 ```
@@ -1115,6 +1117,8 @@ private Double maxScore;
 	public String executeHttp(String path, String action) throws ElasticSearchException
 ```
 
+### 5.1.2 通用服务API案例
+
 通用api的使用案例：**path**参数为相对路径，不需要带ip和端口，在application.properties文件中统一配置
 
 ```
@@ -1126,7 +1130,7 @@ private Double maxScore;
 				"demoTemplate");//模板对应的脚本名称，在esmapper/estrace/ESTemplate.xml中配置
 		System.out.println("createTempate-------------------------");
 		System.out.println(response);
-		//获取模板
+		//通过通用api获取模板
 		/**
 		 * 指定模板
 		 * /_template/demoTemplate_1
@@ -1146,6 +1150,28 @@ private Double maxScore;
 		System.out.println("HTTP_GET after delete-------------------------");
 		System.out.println(template);
 	}
+```
+
+### 5.1.3 通用服务API传递控制参数
+
+我们可以在请求服务相对路径中添加各种控制参数，控制es的操作行为：
+
+/_template/demotemplate_1?pretty&aa=bb
+
+这里以格式化报文为例说明，在请求服务相对路径中添加pretty控制参数，控制响应报文输出格式
+
+```java
+//通过通用api获取模板
+		/**
+		 * 指定模板
+		 * /_template/demoTemplate_1
+		 * /_template/demoTemplate*
+		 * 所有模板 /_template
+		 *
+		 */
+		String template = clientUtil.executeHttp("/_template/demotemplate_1?pretty",ClientUtil.HTTP_GET);//在请求服务相对路径中添加pretty控制参数，控制响应报文输出格式
+		System.out.println("HTTP_GET-------------------------");
+		System.out.println(template);
 ```
 
 

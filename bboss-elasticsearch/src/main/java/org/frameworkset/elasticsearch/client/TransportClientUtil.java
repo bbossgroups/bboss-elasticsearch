@@ -1485,4 +1485,9 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String flushSynced(String indice){
 		return null;
 	}
+
+	@Override
+	public String getCurrentDateString() {
+		return null;
+	}
 }

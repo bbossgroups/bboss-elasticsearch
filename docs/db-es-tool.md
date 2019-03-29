@@ -56,9 +56,11 @@
 </dependency>
 ```
 
+# 3.索引表结构定义
 
+Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
 
-# 3.配置es地址
+# 4.配置es地址
 
 新建application.properties文件，内容为：
 
@@ -70,11 +72,11 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 
 
-# 4.编写简单的导入代码
+# 5.编写简单的导入代码
 
 
 
-## **4.1同步批量导入**
+## **5.1同步批量导入**
 
 ```java
 	public void testSimpleImportBuilder(){
@@ -122,7 +124,7 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 
 
-## **4.2 异步批量导入**
+## **5.2 异步批量导入**
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -189,7 +191,7 @@ thread_pool.bulk.queue_size: 1000   es线程等待队列长度
 
 thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
-## 4.3 一个有字段属性映射的稍微复杂案例实现
+## 5.3 一个有字段属性映射的稍微复杂案例实现
 
 ```java
 	public void testImportBuilder(){
@@ -288,7 +290,7 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
 
 
-## 4.4 指定自定义文档id机制：
+## 5.4 指定自定义文档id机制：
 
 ```
 importBuilder.setEsIdGenerator(new EsIdGenerator() {
@@ -305,7 +307,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 
 
-## 4.5 定时增量导入
+## 5.5 定时增量导入
 
 源码文件 <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/db2es/ScheduleImportTaskTest.java>
 
@@ -418,7 +420,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 
 
-## 4.6 定时全量导入
+## 5.6 定时全量导入
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -477,7 +479,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 	}
 ```
 
-## 4.7 灵活控制文档数据结构
+## 5.7 灵活控制文档数据结构
 
 bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，举例说明如下：
 
@@ -536,7 +538,7 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 
-## 4.8 设置任务执行结果回调处理函数
+## 5.8 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
@@ -580,7 +582,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
-# 5.数据导入工具使用方法
+# 6.数据导入工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件：
 
@@ -765,7 +767,7 @@ build/distributions/db2es-booter-1.0.0-released.zip
 
 ![img](https://esdoc.bbossgroups.com/_images/db-es-dist.png)
 
-# 6 作业参数配置
+# 7 作业参数配置
 
 在使用[db2es-booter](https://gitee.com/bboss/db2es-booter)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties
 
@@ -807,7 +809,7 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
 
 
-# 7 开发交流
+# 8 开发交流
 
 完整的数据导入demo工程
 

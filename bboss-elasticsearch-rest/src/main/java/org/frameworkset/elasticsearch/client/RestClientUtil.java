@@ -59,6 +59,10 @@ public class RestClientUtil extends ClientUtil{
 		this.indexNameBuilder = indexNameBuilder;
 	}
 
+	public String getCurrentDateString(){
+		return this.indexNameBuilder.getCurrentDateString();
+	}
+
 	/**
 	 * 获取索引表字段信息
 	 * @param index

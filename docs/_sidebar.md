@@ -2,7 +2,7 @@
 
 - Getting started
 
-  - [Quick start](quickstart.md)
+  - [Elasticsearch Quick start](quickstart.md)
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
   - [Elasticsearch bboss Performance](performance.md) 

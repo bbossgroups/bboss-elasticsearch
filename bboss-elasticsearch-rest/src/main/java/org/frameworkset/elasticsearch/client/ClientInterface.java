@@ -2451,4 +2451,6 @@ public interface ClientInterface {
 	 */
 	public String flushSynced(String indice);
 
+	public String getCurrentDateString();
+
 }
