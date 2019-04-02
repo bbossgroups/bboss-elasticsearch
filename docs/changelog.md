@@ -11,6 +11,14 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.5.8 功能改进
+
+1. 增加更新索引配置通用方法
+2. 增加更新集群setting通用api 
+3. 增加synflush indice api
+4. 增加获取表明日期格式的方法
+5. 数据同步工具bug修复：oracle.sql.TIMESTAMP类型的增量字段取值转换不正确
+
 # v5.5.7 功能改进：
 1.修复bug：处理构建文档时，可能存在的格式不正确的问题
 
