@@ -480,6 +480,20 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		return value;
 	}
 
+	public Object getDateTimeValue( String colName) throws Exception
+	{
+		if(colName == null)
+			return null;
+		try {
+			Object value = this.resultSet.getTimestamp(colName);
+			return value;
+		}
+		catch (Exception e){
+			Object value = this.resultSet.getDate(colName);
+			return value;
+		}
+	}
+
 	public void refactorData(Context context) throws Exception {
 		if(this.dataRefactor != null){
 
@@ -671,8 +685,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 //			else if (this.scheduleService.getSqlInfo().getLastValueVarName() != null) {
 //				return this.getValue(this.scheduleService.getSqlInfo().getLastValueVarName());
 //			}
-
-			return this.getValue(scheduleService.getLastValueClumnName());
+			if(this.getLastValueType() == null || this.getLastValueType().intValue() ==  ImportIncreamentConfig.NUMBER_TYPE)
+				return this.getValue(scheduleService.getLastValueClumnName());
+			else if(this.getLastValueType().intValue() ==  ImportIncreamentConfig.TIMESTAMP_TYPE){
+				return this.getDateTimeValue(scheduleService.getLastValueClumnName());
+			}
 
 		}
 		return null;

@@ -22,6 +22,11 @@ clientUtil.addDocument("agentinfo",//索引名称
                        "agentinfo",//索引类型
                         agentInfo);//索引数据对象
 
+clientUtil.addDocument("agentinfo",//索引名称
+                       "agentinfo",//索引类型
+                        agentInfo,//索引数据对象
+                        "refresh=true");//强制实时刷新
+
 TAgentInfo的结构如下：
 public class TAgentInfo implements java.io.Serializable{
 	private String hostname;

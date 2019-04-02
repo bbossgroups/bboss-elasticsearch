@@ -223,13 +223,17 @@ String response = clientUtil.addDateDocument("demo",//索引表
 
 
 
-## **2.6 http连接池配置**
+## **2.6 http协议配置**
+
+### 连接池数量配置
 
  \## 总共允许的最大连接数:节点数n x defaultMaxPerRoute
 http.maxTotal = 600
 
 \## 每个地址允许的最大连接数
 http.defaultMaxPerRoute = 200
+
+### 重试机制配置
 
 \##连接失败重试次数，默认-1，小于等于0时不重试
 
@@ -248,6 +252,8 @@ http.retryTime = 3
 
 http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
 
+### 保活机制配置
+
 空闲连接保活校验频率，单位毫秒，>0起作用
 
 http.validateAfterInactivity=3000
@@ -256,7 +262,16 @@ http.validateAfterInactivity=3000
 
 http.staleConnectionCheckEnabled=false 
 
+### 超时时间配置
 
+```properties
+#建立连接超时时间
+http.timeoutConnection = 5000
+#socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值
+http.timeoutSocket = 50000
+#申请连接超时时间
+http.connectionRequestTimeout=5000
+```
 
 
 ## 2.7 DSL配置文件热加载扫描时间间隔配置
@@ -3157,33 +3172,33 @@ public void testQueryDocMapping(){
 
 ## 6.13 Elasticsearch Mget、GetDocSource、索引部分字段更新案例
 
-<https://my.oschina.net/bboss/blog/1678453>
+<https://esdoc.bbossgroups.com/#/Elasticsearch-Mget-GetDocSource-partupdate>
 
 
 
 ## 6.14 scroll分页检索案例
 
-<https://my.oschina.net/bboss/blog/1788729>
+<https://esdoc.bbossgroups.com/#/scroll>
 
-<https://my.oschina.net/bboss/blog/1786493>
+<https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api>
 
 
 
 ## 6.15 Elasticsearch地理位置维护及检索案例
 
-<https://my.oschina.net/bboss/blog/1788008>
+<https://esdoc.bbossgroups.com/#/Elasticsearch-geo>
 
 
 
 ## 6.16 Elasticsearch 父子关系维护和检索案例
 
-<https://my.oschina.net/bboss/blog/1793290>
+https://esdoc.bbossgroups.com/#/elasticsearch5-parent-child
 
 
 
 ## 6.17 Elasticsearch Delete/UpdateByquery案例
 
-<https://my.oschina.net/bboss/blog/1795356>
+<https://esdoc.bbossgroups.com/#/update-delete-byquery>
 
 
 
