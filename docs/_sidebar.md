@@ -34,6 +34,7 @@
   - [ElasticSearch DSL Script使用案例](ElasticSearch-DSL-Script.md)
   - [ElasticSearch客户端注解介绍](client-annotation.md)
   - [Elasticsearch控制搜索相关度评分案例](function-script-score.md)
+  - [Elasticsearch历史数据清理](elasticsearch-indexclean-task.md)
   - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
 
