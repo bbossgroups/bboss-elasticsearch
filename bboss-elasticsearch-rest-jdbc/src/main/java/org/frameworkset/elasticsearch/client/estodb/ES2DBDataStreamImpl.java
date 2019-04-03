@@ -27,22 +27,13 @@ public class ES2DBDataStreamImpl extends DataStream{
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 
 	public void execute() throws ESDataImportException{
-		es2db();
-	}
-
-	@Override
-	public void stop() {
-
-	}
-
-	public void es2db() throws ESDataImportException{
 		if(es2DB == null){
 			throw new ESDataImportException("es2DB is null.");
 		}
 		try {
 			initES(es2DB.getApplicationPropertiesFile());
 			initDS(es2DB.getDbConfig());
-			importData();
+			es2DB.exportData2DB();
 		}
 		catch (Exception e) {
 			throw new ESDataImportException(e);
@@ -52,9 +43,12 @@ public class ES2DBDataStreamImpl extends DataStream{
 		}
 	}
 
-	protected void importData() throws Exception {
-		es2DB.exportData2DB();
+	@Override
+	public void stop() {
+
 	}
+
+
 
 
 	public void setEs2DB(ES2DB es2DB) {

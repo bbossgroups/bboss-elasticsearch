@@ -54,7 +54,6 @@ public abstract class DataStream {
 		if(SimpleStringUtil.isNotEmpty(applicationPropertiesFile ))
 			ElasticSearchBoot.boot(applicationPropertiesFile);
 	}
-	protected abstract void importData() throws Exception;
 
 	public abstract void execute() throws ESDataImportException;
 

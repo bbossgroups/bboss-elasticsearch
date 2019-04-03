@@ -32,8 +32,27 @@ public class DB2ESDataStreamImpl extends DataStream{
 	private ESJDBC esjdbc;
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
+	private boolean inited;
+	public synchronized void init(){
+		if(inited )
+			return;
+		if(esjdbc == null){
+			throw new ESDataImportException("ESJDBC is null.");
+		}
+		try {
 
-
+			this.initES(esjdbc.getApplicationPropertiesFile());
+			this.initDS(esjdbc.getDbConfig());
+			this.initSQLInfo();
+			this.initSchedule();
+		}
+		catch (Exception e) {
+			throw new ESDataImportException(e);
+		}
+		finally{
+			inited = true;
+		}
+	}
 
 	@Override
 	public void stop() {
@@ -46,15 +65,20 @@ public class DB2ESDataStreamImpl extends DataStream{
 	 * @throws ESDataImportException
 	 */
 	public void execute() throws ESDataImportException{
-		if(esjdbc == null){
-			throw new ESDataImportException("ESJDBC is null.");
-		}
+
 		try {
-			initES(esjdbc.getApplicationPropertiesFile());
-			initDS(esjdbc.getDbConfig());
-			initSQLInfo();
-			this.initSchedule();
-			importData();
+
+			if(this.scheduleService == null) {//一次性执行数据导入操作
+				firstImportData();
+			}
+			else{//定时增量导入数据操作
+				if(!scheduleService.isExternalTimer()) {//内部定时任务引擎
+					scheduleService.timeSchedule();
+				}
+				else{ //外部定时任务引擎执行的方法，比如quartz之类的
+					scheduleService.externalTimeSchedule();
+				}
+			}
 		}
 		catch (Exception e) {
 			throw new ESDataImportException(e);
@@ -63,7 +87,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 		}
 	}
-	private void initSQLInfo(){
+	public void initSQLInfo(){
 
 		if(esjdbc.getSql() == null || esjdbc.getSql().equals("")){
 
@@ -83,7 +107,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 		this.esjdbc = esjdbc;
 	}
 
-	private void initSchedule(){
+	public void initSchedule(){
 		if(this.esjdbc.getScheduleConfig() != null) {
 			this.scheduleService = new ScheduleService();
 			this.scheduleService.init(this.esjdbc);
@@ -119,14 +143,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 
 
-	protected void importData() throws Exception {
-		if(this.scheduleService == null) {//一次性执行数据导入操作
-			firstImportData();
-		}
-		else{//定时增量导入数据操作
-			scheduleService.timeSchedule();
-		}
-	}
+
 
 
 }

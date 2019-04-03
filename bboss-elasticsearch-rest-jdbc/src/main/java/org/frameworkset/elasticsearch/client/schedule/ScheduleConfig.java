@@ -32,6 +32,21 @@ public class ScheduleConfig {
 	private Long period;
 	private Boolean fixedRate;
 
+	public boolean isExternalTimer() {
+		return externalTimer;
+	}
+
+	public void setExternalTimer(boolean externalTimer) {
+		this.externalTimer = externalTimer;
+	}
+
+	/**
+	 * 采用外部定时任务引擎执行定时任务控制变量：
+	 * false 内部引擎，默认值
+	 * true 外部引擎
+	 */
+	protected boolean externalTimer;
+
 	public Date getScheduleDate() {
 		return scheduleDate;
 	}

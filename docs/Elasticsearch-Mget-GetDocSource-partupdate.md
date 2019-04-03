@@ -167,7 +167,9 @@ dsl文件定义-esmapper/agentstat.xml
 </properties>
 ```
 
+我们可以设置控制参数来更新文档的版本等信息，参考文档：
 
+[https://esdoc.bbossgroups.com/#/development](https://esdoc.bbossgroups.com/#/development?id=_48-%e4%b8%ba%e6%b7%bb%e5%8a%a0%e4%bf%ae%e6%94%b9%e6%96%87%e6%a1%a3%e6%8c%87%e5%ae%9a%e6%8e%a7%e5%88%b6%e5%8f%82%e6%95%b0)
 
 # 4.GetDocSource案例
 

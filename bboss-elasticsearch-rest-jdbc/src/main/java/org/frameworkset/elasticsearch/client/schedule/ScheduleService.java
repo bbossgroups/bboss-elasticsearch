@@ -48,6 +48,20 @@ public class ScheduleService {
 	private volatile Status firstStatus;
 	private volatile boolean insertedCheck = false;
 	private Lock insertedCheckLock = new ReentrantLock();
+	public boolean isExternalTimer() {
+		return externalTimer;
+	}
+
+	public void setExternalTimer(boolean externalTimer) {
+		this.externalTimer = externalTimer;
+	}
+
+	/**
+	 * 采用外部定时任务引擎执行定时任务控制变量：
+	 * false 内部引擎，默认值
+	 * true 外部引擎
+	 */
+	protected boolean externalTimer;
 	private ESJDBC esjdbc;
 	private String updateSQL ;
 	private String insertSQL;
@@ -291,6 +305,21 @@ public class ScheduleService {
 
 
 	}
+	public void externalTimeSchedule() throws Exception {
+
+		TaskContext taskContext = new TaskContext(esjdbc);
+		try {
+			preCall(taskContext);
+			scheduleImportData(esjdbc.getScheduleBatchSize());
+			afterCall(taskContext);
+		}
+		catch (Exception e){
+			throwException(taskContext,e);
+			logger.error("scheduleImportData failed:",e);
+		}
+
+
+	}
 	public void storeStatus()  {
 //		if(!insertedCheck){
 //			try {
@@ -471,7 +500,7 @@ public class ScheduleService {
 		initStatusStore();
 		initDatasource();
 		initTableAndStatus();
-
+		this.externalTimer = this.esjdbc.isExternalTimer();
 		this.esjdbc.setScheduleService(this);
 //		startStoreStatusTask();
 	}

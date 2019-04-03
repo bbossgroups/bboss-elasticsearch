@@ -30,6 +30,21 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	private static Logger logger = LoggerFactory.getLogger(DB2ESImportBuilder.class);
 	protected String sqlFilepath;
 
+	public boolean isExternalTimer() {
+		return externalTimer;
+	}
+
+	public DB2ESImportBuilder setExternalTimer(boolean externalTimer) {
+		this.externalTimer = externalTimer;
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setExternalTimer(externalTimer);
+		return this;
+	}
+
+
+
 	public boolean isPagine() {
 		return pagine;
 	}
@@ -451,6 +466,8 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		ESJDBC esjdbcResultSet = this.buildESJDBCConfig();
 		DB2ESDataStreamImpl  dataStream = new DB2ESDataStreamImpl();
 		dataStream.setEsjdbc(esjdbcResultSet);
+		dataStream.init();
+
 		return dataStream;
 	}
 

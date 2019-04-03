@@ -39,6 +39,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
+	public boolean isExternalTimer() {
+		if(getScheduleConfig() != null) {
+			return this.getScheduleConfig().isExternalTimer();
+		}
+		else {
+			return false;
+		}
+	}
+
+
+
 	private String indexType;
 	private ErrorWrapper errorWrapper;
 	private volatile boolean forceStop = false;
