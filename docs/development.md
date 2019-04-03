@@ -265,11 +265,11 @@ http.staleConnectionCheckEnabled=false
 ### 超时时间配置
 
 ```properties
-#建立连接超时时间
+#建立连接超时时间，单位：毫秒
 http.timeoutConnection = 5000
-#socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值
+#socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值，单位：毫秒
 http.timeoutSocket = 50000
-#申请连接超时时间
+#申请连接超时时间，单位：毫秒
 http.connectionRequestTimeout=5000
 ```
 
