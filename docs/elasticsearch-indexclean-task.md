@@ -1,8 +1,6 @@
 # Elasticsearch历史数据清理
 
-Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
-
-# 1.BBoss Environmental requirements
+# 1.环境要求
 
 JDK requirement: JDK 1.7+
 
@@ -10,7 +8,8 @@ Elasticsearch version requirements: 1.X,2.X,5.X,6.X,+
 
 Spring booter 1.x,2.x,+
 
-# 2.定期清理es索引数据
+# 2.功能介绍
+
 基于quartz 2.3.0，定期清理es索引数据，支持多个elasticsearch集群数据清理
 索引要求：只支持按日期时间分索引的索引数据清理，
 
@@ -35,11 +34,16 @@ elasticPassword=changeme
 
 ## 3.3 定时任务配置
 
-##数据有效期,以天为单位
+数据有效期,以天为单位
+
 data.livetime=30
-##con time，定时扫描时间点
+
+con time，定时扫描时间点
+
 crontime=0/10 * * * * ?
-##索引表对应的日期格式
+
+索引表对应的日期格式
+
 elasticsearch.dateFormat=yyyy.MM.dd
 
 ## 3.4 quartz任务配置
@@ -117,7 +121,7 @@ elasticsearch.dateFormat=yyyy.MM.dd
 </properties>
 ```
 
-# 4 构建运行
+# 4. 构建运行
 ## 4.1 前提
 
 1. 安装和配置好最新的gradle版本
@@ -131,6 +135,8 @@ elasticsearch.dateFormat=yyyy.MM.dd
    码云: https://gitee.com/bboss/elktask
 
 ## 4.2 利用gradle构建发布版本
+利用gradle构建发布版本，在下载的源码根目录的cmd下运行下面的指令:
+
 gradle releaseVersion
 
 ## 4.3 运行作业
@@ -150,9 +156,15 @@ chmod +x startup.sh
 
 ./restart.sh
 
-windows: startup.bat stop.bat,restart.bat
+windows: 
 
-# 5 快速集成和应用 bboss elasticsearch
+startup.bat 
+
+stop.bat
+
+restart.bat
+
+# 5. 快速集成和应用 bboss elasticsearch
 https://esdoc.bbossgroups.com/#/development
 
 
