@@ -185,13 +185,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 	}
 
-
-//	@VisibleForTesting
-//	public ElasticSearchRestClient(String[] hostNames, String elasticUser, String elasticPassword,
-//								   ElasticSearchEventSerializer serializer, Properties extendElasticsearchPropes) {
-//		this(hostNames, elasticUser, elasticPassword, serializer, extendElasticsearchPropes);
-//
-//	}
 	private void initVersionInfo(){
 		this.getElasticSearch().getRestClientUtil().discover("/",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
@@ -323,15 +316,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	
 
-//  private void initHttpRequest(HttpPost httpRequest){
-//    if (headers != null && headers.size() > 0) {
-//      Iterator<Map.Entry<String, String>> entries = headers.entrySet().iterator();
-//      while (entries.hasNext()) {
-//        Map.Entry<String, String> entry = entries.next();
-//        httpRequest.addHeader(entry.getKey(), entry.getValue());
-//      }
-//    }
-//  }
 
 
 	public String execute(String entity,String options) throws ElasticSearchException {
@@ -461,13 +445,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return response;
 
 
-//    if (statusCode != HttpStatus.SC_OK) {
-//      if (response.getEntity() != null) {
-//        throw new EventDeliveryException(EntityUtils.toString(response.getEntity(), "UTF-8"));
-//      } else {
-//        throw new EventDeliveryException("Elasticsearch status code was: " + statusCode);
-//      }
-//    }
 	}
 
 	@Override
@@ -539,35 +516,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			try {
 				host = serversList.get();
 				url = getPath(host.getAddress(),path);
-//				if (entity == null){
-//					if(action == null)
-//						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers, responseHandler);
-//					else if(action == ClientUtil.HTTP_POST )
-//						response = HttpRequestUtil.httpPostforString(httpPool,url, null, this.headers,responseHandler);
-//					else if( action == ClientUtil.HTTP_PUT)
-//						response = HttpRequestUtil.httpPutforString(httpPool,url, null, this.headers,responseHandler);
-//					else if(action == ClientUtil.HTTP_GET)
-//						response = HttpRequestUtil.httpGetforString(httpPool,url, this.headers,responseHandler);
-//					else if(action == ClientUtil.HTTP_DELETE)
-//						response = HttpRequestUtil.httpDelete(httpPool,url, null, this.headers,responseHandler);
-//					else if(action == ClientUtil.HTTP_HEAD)
-//						response = HttpRequestUtil.httpHead(httpPool,url, null, this.headers,responseHandler);
-//					else
-//						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-//				}
-//				else
-//				{
-//					 if(action == ClientUtil.HTTP_POST )
-//						 response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers,responseHandler);
-//					 else if( action == ClientUtil.HTTP_PUT)
-//					 {
-//						 response = HttpRequestUtil.putJson(httpPool,entity, url, this.headers,responseHandler);
-//					 }
-//					 else if(action == ClientUtil.HTTP_DELETE)
-//						 response = HttpRequestUtil.httpDelete(httpPool,url,entity, null, this.headers,responseHandler);
-//					else
-//						throw new java.lang.IllegalArgumentException("not support http action:"+action);
-//				}
+
 				if(!discoverHost) {
 					response = this.restSeachExecutor.executeHttp(url, entity, action, responseHandler);
 				}
