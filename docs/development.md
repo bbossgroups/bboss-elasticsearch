@@ -228,9 +228,11 @@ String response = clientUtil.addDateDocument("demo",//索引表
 ### 连接池数量配置
 
  \## 总共允许的最大连接数:节点数n x defaultMaxPerRoute
+
 http.maxTotal = 600
 
 \## 每个地址允许的最大连接数
+
 http.defaultMaxPerRoute = 200
 
 ### 重试机制配置
@@ -266,11 +268,11 @@ http.staleConnectionCheckEnabled=false
 
 ```properties
 #建立连接超时时间，单位：毫秒
-http.timeoutConnection = 5000
+http.timeoutConnection = 10000
 #socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值，单位：毫秒
 http.timeoutSocket = 50000
 #申请连接超时时间，单位：毫秒
-http.connectionRequestTimeout=5000
+http.connectionRequestTimeout=10000
 ```
 
 
