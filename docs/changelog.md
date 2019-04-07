@@ -11,6 +11,10 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.5.9 功能改进
+
+解决从http连接池获取连接超时，将服务器标注为不可用问题
+
 # v5.5.8 功能改进
 
 1. 增加更新索引配置通用方法
