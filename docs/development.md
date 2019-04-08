@@ -2200,10 +2200,10 @@ public void testObjectSQLQueryFromDSL(){
 
 ```
 {
-#foreach($ldxxbh in $ldxxbhs) //foreach循环，变量$ldxxbhs是一个list集合,$ldxxbh对应循环中的元素变量，
+#foreach($ldxxbh in $ldxxbhs) ## foreach循环，变量$ldxxbhs是一个list集合,$ldxxbh对应循环中的元素变量，
                                 对应当前遍历的元素
-   #if($velocityCount > 0),#end  //$velocityCount是foreach循环控制变量
-        "v$velocityCount":#[ldxxbhs[$velocityCount]]  //拼接每个元素到脚本中，如果集合中元素类型不确定，使用#[]类型变量，同时又结合$velocityCount做集合的下标索引
+   #if($velocityCount > 0),#end  ## $velocityCount是foreach循环控制变量
+        "v$velocityCount":#[ldxxbhs[$velocityCount]]  ## 拼接每个元素到脚本中，如果集合中元素类型不确定，使用#[]类型变量，同时又结合$velocityCount做集合的下标索引
    
 #end  
 }    
