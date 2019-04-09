@@ -21,14 +21,7 @@ import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 public abstract class DataStream {
 
 
-	/**
-	 *
-	 * @throws ESDataImportException
-	 * @deprecated use execute()
-	 */
-	public void db2es() throws ESDataImportException{
 
-	}
 
 	protected void initDS(DBConfig dbConfig){
 		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {

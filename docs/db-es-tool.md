@@ -45,8 +45,18 @@
 <version>5.5.9</version>
 </dependency>
 ```
+如果需要增量导入，还需要导入sqlite驱动：
 
-本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标：
+```xml
+<dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.23.1</version>
+      <scope>compile</scope>
+ </dependency>
+```
+
+本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标(其他数据库驱动程序自行导入)：
 
 ```xml
 <dependency>
@@ -309,7 +319,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 ## 5.5 定时增量导入
 
-源码文件 <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/db2es/ScheduleImportTaskTest.java>
+源码文件 <https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -771,7 +781,7 @@ build/distributions/db2es-booter-1.0.0-released.zip
 
 # 7 作业参数配置
 
-在使用[db2es-booter](https://gitee.com/bboss/db2es-booter)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties
+在使用[db2es-booter](https://github.com/bbossgroups/db-elasticsearch-tool)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties
 
 中,然后在代码中通过以下方法获取配置的参数：
 
