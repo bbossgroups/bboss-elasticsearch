@@ -36,12 +36,14 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
 import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
+import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.NoRouteToHostException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -315,7 +317,44 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 	
+	private ElasticSearchException handleConnectionPoolTimeOutException(ConnectionPoolTimeoutException ex){
+		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
+		if(configuration == null){
+			return new ElasticSearchException(ex);
+		}
+		else{
+			StringBuilder builder = new StringBuilder();
+			builder.append("Wait timeout for ").append(configuration.getConnectionRequestTimeout()).append("ms for idle http connection from http connection pool.");
 
+			return new ElasticSearchException(builder.toString(),ex);
+		}
+	}
+
+	private NoServerElasticSearchException handleConnectionTimeOutException(ConnectTimeoutException ex){
+		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
+		if(configuration == null){
+			return new NoServerElasticSearchException(ex);
+		}
+		else{
+			StringBuilder builder = new StringBuilder();
+			builder.append("Build a http connection timeout for ").append(configuration.getTimeoutConnection()).append("ms.");
+
+			return new NoServerElasticSearchException(builder.toString(),ex);
+		}
+	}
+
+	private ElasticSearchException handleSocketTimeoutException(SocketTimeoutException ex){
+		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
+		if(configuration == null){
+			return new ElasticSearchException(ex);
+		}
+		else{
+			StringBuilder builder = new StringBuilder();
+			builder.append("Socket Timeout for ").append(configuration.getTimeoutSocket()).append("ms.");
+
+			return new ElasticSearchException(builder.toString(),ex);
+		}
+	}
 
 
 	public String execute(String entity,String options) throws ElasticSearchException {
@@ -391,12 +430,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
 
-				e = ex;
+				e = handleConnectionPoolTimeOutException( ex);
 				break;
 			}
             catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
-				e = new NoServerElasticSearchException(connectTimeoutException);
+				e = handleConnectionTimeOutException(connectTimeoutException);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -416,11 +455,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //				}
 //
 //            }
+			catch (SocketTimeoutException ex) {
+				e = handleSocketTimeoutException( ex);
+				break;
+			}
 			catch (NoServerElasticSearchException ex){
 				e = ex;
 
 				break;
 			}
+
 			catch (ElasticSearchException ex) {
 				e = ex;
 				break;
@@ -571,12 +615,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
 
-				e = ex;
+				e = handleConnectionPoolTimeOutException( ex);
 				break;
 			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
-				e = new NoServerElasticSearchException(connectTimeoutException);
+				e = handleConnectionTimeOutException(connectTimeoutException);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -596,6 +640,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //				}
 //
 //            }
+			catch (SocketTimeoutException ex) {
+				e = handleSocketTimeoutException( ex);
+				break;
+			}
 			catch (NoServerElasticSearchException ex){
 				e = ex;
 				break;
@@ -719,12 +767,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
 
-				e = ex;
+				e = handleConnectionPoolTimeOutException( ex);
 				break;
 			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
-				e = new NoServerElasticSearchException(connectTimeoutException);
+				e = handleConnectionTimeOutException(connectTimeoutException);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -744,6 +792,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //				}
 //
 //            }
+			catch (SocketTimeoutException ex) {
+				e = handleSocketTimeoutException( ex);
+				break;
+			}
 			catch (NoServerElasticSearchException ex){
 					e = ex;
 				break;
@@ -855,12 +907,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
 
-				e = ex;
+				e = handleConnectionPoolTimeOutException( ex);
 				break;
 			}
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
-				e = new NoServerElasticSearchException(connectTimeoutException);
+				e = handleConnectionTimeOutException(connectTimeoutException);
 				if (triesCount < serversList.size()) {//失败尝试下一个地址
 					triesCount++;
 					continue;
@@ -880,7 +932,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //				}
 //
 //            }
-            catch (NoServerElasticSearchException ex){
+			catch (SocketTimeoutException ex) {
+				e = handleSocketTimeoutException( ex);
+				break;
+			}
+			catch (NoServerElasticSearchException ex){
 //				if(e == null){
 //					e = ex;
 //				}

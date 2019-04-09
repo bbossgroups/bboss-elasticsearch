@@ -271,7 +271,7 @@ http.staleConnectionCheckEnabled=false
 http.timeoutConnection = 10000
 #socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值，单位：毫秒
 http.timeoutSocket = 50000
-#申请连接超时时间，单位：毫秒
+#申请连接超时时间，设置为0不超时，单位：毫秒
 http.connectionRequestTimeout=10000
 ```
 
