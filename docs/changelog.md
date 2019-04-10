@@ -11,6 +11,14 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.0 功能改进
+
+1.修改bboss框架版本号为5.2.7
+
+2.http连接池超时，sockettimeout，connectiontimeout异常信息添加超时时间信息
+
+3.修改数据同步任务TaskCall中的空指针异常
+
 # v5.5.9 功能改进
 
 解决从http连接池获取连接超时，将服务器标注为不可用问题
