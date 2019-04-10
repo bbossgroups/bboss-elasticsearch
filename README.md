@@ -1,7 +1,9 @@
 # Elasticsearch Bboss
 
 Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
-https://www.oschina.net/p/bboss-elastic
+
+<https://esdoc.bbossgroups.com/#/README>
+
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
@@ -118,13 +120,15 @@ https://github.com/bbossgroups/es_bboss_web
 https://github.com/bbossgroups/elasticsearch-springboot-example
 
 # Fast integration bboss documentation
-[Spring boot integration ElasticSearch case sharing](https://my.oschina.net/bboss/blog/1835601)
+[Spring boot integration ElasticSearch case sharing](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
 
-[Quickly integrate Elasticsearch Restful API case sharing](https://my.oschina.net/bboss/blog/1801273)
+[Quickly integrate Elasticsearch Restful API case sharing](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
+
+[Quick Start](https://esdoc.bbossgroups.com/#/quickstart)
 
 # Elasticsearch BBoss Developer Tutorial
 
-[High-performance elasticsearch ORM library bboss use introduction](https://my.oschina.net/bboss/blog/1556866)
+[High-performance elasticsearch ORM library bboss use introduction](https://esdoc.bbossgroups.com/#/development)
 
  
 

@@ -2,6 +2,8 @@
 
 Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
 
+https://esdoc.bbossgroups.com/#/README
+
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
@@ -119,13 +121,13 @@ https://github.com/bbossgroups/elasticsearch-spring-boot-starter-example
 
 # Elasticsearch Java rest client bboss fast integration documentation
 
-[How to use Elasticsearch BBoss](https://my.oschina.net/bboss/blog/2999092)
+[Spring boot integration ElasticSearch case sharing](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
 
-[Spring boot integration ElasticSearch case sharing](https://my.oschina.net/bboss/blog/1835601)
+[Quickly integrate Elasticsearch Restful API case sharing](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
 
-[Quickly integrate Elasticsearch Restful API case sharing](https://my.oschina.net/bboss/blog/1801273)
+[Quick Start](https://esdoc.bbossgroups.com/#/quickstart)
 
-# Elasticsearch BBoss easy developer tutorial
+# Elasticsearch BBoss Developer Tutorial
 
 [High-performance elasticsearch ORM library bboss use introduction](https://my.oschina.net/bboss/blog/1556866)
 
@@ -139,20 +141,17 @@ elasticsearch版本要求：1.X,2.X,5.X,6.X,+
 
 ## 快速集成和应用 
 
-非spring boot项目：
-https://my.oschina.net/bboss/blog/1801273 
+[Spring boot integration ElasticSearch case sharing](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
 
-spring boot项目：
-https://my.oschina.net/bboss/blog/1835601
+[Quickly integrate Elasticsearch Restful API case sharing](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
 
-详细配置说明参考文档：
-https://my.oschina.net/bboss/blog/1556866
+[Quick Start](https://esdoc.bbossgroups.com/#/quickstart)
 
 # elastic search配置和使用
 
 elastic search配置和使用参考文档
 
-https://my.oschina.net/bboss/blog/1556866 
+[High-performance elasticsearch ORM library bboss use introduction](https://my.oschina.net/bboss/blog/1556866)
 
 # 完整的demo
 
@@ -164,7 +163,7 @@ https://github.com/bbossgroups/elasticsearchdemo
 
 # bboss elastic特点
 
-https://www.oschina.net/p/bboss-elastic
+https://esdoc.bbossgroups.com/#/README
 
 # 版本升级注意事项
 
