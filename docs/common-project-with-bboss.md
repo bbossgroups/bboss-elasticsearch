@@ -10,6 +10,18 @@
 
 本文中讲述的方法同样适用于其他xxx boot类型项目集成bboss es。
 
+# 从源码构建Elasticsearch BBoss
+
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
+
+Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+
 
 
 # 1.导入bboss elasticsearch

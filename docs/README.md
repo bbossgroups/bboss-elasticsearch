@@ -34,6 +34,18 @@
 20. **一个快速生成bboss es pinpoint监控插件的工具,监控效果浏览**
 21. bboss es环境搭建及开发视频教程（依赖的版本以最新的[maven中央库版本](https://search.maven.org/search?q=g:com.bbossgroups.plugins)为准）：[下载](https://pan.baidu.com/s/1kXjAOKn)
 
+# 从源码构建Elasticsearch BBoss
+
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
+
+Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+
 # Elasticsearch BBoss Demo
 
 [spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)

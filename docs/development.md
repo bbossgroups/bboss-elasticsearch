@@ -18,6 +18,18 @@
 
 首先介绍如何在项目中导入和配置elasticsearch开发包，spring boot的导入和配置请参考文档：
 
+# 从源码构建Elasticsearch BBoss
+
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
+
+Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+
 
 
 # **1** 快速集成和应用 

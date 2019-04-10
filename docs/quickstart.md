@@ -117,3 +117,17 @@ bboss elasticsearch document:
 
 [Development Document](development.md)
 
+
+
+# 从源码构建Elasticsearch BBoss
+
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+
+Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+
+```
+gradle install
+```
+
+Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+

@@ -17,6 +17,8 @@ Then change to cmd window under directory bboss-elasticsearch and run gradle bui
 gradle install
 ```
 
+Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+
 # How to use Elasticsearch BBoss.
 
 First add the maven dependency of BBoss to your pom.xml:

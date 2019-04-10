@@ -57,55 +57,22 @@ public class TaskCall implements Runnable {
 		taskCommand.setEsjdbc(esjdbc);
 		try {
 			String data = taskCommand.execute();
-			/**
-			 if(esjdbc.isDebugResponse()) {
 
-			 if (refreshOption == null) {
-			 data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-			 logger.info(data);
-			 } else {
-			 data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-			 logger.info(data);
-			 }
-
-
-			 }
-			 else{
-			 if(esjdbc.isDiscardBulkResponse() && esjdbc.getExportResultHandler() == null) {
-			 ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
-			 if (refreshOption == null) {
-			 clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
-			 } else {
-			 clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST,esVoidResponseHandler);
-			 }
-			 if(esVoidResponseHandler.getElasticSearchException() != null)
-			 throw esVoidResponseHandler.getElasticSearchException();
-			 return null;
-			 }
-			 else{
-
-			 if (refreshOption == null) {
-			 data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-
-			 } else {
-			 data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-			 }
-
-			 }
-
-
-			 }*/
 			if (esjdbc.getExportResultHandler() != null) {//处理返回值
 				esjdbc.getExportResultHandler().handleResult(taskCommand, data);
 			}
 			return data;
 		}
 		catch (ElasticSearchException e){
-			esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			if (esjdbc.getExportResultHandler() != null) {
+				esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			}
 			throw e;
 		}
 		catch (Exception e){
-			esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			if (esjdbc.getExportResultHandler() != null) {
+				esjdbc.getExportResultHandler().handleException(taskCommand, e);
+			}
 			throw new ElasticSearchException(e);
 		}
 	}
