@@ -117,6 +117,7 @@ The following Demo and related documentation is compatible with Elasticsearch 1.
 https://github.com/bbossgroups/elasticsearch-example
 ## Elasticsearch demo for spring booter 1.x,2.x
 https://github.com/bbossgroups/es_bboss_web
+
 https://github.com/bbossgroups/elasticsearch-springboot-example
 
 # Fast integration bboss documentation
