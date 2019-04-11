@@ -436,7 +436,7 @@ public abstract class ResultUtil {
 
 		ESAggDatas<T> ret = new ESAggDatas<T>();
 		ret.setAggregations(aggregations);
-		ret.setTotalSize(searchResult.getSearchHits().getTotal());
+		ret.setTotal(searchResult.getSearchHits().getTotal());
 		if(value == null)
 			return ret;
 		try {
@@ -468,7 +468,7 @@ public abstract class ResultUtil {
 															 ESAggBucketHandle<T> aggBucketHandle){
 		ESAggDatas<T> ret = new ESAggDatas<T>();
 		ret.setAggregations(aggregations);
-		ret.setTotalSize(searchResult.getSearchHits().getTotal());
+		ret.setTotal(searchResult.getSearchHits().getTotal());
 
 		if(_buckets instanceof List) {
 			List<Map<String, Object>> buckets = (List<Map<String, Object>>) _buckets;
@@ -1390,7 +1390,7 @@ public abstract class ResultUtil {
 		datas.setRestResponse(restResponse);
 		List<SearchHit> searchHits = null;
 		if(restResponse.getSearchHits() != null) {
-			datas.setTotalSize(restResponse.getSearchHits().getTotal());
+			datas.setTotal(restResponse.getSearchHits().getTotal());
 			searchHits = restResponse.getSearchHits().getHits();
 		}
 		datas.setScrollId(restResponse.getScrollId());

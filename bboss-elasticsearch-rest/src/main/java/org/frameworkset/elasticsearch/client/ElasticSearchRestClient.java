@@ -95,6 +95,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private Map clusterInfo ;
 	private String esVersion;
 	private boolean v1 ;
+
+	public boolean isUpper7() {
+		return upper7;
+	}
+
+	public void setUpper7(boolean upper7) {
+		this.upper7 = upper7;
+	}
+
+	/**
+	 * 是否高于或者等于es 7
+	 */
+	private boolean upper7 ;
 	private String clusterVersionInfo;
 
 	private String clusterVarcharInfo;
@@ -207,6 +220,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						if(esVersion != null){
 							if(esVersion.startsWith("1.")){
 								v1 = true;
+							}
+							int idx = esVersion.indexOf(".");
+							if(idx > 0){
+								String max = esVersion.substring(0,idx);
+								try {
+									int v = Integer.parseInt(max);
+									if (v >= 7){
+										upper7 = true;
+									}
+								}
+								catch (Exception e){
+
+								}
 							}
 						}
 						clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;

@@ -133,7 +133,8 @@ public class ElasticSearchHelper {
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadQueue",configContext,"100"));
 			elasticsearchPropes.put("elasticsearch.sliceScrollBlockedWaitTimeout",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollBlockedWaitTimeout",configContext,"0"));
-
+			elasticsearchPropes.put("elasticsearch.includeTypeName",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.includeTypeName",configContext,"true"));
 			elasticsearchPropes.put("elasticsearch.scrollThreadCount",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadCount",configContext,"200"));
 			elasticsearchPropes.put("elasticsearch.scrollThreadQueue",

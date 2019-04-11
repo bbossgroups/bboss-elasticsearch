@@ -97,6 +97,7 @@ public class ElasticSearchSinkConstants {
   public static final String CLIENT_sliceScrollThreadCount = "elasticsearch.sliceScrollThreadCount";
   public static final String CLIENT_sliceScrollThreadQueue = "elasticsearch.sliceScrollThreadQueue";
   public static final String CLIENT_sliceScrollBlockedWaitTimeout = "elasticsearch.sliceScrollBlockedWaitTimeout";
+  public static final String CLIENT_includeTypeName = "elasticsearch.includeTypeName";
   public static final String CLIENT_scrollThreadCount = "elasticsearch.scrollThreadCount";
   public static final String CLIENT_scrollThreadQueue = "elasticsearch.scrollThreadQueue";
   public static final String CLIENT_scrollBlockedWaitTimeout = "elasticsearch.scrollBlockedWaitTimeout";

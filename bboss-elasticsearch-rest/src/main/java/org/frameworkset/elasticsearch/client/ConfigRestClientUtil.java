@@ -630,7 +630,8 @@ public class ConfigRestClientUtil extends RestClientUtil {
 
 
 	/**
-	 * 更新索引定义
+	 * 更新索引定义：my_index/_mapping
+	 * 	  https://www.elastic.co/guide/en/elasticsearch/reference/7.0/indices-put-mapping.html
 	 *
 	 * @return
 	 * @throws ElasticSearchException

@@ -348,6 +348,16 @@ public abstract class BaseESProperties {
 		private String sliceScrollThreadCount;
 		private String sliceScrollThreadQueue;
 		private String sliceScrollBlockedWaitTimeout;
+
+		public String getIncludeTypeName() {
+			return includeTypeName;
+		}
+
+		public void setIncludeTypeName(String includeTypeName) {
+			this.includeTypeName = includeTypeName;
+		}
+
+		private String includeTypeName;
 		private String scrollThreadCount;
 		private String scrollThreadQueue;
 		private String scrollBlockedWaitTimeout;
@@ -569,7 +579,7 @@ public abstract class BaseESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadQueue()))
 				properties.put(_name+"elasticsearch.sliceScrollThreadQueue",this.getElasticsearch().getSliceScrollThreadQueue());
 
-			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadQueue()))
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollBlockedWaitTimeout()))
 				properties.put(_name+"elasticsearch.sliceScrollBlockedWaitTimeout",this.getElasticsearch().getSliceScrollBlockedWaitTimeout());
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadCount()))
@@ -578,8 +588,12 @@ public abstract class BaseESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadQueue()))
 				properties.put(_name+"elasticsearch.scrollThreadQueue",this.getElasticsearch().getScrollThreadQueue());
 
-			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollThreadQueue()))
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getScrollBlockedWaitTimeout()))
 				properties.put(_name+"elasticsearch.scrollBlockedWaitTimeout",this.getElasticsearch().getScrollBlockedWaitTimeout());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getIncludeTypeName()))
+				properties.put(_name+"elasticsearch.includeTypeName",this.getElasticsearch().getIncludeTypeName());
+
 
 		}
 

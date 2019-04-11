@@ -105,6 +105,16 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected int scrollThreadQueue = 200;
 	protected long scrollBlockedWaitTimeout = 0l;
 
+	public boolean isIncludeTypeName() {
+		return includeTypeName;
+	}
+
+	public void setIncludeTypeName(boolean includeTypeName) {
+		this.includeTypeName = includeTypeName;
+	}
+
+	protected boolean includeTypeName = true;
+
 	protected IndexNameBuilder indexNameBuilder;
 
 	/**
@@ -257,6 +267,15 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			}
 			catch (Exception e){
 				logger.warn(_sliceScrollBlockedWaitTimeout,e);
+			}
+		}
+		String _includeTypeName = elasticsearchPropes.getProperty(CLIENT_includeTypeName);
+		if (SimpleStringUtil.isNotEmpty(_includeTypeName)) {
+			try {
+				this.includeTypeName = Boolean.parseBoolean(_includeTypeName);
+			}
+			catch (Exception e){
+				logger.warn(_includeTypeName,e);
 			}
 		}
 		String _sliceScrollThreadQueue = elasticsearchPropes.getProperty(CLIENT_sliceScrollThreadQueue);

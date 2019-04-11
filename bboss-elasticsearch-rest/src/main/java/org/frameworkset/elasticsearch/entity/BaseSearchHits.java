@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public abstract class BaseSearchHits implements Serializable {
-	private long total;
+	private Object total;
 	@JsonProperty("max_score")
 	private Double maxScore;
 
@@ -14,10 +14,10 @@ public abstract class BaseSearchHits implements Serializable {
 	public BaseSearchHits() {
 		// TODO Auto-generated constructor stub
 	}
-	public long getTotal() {
+	public Object getTotal() {
 		return total;
 	}
-	public void setTotal(long total) {
+	public void setTotal(Object total) {
 		this.total = total;
 	}
 	public Double getMaxScore() {

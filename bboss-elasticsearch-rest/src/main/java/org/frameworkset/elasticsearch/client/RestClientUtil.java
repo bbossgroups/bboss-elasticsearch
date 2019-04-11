@@ -2631,7 +2631,7 @@ public class RestClientUtil extends ClientUtil{
 
 	@Override
 	public String createTempate(String template, String entity) throws ElasticSearchException {
-		return this.client.executeHttp("_template/"+template,entity,ClientUtil.HTTP_PUT);
+		return this.client.executeHttp("_template/"+this.handleIndexName(template),entity,ClientUtil.HTTP_PUT);
 	}
 
 	@Override
@@ -2693,7 +2693,8 @@ public class RestClientUtil extends ClientUtil{
 	 
 	 
 	 /**
-	  * 更新索引定义
+	  * 更新索引定义：my_index/_mapping
+	  * https://www.elastic.co/guide/en/elasticsearch/reference/7.0/indices-put-mapping.html
 	  * @param indexMapping
 	  * @return
 	  * @throws ElasticSearchException
@@ -2727,8 +2728,30 @@ public class RestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String createIndiceMapping(String indexName,String indexMapping)  throws ElasticSearchException {
-		 return this.client.executeHttp(indexName,indexMapping,ClientUtil.HTTP_PUT);
+		 return this.client.executeHttp(handleIndexName(indexName),indexMapping,ClientUtil.HTTP_PUT);
 	 }
+
+	 private String handleIndexName(String indexName){
+	 	if(this.client.isUpper7() && this.client.getElasticSearch().isIncludeTypeName()){
+	 		if(indexName.indexOf("include_type_name=") > 0){
+	 			return indexName;
+			}
+	 		else{
+	 			StringBuilder ret = new StringBuilder();
+	 			if(indexName.indexOf("?") > 0){
+					ret.append(indexName).append("&include_type_name=true");
+				}
+	 			else{
+					ret.append(indexName).append("?include_type_name=true");
+				}
+	 			return ret.toString();
+			}
+		}
+	 	else{
+	 		return indexName;
+		}
+	 }
+
 	@Override
 	public String updateIndiceMapping(String action, String templateName, Object parameter)
 			throws ElasticSearchException {
