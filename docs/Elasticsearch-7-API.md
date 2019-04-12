@@ -1,10 +1,10 @@
-# Elasticsearch 7.0.0兼容性API清单
+# Elasticsearch 7+兼容性API
 
 # Elasticsearch 7.0.0新特性
 
 Elasticsearch 7.0.0与之前版本的差别，衔接ES 6和ES 8的中间版本，ES 7默认关闭indexType的支持，这样索引Index将不允许定义和使用indexType，ES 8完全去掉indexType的支持。
 
-bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持ES的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss提供了额外的控制属性：
+bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持ES的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss 在v 5.6.1中提供了额外的控制属性：
 
 ```properties
 ## 设置为true，兼容ES 6的indexType
@@ -61,7 +61,7 @@ https://www.elastic.co/cn/downloads/elasticsearch
 
 
 
-# 兼容性API清单
+# ES 7+ API清单
 
 在bboss 的ClientInterface接口中新增了以下方法，不带索引type参数，以便提供对Elasticsearch 7和Elasticsearch 8以上版本的支持：
 
@@ -1022,6 +1022,18 @@ public String updateDocument(String index,  Object params, UpdateOptions updateO
 */
 public boolean isVersionUpper7();
 ```
+
+# ES 7+ API测试用例
+
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7Test.java
+
+
+
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/jointype/JoinTypeTest7.java
+
+
+
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/script/ScriptImpl7Test.java
 
 # 从源码构建Elasticsearch BBoss
 
