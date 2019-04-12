@@ -966,5 +966,5 @@ public interface ClientInterfaceNew {
 	 */
 	public String updateDocument(String index,  Object params, UpdateOptions updateOptions) throws ElasticSearchException;
 
-
+	public boolean isVersionUpper7();
 }

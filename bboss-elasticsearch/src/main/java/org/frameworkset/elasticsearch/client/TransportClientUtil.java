@@ -1906,4 +1906,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String updateDocument(String index, Object params, UpdateOptions updateOptions) throws ElasticSearchException {
 		return null;
 	}
+	public boolean isVersionUpper7(){
+		return false;
+	}
 }

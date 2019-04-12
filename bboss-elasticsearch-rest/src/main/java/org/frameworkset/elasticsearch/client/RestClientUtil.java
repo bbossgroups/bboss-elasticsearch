@@ -5188,6 +5188,9 @@ public class RestClientUtil extends ClientUtil{
 		 return updateDocument( index, (String) null,params, updateOptions);
 
 	}
+	public boolean isVersionUpper7(){
+		return this.client.isUpper7();
+	}
 
 
 

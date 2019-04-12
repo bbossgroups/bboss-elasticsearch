@@ -404,8 +404,12 @@ public abstract class BuildTool {
 				buildId(parentId,writer,true);
 			}
 			if(routing != null){
-
-				writer.write(", \"_routing\" : ");
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
 				buildId(routing,writer,true);
 			}
 
@@ -447,8 +451,12 @@ public abstract class BuildTool {
 				buildId(parentId,writer,true);
 			}
 			if(routing != null){
-
-				writer.write(", \"_routing\" : ");
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
 				buildId(routing,writer,true);
 			}
 

@@ -67,7 +67,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					throw error;
 				}
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -147,7 +147,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			istart = start;
 			while (jdbcResultSet.next()) {
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -233,7 +233,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			while (jdbcResultSet.next()) {
 				try {
 					lastValue = jdbcResultSet.getLastValue();
-					Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index");
+					Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
 					if(context.isDrop())
 						continue;
 					totalCount ++;
@@ -396,7 +396,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			return jdbcResultSet.getEsParentIdValue();
 	}
 
-	public static void buildMeta(Context context,Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action) throws Exception {
+	public static void buildMeta(Context context,Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action,boolean upper7) throws Exception {
 
 		Object id = context.getEsId();
 		Object parentId = getEsParentId(  jdbcResultSet);
@@ -406,31 +406,39 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Object esRetryOnConflict = jdbcResultSet.getEsRetryOnConflict();
 
 
-		buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict);
+		buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict,upper7);
 	}
 	private static Object getVersion(ESJDBC esjdbc) throws Exception {
 		Object version = esjdbc.getEsVersionField() !=null? esjdbc.getValue(esjdbc.getEsVersionField()):esjdbc.getEsVersionValue();
 		return version;
 	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC esjdbc,String action,
-								 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws Exception {
+								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws Exception {
 
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
-			writer.write("\", \"_id\" : ");
+			writer.write("\"");
+			if(!upper7) {
+				writer.write(", \"_type\" : \"");
+				writer.write(indexType);
+				writer.write("\"");
+			}
+			writer.write(", \"_id\" : ");
 			BuildTool.buildId(id,writer,true);
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
 				BuildTool.buildId(parentId,writer,true);
 			}
 			if(routing != null){
-
-				writer.write(", \"_routing\" : ");
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
 				BuildTool.buildId(routing,writer,true);
 			}
 
@@ -467,46 +475,54 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
+			writer.write("\"");
+			if(!upper7) {
+				writer.write(", \"_type\" : \"");
+				writer.write(indexType);
+				writer.write("\"");
+			}
+
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
 				BuildTool.buildId(parentId,writer,true);
 			}
 			if(routing != null){
 
-				writer.write(", \"_routing\" : ");
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
 				BuildTool.buildId(routing,writer,true);
 			}
 //			if(action.equals("update"))
 //			{
-			{
-				if (esRetryOnConflict != null) {
-					writer.write(",\"_retry_on_conflict\":");
-					writer.write(String.valueOf(esRetryOnConflict));
-				}
-				Object version = getVersion(  esjdbc);
-				if (version != null) {
 
-					writer.write(",\"_version\":");
+			if (esRetryOnConflict != null) {
+				writer.write(",\"_retry_on_conflict\":");
+				writer.write(String.valueOf(esRetryOnConflict));
+			}
+			Object version = getVersion(  esjdbc);
+			if (version != null) {
 
-					writer.write(String.valueOf(version));
+				writer.write(",\"_version\":");
 
-				}
-
-				Object versionType = esjdbc.getEsVersionType();
-				if(versionType != null) {
-					writer.write(",\"_version_type\":\"");
-					writer.write(String.valueOf(versionType));
-					writer.write("\"");
-				}
+				writer.write(String.valueOf(version));
 
 			}
-			writer.write("\" } }\n");
+
+			Object versionType = esjdbc.getEsVersionType();
+			if(versionType != null) {
+				writer.write(",\"_version_type\":\"");
+				writer.write(String.valueOf(versionType));
+				writer.write("\"");
+			}
+			writer.write(" } }\n");
 		}
 	}
 
-	public static Context evalBuilk(Writer writer, String indexName, String indexType, ESJDBC jdbcResultSet, String action) throws Exception {
+	public static Context evalBuilk(Writer writer, String indexName, String indexType, ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
 		Context context = null;
 		if (jdbcResultSet != null) {
 			context = new ContextImpl(jdbcResultSet);
@@ -514,7 +530,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if(context.isDrop()){
 				return context;
 			}
-			buildMeta( context, writer ,  indexType,  indexName,   jdbcResultSet,action);
+			buildMeta( context, writer ,  indexType,  indexName,   jdbcResultSet,action,  upper7);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
