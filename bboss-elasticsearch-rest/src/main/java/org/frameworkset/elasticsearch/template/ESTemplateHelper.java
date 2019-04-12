@@ -137,22 +137,32 @@ public class ESTemplateHelper {
 	}
 
 
-	public static  void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
+	public static  void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action,boolean upper7){
 		Object id = getId(params);
-		if(id != null)
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-		else
-			builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+		if(!upper7) {
+			if (id != null)
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+			else
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\" } }\n");
+		}
+		else{
+			if (id != null)
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+			else
+				builder.append("{ \"").append(action).append("\" : { \"_index\" : \"").append(indexName).append("\" } }\n");
+		}
 	}
-	public static  void buildMeta(Writer writer , String indexType, String indexName, Object params, String action) throws IOException {
+	public static  void buildMeta(Writer writer , String indexType, String indexName, Object params, String action,boolean upper7) throws IOException {
 		Object id = getId(params);
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				writer.write(indexType);
+			}
 			writer.write("\", \"_id\" : \"");
 			writer.write(String.valueOf(id));
 			writer.write("\" } }\n");
@@ -163,15 +173,17 @@ public class ESTemplateHelper {
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				writer.write(indexType);
+			}
 			writer.write("\" } }\n");
 		}
 	}
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,boolean upper7) throws IOException {
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action);
+			buildMeta(  writer ,  indexType,  indexName,   param,action,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -185,13 +197,13 @@ public class ESTemplateHelper {
 		}
 
 	}
-	public static void evalBuilkTemplate(ESUtil esUtil,StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action) {
+	public static void evalBuilkTemplate(ESUtil esUtil,StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action,boolean upper7) {
 
 		ESInfo esInfo = esUtil.getESInfo(templateName);
 		if (esInfo == null)
 			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
-			buildMeta(  builder ,  indexType,  indexName,   params,action);
+			buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 			String template = ESTemplateHelper.evalNullParamsTemplate(esUtil,templateName,esInfo);
 			if(!action.equals("update"))
 				builder.append(template).append("\n");
@@ -205,20 +217,20 @@ public class ESTemplateHelper {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
 
 			if (esInfo.isTpl()) {
-				buildMeta(  builder ,  indexType,  indexName,   params,action);
+				buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				evalStruction(  esUtil,  builder,  struction ,  params,  templateName,  action);
 			} else {
-				buildMeta(  builder ,  indexType,  indexName,   params,action);
+				buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 				evalStruction(  esUtil,  builder,  struction ,  params,  templateName,  action);
 			}
 
 		} else {
-			buildMeta(  builder ,  indexType,  indexName,   params,action);
+			buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 			evalStruction(    esUtil,builder,  struction ,  params,  templateName,  action);
 		}

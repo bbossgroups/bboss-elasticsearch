@@ -22,7 +22,7 @@ import java.util.Set;
  * @see <url>https://esdoc.bbossgroups.com/#/development</url>
  */
 @ThreadSafe
-public interface ClientInterface {
+public interface ClientInterface extends ClientInterfaceNew {
 	public final String HTTP_GET = "get";
 	public final String HTTP_POST = "post";
 	public final String HTTP_DELETE = "delete";

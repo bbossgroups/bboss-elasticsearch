@@ -282,7 +282,7 @@ public abstract class BuildTool {
 		}
 	}
 
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action) throws IOException {
+	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,boolean upper7) throws IOException {
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
 		Object id = getId(params,beanInfo);
 		Object parentId = getParentId(params,beanInfo);
@@ -290,18 +290,18 @@ public abstract class BuildTool {
 		Object esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
 
 
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
 
 
-	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey) throws IOException {
+	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,boolean upper7) throws IOException {
 //		Object id = docIdKey != null ?params.get(docIdKey):null;
 //		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 //		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
-		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
+		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null,  upper7);
 	}
 
-	public static void buildMetaWithDocIdField(Writer writer ,String indexType,String indexName, Object params,String action,String docIdField,String parentIdField) throws IOException {
+	public static void buildMetaWithDocIdField(Writer writer ,String indexType,String indexName, Object params,String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 //		Object id = docIdKey != null ?params.get(docIdKey):null;
 //		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 //		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
@@ -309,17 +309,17 @@ public abstract class BuildTool {
 		ClientOptions clientOption = new ClientOptions();
 		clientOption.setIdField(docIdField);
 		clientOption.setParentIdField(parentIdField);
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  clientOption);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  clientOption,  upper7);
 	}
-	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey) throws IOException {
+	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey,boolean upper7) throws IOException {
 		Object id = docIdKey != null ?params.get(docIdKey):null;
 		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 		Object routing = routingKey != null ?params.get(routingKey):null;
 
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,  upper7);
 	}
 
-	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions) throws IOException {
+	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions,boolean upper7) throws IOException {
 		Object id = null;
 		Object parentId = null;
 		Object routing = null;
@@ -330,7 +330,7 @@ public abstract class BuildTool {
 			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
 			esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
 		}
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
 
 
@@ -344,9 +344,9 @@ public abstract class BuildTool {
 	 * @param action
 	 * @throws IOException
 	 */
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptions clientOption) throws IOException {
+	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptions clientOption,boolean upper7) throws IOException {
 		if(params instanceof Map){
-			buildMapMeta(  writer ,  indexType,  indexName, (Map) params,  action,  clientOption);
+			buildMapMeta(  writer ,  indexType,  indexName, (Map) params,  action,  clientOption,  upper7);
 			return;
 		}
 		Object id = null;
@@ -365,13 +365,13 @@ public abstract class BuildTool {
 			version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionField()) : null;
 			versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionTypeField()) : null;
 		}
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType);
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing) throws IOException {
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null);
+	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
+		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
 	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-								 Object id,Object parentId,Object routing,Object esRetryOnConflict) throws IOException{
+								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws IOException{
 		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
 		ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
 		Object version = null;
@@ -383,18 +383,20 @@ public abstract class BuildTool {
 		if (esVersionTypeProperty != null)
 			versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,
-				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType);
+				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType,  upper7);
 	}
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-							 Object id,Object parentId,Object routing,Object esRetryOnConflict,Object version,Object versionType) throws IOException {
+							 Object id,Object parentId,Object routing,Object esRetryOnConflict,Object version,Object versionType,boolean upper7) throws IOException {
 
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				writer.write(indexType);
+			}
 			writer.write("\", \"_id\" : ");
 			buildId(id,writer,true);
 			if(parentId != null){
@@ -434,8 +436,11 @@ public abstract class BuildTool {
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
 			writer.write(indexName);
-			writer.write("\", \"_type\" : \"");
-			writer.write(indexType);
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				writer.write(indexType);
+
+			}
 			writer.write("\"");
 			if(parentId != null){
 				writer.write(", \"parent\" : ");
@@ -467,11 +472,11 @@ public abstract class BuildTool {
 			writer.write(" } }\n");
 		}
 	}
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,boolean upper7) throws IOException {
 
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action);
+			buildMeta(  writer ,  indexType,  indexName,   param,action,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -537,10 +542,10 @@ public abstract class BuildTool {
 
 
 
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey,boolean upper7) throws IOException {
 
 		if (param != null) {
-			buildMetaWithDocIdKey(  writer ,  indexType,  indexName,   param,action,docIdKey,parentIdKey);
+			buildMetaWithDocIdKey(  writer ,  indexType,  indexName,   param,action,docIdKey,parentIdKey,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -554,10 +559,10 @@ public abstract class BuildTool {
 		}
 
 	}
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,ClientOptions ClientOptions) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,ClientOptions ClientOptions,boolean upper7) throws IOException {
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action,ClientOptions);
+			buildMeta(  writer ,  indexType,  indexName,   param,action,ClientOptions,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -571,10 +576,10 @@ public abstract class BuildTool {
 		}
 
 	}
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 
 		if (param != null) {
-			buildMetaWithDocIdField(  writer ,  indexType,  indexName,   param,action,docIdField,parentIdField);
+			buildMetaWithDocIdField(  writer ,  indexType,  indexName,   param,action,docIdField,parentIdField,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
@@ -589,10 +594,10 @@ public abstract class BuildTool {
 
 	}
 
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions) throws IOException {
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions,boolean upper7) throws IOException {
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action,clientOptions);
+			buildMeta(  writer ,  indexType,  indexName,   param,action,clientOptions,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");

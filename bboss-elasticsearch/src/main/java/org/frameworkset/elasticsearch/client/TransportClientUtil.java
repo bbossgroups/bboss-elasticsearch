@@ -1490,4 +1490,420 @@ public class TransportClientUtil  implements EventClientUtil{
 	public String getCurrentDateString() {
 		return null;
 	}
+
+
+	@Override
+	public String addDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentWithParentId(String indexName, Object bean, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithParentId(String indexName, Object bean, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Map params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Map params, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Object params, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteDocumentsNew(String indexName, String... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteDocumentsWithrefreshOptionNew(String indexName, String refreshOption, String... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public List<IndexField> getIndexMappingFields(String index) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsNew(String indexName, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsNew(String indexName, String addTemplate, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentNew(String indexName, String addTemplate, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentNew(String indexName, String addTemplate, Object bean, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocumentsNew(String indexName, String updateTemplate, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocumentsNew(String indexName, String updateTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, Object bean, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, Object bean, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addMapDocument(String indexName, Map bean, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateMapDocument(String indexName, Map bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addMapDocument(String indexName, Map bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateMapDocument(String indexName, Map bean, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, Object bean, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentWithId(String indexName, Object bean, Object docId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentWithId(String indexName, Object bean, Object docId, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, Object bean, Object docId, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(String indexName, Object bean, Object docId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(String indexName, List<?> beans, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(String indexName, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey, String parentIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(String indexName, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(String indexName, List<Map> beans, String docIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(String indexName, List<Map> beans, String docIdKey, String parentIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocument(String indexName, String documentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocument(String indexName, String documentId, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocument(String indexName, String documentId, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocument(String indexName, String documentId, Map<String, Object> options, Class<T> beanType) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public MapSearchHit getDocumentHit(String indexName, String documentId, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public MapSearchHit getDocumentHit(String indexName, String documentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, Object bean, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithId(String indexName, Object bean, Object docId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentWithId(String indexName, Object bean, Object docId, Object parentId) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, Object bean, Object docId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocument(String indexName, Object bean, Object docId, Object parentId, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, List<Map> beans, String docIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, List<Map> beans, String docIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, List<Map> beans, String docIdKey, String parentIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey, String parentIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, List<Map> beans, String docIdKey, String parentIdKey, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdKey(String indexName, List<Map> beans, String docIdKey, String parentIdKey) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdOptions(String indexName, List<Object> beans, String docIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, List<Object> beans, String docIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, List<Object> beans, String docIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, List<Object> beans, String docIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, List<Object> beans, String docIdField, String parentIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsWithIdField(String indexName, List<Object> beans, String docIdField, String parentIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdField(String indexName, List<Object> beans, String docIdField, String parentIdField, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocumentsWithIdParentField(String indexName, List<Object> beans, String docIdField, String parentIdField) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocuments(String indexName, List<?> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(String indexName, List<?> beans, ClientOptions ClientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentNew(String indexName, String addTemplate, Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentNew(String indexName, String addTemplate, Object bean, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsNew(String indexName, String addTemplate, List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDateDocumentsNew(String indexName, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteDocumentNew(String indexName, String id) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String deleteDocumentNew(String indexName, String id, String refreshOption) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> mgetDocuments(String index, Class<T> type, Object... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String mgetDocumentsNew(String index, Object... ids) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Object params, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Map params, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Map params, String refreshOption, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object id, Object params, String refreshOption, Boolean detect_noop, Boolean doc_as_upsert) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(String index, Object params, UpdateOptions updateOptions) throws ElasticSearchException {
+		return null;
+	}
 }

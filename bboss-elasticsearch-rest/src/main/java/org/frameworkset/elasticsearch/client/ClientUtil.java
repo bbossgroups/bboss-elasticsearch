@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch.client;
 /**
- * @see https://my.oschina.net/bboss/blog/1556866
+ * document
+ * https://esdoc.bbossgroups.com/#/README
  */
 public abstract class ClientUtil implements ClientInterface{
 
