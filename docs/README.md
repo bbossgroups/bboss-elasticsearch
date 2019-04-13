@@ -19,7 +19,7 @@
 5. 提供[创建和查询索引表配置模板api](index-indextemplate.md)；提供创建和查询索引表api；提供索引文档创建、修改、删除、获取基本功能;提供索引文档批量创建、批量修改、批量删除api；
 6. 提供支持分页检索api（[from/size](from-size.md),[searchafter](search-after.md),[scroll](scroll.md),[slicescroll](Scroll-SliceScroll-api.md)）
 7. 支持获取索引文档字段元数据
-8. 提供简洁易用的全文检索api，[聚合检索和统计api](agg.md)；支持o/mapping功能，支持检索和聚合查询结果快速转换为java对象或者java对象列表；支持分页检索功能和[关键词高亮显示](highlight.md)；支持多索引表查询；支持[父子关系](https://my.oschina.net/bboss/blog/1793290)检索；支持[地理位置检索](https://my.oschina.net/bboss/blog/1788008)；提供检索和聚合查询结果的回调处理接口，可以自定义结果封装处理逻辑。
+8. 提供简洁易用的全文检索api，[聚合检索和统计api](agg.md)；支持o/mapping功能，支持检索和聚合查询结果快速转换为java对象或者java对象列表；支持分页检索功能和[关键词高亮显示](highlight.md)；支持多索引表查询；支持[父子关系](elasticsearch5-parent-child.md)检索；支持[地理位置检索](Elasticsearch-geo.md)；提供检索和聚合查询结果的回调处理接口，可以自定义结果封装处理逻辑。
 9. 支持[关键字自动联想和自动纠错的api](https://gitee.com/bboss/elasticsearchdemo/tree/master/src/test/java/org/frameworkset/elasticsearch/suggest)
 10. 提供客户端自动负载均衡和容灾恢复机制，高效可靠
 11. 内置http 连接池管理
@@ -27,7 +27,7 @@
 13. 支持基于[X-Pack](https://www.elastic.co/cn/products/x-pack)和searchguard两种安全认证机制
 14. 除了提供高阶的o/r mapping API，还提供了简单易用的原生restful api和基于tcp的Transport api，可以根据实际需要使用合适的API  
 15. ClientUtil组件可以指定elasticsearch服务器，支持多es集群，可以在指定的elasticsearch集群上执行操作
-16. 提供自动清理历史索引数据的[工具](https://gitee.com/bboss/elktask)
+16. 提供自动清理历史索引数据的[工具](elasticsearch-indexclean-task.md)
 17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x****,+**
 18. **bboss es jdk兼容性： jdk 1.7+**
 19. **bboss es兼容spring boot各个版本,零配置集成，提供spring booter es starter**
@@ -50,11 +50,11 @@ Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#
 
 [spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)
 
-[eshelloworld-example](https://gitee.com/bboss/eshelloword-booter) （maven）
+[eshelloworld-example](https://github.com/bbossgroups/elasticsearch-example) （maven）
 
-[eshelloword-spring-boot-starter](https://gitee.com/bboss/eshelloword-spring-boot-starter) （maven）
+[eshelloword-spring-boot-starter](https://github.com/bbossgroups/elasticsearch-springboot-example) （maven）
 
-[elasticsearch-gradle-demo](https://gitee.com/bboss/elasticsearchdemo)  （gradle）
+[elasticsearch-gradle-demo](https://github.com/bbossgroups/elasticsearch-gradle-example)  （gradle）
 
 # 快速集成和应用 
 
