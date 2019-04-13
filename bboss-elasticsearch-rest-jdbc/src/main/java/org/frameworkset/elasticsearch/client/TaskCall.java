@@ -90,9 +90,11 @@ public class TaskCall implements Runnable {
 		}
 		long totalSize = 0;
 		try {
-			if(printTaskLog) {
-				info.append("Task[").append(this.taskNo).append("] starting ......");
-				logger.info(info.toString());
+			if(printTaskLog&& logger.isInfoEnabled()) {
+
+					info.append("Task[").append(this.taskNo).append("] starting ......");
+					logger.info(info.toString());
+
 			}
 //			if(logger.isDebugEnabled()) {
 //				if (refreshOption == null) {
@@ -115,7 +117,7 @@ public class TaskCall implements Runnable {
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
-			if(printTaskLog) {
+			if(printTaskLog && logger.isInfoEnabled()) {
 				long end = System.currentTimeMillis();
 				info.setLength(0);
 				info.append("Task[").append(this.taskNo).append("] failed,take time:").append((end - start)).append("ms");
@@ -130,11 +132,11 @@ public class TaskCall implements Runnable {
 					logger.error(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed,but continue On Error!").toString(),e);
 			}
 		}
-		if(printTaskLog) {
+		if(printTaskLog&& logger.isInfoEnabled()) {
 			long end = System.currentTimeMillis();
 			info.setLength(0);
 			info.append("Task[").append(this.taskNo).append("] finish,import ").append(this.currentSize).append(" records,Total import ").append(totalSize).append(" records,Take time:").append((end - start)).append("ms");
-			logger.debug(info.toString());
+			logger.info(info.toString());
 		}
 
 

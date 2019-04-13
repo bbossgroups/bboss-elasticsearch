@@ -29,6 +29,10 @@ import java.util.*;
 public class DB2ESImportBuilder extends BaseBuilder{
 	private static Logger logger = LoggerFactory.getLogger(DB2ESImportBuilder.class);
 	protected String sqlFilepath;
+	/**
+	 * 是否删除indice
+	 */
+	private boolean dropIndice;
 
 	public boolean isExternalTimer() {
 		return externalTimer;
@@ -466,6 +470,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		ESJDBC esjdbcResultSet = this.buildESJDBCConfig();
 		DB2ESDataStreamImpl  dataStream = new DB2ESDataStreamImpl();
 		dataStream.setEsjdbc(esjdbcResultSet);
+		dataStream.setConfigString(this.toString());
 		dataStream.init();
 
 		return dataStream;
@@ -828,10 +833,19 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		return this;
 	}
 
+	private String configString;
 	public String toString(){
-		StringBuilder ret = new StringBuilder();
-		ret.append(SimpleStringUtil.object2json(this));
-		return ret.toString();
+		if(configString != null)
+			return configString;
+		try {
+			StringBuilder ret = new StringBuilder();
+			ret.append(SimpleStringUtil.object2json(this));
+			return configString = ret.toString();
+		}
+		catch (Exception e){
+			configString = "";
+			return configString;
+		}
 	}
 
 	public String getSqlName() {
@@ -874,5 +888,13 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	public DB2ESImportBuilder setExportResultHandler(ExportResultHandler exportResultHandler) {
 		this.exportResultHandler = exportResultHandler;
 		return this;
+	}
+
+	public boolean isDropIndice() {
+		return dropIndice;
+	}
+
+	public void setDropIndice(boolean dropIndice) {
+		this.dropIndice = dropIndice;
 	}
 }

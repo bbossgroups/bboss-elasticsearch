@@ -60,6 +60,11 @@ public class DB2ESDataStreamImpl extends DataStream{
 			this.esjdbc.stop();
 	}
 
+	@Override
+	public String getConfigString() {
+		return this.toString();
+	}
+
 	/**
 	 *
 	 * @throws ESDataImportException

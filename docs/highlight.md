@@ -12,9 +12,9 @@
 
 # 2.创建索引表和初始化数据
 
-通过组件[DocumentCRUD ](https://gitee.com/bbossgroups/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)来创建索引表和初始化数据，[DocumentCRUD ](https://gitee.com/bbossgroups/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)组件实现本文不做重点介绍：
+通过组件[DocumentCRUD ](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)来创建索引表和初始化数据，[DocumentCRUD ](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)组件实现本文不做重点介绍：
 
-```
+```java
 /**
  * 创建索引表，并导入高亮检索功能需要的测试数据
  */
@@ -33,9 +33,11 @@ public void initIndiceAndData(){
 
 ## 3.1 定义高亮检索dsl
 
-在文件[esmapper/demo.xml](https://gitee.com/bbossgroups/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中增加testHighlightSearch配置：
+在文件[esmapper/demo.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中增加testHighlightSearch配置：
 
-```
+dsl中变量语法参考文档：[开发指南](https://esdoc.bbossgroups.com/#/development?id=_53-dsl%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83)
+
+```xml
     <!--
         一个简单的检索dsl,中有四个变量
         name 全文检索字段
@@ -43,7 +45,7 @@ public void initIndiceAndData(){
         endTime
         通过map传递变量参数值
 
-        变量语法参考文档：https://my.oschina.net/bboss/blog/1556866
+         
     -->
     <property name="testHighlightSearch">
         <![CDATA[{
@@ -158,7 +160,13 @@ public void initIndiceAndData(){
 	}
 ```
 
+**注意：高亮检索时返回的对象必须继承ESBaseData的对象类型，例如：本案例中的[Demo](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/Demo.java)对象**
 
+```java
+public class Demo extends ESBaseData {
+    。。。。。。。
+}
+```
 
 # 4.运行检索功能
 
@@ -201,7 +209,7 @@ name:刘德华<mark>喜</mark><mark>欢</mark><mark>唱</mark><mark>歌</mark>51
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
-<https://gitee.com/bbossgroups/eshelloword-booter>
+<https://gitee.com/bboss/eshelloword-booter>
 
 
 
@@ -209,9 +217,7 @@ name:刘德华<mark>喜</mark><mark>欢</mark><mark>唱</mark><mark>歌</mark>51
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-highlighting.html>
 
-<https://my.oschina.net/bboss/blog/1801273>
-
-
+https://esdoc.bbossgroups.com/#/common-project-with-bboss
 
 # 7.开发交流
 

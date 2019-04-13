@@ -256,16 +256,17 @@ public class ScheduleService {
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-				TaskContext taskContext = new TaskContext(esjdbc);
-				try {
-					preCall(taskContext);
-					scheduleImportData(esjdbc.getScheduleBatchSize());
-					afterCall(taskContext);
-				}
-				catch (Exception e){
-					throwException(taskContext,e);
-					logger.error("scheduleImportData failed:",e);
-				}
+//				TaskContext taskContext = new TaskContext(esjdbc);
+//				try {
+//					preCall(taskContext);
+//					scheduleImportData(esjdbc.getScheduleBatchSize());
+//					afterCall(taskContext);
+//				}
+//				catch (Exception e){
+//					throwException(taskContext,e);
+//					logger.error("scheduleImportData failed:",e);
+//				}
+				externalTimeSchedule();
 			}
 		};
 		Date scheduleDate = esjdbc.getScheduleConfig().getScheduleDate();
@@ -305,7 +306,7 @@ public class ScheduleService {
 
 
 	}
-	public void externalTimeSchedule() throws Exception {
+	public void externalTimeSchedule()  {
 
 		TaskContext taskContext = new TaskContext(esjdbc);
 		try {

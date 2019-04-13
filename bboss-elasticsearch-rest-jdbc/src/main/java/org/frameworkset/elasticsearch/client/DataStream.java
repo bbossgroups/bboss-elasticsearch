@@ -52,4 +52,16 @@ public abstract class DataStream {
 
 	public abstract void stop();
 
+	public String getConfigString() {
+		return configString;
+	}
+
+	public void setConfigString(String configString) {
+		this.configString = configString;
+	}
+
+	private String configString;
+
+
+
 }
