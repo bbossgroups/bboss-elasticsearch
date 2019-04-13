@@ -154,7 +154,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -183,7 +183,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -216,7 +216,7 @@ elasticsearch.dateFormat=yyyy.MM.dd
 
 下面是一个对比案例：
 
-```
+```java
 //向固定index demo添加或者修改文档,如果demoId已经存在做修改操作，否则做添加文档操作，返回处理结果
 String response = clientUtil.addDocument("demo",//索引表
       "demo",//索引类型
@@ -255,7 +255,7 @@ http.retryTime = 3
 
 自定义重试机制 
 
-```
+```properties
 #* 自定义重试控制接口，必须实现接口方法
 #* public interface CustomHttpRequestRetryHandler  {
 #*     public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
@@ -334,6 +334,16 @@ public static ClientInterface getConfigRestClientUtil(String elasticSearch,Strin
 
 **加载配置文件中的dsl操作实例参考本文章节：【4.1 配置es查询dsl】和【4.2 ormapping操作示例】**
 
+### 创建加载配置文件中的dsl的ConfigRestClientUtil示例
+
+```java
+//加载配置文件，创建es客户端工具包，在默认es数据源操作
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesqlMapper.xml");
+
+//加载配置文件，创建es客户端工具包，在指定的es数据源order操作
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("order","estrace/ESTracesqlMapper.xml");
+```
+
 
 
 ## **3.2** 所有不依赖dsl的功能，或直接接收dsl模式
@@ -348,12 +358,15 @@ public static ClientInterface getRestClientUtil(String elasticSearch) //elastics
 
 **通过这两个方法获取到的ClientInterface实例是多线程安全的、单实例对象**
 
-**直接操作dsl使用实例：**
+### 创建RestClientUtil直接操作dsl使用示例
 
-```
+```java
 	public void testDirectDslQuery(){
 		String queryAll = "{\"query\": {\"match_all\": {}}}";
+        //在默认的es数据源操作
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+        //在order es数据源操作
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil("order");
 		ESDatas<Demo> esDatas =clientUtil.searchList("demo/_search",//demo为索引表，_search为检索操作action
 				queryAll,//queryAll变量对应的dsl语句
 				Demo.class);
@@ -366,9 +379,11 @@ public static ClientInterface getRestClientUtil(String elasticSearch) //elastics
 	}
 ```
 
+
+
 getConfigRestClientUtil方法获取的ClientInterface实例是getRestClientUtil方法获取到的ClientInterface实例的子类，所以同样具备后者的所有功能。加载配置文件api和不加载配置文件api都是一致的，区别就是加载配置文件api传递的是dsl在配置文件中dsl对应的名称，如果配置文件中的dsl带有参数变量，还需要传递参数（map方式、bean方式传入即可）。
 
-[RestClientUtil和ConfigRestClientUtil区别说明](https://my.oschina.net/bboss/blog/2988792)
+[RestClientUtil和ConfigRestClientUtil区别说明](RestClientUtil-ConfigRestClientUtil.md)
 
 
 
@@ -380,7 +395,7 @@ getConfigRestClientUtil方法获取的ClientInterface实例是getRestClientUtil�
 
 在resources下创建配置文件[estrace/ESTracesqlMapper.xml](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTracesMapper.xml)，配置一个query dsl脚本，名称为queryServiceByCondition，我们将在后面的ClientInterface 组件中通过queryServiceByCondition引用这个脚本，脚本内容定义如下：
 
-```
+```xml
 <properties>
    <property name="queryServiceByCondition">
         <![CDATA[
@@ -475,7 +490,7 @@ getConfigRestClientUtil方法获取的ClientInterface实例是getRestClientUtil�
 
 加载query dsl文件,并执行查询操作
 
-```
+```java
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 //加载配置文件，创建es客户端工具包
@@ -529,7 +544,7 @@ for (int i = 0; i < applicationsums .size(); i++) {
 
 按日期分表
 
-```
+```java
  //一个完整的批量添加和修改索引文档的案例  
 SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		String date = format.format(new Date());
@@ -578,7 +593,7 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 
 不按日期分表
 
-```
+```java
  //一个完整的批量添加和修改索引文档的案例  
  
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -630,7 +645,7 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 
 ## 4.4 添加/修改索引文档
 
-```
+```java
 添加/修改文档
 
 TAgentInfo agentInfo = (TAgentInfo) dataObj;
@@ -672,7 +687,7 @@ public class TAgentInfo implements java.io.Serializable{
 
 **注意事项：如果对象的属性不需要存入索引中，则在字段的定义加上@JsonIgnore注解，例如：**
 
-```
+```java
 @JsonIgnore
 private Integer sqlEndElapsed;
 ```
@@ -681,7 +696,7 @@ private Integer sqlEndElapsed;
 
 ## 根据文档ID获取单个文档
 
-```
+```java
         //创建批量创建文档的客户端对象，单实例多线程安全
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil(); 
         //获取索引文档，json格式
@@ -706,7 +721,7 @@ private Integer sqlEndElapsed;
 
 ## 根据条件检索单个对象和对象列表
 
-```
+```java
         //创建加载配置文件的客户端工具，用来检索文档，单实例多线程安全
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(mappath);       
         Map<String,Object> params = new HashMap<String,Object>();
@@ -752,14 +767,14 @@ private Integer sqlEndElapsed;
 
 添加索引文档时，es会自动设置文档_id属性，如果需要人工指定_id值，只需要在对象属性上设置注解**@ESId**即可，例如：
 
-```
+```java
 @ESId //ip属性作为文档唯一标识，根据ip值对应的索引文档存在与否来决定添加或者修改操作
 private String ip;
 ```
 
 @ESId同样适用于文档批量创建和修改操作
 
-另外一个注解@ESParentId用来表示父子关系,在[父子关系检索案例](https://my.oschina.net/bboss/blog/1793290)中有介绍。
+另外一个注解@ESParentId用来表示父子关系,在[父子关系检索案例](elasticsearch5-parent-child.md)中有介绍。
 
 ESId和ESParentId两个注解在添加/修改文档、批量添加/修改文档操中指定文档的_id和parent属性，如果不指定，es自动生成_id属性，parent必须手工指定。
 
@@ -771,7 +786,7 @@ ESId和ESParentId两个注解在添加/修改文档、批量添加/修改文档�
 
 - 单文档添加/修改-直接指定文档id和parentid的值
 
-```
+```java
 	public abstract String addDocumentWithId(String indexName, String indexType, Object bean,Object docId) throws ElasticSearchException;
 
 	 
@@ -794,7 +809,7 @@ ESId和ESParentId两个注解在添加/修改文档、批量添加/修改文档�
 
 - 批量文档添加和修改-指定文档id和parentId对应的对象字段名称
 
-```
+```java
 	/**
 	 * 指定对象集合的文档id字段
 	 */
@@ -851,7 +866,7 @@ ESId和ESParentId两个注解在添加/修改文档、批量添加/修改文档�
 
 批量map类型导入文档，如需指定docid，必须通过制定一个map里面的key或者ClientOptions/UpdateOptions指定key对应的value作为docid，必须设置docidKey参数：
 
-```
+```java
 public String addDateDocuments(String indexName, String indexType, List<Map> beans, String docIdKey, String refreshOption) 
 
 public String addDateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans, String docIdKey) throws ElasticSearchException
@@ -866,7 +881,7 @@ public abstract String addDocumentsWithIdKey(String indexName, String indexType,
 
 ClientOptions:主要用于新增/修改操作，可以指定以下属性：
 
-```
+```java
 *  String parentIdField;
 *  String idField;
 *  String esRetryOnConflictField;
@@ -900,7 +915,7 @@ ClientOptions:主要用于新增/修改操作，可以指定以下属性：
 
 ClientOptions使用示例：
 
-```
+```java
 ClientOptions clientOption = new ClientOptions();
 clientOption.setRefreshOption("refresh=true");//为了测试效果,启用强制刷新机制，实际线上环境去掉最后一个参数"refresh=true"，线上环境谨慎设置这个参数
 clientOption.setIdField("demoId");//设置文档id对应的字段
@@ -912,7 +927,7 @@ String response = clientUtil.addDocuments("demo",//索引表
 
 UpdateOptions：主要用户修改,可以设置以下属性
 
-```
+```java
 private String refreshOption;
 private String detectNoopField;
 private String docasupsertField;
@@ -921,7 +936,7 @@ private String docIdField;
 
  
 
-```
+```java
     /**
 	 * 根据路径更新文档
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
@@ -956,7 +971,7 @@ private String docIdField;
 
 ## 4.6 删除/批量删除索引文档
 
-```
+```java
 //删除索引文档
 clientUtil.deleteDocument("demo",//索引表
       "demo",//索引类型
@@ -974,7 +989,7 @@ clientUtil.deleteDocuments("demo",//索引表
 
 往elasticsearch（批量）添加/修改/删除索引时，并不会立即生效，本节介绍通过bboss api来指定刷新机制：
 
-```
+```java
 public abstract String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException;
 public abstract String addDocuments(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException;
 
@@ -986,7 +1001,7 @@ public abstract String addDateDocuments(String indexName, String indexType, List
 
 bboss在相关的api增加了refreshOption参数，refreshOption参数的值为，通过指定不同的值来指定索引刷新策略：
 
-```
+```java
 refresh=wait_for
 refresh=false
 refresh=true  //强制刷新
@@ -1039,7 +1054,7 @@ refreshOption 使用实例：
 
 指定修改的文档版本号
 
-```
+```java
 		//强制刷新
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
@@ -1048,7 +1063,7 @@ refreshOption 使用实例：
 
 指定文档版本号同时强制刷新：
 
-```
+```java
 		//强制刷新
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
@@ -1061,10 +1076,16 @@ refreshOption 使用实例：
 
 当elasticsearch索引表字段名称和java bean的字段名称不一致的情况下，采用@JsonProperty注解用来定义elasticsearch和java bean的field名称转换映射关系，使用实例如下：
 
-```
+```java
 @JsonProperty("max_score")
 private Double maxScore;
 ```
+
+## 4.10 在es7+使用的api
+
+es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api，参考文档：
+
+ [Elasticsearch-7-API](Elasticsearch-7-API.md) 
 
 
 
@@ -1078,7 +1099,7 @@ private Double maxScore;
 
 通过ClientInterface 接口提供的以下通用executeHttp api，我们可以非常方便地实现es中所有带请求报文的功能
 
-```
+```java
         /**
 	 * 发送es restful请求，获取String类型json报文
 	 * @param path
@@ -1134,7 +1155,7 @@ private Double maxScore;
 
 通过ClientInterface 提供的这个通用http api，我们可以非常方便地实现es中所有不带请求报文的功能
 
-```
+```java
     /**
 	 * 没有报文的请求处理api
 	 * @param path 请求url相对路径，可以带参数
@@ -1150,7 +1171,7 @@ private Double maxScore;
 
 通用api的使用案例：**path**参数为相对路径，不需要带ip和端口，在application.properties文件中统一配置
 
-```
+```java
 	public void testTempate() throws ParseException{
 
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
@@ -1209,7 +1230,7 @@ private Double maxScore;
 
 初始化bboss elasticsearch组件ClientInterface 时，可以指定elasticsearch服务器，支持在指定的elasticsearch服务器集群进行操作,例如：
 
-```
+```java
 ClientInterface clientUtil = ElasticSearchHelper
                  .getConfigRestClientUtil("logs",//指定logs对应的es集群服务器
                                           "estrace/ESTracesqlMapper.xml");
@@ -1267,7 +1288,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 - **script脚本封装语法**
 
-```
+```javascript
 @"""
   ctx._source.last = params.last;
   ctx._source.nick = params.nick
@@ -1278,7 +1299,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 \#""" """,包含在这个中间的dsl片段中包含的回车换行符会被替换成空格，使用示例及注意事项:
 
-```
+```xml
 <property name="sqlPagineQuery">
     <![CDATA[
      {
@@ -1352,7 +1373,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 使用示例
 
-```
+```xml
 <property name="searchAfterAggs">
         <![CDATA[
             ## 通过searchafter实现分页查询
@@ -1396,7 +1417,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 带变量**application**的脚本：
 
-```
+```json
 {"term": {
                             "applicationName": #[application]
                         }}
@@ -1404,7 +1425,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 如果变量application为String类型，值为testweb,那么替换后得到:
 
-```
+```json
 {"term": {
                             "applicationName": "testweb"
                         }}
@@ -1412,7 +1433,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 如果变量application为数字类型，值为100,那么替换后得到:
 
-```
+```json
 {"term": {
                             "applicationName": 100
                         }}
@@ -1470,13 +1491,13 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 - **quoted**  boolean类型，控制是否为字符串变量和日期变量串两头添加"号，true添加，false不加，默认为true，一般在不需要自动加"号的情况下使用，示例如下：
 
-```
+```java
 "asdfaf#[application,quoted=false]s"
 ```
 
 变量application的值为testweb，解析后的效果如下：
 
-```
+```java
 "asdfaftestwebs"
 ```
 
@@ -1484,31 +1505,31 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 简单的例子：
 
-```
+```javascript
 "#[application,quoted=false,lpad=#]s"
 ```
 
 变量的值为testweb，解析后的效果如下：
 
-```
+```java
 "#testwebs"
 ```
 
 带倍数的例子
 
-```
+```java
 "ddd#[application,quoted=false,lpad=#|2,rpad=#|3]s"
 ```
 
 变量的值为testweb，解析后的效果如下：
 
-```
+```java
 "ddd##testweb###s"
 ```
 
 - **dateformat/locale/timezone** 一组时间相关的属性，用来对时间类型的变量进行转换和处理，示例如下：
 
-```
+```json
 "term": {
     "startDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,locale=zh_CN,timezone=Asia/Shanghai]
 }
@@ -1516,7 +1537,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 变量值设置为new Date(),那么解析后的效果如下：
 
-```
+```json
  "term": {
      "startDate": "2018-01-20 12:52:35"
   }
@@ -1526,20 +1547,20 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
 
 1. 在map中传递日期类型参数，则可以通过**dateformat/locale/timezone属性**在变量中指定所需要的日期格式，如果不指定则默认采用utc时区的日期格式：
 
-```
+```json
 "term": {
     "startDate": #[date,dateformat=yyyy-MM-dd'T'HH:mm:ss.SSS'Z',timezone=Etc/UTC],
     "endDate": #[date,dateformat=yyyy-MM-dd HH:mm:ss,timezone=Asia/Shanghai]
 }
 ```
 
-```
+```json
 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC"
 ```
 
 2. 在bean实体对象中日期类型field，**dateformat/locale/timezone属性优先起作用，**注解@JsonFormat，@Column 来指定自定义日期格式其次：
 
-```
+```java
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
 @Column(dataformat = "yyyy-MM-dd HH:mm:ss") 
 protected Date agentStarttime;
@@ -1547,7 +1568,7 @@ protected Date agentStarttime;
 
 ​     如果不指定注解@JsonFormat，@Column，最后默认为日期类型的bean属性采用utc时区的日期格式：
 
-```
+```json
 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",null,"Etc/UTC"
 ```
 
@@ -1555,7 +1576,7 @@ protected Date agentStarttime;
 
 ​        escape使用实例：   
 
-```
+```json
 "term": {
      "applicationName": #[applicationName,escape=false]
  }
@@ -1571,7 +1592,7 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 
 带变量$**application**的脚本：
 
-```
+```json
 {"term": {
                             "applicationName": "$application"
                         }}
@@ -1579,7 +1600,7 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 
 如果变量application为String类型，值为testweb,那么替换后得到:
 
-```
+```json
 {"term": {
                             "applicationName": "testweb"
                         }}
@@ -1587,7 +1608,7 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 
 如果变量application为数字类型，值为100,那么替换后得到:
 
-```
+```json
 {"term": {
          "applicationName": "100" ##数字100被当成String处理了，这种情况下可能会出现不可预知的问题
 }}
@@ -1601,19 +1622,19 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 变量定义
 
-```
+```json
 #set( $hasParam = false )
 ```
 
 然后在dsl其他地方可以修改变量的值
 
-```
+```json
 #set( $hasParam = true )
 ```
 
 案例：
 
-```
+```xml
    <property name="qcondition">
         <![CDATA[
          #set( $hasParam = false ) ## 定义一个是否已经有参数条件的bool变量，控制后续的条件是否前面加逗号
@@ -1682,7 +1703,7 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 定义片段searchAfterAggs和qcondition：
 
-```
+```xml
 <!--
         分页查询和按日期分钟统计片段
         应用：链路检索和统计查询，rpc时间段统计查询
@@ -1765,7 +1786,7 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 引用片段：
 
-```
+```xml
 <property name="queryServiceByCondition">
         <![CDATA[{
             "version": true,
@@ -1865,7 +1886,7 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
-```
+```xml
   <!--
     querySqlTraces直接引用链路查询模板文件esmapper/estrace/ESTracesMapper.xml中定义的查询dsl语句
     queryTracesByCriteria
@@ -1883,7 +1904,7 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 \#""" """,包含在这个中间的dsl片段中包含的回车换行符会被替换成空格，使用示例及注意事项:
 
-```
+```xml
 <property name="sqlPagineQuery">
     <![CDATA[
      {
@@ -1928,7 +1949,7 @@ SELECT * FROM dbclobdemo where channelId='#[channelId,quoted=false]'
 
 **bboss执行sql分页查询方法：**
 
-```
+```java
 /**
  * 配置文件中的sql dsl检索,返回Map类型集合，亦可以返回自定义的对象集合
  */
@@ -1965,7 +1986,7 @@ public void testObjectSQLQueryFromDSL(){
 
 在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，bboss提供了以下语法了对这些值进行处理：
 
-```
+```json
 @"""
 
 多行值
@@ -1979,7 +2000,7 @@ public void testObjectSQLQueryFromDSL(){
 
 字段中的多行值案例 
 
-```
+```xml
     <property name="scriptPianduan">
         <![CDATA[
             "params": {
@@ -1995,7 +2016,7 @@ public void testObjectSQLQueryFromDSL(){
 
 以下是一个script的应用案例
 
-```
+```xml
     <property name="scriptPianduan">
         <![CDATA[
             "params": {
@@ -2020,7 +2041,7 @@ public void testObjectSQLQueryFromDSL(){
 
 执行上述脚本的java代码示例：
 
-```
+```java
     private String mappath = "esmapper/demo.xml";
 
 	public void updateDocumentByScriptPath(){
@@ -2042,7 +2063,7 @@ public void testObjectSQLQueryFromDSL(){
 
 - 更加复杂的案例 
 
-```
+```xml
     <property name="scriptPianduan1">
         <![CDATA[
             "params": {
@@ -2145,7 +2166,7 @@ public void testObjectSQLQueryFromDSL(){
 
 对应的java代码：
 
-```
+```java
     public void updateDocumentByScriptQueryPath(){
 		//初始化数据，会创建type为demo的indice demo，并添加docid为2的文档
 		DocumentCRUD documentCRUD = new DocumentCRUD();
@@ -2210,7 +2231,7 @@ public void testObjectSQLQueryFromDSL(){
 
 如果集合中元素类型不确定，使用#[]类型变量
 
-```
+```java
 {
 #foreach($ldxxbh in $ldxxbhs) ## foreach循环，变量$ldxxbhs是一个list集合,$ldxxbh对应循环中的元素变量，
                                 对应当前遍历的元素
@@ -2227,7 +2248,7 @@ public void testObjectSQLQueryFromDSL(){
 
 经过解析得到最终的query dsl脚本为：
 
-```
+```json
 {
    "v0":"aa",
    "v1":1,
@@ -2241,7 +2262,7 @@ public void testObjectSQLQueryFromDSL(){
 
 #### 案例2：循环List或者数组中的bean对象，并访问每个bean对象属性id
 
-```
+```java
 "dynamic_price_template.rules":#foreach($rule in $rules)#if($velocityCount > 0),#end #[rules[$velocityCount]->id]  #end 
 ```
 
@@ -2249,7 +2270,7 @@ public void testObjectSQLQueryFromDSL(){
 
 #### 案例3：动态排序字段案例-#[xxx]模式变量（适合各种场景） 
 
-```
+```json
 #if($sortColumn)  ##动态排序字段案例
 	"sort":[                   
 		#foreach( $column in $sortColumn)
@@ -2268,7 +2289,7 @@ public void testObjectSQLQueryFromDSL(){
 
 #### 案例4：动态排序字段案例-$xxx模式变量 （适合集合值固定且长度固定并不包含特殊字符的场景）        
 
-```
+```json
 #if($sortColumn) 
 	"sort":[                   
         #foreach( $column in $sortColumn)
@@ -2289,7 +2310,7 @@ public void testObjectSQLQueryFromDSL(){
 
 适合集合值固定且长度固定并不包含特殊字符的场景 
 
-```
+```json
 #if($sortColumn) #从map中获取所有的排序字段
 	"sort":[             
         
@@ -2309,7 +2330,7 @@ public void testObjectSQLQueryFromDSL(){
 
 适合集合值不固定，或者长度不固定，或者可能包含特殊字符等多种场景 
 
-```
+```json
 #if($sortColumn) #从map中获取所有的排序字段
 	"sort":[             
         
@@ -2331,7 +2352,7 @@ public void testObjectSQLQueryFromDSL(){
 
 适合于集合元素少，值固定的场景，且值中不包含破坏json格式的特殊字符，否则参考案例8或者案例9
 
-```
+```java
 #if(!$searchFields && $searchFields.size() == 0)
     "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
 #else
@@ -2349,7 +2370,7 @@ public void testObjectSQLQueryFromDSL(){
 
 如果集合元素，使用$xxx类型变量，以拼接检索字段为例: 
 
-```
+```java
 #if(!$searchFields && $searchFields.size() == 0)
     "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
 #else
@@ -2367,7 +2388,7 @@ public void testObjectSQLQueryFromDSL(){
 
 (适合各种场景)
 
-```
+```javascript
 #if(!$searchFields && $searchFields.size() == 0)
     "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
 #else
@@ -2381,7 +2402,7 @@ public void testObjectSQLQueryFromDSL(){
 
 foreach嵌套dsl脚本定义
 
-```
+```xml
     <property name="dynamicInnerDsl">
         <![CDATA[{ ## 最多返回1000条记录
             size: #[size],
@@ -2408,7 +2429,7 @@ foreach嵌套dsl脚本定义
 
 传递参数和解析上述dsl的java方法代码
 
-```
+```java
 	@Test
 	public void dynamicInnerDsl(){
 		Map conditions = new HashMap<String,Map<String,Object>>();
@@ -2438,7 +2459,7 @@ foreach嵌套dsl脚本定义
 
 运行上述代码打印出来的实际dsl
 
-```
+```json
 {
     "size": 1000,
     "query": {
@@ -2484,7 +2505,7 @@ foreach嵌套dsl脚本定义
 
 #### 案例11 综合案例
 
-```
+```json
 {
     "query": {
         "bool": {
@@ -2549,7 +2570,7 @@ bboss对于日期类型的映射处理比较简单，分为两种情况：
 
 第一种情况，采用默认的时间格式和utc时区定义，mapping field定义如下：
 
-```
+```json
 "agentStarttime": {
     "type": "date"     
 }
@@ -2557,13 +2578,13 @@ bboss对于日期类型的映射处理比较简单，分为两种情况：
 
 那么我们在对象中也只需要定义一个日期类型的字段与之对应即可： 
 
-```
+```java
 private Date agentStarttime;
 ```
 
 第二种情况，定义mapping field时指定了时间格式：
 
-```
+```json
 "agentStarttime": {
     "type": "date",
      "format":"yyyy-MM-dd HH:mm:ss"
@@ -2572,7 +2593,7 @@ private Date agentStarttime;
 
 那么我们在对象中除了定义日期类型的字段，还要为字段加上时间格式的注解： 
 
-```
+```java
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 @Column(dataformat = "yyyy-MM-dd HH:mm:ss")
 protected Date agentStarttime;
@@ -2590,7 +2611,7 @@ perKeyDSLStructionCacheSize:配置文件中对应的dsl可以缓存的解析后�
 
 alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize指定的dsl个数后，是否继续缓存dsl语句，true 缓存，并且清除不经常使用的dsl，false 不缓存（默认值），每次都硬解析。
 
-```
+```xml
 <property name="perKeyDSLStructionCacheSize" value="2000"/>
 <property name="alwaysCacheDslStruction" value="false"/>
 ```
@@ -2605,7 +2626,7 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 
 经常在dsl中碰到很多个条件的动态组合，中间的,号出现的位置不确定，例如：
 
-```
+```json
 {
 	"from": #[from],
 	"size": #[size],
@@ -2801,7 +2822,7 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 
 加上变量后的dsl如下：
 
-```
+```json
 {
 	"from": #[from],
 	"size": #[size],
@@ -2887,7 +2908,7 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 
 [esmapper/estrace/ESTracesMapper.xml](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTracesMapper.xml)
 
-> ```
+> ```xml
 > <!--es
 > https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-term-query.html
 > https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-range-query.html
@@ -2900,7 +2921,7 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 
 [ESTemplate.xml文件定义](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTemplate.xml)
 
-```
+```java
 public void testTempate() throws ParseException{
 
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
@@ -2937,7 +2958,7 @@ public void testTempate() throws ParseException{
 
 [ESTemplate.xml文件定义](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTemplate.xml)
 
-> ```
+> ```java
 > public void testCreateTempate() throws ParseException{
 > 
 >    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
@@ -2967,7 +2988,7 @@ public void testTempate() throws ParseException{
 
 ## 6.4 更新x-pack license
 
-```
+```java
 public void testLicense(){
         ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
    
@@ -2981,7 +3002,7 @@ public void testLicense(){
 
 ## 6.5 创建索引表
 
-```
+```java
  ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
 String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 ```
@@ -2994,7 +3015,7 @@ String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 
 #### json格式
 
-> ```
+> ```java
 > public void testGetmapping(){
 >    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 >    String date = format.format(new Date());
@@ -3010,7 +3031,7 @@ String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 
 #### 字段列表
 
-```
+```java
 public void testQueryDocMapping(){
    ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
    List<IndexField> fields = clientUtil.getIndexMappingFields("trace-*",//索引表名称
@@ -3023,7 +3044,7 @@ public void testQueryDocMapping(){
 
 ## 6.7 单文档操作
 
-> ```
+> ```java
 > public void testAddDateDocument() throws ParseException{
 >    testGetmapping();
 >    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
@@ -3058,7 +3079,7 @@ public void testQueryDocMapping(){
 >
 > 创建索引文档脚本：createDemoDocument
 >
-> ```
+> ```xml
 >  <property name="createDemoDocument">
 >         <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
 >     </property>
@@ -3070,7 +3091,7 @@ public void testQueryDocMapping(){
 
 ## 6.8 批量操作
 
-> ```
+> ```java
 > public void testBulkAddDateDocument() throws ParseException{
 >    testGetmapping();
 >    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
@@ -3119,7 +3140,7 @@ public void testQueryDocMapping(){
 
 管理类api演示，以健康状态和集群状态为例进行说明，其他服务调整服务地址即可。更多的服务参考elasticsearch官方文档地址：[集群](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html)  [Cat](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat.html)
 
-```
+```java
     @Test
 	public void clusterHeathCheck(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -3152,7 +3173,7 @@ public void testQueryDocMapping(){
 
 ## 6.10 执行列子代码：[TestMain.java](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/java/org/frameworkset/elasticsearch/TestMain.java)
 
-> ```
+> ```java
 > public static void main(String[] args) throws ParseException {
 >    ESTest esTest = new ESTest();
 >    //测试模板管理功能

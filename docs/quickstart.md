@@ -14,7 +14,7 @@ First add the maven dependency of BBoss to your pom.xml:
 <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
         </dependency>
 ```
 
@@ -24,13 +24,13 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
 <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
         </dependency>
 ```
 
 Next, add the Elasticsearch addresses to the application.properties file under the project resource directory, and create a new one if the file does not exist:
 
-```
+```properties
 elasticsearch.rest.hostNames=10.21.20.168:9200
 
 #Cluster addresses are separated by commas
@@ -40,13 +40,13 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 If the HTTPS protocol is on, add the https protocol header to the elasticsearch address:
 
-```
+```properties
 elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
 If x-pack or searchguard security authentication is enabled, configure the account and password with the following two properties in application.properties:
 
-```
+```properties
 # x-pack or searchguard security authentication and password configuration
 elasticUser=elastic
 elasticPassword=changeme
@@ -54,7 +54,7 @@ elasticPassword=changeme
 
 And last create a jsp file named testElasticsearch.jsp :
 
-```
+```jsp
 <%@ page import="org.frameworkset.elasticsearch.ElasticSearchHelper" %>
 <%@ page import="org.frameworkset.elasticsearch.client.ClientInterface" %>
 <%@ page import="org.frameworkset.elasticsearch.entity.ESDatas" %>
@@ -125,7 +125,7 @@ First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 
 Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
 
-```
+```properties
 gradle install
 ```
 

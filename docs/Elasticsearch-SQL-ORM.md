@@ -35,7 +35,7 @@ orm查询
 
 ## 1.1 定义orm查询的实体bean
 
-```
+```java
 package org.bboss.elasticsearchtest.sql;
 
 import com.frameworkset.orm.annotation.Column;
@@ -112,14 +112,14 @@ public class DocObject {
 
 通过column指定索引文档和对象属性的映射关系，指定日期格式和时区信息,示例如下：
 
-```
+```java
 @Column(name="docInfo.author")
 private String docInfoAuthor;
 ```
 
 指定属性的映射关系、日期格式和时区信息,示例如下：    
 
-```
+```java
  @Column(name="docInfo.author",dataformat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",timezone = "Etc/UTC",locale = "zh")
 ```
 
@@ -129,7 +129,7 @@ private String docInfoAuthor;
 
 以rest sql api为例来介绍es 6.3.0的sql orm查询功能
 
-```
+```java
 package org.bboss.elasticsearchtest.sql;
 
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
@@ -292,7 +292,7 @@ public class SQLOrmTest {
 
 代码中用到的sql dsl脚本配置文件及内容：esmapper/sql.xml
 
-```
+```xml
 <properties>
     <!--
         sql query
@@ -340,7 +340,7 @@ public class SQLOrmTest {
 
 sql中特定的字符串参数语法
 
-```
+```json
 {"query": "SELECT * FROM dbclobdemo where channelId=#[channelId] and docTitle='#[channelId,quoted=false]'"}
 ```
 
@@ -360,7 +360,7 @@ sql中特定的字符串参数语法
 
 例如：
 
-```
+```json
 {
 ## 指示sql语句中的回车换行符会被替换掉开始符,注意dsl注释不能放到sql语句中，否则会有问题，因为sql中的回车换行符会被去掉，导致回车换行符后面的语句变道与注释一行
 ##  导致dsl模板解析的时候部分sql段会被去掉
@@ -380,7 +380,7 @@ sql中特定的字符串参数语法
 
 ## 1.3 通过fetch_size实现分页查询
 
-```
+```java
 package org.bboss.elasticsearchtest.sql;
 
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
@@ -696,7 +696,7 @@ sql转换为dsl的结果：
 
 基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可：
 
-```
+```java
     /**
 	 * Elasticsearch-SQL插件功能测试方法
 	 */
