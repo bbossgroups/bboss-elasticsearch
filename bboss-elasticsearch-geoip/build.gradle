@@ -1,0 +1,33 @@
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+           
+        }
+        resources {
+			srcDir 'src/main/resources'
+			srcDir 'src/main/java'  exclude '**/*.java'
+        }
+        
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+           
+        }
+        resources {
+			srcDir 'src/test/resources'
+			srcDir 'src/test/java'  exclude '**/*.java'
+        }
+        
+    }
+    
+}
+
+
+dependencies {
+	compile project(':bboss-elasticsearch-rest-jdbc')
+	compile group: "com.maxmind.geoip2", name: "geoip2", version: "2.12.0"
+	compile group: "com.maxmind.db", name: "maxmind-db", version: "1.2.2" 
+     
+}
