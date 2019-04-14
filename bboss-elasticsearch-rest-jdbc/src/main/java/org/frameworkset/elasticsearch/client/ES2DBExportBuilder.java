@@ -61,20 +61,13 @@ public class ES2DBExportBuilder extends BaseBuilder{
 		es2DB.setDsl2ndSqlFile(this.dsl2ndSqlFile);
 		es2DB.setSqlName(sqlName);
 		es2DB.setSql(this.sql);
-		DBConfig dbConfig = new DBConfig();
+
 		es2DB.setDbConfig(dbConfig);
-		dbConfig.setDbName(dbName);
-		dbConfig.setShowSql(showSql);
+		es2DB.setStatusDbConfig(statusDbConfig);
 		es2DB.setBatchSize(this.batchSize);
-		dbConfig.setJdbcFetchSize(this.jdbcFetchSize);
 		es2DB.setQueryUrl(this.queryUrl);
 		es2DB.setScrollLiveTime(this.scrollLiveTime);
-		dbConfig.setDbDriver(this.dbDriver);
-		dbConfig.setDbUrl(this.dbUrl);
-		dbConfig.setDbUser(this.dbUser);
-		dbConfig.setDbPassword(this.dbPassword);
-		dbConfig.setValidateSQL(this.validateSQL);
-		dbConfig.setUsePool(this.usePool);
+
 		es2DB.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		es2DB.setParallel(this.parallel);
 		es2DB.setThreadCount(this.threadCount);
@@ -110,6 +103,7 @@ public class ES2DBExportBuilder extends BaseBuilder{
 	}
 	public DataStream builder(){
 		this.buildDBConfig();
+		this.buildStatusDBConfig();
 		try {
 			logger.info("ES2DB Import Configs:");
 			logger.info(this.toString());
@@ -178,75 +172,56 @@ public class ES2DBExportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	public boolean isShowSql() {
-		return showSql;
-	}
+
 
 	public ES2DBExportBuilder setShowSql(boolean showSql) {
-		this.showSql = showSql;
+		_setShowSql(  showSql);
 		return this;
-	}
-
-	public String getDbName() {
-		return dbName;
 	}
 
 	public ES2DBExportBuilder setDbName(String dbName) {
-		this.dbName = dbName;
+		_setDbName(  dbName);
 		return this;
 	}
 
-	public String getDbDriver() {
-		return dbDriver;
-	}
+
 
 	public ES2DBExportBuilder setDbDriver(String dbDriver) {
-		this.dbDriver = dbDriver;
+		_setDbDriver(  dbDriver);
 		return this;
 	}
 
-	public String getDbUrl() {
-		return dbUrl;
-	}
+
 
 	public ES2DBExportBuilder setDbUrl(String dbUrl) {
-		this.dbUrl = dbUrl;
+		_setDbUrl(  dbUrl);
 		return this;
 	}
 
-	public String getDbUser() {
-		return dbUser;
-	}
+
 
 	public ES2DBExportBuilder setDbUser(String dbUser) {
-		this.dbUser = dbUser;
+		_setDbUser(  dbUser);
 		return this;
 	}
 
-	public String getDbPassword() {
-		return dbPassword;
-	}
+
 
 	public ES2DBExportBuilder setDbPassword(String dbPassword) {
-		this.dbPassword = dbPassword;
+		_setDbPassword(  dbPassword);
 		return this;
 	}
 
-	public String getValidateSQL() {
-		return validateSQL;
-	}
+
 
 	public ES2DBExportBuilder setValidateSQL(String validateSQL) {
-		this.validateSQL = validateSQL;
+		_setValidateSQL(  validateSQL);
 		return this;
 	}
 
-	public boolean isUsePool() {
-		return usePool;
-	}
 
 	public ES2DBExportBuilder setUsePool(boolean usePool) {
-		this.usePool = usePool;
+		_setUsePool(  usePool);
 		return this;
 	}
 

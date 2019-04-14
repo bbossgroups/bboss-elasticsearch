@@ -37,9 +37,12 @@ mysql,maridb，postgress,oracle ,sqlserver,db2等
 
 使用参考文档
 
-https://my.oschina.net/bboss/blog/1832212
+<https://esdoc.bbossgroups.com/#/db-es-tool>
+
+[High-performance elasticsearch ORM library bboss use introduction](https://esdoc.bbossgroups.com/#/development)
 
 
+geoip实现
 
 ## License
 

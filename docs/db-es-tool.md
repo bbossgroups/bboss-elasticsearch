@@ -716,10 +716,18 @@ a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源
 
 b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
 
-c) 对于等待超时的异常，亦可以调整bboss的http timeout时间参数
+```java
+importBuilder.setBatchSize(10000);//每次bulk批处理的记录条数
+importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+importBuilder.setQueue(100);//设置批量导入线程池等待队列长度
+importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+```
 
-http.timeoutConnection = 5000
-http.timeoutSocket = 5000
+c) 对于read或者等待超时的异常，亦可以调整bboss的application.properties文件中的http timeout时间参数
+
+http.timeoutConnection = 50000
+
+http.timeoutSocket = 50000
 
 
 
@@ -755,7 +763,18 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
          }
 ```
 
+## 作业运行jvm内存配置
 
+修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
+
+```properties
+-Xms1g
+-Xmx1g
+-XX:NewSize=512m
+-XX:MaxNewSize=512m
+```
+
+Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
 
 ## 发布版本
 

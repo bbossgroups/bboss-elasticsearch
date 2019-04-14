@@ -56,6 +56,10 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 	private DBConfig dbConfig;
+	/**
+	 * 增量导入状态存储数据源
+	 */
+	private DBConfig statusDbConfig;
 	private ExecutorService blockedExecutor;
 	public boolean isPagine() {
 		return pagine;
@@ -192,6 +196,18 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private ScheduleConfig scheduleConfig;
 	private ImportIncreamentConfig importIncreamentConfig;
 
+	public int getStatusTableId() {
+		return statusTableId;
+	}
+
+	public void setStatusTableId(int statusTableId) {
+		this.statusTableId = statusTableId;
+	}
+
+	/**
+	 * 根据导入的sql的hashcode决定导入作业的增量导入状态记录主键
+	 */
+	private int statusTableId = 0;
 
 	public String getSql() {
 		return sql;
@@ -798,5 +814,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		if(this.exportResultHandler != null)
 			return this.exportResultHandler.getMaxRetry();
 		return -1;
+	}
+
+	public DBConfig getStatusDbConfig() {
+		return statusDbConfig;
+	}
+
+	public void setStatusDbConfig(DBConfig statusDbConfig) {
+		this.statusDbConfig = statusDbConfig;
 	}
 }

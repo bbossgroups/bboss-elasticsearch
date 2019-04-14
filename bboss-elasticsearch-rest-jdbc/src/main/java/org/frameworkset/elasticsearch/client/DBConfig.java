@@ -24,7 +24,7 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public class DBConfig {
-
+	private String statusTableDML;
 	private Integer jdbcFetchSize;
 	private String dbDriver;
 	private String dbUrl;
@@ -36,6 +36,9 @@ public class DBConfig {
 	private int minIdleSize = 10;
 	private int maxSize = 20;
 
+	public static final String mysql_createStatusTableSQL = "CREATE TABLE $statusTableName ( ID bigint(10) NOT NULL, lasttime bigint(10) NOT NULL, lastvalue bigint(10) NOT NULL, lastvaluetype int(1) NOT NULL, PRIMARY KEY(ID)) ENGINE=InnoDB";
+	public static final String oracle_createStatusTableSQL = "CREATE TABLE $statusTableName ( ID NUMBER(10) NOT NULL, lasttime NUMBER(10) NOT NULL, lastvalue NUMBER(10) NOT NULL, lastvaluetype NUMBER(1) NOT NULL,constraint $statusTableName_PK primary key(ID))";
+
 	/**是否启用sql日志，true启用，false 不启用，*/
 	private boolean showSql;
 	private boolean usePool = false;
@@ -43,6 +46,15 @@ public class DBConfig {
 		return dbDriver;
 	}
 
+	public String getCreateStatusTableSQL(String dbtype){
+		if(dbtype.equals("mysql")){
+			return mysql_createStatusTableSQL;
+		}
+		else if(dbtype.equals("oracle")){
+			return oracle_createStatusTableSQL;
+		}
+		throw new ESDataImportException("getCreateStatusTableSQL failed: unsupport dbtype "+ dbtype);
+	}
 	public void setDbDriver(String dbDriver) {
 		this.dbDriver = dbDriver;
 	}
@@ -138,5 +150,13 @@ public class DBConfig {
 
 	public void setInitSize(int initSize) {
 		this.initSize = initSize;
+	}
+
+	public String getStatusTableDML() {
+		return statusTableDML;
+	}
+
+	public void setStatusTableDML(String statusTableDML) {
+		this.statusTableDML = statusTableDML;
 	}
 }

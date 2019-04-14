@@ -107,6 +107,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 			}
 
 		}
+		esjdbc.setStatusTableId(esjdbc.getSql().hashCode());
 	}
 	public void setEsjdbc(ESJDBC esjdbc){
 		this.esjdbc = esjdbc;

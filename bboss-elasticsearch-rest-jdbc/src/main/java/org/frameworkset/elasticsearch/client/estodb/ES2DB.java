@@ -49,6 +49,7 @@ public class ES2DB {
 	private String scrollLiveTime ;//= "100m";
 	private BatchHandler<Map> batchHandler;
 	private DBConfig dbConfig;
+	private DBConfig statusDbConfig;
 	private ConfigSQLExecutor configSQLExecutor;
 	private ExportCount exportCount;
 	/**
@@ -282,5 +283,13 @@ public class ES2DB {
 
 	public void setExportResultHandler(ExportResultHandler exportResultHandler) {
 		this.exportResultHandler = exportResultHandler;
+	}
+
+	public DBConfig getStatusDbConfig() {
+		return statusDbConfig;
+	}
+
+	public void setStatusDbConfig(DBConfig statusDbConfig) {
+		this.statusDbConfig = statusDbConfig;
 	}
 }

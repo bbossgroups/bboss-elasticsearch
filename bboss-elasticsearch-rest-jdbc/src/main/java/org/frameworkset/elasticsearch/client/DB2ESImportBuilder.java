@@ -65,12 +65,11 @@ public class DB2ESImportBuilder extends BaseBuilder{
 
 
 	protected EsIdGenerator esIdGenerator = ESJDBC.DEFAULT_EsIdGenerator;
-	public boolean isShowSql() {
-		return showSql;
-	}
+
 
 	public DB2ESImportBuilder setShowSql(boolean showSql) {
-		this.showSql = showSql;
+		_setShowSql(showSql);
+
 		return this;
 	}
 	public Boolean getUseLowcase() {
@@ -145,33 +144,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		return sql;
 	}
 
-	public String getDbName() {
-		return dbName;
-	}
 
-	public String getDbDriver() {
-		return dbDriver;
-	}
-
-	public String getDbUrl() {
-		return dbUrl;
-	}
-
-	public String getDbUser() {
-		return dbUser;
-	}
-
-	public String getDbPassword() {
-		return dbPassword;
-	}
-
-	public String getValidateSQL() {
-		return validateSQL;
-	}
-
-	public boolean isUsePool() {
-		return usePool;
-	}
 
 	public String getRefreshOption() {
 		return refreshOption;
@@ -409,22 +382,18 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		esjdbcResultSet.setSqlName(sqlName);
 		if(SimpleStringUtil.isNotEmpty(sql))
 			esjdbcResultSet.setSql(this.sql);
-		DBConfig dbConfig = new DBConfig();
+//		DBConfig dbConfig = new DBConfig();
 		esjdbcResultSet.setDbConfig(dbConfig);
-		dbConfig.setDbName(dbName);
-		dbConfig.setShowSql(showSql);
+		esjdbcResultSet.setStatusDbConfig(statusDbConfig);
+
+
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
 		esjdbcResultSet.setBatchSize(this.batchSize);
-		dbConfig.setJdbcFetchSize(this.jdbcFetchSize);
+
 		esjdbcResultSet.setIndex(index);
 		esjdbcResultSet.setIndexPattern(this.splitIndexName(index));
 		esjdbcResultSet.setIndexType(indexType);
-		dbConfig.setDbDriver(this.dbDriver);
-		dbConfig.setDbUrl(this.dbUrl);
-		dbConfig.setDbUser(this.dbUser);
-		dbConfig.setDbPassword(this.dbPassword);
-		dbConfig.setValidateSQL(this.validateSQL);
-		dbConfig.setUsePool(this.usePool);
+
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		esjdbcResultSet.setParallel(this.parallel);
 		esjdbcResultSet.setThreadCount(this.threadCount);
@@ -460,6 +429,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 
 	public DataStream builder(){
 		this.buildDBConfig();
+		this.buildStatusDBConfig();
 		try {
 			logger.info("DB2ES Import Configs:");
 			logger.info(this.toString());
@@ -498,8 +468,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	}
 
 	public DB2ESImportBuilder setDbName(String dbName) {
-		freezen = true;
-		this.dbName = dbName;
+		_setDbName(  dbName);
 		return this;
 	}
 
@@ -509,38 +478,32 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	}
 
 	public DB2ESImportBuilder setDbDriver(String dbDriver) {
-		freezen = true;
-		this.dbDriver = dbDriver;
+		_setDbDriver(  dbDriver);
 		return this;
 	}
 
 	public DB2ESImportBuilder setDbUrl(String dbUrl) {
-		freezen = true;
-		this.dbUrl = dbUrl;
+		_setDbUrl( dbUrl);
 		return this;
 	}
 
 	public DB2ESImportBuilder setDbUser(String dbUser) {
-		freezen = true;
-		this.dbUser = dbUser;
+		_setDbUser(  dbUser);
 		return this;
 	}
 
 	public DB2ESImportBuilder setDbPassword(String dbPassword) {
-		freezen = true;
-		this.dbPassword = dbPassword;
+		_setDbPassword(  dbPassword);
 		return this;
 	}
 
 	public DB2ESImportBuilder setValidateSQL(String validateSQL) {
-		freezen = true;
-		this.validateSQL = validateSQL;
+		_setValidateSQL(  validateSQL);
 		return this;
 	}
 
 	public DB2ESImportBuilder setUsePool(boolean usePool) {
-		freezen = true;
-		this.usePool = usePool;
+		_setUsePool(  usePool);
 		return this;
 	}
 
@@ -804,7 +767,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	}
 
 	public DB2ESImportBuilder setJdbcFetchSize(Integer jdbcFetchSize) {
-		this.jdbcFetchSize = jdbcFetchSize;
+		_setJdbcFetchSize(  jdbcFetchSize);
 		return  this;
 	}
 

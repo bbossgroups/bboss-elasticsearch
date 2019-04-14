@@ -19,10 +19,7 @@ import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.orm.transaction.TransactionManager;
-import org.frameworkset.elasticsearch.client.DefaultResultSetHandler;
-import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.ESJDBC;
-import org.frameworkset.elasticsearch.client.TaskFailedException;
+import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.util.tokenizer.TextGrammarParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +62,14 @@ public class ScheduleService {
 	private ESJDBC esjdbc;
 	private String updateSQL ;
 	private String insertSQL;
+	private String createStatusTableSQL;
 	private String selectSQL;
 	private String existSQL;
 	private int lastValueType = 0;
-	private int id = 1;
+//	private int id = 1;
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private Date initLastDate = null;
-	private String dbname;
+	private String statusDbname;
 	private String statusTableName;
 	private String statusStorePath;
 	private String lastValueClumnName;
@@ -98,14 +96,14 @@ public class ScheduleService {
 
 	private Timer timer ;
 	public void addStatus(Status currentStatus) throws Exception {
-		SQLExecutor.insertWithDBName(dbname,insertSQL,currentStatus.getId(),currentStatus.getTime(),currentStatus.getLastValue(),lastValueType);
+		SQLExecutor.insertWithDBName(statusDbname,insertSQL,currentStatus.getId(),currentStatus.getTime(),currentStatus.getLastValue(),lastValueType);
 	}
 	public void updateStatus(Status currentStatus) throws Exception {
-		SQLExecutor.updateWithDBName(dbname,updateSQL, currentStatus.getTime(), currentStatus.getLastValue(), lastValueType,currentStatus.getId());
+		SQLExecutor.updateWithDBName(statusDbname,updateSQL, currentStatus.getTime(), currentStatus.getLastValue(), lastValueType,currentStatus.getId());
 	}
 	private void initLastValueStatus(boolean update) throws Exception {
 		Status currentStatus = new Status();
-		currentStatus.setId(id);
+		currentStatus.setId(esjdbc.getStatusTableId());
 		currentStatus.setTime(new Date().getTime());
 		if(lastValueType == 1) {
 			currentStatus.setLastValue(initLastDate.getTime());
@@ -137,15 +135,7 @@ public class ScheduleService {
 		}
 //		SQLInfo sqlInfo = getLastValueSQL();
 		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,batchSize);
-//		ResultSetHandler resultSetHandler = new ResultSetHandler() {
-//			@Override
-//			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-//				esjdbc.setResultSet(resultSet);
-//				esjdbc.setMetaData(statementInfo.getMeta());
-//				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-//				jdbcRestClientUtil.addDocuments(esjdbc.getIndex(), esjdbc.getIndexType(), esjdbc, esjdbc.getRefreshOption(), batchSize);
-//			}
-//		};
+
 
 		if(sqlInfo.getParamSize() == 0) {
 			if(esjdbc.getDataRefactor() == null){
@@ -375,28 +365,65 @@ public class ScheduleService {
 	 */
 	private void initDatasource()  {
 		if(this.isIncreamentImport()) {
-			dbname = this.esjdbc.getDbConfig().getDbName() + "_config";
-			String dbJNDIName = this.esjdbc.getDbConfig().getDbName() + "_config";
-			try {
-				File dbpath = new File(statusStorePath);
-				logger.info("initDatasource dbpath:" + dbpath.getCanonicalPath());
-				SQLUtil.startPool(dbname,
-						"org.sqlite.JDBC",
-						"jdbc:sqlite://" + dbpath.getCanonicalPath(),
-						"root", "root",
-						null,//"false",
-						null,// "READ_UNCOMMITTED",
-						"select 1",
-						dbJNDIName,
-						10,
-						10,
-						20,
-						true,
-						false,
-						null, false, false
-				);
-			} catch (Exception e) {
-				throw new ESDataImportException(e);
+			if(this.esjdbc.getStatusDbConfig() == null) {
+				statusDbname = this.esjdbc.getDbConfig().getDbName() + "_config";
+				String dbJNDIName = this.esjdbc.getDbConfig().getDbName() + "_config";
+				try {
+					createStatusTableSQL = new StringBuilder().append("create table " ).append( statusTableName)
+							.append( " (ID number(10),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))").toString();
+					File dbpath = new File(statusStorePath);
+					logger.info("initDatasource dbpath:" + dbpath.getCanonicalPath());
+					SQLUtil.startPool(statusDbname,
+							"org.sqlite.JDBC",
+							"jdbc:sqlite://" + dbpath.getCanonicalPath(),
+							"root", "root",
+							null,//"false",
+							null,// "READ_UNCOMMITTED",
+							"select 1",
+							dbJNDIName,
+							10,
+							10,
+							20,
+							true,
+							false,
+							null, false, false
+					);
+				} catch (Exception e) {
+					throw new ESDataImportException(e);
+				}
+			}
+			else{
+				DBConfig statusDBConfig = esjdbc.getStatusDbConfig();
+
+				statusDbname = esjdbc.getStatusDbConfig().getDbName();
+				if(!statusDbname.equals(esjdbc.getDbConfig().getDbName())){
+					String dbJNDIName = statusDbname + "_config";
+					try {
+
+						SQLUtil.startPool(statusDbname,
+								statusDBConfig.getDbDriver(),
+								statusDBConfig.getDbUrl(),
+								statusDBConfig.getDbUser(), statusDBConfig.getDbPassword(),
+								null,//"false",
+								null,// "READ_UNCOMMITTED",
+								statusDBConfig.getValidateSQL(),
+								dbJNDIName,
+								10,
+								10,
+								20,
+								true,
+								false,
+								null, false, false
+						);
+					} catch (Exception e) {
+						throw new ESDataImportException(e);
+					}
+				}
+				createStatusTableSQL = statusDBConfig.getStatusTableDML();
+				if(createStatusTableSQL == null){
+					createStatusTableSQL = statusDBConfig.getCreateStatusTableSQL(SQLUtil.getPool(statusDbname).getDBType());
+				}
+				createStatusTableSQL = createStatusTableSQL.replace("$statusTableName",statusTableName);
 			}
 
 			if (esjdbc.getDateLastValueColumn() != null) {
@@ -435,14 +462,13 @@ public class ScheduleService {
 			try {
 				initLastDate = dateFormat.parse("1970-01-01");
 				//SQLExecutor.updateWithDBName("gencode","drop table BBOSS_GENCODE");
-				SQLExecutor.queryObjectWithDBName(int.class, dbname, existSQL);
+				SQLExecutor.queryObjectWithDBName(int.class, statusDbname, existSQL);
 
 			} catch (Exception e) {
-				String tsql = "create table " + statusTableName
-						+ " (ID number(2),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))";
+				String tsql = createStatusTableSQL;
 				logger.info(statusTableName + " table not exist，" + statusTableName + "：" + tsql + ".");
 				try {
-					SQLExecutor.updateWithDBName(dbname, tsql);
+					SQLExecutor.updateWithDBName(statusDbname, tsql);
 					logger.info("table " + statusTableName + " create success：" + tsql + ".");
 
 				} catch (Exception e1) {
@@ -455,7 +481,7 @@ public class ScheduleService {
 				/**
 				 * 初始化数据检索起始状态信息
 				 */
-				currentStatus = SQLExecutor.queryObjectWithDBName(Status.class, dbname, selectSQL, id);
+				currentStatus = SQLExecutor.queryObjectWithDBName(Status.class, statusDbname, selectSQL, esjdbc.getStatusTableId());
 				if (currentStatus == null) {
 					initLastValueStatus(false);
 				} else {
@@ -473,7 +499,7 @@ public class ScheduleService {
 
 			try {
 				Status currentStatus = new Status();
-				currentStatus.setId(id);
+				currentStatus.setId(esjdbc.getStatusTableId());
 				currentStatus.setTime(new Date().getTime());
 				this.firstStatus = (Status) currentStatus.clone();
 				this.currentStatus = currentStatus;
@@ -589,7 +615,7 @@ public class ScheduleService {
 //			logger.error("",e);
 //		}
 		try {
-			SQLUtil.stopPool(this.dbname);
+			SQLUtil.stopPool(this.statusDbname);
 		}
 		catch (Exception e){
 			logger.error("",e);
