@@ -27,6 +27,16 @@ public abstract class BaseESProperties {
 	private Http http;
 	private Db db;
 
+	public Ip getIp() {
+		return ip;
+	}
+
+	public void setIp(Ip ip) {
+		this.ip = ip;
+	}
+
+	private Ip ip;
+
 
 	private Dslfile dslfile;
 	public Dslfile getDslfile() {
@@ -90,7 +100,45 @@ public abstract class BaseESProperties {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public static class Ip{
+		private String serviceUrl;
+		private String cachesize;
+		private String database;
 
+		public String getServiceUrl() {
+			return serviceUrl;
+		}
+
+		public void setServiceUrl(String serviceUrl) {
+			this.serviceUrl = serviceUrl;
+		}
+
+		public String getCachesize() {
+			return cachesize;
+		}
+
+		public void setCachesize(String cachesize) {
+			this.cachesize = cachesize;
+		}
+
+		public String getDatabase() {
+			return database;
+		}
+
+		public void setDatabase(String database) {
+			this.database = database;
+		}
+
+		public String getAsnDatabase() {
+			return asnDatabase;
+		}
+
+		public void setAsnDatabase(String asnDatabase) {
+			this.asnDatabase = asnDatabase;
+		}
+
+		private String asnDatabase;
+	}
 	public static class Db{
 		private String name;
 		private String user;
@@ -659,6 +707,17 @@ public abstract class BaseESProperties {
 				properties.put("db.usePool",this.db.getUsePool());
 			if(SimpleStringUtil.isNotEmpty(this.db.getValidateSQL()))
 				properties.put("db.validateSQL",this.db.getValidateSQL());
+		}
+		if(this.ip != null){
+			if(SimpleStringUtil.isNotEmpty(this.ip.getDatabase()))
+				properties.put("ip.database",this.ip.getDatabase());
+			if(SimpleStringUtil.isNotEmpty(this.ip.getAsnDatabase()))
+				properties.put("ip.asnDatabase",this.ip.getAsnDatabase());
+			if(SimpleStringUtil.isNotEmpty(this.ip.getCachesize()))
+				properties.put("ip.cachesize",this.ip.getCachesize());
+			if(SimpleStringUtil.isNotEmpty(this.ip.getServiceUrl()))
+				properties.put("ip.serviceUrl",this.ip.getServiceUrl());
+
 		}
 		return properties;
 	}

@@ -26,7 +26,7 @@ sourceSets {
 
 
 dependencies {
-    compile project(':bboss-elasticsearch-rest-booter')
+	compile project(':bboss-elasticsearch-geoip')
     compile([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
 	testCompile (
 

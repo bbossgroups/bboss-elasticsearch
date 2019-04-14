@@ -16,6 +16,8 @@ public class ElasticSearchHelper {
 	protected static DefaultApplicationContext context = null;
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
+
+	private static Map<String,String> geoipConfig = new HashMap<String, String>();
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
@@ -34,6 +36,9 @@ public class ElasticSearchHelper {
 				logger.warn("ElasticSearch load from Boot ignore: boot method Not found in org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot!");
 			}
 		}
+	}
+	public static Map<String,String> getGeoipConfig(){
+		return geoipConfig;
 	}
 	public static long getDslfileRefreshInterval(){
 		return dslfileRefreshInterval;
@@ -142,6 +147,15 @@ public class ElasticSearchHelper {
 			elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollBlockedWaitTimeout",configContext,"0"));
 
+			geoipConfig.put("ip.database",
+					ElasticSearchHelper._getStringValue("","ip.database",configContext,""));
+			geoipConfig.put("ip.asnDatabase",
+					ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
+			geoipConfig.put("ip.cachesize",
+					ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"2000"));
+			geoipConfig.put("ip.serviceUrl",
+					ElasticSearchHelper._getStringValue("","ip.serviceUrl",configContext,""));
+
 			final ElasticSearch elasticSearch = new ElasticSearch();
 			if(firstElasticSearch == null)
 				firstElasticSearch = elasticSearch;
@@ -237,7 +251,11 @@ public class ElasticSearchHelper {
 
 		}
 		else{
-			_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+			if(!poolName.equals(""))
+				_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+			else{
+				_value = (String)context.getExternalProperty(propertyName);
+			}
 		}
 		if(_value == null){
 			return defaultValue;

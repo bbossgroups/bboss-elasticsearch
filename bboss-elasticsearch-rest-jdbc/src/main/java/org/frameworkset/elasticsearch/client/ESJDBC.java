@@ -22,6 +22,7 @@ import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.elasticsearch.util.ESJDBCResultSet;
 import org.frameworkset.persitent.util.JDBCResultSet;
+import org.frameworkset.spi.geoip.GeoIPUtil;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private volatile boolean forceStop = false;
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
+
 	private DBConfig dbConfig;
 	/**
 	 * 增量导入状态存储数据源
@@ -822,5 +824,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setStatusDbConfig(DBConfig statusDbConfig) {
 		this.statusDbConfig = statusDbConfig;
+	}
+	public static GeoIPUtil getGeoIPUtil(){
+		return GeoIPUtil.getGeoIPUtil();
 	}
 }

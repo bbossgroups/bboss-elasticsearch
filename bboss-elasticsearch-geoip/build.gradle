@@ -26,7 +26,7 @@ sourceSets {
 
 
 dependencies {
-	compile project(':bboss-elasticsearch-rest-jdbc')
+	compile project(':bboss-elasticsearch-rest-booter')
 	compile group: "com.maxmind.geoip2", name: "geoip2", version: "2.12.0"
 	compile group: "com.maxmind.db", name: "maxmind-db", version: "1.2.2" 
      

@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.spi.geoip.IpInfo;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -153,5 +155,25 @@ public class ContextImpl implements Context {
 
 	public void setDrop(boolean drop) {
 		this.drop = drop;
+	}
+
+	@Override
+	public IpInfo getIpInfo(String fieldName) throws Exception{
+		Object _ip = esjdbc.getValue(fieldName);
+		if(_ip == null){
+			return null;
+		}
+		if(esjdbc.getGeoIPUtil() != null) {
+			return esjdbc.getGeoIPUtil().getAddressMapResult(String.valueOf(_ip));
+		}
+		return null;
+	}
+
+	@Override
+	public IpInfo getIpInfoByIp(String ip) {
+		if(esjdbc.getGeoIPUtil() != null) {
+			return esjdbc.getGeoIPUtil().getAddressMapResult(ip);
+		}
+		return null;
 	}
 }

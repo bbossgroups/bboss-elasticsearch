@@ -16,9 +16,12 @@ package org.frameworkset.spi.geoip;
  */
 
 
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.entity.geo.GeoPoint;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.frameworkset.spi.remote.http.MapResponseHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -207,7 +210,7 @@ public class GeoIPUtil {
 
 
 
-			ip = "240e:c0:f450:cb84:5dc4:928c:cd42:342b";
+//			ip = "240e:c0:f450:cb84:5dc4:928c:cd42:342b";
 		//从geolite2获取ip地址信息
 		Map<String,Object> geoData_ = this.geoIPFilter.handleIp(ip);
 //			Map<String,Object> taobaodata = HttpRequestUtil.httpGetforString(url.toString(),header,new MapResponseHandler());
@@ -389,4 +392,43 @@ public class GeoIPUtil {
 //		}
 //		return outBuffer.toString();
 //	}
+	private static Logger logger = LoggerFactory.getLogger(GeoIPUtil.class);
+	private static boolean getGeoIPUtil ;
+	public static GeoIPUtil getGeoIPUtil() {
+		if(getGeoIPUtil)
+			return  geoIPUtil;
+		synchronized (GeoIPUtil.class){
+			if(getGeoIPUtil)
+				return  geoIPUtil;
+			getGeoIPUtil = true;
+			if(geoIPUtil == null) {
+
+				try {
+					Map<String, String> geoipConfig = ElasticSearchHelper.getGeoipConfig();
+					GeoIPUtil geoIPUtil = new GeoIPUtil();
+					geoIPUtil.setDatabase(geoipConfig.get("ip.database"));
+					geoIPUtil.setAsnDatabase(geoipConfig.get("ip.asnDatabase"));
+					String _cachsize = geoipConfig.get("ip.cachesize");
+					if (_cachsize != null) {
+						try {
+							geoIPUtil.setCachesize(Integer.parseInt(_cachsize));
+						} catch (Exception e) {
+							logger.info("getGeoIPUtil ip.cachesize must be a number:" + _cachsize, e);
+						}
+					}
+					geoIPUtil.setIpUrl(geoipConfig.get("ip.serviceUrl"));
+					geoIPUtil.init();
+					GeoIPUtil.geoIPUtil = geoIPUtil;
+				} catch (Exception e) {
+					logger.info("getGeoIPUtil failed:", e);
+				}
+			}
+
+		}
+		return geoIPUtil;
+	}
+
+
+
+	private static GeoIPUtil geoIPUtil;
 }

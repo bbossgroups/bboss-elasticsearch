@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.spi.geoip.IpInfo;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,4 +51,6 @@ public interface Context {
 	String getEsIdField();
 	public boolean isDrop();
 	public void setDrop(boolean drop);
+	public IpInfo getIpInfo(String fieldName) throws Exception;
+	public IpInfo getIpInfoByIp(String ip) ;
 }
