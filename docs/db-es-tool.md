@@ -22,6 +22,8 @@
 
 支持海量PB级数据同步导入功能
 
+支持将ip转换为对应的运营商和城市地理坐标位置信息
+
 **支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error方法进行相应处理**
 
 下面详细介绍本案例。
@@ -548,7 +550,38 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 
-## 5.8 设置任务执行结果回调处理函数
+## 5.8 IP转换为地理坐标城市运营商信息
+
+在DataRefactor中，可以获取ip对应的运营商和区域信息，举例说明：
+
+```java
+/**
+       * 重新设置es数据结构，获取ip对应的运营商和区域信息案例
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+    
+            /**
+             * 获取ip对应的运营商和区域信息，remoteAddr字段存放ip信息
+             */
+            IpInfo ipInfo = context.getIpInfo("remoteAddr");
+            context.addFieldValue("ipInfo",ipInfo);
+            context.addFieldValue("collectTime",new Date());
+            
+         }
+      });
+```
+
+需要在appliction.properties文件中配置geoip的ip地址信息库：
+
+```properties
+ip.cachesize = 2000
+# geoip的ip地址信息库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
+ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+```
+
+## 5.9 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
