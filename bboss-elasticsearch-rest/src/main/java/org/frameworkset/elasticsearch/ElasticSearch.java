@@ -70,7 +70,15 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	private ClientInterface detaultClientInterface;
 
 
+	public String getElasticSearchName() {
+		return elasticSearchName;
+	}
 
+	public void setElasticSearchName(String elasticSearchName) {
+		this.elasticSearchName = elasticSearchName;
+	}
+
+	private String elasticSearchName;
 	protected Properties elasticsearchPropes;
 	protected Properties extendElasticsearchPropes;
 	protected int batchSize = defaultBatchSize;
@@ -213,6 +221,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			return "ElasticSearch Configs";
 		}
 	}
+	private boolean fromspringboot;
 
 	public void configure(){
 		configureWithConfigContext(null);
@@ -220,6 +229,14 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public void configureWithConfigContext(GetProperties configContext) {
 		if(configContext != null && configContext instanceof BaseApplicationContext)
 			this.setApplicationContext((BaseApplicationContext)configContext);
+		if(logger.isInfoEnabled()) {
+			try {
+				logger.info("Start Elasticsearch Datasource[{}] from springboot[{}]:{}", this.getElasticSearchName(), this.isFromspringboot(), SimpleStringUtil.object2json(elasticsearchPropes));
+			}
+			catch (Exception e){
+
+			}
+		}
 		origineRestServerAddresses = elasticsearchPropes.getProperty(REST_HOSTNAMES);
 		if (SimpleStringUtil.isNotEmpty(origineRestServerAddresses)) {
 			origineRestServerAddresses = origineRestServerAddresses.trim();
@@ -489,4 +506,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	}
 
 
+	public boolean isFromspringboot() {
+		return fromspringboot;
+	}
+
+	public void setFromspringboot(boolean fromspringboot) {
+		this.fromspringboot = fromspringboot;
+	}
 }

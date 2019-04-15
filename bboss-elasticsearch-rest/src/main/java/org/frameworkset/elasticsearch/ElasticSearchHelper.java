@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch;
 
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
@@ -94,6 +95,9 @@ public class ElasticSearchHelper {
 	 *             </property>
 	 */
 	public static void booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot){
+		booter(  elasticsearchServerNames,  configContext,  forceBoot,false);
+	}
+	public static void booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot,boolean fromspringboot){
 		if(inited ) {
 			if(!forceBoot)
 				return;
@@ -147,21 +151,16 @@ public class ElasticSearchHelper {
 			elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollBlockedWaitTimeout",configContext,"0"));
 
-			geoipConfig.put("ip.database",
-					ElasticSearchHelper._getStringValue("","ip.database",configContext,""));
-			geoipConfig.put("ip.asnDatabase",
-					ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
-			geoipConfig.put("ip.cachesize",
-					ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"2000"));
-			geoipConfig.put("ip.serviceUrl",
-					ElasticSearchHelper._getStringValue("","ip.serviceUrl",configContext,""));
 
 			final ElasticSearch elasticSearch = new ElasticSearch();
 			if(firstElasticSearch == null)
 				firstElasticSearch = elasticSearch;
+			elasticSearch.setFromspringboot(fromspringboot);
+			elasticSearch.setElasticSearchName(serverName);
 			elasticSearch.setElasticsearchPropes(elasticsearchPropes);
 			elasticSearch.configureWithConfigContext(configContext);
 			if (!serverName.equals("default")) {
+
 				elasticSearchMap.put(serverName, elasticSearch);
 			} else {
 				elasticSearchMap.put(DEFAULT_SEARCH, elasticSearch);
@@ -169,6 +168,23 @@ public class ElasticSearchHelper {
 			}
 
 
+		}
+		geoipConfig.put("ip.database",
+				ElasticSearchHelper._getStringValue("","ip.database",configContext,""));
+		geoipConfig.put("ip.asnDatabase",
+				ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
+		geoipConfig.put("ip.cachesize",
+				ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"2000"));
+		geoipConfig.put("ip.serviceUrl",
+				ElasticSearchHelper._getStringValue("","ip.serviceUrl",configContext,""));
+
+		if(logger.isInfoEnabled()) {
+			try {
+				logger.info("Geo ipinfo config {},from springboot:{}", SimpleStringUtil.object2json(geoipConfig), fromspringboot);
+			}
+			catch (Exception e){
+
+			}
 		}
 		if(ElasticSearchHelper.elasticSearchSink == null) {
 			if (elasticSearchSink == null)

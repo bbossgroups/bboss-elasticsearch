@@ -154,7 +154,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.1</version>
+            <version>5.6.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -183,7 +183,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.1</version>
+            <version>5.6.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -1320,7 +1320,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 \#foreach-#end
 
-  foreach循环内置循环变量：$velocaitycount，不需要从外部传入
+  foreach循环内置循环变量：$velocityCount，不需要从外部传入
 
 - **逻辑判断语法**
 
@@ -2221,7 +2221,7 @@ public void testObjectSQLQueryFromDSL(){
 
 循环语法：#foreach-#end
 
-循环控制计数器变量：velocityCount
+循环控制计数器变量：$velocityCount
 
 举例说明如下：
 

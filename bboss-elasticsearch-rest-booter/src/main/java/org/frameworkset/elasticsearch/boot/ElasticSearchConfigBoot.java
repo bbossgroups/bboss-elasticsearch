@@ -51,7 +51,7 @@ public abstract class ElasticSearchConfigBoot {
 				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, context);
 
 				//初始化ElasticSearchServer
-				ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot);
+				ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot,false);
 			}
 			finally {
 				inited = true;
@@ -62,8 +62,10 @@ public abstract class ElasticSearchConfigBoot {
 
 
 	}
-
 	public static void boot(Map properties){
+		boot(  properties,false);
+	}
+	public static void boot(Map properties,boolean fromspringboot){
 
 
 		synchronized (ElasticSearchConfigBoot.class) {
@@ -74,7 +76,7 @@ public abstract class ElasticSearchConfigBoot {
 				//初始化Http连接池
 				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, propertiesContainer);
 				//初始化ElasticSearchServer
-				ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true);
+				ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
 		}
 
 

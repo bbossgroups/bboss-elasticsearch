@@ -47,8 +47,11 @@ public abstract class ElasticSearchBoot {
 	 * conf/elasticsearch.properties,application.properties,config/application.properties
 	 */
 	public final static void boot(Map configProperties){
+		boot(  configProperties,false);
+	}
+	public final static void boot(Map configProperties,boolean fromspringboot){
 
-		ElasticSearchConfigBoot.boot(configProperties);
+		ElasticSearchConfigBoot.boot(configProperties,fromspringboot);
 
 	}
 }

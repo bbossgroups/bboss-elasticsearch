@@ -44,7 +44,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.1</version>
+<version>5.6.2</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -521,7 +521,20 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，设置增量变量log_id
 		importBuilder.setSql("select * from td_sm_log where log_id > **#[log_id]**");
 
-**指定定时timer**
+bboss自动提取log_id作为增量字段，目前支持number和timestamp两种类型，如果是时间戳，还需要指定一下类型：
+
+```java
+importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE );//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
+		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
+```
+
+对于修改增量的同步，一般用修改时间戳来作为增量同步字段，同时将数据库记录主键作为文档ID：
+
+```java
+importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+```
+
+指定定时timer**
 
 ```java
 importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
