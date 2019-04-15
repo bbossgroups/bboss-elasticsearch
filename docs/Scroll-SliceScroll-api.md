@@ -42,6 +42,9 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
     </property>
     <!--
         简单的slice scroll query案例，复杂的条件修改query dsl即可
+        max参数：要分成max个slice，比如max为6，就要分成6个slice
+        id参数：分成max个slice后，对应的每个slice序号
+
     -->
     <property name="scrollSliceQuery">
         <![CDATA[

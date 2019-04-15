@@ -86,7 +86,18 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 # 5.编写简单的导入代码
 
+批量导入关键配置：
 
+importBuilder.setBatchSize(5000)
+
+mysql需要在application.properties文件配置连接串和指定fetch相关的useCursorFetch和jdbcFetchSize参数：
+
+```properties
+db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+
+db.jdbcFetchSize = 10000
+
+```
 
 ## **5.1同步批量导入**
 
@@ -137,6 +148,16 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 
 ## **5.2 异步批量导入**
+
+异步批量导入关键配置：
+
+```java
+        importBuilder.setParallel(true);//设置为多线程异步并行批量导入
+		importBuilder.setQueue(100);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(200);//设置批量导入线程池工作线程数量
+```
+
+示例代码如下：
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -491,7 +512,34 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 	}
 ```
 
-## 5.7 灵活控制文档数据结构
+## 5.7 定时任务调度说明
+
+定时增量导入的关键配置：
+
+**sql语句指定增量字段**
+
+//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，设置增量变量log_id
+		importBuilder.setSql("select * from td_sm_log where log_id > **#[log_id]**");
+
+**指定定时timer**
+
+```java
+importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+				     .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+					 .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
+```
+
+上面说明的是基于jdk timer组件的定时调度，bboss还可以通过quartz、xx-job、elastic-job来定时调度同步作业，进行以下配置指示bboss采用外部任务调度器：
+
+```java
+//采用外部定时任务
+importBuilder.setExternalTimer(true);
+```
+
+
+
+## 5.8 灵活控制文档数据结构
 
 bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，举例说明如下：
 
@@ -550,7 +598,7 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 
-## 5.8 IP转换为地理坐标城市运营商信息
+## 5.9 IP转换为地理坐标城市运营商信息
 
 在DataRefactor中，可以获取ip对应的运营商和区域信息，举例说明：
 
@@ -581,7 +629,7 @@ ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
 ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 ```
 
-## 5.9 设置任务执行结果回调处理函数
+## 5.10 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
