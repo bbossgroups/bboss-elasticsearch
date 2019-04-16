@@ -427,7 +427,7 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
-	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
+	public String deleteDocuments(String indexName, String indexType, String[] ids) throws ElasticSearchException {
 		init();
 		for(int i = 0; i < ids.length; i ++){
 			try {
@@ -990,7 +990,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String deleteScrolls(String... scrollIds) throws ElasticSearchException {
+	public String deleteScrolls(String[] scrollIds) throws ElasticSearchException {
 		return null;
 	}
 
@@ -1126,7 +1126,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 	@Override
 	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,
-			String... ids) throws ElasticSearchException {
+			String[] ids) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1533,12 +1533,12 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String deleteDocumentsNew(String indexName, String... ids) throws ElasticSearchException {
+	public String deleteDocuments(String indexName, String[] ids) throws ElasticSearchException {
 		return null;
 	}
 
 	@Override
-	public String deleteDocumentsWithrefreshOptionNew(String indexName, String refreshOption, String... ids) throws ElasticSearchException {
+	public String deleteDocumentsWithrefreshOption(String indexName, String refreshOption, String[] ids) throws ElasticSearchException {
 		return null;
 	}
 

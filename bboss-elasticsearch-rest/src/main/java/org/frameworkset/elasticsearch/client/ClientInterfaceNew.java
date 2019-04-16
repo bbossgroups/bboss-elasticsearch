@@ -117,7 +117,7 @@ public interface ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String deleteDocumentsNew(String indexName,  String... ids) throws ElasticSearchException;
+	public String deleteDocuments(String indexName,  String[] ids) throws ElasticSearchException;
 	/**
 	 *
 	 * For Elasticsearch 7 and 7+
@@ -138,7 +138,7 @@ public interface ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract String deleteDocumentsWithrefreshOptionNew(String indexName,   String refreshOption, String... ids) throws ElasticSearchException;
+	public abstract String deleteDocumentsWithrefreshOption(String indexName,   String refreshOption, String[] ids) throws ElasticSearchException;
 
 
 	/**

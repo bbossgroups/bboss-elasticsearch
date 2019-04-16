@@ -398,7 +398,7 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 */
 	public String deleteByQuery(String path,String templateName,Object params) throws ElasticSearchException;
 
-	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException;
+	public String deleteDocuments(String indexName, String indexType, String[] ids) throws ElasticSearchException;
 	/**
 	 *
 	 * @param indexName
@@ -419,7 +419,7 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String... ids) throws ElasticSearchException;
+	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
 
@@ -1824,7 +1824,7 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String deleteScrolls(String ... scrollIds) throws ElasticSearchException;
+	public String deleteScrolls(String [] scrollIds) throws ElasticSearchException;
 
 	/**
 	 * 清理all scrollId

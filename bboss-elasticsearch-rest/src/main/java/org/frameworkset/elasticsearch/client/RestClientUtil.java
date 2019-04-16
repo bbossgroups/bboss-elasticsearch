@@ -836,10 +836,11 @@ public class RestClientUtil extends ClientUtil{
  
 
 	@Override
-	public String deleteDocuments(String indexName, String indexType, String... ids) throws ElasticSearchException {
+	public String deleteDocuments(String indexName, String indexType, String[] ids) throws ElasticSearchException {
 		StringBuilder builder = new StringBuilder();
 		if(!this.client.isUpper7() ) {
 			for (String id : ids) {
+
 				builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
 			}
 		}
@@ -852,7 +853,7 @@ public class RestClientUtil extends ClientUtil{
 		
 	}
 	
-	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String... ids) throws ElasticSearchException{
+	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		if(!this.client.isUpper7() ) {
 			for (String id : ids) {
@@ -2093,7 +2094,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String deleteScrolls(String ... scrollIds) throws ElasticSearchException{
+	public String deleteScrolls(String [] scrollIds) throws ElasticSearchException{
 		if(scrollIds == null || scrollIds.length == 0)
 			return null;
 		if(!client.isV1()) {
@@ -4187,7 +4188,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String deleteDocumentsNew(String indexName,  String... ids) throws ElasticSearchException{
+	public String deleteDocuments(String indexName,  String[] ids) throws ElasticSearchException{
 		return deleteDocuments(  indexName, (String)null,    ids);
 	}
 	/**
@@ -4210,7 +4211,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String deleteDocumentsWithrefreshOptionNew(String indexName,   String refreshOption, String... ids) throws ElasticSearchException{
+	public String deleteDocumentsWithrefreshOption(String indexName,   String refreshOption, String[] ids) throws ElasticSearchException{
 		return deleteDocumentsWithrefreshOption(  indexName,   (String)null,  refreshOption,   ids);
 	}
 
