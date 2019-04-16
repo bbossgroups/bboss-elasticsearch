@@ -127,7 +127,7 @@ public class TestESJDBC {
 		 * 执行数据库表数据导入es操作
 		 */
 		DataStream dataStream = importBuilder.builder();
-		dataStream.db2es();
+		dataStream.execute();
 	}
 
 	@Test
@@ -167,7 +167,7 @@ public class TestESJDBC {
 		 * 执行数据库表数据导入es操作
 		 */
 		DataStream dataStream = importBuilder.builder();
-		dataStream.db2es();
+		dataStream.execute();
 	}
 
 	/**

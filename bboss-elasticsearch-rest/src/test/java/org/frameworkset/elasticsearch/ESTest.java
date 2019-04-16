@@ -482,7 +482,7 @@ public class ESTest {
 		//批量删除索引文档
 		clientUtil.deleteDocuments("demo",//索引表
 				"demo",//索引类型
-				"1","2","3");//文档ids
+				new String[]{"1","2","3"});//文档ids
 	}
 
 	@Test
