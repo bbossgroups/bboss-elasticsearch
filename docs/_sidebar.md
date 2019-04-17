@@ -19,6 +19,7 @@
     - [scroll](scroll.md) 
     - [Sliced-Scroll](Sliced-Scroll.md) 
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
+  - [Elasticsearch SQL介绍](Elasticsearch-6-SQL.md)
   - [Elasticsearch聚合查询](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
