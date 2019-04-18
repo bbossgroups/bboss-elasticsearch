@@ -1,4 +1,20 @@
-# Elasticsearch 7+兼容性API
+# Elasticsearch 7 API介绍
+
+本文介绍内容
+
+1. bboss中对es7.0及以上版本的支持API
+
+2. bboss中基于es 7.0的案例：
+
+   - 增删改查案例
+
+   - 索引mapping管理案例
+
+   - 索引模板管理案例
+   - script使用案例
+   - 父子jointype关系维护和关联检索案例
+
+
 
 # Elasticsearch 7.0.0新特性
 
@@ -1023,17 +1039,43 @@ public String updateDocument(String index,  Object params, UpdateOptions updateO
 public boolean isVersionUpper7();
 ```
 
-# ES 7+ API测试用例
+# ES 7 API案例
+
+下面的案例对应的maven工程：
+
+https://github.com/bbossgroups/elasticsearch-example/
+
+
+
+## 增删改查、索引mapping、索引模板维护
+
+java
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7Test.java
 
+对应的dsl：
 
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/demo7.xml
+
+## 父子关系-jointype
+
+java
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/jointype/JoinTypeTest7.java
 
+对应的dsl
 
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/joinparentchild7.xml
+
+## script脚本
+
+Java
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/script/ScriptImpl7Test.java
+
+对应的dsl
+
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/demo7.xml
 
 # 从源码构建Elasticsearch BBoss
 
