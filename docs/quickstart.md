@@ -30,6 +30,8 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
 
 Next, add the Elasticsearch addresses to the application.properties file under the project resource directory, and create a new one if the file does not exist:
 
+1. **common maven project config**
+
 ```properties
 elasticsearch.rest.hostNames=10.21.20.168:9200
 
@@ -50,6 +52,26 @@ If x-pack or searchguard security authentication is enabled, configure the accou
 # x-pack or searchguard security authentication and password configuration
 elasticUser=elastic
 elasticPassword=changeme
+```
+
+**2.spring boot maven project config**
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
+```
+
+If the HTTPS protocol is on, add the https protocol header to the elasticsearch address:
+
+```
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
+```
+
+If x-pack or searchguard security authentication is enabled, configure the account and password with the following two properties in application.properties:
+
+```properties
+##support x-pack and searchguard
+spring.elasticsearch.bboss.elasticUser=elastic
+spring.elasticsearch.bboss.elasticPassword=changeme
 ```
 
 And last create a jsp file named testElasticsearch.jsp :

@@ -1047,7 +1047,7 @@ https://github.com/bbossgroups/elasticsearch-example/
 
 
 
-## 增删改查、索引mapping、索引模板维护
+## ES 7增删改查、索引mapping、索引模板管理使用案例
 
 java
 
@@ -1057,7 +1057,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/o
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/demo7.xml
 
-## 父子关系-jointype
+## ES 7父子关系jointype使用案例
 
 java
 
@@ -1067,7 +1067,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/o
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/joinparentchild7.xml
 
-## script脚本
+## ES 7script脚本使用案例
 
 Java
 

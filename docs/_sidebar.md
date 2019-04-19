@@ -38,7 +38,7 @@
   - [Elasticsearch历史数据清理](elasticsearch-indexclean-task.md)
   - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
-  - [Elasticsearch 7 API介绍](Elasticsearch-7-API.md) 
+  - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
 
 - [Changelog](changelog.md)
 
