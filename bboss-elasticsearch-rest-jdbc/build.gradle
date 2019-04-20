@@ -27,6 +27,7 @@ sourceSets {
 
 dependencies {
 	compile project(':bboss-elasticsearch-geoip')
+	compileOnly 'com.xuxueli:xxl-job-core:2.0.2-SNAPSHOT'
     compile([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
 	testCompile (
 

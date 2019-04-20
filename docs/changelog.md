@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.5.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.6.3 发布。
 
 # **主要功能特色**
 
