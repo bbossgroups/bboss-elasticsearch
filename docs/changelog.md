@@ -11,6 +11,11 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.3 功能改进
+
+1. 调整可变长数组为固定长度数组
+2. 更新bboss框架版本5.2.9
+
 # v5.6.2 功能改进
 
 1. 增加地理信息库模块，同步数据时，可以将ip字段对应的ip转换为对应的运营商、城市国家、地理坐标信息

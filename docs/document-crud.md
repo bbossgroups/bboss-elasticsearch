@@ -57,7 +57,7 @@ clientUtil.deleteDocument("agentinfo",//索引表
 //批量删除索引文档
 clientUtil.deleteDocuments("agentinfo",//索引表
       "agentinfo",//索引类型
-      "192.168.137.1","192.168.137.2","192.168.137.3");//文档ids
+      new String[]{"192.168.137.1","192.168.137.2","192.168.137.3"});//文档ids
 ```
 
 # 批量添加/修改文档
