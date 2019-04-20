@@ -176,4 +176,8 @@ public class ContextImpl implements Context {
 		}
 		return null;
 	}
+
+	public ColumnData editName2ndData(String fieldName, Object fieldValue){
+		return null;
+	}
 }

@@ -21,7 +21,9 @@ import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 public abstract class DataStream {
 
 
+	public void setExternalTimer(boolean externalTimer) {
 
+	}
 
 	protected void initDS(DBConfig dbConfig){
 		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
@@ -63,5 +65,6 @@ public abstract class DataStream {
 	private String configString;
 
 
-
+	public void init() {
+	}
 }

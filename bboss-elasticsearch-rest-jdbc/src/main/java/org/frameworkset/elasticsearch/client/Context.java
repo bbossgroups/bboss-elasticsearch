@@ -53,4 +53,5 @@ public interface Context {
 	public void setDrop(boolean drop);
 	public IpInfo getIpInfo(String fieldName) throws Exception;
 	public IpInfo getIpInfoByIp(String ip) ;
+	public ColumnData editName2ndData(String fieldName, Object fieldValue)throws Exception;
 }

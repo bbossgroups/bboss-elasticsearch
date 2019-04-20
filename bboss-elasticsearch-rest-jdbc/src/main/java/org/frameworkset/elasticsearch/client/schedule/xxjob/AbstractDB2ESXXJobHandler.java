@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.schedule;
+package org.frameworkset.elasticsearch.client.schedule.xxjob;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,16 +15,29 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.handler.IJobHandler;
+import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/4/13 13:01
+ * @Date 2019/4/20 22:51
  * @author biaoping.yin
  * @version 1.0
  */
-public interface DataStreamBuilder {
-	public DB2ESImportBuilder builder();
+public abstract class AbstractDB2ESXXJobHandler extends IJobHandler {
+	protected ExternalScheduler externalScheduler;
+	public abstract void init();
+	public ReturnT<String> execute(String param){
+		externalScheduler.execute();
+		return SUCCESS;
+	}
+
+	public void destroy(){
+		if(externalScheduler != null){
+			externalScheduler.destroy();
+		}
+	}
 }

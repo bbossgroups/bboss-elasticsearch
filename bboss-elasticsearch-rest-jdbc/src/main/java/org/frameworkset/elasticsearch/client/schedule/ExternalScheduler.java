@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 
@@ -35,12 +36,24 @@ public class ExternalScheduler {
 
 	public void execute(){
 		if(dataStream == null) {
-			dataStream = dataStreamBuilder.builder();
+			DB2ESImportBuilder db2ESImportBuilder = dataStreamBuilder.builder();
+			if(!db2ESImportBuilder.isExternalTimer())
+				db2ESImportBuilder.setExternalTimer(true);
+			dataStream = db2ESImportBuilder.builder();
 			if(dataStream == null)
 			{
 				throw new ESDataImportException("ExternalScheduler failed: datastream build failed");
 			}
+
+//			dataStream.init();
+
 		}
 		dataStream.execute();
+	}
+
+	public void destroy(){
+		if(this.dataStream != null){
+			this.dataStream.stop();
+		}
 	}
 }

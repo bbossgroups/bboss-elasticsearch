@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 数据库同步到Elasticsearch
@@ -33,24 +35,33 @@ public class DB2ESDataStreamImpl extends DataStream{
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 	private boolean inited;
-	public synchronized void init(){
+	public void setExternalTimer(boolean externalTimer) {
+		this.esjdbc.setExternalTimer(externalTimer);
+	}
+	private Lock lock = new ReentrantLock();
+	public void init(){
 		if(inited )
 			return;
 		if(esjdbc == null){
 			throw new ESDataImportException("ESJDBC is null.");
 		}
-		try {
 
+		try {
+			lock.lock();
 			this.initES(esjdbc.getApplicationPropertiesFile());
 			this.initDS(esjdbc.getDbConfig());
 			this.initSQLInfo();
 			this.initSchedule();
+			inited = true;
 		}
 		catch (Exception e) {
+			inited = true;
 			throw new ESDataImportException(e);
 		}
 		finally{
-			inited = true;
+
+
+			lock.unlock();
 		}
 	}
 
@@ -72,7 +83,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 	public void execute() throws ESDataImportException{
 
 		try {
-
+			this.init();
 			if(this.scheduleService == null) {//一次性执行数据导入操作
 				firstImportData();
 			}

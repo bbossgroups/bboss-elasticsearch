@@ -828,4 +828,11 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public static GeoIPUtil getGeoIPUtil(){
 		return GeoIPUtil.getGeoIPUtil();
 	}
+
+	public void setExternalTimer(boolean externalTimer) {
+		if(scheduleConfig == null){
+			scheduleConfig = new ScheduleConfig();
+		}
+		this.scheduleConfig.setExternalTimer(externalTimer);
+	}
 }

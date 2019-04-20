@@ -426,7 +426,6 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		return esjdbcResultSet;
 	}
 
-
 	public DataStream builder(){
 		this.buildDBConfig();
 		this.buildStatusDBConfig();
@@ -442,7 +441,6 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		dataStream.setEsjdbc(esjdbcResultSet);
 		dataStream.setConfigString(this.toString());
 		dataStream.init();
-
 		return dataStream;
 	}
 
