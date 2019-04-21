@@ -40,7 +40,7 @@ public abstract class DataStream {
 					dbConfig.getMaxSize(),
 					dbConfig.isUsePool(),
 					false,
-					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize()
+					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
 			);
 		}
 	}

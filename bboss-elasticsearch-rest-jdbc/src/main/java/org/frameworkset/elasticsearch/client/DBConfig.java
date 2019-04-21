@@ -42,6 +42,17 @@ public class DBConfig {
 	/**是否启用sql日志，true启用，false 不启用，*/
 	private boolean showSql;
 	private boolean usePool = false;
+	/**
+	 * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+	 * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
+	 */
+	private String dbtype ;
+	/**
+	 * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+	 * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
+	 */
+	private String dbAdaptor;
+
 	public String getDbDriver() {
 		return dbDriver;
 	}
@@ -158,5 +169,21 @@ public class DBConfig {
 
 	public void setStatusTableDML(String statusTableDML) {
 		this.statusTableDML = statusTableDML;
+	}
+
+	public String getDbtype() {
+		return dbtype;
+	}
+
+	public void setDbtype(String dbtype) {
+		this.dbtype = dbtype;
+	}
+
+	public String getDbAdaptor() {
+		return dbAdaptor;
+	}
+
+	public void setDbAdaptor(String dbAdaptor) {
+		this.dbAdaptor = dbAdaptor;
 	}
 }

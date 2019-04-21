@@ -485,6 +485,17 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		return this;
 	}
 
+	public DB2ESImportBuilder setDbAdaptor(String dbAdaptor) {
+		_setDbAdaptor(  dbAdaptor);
+		return this;
+
+	}
+
+	public DB2ESImportBuilder setDbtype(String dbtype) {
+		_setDbtype(  dbtype);
+		return this;
+	}
+
 	public DB2ESImportBuilder setDbUser(String dbUser) {
 		_setDbUser(  dbUser);
 		return this;

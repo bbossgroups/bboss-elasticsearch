@@ -543,12 +543,14 @@ importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说�
 					 .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
-上面说明的是基于jdk timer组件的定时调度，bboss还可以通过quartz、xx-job、elastic-job来定时调度同步作业，进行以下配置指示bboss采用外部任务调度器：
+上面说明的是基于jdk timer组件的定时调度，bboss还可以通过[quartz](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzImportTask.java)、[xx-job](https://github.com/bbossgroups/db-elasticsearch-xxjob)、elastic-job（目前未支持）来定时调度同步作业，进行以下配置指示bboss采用外部任务调度器：
 
 ```java
 //采用外部定时任务
 importBuilder.setExternalTimer(true);
 ```
+
+采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
 
 
@@ -700,6 +702,118 @@ public static void main(String args[]){
    boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
    dbdemo.scheduleFullImportData(  dropIndice);
 }
+```
+
+## es数据源配置
+
+```properties
+# elasticsearch客户端配置
+##x-pack或者searchguard账号和口令
+elasticUser=elastic
+elasticPassword=changeme
+
+#elasticsearch.rest.hostNames=10.1.236.88:9200
+#elasticsearch.rest.hostNames=127.0.0.1:9200
+#elasticsearch.rest.hostNames=10.21.20.168:9200
+elasticsearch.rest.hostNames=192.168.137.1:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
+elasticsearch.dateFormat=yyyy.MM.dd
+elasticsearch.timeZone=Asia/Shanghai
+elasticsearch.ttl=2d
+#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
+elasticsearch.showTemplate=false
+elasticsearch.discoverHost=false
+
+##elasticsearch客户端使用的http连接池配置
+http.timeoutConnection = 5000
+http.timeoutSocket = 50000
+http.connectionRequestTimeout=10000
+http.retryTime = 1
+http.maxLineLength = -1
+http.maxHeaderCount = 200
+http.maxTotal = 200
+http.defaultMaxPerRoute = 100
+http.soReuseAddress = false
+http.soKeepAlive = false
+http.timeToLive = 3600000
+http.keepAlive = 3600000
+http.keystore =
+http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+http.hostnameVerifier =
+
+# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
+dslfile.refreshInterval = 3000
+```
+
+## 数据库数据源配置
+
+以mysql未来介绍数据源配置：
+
+```properties
+db.name = test  #数据源名称，持久层通过dbname引用定义的数据源
+db.user = root
+db.password = 123456
+db.driver = com.mysql.jdbc.Driver
+db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+db.usePool = true
+db.validateSQL = select 1
+db.jdbcFetchSize = 10000
+db.showsql = true
+```
+
+扩展自定义适配器数据源配置
+
+```properties
+# 国产数据库达梦数据源配置，展示额外定制的达梦dbAdaptor，
+# 通过定制自己的dbAdaptor可以非常方便地实现bboss本身不支持的数据库的数据同步工作
+#   /**
+#   * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+#   * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
+#   */
+#  private String dbtype ;
+#  /**
+#   * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+#   * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
+#   */
+#db.name = test
+#db.user = username
+#db.password = password
+#db.driver = dm.jdbc.driver.DmDriver
+#db.url = jdbc:dm://localhost:12345/dbname
+#db.usePool = true
+#db.validateSQL = select 1
+#db.jdbcFetchSize = 10000
+#db.showsql = true
+#db.dbtype = dm
+#db.dbAdaptor = org.frameworkset.elasticsearch.imp.DMAdaptor
+```
+
+## 保存增量状态的数据源配置
+
+采用分布式作业调度引擎时，定时增量导入需要指定保存增量状态的数据源：
+
+```properties
+# 增量导入状态存储数据源配置，默认采用sqlite，增量导入装存储到本地的sqlite数据库中，采用分布式的外部定时任务引擎时，
+# 就不能将状态存储到本地，需要采用外部的数据库（mysql,oracle等）来存储增量导入状态。
+# 如果做了config.db配置，则采用配置的的数据源，必须指定创建statusTableName的建表语句，每种数据库对应的语法做适当调整
+# create table $statusTableName  (ID number(2),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))
+#
+# 一般情况下不需要使用外部状态数据源，除非采用分布式的外部定时任务引擎，
+# 外部状态数据源可以直接使用上面的导入数据源
+config.db.name=test
+#config.db.name = testconfig
+#config.db.user = root
+#config.db.password = 123456
+#config.db.driver = com.mysql.jdbc.Driver
+#config.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+#config.db.usePool = true
+#config.db.validateSQL = select 1
+#config.db.jdbcFetchSize = 10000
+#config.db.showsql = true
+### mysql
+#config.db.statusTableDML = CREATE TABLE $statusTableName ( ID bigint(10) NOT NULL AUTO_INCREMENT, lasttime bigint(10) NOT NULL, lastvalue bigint(10) NOT NULL, lastvaluetype int(1) NOT NULL, PRIMARY KEY(ID)) ENGINE=InnoDB
 ```
 
 ## 测试以及调试同步代码

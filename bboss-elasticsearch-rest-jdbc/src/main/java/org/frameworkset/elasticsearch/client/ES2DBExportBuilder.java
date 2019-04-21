@@ -199,6 +199,17 @@ public class ES2DBExportBuilder extends BaseBuilder{
 	}
 
 
+	public ES2DBExportBuilder setDbAdaptor(String dbAdaptor) {
+		_setDbAdaptor(  dbAdaptor);
+		return this;
+
+	}
+
+	public ES2DBExportBuilder setDbtype(String dbtype) {
+		_setDbtype(  dbtype);
+		return this;
+	}
+
 
 	public ES2DBExportBuilder setDbUser(String dbUser) {
 		_setDbUser(  dbUser);

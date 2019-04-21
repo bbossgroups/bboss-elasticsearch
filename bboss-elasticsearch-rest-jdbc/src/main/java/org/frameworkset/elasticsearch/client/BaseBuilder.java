@@ -178,8 +178,21 @@ public class BaseBuilder {
 
 		String statusTableDML  = propertiesContainer.getProperty(prefix+"db.statusTableDML");
 		dbConfig.setStatusTableDML(statusTableDML);
-
-
+//
+//		/**
+//		 * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+//		 * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
+//		 */
+//		private String dbtype ;
+//		/**
+//		 * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
+//		 * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
+//		 */
+//		private String dbAdaptor;
+		String dbAdaptor  = propertiesContainer.getProperty(prefix+"db.dbAdaptor");
+		dbConfig.setDbAdaptor(dbAdaptor);
+		String dbtype  = propertiesContainer.getProperty(prefix+"db.dbtype");
+		dbConfig.setDbtype(dbtype);
 	}
 	public String getDbName() {
 		return dbConfig.getDbName();
@@ -255,6 +268,22 @@ public class BaseBuilder {
 			this.dbConfig = new DBConfig();
 		}
 		this.dbConfig.setDbDriver(dbDriver);
+	}
+
+	public void _setDbAdaptor(String dbAdaptor) {
+		freezen = true;
+		if(this.dbConfig == null){
+			this.dbConfig = new DBConfig();
+		}
+		this.dbConfig.setDbAdaptor(dbAdaptor);
+	}
+
+	public void _setDbtype(String dbtype) {
+		freezen = true;
+		if(this.dbConfig == null){
+			this.dbConfig = new DBConfig();
+		}
+		this.dbConfig.setDbtype(dbtype);
 	}
 
 	public void _setDbUrl(String dbUrl) {

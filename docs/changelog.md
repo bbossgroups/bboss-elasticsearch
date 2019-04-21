@@ -11,6 +11,23 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.5 功能改进
+
+1. 数据同步工具改进：增加dbAdaptor属性配置，通过定制自己的dbAdaptor可以非常方便地实现bboss本身不支持的数据库的数据同步工作
+
+2. 数据同步工具改进：支持xxjob分布式定时任务引擎来调度同步作业任务
+
+3. 数据同步工具改进：支持quartz定时任务引擎来调度同步作业任务
+
+4. 数据同步工具改进：过滤器Context增加修改字段名称title为新名称newTitle并且修改字段的值api，使用方法，
+
+   ```java
+   //修改字段名称title为新名称newTitle，并且修改字段的值
+   context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+   ```
+
+5. 更新bboss框架版本5.3.0
+
 # v5.6.3 功能改进
 
 1. 调整可变长数组为固定长度数组

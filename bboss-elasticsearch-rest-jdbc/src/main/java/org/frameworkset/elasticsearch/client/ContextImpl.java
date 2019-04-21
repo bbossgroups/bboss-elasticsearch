@@ -31,6 +31,9 @@ import java.util.*;
 public class ContextImpl implements Context {
 	private List<FieldMeta> fieldValues ;
 	private Map<String,FieldMeta> fieldMetaMap;
+
+	private Map<String,String> newfieldNames;
+	private Map<String,ColumnData> newfieldName2ndColumnDatas;
 	private ESJDBC esjdbc;
 	private boolean drop;
 	public ContextImpl(ESJDBC esjdbc){
@@ -177,7 +180,19 @@ public class ContextImpl implements Context {
 		return null;
 	}
 
-	public ColumnData editName2ndData(String fieldName, Object fieldValue){
-		return null;
+	/**
+	 * 重命名字段和并设置修改后字段值
+	 * @param fieldName
+	 * @param newFieldName
+	 * @param newFieldValue
+	 * @throws Exception
+	 */
+	public void newName2ndData(String fieldName, String newFieldName, Object newFieldValue)throws Exception{
+		this.addFieldValue(newFieldName,newFieldValue);//将long类型的时间戳转换为Date类型
+		//忽略旧的名称
+		if(!fieldName.equals(newFieldName))
+			this.addIgnoreFieldMapping(fieldName);
 	}
+
+
 }

@@ -53,5 +53,15 @@ public interface Context {
 	public void setDrop(boolean drop);
 	public IpInfo getIpInfo(String fieldName) throws Exception;
 	public IpInfo getIpInfoByIp(String ip) ;
-	public ColumnData editName2ndData(String fieldName, Object fieldValue)throws Exception;
+
+	/**
+	 * 重命名字段和修改字段值
+	 * @param fieldName
+	 * @param newFieldName
+	 * @param newFieldValue
+	 * @throws Exception
+	 */
+	public void newName2ndData(String fieldName, String newFieldName, Object newFieldValue)throws Exception;
+
+
 }

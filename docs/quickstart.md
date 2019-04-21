@@ -131,11 +131,11 @@ And last create a jsp file named testElasticsearch.jsp :
 
 Put the jsp file into your web project , run it in browser, then see the execution result of bboss .
 
-The Web demo github url:
+A Web demo github url:
 
 <https://github.com/bbossgroups/es_bboss_web>
 
-bboss elasticsearch document:
+Elasticsearch bboss development document:
 
 [Development Document](development.md)
 
