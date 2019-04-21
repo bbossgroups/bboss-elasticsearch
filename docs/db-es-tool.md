@@ -58,6 +58,17 @@
  </dependency>
 ```
 
+如果需要使用xxjob来调度作业任务，还需要导入坐标：
+
+```xml
+<dependency>
+      <groupId>com.xuxueli</groupId>
+      <artifactId>xxl-job-core</artifactId>
+      <version>2.0.2-SNAPSHOT</version>
+      <scope>compile</scope>
+ </dependency>
+```
+
 本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标(其他数据库驱动程序自行导入)：
 
 ```xml
