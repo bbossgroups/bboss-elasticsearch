@@ -19,9 +19,6 @@ import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * <p>Description: </p>
  * <p></p>
@@ -33,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ExternalScheduler {
 	private DataStreamBuilder dataStreamBuilder;
 	private DataStream dataStream;
-	private Lock lock = new ReentrantLock();
+//	private Lock lock = new ReentrantLock();
 	public void dataStream(DataStreamBuilder dataStreamBuilder){
 		this.dataStreamBuilder = dataStreamBuilder;
 	}
@@ -41,16 +38,19 @@ public class ExternalScheduler {
 	public void execute(Object params){
 		if(dataStream == null) {
 			try {
-				lock.lock();
+//				lock.lock();
 				if(dataStream == null) {
 					DB2ESImportBuilder db2ESImportBuilder = dataStreamBuilder.builder( params);
-					if (!db2ESImportBuilder.isExternalTimer())
+					if (!db2ESImportBuilder.isExternalTimer())//强制设置为外部定时器模式
 						db2ESImportBuilder.setExternalTimer(true);
+					if(db2ESImportBuilder.isAsyn()){//强制设置为同步等待模式
+						db2ESImportBuilder.setAsyn(false);
+					}
 					dataStream = db2ESImportBuilder.builder();
 				}
 			}
 			finally {
-				lock.unlock();
+//				lock.unlock();
 			}
 			if(dataStream == null)
 			{

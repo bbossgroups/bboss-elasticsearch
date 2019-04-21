@@ -19,6 +19,9 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -29,12 +32,17 @@ import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
  */
 public abstract class AbstractDB2ESXXJobHandler extends IJobHandler {
 	protected ExternalScheduler externalScheduler;
-
+	private Lock lock = new ReentrantLock();
 	public abstract void init();
 	public ReturnT<String> execute(String param){
-
-		externalScheduler.execute(  param);
-		return SUCCESS;
+		try {
+			lock.lock();
+			externalScheduler.execute(  param);
+			return SUCCESS;
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 	public void destroy(){

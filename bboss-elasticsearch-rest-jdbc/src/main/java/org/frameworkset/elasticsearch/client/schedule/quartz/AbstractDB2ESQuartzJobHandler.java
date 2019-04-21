@@ -17,6 +17,9 @@ package org.frameworkset.elasticsearch.client.schedule.quartz;
 
 import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -27,11 +30,17 @@ import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
  */
 public abstract class AbstractDB2ESQuartzJobHandler  {
 	protected ExternalScheduler externalScheduler;
-
+	private Lock lock = new ReentrantLock();
 	public abstract void init();
 	public void execute(){
+		try {
+			lock.lock();
+			externalScheduler.execute(null);
 
-		externalScheduler.execute(  null);
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 	public void destroy(){
