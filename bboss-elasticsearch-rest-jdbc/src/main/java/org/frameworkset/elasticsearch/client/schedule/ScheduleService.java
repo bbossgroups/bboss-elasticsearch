@@ -608,7 +608,13 @@ public class ScheduleService {
 		return params;
 	}
 	public void stop(){
-		timer.cancel();
+		try {
+			if (timer != null)
+				timer.cancel();
+		}
+		catch (Exception e){
+			logger.error("",e);
+		}
 //		try {
 //			this.storeStatusTask.interrupt();
 //		}catch (Exception e){

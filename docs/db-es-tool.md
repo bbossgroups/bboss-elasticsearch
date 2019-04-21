@@ -44,7 +44,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.3</version>
+<version>5.6.5</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -64,7 +64,7 @@
 <dependency>
       <groupId>com.xuxueli</groupId>
       <artifactId>xxl-job-core</artifactId>
-      <version>2.0.2-SNAPSHOT</version>
+      <version>2.0.2</version>
       <scope>compile</scope>
  </dependency>
 ```

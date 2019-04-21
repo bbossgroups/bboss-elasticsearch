@@ -19,6 +19,9 @@ import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -30,20 +33,30 @@ import org.frameworkset.elasticsearch.client.ESDataImportException;
 public class ExternalScheduler {
 	private DataStreamBuilder dataStreamBuilder;
 	private DataStream dataStream;
+	private Lock lock = new ReentrantLock();
 	public void dataStream(DataStreamBuilder dataStreamBuilder){
 		this.dataStreamBuilder = dataStreamBuilder;
 	}
 
-	public void execute(){
+	public void execute(Object params){
 		if(dataStream == null) {
-			DB2ESImportBuilder db2ESImportBuilder = dataStreamBuilder.builder();
-			if(!db2ESImportBuilder.isExternalTimer())
-				db2ESImportBuilder.setExternalTimer(true);
-			dataStream = db2ESImportBuilder.builder();
+			try {
+				lock.lock();
+				if(dataStream == null) {
+					DB2ESImportBuilder db2ESImportBuilder = dataStreamBuilder.builder( params);
+					if (!db2ESImportBuilder.isExternalTimer())
+						db2ESImportBuilder.setExternalTimer(true);
+					dataStream = db2ESImportBuilder.builder();
+				}
+			}
+			finally {
+				lock.unlock();
+			}
 			if(dataStream == null)
 			{
 				throw new ESDataImportException("ExternalScheduler failed: datastream build failed");
 			}
+
 
 //			dataStream.init();
 

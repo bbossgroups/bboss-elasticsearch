@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.schedule;
+package org.frameworkset.elasticsearch.client.schedule.quartz;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,16 +15,28 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
+import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/4/13 13:01
+ * @Date 2019/4/20 22:51
  * @author biaoping.yin
  * @version 1.0
  */
-public interface DataStreamBuilder {
-	public DB2ESImportBuilder builder(Object params);
+public abstract class AbstractDB2ESQuartzJobHandler  {
+	protected ExternalScheduler externalScheduler;
+
+	public abstract void init();
+	public void execute(){
+
+		externalScheduler.execute(  null);
+	}
+
+	public void destroy(){
+		if(externalScheduler != null){
+			externalScheduler.destroy();
+		}
+	}
 }

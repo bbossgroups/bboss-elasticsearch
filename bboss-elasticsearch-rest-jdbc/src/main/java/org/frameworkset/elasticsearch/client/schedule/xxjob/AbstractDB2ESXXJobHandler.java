@@ -29,9 +29,11 @@ import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
  */
 public abstract class AbstractDB2ESXXJobHandler extends IJobHandler {
 	protected ExternalScheduler externalScheduler;
+
 	public abstract void init();
 	public ReturnT<String> execute(String param){
-		externalScheduler.execute();
+
+		externalScheduler.execute(  param);
 		return SUCCESS;
 	}
 
