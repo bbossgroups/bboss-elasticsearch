@@ -67,6 +67,9 @@ public class ExternalScheduler {
 	public void destroy(){
 		if(this.dataStream != null){
 			this.dataStream.stop();
+			dataStream = null;
 		}
+		dataStreamBuilder = null;
+
 	}
 }
