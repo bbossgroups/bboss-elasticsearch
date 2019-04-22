@@ -69,7 +69,7 @@ public class HealthCheck implements Runnable{
 			 	 if(address.failedCheck()){
 			 		 try {		
 			 			 if(logger.isDebugEnabled())
-			 				 logger.debug(new StringBuilder().append("Check dead elasticsearch server[").append(address.toString()).append("] status.").toString());
+			 				 logger.debug(new StringBuilder().append("Check downed elasticsearch server[").append(address.toString()).append("] status.").toString());
 						 HttpRequestUtil.httpGet(ElasticSearchSinkConstants.healthCheckHttpPool,address.getHealthPath(),headers,new ResponseHandler<Void>(){
 	
 							 @Override
@@ -77,7 +77,7 @@ public class HealthCheck implements Runnable{
 								 int status = response.getStatusLine().getStatusCode();
 								 if (status >= 200 && status < 300) {
 									 if(logger.isInfoEnabled())
-										 logger.info(new StringBuilder().append("Dead elasticsearch server[").append(address.toString()).append("] recovered to normal server.").toString());
+										 logger.info(new StringBuilder().append("Downed elasticsearch server[").append(address.toString()).append("] recovered to normal server.").toString());
 									 address.onlySetStatus(0);
 								 } else {
 									address.onlySetStatus(1);
@@ -88,7 +88,7 @@ public class HealthCheck implements Runnable{
 					
 					 } catch (Exception e) {
 						 if(logger.isInfoEnabled())
-							 logger.info(new StringBuilder().append("Elasticsearch server[").append(address.toString()).append("] is dead.").toString());
+							 logger.info(new StringBuilder().append("Elasticsearch server[").append(address.toString()).append("] is down.").toString());
 						 address.onlySetStatus(1);
 					 }
 			 		 if(this.stop)
