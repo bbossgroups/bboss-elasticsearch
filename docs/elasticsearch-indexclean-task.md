@@ -112,7 +112,7 @@ elasticsearch.dateFormat=yyyy.MM.dd
       </list>
    </property>
 
-   <property name="EsscanTask199" class="com.ai.elasticsearch.job.EsscanTask"
+   <property name="EsscanTask199" class="org.frameworkset.elasticsearch.job.EsscanTask"
            f:dateformat="${elasticsearch.dateFormat}"
            f:elasticDataLivetime="${data.livetime}"          
            init-method="init"/>

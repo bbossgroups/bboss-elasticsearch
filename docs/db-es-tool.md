@@ -611,6 +611,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
       // 可参考Sample示例执行器中的示例任务"ShardingJobHandler"了解试用
 
       externalScheduler = new ExternalScheduler();
+      //params是xxjob admin管理控制台为作业配置的参数数据 
       externalScheduler.dataStream((Object params)->{
          //在作业中获取分片信息
          ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
