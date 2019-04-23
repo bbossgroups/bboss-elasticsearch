@@ -24,7 +24,13 @@
 
 支持将ip转换为对应的运营商和城市地理坐标位置信息
 
-**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error方法进行相应处理**
+**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+
+支持多种定时任务执行引擎：
+
+- jdk timer （内置）
+- quartz
+- xxjob
 
 下面详细介绍本案例。
 
@@ -44,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.5</version>
+<version>5.6.6</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -563,29 +569,15 @@ importBuilder.setExternalTimer(true);
 
 采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
-## 5.8 xxjob分布式定时调度数据同步
+## 5.8 基于xxjob 同步DB-Elasticsearch数据
 
-可以利用xxjob分布式定时任务调度的优势，实现强大的shard分片数据同步功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右。
+bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
 首先定义一个xxjob的同步作业：
 
 ```java
 package org.frameworkset.elasticsearch.imp.jobhandler;
-/**
- * Copyright 2008 biaoping.yin
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import com.xxl.job.core.util.ShardingUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
@@ -599,11 +591,6 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>Description: 使用quartz等外部环境定时运行导入数据，需要设置：</p>
  * importBuilder.setExternalTimer(true);
- * <p></p>
- * <p>Copyright (c) 2018</p>
- * @Date 2019/4/13 13:45
- * @author biaoping.yin
- * @version 1.0
  */
 public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
    private static Logger logger = LoggerFactory.getLogger(XXJobImportTask.class);
@@ -777,9 +764,47 @@ xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJ
 ## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
 ```
 
-任务构建和执行参考完整的demo：
+任务构建和运行参考完整的demo：
 
 https://github.com/bbossgroups/db-elasticsearch-xxjob
+
+第一步：安装和配置gradel
+
+第二步：在工程db-elasticsearch-xxjob根目录下运行gradle clean releaseVersion
+
+第三步：启动作业
+
+构建成功后，将会在工程目录下面生成可部署的二进制包：
+
+build/distributions/db-elasticsearch-xxjob-released.zip
+
+解压运行里面的指令，即可启动作业：
+
+windows: restart.bat 
+
+linux: restart.sh
+
+任务启动后，可以在xxjob的挂你控制台看到刚注册的执行器和作业：
+
+注册好的作业执行器
+
+![作业执行器](images\xxjob-executor.png)
+
+编辑执行器
+
+![编辑执行器](images\xxjobexe-editor.png)
+
+任务管理
+
+![任务管理](images\joblist.png)
+
+可以在后面的操作去，执行、启动作业，查看作业调度执行日志，修改作业参数和运行模式：
+
+![](images\jobedit.png)
+
+运行报表
+
+![运行报表](images\jobstatic.png)
 
 ## 5.9 灵活控制文档数据结构
 
@@ -1263,6 +1288,12 @@ build/distributions/db2es-booter-1.0.0-released.zip
 包的目录结构如下：
 
 ![img](https://esdoc.bbossgroups.com/_images/db-es-dist.png)
+
+运行里面的即可启动作业：
+
+windows: restart.bat 
+
+linux: restart.sh
 
 # 7 作业参数配置
 

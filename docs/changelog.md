@@ -11,6 +11,11 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.6 功能改进
+
+1. 数据同步工具改进：改进xxjob的支持，增加shard分片任务执行机制
+2. 完善故障节点检测日志信息
+
 # v5.6.5 功能改进
 
 1. 数据同步工具改进：增加dbAdaptor属性配置，通过定制自己的dbAdaptor可以非常方便地实现bboss本身不支持的数据库的数据同步工作
