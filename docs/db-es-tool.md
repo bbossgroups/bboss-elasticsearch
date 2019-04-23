@@ -573,7 +573,7 @@ importBuilder.setExternalTimer(true);
 
 bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
-首先定义一个xxjob的同步作业：
+### 首先定义一个xxjob的同步作业
 
 ```java
 package org.frameworkset.elasticsearch.imp.jobhandler;
@@ -743,6 +743,8 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 }
 ```
 
+### 作业注册配置
+
 然后将作业配置到application.propperties中：
 
 ```properties
@@ -764,15 +766,20 @@ xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJ
 ## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
 ```
 
-任务构建和运行参考完整的demo：
+### 任务构建和运行
 
-https://github.com/bbossgroups/db-elasticsearch-xxjob
+1. 下载完整的demo
+   https://github.com/bbossgroups/db-elasticsearch-xxjob
 
-第一步：安装和配置gradel
+2.  安装和配置gradle
 
-第二步：在工程db-elasticsearch-xxjob根目录下运行gradle clean releaseVersion
+   https://esdoc.bbossgroups.com/#/bboss-build
 
-第三步：启动作业
+3. 在工程db-elasticsearch-xxjob根目录下运行gradle构建指令
+
+   gradle clean releaseVersion
+
+4. 启动作业
 
 构建成功后，将会在工程目录下面生成可部署的二进制包：
 
@@ -783,6 +790,8 @@ build/distributions/db-elasticsearch-xxjob-released.zip
 windows: restart.bat 
 
 linux: restart.sh
+
+### xxjob运行效果
 
 任务启动后，可以在xxjob的挂你控制台看到刚注册的执行器和作业：
 
