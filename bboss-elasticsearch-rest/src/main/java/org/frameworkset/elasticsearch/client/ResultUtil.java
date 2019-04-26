@@ -1540,10 +1540,16 @@ public abstract class ResultUtil {
 				String errorInfo = httpRuntimeException.getMessage();
 
 				if(operType == ResultUtil.OPERTYPE_getDocument) {
-//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-//						Boolean found = (Boolean) data.get("found");
-//						if (found != null && found == false)
-//						{
+					if(errorInfo != null && !errorInfo.equals("")) {
+						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+						Map error = (Map) data.get("error");
+						if(error != null) {
+							String errorType = (String) error.get("type");
+							if (errorType != null && errorType.equals("index_not_found_exception")) {
+								throw e;
+							}
+						}
+					}
 					return (T) null;
 //						}
 				}
