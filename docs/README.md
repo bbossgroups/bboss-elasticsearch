@@ -47,12 +47,19 @@ gradle install
 Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
 
 # Elasticsearch Demo
+spring booter必看demo1：
 
 [spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)
 
-[eshelloworld-example](https://github.com/bbossgroups/elasticsearch-example) （maven）
+spring booter必看demo2：
 
 [eshelloword-spring-boot-starter](https://github.com/bbossgroups/elasticsearch-springboot-example) （maven）
+
+其他项目参考demo1：
+
+[eshelloworld-example](https://github.com/bbossgroups/elasticsearch-example) （maven）
+
+其他项目参考demo2：
 
 [elasticsearch-gradle-demo](https://github.com/bbossgroups/elasticsearch-gradle-example)  （gradle）
 
