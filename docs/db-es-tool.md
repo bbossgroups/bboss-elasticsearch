@@ -846,11 +846,13 @@ final AtomicInteger s = new AtomicInteger(0);
             context.addFieldValue("author",customObject);
             long testtimestamp = context.getLongValue("testtimestamp");//将long类型的时间戳转换为Date类型
             context.addFieldValue("testtimestamp",new Date(testtimestamp));//将long类型的时间戳转换为Date类型
+//修改字段名称title为新名称newTitle，并且修改字段的值
+				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+				
 
-//          context.addIgnoreFieldMapping("title");
-            //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//          context.addIgnoreFieldMapping("author");
-            context.addIgnoreFieldMapping("title");
+            //上述属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+
+            
             context.addIgnoreFieldMapping("subtitle");
 
             //关联查询数据,单值查询

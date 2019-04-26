@@ -120,9 +120,11 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
 
 # 执行多表查询操作
 
+执行多表查询操作，逗号分隔表名称
+
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
-//执行多表查询操作
+//执行多表查询操作，逗号分隔表名称
 ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
             = clientUtil.searchList("trace1,trace2/_search",//查询操作，同时查询trace1,trace2中符合条件的数据
                                 "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
@@ -133,6 +135,30 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         //获取总记录数
         long totalSize = data.getTotalSize();
 ```
+
+执行多表查询操作，通配符匹配多表（适合按日期分表的场景）：
+
+trace-2009.09.18
+
+trace-2009.09.19
+
+可以通过trace-*同时检索这两张表的数据：
+
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
+//执行多表查询操作，逗号分隔表名称
+ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("trace-*/_search",//查询操作，同时查询trace-*中符合条件的数据
+                                "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
+                                traceExtraCriteria,//查询条件封装对象
+                                TAgentInfo.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+//获取结果对象列表
+        List<TAgentInfo> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
+```
+
+
 
 检索文档对应的dsl语句定义：esmapper/estrace/ESTracesMapper.xml
 

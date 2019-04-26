@@ -14,10 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.util.ColumnEditorInf;
-import com.frameworkset.util.FieldToColumnEditor;
-import com.frameworkset.util.NoSupportTypeCastException;
-import com.frameworkset.util.ValueObjectUtil;
+import com.frameworkset.util.*;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
@@ -1491,8 +1488,17 @@ public abstract class ResultUtil {
 			if(e.getHttpStatusCode() == 404){
 				String errorInfo = e.getMessage();
 				if(operType == ResultUtil.OPERTYPE_getDocument) {
-//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-//						Boolean found = (Boolean) data.get("found");
+					if(errorInfo != null && !errorInfo.equals("")) {
+						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+						Map error = (Map) data.get("error");
+						if(error != null) {
+							String errorType = (String) error.get("type");
+							if (errorType != null && errorType.equals("index_not_found_exception")) {
+								throw e;
+							}
+						}
+					}
+//					Boolean found = (Boolean) data.get("found");
 //						if (found != null && found == false)
 //						{
 					return (T) null;
