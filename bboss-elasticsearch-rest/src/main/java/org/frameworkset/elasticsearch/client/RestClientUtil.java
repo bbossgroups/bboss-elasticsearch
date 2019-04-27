@@ -1878,8 +1878,12 @@ public class RestClientUtil extends ClientUtil{
 				}
 				else {
 					if(parallel) {
-						scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
-						tasks.add(executorService.submit(scrollTask));
+//						scrollTask = new  ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
+//						tasks.add(executorService.submit(scrollTask));
+						runSliceScrollTask( tasks,  _scrollHandler,
+								sliceResponse,   handlerInfo,
+								sliceScrollResult,
+								executorService);
 					}
 					else {
 						_scrollHandler.handle(sliceResponse, handlerInfo);
@@ -1909,8 +1913,12 @@ public class RestClientUtil extends ClientUtil{
 					scrollId = sliceScrollId;
 					if(!useDefaultHandler ) {
 						if(parallel) {
-							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
-							tasks.add(executorService.submit(scrollTask));
+//							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
+//							tasks.add(executorService.submit(scrollTask));
+							runSliceScrollTask( tasks,  _scrollHandler,
+									 sliceResponse,   handlerInfo,
+									  sliceScrollResult,
+									  executorService);
 						}
 						else{
 							_scrollHandler.handle(_sliceResponse, handlerInfo);
@@ -1946,6 +1954,14 @@ public class RestClientUtil extends ClientUtil{
 			if(tasks != null && tasks.size() > 0)
 				this.waitTasksComplete(tasks);
 		}
+	}
+
+	public <T> void runSliceScrollTask(List<Future> tasks,ScrollHandler<T> _scrollHandler,
+								  ESDatas<T> sliceResponse, HandlerInfo handlerInfo,
+								  SliceScrollResultInf<T> sliceScrollResult,
+								  ExecutorService executorService){
+		ScrollTask<T> scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
+		tasks.add(executorService.submit(scrollTask));
 	}
 
 	/************************************slice searchAll end*****************************/
@@ -2273,9 +2289,13 @@ public class RestClientUtil extends ClientUtil{
 					tasks = new ArrayList<Future>();
 					HandlerInfo handlerInfo = new HandlerInfo();
 					handlerInfo.setTaskId(taskId);
-					scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
 					taskId++;
-					tasks.add(executorService.submit(scrollTask));
+//					scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
+//
+//					tasks.add(executorService.submit(scrollTask));
+					runScrollTask( tasks, scrollHandler,
+							response,   handlerInfo,
+							  executorService);
 //				scrollHandler.handle(response);
 				}
 			}
@@ -2309,9 +2329,12 @@ public class RestClientUtil extends ClientUtil{
 						handlerInfo.setScrollId(scrollId);
 						taskId ++;
 						if(!useDefaultScrollHandler) {
-							scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
 							taskId++;
-							tasks.add(executorService.submit(scrollTask));
+//							scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
+//							tasks.add(executorService.submit(scrollTask));
+							runScrollTask( tasks, scrollHandler,
+									response,   handlerInfo,
+									executorService);
 						}
 						else {
 							scrollHandler.handle(_response,handlerInfo);
@@ -2349,6 +2372,12 @@ public class RestClientUtil extends ClientUtil{
 			if(tasks != null && tasks.size() > 0)
 				this.waitTasksComplete(tasks);
 		}
+	}
+	public <T> void runScrollTask(List<Future> tasks,ScrollHandler<T> _scrollHandler,
+									   ESDatas<T> sliceResponse, HandlerInfo handlerInfo,
+									   ExecutorService executorService){
+		ScrollTask<T> scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo);
+		tasks.add(executorService.submit(scrollTask));
 	}
 	/**
 	 * scroll检索,每次检索结果交给scrollHandler回调函数处理

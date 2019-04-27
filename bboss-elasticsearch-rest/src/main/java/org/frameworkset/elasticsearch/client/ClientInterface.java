@@ -2454,4 +2454,5 @@ public interface ClientInterface extends ClientInterfaceNew {
 
 	public String getCurrentDateString();
 
+	public <T> ESDatas<T> scrollParallel(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 }

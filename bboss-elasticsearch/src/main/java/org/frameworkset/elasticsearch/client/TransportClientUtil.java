@@ -1491,6 +1491,13 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+ 
+
+	@Override
+	public <T> ESDatas<T> scrollParallel(String path, String entity, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
+		return null;
+	}
+
 
 	@Override
 	public String addDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {
