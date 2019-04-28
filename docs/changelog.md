@@ -4,12 +4,16 @@
 
 # **主要功能特色**
 
-1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,+
+1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,+
 2. JDK兼容性： jdk 1.7+
 3. Spring boot兼容性:1.x,2.x
 4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
+
+# v5.6.7 功能改进
+
+1. 改机scroll并行查询机制，支撑Elasticsearch pinpoint apm插件
 
 # v5.6.6 功能改进
 

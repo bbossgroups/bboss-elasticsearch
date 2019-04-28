@@ -28,7 +28,7 @@
 14. 除了提供高阶的o/r mapping API，还提供了简单易用的原生restful api和基于tcp的Transport api，可以根据实际需要使用合适的API  
 15. ClientUtil组件可以指定elasticsearch服务器，支持多es集群，可以在指定的elasticsearch集群上执行操作
 16. 提供自动清理历史索引数据的[工具](elasticsearch-indexclean-task.md)
-17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x****,+**
+17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x,7.x****,+**
 18. **bboss es jdk兼容性： jdk 1.7+**
 19. **bboss es兼容spring boot各个版本,零配置集成，提供spring booter es starter**
 20. **一个快速生成bboss es pinpoint监控插件的工具,监控效果浏览**

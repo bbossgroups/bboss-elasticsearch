@@ -15,7 +15,7 @@ Spring boot整合ElasticSearch HighLevel Rest Client案例分享，本文涉及�
 本文内容适合于:
 
 - spring boot 1.x,2.x
-- elasticsearch 1.x,2.x,5.x,6.x,+
+- elasticsearch 1.x,2.x,5.x,6.x,7.x,+
 
 # 从源码构建Elasticsearch BBoss
 
@@ -39,14 +39,14 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.6</version>
+            <version>5.6.7</version>
         </dependency>
 ```
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.6.6"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.6.7"
 ```
 
 

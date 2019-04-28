@@ -18,7 +18,7 @@
 
 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive等
 
-支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,+
+支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
 
 支持海量PB级数据同步导入功能
 
@@ -50,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.6</version>
+<version>5.6.7</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：

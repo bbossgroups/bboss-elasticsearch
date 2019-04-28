@@ -6,7 +6,7 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](README.md)*
 
-快速集成Elasticsearch Restful API案例分享,*本案例代码可用于非spring项目和spring项目，兼容spring boot 1.x,2.x,兼容Elasticserch 1.x,2.x,5.x,6.x,以及后续版本。*
+快速集成Elasticsearch Restful API案例分享,*本案例代码可用于非spring项目和spring项目，兼容spring boot 1.x,2.x,兼容Elasticserch 1.x,2.x,5.x,6.x,7.x,以及后续版本。*
 
 本文中讲述的方法同样适用于其他xxx boot类型项目集成bboss es。
 
@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.6</version>
+            <version>5.6.7</version>
         </dependency>
 ```
 
@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.6.6"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.6.7"
 ```
 
 
