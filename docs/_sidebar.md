@@ -7,6 +7,8 @@
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
   - [Elasticsearch bboss Performance](performance.md) 
   - [从源码构建Elasticsearch bboss](bboss-build.md)
+  - [Changelog](changelog.md)
+  - [支持我们](supportus.md)
 
 - Guide
 
@@ -40,7 +42,7 @@
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
 
-- [Changelog](changelog.md)
+- 
 
   
 
