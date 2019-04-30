@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch.client.schedule.xxjob;
 
 import com.xxl.job.core.executor.XxlJobExecutor;
+import com.xxl.job.core.handler.IJobHandler;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class SyndataXXJobConfig {
                         value = value.trim();
                         if(!value.equals("")) {
                             try {
-                                AbstractDB2ESXXJobHandler abstractDB2ESXXJobHandler = (AbstractDB2ESXXJobHandler)Class.forName(value).newInstance();
+                                IJobHandler abstractDB2ESXXJobHandler = (IJobHandler)Class.forName(value).newInstance();
                                 XxlJobExecutor.registJobHandler(name, abstractDB2ESXXJobHandler);
                             }
                             catch (Exception e){
