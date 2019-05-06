@@ -290,16 +290,7 @@ public abstract class BuildTool {
 		Object parentId = getParentId(params,beanInfo);
 		Object routing = getRouting(params,beanInfo);
 		Object esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
-		ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
-		if(indexName == null ){
-			if (esIndexWrapper == null ) {
-				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
-			}
-			indexName = esIndexWrapper.buildIndexName(beanInfo,params);
-		}
-		if(indexType  == null && esIndexWrapper != null){
-			indexType = esIndexWrapper.buildIndexType(beanInfo,params);
-		}
+
 		buildMeta( beanInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
 
@@ -365,8 +356,9 @@ public abstract class BuildTool {
 		Object esRetryOnConflict = null;
 		Object version = null;
 		Object versionType = null;
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
 		if(clientOption != null) {
-			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+
 			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOption.getIdField()) : null;
 			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOption.getParentIdField()) : null;
 			routing = clientOption.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRountField()) : null;
@@ -375,7 +367,7 @@ public abstract class BuildTool {
 			version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionField()) : null;
 			versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionTypeField()) : null;
 		}
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
+		buildMeta( beanClassInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
 	}
 	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
 		buildMeta(  classInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
@@ -409,20 +401,42 @@ public abstract class BuildTool {
 
 		Object versionType = getVersionType(  classInfo,   params);
 
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,
+		buildMeta(  classInfo,writer ,  indexType,  indexName,   params,  action,
 				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType,  upper7);
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-							 Object id,Object parentId,Object routing,Object esRetryOnConflict,Object version,Object versionType,boolean upper7) throws IOException {
+	public static void buildMeta(ClassUtil.ClassInfo beanInfo, Writer writer , String indexType, String indexName, Object params, String action,
+								 Object id, Object parentId, Object routing, Object esRetryOnConflict, Object version, Object versionType, boolean upper7) throws IOException {
 
+		ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
+		RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,params);
+
+		if(indexType  == null && esIndexWrapper != null){
+			indexType = esIndexWrapper.buildIndexType(restGetVariableValue);
+		}
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
+			if(indexName != null) {
+				writer.write(indexName);
+			}
+			else{
+				if (esIndexWrapper == null ) {
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+				}
+				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
+			}
 			if(!upper7) {
 				writer.write("\", \"_type\" : \"");
-				writer.write(indexType);
+				if(indexType != null) {
+					writer.write(indexType);
+				}
+				else{
+					if (esIndexWrapper == null ) {
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+					}
+					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
+				}
 			}
 			writer.write("\", \"_id\" : ");
 			buildId(id,writer,true);
@@ -466,10 +480,26 @@ public abstract class BuildTool {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
+			if(indexName != null) {
+				writer.write(indexName);
+			}
+			else{
+				if (esIndexWrapper == null ) {
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+				}
+				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
+			}
 			if(!upper7) {
 				writer.write("\", \"_type\" : \"");
-				writer.write(indexType);
+				if(indexType != null) {
+					writer.write(indexType);
+				}
+				else{
+					if (esIndexWrapper == null ) {
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+					}
+					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
+				}
 
 			}
 			writer.write("\"");

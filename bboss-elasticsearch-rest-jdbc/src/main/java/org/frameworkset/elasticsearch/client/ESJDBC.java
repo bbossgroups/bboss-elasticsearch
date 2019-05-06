@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -51,7 +52,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 
 
-	private String indexType;
+//	private String indexType;
 	private ErrorWrapper errorWrapper;
 	private volatile boolean forceStop = false;
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
@@ -175,8 +176,17 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private String refreshOption;
 	private int batchSize = 1000;
 	private Integer scheduleBatchSize ;
-	private String index;
-	private IndexPattern indexPattern;
+//	private String index;
+
+	public ESIndexWrapper getEsIndexWrapper() {
+		return esIndexWrapper;
+	}
+
+	public void setEsIndexWrapper(ESIndexWrapper esIndexWrapper) {
+		this.esIndexWrapper = esIndexWrapper;
+	}
+
+	private ESIndexWrapper esIndexWrapper;
 
 
 	private AtomicInteger rejectCounts = new AtomicInteger();
@@ -238,21 +248,21 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.batchSize = batchSize;
 	}
 
-	public String getIndex() {
-		return index;
-	}
-
-	public void setIndex(String index) {
-		this.index = index;
-	}
-
-	public String getIndexType() {
-		return indexType;
-	}
-
-	public void setIndexType(String indexType) {
-		this.indexType = indexType;
-	}
+//	public String getIndex() {
+//		return index;
+//	}
+//
+//	public void setIndex(String index) {
+//		this.index = index;
+//	}
+//
+//	public String getIndexType() {
+//		return indexType;
+//	}
+//
+//	public void setIndexType(String indexType) {
+//		this.indexType = indexType;
+//	}
 
 
 
@@ -775,27 +785,27 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 			this.esIdGenerator = esIdGenerator;
 	}
 
-	public IndexPattern getIndexPattern() {
-		return indexPattern;
-	}
+//	public IndexPattern getIndexPattern() {
+//		return indexPattern;
+//	}
+//
+//	public void setIndexPattern(IndexPattern indexPattern) {
+//		this.indexPattern = indexPattern;
+//	}
 
-	public void setIndexPattern(IndexPattern indexPattern) {
-		this.indexPattern = indexPattern;
-	}
-
-	public String buildIndexName(){
-		if(this.indexPattern == null){
-			return this.index;
-		}
-		SimpleDateFormat dateFormat = new SimpleDateFormat(this.indexPattern.getDateFormat());
-		String date = dateFormat.format(new Date());
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexPattern.getIndexPrefix()).append(date);
-		if(indexPattern.getIndexEnd() != null){
-			builder.append(indexPattern.getIndexEnd());
-		}
-		return builder.toString();
-	}
+//	public String buildIndexName(){
+//		if(this.indexPattern == null){
+//			return this.index;
+//		}
+//		SimpleDateFormat dateFormat = new SimpleDateFormat(this.indexPattern.getDateFormat());
+//		String date = dateFormat.format(new Date());
+//		StringBuilder builder = new StringBuilder();
+//		builder.append(indexPattern.getIndexPrefix()).append(date);
+//		if(indexPattern.getIndexEnd() != null){
+//			builder.append(indexPattern.getIndexEnd());
+//		}
+//		return builder.toString();
+//	}
 
 	public DBConfig getDbConfig() {
 		return dbConfig;

@@ -462,20 +462,11 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		if(indexName == null){
-			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
-			if(esIndexWrapper == null){
-				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
-			}
-			indexName = esIndexWrapper.buildIndexName(beanInfo,bean);
-			if(indexType == null){
-				indexType = esIndexWrapper.buildIndexType(beanInfo,bean);
-			}
-		}
+
 		Object id = BuildTool.getId(bean,beanInfo);
 		Object parentId = BuildTool.getParentId(bean,beanInfo);
 		Object routing = BuildTool.getRouting(bean,beanInfo);
-		return addDocument(indexName, indexType, bean,id,parentId,routing,refreshOption);
+		return _addDocument(beanInfo,indexName, indexType, bean,id,parentId,routing,refreshOption);
 
 	}
 
@@ -566,17 +557,8 @@ public class RestClientUtil extends ClientUtil{
 			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : null;
 			routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
 		}
-		if(indexName == null){
-			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
-			if(esIndexWrapper == null){
-				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
-			}
-			indexName = esIndexWrapper.buildIndexName(beanClassInfo,params);
-			if(indexType == null){
-				indexType = esIndexWrapper.buildIndexType(beanClassInfo,params);
-			}
-		}
-		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
+
+		return _addDocument( beanClassInfo, indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
 	}
 	/**
 	 * 创建或者更新索引文档
@@ -665,10 +647,57 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,Object routing,String refreshOption) throws ElasticSearchException{
+		return _addDocument((ClassUtil.ClassInfo) null,  indexName,   indexType,   bean,   docId,   parentId,   routing,   refreshOption);
+	}
+
+	/**
+	 *
+	 * @param indexName
+	 * @param indexType
+	 * @param bean
+	 * @param refreshOption
+	 *    refresh=wait_for
+	 *    refresh=false
+	 *    refresh=true
+	 *    refresh
+	 *    Empty string or true
+	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
+	wait_for
+	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
+	false (the default)
+	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	private String _addDocument(ClassUtil.ClassInfo beanInfo,String indexName, String indexType, Object bean, Object docId, Object parentId, Object routing, String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
+		if(indexName == null){
+			if(beanInfo == null){
+				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
+			}
+			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+			}
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,bean);
+			esIndexWrapper.buildIndexName(builder,restGetVariableValue);
+			builder.append("/");
+			if(indexType == null){
+				esIndexWrapper.buildIndexType(builder,restGetVariableValue);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
 
-		builder.append(indexName).append("/").append(indexType);
+		}
+		else {
+			builder.append(indexName);
+			builder.append("/").append(indexType);
+
+		}
+
+
 		if(id != null){
 			builder.append("/").append(id);
 		}

@@ -40,6 +40,6 @@ public class DefaultResultSetHandler extends ResultSetHandler {
 		esjdbc.setResultSet(resultSet);
 		esjdbc.setMetaData(statementInfo.getMeta());
 		JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-		jdbcRestClientUtil.addDocuments(esjdbc.buildIndexName(), esjdbc.getIndexType(), esjdbc, esjdbc.getRefreshOption(), batchSize);
+		jdbcRestClientUtil.addDocuments(  esjdbc, esjdbc.getRefreshOption(), batchSize);
 	}
 }

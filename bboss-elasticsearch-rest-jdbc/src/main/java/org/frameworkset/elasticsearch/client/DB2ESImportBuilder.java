@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;/*
  */
 
 import com.frameworkset.common.poolman.StatementInfo;
+import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
@@ -389,10 +390,11 @@ public class DB2ESImportBuilder extends BaseBuilder{
 
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
 		esjdbcResultSet.setBatchSize(this.batchSize);
-
-		esjdbcResultSet.setIndex(index);
-		esjdbcResultSet.setIndexPattern(this.splitIndexName(index));
-		esjdbcResultSet.setIndexType(indexType);
+		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(index,indexType);
+		esjdbcResultSet.setEsIndexWrapper(esIndexWrapper);
+//		esjdbcResultSet.setIndex(index);
+//		esjdbcResultSet.setIndexPattern(this.splitIndexName(index));
+//		esjdbcResultSet.setIndexType(indexType);
 
 		esjdbcResultSet.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		esjdbcResultSet.setParallel(this.parallel);
@@ -835,23 +837,23 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		return this;
 	}
 
-	private IndexPattern splitIndexName(String indexPattern){
-		int idx = indexPattern.indexOf("{");
-		int end = -1;
-		if(idx > 0){
-			end = indexPattern.indexOf("}");
-			IndexPattern _indexPattern = new IndexPattern();
-			_indexPattern.setIndexPrefix(indexPattern.substring(0,idx));
-			_indexPattern.setDateFormat(indexPattern.substring(idx + 1,end));
-			if(end < indexPattern.length()){
-				_indexPattern.setIndexEnd(indexPattern.substring(end+1));
-			}
-			return _indexPattern;
-		}
-		return null;
-
-
-	}
+//	private IndexPattern splitIndexName(String indexPattern){
+//		int idx = indexPattern.indexOf("{");
+//		int end = -1;
+//		if(idx > 0){
+//			end = indexPattern.indexOf("}");
+//			IndexPattern _indexPattern = new IndexPattern();
+//			_indexPattern.setIndexPrefix(indexPattern.substring(0,idx));
+//			_indexPattern.setDateFormat(indexPattern.substring(idx + 1,end));
+//			if(end < indexPattern.length()){
+//				_indexPattern.setIndexEnd(indexPattern.substring(end+1));
+//			}
+//			return _indexPattern;
+//		}
+//		return null;
+//
+//
+//	}
 
 	public ExportResultHandler getExportResultHandler() {
 		return exportResultHandler;

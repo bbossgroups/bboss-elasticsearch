@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.db2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,17 +16,31 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.client.Context;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/1/5 0:08
+ * @Date 2019/5/6 21:36
  * @author biaoping.yin
  * @version 1.0
  */
-public class IndexPattern extends ESIndexWrapper.NameInfo {
+public class JDBCGetVariableValue implements ESIndexWrapper.GetVariableValue {
+	private Context context;
+	public JDBCGetVariableValue(Context context){
+		this.context = context;
+	}
+	@Override
+	public Object getValue(String field) {
 
-
-
+		try {
+			return context.getValue(field);
+		} catch (Exception e) {
+			throw new ESDataImportException(new StringBuilder()
+											.append("JDBCGetVariableValue getValue failed:")
+											.append(field).toString(),e);
+		}
+	}
 }

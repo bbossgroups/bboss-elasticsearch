@@ -16,17 +16,25 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.util.ClassUtil;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/1/5 0:08
+ * @Date 2019/5/6 21:36
  * @author biaoping.yin
  * @version 1.0
  */
-public class IndexPattern extends ESIndexWrapper.NameInfo {
-
-
-
+public class RestGetVariableValue implements ESIndexWrapper.GetVariableValue {
+	private ClassUtil.ClassInfo beanInfo;
+	private Object params;
+	public RestGetVariableValue(ClassUtil.ClassInfo beanInfo,Object params){
+		this.beanInfo = beanInfo;
+		this.params = params;
+	}
+	@Override
+	public Object getValue(String property) {
+		return beanInfo.getPropertyValue(params,property);
+	}
 }
