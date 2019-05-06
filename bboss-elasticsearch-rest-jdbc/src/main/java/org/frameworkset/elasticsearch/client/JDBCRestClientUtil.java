@@ -2,9 +2,11 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.common.poolman.handle.ValueExchange;
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
+import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.db2es.JDBCGetVariableValue;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.soa.BBossStringWriter;
@@ -43,13 +45,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	/**
 	 * 并行批处理导入
-	 * @param indexName
-	 * @param indexType
+
 	 * @param batchsize
 	 * @param refreshOption
 	 * @return
 	 */
-	private String parallelBatchExecute(String indexName,String indexType,int batchsize,String refreshOption){
+	private String parallelBatchExecute( int batchsize,String refreshOption){
 		int count = 0;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
@@ -67,7 +68,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					throw error;
 				}
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				Context context = evalBuilk(writer, jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -125,13 +126,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 	}
 	/**
 	 * 串行批处理导入
-	 * @param indexName
-	 * @param indexType
+
 	 * @param batchsize
 	 * @param refreshOption
 	 * @return
 	 */
-	private String batchExecute(String indexName,String indexType,int batchsize,String refreshOption){
+	private String batchExecute( int batchsize,String refreshOption){
 		int count = 0;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
@@ -147,7 +147,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			istart = start;
 			while (jdbcResultSet.next()) {
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				Context context = evalBuilk(writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -220,7 +220,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		return ret;
 	}
-	private String serialExecute(String indexName, String indexType, ESJDBC jdbcResultSet, String refreshOption, int batchsize){
+	private String serialExecute(ESJDBC jdbcResultSet, String refreshOption, int batchsize){
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		Object lastValue = null;
@@ -233,7 +233,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			while (jdbcResultSet.next()) {
 				try {
 					lastValue = jdbcResultSet.getLastValue();
-					Context context = evalBuilk(writer, indexName, indexType, jdbcResultSet, "index",clientInterface.isVersionUpper7());
+					Context context = evalBuilk(writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
 					if(context.isDrop())
 						continue;
 					totalCount ++;
@@ -269,23 +269,29 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			}
 		}
 	}
-	public String addDocuments(String indexName, String indexType, ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException {
+	public String addDocuments(String indexName,String indexType,ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException{
+		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(indexName,indexType);
+		jdbcResultSet.setEsIndexWrapper(esIndexWrapper);
+		return addDocuments( jdbcResultSet,  refreshOption, batchsize);
+
+	}
+	public String addDocuments(ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException {
 		if(jdbcResultSet == null || jdbcResultSet.getResultSet() == null)
 			return null;
 		this.jdbcResultSet = jdbcResultSet;
 		if(isPrintTaskLog()) {
-			logger.info(new StringBuilder().append("import data to IndexName[").append(indexName)
-							.append("] IndexType[").append(indexType)
+			logger.info(new StringBuilder().append("import data to IndexName[").append(jdbcResultSet.getEsIndexWrapper().getIndex())
+							.append("] IndexType[").append(jdbcResultSet.getEsIndexWrapper().getType())
 							.append("] start.").toString());
 		}
 		if (batchsize <= 0) {
-			return serialExecute(  indexName,   indexType,   jdbcResultSet,   refreshOption,   batchsize);
+			return serialExecute(      jdbcResultSet,   refreshOption,   batchsize);
 		} else {
 			if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
-				return this.parallelBatchExecute(indexName,indexType,batchsize,refreshOption);
+				return this.parallelBatchExecute( batchsize,refreshOption);
 			}
 			else{
-				return this.batchExecute(indexName,indexType,batchsize,refreshOption);
+				return this.batchExecute( batchsize,refreshOption);
 			}
 
 		}
@@ -396,8 +402,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			return jdbcResultSet.getEsParentIdValue();
 	}
 
-	public static void buildMeta(Context context,Writer writer ,String indexType,String indexName, ESJDBC jdbcResultSet,String action,boolean upper7) throws Exception {
-
+	public static void buildMeta(Context context,Writer writer ,ESJDBC jdbcResultSet,String action,boolean upper7) throws Exception {
+		String indexType;
+		String indexName;
 		Object id = context.getEsId();
 		Object parentId = getEsParentId(  jdbcResultSet);
 		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
@@ -406,24 +413,35 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Object esRetryOnConflict = jdbcResultSet.getEsRetryOnConflict();
 
 
-		buildMeta(  writer ,  indexType,  indexName,   jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict,upper7);
+		buildMeta( context, writer ,    jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict,upper7);
 	}
 	private static Object getVersion(ESJDBC esjdbc) throws Exception {
 		Object version = esjdbc.getEsVersionField() !=null? esjdbc.getValue(esjdbc.getEsVersionField()):esjdbc.getEsVersionValue();
 		return version;
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, ESJDBC esjdbc,String action,
+	public static void buildMeta(Context context,Writer writer , ESJDBC esjdbc,String action,
 								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws Exception {
+		ESIndexWrapper esIndexWrapper = esjdbc.getEsIndexWrapper();
+
+		JDBCGetVariableValue jdbcGetVariableValue = new JDBCGetVariableValue(context);
 
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
+
+			if (esIndexWrapper == null ) {
+				throw new ESDataImportException(" ESIndex not seted." );
+			}
+			esIndexWrapper.buildIndexName(writer,jdbcGetVariableValue);
+
 			writer.write("\"");
 			if(!upper7) {
 				writer.write(", \"_type\" : \"");
-				writer.write(indexType);
+				if (esIndexWrapper == null ) {
+					throw new ESDataImportException(" ESIndex type not seted." );
+				}
+				esIndexWrapper.buildIndexType(writer,jdbcGetVariableValue);
 				writer.write("\"");
 			}
 			writer.write(", \"_id\" : ");
@@ -474,11 +492,18 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.write("{ \"");
 			writer.write(action);
 			writer.write("\" : { \"_index\" : \"");
-			writer.write(indexName);
+			if (esIndexWrapper == null ) {
+				throw new ESDataImportException(" ESIndex not seted." );
+			}
+			esIndexWrapper.buildIndexName(writer,jdbcGetVariableValue);
 			writer.write("\"");
 			if(!upper7) {
 				writer.write(", \"_type\" : \"");
-				writer.write(indexType);
+				if (esIndexWrapper == null ) {
+					throw new ESDataImportException(" ESIndex type not seted." );
+				}
+				esIndexWrapper.buildIndexType(writer,jdbcGetVariableValue);
+				writer.write("\"");
 				writer.write("\"");
 			}
 
@@ -522,7 +547,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 	}
 
-	public static Context evalBuilk(Writer writer, String indexName, String indexType, ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
+	public static Context evalBuilk(Writer writer,  ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
 		Context context = null;
 		if (jdbcResultSet != null) {
 			context = new ContextImpl(jdbcResultSet);
@@ -530,7 +555,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if(context.isDrop()){
 				return context;
 			}
-			buildMeta( context, writer ,  indexType,  indexName,   jdbcResultSet,action,  upper7);
+			buildMeta( context, writer ,     jdbcResultSet,action,  upper7);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
