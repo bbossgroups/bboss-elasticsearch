@@ -1266,6 +1266,46 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String addDocument(Object bean) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocument(Object bean, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(Object params, UpdateOptions updateOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocument(Object documentId, Object params) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String addDocuments(List<?> beans, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(List<?> beans, ClientOptions clientOptions) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String updateDocuments(List<?> beans) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public String addDocument(String indexName, String indexType, Object bean, ClientOptions clientOptions) throws ElasticSearchException {
 		return null;
 	}

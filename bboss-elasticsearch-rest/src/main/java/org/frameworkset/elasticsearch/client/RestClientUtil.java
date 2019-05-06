@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
+import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -299,9 +300,14 @@ public class RestClientUtil extends ClientUtil{
 			return null;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
+		ClassUtil.ClassInfo beanInfo = null;
+
 		for(Object bean:beans) {
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",this.client.isUpper7());
+				if(beanInfo == null) {
+					beanInfo = ClassUtil.getClassInfo(bean.getClass());
+				}
+				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"index",this.client.isUpper7());
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -456,6 +462,16 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+		if(indexName == null){
+			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+			}
+			indexName = esIndexWrapper.buildIndexName(beanInfo,bean);
+			if(indexType == null){
+				indexType = esIndexWrapper.buildIndexType(beanInfo,bean);
+			}
+		}
 		Object id = BuildTool.getId(bean,beanInfo);
 		Object parentId = BuildTool.getParentId(bean,beanInfo);
 		Object routing = BuildTool.getRouting(bean,beanInfo);
@@ -542,12 +558,23 @@ public class RestClientUtil extends ClientUtil{
 		Object parentId = null;
 		Object routing = null;
 		String refreshOption = null;
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
 		if(clientOptions != null) {
 			refreshOption = clientOptions.getRefreshOption();
-			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+
 			docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : null;
 			routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
+		}
+		if(indexName == null){
+			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+			}
+			indexName = esIndexWrapper.buildIndexName(beanClassInfo,params);
+			if(indexType == null){
+				indexType = esIndexWrapper.buildIndexType(beanClassInfo,params);
+			}
 		}
 		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
 	}
@@ -707,9 +734,13 @@ public class RestClientUtil extends ClientUtil{
 
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
+		ClassUtil.ClassInfo beanInfo = null;
 		for(Object bean:beans) {
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",this.client.isUpper7());
+				if(beanInfo == null){
+					beanInfo = ClassUtil.getClassInfo(bean.getClass());
+				}
+				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"update",this.client.isUpper7());
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
@@ -5222,6 +5253,91 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.isUpper7();
 	}
 
+	/**
+	 * 创建或者更新索引文档
+	 *  indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String addDocument(Object bean) throws ElasticSearchException{
+		return this.addDocument((String)null,(String)null,bean);
+	}
+	/**
+	 * 创建或者更新索引文档
+	 *  indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param bean
+	 * @param clientOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocument(Object bean,ClientOptions clientOptions) throws ElasticSearchException{
+		return this.addDocument((String)null,(String)null,bean,clientOptions);
+	}
 
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param params
+	 * @param updateOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException{
+		return updateDocument((String)null,(String)null,params,  updateOptions);
+	}
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param documentId
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(Object documentId,Object params) throws ElasticSearchException{
+		return updateDocument((String)null,(String)null,params);
+
+	}
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocuments(List<?> beans) throws ElasticSearchException{
+		return this.addDocuments((String)null,(String)null,beans);
+	}
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @param clientOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String addDocuments(List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
+		return this.addDocuments((String)null,(String)null,beans,clientOptions);
+	}
+	/**
+	 *
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @param clientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocuments( List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
+		return this.updateDocuments((String)null,(String)null,beans,clientOptions);
+	}
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public   String updateDocuments( List<?> beans) throws ElasticSearchException{
+		return this.updateDocuments((String)null,(String)null,beans);
+	}
 
 }

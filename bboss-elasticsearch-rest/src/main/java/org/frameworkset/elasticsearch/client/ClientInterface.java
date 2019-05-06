@@ -553,6 +553,75 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String addDocument(String indexName, String indexType, Object bean) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 *  indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param bean
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocument(Object bean) throws ElasticSearchException;
+	/**
+	 * 创建或者更新索引文档
+	 *  indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param bean
+	 * @param clientOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocument(Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param params
+	 * @param updateOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param documentId
+	 * @param params
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public String updateDocument(Object documentId,Object params) throws ElasticSearchException;
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocuments(List<?> beans) throws ElasticSearchException;
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @param clientOptions
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String addDocuments(List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+	/**
+	 *
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @param clientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String updateDocuments( List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+
+	/**
+	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+	 * @param beans
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String updateDocuments( List<?> beans) throws ElasticSearchException;
 
 	/**
 	 * 创建或者更新索引文档

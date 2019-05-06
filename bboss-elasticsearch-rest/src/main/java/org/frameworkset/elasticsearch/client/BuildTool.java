@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.entity.IndiceHeader;
@@ -282,15 +284,23 @@ public abstract class BuildTool {
 		}
 	}
 
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,boolean upper7) throws IOException {
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
+	public static void buildMeta(ClassUtil.ClassInfo beanInfo,Writer writer ,String indexType,String indexName, Object params,String action,boolean upper7) throws IOException {
+//		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
 		Object id = getId(params,beanInfo);
 		Object parentId = getParentId(params,beanInfo);
 		Object routing = getRouting(params,beanInfo);
 		Object esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
-
-
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
+		ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
+		if(indexName == null ){
+			if (esIndexWrapper == null ) {
+				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+			}
+			indexName = esIndexWrapper.buildIndexName(beanInfo,params);
+		}
+		if(indexType  == null && esIndexWrapper != null){
+			indexType = esIndexWrapper.buildIndexType(beanInfo,params);
+		}
+		buildMeta( beanInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
 
 
@@ -316,7 +326,7 @@ public abstract class BuildTool {
 		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 		Object routing = routingKey != null ?params.get(routingKey):null;
 
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,  upper7);
+		buildMeta( null, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,  upper7);
 	}
 
 	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions,boolean upper7) throws IOException {
@@ -330,7 +340,7 @@ public abstract class BuildTool {
 			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
 			esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
 		}
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
+		buildMeta(null,  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
 
 
@@ -367,21 +377,38 @@ public abstract class BuildTool {
 		}
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
+	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
+		buildMeta(  classInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
 	}
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,
-								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws IOException{
-		ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(params.getClass());
+	public static Object getVersion(ClassUtil.ClassInfo classInfo, Object params){
+		if(classInfo == null){
+			return null;
+		}
 		ClassUtil.PropertieDescription esVersionProperty = classInfo.getEsVersionProperty();
 		Object version = null;
 		if (esVersionProperty != null) {
 			version = classInfo.getPropertyValue(params, esVersionProperty.getName());
 		}
+		return version;
+	}
+
+	public static Object getVersionType(ClassUtil.ClassInfo classInfo, Object params){
+		if(classInfo == null){
+			return null;
+		}
 		ClassUtil.PropertieDescription esVersionTypeProperty = classInfo.getEsVersionTypeProperty();
 		Object versionType = null;
 		if (esVersionTypeProperty != null)
 			versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
+		return versionType;
+	}
+	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,
+								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws IOException{
+
+		Object version = getVersion(  classInfo,   params);
+
+		Object versionType = getVersionType(  classInfo,   params);
+
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,
 				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType,  upper7);
 	}
@@ -480,22 +507,21 @@ public abstract class BuildTool {
 			writer.write(" } }\n");
 		}
 	}
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,boolean upper7) throws IOException {
+	public static void evalBuilk( ClassUtil.ClassInfo classInfo,Writer writer,String indexName, String indexType, Object param, String action,boolean upper7) throws IOException {
 
 
 		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action,  upper7);
+			buildMeta( classInfo, writer ,  indexType,  indexName,   param,action,  upper7);
 			if(!action.equals("update")) {
 				SerialUtil.object2json(param,writer);
 				writer.write("\n");
 			}
 			else
 			{
-				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(param.getClass());
-				ClassUtil.PropertieDescription esDocAsUpsertProperty = classInfo.getEsDocAsUpsertProperty();
+				ClassUtil.PropertieDescription esDocAsUpsertProperty = classInfo != null ?classInfo.getEsDocAsUpsertProperty():null;
 
 
-				ClassUtil.PropertieDescription esReturnSourceProperty = classInfo.getEsReturnSourceProperty();
+				ClassUtil.PropertieDescription esReturnSourceProperty = classInfo != null ?classInfo.getEsReturnSourceProperty():null;
 
 				writer.write("{\"doc\":");
 				SerialUtil.object2json(param,writer);
@@ -687,7 +713,8 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getId(Object bean,ClassUtil.ClassInfo beanInfo ){
-
+		if(beanInfo == null)
+			return null;
 		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -701,12 +728,14 @@ public abstract class BuildTool {
 //		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
-		if(docIdField == null)
+		if(beanInfo == null || docIdField == null)
 			return null;
 		return beanInfo.getPropertyValue(bean,docIdField);
 	}
 
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ){
+		if(beanInfo == null)
+			return null;
 		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -716,6 +745,9 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ,String esRetryOnConflictField){
+		if( beanInfo == null){
+			return null;
+		}
 //		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -724,6 +756,9 @@ public abstract class BuildTool {
 		return beanInfo.getPropertyValue(bean,esRetryOnConflictField);
 	}
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo ){
+		if(beanInfo == null){
+			return null;
+		}
 		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -733,6 +768,9 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo,String routingField ){
+		if(beanInfo == null){
+			return null;
+		}
 //		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -742,6 +780,9 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
+		if(beanInfo == null){
+			return null;
+		}
 		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
@@ -751,6 +792,9 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ,String parentIdField){
+		if(beanInfo == null){
+			return null;
+		}
 //		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
