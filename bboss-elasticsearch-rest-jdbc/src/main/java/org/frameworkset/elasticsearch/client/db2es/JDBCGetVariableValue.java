@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
-import com.frameworkset.orm.annotation.ESIndexWrapper;
+import com.frameworkset.orm.annotation.BaseESGetVariableValue;
 import org.frameworkset.elasticsearch.client.Context;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 
@@ -27,10 +27,11 @@ import org.frameworkset.elasticsearch.client.ESDataImportException;
  * @author biaoping.yin
  * @version 1.0
  */
-public class JDBCGetVariableValue implements ESIndexWrapper.GetVariableValue {
+public class JDBCGetVariableValue extends BaseESGetVariableValue {
 	private Context context;
 	public JDBCGetVariableValue(Context context){
 		this.context = context;
+		this.batchContext = context.getBatchContext();
 	}
 	@Override
 	public Object getValue(String field) {

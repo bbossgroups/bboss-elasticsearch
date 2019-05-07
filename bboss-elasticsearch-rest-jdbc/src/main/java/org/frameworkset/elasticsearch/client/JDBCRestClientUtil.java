@@ -2,6 +2,7 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.common.poolman.handle.ValueExchange;
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
+import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -62,13 +63,13 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Exception exception = null;
 		Object lastValue = null;
 		try {
-
+			BatchContext batchContext = new BatchContext();
 			while (jdbcResultSet.next()) {
 				if(!assertCondition()) {
 					throw error;
 				}
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer, jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				Context context = evalBuilk(  batchContext,writer, jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -145,9 +146,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		long totalCount = 0;
 		try {
 			istart = start;
+			BatchContext batchContext = new BatchContext();
 			while (jdbcResultSet.next()) {
 				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				Context context = evalBuilk(  batchContext,writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -229,11 +231,11 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		long totalCount = 0;
 		try {
-
+			BatchContext batchContext =  new BatchContext();
 			while (jdbcResultSet.next()) {
 				try {
 					lastValue = jdbcResultSet.getLastValue();
-					Context context = evalBuilk(writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
+					Context context = evalBuilk(  batchContext,writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
 					if(context.isDrop())
 						continue;
 					totalCount ++;
@@ -547,10 +549,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 	}
 
-	public static Context evalBuilk(Writer writer,  ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
+	public static Context evalBuilk(BatchContext batchContext,Writer writer,  ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
 		Context context = null;
 		if (jdbcResultSet != null) {
-			context = new ContextImpl(jdbcResultSet);
+			context = new ContextImpl(jdbcResultSet,batchContext);
 			jdbcResultSet.refactorData(context);
 			if(context.isDrop()){
 				return context;

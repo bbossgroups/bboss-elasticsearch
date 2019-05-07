@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.frameworkset.orm.annotation.BatchContext;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.util.Date;
@@ -62,6 +63,8 @@ public interface Context {
 	 * @throws Exception
 	 */
 	public void newName2ndData(String fieldName, String newFieldName, Object newFieldValue)throws Exception;
+
+	public BatchContext getBatchContext();
 
 
 }

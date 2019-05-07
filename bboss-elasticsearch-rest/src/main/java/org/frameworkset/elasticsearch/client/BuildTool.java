@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.ESIndice;
@@ -30,6 +31,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public abstract class BuildTool {
+	private static final ThreadLocal<BatchContext> batchContextThreadLocal = new ThreadLocal<BatchContext>();
+	public static BatchContext initBatchContextThreadLocal(){
+		BatchContext batchContext = new BatchContext();
+		batchContextThreadLocal.set(batchContext);
+		return batchContext;
+	}
+	public static void cleanBatchContextThreadLocal(){
+		batchContextThreadLocal.set(null);
+	}
+	public static BatchContext getBatchContext(){
+		return batchContextThreadLocal.get();
+	}
 	/**
 	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 	 * @param lineHeader

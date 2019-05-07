@@ -64,6 +64,10 @@ public class RestClientUtil extends ClientUtil{
 		return this.indexNameBuilder.getCurrentDateString();
 	}
 
+	public String getDateString(Date date){
+		return this.indexNameBuilder.getDateString(date);
+	}
+
 	/**
 	 * 获取索引表字段信息
 	 * @param index
@@ -5334,7 +5338,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocuments(List<?> beans) throws ElasticSearchException{
-		return this.addDocuments((String)null,(String)null,beans);
+		try {
+			BuildTool.initBatchContextThreadLocal();
+			return this.addDocuments((String)null,(String)null,beans);
+		}
+		finally {
+			BuildTool.cleanBatchContextThreadLocal();
+		}
 	}
 
 	/**
@@ -5345,7 +5355,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocuments(List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
-		return this.addDocuments((String)null,(String)null,beans,clientOptions);
+		try {
+			BuildTool.initBatchContextThreadLocal();
+			return this.addDocuments((String)null,(String)null,beans,clientOptions);
+		}
+		finally {
+			BuildTool.cleanBatchContextThreadLocal();
+		}
 	}
 	/**
 	 *
@@ -5356,7 +5372,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocuments( List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
-		return this.updateDocuments((String)null,(String)null,beans,clientOptions);
+		try {
+			BuildTool.initBatchContextThreadLocal();
+			return this.updateDocuments((String) null, (String) null, beans, clientOptions);
+		}
+		finally {
+			BuildTool.cleanBatchContextThreadLocal();
+		}
 	}
 
 	/**
@@ -5366,7 +5388,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   String updateDocuments( List<?> beans) throws ElasticSearchException{
-		return this.updateDocuments((String)null,(String)null,beans);
+		try {
+			BuildTool.initBatchContextThreadLocal();
+			return this.updateDocuments((String) null, (String) null, beans);
+		}
+		finally {
+			BuildTool.cleanBatchContextThreadLocal();
+		}
 	}
 
 }

@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.frameworkset.orm.annotation.BatchContext;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.math.BigDecimal;
@@ -35,9 +36,11 @@ public class ContextImpl implements Context {
 	private Map<String,String> newfieldNames;
 	private Map<String,ColumnData> newfieldName2ndColumnDatas;
 	private ESJDBC esjdbc;
+	private BatchContext batchContext;
 	private boolean drop;
-	public ContextImpl(ESJDBC esjdbc){
+	public ContextImpl(ESJDBC esjdbc, BatchContext batchContext){
 		this.esjdbc = esjdbc;
+		this.batchContext = batchContext;
 	}
 	public List<FieldMeta> getFieldValues(){
 		return this.fieldValues;
@@ -195,4 +198,7 @@ public class ContextImpl implements Context {
 	}
 
 
+	public BatchContext getBatchContext() {
+		return batchContext;
+	}
 }

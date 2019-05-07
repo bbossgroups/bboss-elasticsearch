@@ -23,6 +23,7 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESInfo;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1531,7 +1532,11 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
- 
+	@Override
+	public String getDateString(Date date) {
+		return null;
+	}
+
 
 	@Override
 	public <T> ESDatas<T> scrollParallel(String path, String entity, String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {

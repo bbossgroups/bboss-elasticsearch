@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import com.frameworkset.orm.annotation.ESIndexWrapper;
+import com.frameworkset.orm.annotation.BaseESGetVariableValue;
 import org.frameworkset.util.ClassUtil;
 
 /**
@@ -26,12 +26,13 @@ import org.frameworkset.util.ClassUtil;
  * @author biaoping.yin
  * @version 1.0
  */
-public class RestGetVariableValue implements ESIndexWrapper.GetVariableValue {
+public class RestGetVariableValue extends BaseESGetVariableValue {
 	private ClassUtil.ClassInfo beanInfo;
 	private Object params;
 	public RestGetVariableValue(ClassUtil.ClassInfo beanInfo,Object params){
 		this.beanInfo = beanInfo;
 		this.params = params;
+		this.batchContext = BuildTool.getBatchContext();
 	}
 	@Override
 	public Object getValue(String property) {

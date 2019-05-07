@@ -19,6 +19,7 @@ package org.frameworkset.elasticsearch;
 
 import org.frameworkset.util.FastDateFormat;
 
+import java.util.Date;
 import java.util.Properties;
 
 public class SimpleIndexNameBuilder implements IndexNameBuilder {
@@ -38,6 +39,9 @@ public class SimpleIndexNameBuilder implements IndexNameBuilder {
 
   @Override
   public String getCurrentDateString() {
+    return null;
+  }
+  public String getDateString(Date date){
     return null;
   }
 

@@ -14,6 +14,7 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.util.annotations.ThreadSafe;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2522,6 +2523,6 @@ public interface ClientInterface extends ClientInterfaceNew {
 	public String flushSynced(String indice);
 
 	public String getCurrentDateString();
-
+	public String getDateString(Date date);
 	public <T> ESDatas<T> scrollParallel(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
 }

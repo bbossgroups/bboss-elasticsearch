@@ -53,6 +53,10 @@ public class TimeBasedIndexNameBuilder implements
   public String getCurrentDateString(){
       return fastDateFormat.format(new Date());
   }
+
+  public String getDateString(Date date){
+    return fastDateFormat.format(date);
+  }
    
 
   @Override
