@@ -7,7 +7,7 @@ https://esdoc.bbossgroups.com/#/README
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
-Elasticsearch version requirements: 1.X,2.X,5.X,6.X,+
+Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,+
 # Build from source code
 First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 
@@ -27,7 +27,7 @@ First add the maven dependency of BBoss to your pom.xml:
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.3</version>
+            <version>5.6.8</version>
         </dependency>
 ```
 
@@ -37,7 +37,7 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.3</version>
+            <version>5.6.8</version>
         </dependency>
 ```
 

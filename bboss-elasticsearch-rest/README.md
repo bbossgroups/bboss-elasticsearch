@@ -4,7 +4,7 @@
 
 jdk要求： jdk 1.6+
 
-elasticsearch版本要求：2.x,5.x,6.x,+
+elasticsearch版本要求：2.x,5.x,6.x,7.x,+
 
 ## 快速集成和应用 
 非spring boot项目：
