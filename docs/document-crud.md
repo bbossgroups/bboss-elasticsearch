@@ -100,6 +100,185 @@ Map map = clientUtil.getDocument("demo",//索引表
       Map.class);      
 ```
 
+# @ESIndex注解使用
+
+bboss 5.6.8新增了一组添加和修改文档的api，这组api没有带indexName和indextype参数，对应的索引和索引type在po对象中通过@ESIndex注解来指定。
+
+@ESIndex提供了两个属性name和type，使用方法：
+
+```java
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
+索引类型为demowithesindex
+@ESIndex(name="demowithesindex-{agentStarttime,yyyy.MM.dd}",type="demowithesindex")
+索引名称由demowithesindex和当前日期通过yyyy.MM.dd格式化后的值拼接而成
+索引类型为type字段对应的值
+@ESIndex(name="demowithesindex-{dateformat=yyyy.MM.dd}",type="{type}")
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
+索引类型为type字段对应的值
+@ESIndex(name="demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}",type="{field=type}")
+```
+
+
+
+## api清单
+
+```java
+/**
+ * 创建或者更新索引文档
+ *  indexName，  indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param bean
+ * @return
+ * @throws ElasticSearchException
+ */
+public   String addDocument(Object bean) throws ElasticSearchException;
+/**
+ * 创建或者更新索引文档
+ *  indexName，  indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param bean
+ * @param clientOptions
+ * @return
+ * @throws ElasticSearchException
+ */
+public String addDocument(Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+
+/**
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param params
+ * @param updateOptions
+ * @return
+ * @throws ElasticSearchException
+ */
+public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+
+/**
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param documentId
+ * @param params
+ * @return
+ * @throws ElasticSearchException
+ */
+public String updateDocument(Object documentId,Object params) throws ElasticSearchException;
+
+/**
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param beans
+ * @return
+ * @throws ElasticSearchException
+ */
+public String addDocuments(List<?> beans) throws ElasticSearchException;
+
+/**
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param beans
+ * @param clientOptions
+ * @return
+ * @throws ElasticSearchException
+ */
+public String addDocuments(List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+/**
+ *
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param beans
+ * @param clientOptions 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
+ * @return
+ * @throws ElasticSearchException
+ */
+public String updateDocuments( List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+
+/**
+ * indexName，   indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
+ * @param beans
+ * @return
+ * @throws ElasticSearchException
+ */
+public   String updateDocuments( List<?> beans) throws ElasticSearchException;
+```
+
+## 定义带ESIndex注解的实体
+
+```java
+/**
+ * 测试实体，可以从ESBaseData对象继承meta属性，检索时会将文档的一下meta属性设置到对象实例中
+ */
+@ESIndex(name="demowithesindex-{agentStarttime,yyyy.MM.dd}",type="demowithesindex")
+public class DemoWithESIndex extends ESBaseData {
+   private Object dynamicPriceTemplate;
+   //设定文档标识字段
+   @ESId(readSet = true,persistent = false)
+   private Long demoId;
+   。。。。。。。
+} 
+```
+
+## api使用
+
+```java
+/**
+ * 批量导入20002条数据
+ */
+public void testBulkAddDocumentsWithESIndex() {
+   //创建批量创建文档的客户端对象，单实例多线程安全
+   ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+   clientUtil.dropIndice("demowithesindex-*");
+   List<DemoWithESIndex> demos = new ArrayList<DemoWithESIndex>();
+   DemoWithESIndex demo = null;
+   long start = System.currentTimeMillis();
+   for(int i = 0 ; i < 20002; i ++) {
+      demo = new DemoWithESIndex();//定义第一个对象
+      demo.setDemoId((long)i);
+      demo.setAgentStarttime(new Date());
+      demo.setApplicationName("blackcatdemo"+i);
+      demo.setContentbody("this is content body"+i);
+      if(i % 2 == 0) {
+         demo.setName("刘德华喜欢唱歌" + i);
+      }
+      else{
+         demo.setName("张学友不喜欢唱歌" + i);
+      }
+
+      demo.setOrderId("NFZF15045871807281445364228");
+      demo.setContrastStatus(2);
+      demos.add(demo);//添加第一个对象到list中
+   }
+   //批量添加或者修改2万个文档，将两个对象添加到索引表demo中，批量添加2万条记录耗时1.8s，
+   ClientOptions clientOptions = new ClientOptions();
+   clientOptions.setRefreshOption("refresh=true");
+   clientOptions.setIdField("demoId");
+   String response = clientUtil.addDocuments(
+         demos,clientOptions);//为了测试效果,启用强制刷新机制，实际线上环境去掉最后一个参数"refresh=true"
+   long end = System.currentTimeMillis();
+   System.out.println("BulkAdd 20002 Documents elapsed:"+(end - start)+"毫秒");
+   start = System.currentTimeMillis();
+   String datasr = ElasticSearchHelper.getRestClientUtil().executeHttp("demowithesindex-*/_search","{\"size\":1000,\"query\": {\"match_all\": {}}}",ClientInterface.HTTP_POST);
+   System.out.println(datasr);
+   //scroll查询2万条记录：0.6s，参考文档：https://my.oschina.net/bboss/blog/1942562
+   ESDatas<Demo> datas = clientUtil.scroll("demowithesindex-*/_search","{\"size\":1000,\"query\": {\"match_all\": {}}}","1m",Demo.class);
+   end = System.currentTimeMillis();
+   System.out.println("scroll SearchAll 20002 Documents elapsed:"+(end - start)+"毫秒");
+   int max = 6;
+   Map params = new HashMap();
+   params.put("sliceMax", max);//最多6个slice，不能大于share数
+   params.put("size", 1000);//每页1000条记录
+
+   datas = clientUtil.scrollSlice("demowithesindex-*/_search","scrollSliceQuery", params,"1m",Demo.class);
+   //scroll上下文有效期1分钟
+   //scrollSlice 并行查询2万条记录：0.1s，参考文档：https://my.oschina.net/bboss/blog/1942562
+   start = System.currentTimeMillis();
+   datas = clientUtil.scrollSliceParallel("demowithesindex-*/_search","scrollSliceQuery", params,"1m",Demo.class);
+   end = System.currentTimeMillis();
+   System.out.println("scrollSlice SearchAll 20002 Documents elapsed:"+(end - start)+"毫秒");
+   if(datas != null){
+      System.out.println("scrollSlice SearchAll datas.getTotalSize():"+datas.getTotalSize());
+      if(datas.getDatas() != null)
+         System.out.println("scrollSlice SearchAll datas.getDatas().size():"+datas.getDatas().size());
+   }
+   long count = clientUtil.countAll("demowithesindex-*");
+
+   System.out.println("addDocuments-------------------------" +count);
+
+}
+```
+
 # 检索文档
 
 ```java

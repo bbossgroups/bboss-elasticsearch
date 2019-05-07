@@ -951,6 +951,33 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
+## 5.12 灵活指定索引名称和索引类型
+
+```java
+importBuilder
+				.setIndex("dbclobdemo") //必填项
+				.setIndexType("dbclobdemo") //必填项
+```
+
+index和type可以有以下几种动态生成方法：
+
+```java
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
+dbclobdemo-{agentStarttime,yyyy.MM.dd}
+ 
+索引名称由demowithesindex和当前日期通过yyyy.MM.dd格式化后的值拼接而成
+demowithesindex-{dateformat=yyyy.MM.dd}
+
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
+demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
+
+索引类型为typeFieldName字段对应的值:
+{field=typeFieldName}
+或者{typeFieldName}
+```
+
+
+
 # 6.数据导入工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件：
