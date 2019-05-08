@@ -15,7 +15,7 @@
 
 1. 更新jackson版本号为2.9.8 
 2. 更新bboss版本号为5.3.1
-3. 增加ESIndex注解，用于配置bean的动态索引名称和索引类型
+3. 增加[ESIndex注解](https://esdoc.bbossgroups.com/#/document-crud?id=esindex%e6%b3%a8%e8%a7%a3%e4%bd%bf%e7%94%a8)，用于配置bean的动态索引名称和索引类型
 4. 如果http端口被错误配置为transport 9300端口，给出相应的出错提示
 
 # v5.6.7 功能改进
