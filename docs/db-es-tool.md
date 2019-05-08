@@ -50,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.7</version>
+<version>5.6.8</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
