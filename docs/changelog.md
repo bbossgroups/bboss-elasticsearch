@@ -11,6 +11,13 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.8 功能改进
+
+1. 更新jackson版本号为2.9.8 
+2. 更新bboss版本号为5.3.1
+3. 增加ESIndex注解，用于配置bean的动态索引名称和索引类型
+4. 如果http端口被错误配置为transport 9300端口，给出相应的出错提示
+
 # v5.6.7 功能改进
 
 1. 改机scroll并行查询机制，支撑Elasticsearch pinpoint apm插件
