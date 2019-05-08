@@ -423,9 +423,7 @@ public abstract class BuildTool {
 		ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
 		RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,params);
 
-		if(indexType  == null && esIndexWrapper != null){
-			indexType = esIndexWrapper.buildIndexType(restGetVariableValue);
-		}
+
 		if(id != null) {
 			writer.write("{ \"");
 			writer.write(action);

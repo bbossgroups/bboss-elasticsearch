@@ -490,7 +490,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 				break;
 			}
-
+			catch (ClientProtocolException ex){
+				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+			}
 			catch (ElasticSearchException ex) {
 				e = ex;
 				break;
@@ -674,6 +676,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				e = ex;
 				break;
 			}
+			catch (ClientProtocolException ex){
+				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+			}
 			catch (ElasticSearchException ex) {
 				e = ex;
 				break;
@@ -826,6 +831,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					e = ex;
 				break;
 			}
+			catch (ClientProtocolException ex){
+				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+			}
 			catch (ElasticSearchException ex) {
 				throw ex;
 			}
@@ -971,6 +979,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //				}
 				e = ex;
 				break;
+			}
+			catch (ClientProtocolException ex){
+				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
 			}
 			catch (ElasticSearchException ex) {
 				throw ex;
