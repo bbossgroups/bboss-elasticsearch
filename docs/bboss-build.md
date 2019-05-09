@@ -2,11 +2,11 @@
 
 # Gradle安装和配置
 
-在自己的电脑上装好gradle运行环境,下载最新的gradle版本：
+在自己的电脑上装好gradle运行环境,下载**最新**的gradle版本：
 
 [下载gradle](https://gradle.org/releases) 
 
-![img](http://dl2.iteye.com/upload/attachment/0121/1499/1e28d95c-4884-3057-a6ea-8e2f178abc0f.png)
+![img](images/gradle.png)
 
 下载完毕后解压，然后配置好gradle环境变量： 
 
