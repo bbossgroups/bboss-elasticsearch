@@ -20,7 +20,7 @@
 
 # v5.6.7 功能改进
 
-1. 改机scroll并行查询机制，支撑Elasticsearch pinpoint apm插件
+1. 改进scroll并行查询机制，支撑Elasticsearch pinpoint apm插件
 
 # v5.6.6 功能改进
 

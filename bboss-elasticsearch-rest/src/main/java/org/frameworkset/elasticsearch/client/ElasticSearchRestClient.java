@@ -491,7 +491,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				e = ex;
@@ -677,7 +677,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				e = ex;
@@ -832,7 +832,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				throw ex;
@@ -981,7 +981,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException("Request handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.",ex);
+				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				throw ex;
