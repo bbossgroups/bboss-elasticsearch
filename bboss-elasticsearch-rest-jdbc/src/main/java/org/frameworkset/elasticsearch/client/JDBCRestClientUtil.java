@@ -506,7 +506,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				}
 				esIndexWrapper.buildIndexType(writer,jdbcGetVariableValue);
 				writer.write("\"");
-				writer.write("\"");
+
 			}
 
 			if(parentId != null){
