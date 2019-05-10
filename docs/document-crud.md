@@ -104,6 +104,12 @@ Map map = clientUtil.getDocument("demo",//索引表
 
 bboss 5.6.8新增了一组添加和修改文档的api，这组api没有带indexName和indextype参数，对应的索引和索引type在po对象中通过@ESIndex注解来指定。
 
+@ESIndex对应的demo地址：
+
+<https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DemoWithESIndex.java>
+
+<https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java>
+
 @ESIndex提供了两个属性name和type，使用方法：
 
 ```java

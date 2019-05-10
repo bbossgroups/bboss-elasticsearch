@@ -3277,6 +3277,11 @@ elasticsearch常用监控地址：将ip地址调整为服务器ip即可
 
 <http://192.168.137.1:9200/_cluster/stats?pretty>
 
+http://192.168.137.1:9200/_settings?pretty
+
+http://192.168.137.1:9200/_cat/indices?v
+ 
+
 ## **7.4 velocity官方文档：**
 
 <http://velocity.apache.org/engine/1.7/user-guide.html>
