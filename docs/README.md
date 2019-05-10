@@ -93,3 +93,4 @@ bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的�
 <div align="left"></div>
 
 <img src="images/alipay.png"  height="200" width="200">
+

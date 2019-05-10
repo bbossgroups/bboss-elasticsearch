@@ -50,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.6.8</version>
+<version>5.6.9</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1383,8 +1383,19 @@ github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch
 
 码云：<https://gitee.com/bboss/db2es-booter>
 
-**elasticsearch技术交流：166471282**
 
-**elasticsearch技术交流：**
 
-**![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)**
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+

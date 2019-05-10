@@ -97,3 +97,22 @@ scroll检索对应的代码和脚本文件：
 <https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/scroll.xml>
 
 <https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/java/org/frameworkset/elasticsearch/TestScrollQuery.java>
+
+# 开发交流
+
+
+
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+

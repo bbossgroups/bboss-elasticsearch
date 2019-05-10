@@ -931,14 +931,21 @@ esmapper/Client_Info.xml
 
  
 
-开发交流
+# 开发交流
 
-bboss交流群 166471282
 
-bboss公众号
 
-[![getqrcode.jpg](https://elasticsearch.cn/uploads/article/20181211/7f2bfca82caef0c3ec63b22f01a3dabb.jpg)](https://elasticsearch.cn/uploads/article/20181211/7f2bfca82caef0c3ec63b22f01a3dabb.jpg)
+bboss elasticsearch交流：166471282
 
- 
+**bboss elasticsearch微信公众号：**
 
-敬请关注：父子关系维护检索实战二 Elasticsearch 6.x 父子关系维护和检索
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+

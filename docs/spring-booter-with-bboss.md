@@ -39,14 +39,14 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.8</version>
+            <version>5.6.9</version>
         </dependency>
 ```
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.6.8"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.6.9"
 ```
 
 
@@ -720,8 +720,19 @@ MultiESDocumentCRUD:各种增删改查操作实例，在demo工程中提供
 
 # 6 开发交流
 
-**elasticsearch交流Q：166471282**
 
-**elasticsearch：**
 
-**![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)**
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+

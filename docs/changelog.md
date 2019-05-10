@@ -11,6 +11,10 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.6.9 功能改进
+
+1. 修改v5.6.8数据同步bug：索引type类型多了一个双引号 
+
 # v5.6.8 功能改进
 
 1. 更新jackson版本号为2.9.8 
@@ -179,3 +183,24 @@
 
 - bboss-elastic 的详细介绍：[点击查看](README.md)
 - bboss-elastic 的下载地址：[点击下载](https://gitee.com/bboss/bboss-elastic)
+
+# 开发交流
+
+
+
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+
+
+

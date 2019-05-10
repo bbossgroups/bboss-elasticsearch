@@ -154,7 +154,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.8</version>
+            <version>5.6.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -183,7 +183,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.8</version>
+            <version>5.6.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -3013,7 +3013,7 @@ String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 
 
 
-#### json格式
+### json格式
 
 > ```java
 > public void testGetmapping(){
@@ -3029,7 +3029,7 @@ String ret = clientUtil.createIndiceMapping("trace", "createTraceIndice") ;
 
 
 
-#### 字段列表
+### 字段列表
 
 ```java
 public void testQueryDocMapping(){
@@ -3257,7 +3257,7 @@ https://esdoc.bbossgroups.com/#/elasticsearch5-parent-child
 
 
 
-## **7.3 es query dsl语法请参考官方文档**
+## **7.3 elasticsearch dsl语法官方文档**
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
@@ -3265,16 +3265,39 @@ https://esdoc.bbossgroups.com/#/elasticsearch5-parent-child
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html>
 
-**velocity官方文档：**
+## 7.4 elasticsearch常用监控地址
+
+elasticsearch常用监控地址：将ip地址调整为服务器ip即可
+
+<http://192.168.137.1:9200/_nodes/http?pretty> 
+
+<http://192.168.137.1:9200/_nodes/stats?pretty> 
+
+<http://192.168.137.1:9200/_cluster/health?pretty> 
+
+<http://192.168.137.1:9200/_cluster/stats?pretty>
+
+## **7.4 velocity官方文档：**
 
 <http://velocity.apache.org/engine/1.7/user-guide.html>
 
 
 
-## 7.4 开发交流
+## 7.5 开发交流
 
-**elasticsearch技术交流：166471282**
 
-**elasticsearch：**
 
-**![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)**
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+

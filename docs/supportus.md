@@ -4,4 +4,5 @@
 
 <img src="images/alipay.png"  height="200" width="200">
 
-感谢您对bboss的支持，更好更棒！
+感谢您对开源工作的支持！
+
