@@ -252,7 +252,6 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if (elasticUser != null && !elasticUser.equals(""))
 			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
 		restSeachExecutor = new RestSearchExecutor(headers,this.httpPool,this);
-		initVersionInfo();
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
 			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
@@ -262,7 +261,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			logger.info("Elasticsearch healthCheck disable,you can set elasticsearch.healthCheckInterval=3000 in "+this.elasticSearch.getConfigContainerInfo()+" to enabled healthCheck thread.");
 
 		}
-
+		initVersionInfo();
 		if(discoverHost) {
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
