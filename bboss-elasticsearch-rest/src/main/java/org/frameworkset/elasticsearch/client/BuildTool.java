@@ -420,8 +420,8 @@ public abstract class BuildTool {
 	public static void buildMeta(ClassUtil.ClassInfo beanInfo, Writer writer , String indexType, String indexName, Object params, String action,
 								 Object id, Object parentId, Object routing, Object esRetryOnConflict, Object version, Object versionType, boolean upper7) throws IOException {
 
-		ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
-		RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,params);
+		ESIndexWrapper esIndexWrapper = beanInfo != null ?beanInfo.getEsIndexWrapper():null;
+		RestGetVariableValue restGetVariableValue = esIndexWrapper != null ?new RestGetVariableValue(beanInfo,params):null;
 
 
 		if(id != null) {
@@ -433,7 +433,8 @@ public abstract class BuildTool {
 			}
 			else{
 				if (esIndexWrapper == null ) {
-					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
 				}
 				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
 			}
@@ -444,7 +445,8 @@ public abstract class BuildTool {
 				}
 				else{
 					if (esIndexWrapper == null ) {
-						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+								.append(beanInfo != null ?beanInfo.toString():"").toString());
 					}
 					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
 				}
@@ -496,7 +498,8 @@ public abstract class BuildTool {
 			}
 			else{
 				if (esIndexWrapper == null ) {
-					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
 				}
 				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
 			}
@@ -507,7 +510,8 @@ public abstract class BuildTool {
 				}
 				else{
 					if (esIndexWrapper == null ) {
-						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+								.append(beanInfo != null ?beanInfo.toString():"").toString());
 					}
 					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
 				}
