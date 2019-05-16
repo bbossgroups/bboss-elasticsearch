@@ -214,6 +214,7 @@ public abstract class BaseESProperties {
 		private String timeoutSocket;
 		private String connectionRequestTimeout;
 		private String retryTime;
+		private String retryInterval;
 		private String maxLineLength;
 		private String maxHeaderCount;
 		private String maxTotal;
@@ -384,6 +385,14 @@ public abstract class BaseESProperties {
 
 		public void setStaleConnectionCheckEnabled(String staleConnectionCheckEnabled) {
 			this.staleConnectionCheckEnabled = staleConnectionCheckEnabled;
+		}
+
+		public String getRetryInterval() {
+			return retryInterval;
+		}
+
+		public void setRetryInterval(String retryInterval) {
+			this.retryInterval = retryInterval;
 		}
 	}
 
@@ -657,6 +666,8 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.connectionRequestTimeout",this.getHttp().getConnectionRequestTimeout());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryTime()))
 				properties.put(_name+"http.retryTime",this.getHttp().getRetryTime());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryInterval()))
+				properties.put(_name+"http.retryInterval",this.getHttp().getRetryInterval());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getMaxLineLength()))
 				properties.put(_name+"http.maxLineLength",this.getHttp().getMaxLineLength());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getMaxHeaderCount()))
