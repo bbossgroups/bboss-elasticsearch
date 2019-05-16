@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.6.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.7.0 发布。
 
 # **主要功能特色**
 
@@ -13,7 +13,7 @@
 
 # v5.7.0 功能改进
 
-1. 修复健康检查不起作用的bug，如果es没有启动的话，就启动应用，这个时候es不可用，但是这种情况下es起来后，客户端也提示一直不可用
+1. 修复健康检查不起作用的bug: 应用启动时es没有启动，当es起来后，客户端一直提示es不可用
 2. 同步数据工具支持达梦数据库到elasticsearch数据同步
 
 # v5.6.9 功能改进
