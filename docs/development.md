@@ -154,7 +154,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.6.9</version>
+            <version>5.7.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -183,7 +183,7 @@ log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.6.9</version>
+            <version>5.7.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -3280,7 +3280,7 @@ elasticsearch常用监控地址：将ip地址调整为服务器ip即可
 http://192.168.137.1:9200/_settings?pretty
 
 http://192.168.137.1:9200/_cat/indices?v
- 
+
 
 ## **7.4 velocity官方文档：**
 

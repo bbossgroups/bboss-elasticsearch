@@ -11,6 +11,11 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.7.0 功能改进
+
+1. 修复健康检查不起作用的bug，如果es没有启动的话，就启动应用，这个时候es不可用，但是这种情况下es起来后，客户端也提示一直不可用
+2. 同步数据工具支持达梦数据库到elasticsearch数据同步
+
 # v5.6.9 功能改进
 
 1. 修改v5.6.8数据同步bug：索引type类型多了一个双引号 
