@@ -169,7 +169,7 @@ demo = clientUtil.getDocument("demo",//索引表
             "must": [
                 {
                       "match_phrase_prefix" : {
-                            "name" : {
+                            "name.pinyin" : {
                                 "query" : #[name],
                                 "max_expansions" : 10
                             }
