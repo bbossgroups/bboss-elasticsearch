@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.7.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.7.1 发布。
 
 # **主要功能特色**
 
@@ -10,6 +10,11 @@
 4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
+
+# v5.7.1 功能改进
+
+1. Fixed addDocumentsWithIdKey null point exception since 5.6.8
+2. Spring booter start module support set retryInterval(timeunit:ms) parameter
 
 # v5.7.0 功能改进
 
