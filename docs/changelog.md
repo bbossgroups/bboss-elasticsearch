@@ -11,6 +11,10 @@
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.7.2 功能改进
+
+1. mysql数据同步到Elasticsearch，增加内置流处理机制的支持
+
 # v5.7.1 功能改进
 
 1. Fixed addDocumentsWithIdKey null point exception since 5.6.8
