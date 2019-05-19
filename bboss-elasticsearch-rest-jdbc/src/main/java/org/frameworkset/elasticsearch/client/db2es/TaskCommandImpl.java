@@ -82,10 +82,12 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 
 			if (refreshOption == null) {
 				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
-				logger.info(data);
+				if(logger.isInfoEnabled())
+					logger.info(data);
 			} else {
 				data = clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
-				logger.info(data);
+				if(logger.isInfoEnabled())
+					logger.info(data);
 			}
 		}
 		else{

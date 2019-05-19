@@ -327,14 +327,16 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				} catch (ExecutionException e) {
 					if(exception == null)
 						exception = e;
-					if(e.getCause() != null)
-						logger.error("",e.getCause());
-					else
-						logger.error("",e);
+					if( logger.isErrorEnabled()) {
+						if (e.getCause() != null)
+							logger.error("", e.getCause());
+						else
+							logger.error("", e);
+					}
 				}catch (Exception e) {
 					if(exception == null)
 						exception = e;
-					logger.error("",e);
+					if( logger.isErrorEnabled()) logger.error("",e);
 				}
 			}
 			if(isPrintTaskLog()) {
@@ -352,12 +354,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 							future.get();
 							count ++;
 						} catch (ExecutionException e) {
-							if(e.getCause() != null)
-								logger.error("",e.getCause());
-							else
-								logger.error("",e);
+							if( logger.isErrorEnabled()) {
+								if (e.getCause() != null)
+									logger.error("", e.getCause());
+								else
+									logger.error("", e);
+							}
 						}catch (Exception e) {
-							logger.error("",e);
+							if( logger.isErrorEnabled()) logger.error("",e);
 						}
 					}
 					if(isPrintTaskLog()) {
