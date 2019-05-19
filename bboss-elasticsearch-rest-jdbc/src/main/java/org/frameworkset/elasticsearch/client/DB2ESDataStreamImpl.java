@@ -85,7 +85,11 @@ public class DB2ESDataStreamImpl extends DataStream{
 		try {
 			this.init();
 			if(this.scheduleService == null) {//一次性执行数据导入操作
+				long importStartTime = System.currentTimeMillis();
 				firstImportData();
+				long importEndTime = System.currentTimeMillis();
+				if(esjdbc != null && this.esjdbc.isPrintTaskLog() && logger.isInfoEnabled())
+					logger.info(new StringBuilder().append("Execute job Take ").append((importEndTime - importStartTime)).append(" ms").toString());
 			}
 			else{//定时增量导入数据操作
 				if(!scheduleService.isExternalTimer()) {//内部定时任务引擎
@@ -135,7 +139,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 	private void firstImportData() throws Exception {
 		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,esjdbc.getBatchSize());
-		if(esjdbc.getDataRefactor() == null){
+		if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
 			if (esjdbc.getExecutor() == null) {
 				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
 			} else {
@@ -143,6 +147,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 			}
 		}
 		else {
+
 			TransactionManager transactionManager = new TransactionManager();
 			try {
 				transactionManager.begin(TransactionManager.RW_TRANSACTION);

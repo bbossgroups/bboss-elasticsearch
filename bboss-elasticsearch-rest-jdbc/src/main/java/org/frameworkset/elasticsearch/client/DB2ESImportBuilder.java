@@ -481,6 +481,11 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		_setDbDriver(  dbDriver);
 		return this;
 	}
+	public DB2ESImportBuilder setEnableDBTransaction(boolean enableDBTransaction) {
+		_setEnableDBTransaction(  enableDBTransaction);
+		return this;
+	}
+
 
 	public DB2ESImportBuilder setDbUrl(String dbUrl) {
 		_setDbUrl( dbUrl);

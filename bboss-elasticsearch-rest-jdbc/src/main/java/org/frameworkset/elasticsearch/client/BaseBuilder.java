@@ -154,6 +154,9 @@ public class BaseBuilder {
 		dbConfig.setDbPassword(dbPassword);
 		String dbDriver  = propertiesContainer.getProperty(prefix+"db.driver");
 		dbConfig.setDbDriver(dbDriver);
+
+		boolean enableDBTransaction = propertiesContainer.getBooleanProperty(prefix+"db.enableDBTransaction",false);
+		dbConfig.setEnableDBTransaction(enableDBTransaction);
 		String dbUrl  = propertiesContainer.getProperty(prefix+"db.url");
 		dbConfig.setDbUrl(dbUrl);
 		String _usePool = propertiesContainer.getProperty(prefix+"db.usePool");
@@ -268,6 +271,13 @@ public class BaseBuilder {
 			this.dbConfig = new DBConfig();
 		}
 		this.dbConfig.setDbDriver(dbDriver);
+	}
+	public void _setEnableDBTransaction(boolean enableDBTransaction) {
+		freezen = true;
+		if(this.dbConfig == null){
+			this.dbConfig = new DBConfig();
+		}
+		dbConfig.setEnableDBTransaction(enableDBTransaction);
 	}
 
 	public void _setDbAdaptor(String dbAdaptor) {

@@ -138,7 +138,7 @@ public class ScheduleService {
 
 
 		if(sqlInfo.getParamSize() == 0) {
-			if(esjdbc.getDataRefactor() == null){
+			if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
 				if (esjdbc.getExecutor() == null) {
 					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
 				} else {
@@ -166,7 +166,7 @@ public class ScheduleService {
 			 	esjdbc.setForceStop();
 			 }
 			 else {
-				 if(esjdbc.getDataRefactor() == null){
+				 if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
 					 if (esjdbc.getExecutor() == null) {
 						 SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
 					 } else {
@@ -299,7 +299,9 @@ public class ScheduleService {
 	public void externalTimeSchedule()  {
 
 		TaskContext taskContext = new TaskContext(esjdbc);
+		long importStartTime = System.currentTimeMillis();
 		try {
+
 			preCall(taskContext);
 			scheduleImportData(esjdbc.getScheduleBatchSize());
 			afterCall(taskContext);
@@ -307,6 +309,11 @@ public class ScheduleService {
 		catch (Exception e){
 			throwException(taskContext,e);
 			logger.error("scheduleImportData failed:",e);
+		}
+		finally {
+			long importEndTime = System.currentTimeMillis();
+			if(esjdbc != null && this.esjdbc.isPrintTaskLog() && logger.isInfoEnabled())
+				logger.info(new StringBuilder().append("Execute schedule job Take ").append((importEndTime - importStartTime)).append(" ms").toString());
 		}
 
 

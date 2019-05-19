@@ -52,7 +52,10 @@ public class DBConfig {
 	 * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
 	 */
 	private String dbAdaptor;
-
+	/**
+	 * 事务管理机制只有在一次性全量单线程导入的情况下才有用
+	 */
+	private boolean enableDBTransaction = false;
 	public String getDbDriver() {
 		return dbDriver;
 	}
@@ -185,5 +188,13 @@ public class DBConfig {
 
 	public void setDbAdaptor(String dbAdaptor) {
 		this.dbAdaptor = dbAdaptor;
+	}
+
+	public boolean isEnableDBTransaction() {
+		return enableDBTransaction;
+	}
+
+	public void setEnableDBTransaction(boolean enableDBTransaction) {
+		this.enableDBTransaction = enableDBTransaction;
 	}
 }
