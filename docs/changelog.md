@@ -1,6 +1,10 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----bboss**   v5.7.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.7.2 发布。
+
+https://esdoc.bbossgroups.com/#/quickstart
+
+https://esdoc.bbossgroups.com/#/development
 
 # **主要功能特色**
 
@@ -13,7 +17,7 @@
 
 # v5.7.2 功能改进
 
-1. mysql数据同步到Elasticsearch，增加内置流处理机制的支持
+1. 同步mysql大数据表到Elasticsearch，增加[mysql内置流处理机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_513-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)的支持
 
 # v5.7.1 功能改进
 

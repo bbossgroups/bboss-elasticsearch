@@ -976,7 +976,26 @@ demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 或者{typeFieldName}
 ```
 
+## 5.13 Mysql ResultSet Stream机制说明
 
+同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
+
+**机制一** mysql 5以后的版本采用jdbc url串参数useCursorFetch=true以及配置fetchsize属性来实现，bboss在application.properties中做如下配置即可：
+
+```properties
+db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+db.jdbcFetchSize = 10000
+```
+
+**机制二**  配置fetchsize为最新整数来采用mysql的默认实现机制（适用mysql各版本）
+
+```properties
+db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
+# Integer.MIN_VALUE
+db.jdbcFetchSize = -2147483648
+```
+
+机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
 
 # 6.数据导入工具使用方法
 
