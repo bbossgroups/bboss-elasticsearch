@@ -96,6 +96,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private String esVersion;
 	private boolean v1 ;
 
+	public boolean isLower5() {
+		return lower5;
+	}
+
+	public void setLower5(boolean lower5) {
+		this.lower5 = lower5;
+	}
+
+	private boolean lower5;
+
 	public boolean isUpper7() {
 		return upper7;
 	}
@@ -228,6 +238,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 									int v = Integer.parseInt(max);
 									if (v >= 7){
 										upper7 = true;
+									}
+									if(v < 5){
+										lower5 = true;
 									}
 								}
 								catch (Exception e){

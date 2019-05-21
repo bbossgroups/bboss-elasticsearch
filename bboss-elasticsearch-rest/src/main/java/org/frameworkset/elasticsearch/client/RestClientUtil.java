@@ -1794,7 +1794,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchAllParallel(String index,  final int fetchSize ,ScrollHandler<T> scrollHandler,final Class<T> type,int max) throws ElasticSearchException{
-		if(!this.client.isV1()) {
+		if(!this.client.isLower5()) {
 			SliceScroll sliceScroll = new SliceScroll() {
 				@Override
 				public String buildSliceDsl(int sliceId, int max) {
