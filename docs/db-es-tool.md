@@ -431,43 +431,6 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 	}
 ```
 
-可以为同步定时任务指定执行拦截器，示例如下：
-
-```java
-        //设置任务执行拦截器，可以添加多个
-		importBuilder.addCallInterceptor(new CallInterceptor() {
-			@Override
-			public void preCall(TaskContext taskContext) {
-				System.out.println("preCall");
-			}
-
-			@Override
-			public void afterCall(TaskContext taskContext) {
-				System.out.println("afterCall");
-			}
-
-			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
-				System.out.println("throwException");
-			}
-		}).addCallInterceptor(new CallInterceptor() {
-			@Override
-			public void preCall(TaskContext taskContext) {
-				System.out.println("preCall 1");
-			}
-
-			@Override
-			public void afterCall(TaskContext taskContext) {
-				System.out.println("afterCall 1");
-			}
-
-			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
-				System.out.println("throwException 1");
-			}
-		});
-```
-
 
 
 ## 5.6 定时全量导入
@@ -529,7 +492,49 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 	}
 ```
 
-## 5.7 定时任务调度说明
+## 5.7 定时任务指定执行拦截器使用
+
+可以为同步定时任务指定执行拦截器，示例如下：
+
+```java
+        //设置任务执行拦截器，可以添加多个
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+				System.out.println("preCall");
+                //可以在这里做一些重置初始化操作，比如删mapping之类的
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+				System.out.println("afterCall");
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Exception e) {
+				System.out.println("throwException");
+			}
+		}).addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+				System.out.println("preCall 1");
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+				System.out.println("afterCall 1");
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Exception e) {
+				System.out.println("throwException 1");
+			}
+		});
+```
+
+
+
+## 5.8 定时任务调度说明
 
 定时增量导入的关键配置：
 
@@ -569,7 +574,7 @@ importBuilder.setExternalTimer(true);
 
 采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
-## 5.8 基于xxjob 同步DB-Elasticsearch数据
+## 5.9 基于xxjob 同步DB-Elasticsearch数据
 
 bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
@@ -815,7 +820,7 @@ linux: restart.sh
 
 ![运行报表](images\jobstatic.png)
 
-## 5.9 灵活控制文档数据结构
+## 5.10 灵活控制文档数据结构
 
 bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，举例说明如下：
 
@@ -876,7 +881,7 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 
-## 5.10 IP转换为地理坐标城市运营商信息
+## 5.11 IP转换为地理坐标城市运营商信息
 
 在DataRefactor中，可以获取ip对应的运营商和区域信息，举例说明：
 
@@ -907,7 +912,7 @@ ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
 ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 ```
 
-## 5.11 设置任务执行结果回调处理函数
+## 5.12 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
@@ -951,7 +956,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
-## 5.12 灵活指定索引名称和索引类型
+## 5.13 灵活指定索引名称和索引类型
 
 ```java
 importBuilder
@@ -976,7 +981,7 @@ demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 或者{typeFieldName}
 ```
 
-## 5.13 Mysql ResultSet Stream机制说明
+## 5.14 Mysql ResultSet Stream机制说明
 
 同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 

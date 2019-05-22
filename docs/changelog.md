@@ -15,6 +15,12 @@ https://esdoc.bbossgroups.com/#/development
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.7.3 功能改进
+
+1. 改进searchAllParrel方法：增加对es 2.x的兼容性处理
+2. 改进数据库同步到es的db事务机制：增加是否启用在datarefactor中开启db事务
+
+
 # v5.7.2 功能改进
 
 1. 同步mysql大数据表到Elasticsearch，增加[mysql内置流处理机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_513-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)的支持
