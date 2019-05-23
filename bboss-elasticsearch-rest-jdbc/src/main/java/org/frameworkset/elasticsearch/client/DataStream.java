@@ -18,13 +18,21 @@ import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 
+import java.util.List;
+
 public abstract class DataStream {
 
 
 	public void setExternalTimer(boolean externalTimer) {
 
 	}
-
+	protected void initOtherDSes(List<DBConfig> dbConfigs){
+		if(dbConfigs != null && dbConfigs.size() > 0){
+			for (DBConfig dbConfig:dbConfigs){
+				initDS( dbConfig);
+			}
+		}
+	}
 	protected void initDS(DBConfig dbConfig){
 		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
 			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称

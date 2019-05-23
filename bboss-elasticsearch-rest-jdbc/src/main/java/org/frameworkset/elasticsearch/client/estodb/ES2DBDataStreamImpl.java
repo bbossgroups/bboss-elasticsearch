@@ -33,6 +33,7 @@ public class ES2DBDataStreamImpl extends DataStream{
 		try {
 			initES(es2DB.getApplicationPropertiesFile());
 			initDS(es2DB.getDbConfig());
+			initOtherDSes(es2DB.getConfigs());
 			es2DB.exportData2DB();
 		}
 		catch (Exception e) {

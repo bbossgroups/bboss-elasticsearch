@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -41,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
 	private ScheduleService scheduleService;
+	private List<DBConfig> configs;
 	public boolean isExternalTimer() {
 		if(getScheduleConfig() != null) {
 			return this.getScheduleConfig().isExternalTimer();
@@ -844,5 +843,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 			scheduleConfig = new ScheduleConfig();
 		}
 		this.scheduleConfig.setExternalTimer(externalTimer);
+	}
+
+	public List<DBConfig> getConfigs() {
+		return configs;
+	}
+
+	public void setConfigs(List<DBConfig> configs) {
+		this.configs = configs;
 	}
 }

@@ -50,6 +50,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 			lock.lock();
 			this.initES(esjdbc.getApplicationPropertiesFile());
 			this.initDS(esjdbc.getDbConfig());
+			initOtherDSes(esjdbc.getConfigs());
 			this.initSQLInfo();
 			this.initSchedule();
 			inited = true;

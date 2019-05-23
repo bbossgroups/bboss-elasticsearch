@@ -64,6 +64,7 @@ public class ES2DBExportBuilder extends BaseBuilder{
 
 		es2DB.setDbConfig(dbConfig);
 		es2DB.setStatusDbConfig(statusDbConfig);
+		es2DB.setConfigs(this.configs);
 		es2DB.setBatchSize(this.batchSize);
 		es2DB.setQueryUrl(this.queryUrl);
 		es2DB.setScrollLiveTime(this.scrollLiveTime);

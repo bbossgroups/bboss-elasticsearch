@@ -18,6 +18,7 @@ package org.frameworkset.elasticsearch.client;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,8 @@ import java.util.List;
 public class BaseBuilder {
 	protected DBConfig dbConfig ;
 	protected DBConfig statusDbConfig ;
+
+
 	/**
 	 * 采用外部定时任务引擎执行定时任务控制变量：
 	 * false 内部引擎，默认值
@@ -49,6 +52,7 @@ public class BaseBuilder {
 	protected String applicationPropertiesFile;
 	protected boolean freezen;
 	protected boolean statusFreezen;
+	protected List<DBConfig> configs;
 	/**抽取数据的sql语句*/
 	protected String sql;
 
@@ -140,6 +144,38 @@ public class BaseBuilder {
 			statusDbConfig = new DBConfig();
 			_buildDBConfig(propertiesContainer,dbName,statusDbConfig, "config.");
 		}
+	}
+
+	/**
+	 * 在数据导入过程可能需要使用的其他数据名称，需要在配置文件中定义相关名称的db配置
+	 */
+	protected void buildOtherDBConfigs(){
+
+			PropertiesContainer propertiesContainer = new PropertiesContainer();
+
+			if(this.applicationPropertiesFile == null) {
+				propertiesContainer.addConfigPropertiesFile("application.properties");
+			}
+			else{
+				propertiesContainer.addConfigPropertiesFile(applicationPropertiesFile);
+			}
+			String thirdDatasources = propertiesContainer.getProperty("thirdDatasources");
+			if(thirdDatasources == null || thirdDatasources.equals(""))
+				return;
+			String[] names = thirdDatasources.split(",");
+			List<DBConfig> configs = new ArrayList<DBConfig>();
+			for(int i = 0; i < names.length; i ++ ) {
+				String prefix = names[i].trim();
+				if(prefix.equals(""))
+					continue;
+
+
+				DBConfig statusDbConfig = new DBConfig();
+				_buildDBConfig(propertiesContainer, prefix, statusDbConfig, prefix+".");
+				configs.add(statusDbConfig);
+			}
+			this.configs = configs;
+
 	}
 
 
@@ -329,4 +365,7 @@ public class BaseBuilder {
 	}
 
 
+	public List<DBConfig> getConfigs() {
+		return configs;
+	}
 }

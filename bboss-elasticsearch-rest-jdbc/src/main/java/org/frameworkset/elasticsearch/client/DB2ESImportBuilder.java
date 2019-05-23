@@ -387,7 +387,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		esjdbcResultSet.setDbConfig(dbConfig);
 		esjdbcResultSet.setStatusDbConfig(statusDbConfig);
 
-
+		esjdbcResultSet.setConfigs(this.configs);
 		esjdbcResultSet.setRefreshOption(this.refreshOption);
 		esjdbcResultSet.setBatchSize(this.batchSize);
 		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(index,indexType);
@@ -431,6 +431,7 @@ public class DB2ESImportBuilder extends BaseBuilder{
 	public DataStream builder(){
 		this.buildDBConfig();
 		this.buildStatusDBConfig();
+		this.buildOtherDBConfigs();
 		try {
 			logger.info("DB2ES Import Configs:");
 			logger.info(this.toString());

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +51,7 @@ public class ES2DB {
 	private BatchHandler<Map> batchHandler;
 	private DBConfig dbConfig;
 	private DBConfig statusDbConfig;
+	private List<DBConfig> configs;
 	private ConfigSQLExecutor configSQLExecutor;
 	private ExportCount exportCount;
 	/**
@@ -291,5 +293,13 @@ public class ES2DB {
 
 	public void setStatusDbConfig(DBConfig statusDbConfig) {
 		this.statusDbConfig = statusDbConfig;
+	}
+
+	public List<DBConfig> getConfigs() {
+		return configs;
+	}
+
+	public void setConfigs(List<DBConfig> configs) {
+		this.configs = configs;
 	}
 }
