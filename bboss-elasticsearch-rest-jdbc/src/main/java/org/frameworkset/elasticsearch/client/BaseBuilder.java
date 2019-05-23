@@ -214,7 +214,21 @@ public class BaseBuilder {
 			int jdbcFetchSize = Integer.parseInt(_jdbcFetchSize);
 			dbConfig.setJdbcFetchSize(jdbcFetchSize);
 		}
-
+		String _initSize = propertiesContainer.getProperty(prefix+"db.initSize");
+		if(_initSize != null && !_initSize.equals("")) {
+			int initSize = Integer.parseInt(_initSize);
+			dbConfig.setInitSize(initSize);
+		}
+		String _minIdleSize = propertiesContainer.getProperty(prefix+"db.minIdleSize");
+		if(_minIdleSize != null && !_minIdleSize.equals("")) {
+			int minIdleSize = Integer.parseInt(_minIdleSize);
+			dbConfig.setMinIdleSize(minIdleSize);
+		}
+		String _maxSize = propertiesContainer.getProperty(prefix+"db.maxSize");
+		if(_maxSize != null && !_maxSize.equals("")) {
+			int maxSize = Integer.parseInt(_maxSize);
+			dbConfig.setMaxSize(maxSize);
+		}
 		String statusTableDML  = propertiesContainer.getProperty(prefix+"db.statusTableDML");
 		dbConfig.setStatusTableDML(statusTableDML);
 //
