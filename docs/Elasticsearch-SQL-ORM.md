@@ -6,7 +6,7 @@
 
 
 
-bboss ES SQL是针对[es jdbc](https://my.oschina.net/bboss/blog/2221868)的替代解决方案
+bboss ES SQL是针对[es jdbc](Elasticsearch-JDBC.md)的替代解决方案
 
 **the best elasticsearch highlevel java rest api-----bboss**     
 
