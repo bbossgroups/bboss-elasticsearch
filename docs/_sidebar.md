@@ -3,12 +3,24 @@
 - Getting started
 
   - [Elasticsearch Quick start](quickstart.md)
+
+  - [Elasticsearch Demo](Elasticsearch-demo.md)
+
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
+
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
+
   - [Elasticsearch bboss Performance](performance.md) 
+
   - [从源码构建Elasticsearch bboss](bboss-build.md)
+
+  - [常见问题处理](question-answer.md)
+
   - [Changelog](changelog.md)
+
   - [支持我们](supportus.md)
+
+    
 
 - Guide
 

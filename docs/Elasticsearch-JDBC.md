@@ -8,15 +8,11 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 
 ```xml
 导入elasticsearch jdbc驱动和bboss持久层
-<dependency>
-  <groupId>org.elasticsearch.plugin</groupId>
-  <artifactId>jdbc</artifactId>
-  <version>6.3.2</version>
-</dependency>
+
 <dependency> 
     <groupId>com.bbossgroups</groupId> 
     <artifactId>bboss-persistent</artifactId> 
-    <version>5.3.6</version> 
+    <version>5.3.7</version> 
 </dependency> 
 
 在pom中添加elastic maven库 
@@ -29,9 +25,25 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 </repositories>
 ```
 
+如果是Elasticsearch 6.3.x，导入下面的坐标：
 
+```xml
+<dependency>
+  <groupId>org.elasticsearch.plugin</groupId>
+  <artifactId>jdbc</artifactId>
+  <version>6.3.2</version>
+</dependency>
+```
 
+如果是Elasticsearch 6.4.x.6.5.x,7.x(版本号务必与elasticsearch版本号保持一致)，导入以下坐标：
 
+```xml
+<dependency>
+  <groupId>org.elasticsearch.plugin</groupId>
+  <artifactId>x-pack-sql-jdbc</artifactId>
+  <version>7.1.0</version>
+</dependency>
+```
 
 # 2.通过jdbc驱动执行elasticsearch sql相关功能
 
@@ -40,7 +52,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 
 直接看执行各种sql功能的代码[ESJdbcTest](https://gitee.com/bboss/bestpractice/blob/master/persistent/src/com/frameworkset/sqlexecutor/ESJdbcTest.java)：
 
-```
+```java
 package com.frameworkset.sqlexecutor;
 /*
  *  Copyright 2008 biaoping.yin
@@ -68,12 +80,34 @@ import java.util.List;
 
 public class ESJdbcTest {
 
+	@Test
 	public void initDBSource(){
-		SQLUtil.startPool("es",//ES数据源名称
-				"org.elasticsearch.xpack.sql.jdbc.jdbc.JdbcDriver",//ES jdbc驱动
-				"jdbc:es://http://127.0.0.1:9200/timezone=UTC&page.size=250",//es链接串
+//		SQLUtil.startPool("es",//ES数据源名称 for 6.3.x
+//				"org.elasticsearch.xpack.sql.jdbc.jdbc.JdbcDriver",//ES jdbc驱动
+//				"jdbc:es://http://192.168.137.1:9200/timezone=UTC&page.size=250",//es链接串
+//				"elastic","changeme",//es x-pack账号和口令
+//				"SELECT 1 AS result" //数据源连接校验sql
+//		);
+//		SQLUtil.startPool("es",//ES数据源名称 for Elasticsearch 6.4.x,+
+//				"org.elasticsearch.xpack.sql.jdbc.EsDriver",//ES jdbc驱动
+//				"jdbc:es://http://192.168.137.1:9200/timezone=UTC&page.size=250",//es链接串
+//				"elastic","changeme",//es x-pack账号和口令
+//				null,//"false",
+//				null,// "READ_UNCOMMITTED",
+//				"SELECT 1 AS result", //数据源连接校验sql
+//				 "es_jndi",
+//				10,
+//				10,
+//				20,
+//				true,
+//				false,
+//				null, true, false,10000,"es7","com.frameworkset.sqlexecutor.DBElasticsearch7"
+//		);
+		SQLUtil.startPool("es",//ES数据源名称 for Elasticsearch 6.4.x,+
+				"org.elasticsearch.xpack.sql.jdbc.EsDriver",//ES jdbc驱动
+				"jdbc:es://http://192.168.137.1:9200/timezone=UTC&page.size=250",//es链接串
 				"elastic","changeme",//es x-pack账号和口令
-				"SHOW tables 'dbclob%'" //数据源连接校验sql
+				"SELECT 1 AS result" //数据源连接校验sql
 		);
 	}
 
@@ -85,8 +119,24 @@ public class ESJdbcTest {
 	public void testSelect() throws SQLException {
 		initDBSource();//启动数据源
 		//执行查询，将结果映射为HashMap集合
-		 List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT SCORE() as score,content as content FROM dbclobdemo");
+		 List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT SCORE() as score,* FROM dbclobdemo ");
 		 System.out.println(data);
+
+		data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT SCORE() as score,* FROM dbclobdemo where detailtemplateId=?",1);
+		System.out.println(data);
+	}
+
+	@Test
+	public void testQuery() throws SQLException {
+		initDBSource();//启动数据源
+		//执行查询，将结果映射为HashMap集合,全文检索查询
+		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,
+				"es","SELECT * FROM hawkeye-auth-service-web-api-index-2018-06-30 where match(url_group,'synchronize_info')");
+		System.out.println(data);
+		//关键词精确查找
+		data =	SQLExecutor.queryListWithDBName(HashMap.class,
+				"es","SELECT * FROM hawkeye-auth-service-web-api-index-2018-06-30 where url_group.keyword = ?","synchronize_info");
+		System.out.println(data);
 	}
 
 	/**
@@ -169,6 +219,7 @@ public class ESJdbcTest {
 
 	}
 }
+
 ```
 
 如果执行的时候报错：
