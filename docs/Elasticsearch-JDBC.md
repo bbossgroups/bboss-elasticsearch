@@ -25,7 +25,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 </repositories>
 ```
 
-如果是Elasticsearch 6.3.x，导入下面的坐标：
+如果是Elasticsearch 6.3.x(版本号务必与elasticsearch版本号保持一致)，导入下面的坐标：
 
 ```xml
 <dependency>
@@ -79,8 +79,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ESJdbcTest {
-
-	@Test
+    //启动数据源，初始化数据源
+	@Before
 	public void initDBSource(){
 //		SQLUtil.startPool("es",//ES数据源名称 for 6.3.x
 //				"org.elasticsearch.xpack.sql.jdbc.jdbc.JdbcDriver",//ES jdbc驱动
@@ -117,7 +117,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testSelect() throws SQLException {
-		initDBSource();//启动数据源
+		 
 		//执行查询，将结果映射为HashMap集合
 		 List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT SCORE() as score,* FROM dbclobdemo ");
 		 System.out.println(data);
@@ -145,7 +145,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testMatchQuery() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT SCORE(), * FROM dbclobdemo WHERE match(content, '_ewebeditor_pa_src') ORDER BY documentId DESC");
 		System.out.println(data);
 
@@ -160,7 +160,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testGroupQuery() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SELECT title.keyword,max(documentId) as max_id FROM dbclobdemo as mytable group by title.keyword limit 5");
 		System.out.println(data);
 
@@ -174,7 +174,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testShowTable() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SHOW tables");
 		System.out.println(data);
 	}
@@ -185,7 +185,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testShowTablePattern() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SHOW tables 'dbclob_'");
 		System.out.println(data);
 		data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SHOW tables 'dbclob%'");
@@ -197,7 +197,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testDescTable() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","DESC dbclobdemo");
 		System.out.println(data);
 		data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SHOW COLUMNS IN dbclobdemo");
@@ -210,7 +210,7 @@ public class ESJdbcTest {
 	 */
 	@Test
 	public void testShowFunctin() throws SQLException {
-		initDBSource();
+		 
 		List<HashMap> data =	SQLExecutor.queryListWithDBName(HashMap.class,"es","SHOW FUNCTIONS");
 		System.out.println(data);
 		//同样支持通配符进行过滤：
@@ -267,5 +267,5 @@ bboss elasticsearch交流：166471282
 
 <div align="left"></div>
 
-<img src="E:/workspace/bbossgroups/bboss-elastic/docs/images/alipay.png"  height="200" width="200">
+<img src="images/alipay.png"  height="200" width="200">
 

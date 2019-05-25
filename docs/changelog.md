@@ -15,6 +15,21 @@ https://esdoc.bbossgroups.com/#/development
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 
+# v5.7.5 功能改进
+
+1. 支持第三方用途多数据源配置和加载，可以同步数据过程中加载这些数据，通过这些数据源查找数据，组合同步到es中
+2. 持久层消除对jackson json包的依赖 
+3. 持久层增加对es jdbc 6.4.x,6.5.x,6.6.x,7.x的支持
+4. 对于默认的持久层不能识别的driver，采用DBNone默认适配器并给出警告信息，而不是抛出异常
+
+```java
+if(log.isWarnEnabled()){
+				log.warn("Unknown JDBC driver: {}: Adapter DBNonewill be used or define one and resitry it to bboss.",driver);
+			}
+```
+
+
+
 # v5.7.3 功能改进
 
 1. 改进searchAllParrel方法：增加对es 2.x的兼容性处理
