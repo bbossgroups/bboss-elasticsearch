@@ -1255,6 +1255,8 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 
 **1.并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析**
 
+参考章节【[5.12 设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_512-设置任务执行结果回调处理函数)】
+
 ```java
  public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
 //任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
@@ -1285,6 +1287,8 @@ http.timeoutSocket = 50000
 
 
 **2.任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析**
+
+参考章节【[5.12 设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_512-设置任务执行结果回调处理函数)】
 
 bulk拒绝记录解决办法：
 
