@@ -10,6 +10,8 @@
 
   - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
 
+  - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
+
   - [Elasticsearch bboss Performance](performance.md) 
 
   - [从源码构建Elasticsearch bboss](bboss-build.md)

@@ -296,13 +296,35 @@ dslfile.refreshInterval = -1
 
 
 
-## 2.8 设置slice scroll查询线程池线程数和等待队列长度
+## 2.8 设置scroll查询线程池线程数和等待队列长度
 
-elasticsearch.sliceScrollThreadCount 默认值500
+### 设置slice scroll查询对应的线程数和等待队列数
+elasticsearch.sliceScrollThreadCount=100
 
-elasticsearch.sliceScrollThreadQueue 默认值500
+elasticsearch.sliceScrollThreadQueue=100
+
+elasticsearch.sliceScrollBlockedWaitTimeout=0  #单位毫秒
+
+
+
+### 设置scroll查询对应的线程数和等待队列数
+elasticsearch.scrollThreadCount=200
+
+elasticsearch.scrollThreadQueue=200
+
+elasticsearch.scrollBlockedWaitTimeout=0   #单位毫秒
 
  [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md) 
+
+## 2.9 Elasticsearch 7.0 索引类型兼容性配置
+Elasticsearch 7.0 索引类型兼容性配置，false禁用索引类型，es默认禁用，如果需要在Elasticsearch 7.x向下兼容es6和5的indextype，需要配置为true
+
+```
+elasticsearch.includeTypeName = false
+```
+
+
+
 
 ***完成导入和配置，接下来就可以开始使用bboss操作和访问elasticsearch了。***
 
