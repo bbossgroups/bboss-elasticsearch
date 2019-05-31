@@ -1004,7 +1004,19 @@ db.jdbcFetchSize = -2147483648
 
 # 6.数据导入工具使用方法
 
-上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件：
+上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
+
+## 环境准备
+
+首先需要从Github下载最新的工具源码：
+
+https://github.com/bbossgroups/db-elasticsearch-tool
+
+[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)是一个gradle工程，因此需要安装最新版本的gradle并配置好gradle环境变量，gradle安装和配置参考文档：
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
+安装和配置好gradle，就可以将db-elasticsearch-tool工程导入idea或者eclipse，然后进行数据同步逻辑的开发、调试以及构建打包工作。
 
 ## 同步代码主程序定义-Dbdemo
 
@@ -1019,6 +1031,8 @@ public static void main(String args[]){
 ```
 
 ## es数据源配置
+
+修改配置文件src\test\resources\application.properties
 
 ```properties
 # elasticsearch客户端配置
@@ -1063,7 +1077,7 @@ dslfile.refreshInterval = 3000
 
 ## 数据库数据源配置
 
-以mysql未来介绍数据源配置：
+修改配置文件src\test\resources\application.properties，以mysql未来介绍数据源配置：
 
 ```properties
 db.name = test  #数据源名称，持久层通过dbname引用定义的数据源
@@ -1101,7 +1115,7 @@ public class DMAdaptor extends DBOracle {
 }
 ```
 
-在配置文件application.properties中指定自定义数据源适配器
+在配置文件src\test\resources\application.properties中指定自定义数据源适配器
 
 ```properties
 # 国产数据库达梦数据源配置，展示额外定制的达梦dbAdaptor，
@@ -1138,6 +1152,8 @@ importBuilder.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor");
 ## 保存增量状态的数据源配置
 
 采用分布式作业调度引擎时，定时增量导入需要指定保存增量状态的数据源：
+
+修改配置文件src\test\resources\application.properties
 
 ```properties
 # 增量导入状态存储数据源配置，默认采用sqlite，增量导入装存储到本地的sqlite数据库中，采用分布式的外部定时任务引擎时，
@@ -1278,7 +1294,7 @@ importBuilder.setQueue(100);//设置批量导入线程池等待队列长度
 importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 ```
 
-c) 对于read或者等待超时的异常，亦可以调整bboss的application.properties文件中的http timeout时间参数
+c) 对于read或者等待超时的异常，亦可以调整配置文件src\test\resources\application.properties中的http timeout时间参数
 
 http.timeoutConnection = 50000
 
@@ -1343,13 +1359,13 @@ gradle安装和配置参考文档：https://esdoc.bbossgroups.com/#/bboss-build
 
 ```gradle
 先切换到工程的根目录
-cd D:\workspace\bbossesdemo\db2es-booter
+cd D:\workspace\bbossesdemo\db-elasticsearch-tool
 gradle clean releaseVersion
 ```
 
 构建成功后，将会在工程目录下面生成可部署的二进制包：
 
-build/distributions/db2es-booter-1.0.0-released.zip
+build/distributions/db-elasticsearch-tool-1.0.0-released.zip
 
 包的目录结构如下：
 
@@ -1363,9 +1379,9 @@ linux: restart.sh
 
 # 7 作业参数配置
 
-在使用[db2es-booter](https://github.com/bbossgroups/db-elasticsearch-tool)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties
+在使用[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)时，为了避免调试过程中不断打包发布数据同步工具，可以将需要调整的参数配置到启动配置文件src\test\resources\application.properties中,然后在代码中通过以下方法获取配置的参数：
 
-中,然后在代码中通过以下方法获取配置的参数：
+
 
 ```
 #工具主程序
@@ -1382,7 +1398,7 @@ dropIndice=false
 boolean dropIndice = CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值false
 ```
 
-另外可以在resources/application.properties配置控制作业执行的一些参数，例如工作线程数，等待队列数，批处理size等等：
+另外可以在src\test\resources\application.properties配置控制作业执行的一些参数，例如工作线程数，等待队列数，批处理size等等：
 
 ```
 queueSize=50
@@ -1401,7 +1417,7 @@ importBuilder.setQueue(queueSize);//设置批量导入线程池等待队列长�
 importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线程数量
 ```
 
-
+**注意：这些参数只有在正式发布后，用shell脚本启动作业才会从配置文件中读取并生效，所以需要指定默认值，在开发调试的时候采用参数默认值来运行作业。**
 
 # 8 开发交流
 

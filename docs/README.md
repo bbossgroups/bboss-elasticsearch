@@ -31,7 +31,7 @@
 17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x,7.x****,+**
 18. **bboss es jdk兼容性： jdk 1.7+**
 19. **bboss es兼容spring boot各个版本,零配置集成，提供spring booter es starter**
-20. **一个快速生成bboss es pinpoint监控插件的工具,监控效果浏览**
+20. **提供bboss es pinpoint监控插件,[插件地址和监控效果浏览](https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss)**，监控es访问性能和协助处理ES操作故障和问题
 21. bboss es环境搭建及开发视频教程（依赖的版本以最新的[maven中央库版本](https://search.maven.org/search?q=g:com.bbossgroups.plugins)为准）：[下载](https://pan.baidu.com/s/1kXjAOKn)
 
 # 从源码构建Elasticsearch BBoss
