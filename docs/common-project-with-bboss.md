@@ -102,9 +102,9 @@ elasticsearch.showTemplate=true
 elasticsearch.discoverHost=false
 
 #http链接池配置
-http.timeoutConnection = 5000
-http.timeoutSocket = 5000
-http.connectionRequestTimeout=5000
+http.timeoutConnection = 50000
+http.timeoutSocket = 50000
+http.connectionRequestTimeout=50000
 http.retryTime = 1
 http.maxLineLength = -1
 http.maxHeaderCount = 200
@@ -145,9 +145,9 @@ default.elasticsearch.showTemplate=true
 default.elasticsearch.discoverHost=false
 
 ##default连接池配置
-default.http.timeoutConnection = 5000
-default.http.timeoutSocket = 5000
-default.http.connectionRequestTimeout=5000
+default.http.timeoutConnection = 50000
+default.http.timeoutSocket = 50000
+default.http.connectionRequestTimeout=50000
 default.http.retryTime = 1
 default.http.maxLineLength = -1
 default.http.maxHeaderCount = 200

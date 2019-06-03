@@ -129,9 +129,9 @@ spring.elasticsearch.bboss.elasticsearch.discoverHost=false
 spring.elasticsearch.bboss.dslfile.refreshInterval = -1
 
 ##es client http连接池配置
-spring.elasticsearch.bboss.http.timeoutConnection = 5000
-spring.elasticsearch.bboss.http.timeoutSocket = 5000
-spring.elasticsearch.bboss.http.connectionRequestTimeout=5000
+spring.elasticsearch.bboss.http.timeoutConnection = 50000
+spring.elasticsearch.bboss.http.timeoutSocket = 50000
+spring.elasticsearch.bboss.http.connectionRequestTimeout=50000
 spring.elasticsearch.bboss.http.retryTime = 1
 spring.elasticsearch.bboss.http.maxLineLength = -1
 spring.elasticsearch.bboss.http.maxHeaderCount = 200
@@ -346,9 +346,9 @@ spring.elasticsearch.bboss.default.elasticsearch.showTemplate=true
 spring.elasticsearch.bboss.default.elasticsearch.discoverHost=false
 
 ##default连接池配置
-spring.elasticsearch.bboss.default.http.timeoutConnection = 5000
-spring.elasticsearch.bboss.default.http.timeoutSocket = 5000
-spring.elasticsearch.bboss.default.http.connectionRequestTimeout=5000
+spring.elasticsearch.bboss.default.http.timeoutConnection = 50000
+spring.elasticsearch.bboss.default.http.timeoutSocket = 50000
+spring.elasticsearch.bboss.default.http.connectionRequestTimeout=50000
 spring.elasticsearch.bboss.default.http.retryTime = 1
 spring.elasticsearch.bboss.default.http.maxLineLength = -1
 spring.elasticsearch.bboss.default.http.maxHeaderCount = 200
@@ -377,9 +377,9 @@ spring.elasticsearch.bboss.logs.elasticsearch.showTemplate=true
 spring.elasticsearch.bboss.logs.elasticsearch.discoverHost=false
 
 ##logs集群对应的连接池配置
-spring.elasticsearch.bboss.logs.http.timeoutConnection = 5000
-spring.elasticsearch.bboss.logs.http.timeoutSocket = 5000
-spring.elasticsearch.bboss.logs.http.connectionRequestTimeout=5000
+spring.elasticsearch.bboss.logs.http.timeoutConnection = 50000
+spring.elasticsearch.bboss.logs.http.timeoutSocket = 50000
+spring.elasticsearch.bboss.logs.http.connectionRequestTimeout=50000
 spring.elasticsearch.bboss.logs.http.retryTime = 1
 spring.elasticsearch.bboss.logs.http.maxLineLength = -1
 spring.elasticsearch.bboss.logs.http.maxHeaderCount = 200

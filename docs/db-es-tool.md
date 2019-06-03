@@ -107,7 +107,7 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 importBuilder.setBatchSize(5000)
 
-mysql需要在application.properties文件配置连接串和指定fetch相关的useCursorFetch和jdbcFetchSize参数：
+mysql提供两种处理机制支持海量数据的导入，一种机制是在application.properties文件配置连接串和指定fetch相关的useCursorFetch和jdbcFetchSize参数：
 
 ```properties
 db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
@@ -116,7 +116,11 @@ db.jdbcFetchSize = 10000
 
 ```
 
-## **5.1同步批量导入**
+另外一种机制可以参考文档章节：
+
+## [5.14 Mysql ResultSet Stream机制说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_514-mysql-resultset-stream机制说明)
+
+## 5.1同步批量导入
 
 ```java
 	public void testSimpleImportBuilder(){

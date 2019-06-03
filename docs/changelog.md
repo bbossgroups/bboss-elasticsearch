@@ -14,6 +14,7 @@ https://esdoc.bbossgroups.com/#/development
 4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
+7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
 # v5.7.5 功能改进
 
