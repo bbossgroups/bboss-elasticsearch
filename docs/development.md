@@ -2408,6 +2408,8 @@ public void testObjectSQLQueryFromDSL(){
 
 #### 案例9 #if-#else-#end结合#[xxx,serialJson=true]变量
 
+
+
 (适合各种场景)
 
 ```javascript
@@ -2416,6 +2418,46 @@ public void testObjectSQLQueryFromDSL(){
 #else
     "fields":#[searchFields,serialJson=true]
 #end
+```
+
+本案例其实是案例8的一种简单的写法，我们将
+
+```json
+"fields":[
+          #foreach($field in $searchFields)
+             #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+          #end
+     ]
+```
+
+借助于serialJson=true属性直接将集合searchFields处理为对应的json集合格式，转换为下面的写法：
+
+```json
+"fields":#[searchFields,serialJson=true]
+```
+
+同样的可以对terms检索进行处理，例如：
+
+```json
+ {
+                        "terms": {
+                            "titleId": [
+          #foreach($field in $titleIds)
+             #if($velocityCount > 0),#end #[titleIds[$velocityCount]]
+          #end
+     ]
+                        }
+                    }
+```
+
+借助于serialJson=true属性直接将集合searchFields处理为对应的json集合格式，转换为下面的写法：
+
+```json
+ {
+                        "terms": {
+                            "titleId": #[titleIds,serialJson=true]
+                        }
+                    }
 ```
 
 
