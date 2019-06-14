@@ -76,7 +76,7 @@
 ```
 
 本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标(其他数据库驱动程序自行导入)：
-
+mysql 5.x驱动依赖包
 ```xml
 <dependency>
 <groupId>mysql</groupId>
@@ -84,7 +84,14 @@
 <version>5.1.40</version>
 </dependency>
 ```
-
+mysql 8.x驱动依赖包(mysql 8必须采用相应版本的驱动，否则不能正确运行)
+```xml
+<dependency>
+<groupId>mysql</groupId>
+<artifactId>mysql-connector-java</artifactId>
+<version>8.0.16</version>
+</dependency>
+```
 # 3.索引表结构定义
 
 Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
