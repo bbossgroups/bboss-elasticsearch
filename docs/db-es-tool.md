@@ -119,6 +119,8 @@ mysql提供两种处理机制支持海量数据的导入，一种机制是在app
 ```properties
 db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
 
+##mysql 8 url配置样例
+#db.url = jdbc:mysql://192.168.0.188:3308/braineex?useCursorFetch=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
 db.jdbcFetchSize = 10000
 
 ```
