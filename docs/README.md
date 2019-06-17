@@ -15,7 +15,7 @@
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
    分页
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLPagineTest.java>
-4. 支持ES JDBC，参考文档：[Elasticsearch JDBC案例介绍](https://my.oschina.net/bboss/blog/2221868)
+4. 支持ES JDBC，参考文档：[Elasticsearch JDBC案例介绍](https://esdoc.bbossgroups.com/#/Elasticsearch-JDBC)
 5. 提供[创建和查询索引表配置模板api](index-indextemplate.md)；提供创建和查询索引表api；提供索引文档创建、修改、删除、获取基本功能;提供索引文档批量创建、批量修改、批量删除api；
 6. 提供支持分页检索api（[from/size](from-size.md),[searchafter](search-after.md),[scroll](scroll.md),[slicescroll](Scroll-SliceScroll-api.md)）
 7. 支持获取索引文档字段元数据

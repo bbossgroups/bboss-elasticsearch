@@ -585,253 +585,19 @@ importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说�
 importBuilder.setExternalTimer(true);
 ```
 
-采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+## 5.9 增量导入注意事项
 
-## 5.9 基于xxjob 同步DB-Elasticsearch数据
+### 排序设置
 
-bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
-
-### 首先定义一个xxjob的同步作业
+如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显示对查询的数据进行排序，否则需要在sql语句中显示基于增量字段升序排序：
 
 ```java
-package org.frameworkset.elasticsearch.imp.jobhandler;
-
-
-import com.xxl.job.core.util.ShardingUtil;
-import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
-import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
-import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
-import org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * <p>Description: 使用quartz等外部环境定时运行导入数据，需要设置：</p>
- * importBuilder.setExternalTimer(true);
- */
-public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
-   private static Logger logger = LoggerFactory.getLogger(XXJobImportTask.class);
-   public void init(){
-      // 可参考Sample示例执行器中的示例任务"ShardingJobHandler"了解试用
-
-      externalScheduler = new ExternalScheduler();
-      //params是xxjob admin管理控制台为作业配置的参数数据 
-      externalScheduler.dataStream((Object params)->{
-         //在作业中获取分片信息
-         ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
-         int index = 0;
-         if(shardingVO != null) {
-            index = shardingVO.getIndex();
-            logger.info("index:>>>>>>>>>>>>>>>>>>>" + shardingVO.getIndex());
-            logger.info("total:>>>>>>>>>>>>>>>>>>>" + shardingVO.getTotal());
-         }
-         logger.info("params:>>>>>>>>>>>>>>>>>>>" + params);
-         DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-         //增量定时任务不要删表，但是可以通过删表来做初始化操作
-//    if(dropIndice) {
-         try {
-            //清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
-            String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("quartz");
-            System.out.println(repsonse);
-         } catch (Exception e) {
-         }
-//    }
-
-
-         //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
-         // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
-         // select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-         // log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
-         // 但是需要设置setLastValueType告诉工具增量字段的类型
-		 //在sql中设置分片相关的参数,以index为例简单说明，可以结合index和param参数实现更加复杂的分片机制
-         importBuilder.setSql("select * from td_sm_log where shardColumn ="+ index +" and log_id > #[log_id]");
-         importBuilder.addIgnoreFieldMapping("remark1");
-//    importBuilder.setSql("select * from td_sm_log ");
-         /**
-          * es相关配置
-          */
-         importBuilder
-               .setIndex("quartz") //必填项
-               .setIndexType("quartz") //必填项
-//          .setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
-               .setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
-               .setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
-               .setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-               .setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-
-         //定时任务配置，
-         //采用内部定时任务
-//    importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-////                .setScheduleDate(date) //指定任务开始执行时间：日期
-//          .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-//          .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
-         //采用外部定时任务
-         importBuilder.setExternalTimer(true);
-         //定时任务配置结束
- 
-         //增量配置开始
-//    importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-//    importBuilder.setNumberLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-         importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
-         importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-         importBuilder.setLastValueStoreTableName("logs"+index);//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab，如果xxjob是shard分片模式运行，每个分片需要独立的增量记录桩体表
-         importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
-         // 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
-         //增量配置结束
-
-         //映射和转换配置开始
-//    /**
-//     * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//     * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
-//     */
-//    importBuilder.addFieldMapping("document_id","docId")
-//          .addFieldMapping("docwtime","docwTime")
-//          .addIgnoreFieldMapping("channel_id");//添加忽略字段
-//
-//
-//    /**
-//     * 为每条记录添加额外的字段和值
-//     * 可以为基本数据类型，也可以是复杂的对象
-//     */
-//    importBuilder.addFieldValue("testF1","f1value");
-//    importBuilder.addFieldValue("testInt",0);
-//    importBuilder.addFieldValue("testDate",new Date());
-//    importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
-//    TestObject testObject = new TestObject();
-//    testObject.setId("testid");
-//    testObject.setName("jackson");
-//    importBuilder.addFieldValue("testObject",testObject);
-//
-//    /**
-//     * 重新设置es数据结构
-//     */
-//    importBuilder.setDataRefactor(new DataRefactor() {
-//       public void refactor(Context context) throws Exception  {
-//          CustomObject customObject = new CustomObject();
-//          customObject.setAuthor((String)context.getValue("author"));
-//          customObject.setTitle((String)context.getValue("title"));
-//          customObject.setSubtitle((String)context.getValue("subtitle"));
-//          customObject.setIds(new int[]{1,2,3});
-//          context.addFieldValue("docInfo",customObject);//如果还需要构建更多的内部对象，可以继续构建
-//
-//          //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//          context.addIgnoreFieldMapping("author");
-//          context.addIgnoreFieldMapping("title");
-//          context.addIgnoreFieldMapping("subtitle");
-//       }
-//    });
-         //映射和转换配置结束
-
-         /**
-          * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-          */
-         importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-         importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-         importBuilder.setThreadCount(5);//设置批量导入线程池工作线程数量
-         importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-         importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-         importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
-//    importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//    importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-
-         importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-         importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-         /**
-          importBuilder.setEsIdGenerator(new EsIdGenerator() {
-          //如果指定EsIdGenerator，则根据下面的方法生成文档id，
-          // 否则根据setEsIdField方法设置的字段值作为文档id，
-          // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
-
-          @Override
-          public Object genId(Context context) throws Exception {
-          return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
-          }
-          });
-          */
-         /**
-          * 执行数据库表数据导入es操作
-          */
-         return importBuilder;
-      });
-
-   }
-
-
-}
+importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
 ```
 
-### 作业注册配置
+### 增量状态存储数据库
 
-然后将作业配置到application.propperties中：
-
-```properties
-##
-# 作业任务配置
-# xxl.job.task为前置配置多个数据同步任务，后缀XXJobImportTask和OtherTask将xxjob执行任务的名称
-# 作业程序都需要继承抽象类org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler
-# public void init(){
-#     externalScheduler = new ExternalScheduler();
-#     externalScheduler.dataStream(()->{
-#         DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-#              编写导入作业任务配置逻辑，参考文档：https://esdoc.bbossgroups.com/#/db-es-tool
-#         return    importBuilder;
-#       }
-# }
-#
-
-xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJobImportTask
-## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
-```
-
-### 任务构建和运行
-
-1. 下载完整的demo
-   https://github.com/bbossgroups/db-elasticsearch-xxjob
-
-2.  安装和配置gradle
-
-   https://esdoc.bbossgroups.com/#/bboss-build
-
-3. 在工程db-elasticsearch-xxjob根目录下运行gradle构建指令
-
-   gradle clean releaseVersion
-
-4. 启动作业
-
-构建成功后，将会在工程目录下面生成可部署的二进制包：
-
-build/distributions/db-elasticsearch-xxjob-released.zip
-
-解压运行里面的指令，即可启动作业：
-
-windows: restart.bat 
-
-linux: restart.sh
-
-### xxjob运行效果
-
-任务启动后，可以在xxjob的挂你控制台看到刚注册的执行器和作业：
-
-注册好的作业执行器
-
-![作业执行器](images\xxjob-executor.png)
-
-编辑执行器
-
-![编辑执行器](images\xxjobexe-editor.png)
-
-任务管理
-
-![任务管理](images\joblist.png)
-
-可以在后面的操作去，执行、启动作业，查看作业调度执行日志，修改作业参数和运行模式：
-
-![](images\jobedit.png)
-
-运行报表
-
-![运行报表](images\jobstatic.png)
+采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
 ## 5.10 灵活控制文档数据结构
 
@@ -1015,7 +781,7 @@ db.jdbcFetchSize = -2147483648
 
 机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
 
-# 6.数据导入工具使用方法
+# 6.DB-ES数据同步工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
 
@@ -1432,7 +1198,307 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
 **注意：这些参数只有在正式发布后，用shell脚本启动作业才会从配置文件中读取并生效，所以需要指定默认值，在开发调试的时候采用参数默认值来运行作业。**
 
-# 8 开发交流
+# 8 基于xxjob 同步DB-Elasticsearch数据
+
+bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
+
+## 首先定义一个xxjob的同步作业
+
+```java
+package org.frameworkset.elasticsearch.imp.jobhandler;
+/**
+ * Copyright 2008 biaoping.yin
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import com.xxl.job.core.util.ShardingUtil;
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
+import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
+import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
+import org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * <p>Description: 使用xxl-job,quartz等外部定时任务调度引擎导入数据，需要设置：</p>
+ * importBuilder.setExternalTimer(true);
+ * <p></p>
+ * <p>Copyright (c) 2018</p>
+ * @Date 2019/4/13 13:45
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
+	private static Logger logger = LoggerFactory.getLogger(XXJobImportTask.class);
+	public void init(){
+		// 可参考Sample示例执行器中的示例任务"ShardingJobHandler"了解试用
+
+		externalScheduler = new ExternalScheduler();
+		externalScheduler.dataStream((Object params)->{
+			ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
+			int index = 0;
+			if(shardingVO != null) {
+				index = shardingVO.getIndex();
+				logger.info("index:>>>>>>>>>>>>>>>>>>>" + shardingVO.getIndex());
+				logger.info("total:>>>>>>>>>>>>>>>>>>>" + shardingVO.getTotal());
+			}
+			logger.info("params:>>>>>>>>>>>>>>>>>>>" + params);
+			DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
+			//增量定时任务不要删表，但是可以通过删表来做初始化操作
+//		if(dropIndice) {
+			try {
+				//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+				String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("quartz");
+				System.out.println(repsonse);
+			} catch (Exception e) {
+			}
+//		}
+
+
+			//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+			// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+			// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+			// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
+			// 但是需要设置setLastValueType告诉工具增量字段的类型
+
+			importBuilder.setSql("select * from td_sm_log where log_id > #[log_id]");
+			importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+			/**
+			 * es相关配置
+			 */
+			importBuilder
+					.setIndex("quartz") //必填项
+					.setIndexType("quartz") //必填项
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+					.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
+					.setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
+					.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
+					.setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+
+			//定时任务配置，
+			//采用内部定时任务
+//		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+////					 .setScheduleDate(date) //指定任务开始执行时间：日期
+//				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+//				.setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
+			//采用外部定时任务
+			importBuilder.setExternalTimer(true);
+			//定时任务配置结束
+//
+//		//设置任务执行拦截器，可以添加多个
+//		importBuilder.addCallInterceptor(new CallInterceptor() {
+//			@Override
+//			public void preCall(TaskContext taskContext) {
+//				System.out.println("preCall");
+//			}
+//
+//			@Override
+//			public void afterCall(TaskContext taskContext) {
+//				System.out.println("afterCall");
+//			}
+//
+//			@Override
+//			public void throwException(TaskContext taskContext, Exception e) {
+//				System.out.println("throwException");
+//			}
+//		}).addCallInterceptor(new CallInterceptor() {
+//			@Override
+//			public void preCall(TaskContext taskContext) {
+//				System.out.println("preCall 1");
+//			}
+//
+//			@Override
+//			public void afterCall(TaskContext taskContext) {
+//				System.out.println("afterCall 1");
+//			}
+//
+//			@Override
+//			public void throwException(TaskContext taskContext, Exception e) {
+//				System.out.println("throwException 1");
+//			}
+//		});
+//		//设置任务执行拦截器结束，可以添加多个
+			//增量配置开始
+//		importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+			importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+			importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+			importBuilder.setLastValueStoreTableName("logs"+index);//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab，增量状态表会自动创建。如果xxl-job是shard分片模式运行，
+																   // 需要独立的表来记录每个分片增量同步状态，
+																   // 并且采用xxl-job等分布式任务调度引擎时，同步状态表必须存放于db.config=test指定的数据源，不能采用本地sqlite数据库
+			importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
+			// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
+			//增量配置结束
+
+			//映射和转换配置开始
+//		/**
+//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
+//		 */
+//		importBuilder.addFieldMapping("document_id","docId")
+//				.addFieldMapping("docwtime","docwTime")
+//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
+//
+//
+//		/**
+//		 * 为每条记录添加额外的字段和值
+//		 * 可以为基本数据类型，也可以是复杂的对象
+//		 */
+//		importBuilder.addFieldValue("testF1","f1value");
+//		importBuilder.addFieldValue("testInt",0);
+//		importBuilder.addFieldValue("testDate",new Date());
+//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
+//		TestObject testObject = new TestObject();
+//		testObject.setId("testid");
+//		testObject.setName("jackson");
+//		importBuilder.addFieldValue("testObject",testObject);
+//
+//		/**
+//		 * 重新设置es数据结构
+//		 */
+//		importBuilder.setDataRefactor(new DataRefactor() {
+//			public void refactor(Context context) throws Exception  {
+//				CustomObject customObject = new CustomObject();
+//				customObject.setAuthor((String)context.getValue("author"));
+//				customObject.setTitle((String)context.getValue("title"));
+//				customObject.setSubtitle((String)context.getValue("subtitle"));
+//				customObject.setIds(new int[]{1,2,3});
+//				context.addFieldValue("docInfo",customObject);//如果还需要构建更多的内部对象，可以继续构建
+//
+//				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//				context.addIgnoreFieldMapping("author");
+//				context.addIgnoreFieldMapping("title");
+//				context.addIgnoreFieldMapping("subtitle");
+//			}
+//		});
+			//映射和转换配置结束
+
+			/**
+			 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+			 */
+			importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+			importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+			importBuilder.setThreadCount(5);//设置批量导入线程池工作线程数量
+			importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+			importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+			importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
+//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
+
+			importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
+			importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+			/**
+			 importBuilder.setEsIdGenerator(new EsIdGenerator() {
+				 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+				 // 否则根据setEsIdField方法设置的字段值作为文档id，
+				 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+				 @Override
+				 public Object genId(Context context) throws Exception {
+				 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+				 }
+			 });
+			 */
+			/**
+			 * 执行数据库表数据导入es操作
+			 */
+			return importBuilder;
+		});
+
+	}
+
+
+}
+
+```
+
+## 作业注册配置
+
+然后将作业配置到application.propperties中：
+
+```properties
+##
+# 作业任务配置
+# xxl.job.task为前置配置多个数据同步任务，后缀XXJobImportTask和OtherTask将xxjob执行任务的名称
+# 作业程序都需要继承抽象类org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler
+# public void init(){
+#     externalScheduler = new ExternalScheduler();
+#     externalScheduler.dataStream(()->{
+#         DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
+#              编写导入作业任务配置逻辑，参考文档：https://esdoc.bbossgroups.com/#/db-es-tool
+#         return    importBuilder;
+#       }
+# }
+#
+
+xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJobImportTask
+## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
+```
+
+## 任务构建和运行
+
+1. 下载完整的demo
+   https://github.com/bbossgroups/db-elasticsearch-xxjob
+
+2. 安装和配置gradle
+
+   https://esdoc.bbossgroups.com/#/bboss-build
+
+3. 在工程db-elasticsearch-xxjob根目录下运行gradle构建指令
+
+   gradle clean releaseVersion
+
+4. 启动作业
+
+构建成功后，将会在工程目录下面生成可部署的二进制包：
+
+build/distributions/db-elasticsearch-xxjob-released.zip
+
+解压运行里面的指令，即可启动作业：
+
+windows: restart.bat 
+
+linux: restart.sh
+
+## xxjob运行效果
+
+任务启动后，可以在xxjob的挂你控制台看到刚注册的执行器和作业：
+
+注册好的作业执行器
+
+![作业执行器](E:/workspace/bbossgroups/bboss-elastic/docs/images/xxjob-executor.png)
+
+编辑执行器
+
+![编辑执行器](E:/workspace/bbossgroups/bboss-elastic/docs/images/xxjobexe-editor.png)
+
+任务管理
+
+![任务管理](E:/workspace/bbossgroups/bboss-elastic/docs/images/joblist.png)
+
+可以在后面的操作去，执行、启动作业，查看作业调度执行日志，修改作业参数和运行模式：
+
+![](E:/workspace/bbossgroups/bboss-elastic/docs/images/jobedit.png)
+
+运行报表
+
+![运行报表](E:/workspace/bbossgroups/bboss-elastic/docs/images/jobstatic.png)
+
+## 
+
+# 9 开发交流
 
 完整的数据导入demo工程
 
