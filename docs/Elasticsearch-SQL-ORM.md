@@ -694,7 +694,9 @@ sql转换为dsl的结果：
 
 # 2 Elasticsearch-sql查询
 
-基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可：
+基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可
+
+## 简单案例
 
 ```java
     /**
@@ -715,7 +717,77 @@ sql转换为dsl的结果：
 	}
 ```
 
-Elasticsearch-SQL插件sql转dsl功能:
+## 通过配置文件管理sql语句案例
+
+```java
+/**
+ * Elasticsearch-SQL插件功能测试方法
+ */
+@Test
+public void testESSQLFromConf(){
+   ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/sql.xml");
+   ESDatas<Map> esDatas =  //ESDatas包含当前检索的记录集合，最多10条记录，由sql中的limit属性指定
+         clientUtil.searchList("/_sql",//sql请求
+               "testESSQL", //elasticsearch-sql支持的sql语句
+               Map.class);//返回的文档封装对象类型    
+   
+   //获取结果对象列表
+   List<Map> demos = esDatas.getDatas();
+
+   //获取总记录数
+   long totalSize = esDatas.getTotalSize();
+   System.out.println(totalSize);
+}
+```
+
+对应的配置文件设置：
+
+```xml
+<!--for elasticsearch sqlplugin -->
+<property name="testESSQL">
+    <![CDATA[
+     select operModule.keyword from dbdemo group by operModule.keyword
+    ]]>
+</property>
+```
+
+## 带参数的配置文件案例
+
+```
+/**
+ * Elasticsearch-SQL插件功能测试方法，带参数sql
+ */
+@Test
+public void testESSQLFromConfParams(){
+   ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/sql.xml");
+   Map params = new HashMap();
+   params.put("operModule","xxxx");
+   ESDatas<Map> esDatas =  //ESDatas包含当前检索的记录集合，最多10条记录，由sql中的limit属性指定
+         clientUtil.searchList("/_sql",//sql请求
+               "testESSQL", //elasticsearch-sql支持的sql语句
+               params, //检索参数
+               Map.class);//返回的文档封装对象类型
+   //获取结果对象列表
+   List<Map> demos = esDatas.getDatas();
+
+   //获取总记录数
+   long totalSize = esDatas.getTotalSize();
+   System.out.println(totalSize);
+}
+```
+
+对应的sql配置：
+
+```xml
+<!--for elasticsearch sqlplugin -->
+<property name="testESSQLWithParams">
+    <![CDATA[
+     select operModule.keyword from dbdemo group by operModule.keyword where operModule.keyword=#[operModule]
+    ]]>
+</property>
+```
+
+## Elasticsearch-SQL插件sql转dsl功能
 
 ```java
 /**
