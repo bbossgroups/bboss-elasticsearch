@@ -1056,6 +1056,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			if(address != null  ){
 				if(address.getStatus() == 2){//节点还原
 					address.onlySetStatus(0);
+					if(logger.isInfoEnabled()){
+						logger.info(new StringBuilder().append("Recover Removed Node [").append(address.toString()).append("] to clusters addresses list.").toString());
+					}
 				}
 			}
 		}
