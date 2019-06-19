@@ -88,7 +88,7 @@ public class HealthCheck implements Runnable{
 					
 					 } catch (Exception e) {
 						 if(logger.isInfoEnabled())
-							 logger.info(new StringBuilder().append("Elasticsearch server[").append(address.toString()).append("] is down.").toString());
+							 logger.info(new StringBuilder().append("Down elasticsearch node health check use [").append(address.getHealthPath()).append("] failed:").append(" Elasticsearch server[").append(address.toString()).append("] is down.").toString());
 						 address.onlySetStatus(1);
 					 }
 			 		 if(this.stop)

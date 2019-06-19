@@ -38,6 +38,8 @@ public class UpdateOptions implements Serializable {
 	private String refreshOption;
 	private String detectNoopField;
 	private String docasupsertField;
+	private Object detectNoop;
+	private Object docasupsert;
 	private String parentIdField;
 	private String docIdField;
 	public String getRefreshOption() {
@@ -79,5 +81,21 @@ public class UpdateOptions implements Serializable {
 
 	public void setParentIdField(String parentIdField) {
 		this.parentIdField = parentIdField;
+	}
+
+	public Object getDocasupsert() {
+		return docasupsert;
+	}
+
+	public void setDocasupsert(Object docasupsert) {
+		this.docasupsert = docasupsert;
+	}
+
+	public Object getDetectNoop() {
+		return detectNoop;
+	}
+
+	public void setDetectNoop(Object detectNoop) {
+		this.detectNoop = detectNoop;
 	}
 }

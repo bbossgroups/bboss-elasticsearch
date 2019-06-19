@@ -43,6 +43,11 @@ public class ClientOptions implements Serializable {
 	private String rountField;
 	private String refreshOption;
 
+	private Object esRetryOnConflict;
+	private Object version;
+	private Object versionType;
+	private Object rount;
+
 	public String getParentIdField() {
 		return parentIdField;
 	}
@@ -99,5 +104,37 @@ public class ClientOptions implements Serializable {
 
 	public void setVersionTypeField(String versionTypeField) {
 		this.versionTypeField = versionTypeField;
+	}
+
+	public Object getEsRetryOnConflict() {
+		return esRetryOnConflict;
+	}
+
+	public void setEsRetryOnConflict(Object esRetryOnConflict) {
+		this.esRetryOnConflict = esRetryOnConflict;
+	}
+
+	public Object getVersion() {
+		return version;
+	}
+
+	public void setVersion(Object version) {
+		this.version = version;
+	}
+
+	public Object getVersionType() {
+		return versionType;
+	}
+
+	public void setVersionType(Object versionType) {
+		this.versionType = versionType;
+	}
+
+	public Object getRount() {
+		return rount;
+	}
+
+	public void setRount(Object rount) {
+		this.rount = rount;
 	}
 }

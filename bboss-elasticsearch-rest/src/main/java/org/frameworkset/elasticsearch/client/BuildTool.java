@@ -341,8 +341,18 @@ public abstract class BuildTool {
 		if(clientOptions != null) {
 			id = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? params.get(clientOptions.getParentIdField()) : null;
-			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
-			esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
+			if(clientOptions.getRount() == null) {
+				routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			}
+			else{
+				routing = clientOptions.getRount();
+			}
+			if(clientOptions.getEsRetryOnConflict() == null) {
+				esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
+			}
+			else{
+				esRetryOnConflict = clientOptions.getEsRetryOnConflict();
+			}
 		}
 		buildMeta(null,  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
@@ -374,11 +384,31 @@ public abstract class BuildTool {
 
 			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOption.getIdField()) : null;
 			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOption.getParentIdField()) : null;
-			routing = clientOption.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRountField()) : null;
-			esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,
-									clientOption.getEsRetryOnConflictField()) : null;
-			version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionField()) : null;
-			versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,clientOption.getVersionTypeField()) : null;
+			if(clientOption.getRount() == null) {
+				routing = clientOption.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRountField()) : null;
+			}
+			else{
+				routing = clientOption.getRount();
+			}
+
+			if(clientOption.getEsRetryOnConflict() == null) {
+				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,
+						clientOption.getEsRetryOnConflictField()) : null;
+			}
+			else{
+				esRetryOnConflict = clientOption.getEsRetryOnConflict();
+			}
+			if(clientOption.getVersion() == null) {
+				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo, clientOption.getVersionField()) : null;
+			}
+			else{
+				version = clientOption.getVersion();
+			}
+			if(clientOption.getVersionType() == null) {
+				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo, clientOption.getVersionTypeField()) : null;
+			}else{
+				versionType = clientOption.getVersionType();
+			}
 		}
 		buildMeta( beanClassInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
 	}

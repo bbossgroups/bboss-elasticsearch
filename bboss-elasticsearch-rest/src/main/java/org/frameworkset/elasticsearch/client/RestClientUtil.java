@@ -559,7 +559,12 @@ public class RestClientUtil extends ClientUtil{
 
 			docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : null;
-			routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
+			if(clientOptions.getRount() == null) {
+				routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
+			}
+			else{
+				routing = clientOptions.getRount();
+			}
 		}
 
 		return _addDocument( beanClassInfo, indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
@@ -592,7 +597,12 @@ public class RestClientUtil extends ClientUtil{
 			refreshOption = clientOptions.getRefreshOption();
 			docId = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? params.get( clientOptions.getParentIdField()) : null;
-			routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			if(clientOptions.getRount() == null) {
+				routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			}
+			else{
+				routing = clientOptions.getRount();
+			}
 		}
 		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
 	}
@@ -3482,14 +3492,36 @@ public class RestClientUtil extends ClientUtil{
 				ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
 
 				id = updateOptions.getDocIdField() != null ? BuildTool.getId(params, beanClassInfo, updateOptions.getDocIdField()) : null;
-				detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
-				doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
+				if(updateOptions.getDetectNoop() != null){
+					detect_noop = updateOptions.getDetectNoop();
+				}
+				else {
+					detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
+				}
+				if(updateOptions.getDocasupsert() != null) {
+					doc_as_upsert =updateOptions.getDocasupsert();
+				}
+				else {
+					doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
+				}
 			}
 			else{
 				Map _params = (Map)params;
 				id = updateOptions.getDocIdField() != null ? _params.get(updateOptions.getDocIdField()) : null;
-				detect_noop = updateOptions.getDetectNoopField() != null ? _params.get( updateOptions.getDetectNoopField()) : null;
-				doc_as_upsert = updateOptions.getDocasupsertField() != null ? _params.get(updateOptions.getDocasupsertField()) : null;
+
+				if(updateOptions.getDetectNoop() != null){
+					detect_noop = updateOptions.getDetectNoop();
+				}
+				else {
+					detect_noop = updateOptions.getDetectNoopField() != null ? _params.get( updateOptions.getDetectNoopField()) : null;
+				}
+				if(updateOptions.getDocasupsert() != null) {
+					doc_as_upsert = updateOptions.getDocasupsert();
+				}
+				else {
+					doc_as_upsert = updateOptions.getDocasupsertField() != null ? _params.get(updateOptions.getDocasupsertField()) : null;
+				}
+
 			}
 
 		}
