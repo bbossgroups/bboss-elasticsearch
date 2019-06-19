@@ -32,7 +32,7 @@ public class RoundRobinList {
 
 	public RoundRobinList(List<ESAddress> elements) {
 		this.elements = elements;
-		message = "All elasticServer "+elements.toString()+" can't been connected.";
+		message = "All elasticsearch server "+elements.toString()+" can't been connected.";
 		iterator = this.elements.iterator();
 	}
 
@@ -62,6 +62,7 @@ public class RoundRobinList {
 		try{
 			lock.lock();
 			this.elements.addAll(address);
+			message = new StringBuilder().append("All elasticsearch server ").append(elements.toString()).append(" can't been connected.").toString();
 			this.iterator = elements.iterator();
 		}
 		finally {

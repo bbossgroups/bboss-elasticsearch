@@ -68,10 +68,10 @@ public class ESAddress {
 	
 	public void onlySetStatus(int status) {
 		synchronized (this) {
-			if(status == 0)
+			if(status == 0) {
 				this.status = status;
-
-			if (this.status != 2)//如果没有移除，则设置故障状态
+			}
+			else if (this.status != 2)//如果没有移除，则设置故障状态
 				this.status = status;
 		}
 		
