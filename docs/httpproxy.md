@@ -1,0 +1,289 @@
+# bboss http负载均衡器使用指南
+
+bboss 5.3.9版本新增了一个简单而功能强大的http负载均衡器模块，具有以下特色：
+
+```
+1.服务负载均衡
+2.服务健康检查
+3.服务容灾故障恢复
+4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
+5.分组服务管理
+```
+
+本文介绍其使用方法。
+
+# 1.导入http负载均衡器
+
+在工程中导入以下maven坐标即可
+
+```xml
+<dependency>
+   <groupId>com.bbossgroups</groupId>
+   <artifactId>bboss-http</artifactId>
+   <version>5.5.0</version>
+</dependency>
+```
+
+如果是gradle工程，导入方法如下：
+
+```
+implementation 'com.bbossgroups:bboss-http:5.3.9'
+```
+
+# 2.http负载均衡器配置和启动
+
+http负载均衡器配置非常简单，可以通过配置文件方式和代码方式对http负载均衡器进行配置
+
+## 2.1 配置文件方式
+
+在配置文件中添加以下内容-resources\application.properties
+
+```properties
+http.poolNames = default,schedule
+##http连接池配置
+http.timeoutConnection = 5000
+http.timeoutSocket = 50000
+http.connectionRequestTimeout=10000
+http.retryTime = 0
+http.maxLineLength = -1
+http.maxHeaderCount = 200
+http.maxTotal = 200
+http.defaultMaxPerRoute = 100
+http.soReuseAddress = false
+http.soKeepAlive = false
+http.timeToLive = 3600000
+http.keepAlive = 3600000
+http.keystore =
+http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+http.hostnameVerifier =
+
+# 服务代理配置
+# 服务全认证账号配置
+http.authAccount=elastic
+http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置
+http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# 健康检查服务
+http.health=/health
+# 健康检查定时时间间隔，单位：毫秒，默认3秒
+http.healthCheckInterval=3000
+# 服务地址自动发现功能
+http.discoverService=org.frameworkset.http.client.DemoHttpHostDiscover
+
+##告警服务使用的http连接池配置
+schedule.http.timeoutConnection = 5000
+schedule.http.timeoutSocket = 50000
+schedule.http.connectionRequestTimeout=10000
+schedule.http.retryTime = 0
+schedule.http.maxLineLength = -1
+schedule.http.maxHeaderCount = 200
+schedule.http.maxTotal = 200
+schedule.http.defaultMaxPerRoute = 100
+schedule.http.soReuseAddress = false
+schedule.http.soKeepAlive = false
+schedule.http.timeToLive = 3600000
+schedule.http.keepAlive = 3600000
+schedule.http.keystore =
+schedule.http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+schedule.http.hostnameVerifier =
+# 告警服务使用服务代理配置
+# 服务全认证账号配置
+schedule.http.authAccount=elastic
+schedule.http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置
+schedule.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# 健康检查服务
+schedule.http.health=/health
+# 健康检查定时时间间隔，单位：毫秒，默认3秒
+schedule.http.healthCheckInterval=3000
+# 服务地址自动发现功能
+schedule.http.discoverService=org.frameworkset.http.client.DemoHttpHostDiscover
+```
+
+上面配置了default和schedule两组服务配置，每组包含两部分内容：
+
+- http连接池配置
+- 服务负载均衡配置
+
+http连接池配置这里不着重说明，只介绍服务负载均衡相关配置
+
+```properties
+# 服务代理配置
+# 服务全认证账号和口令配置
+http.authAccount=elastic
+http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置，初始地址清单，
+# 还可以通过http.discoverService动态发现新的负载地址、移除关停的负载地址，也可以不配置初始地址
+# 这样初始地址完全由http.discoverService对应的服务发现功能来提供
+http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# 健康检查服务，服务端提供的一个监控服务检查地址，当服务节点不可用时，就会启动健康检查,根据healthCheckInterval参数，按一定的时间间隔探测health对应的服务是否正常，如果正常，那么服务即可用，健康检查线程停止（直到服务不可用时，再次启动检查机制），否则继续监测
+http.health=/health
+# 健康检查定时时间间隔，单位：毫秒，默认3秒
+http.healthCheckInterval=3000
+# 服务地址自动发现功能，必须继承抽象类org.frameworkset.spi.remote.http.proxy.HttpHostDiscover
+# 实现抽象方法discover
+http.discoverService=org.frameworkset.http.client.DemoHttpHostDiscover
+```
+
+ org.frameworkset.http.client.DemoHttpHostDiscover的实现如下：
+
+```java
+package org.frameworkset.http.client;
+ 
+
+import org.frameworkset.spi.assemble.GetProperties;
+import org.frameworkset.spi.remote.http.ClientConfiguration;
+import org.frameworkset.spi.remote.http.HttpHost;
+import org.frameworkset.spi.remote.http.proxy.HttpHostDiscover;
+import org.frameworkset.spi.remote.http.proxy.HttpServiceHosts;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class DemoHttpHostDiscover extends HttpHostDiscover {
+   private int count = 0;
+   @Override
+   protected List<HttpHost> discover(HttpServiceHosts httpServiceHosts,
+                             ClientConfiguration configuration,
+                             GetProperties context) {
+	  //直接构造并返回三个服务地址的列表对象
+      List<HttpHost> hosts = new ArrayList<HttpHost>();
+      HttpHost host = new HttpHost("192.168.137.1:808");
+      hosts.add(host);
+      if(count != 2) {
+         host = new HttpHost("192.168.137.1:809");
+         hosts.add(host);
+      }
+      else{
+         System.out.println("aa");
+      }
+      host = new HttpHost("192.168.137.1:810");
+      hosts.add(host);
+      count ++;
+      return hosts;
+   }
+}
+```
+
+## 2.2 加载配置文件启动负载均衡器
+
+```java
+HttpRequestProxy.startHttpPools("application.properties");
+```
+
+## 2.3 代码方式配置和启动负载均衡器
+
+```java
+/**
+       * 1.服务健康检查
+       * 2.服务负载均衡
+       * 3.服务容灾故障恢复
+       * 4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
+       * 配置了两个服务集群组：default,report
+       */
+      Map<String,Object> configs = new HashMap<String,Object>();
+      configs.put("http.poolNames","default,report");
+	//default组配置	
+      configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+
+      DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
+      configs.put("http.discoverService",demoHttpHostDiscover);
+
+      //report组配置
+      configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+
+      configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
+     //启动负载均衡器
+      HttpRequestProxy.startHttpPools(configs);
+```
+
+# 3.使用负载均衡器调用服务
+
+使用负载均衡器调用服务，在指定服务集群组report调用rest服务/testBBossIndexCrud,返回json字符串报文，通过循环调用，测试负载均衡机制
+
+```java
+@Test
+   public void testGet(){
+      String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+      System.out.println(data);
+      do {
+         try {
+            data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+         } catch (Exception e) {
+            e.printStackTrace();
+         }
+         try {
+            Thread.sleep(3000l);
+         } catch (Exception e) {
+            break;
+         }
+         try {
+            data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+         } catch (Exception e) {
+            e.printStackTrace();
+         }
+         try {
+            data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+         } catch (Exception e) {
+            e.printStackTrace();
+         }
+//       break;
+      }
+      while(true);
+   }
+```
+
+# 4.服务发现机制的两种工作模式
+
+本文开头介绍了http负载均衡器服务发现支持从各种数据源获取和发现服务地址：
+
+zookeeper，etcd，consul，eureka，db，其他第三方注册中心
+
+为了支持第三方注册中心，服务发现机制的提供两种工作模式：
+
+**主动发现模式**：定时从数据库和注册中心中查询最新的服务地址数据，本文上面介绍的http.discoverService就是一种主动定时发现模式
+
+**被动发现模式**：监听zookeeper，etcd，consul，eureka数据变化
+
+被动发现模式示例代码如下：
+
+```java
+//模拟被动获取监听地址清单
+List<HttpHost> hosts = new ArrayList<HttpHost>();
+HttpHost host = new HttpHost("192.168.137.1:808");
+hosts.add(host);
+
+   host = new HttpHost("192.168.137.1:809");
+   hosts.add(host);
+
+host = new HttpHost("192.168.137.1:810");
+hosts.add(host);
+//将被动获取到的地址清单加入服务地址组report中
+HttpProxyUtil.handleDiscoverHosts("report",hosts);
+```
+
+
+
+# 5.开发交流
+
+
+
+bboss elasticsearch交流：166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+
+
+
+# 6.支持我们
+
+<div align="left"></div>
+
+<img src="E:/workspace/bbossgroups/bboss-elastic/docs/images/alipay.png"  height="200" width="200">
+
