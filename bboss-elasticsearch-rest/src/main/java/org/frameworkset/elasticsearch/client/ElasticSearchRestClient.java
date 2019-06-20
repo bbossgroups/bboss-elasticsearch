@@ -267,7 +267,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		restSeachExecutor = new RestSearchExecutor(headers,this.httpPool,this);
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
-			healthCheck = new HealthCheck(addressList, healthCheckInterval,headers);
+			healthCheck = new HealthCheck(this.getElasticSearch().getElasticSearchName(),addressList, healthCheckInterval,headers);
 			healthCheck.run();
 		}
 		else {
@@ -278,7 +278,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if(discoverHost) {
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
-			HostDiscover hostDiscover = new HostDiscover(this);
+			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),this);
 			hostDiscover.start();
 		}
 		else {

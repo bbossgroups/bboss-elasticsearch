@@ -30,8 +30,8 @@ public class HostDiscover extends Thread{
 	private ClientInterface clientInterface ;
 	private ElasticSearch elasticSearch;
 	private ElasticSearchRestClient elasticSearchRestClient;
-	public HostDiscover(ElasticSearchRestClient elasticSearchRestClient ){
-		super("ElasticSearch HostDiscover Thread");
+	public HostDiscover(String elasticsearchName,ElasticSearchRestClient elasticSearchRestClient ){
+		super("ElasticSearch["+elasticsearchName+"] HostDiscover Thread");
 		this.jsonFactory = new JsonFactory();
 		this.elasticSearchRestClient = elasticSearchRestClient;
 		this.elasticSearch = elasticSearchRestClient.getElasticSearch();
@@ -63,7 +63,7 @@ public class HostDiscover extends Thread{
 		//处理新增节点
 		if(newAddress.size() > 0) {
 			if (logger.isInfoEnabled()) {
-				logger.info(new StringBuilder().append("Discovery new elasticsearch server[").append(newAddress).append("].").toString());
+				logger.info(new StringBuilder().append("Discovery new elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] server[").append(newAddress).append("].").toString());
 			}
 			elasticSearchRestClient.addAddresses(newAddress);
 		}
@@ -94,7 +94,7 @@ public class HostDiscover extends Thread{
 
 			} catch (Exception e) {
 				if (logger.isInfoEnabled())
-					logger.info("Discovery elasticsearch server failed:",e);
+					logger.info(new StringBuilder().append("Discovery elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] server failed:").toString(),e);
 			}
 			try {
 				sleep(discoverInterval);
@@ -112,7 +112,7 @@ public class HostDiscover extends Thread{
 		try {
 			JsonParser parser = this.jsonFactory.createParser(inputStream);
 			if (parser.nextToken() != JsonToken.START_OBJECT) {
-				throw new IOException("expected data to start with an object");
+				throw new IOException(new StringBuilder().append("expected data to start with an object for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("]").toString());
 			} else {
 				ArrayList hosts = new ArrayList();
 
@@ -134,7 +134,8 @@ public class HostDiscover extends Thread{
 								String nodeId = parser.getCurrentName();
 								HttpHost sniffedHost = readHost(nodeId, parser, this.scheme);
 								if (sniffedHost != null) {
-									logger.trace("adding node [" + nodeId + "]");
+									if(logger.isTraceEnabled())
+										logger.trace(new StringBuilder().append("Adding node [" ).append( nodeId ).append( "] for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("]").toString());
 									hosts.add(sniffedHost);
 								}
 							}
@@ -163,7 +164,7 @@ public class HostDiscover extends Thread{
 		}
 	}
 
-	private static HttpHost readHost(String nodeId, JsonParser parser, Scheme scheme) throws IOException {
+	private  HttpHost readHost(String nodeId, JsonParser parser, Scheme scheme) throws IOException {
 		HttpHost httpHost = null;
 		String fieldName = null;
 
@@ -195,7 +196,9 @@ public class HostDiscover extends Thread{
 			}
 
 			if (httpHost == null) {
-				logger.debug("skipping node [" + nodeId + "] with http disabled");
+				if(logger.isDebugEnabled())
+				logger.debug(new StringBuilder().append("skipping node [" )
+						.append( nodeId ).append( "] with http disabled  for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("]").toString());
 				return null;
 			}
 

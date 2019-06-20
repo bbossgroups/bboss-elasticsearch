@@ -4,7 +4,7 @@ import org.frameworkset.elasticsearch.client.HostDiscover;
 
 public class DiscoveryTest {
 	public static void main(String[] args){
-		Thread t = new Thread(new HostDiscover(null));
+		Thread t = new Thread(new HostDiscover("default",null));
 		t.start();
 	}
 }
