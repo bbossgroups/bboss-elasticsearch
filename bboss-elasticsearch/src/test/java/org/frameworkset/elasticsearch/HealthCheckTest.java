@@ -20,7 +20,7 @@ public class HealthCheckTest {
 		String elasticUser = "elastic", elasticPassword = "changeme";
 		Map<String,String> headers = new HashMap<String,String>();
 		headers.put("Authorization", ElasticSearchRestClient.getHeader(elasticUser, elasticPassword));
-		final HealthCheck healthCheck = new HealthCheck(esAddresses,5000, headers);
+		final HealthCheck healthCheck = new HealthCheck("default",esAddresses,5000, headers);
 		healthCheck.run();
 		
 		Thread r = new Thread(new Runnable(){
