@@ -1478,23 +1478,23 @@ linux: restart.sh
 
 注册好的作业执行器
 
-![作业执行器](E:/workspace/bbossgroups/bboss-elastic/docs/images/xxjob-executor.png)
+![作业执行器](images/xxjob-executor.png)
 
 编辑执行器
 
-![编辑执行器](E:/workspace/bbossgroups/bboss-elastic/docs/images/xxjobexe-editor.png)
+![编辑执行器](images/xxjobexe-editor.png)
 
 任务管理
 
-![任务管理](E:/workspace/bbossgroups/bboss-elastic/docs/images/joblist.png)
+![任务管理](images/joblist.png)
 
 可以在后面的操作去，执行、启动作业，查看作业调度执行日志，修改作业参数和运行模式：
 
-![](E:/workspace/bbossgroups/bboss-elastic/docs/images/jobedit.png)
+![](images/jobedit.png)
 
 运行报表
 
-![运行报表](E:/workspace/bbossgroups/bboss-elastic/docs/images/jobstatic.png)
+![运行报表](images/jobstatic.png)
 
 ## 
 
