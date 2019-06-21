@@ -353,7 +353,17 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
 
 
-## 5.4 指定自定义文档id机制：
+## 5.4 设置文档id机制
+
+bboss充分利用elasticsearch的文档id生成机制，同步数据的时候提供了以下3种生成文档Id的机制：
+
+1. 不指定文档ID机制：直接使用Elasticsearch自动生成文档ID
+
+2. 指定表字段，对应的字段值作为Elasticsearch文档ID
+
+   importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+
+3. 自定义文档id机制配置
 
 ```
 importBuilder.setEsIdGenerator(new EsIdGenerator() {
@@ -780,6 +790,37 @@ db.jdbcFetchSize = -2147483648
 ```
 
 机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
+
+## 5.15 用配置文件来管理同步sql
+
+如果同步的sql很长，那么可以在配置文件中管理同步的sql
+
+**首先定义一个xml sql配置文件**
+
+在工程resources目录下创建一个名称为sql.xml的配置文件（路径可以自己设定，如果有子目录，那么在setSqlFilepath方法中带上相对路径即可），内容如下：
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+   配置数据导入的sql
+ ]]>
+    </description>
+    <!--增量导入sql-->
+    <!--<property name="demoexport"><![CDATA[select * from td_sm_log where log_id > #[log_id]]]></property>-->
+    <!--全量导入sql-->
+    <property name="demoexportFull"><![CDATA[select * from td_sm_log ]]></property>
+
+</properties>
+```
+
+**然后，利用api指定配置文件相对classpath路径和对应sql配置名称即可**
+
+```java
+importBuilder.setSqlFilepath("sql.xml")
+           .setSqlName("demoexportFull");
+```
 
 # 6.DB-ES数据同步工具使用方法
 
