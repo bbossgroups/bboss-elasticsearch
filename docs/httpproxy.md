@@ -1,18 +1,28 @@
 # bboss http负载均衡器使用指南
 
-bboss 5.3.9版本新增了一个简单而功能强大的http负载均衡器模块，具有以下特色：
+bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
-```
-1.服务负载均衡
+# 1.负载均衡器特色
+
+bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，具有以下特色
+
+```properties
+1.服务负载均衡（目前提供RoundRobin负载算法）
 2.服务健康检查
 3.服务容灾故障恢复
 4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
 5.分组服务管理
+可以配置多组服务集群地址，每一组地址清单支持的配置格式：
+http://ip:port
+https://ip:port
+ip:port（默认http协议）
+多个地址用逗号分隔
+6.服务安全认证（配置basic账号和口令）
 ```
 
-本文介绍其使用方法。
 
-# 1.导入http负载均衡器
+
+# 2.导入http负载均衡器
 
 在工程中导入以下maven坐标即可
 
@@ -27,14 +37,78 @@ bboss 5.3.9版本新增了一个简单而功能强大的http负载均衡器模�
 如果是gradle工程，导入方法如下：
 
 ```
-implementation 'com.bbossgroups:bboss-http:5.3.9'
+implementation 'com.bbossgroups:bboss-http:5.5.0'
 ```
 
-# 2.http负载均衡器配置和启动
+# 3.负载均衡组件
+
+```
+org.frameworkset.spi.remote.http.HttpRequestProxy
+```
+
+## 3.1 负载均衡组件API
+
+### 3.1.1 启动相关的api及示例
+
+HttpRequestProxy.startHttpPools(Map configs);
+
+HttpRequestProxy.startHttpPools(String configFile);
+
+加载配置文件启动示例
+
+```java
+//加载配置文件，启动负载均衡器
+HttpRequestProxy.startHttpPools("application.properties");
+```
+
+加载Map属性配置启动负载均衡器示例
+
+```java
+       Map<String,Object> configs = new HashMap<String,Object>();
+      configs.put("http.poolNames","default,report");
+
+      DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
+      configs.put("http.discoverService",demoHttpHostDiscover);
+
+
+      configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+//如果指定hosts那么就会采用配置的地址作为初始化地址清单，后续通过discoverService服务发现的地址都会加入到清单中
+//    configs.put("report.http.hosts，","1111:90222,http://1111:90222,https://1111:90222");
+      configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
+      HttpRequestProxy.startHttpPools(configs);
+```
+
+### 3.1.2 调用服务API及示例
+
+HttpRequestProxy.httpGetforString
+
+HttpRequestProxy.httpXXX
+
+HttpRequestProxy.sendXXX
+
+提供了两套方法：一套方法是带服务组名称的方法，一套方法是不带服务组名称的方法（默认default服务组）
+
+服务地址都是相对地址，例如：/testBBossIndexCrud，最终地址会被解析为
+
+http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
+
+默认服务组示例
+
+```
+String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
+```
+
+指定服务组示例
+
+```
+String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+```
+
+## 3.2 http负载均衡器配置和启动
 
 http负载均衡器配置非常简单，可以通过配置文件方式和代码方式对http负载均衡器进行配置
 
-## 2.1 配置文件方式
+### 3.2.1 配置文件方式
 
 在配置文件中添加以下内容-resources\application.properties
 
@@ -139,7 +213,7 @@ import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.spi.remote.http.HttpHost;
 import org.frameworkset.spi.remote.http.proxy.HttpHostDiscover;
-import org.frameworkset.spi.remote.http.proxy.HttpServiceHosts;
+import org.frameworkset.spi.remote.http.proxy.HttpServiceHostsConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +222,7 @@ import java.util.List;
 public class DemoHttpHostDiscover extends HttpHostDiscover {
    private int count = 0;
    @Override
-   protected List<HttpHost> discover(HttpServiceHosts httpServiceHosts,
+   protected List<HttpHost> discover(HttpServiceHostsConfig httpServiceHostsConfig,
                              ClientConfiguration configuration,
                              GetProperties context) {
 	  //直接构造并返回三个服务地址的列表对象
@@ -170,13 +244,13 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 }
 ```
 
-## 2.2 加载配置文件启动负载均衡器
+### 3.2.2 加载配置文件启动负载均衡器
 
 ```java
 HttpRequestProxy.startHttpPools("application.properties");
 ```
 
-## 2.3 代码方式配置和启动负载均衡器
+### 3.2.3 代码方式配置和启动负载均衡器
 
 ```java
 /**
@@ -202,7 +276,7 @@ HttpRequestProxy.startHttpPools("application.properties");
       HttpRequestProxy.startHttpPools(configs);
 ```
 
-# 3.使用负载均衡器调用服务
+## 3.3 使用负载均衡器调用服务
 
 使用负载均衡器调用服务，在指定服务集群组report调用rest服务/testBBossIndexCrud,返回json字符串报文，通过循环调用，测试负载均衡机制
 
@@ -285,5 +359,5 @@ bboss elasticsearch交流：166471282
 
 <div align="left"></div>
 
-<img src="E:/workspace/bbossgroups/bboss-elastic/docs/images/alipay.png"  height="200" width="200">
+<img src="images/alipay.png"  height="200" width="200">
 

@@ -18,7 +18,10 @@ https://esdoc.bbossgroups.com/#/development
 
 # v5.7.8 功能改进
 
-
+1. 升级bboss版本为5.5.0
+2. 增加http负载均衡组件，参考文档：https://esdoc.bbossgroups.com/#/httpproxy
+3. 完善http组件，升级httpcomponents client版本为4.5.9
+4. ClientOption/UpdateOption 添加属性：version/versionType/routing/Docasupsert/DetectNoop/EsRetryOnConflict
 
 # v5.7.5 功能改进
 
