@@ -139,6 +139,9 @@ http.authAccount=elastic
 http.authPassword=changeme
 # ha proxy 集群负载均衡地址配置
 http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# https服务必须带https://协议头
+#http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
+
 # 健康检查服务
 http.health=/health
 # 健康检查定时时间间隔，单位：毫秒，默认3秒
@@ -170,6 +173,9 @@ schedule.http.authAccount=elastic
 schedule.http.authPassword=changeme
 # ha proxy 集群负载均衡地址配置
 schedule.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# https服务必须带https://协议头
+# schedule.http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
+
 # 健康检查服务
 schedule.http.health=/health
 # 健康检查定时时间间隔，单位：毫秒，默认3秒
@@ -194,6 +200,8 @@ http.authPassword=changeme
 # 还可以通过http.discoverService动态发现新的负载地址、移除关停的负载地址，也可以不配置初始地址
 # 这样初始地址完全由http.discoverService对应的服务发现功能来提供
 http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+# https服务必须带https://协议头
+#http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
 # 健康检查服务，服务端提供的一个监控服务检查地址，当服务节点不可用时，就会启动健康检查,根据healthCheckInterval参数，按一定的时间间隔探测health对应的服务是否正常，如果正常，那么服务即可用，健康检查线程停止（直到服务不可用时，再次启动检查机制），否则继续监测
 http.health=/health
 # 健康检查定时时间间隔，单位：毫秒，默认3秒
@@ -227,6 +235,7 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
                              GetProperties context) {
 	  //直接构造并返回三个服务地址的列表对象
       List<HttpHost> hosts = new ArrayList<HttpHost>();
+       // https服务必须带https://协议头,例如https://192.168.137.1:808
       HttpHost host = new HttpHost("192.168.137.1:808");
       hosts.add(host);
       if(count != 2) {
@@ -320,15 +329,16 @@ zookeeper，etcd，consul，eureka，db，其他第三方注册中心
 
 为了支持第三方注册中心，服务发现机制的提供两种工作模式：
 
-**主动发现模式**：定时从数据库和注册中心中查询最新的服务地址数据，本文上面介绍的http.discoverService就是一种主动定时发现模式
+**主动发现模式**：bboss通过调用http.discoverService配置的服务发现方法，定时从数据库和注册中心中查询最新的服务地址数据清单，本文上面介绍的http.discoverService就是一种主动定时发现模式
 
-**被动发现模式**：监听zookeeper，etcd，consul，eureka数据变化
+**被动发现模式**：监听zookeeper，etcd，consul，eureka数据变化，适用于发布订阅模式
 
 被动发现模式示例代码如下：
 
 ```java
 //模拟被动获取监听地址清单
 List<HttpHost> hosts = new ArrayList<HttpHost>();
+// https服务必须带https://协议头,例如https://192.168.137.1:808
 HttpHost host = new HttpHost("192.168.137.1:808");
 hosts.add(host);
 

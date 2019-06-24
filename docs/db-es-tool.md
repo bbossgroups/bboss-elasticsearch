@@ -237,7 +237,7 @@ db.jdbcFetchSize = 10000
 		 */
 		DataStream dataStream = importBuilder.builder();
 		dataStream.execute();
-		
+		//获取索引表dbdemo中的数据总量，如果没有设置refreshOption,es插入数据会有几秒的延迟（具体的延迟多久取决于index refresh interval配置），所以countAll统计出来的结果不一定准确
 		long count = ElasticSearchHelper.getRestClientUtil().countAll("dbdemo");
 		System.out.println("数据导入完毕后索引表dbdemo中的文档数量:"+count);
 	}
@@ -448,7 +448,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 		DataStream dataStream = importBuilder.builder();
 		dataStream.execute();//执行导入操作
 
-		System.out.println();
+		
 
 		
 	}
@@ -509,7 +509,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 		DataStream dataStream = importBuilder.builder();
 		dataStream.execute();//执行导入操作
 
-		System.out.println();
+		
 
 		
 	}

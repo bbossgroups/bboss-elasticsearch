@@ -142,6 +142,21 @@ log4j.appender.COMMON_FILE.layout=org.apache.log4j.PatternLayout
 log4j.appender.COMMON_FILE.layout.ConversionPattern=[%d{yyyy-MM-dd HH:mm:ss}][%p]%x[%c] %m%n
 ```
 
+如果是spring boot项目，那么在spring boot项目的配置文件找那个加入以下内容：
+
+以application.properties为例：
+
+```properties
+logging.level.org.bboss=INFO
+logging.level.bboss=INFO
+logging.level.com.frameworkset=INFO
+logging.level.org.frameworkset=INFO
+
+logging.level.org.apache=INFO
+```
+
+
+
 注意：
 
 在生产环境请关闭：elasticsearch.showTemplate=false
