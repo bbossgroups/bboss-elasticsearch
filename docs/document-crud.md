@@ -301,7 +301,168 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         long totalSize = data.getTotalSize();
 ```
 
+# 返回索引元数据的检索操作
 
+检索文档的时候，除了返回要检索的业务数据，同时也可以返回索引元数据信息，只是返回的对象类必须继承父类：
+
+org.frameworkset.elasticsearch.entity.ESBaseData
+
+高亮检索和父子查询信息都通过这个机制实现，下面举例说明：
+
+首先定义一个Demo对象，继承ESBaseData
+
+```java
+/**
+ * 测试实体，可以从ESBaseData对象继承meta属性，检索时会将文档的一下meta属性设置到对象实例中
+ */
+public class Demo extends ESBaseData {
+   private Object dynamicPriceTemplate;
+   //设定文档标识字段
+   @ESId(readSet = true,persistent = false)
+   private Long demoId;
+   private String contentbody;
+   /**  当在mapping定义中指定了日期格式时，则需要指定以下两个注解,例如
+    *
+    "agentStarttime": {
+    "type": "date",###指定多个日期格式
+    "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+    }
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @Column(dataformat = "yyyy-MM-dd HH:mm:ss.SSS")
+    */
+
+   protected Date agentStarttime;
+   private String applicationName;
+   private String orderId;
+   private int contrastStatus;
+
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   private String name;
+
+   public String getContentbody() {
+      return contentbody;
+   }
+
+   public void setContentbody(String contentbody) {
+      this.contentbody = contentbody;
+   }
+
+   public Date getAgentStarttime() {
+      return agentStarttime;
+   }
+
+   public void setAgentStarttime(Date agentStarttime) {
+      this.agentStarttime = agentStarttime;
+   }
+
+   public String getApplicationName() {
+      return applicationName;
+   }
+
+   public void setApplicationName(String applicationName) {
+      this.applicationName = applicationName;
+   }
+
+   public Long getDemoId() {
+      return demoId;
+   }
+
+   public void setDemoId(Long demoId) {
+      this.demoId = demoId;
+   }
+
+   public Object getDynamicPriceTemplate() {
+      return dynamicPriceTemplate;
+   }
+
+   public void setDynamicPriceTemplate(Object dynamicPriceTemplate) {
+      this.dynamicPriceTemplate = dynamicPriceTemplate;
+   }
+
+   public String getOrderId() {
+      return orderId;
+   }
+
+   public void setOrderId(String orderId) {
+      this.orderId = orderId;
+   }
+
+   public int getContrastStatus() {
+      return contrastStatus;
+   }
+
+   public void setContrastStatus(int contrastStatus) {
+      this.contrastStatus = contrastStatus;
+   }
+}
+```
+
+
+
+执行查询，demo对象中除了包含返回的业务数据，还包含索引相关的元数据，下面是演示代码：
+
+```java
+    /**
+    * 检索文档
+    * @throws ParseException
+    */
+   public void testSearch() throws ParseException {
+      //创建加载配置文件的客户端工具，用来检索文档，单实例多线程安全
+      ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(mappath);
+      //设定查询条件,通过map传递变量参数值,key对于dsl中的变量名称
+      //dsl中有四个变量
+      //        applicationName1
+      //        applicationName2
+      //        startTime
+      //        endTime
+      Map<String,Object> params = new HashMap<String,Object>();
+      //设置applicationName1和applicationName2两个变量的值
+      params.put("applicationName1","blackcatdemo2");
+      params.put("applicationName2","blackcatdemo3");
+      DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      //设置时间范围,时间参数接受long值
+      params.put("startTime",dateFormat.parse("2017-09-02 00:00:00"));
+      params.put("endTime",new Date());
+      //执行查询，demo为索引表，_search为检索操作action
+      ESDatas<Demo> esDatas =  //ESDatas包含当前检索的记录集合，最多1000条记录，由dsl中的size属性指定
+            clientUtil.searchList("demo/_search",//demo为索引表，_search为检索操作action
+            "searchDatas",//esmapper/demo.xml中定义的dsl语句
+            params,//变量参数
+            Demo.class);//返回的文档封装对象类型
+
+      long count = clientUtil.count("demo","searchDatas",//esmapper/demo.xml中定义的dsl语句
+            params);//变量参数
+      //获取结果对象列表，最多返回1000条记录
+      List<Demo> demos = esDatas.getDatas();
+
+      for(int i = 0; demos != null && i < demos.size(); i ++){
+         Demo demo = demos.get(i);
+         //获取索引元数据
+         Double score = demo.getScore();//文档评分
+         String indexName = demo.getIndex();//索引名称
+         String indexType = demo.getType();//索引type
+         Map<String,Object> nested = demo.getNested();//文档neste信息
+         Map<String,Map<String, InnerSearchHits>> innerHits = demo.getInnerHits();//文档父子查询数据
+         Map<String,List<Object>> highlight = demo.getHighlight();//高亮检索数据
+         Map<String,List<Object>> fields = demo.getFields();//检索字段信息
+         long version = demo.getVersion();//文档版本号
+         Object parent = demo.getParent();//文档父docId
+         Object routing = demo.getRouting();//文档路由信息
+         String id = demo.getId();//文档docId
+          Object[] sort = demo.getSort();//排序信息
+      }
+
+
+      long totalSize = esDatas.getTotalSize();
+      System.out.println(totalSize);
+```
 
 # 执行多表查询操作
 
