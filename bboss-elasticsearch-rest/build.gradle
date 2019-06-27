@@ -27,7 +27,7 @@ sourceSets {
 
 dependencies {
     
-   compile([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_VERSION}", transitive: true])   
+   compile([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
        
     compile([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])  
    	 

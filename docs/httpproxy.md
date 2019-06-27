@@ -39,7 +39,7 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.5.0</version>
+   <version>5.5.1</version>
 </dependency>
 ```
 
@@ -259,6 +259,15 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
       count ++;
       return hosts;
    }
+    /**
+	 * 返回false，忽略对返回的null或者空的hosts进行处理；
+	 * 返回true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
+	 *
+	 * @return 默认返回false
+	 */
+	protected boolean handleNullOrEmptyHostsByDiscovery(){
+		return false;
+	}
 }
 ```
 
@@ -426,6 +435,15 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 		hosts.add(host);
 		count ++;
 		return hosts;
+	}
+    /**
+	 * 返回false，忽略对返回的null或者空的hosts进行处理；
+	 * 返回true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
+	 *
+	 * @return 默认返回false
+	 */
+	protected boolean handleNullOrEmptyHostsByDiscovery(){
+		return false;
 	}
 }
 

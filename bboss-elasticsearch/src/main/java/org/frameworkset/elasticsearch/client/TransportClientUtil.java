@@ -1543,6 +1543,26 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public String forcemerge(String indices) {
+		return null;
+	}
+
+	@Override
+	public String forcemerge(String indices, MergeOption mergeOption) {
+		return null;
+	}
+
+	@Override
+	public String forcemerge() {
+		return null;
+	}
+
+	@Override
+	public String forcemerge(MergeOption mergeOption) {
+		return null;
+	}
+
 
 	@Override
 	public String addDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {

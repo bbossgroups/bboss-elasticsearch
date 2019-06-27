@@ -2447,6 +2447,88 @@ public class RestClientUtil extends ClientUtil{
 				this.waitTasksComplete(tasks);
 		}
 	}
+
+	@Override
+	public String forcemerge(String indices) {
+		String result = this.client.executeHttp(new StringBuilder().append(indices)
+				.append("/_forcemerge").toString(),ClientUtil.HTTP_POST);
+		return result;
+	}
+
+	@Override
+	public String forcemerge(String indices, MergeOption mergeOption) {
+		StringBuilder action = new StringBuilder().append(indices)
+				.append("/_forcemerge");
+		if(mergeOption != null) {
+			boolean seted = false;
+			if(mergeOption.getMaxnumSegments() != null) {
+				seted = true;
+				action.append("?max_num_segments=").append(mergeOption.getMaxnumSegments());
+			}
+			if(mergeOption.getFlush() != null){
+				if(seted)
+					action.append("&");
+				else {
+					seted = true;
+					action.append("?");
+				}
+				action.append("flush=").append(mergeOption.getFlush());
+			}
+
+			if(mergeOption.getOnlyExpungeDeletes() != null){
+				if(seted)
+					action.append("&");
+				else {
+					action.append("?");
+				}
+				action.append("only_expunge_deletes=").append(mergeOption.getOnlyExpungeDeletes());
+			}
+
+		}
+		String result = this.client.executeHttp(action.toString(),ClientUtil.HTTP_POST);
+		return result;
+	}
+
+	@Override
+	public String forcemerge() {
+		String result = this.client.executeHttp("/_forcemerge",ClientUtil.HTTP_POST);
+		return result;
+	}
+
+	@Override
+	public String forcemerge(MergeOption mergeOption) {
+		StringBuilder action = new StringBuilder()
+				.append("/_forcemerge");
+		if(mergeOption != null) {
+			boolean seted = false;
+			if(mergeOption.getMaxnumSegments() != null) {
+				seted = true;
+				action.append("?max_num_segments=").append(mergeOption.getMaxnumSegments());
+			}
+			if(mergeOption.getFlush() != null){
+				if(seted)
+					action.append("&");
+				else {
+					seted = true;
+					action.append("?");
+				}
+				action.append("flush=").append(mergeOption.getFlush());
+			}
+
+			if(mergeOption.getOnlyExpungeDeletes() != null){
+				if(seted)
+					action.append("&");
+				else {
+					action.append("?");
+				}
+				action.append("only_expunge_deletes=").append(mergeOption.getOnlyExpungeDeletes());
+			}
+
+		}
+		String result = this.client.executeHttp(action.toString(),ClientUtil.HTTP_POST);
+		return result;
+	}
+
 	public <T> void runScrollTask(List<Future> tasks,ScrollHandler<T> _scrollHandler,
 									   ESDatas<T> sliceResponse, HandlerInfo handlerInfo,
 									   ExecutorService executorService){

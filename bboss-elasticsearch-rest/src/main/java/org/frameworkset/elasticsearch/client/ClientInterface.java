@@ -2525,4 +2525,43 @@ public interface ClientInterface extends ClientInterfaceNew {
 	public String getCurrentDateString();
 	public String getDateString(Date date);
 	public <T> ESDatas<T> scrollParallel(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException;
+
+	/**
+	 * POST /kimchy,elasticsearch/_forcemerge
+	 *
+	 * POST /_forcemerge
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+	 * @param indices
+	 * @return
+	 */
+	public String forcemerge(String indices);
+
+	/**
+	 * POST /kimchy,elasticsearch/_forcemerge
+	 *
+	 * POST /_forcemerge
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+	 * @param indices
+	 * @return
+	 */
+	public String forcemerge(String indices,MergeOption mergeOption);
+
+	/**
+	 * POST /kimchy,elasticsearch/_forcemerge
+	 *
+	 * POST /_forcemerge
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+	 * @return
+	 */
+	public String forcemerge();
+
+	/**
+	 * POST /kimchy,elasticsearch/_forcemerge
+	 *
+	 * POST /_forcemerge
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+	 * @return
+	 */
+	public String forcemerge(MergeOption mergeOption);
+
 }
