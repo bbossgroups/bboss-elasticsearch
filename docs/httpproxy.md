@@ -2,6 +2,9 @@
 
 bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
+项目源码
+https://github.com/bbossgroups/bboss-http
+
 # 1.负载均衡器特色
 
 bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，具有以下特色
@@ -18,6 +21,12 @@ https://ip:port
 ip:port（默认http协议）
 多个地址用逗号分隔
 6.服务安全认证（配置basic账号和口令）
+7.主备路由/异地灾备特色
+
+ 7.1.负载均衡器主备功能，如果主节点全部挂掉，请求转发到可用的备用节点，如果备用节点也挂了，就抛出异常，如果主节点恢复正常，那么请求重新发往主节点 
+ 7.2. 异地灾备，服务采用异地灾备模式部署，服务优先调用本地，当本地服务全部挂掉，服务请求转发到异地服务，如果本地服务部分恢复或者全部恢复，那么请求重新发往本地服务
+
+
 ```
 
 
@@ -351,9 +360,78 @@ hosts.add(host);
 HttpProxyUtil.handleDiscoverHosts("report",hosts);
 ```
 
+# 5.主备和异地灾备配置和服务发现
+
+主备和异地灾备配置和服务发现
+
+地址格式配置，其中routing标识服务地址或者路由标记
+
+ip:port|routing
+
+例如：
+
+```properties
+#指定了每个地址对应的地区信息，可以按照地区信息进行路由
+schedule.http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810|shanghai
+```
+
+需要在客户端配置指定本地区信息
+
+```properties
+# 指定本地区信息，系统按地区部署时，指定地区信息，
+# 不同的地区请求只路由到本地区（beijing）对应的服务器，shanghai的服务器作为backup服务器，
+# 当本地(beijing)的服务器都不可用时，才将请求转发到可用的上海服务器
+schedule.http.routing=beijing
+```
+
+带路由信息的服务发现机制：可以动态变化服务地址的routing信息
+
+```java
+package org.frameworkset.http.client;
 
 
-# 5.开发交流
+import org.frameworkset.spi.assemble.GetProperties;
+import org.frameworkset.spi.remote.http.ClientConfiguration;
+import org.frameworkset.spi.remote.http.HttpHost;
+import org.frameworkset.spi.remote.http.proxy.HttpHostDiscover;
+import org.frameworkset.spi.remote.http.proxy.HttpServiceHostsConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DemoHttpHostDiscover extends HttpHostDiscover {
+	private int count = 0;
+	@Override
+	protected List<HttpHost> discover(HttpServiceHostsConfig httpServiceHostsConfig,
+									  ClientConfiguration configuration,
+									  GetProperties context) {
+
+		List<HttpHost> hosts = new ArrayList<HttpHost>();
+		HttpHost host = new HttpHost("192.168.137.1:808|beijing");
+		hosts.add(host);
+		if(count != 2) {
+			host = new HttpHost("192.168.137.1:809|beijing");
+			hosts.add(host);
+		}
+		else{
+			System.out.println("aa");
+		}
+        //可以动态变化服务地址的routing信息
+		if(count > 10 && count < 15) {
+			host = new HttpHost("192.168.137.1:810|beijing");
+		}
+		else{
+			host = new HttpHost("192.168.137.1:810|shanghai");
+		}
+		hosts.add(host);
+		count ++;
+		return hosts;
+	}
+}
+
+```
+
+# 6.开发交流
 
 
 
@@ -368,6 +446,5 @@ bboss elasticsearch交流：166471282
 # 6.支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

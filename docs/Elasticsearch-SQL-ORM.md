@@ -694,7 +694,11 @@ sql转换为dsl的结果：
 
 # 2 Elasticsearch-sql查询
 
-基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可
+基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可。
+
+如果需要使用本插件，请自行下载安装Elasticsearch-sql插件并安装，下载地址：
+
+https://github.com/NLPchina/elasticsearch-sql
 
 ## 简单案例
 
