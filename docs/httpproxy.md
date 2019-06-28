@@ -39,14 +39,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.5.0</version>
+   <version>5.5.1</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```
-implementation 'com.bbossgroups:bboss-http:5.5.0'
+implementation 'com.bbossgroups:bboss-http:5.5.1'
 ```
 
 # 3.负载均衡组件
@@ -74,16 +74,15 @@ HttpRequestProxy.startHttpPools("application.properties");
 
 ```java
        Map<String,Object> configs = new HashMap<String,Object>();
-      configs.put("http.poolNames","default,report");
 
       DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
-      configs.put("http.discoverService",demoHttpHostDiscover);
+      configs.put("http.discoverService",demoHttpHostDiscover);//设置服务发现组件
 
 
-      configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
-//如果指定hosts那么就会采用配置的地址作为初始化地址清单，后续通过discoverService服务发现的地址都会加入到清单中
-//    configs.put("report.http.hosts，","1111:90222,http://1111:90222,https://1111:90222");
-      configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
+      configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机制
+//如果指定hosts那么就会采用配置的地址作为初始化地址清单，后续通过discoverService服务发现的地址都会加入到清单中，去掉的服务也会从清单中剔除
+configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3:9200");
+ 
       HttpRequestProxy.startHttpPools(configs);
 ```
 
@@ -103,14 +102,18 @@ http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
 
 默认服务组示例
 
-```
+```java
 String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
+AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",AgentRule.class);
+AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCrud",AgentRule.class);
 ```
 
 指定服务组示例
 
-```
+```java
 String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+AgentRule agentRule = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",AgentRule.class);
+AgentRule agentRule = HttpRequestProxy.sendJsonBody("report", params, "/testBBossIndexCrud",AgentRule.class);
 ```
 
 ## 3.2 http负载均衡器配置和启动
@@ -302,7 +305,7 @@ DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
 
 ```java
  String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");//获取字符串报文
-Map data = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",Map.class);//获取对象数据
+Map data = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",Map.class);//获取对象数据
 ```
 
 #### 多集群
