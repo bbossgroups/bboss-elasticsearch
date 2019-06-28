@@ -39,7 +39,7 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.5.1</version>
+   <version>5.5.0</version>
 </dependency>
 ```
 
@@ -157,7 +157,8 @@ http.health=/health
 http.healthCheckInterval=3000
 # 服务地址自动发现功能
 http.discoverService=org.frameworkset.http.client.DemoHttpHostDiscover
-
+# 定时运行服务发现方法时间间隔，单位：毫秒，默认10秒
+http.discoverService.interval=10000
 ##告警服务使用的http连接池配置
 schedule.http.timeoutConnection = 5000
 schedule.http.timeoutSocket = 50000
@@ -191,6 +192,8 @@ schedule.http.health=/health
 schedule.http.healthCheckInterval=3000
 # 服务地址自动发现功能
 schedule.http.discoverService=org.frameworkset.http.client.DemoHttpHostDiscover
+# 定时运行服务发现方法时间间隔，单位：毫秒，默认10秒
+schedule.http.discoverService.interval=10000
 ```
 
 上面配置了default和schedule两组服务配置，每组包含两部分内容：
@@ -260,13 +263,13 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
       return hosts;
    }
     /**
-	 * 返回false，忽略对返回的null或者空的hosts进行处理；
+	 * 返回null或者false，忽略对返回的null或者空的hosts进行处理；
 	 * 返回true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
 	 *
-	 * @return 默认返回false
+	 * @return 默认返回null
 	 */
-	protected boolean handleNullOrEmptyHostsByDiscovery(){
-		return false;
+	protected Boolean handleNullOrEmptyHostsByDiscovery(){
+		return null;
 	}
 }
 ```
@@ -278,6 +281,33 @@ HttpRequestProxy.startHttpPools("application.properties");
 ```
 
 ### 3.2.3 代码方式配置和启动负载均衡器
+
+#### 单集群
+
+配置和启动      
+
+```java
+ Map<String,Object> configs = new HashMap<String,Object>();
+ configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制 
+
+DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
+  configs.put("http.discoverService",demoHttpHostDiscover);//注册服务发现机制，服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
+
+ 
+ //启动负载均衡器
+  HttpRequestProxy.startHttpPools(configs);
+```
+
+服务调用示例
+
+```java
+ String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");//获取字符串报文
+Map data = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",Map.class);//获取对象数据
+```
+
+#### 多集群
+
+配置和启动：两个集群default,report
 
 ```java
 /**
@@ -302,6 +332,16 @@ HttpRequestProxy.startHttpPools("application.properties");
      //启动负载均衡器
       HttpRequestProxy.startHttpPools(configs);
 ```
+
+服务调用
+
+```java
+ String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");//在default集群上执行请求，无需指定集群名称
+
+ String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");//在report集群上执行请求
+```
+
+
 
 ## 3.3 使用负载均衡器调用服务
 
@@ -437,13 +477,13 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 		return hosts;
 	}
     /**
-	 * 返回false，忽略对返回的null或者空的hosts进行处理；
+	 * 返回null或者false，忽略对返回的null或者空的hosts进行处理；
 	 * 返回true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
 	 *
-	 * @return 默认返回false
+	 * @return 默认返回null
 	 */
-	protected boolean handleNullOrEmptyHostsByDiscovery(){
-		return false;
+	protected Boolean handleNullOrEmptyHostsByDiscovery(){
+		return null;
 	}
 }
 
