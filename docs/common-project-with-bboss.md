@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.7.8</version>
+            <version>5.8.0</version>
         </dependency>
 ```
 
@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.7.8"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.8.0"
 ```
 
 
@@ -252,6 +252,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

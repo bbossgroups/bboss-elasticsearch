@@ -49,7 +49,9 @@ public abstract class ResultUtil {
 	public static final int OPERTYPE_existIndiceType = 6;
 	public static final int OPERTYPE_dropIndice = 7;
 	public static final int OPERTYPE_deleteTempate = 8;
-	public static final int OPERTYPE_updateIndiceMapping = 8;
+	public static final int OPERTYPE_updateIndiceMapping = 9;
+	public static final int OPERTYPE_getScript = 10;
+
 
 	public static final Boolean exist = new Boolean(false);
 
@@ -1512,6 +1514,10 @@ public abstract class ResultUtil {
 					return (T) null;
 
 				}
+				else if(operType == ResultUtil.OPERTYPE_getScript) {
+					return (T) null;
+
+				}
 				else if(operType == ResultUtil.OPERTYPE_existIndice) {
 					return (T)ResultUtil.exist;
 
@@ -1577,9 +1583,14 @@ public abstract class ResultUtil {
 //						return (T)ResultUtil.exist;
 
 				}
+				else if(operType == ResultUtil.OPERTYPE_getScript) {
+					return (T) null;
+
+				}
 				else if(String.class.isAssignableFrom(type)){
 					return (T)errorInfo;
 				}
+
 
 			}
 		}

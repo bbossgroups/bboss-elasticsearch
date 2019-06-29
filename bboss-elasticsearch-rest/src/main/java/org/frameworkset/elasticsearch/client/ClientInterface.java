@@ -2564,4 +2564,50 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 */
 	public String forcemerge(MergeOption mergeOption);
 
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * used by ConfigRestClientUtil and RestClientUtil
+	 * @param scriptName
+	 * @param scriptDsl
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDsl);
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * used by ConfigRestClientUtil
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Map params);
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * used by ConfigRestClientUtil
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Object params);
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * @param scriptName
+	 * @return
+	 */
+	public String deleteScript(String scriptName);
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * @param scriptName
+	 * @return
+	 */
+	public String getScript(String scriptName);
 }

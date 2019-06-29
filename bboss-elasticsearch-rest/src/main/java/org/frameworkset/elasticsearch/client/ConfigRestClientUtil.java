@@ -1454,6 +1454,45 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	}
 
 	/**************************************基于query dsl配置文件脚本创建或者修改文档结束**************************************************************/
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate){
+		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
+				ESTemplateHelper.evalTemplate(esUtil,scriptDslTemplate, (Object)null),ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Map params){
+		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
+				ESTemplateHelper.evalTemplate(esUtil,scriptDslTemplate, params),ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Object params){
+		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
+				ESTemplateHelper.evalTemplate(esUtil,scriptDslTemplate, params),ClientUtil.HTTP_POST);
+	}
+
 
 
 }

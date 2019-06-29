@@ -347,13 +347,16 @@ dsl配置文件
 ​	boost_mode字段用来指定新计算的分数与_score的结合方式，取值可以是：
 
 ​				multiply 相乘
+
 ​				replace 替换
+
 ​				sum 相加
+
 ​				avg 取平均值
+
 ​				max 取最大值
+
 ​				min 取最小值
-
-
 
 # 相关资料
 
@@ -366,7 +369,12 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-functi
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
 
 https://elasticsearch.cn/question/1890
-评分相似度文档：https://blog.csdn.net/qq_19598855/article/details/50581945
+
+评分相似度文档：
+
+https://blog.csdn.net/qq_19598855/article/details/50581945
+
+https://blog.csdn.net/wwd0501/article/details/78652850
 
 
 
@@ -385,6 +393,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

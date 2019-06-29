@@ -1563,6 +1563,31 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public String createScript(String scriptName, String scriptDsl) {
+		return null;
+	}
+
+	@Override
+	public String createScript(String scriptName, String scriptDslTemplate, Map params) {
+		return null;
+	}
+
+	@Override
+	public String createScript(String scriptName, String scriptDslTemplate, Object params) {
+		return null;
+	}
+
+	@Override
+	public String deleteScript(String scriptName) {
+		return null;
+	}
+
+	@Override
+	public String getScript(String scriptName) {
+		return null;
+	}
+
 
 	@Override
 	public String addDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {

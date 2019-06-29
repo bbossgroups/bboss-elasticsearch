@@ -50,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.7.8</version>
+<version>5.8.0</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1851,6 +1851,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

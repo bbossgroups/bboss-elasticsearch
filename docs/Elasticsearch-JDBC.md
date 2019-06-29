@@ -12,7 +12,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 <dependency> 
     <groupId>com.bbossgroups</groupId> 
     <artifactId>bboss-persistent</artifactId> 
-    <version>5.5.0</version> 
+    <version>5.5.1</version> 
 </dependency> 
 
 在pom中添加elastic maven库 
@@ -266,6 +266,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

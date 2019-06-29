@@ -5511,4 +5511,66 @@ public class RestClientUtil extends ClientUtil{
 		}
 	}
 
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDsl
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDsl){
+		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), scriptDsl,ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Map params){
+		return null;
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 *
+	 * @param scriptName
+	 * @param scriptDslTemplate
+	 * @return
+	 */
+	public String createScript(String scriptName,String scriptDslTemplate,Object params){
+		return null;
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * @param scriptName
+	 * @return
+	 */
+	public String deleteScript(String scriptName){
+		 return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), ClientUtil.HTTP_DELETE);
+
+	}
+
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-using.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+	 * @param scriptName
+	 * @return
+	 */
+	public String getScript(String scriptName){
+		try {
+			return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), ClientUtil.HTTP_GET);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getScript);
+		}
+	}
+
 }

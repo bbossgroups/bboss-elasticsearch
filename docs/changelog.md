@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.7.8 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.8.0 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -15,6 +15,13 @@ https://esdoc.bbossgroups.com/#/development
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
 6. 提供快速而高效的数据导入ES工具
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+
+# v5.8.0 功能改进
+
+1. 升级框架到5.5.2
+2. 增加forcemerge方法
+3. Elasticsearch响应报文长度为0情况处理
+4. http负载均衡组件增加主备路由功能
 
 # v5.7.8 功能改进
 
@@ -246,7 +253,6 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 
 
