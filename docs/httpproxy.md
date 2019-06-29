@@ -103,13 +103,19 @@ http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
 默认服务组示例
 
 ```java
+//以get方式发送请求
 String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
-AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",AgentRule.class);
+//以get方式发送请求,将返回的json数据封装为AgentRule对象
+AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud?id=1",AgentRule.class);
+//以RequestBody方式，将params对象转换为json报文post方式推送到服务端，将相应json报文转换为AgentRule对象返回
 AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCrud",AgentRule.class);
-
+//以post方式发送请求,将返回的json数据封装为AgentRule对象,方法第二个参数为保存请求参数的map对象
 AgentRule data = HttpRequestProxy.httpPostForObject("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象List集合,方法第二个参数为保存请求参数的map对象
 				List<AgentRule> datas = HttpRequestProxy.httpPostForList("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象Set集合,方法第二个参数为保存请求参数的map对象
 				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象Map集合,方法第二个参数为保存请求参数的map对象
 				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
 ```
 
