@@ -106,6 +106,11 @@ http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
 String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
 AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",AgentRule.class);
 AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCrud",AgentRule.class);
+
+AgentRule data = HttpRequestProxy.httpPostForObject("/testBBossIndexCrud",(Map)null,AgentRule.class);
+				List<AgentRule> datas = HttpRequestProxy.httpPostForList("/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
 ```
 
 指定服务组示例
@@ -114,6 +119,11 @@ AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCru
 String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
 AgentRule agentRule = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",AgentRule.class);
 AgentRule agentRule = HttpRequestProxy.sendJsonBody("report", params, "/testBBossIndexCrud",AgentRule.class);
+
+AgentRule data = HttpRequestProxy.httpPostForObject("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				List<AgentRule> datas = HttpRequestProxy.httpPostForList("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("report","/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
 ```
 
 ## 3.2 http负载均衡器配置和启动
