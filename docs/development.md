@@ -387,11 +387,19 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("order"
 
 public static ClientInterface getRestClientUtil()
 
-public static ClientInterface getRestClientUtil(String elasticSearch) //elasticsearch参数指定了bboss中多集群配
+public static ClientInterface getRestClientUtil(String elasticSearch) //elasticsearch参数指定了bboss中多集群配置中的逻辑es集群名称，
 
-置中的逻辑es集群名称，关于多集群配置请参考文档：
+关于多集群配置请参考文档：
 
 [快速集成Elasticsearch Restful API案例分享](common-project-with-bboss.md)  中的章节【***2.2多集群配置***】
+
+获取实例方法
+
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil("othercluster");
+```
 
 **通过这两个方法获取到的ClientInterface实例是多线程安全的、单实例对象**
 
@@ -1107,9 +1115,50 @@ refreshOption 使用实例：
 				demo,"refresh=true&version=1");
 ```
 
+## 4.9 指定检索search_type参数
+
+### 关于search_type的介绍如下
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-type.html
+
+Elasticsearch is very flexible and allows to control the type of search to execute on a **per search request** basis. The type can be configured by setting the **search_type** parameter in the query string. The types are:
+
+#### Query Then Fetch
+
+Parameter value: **query_then_fetch**.
+
+The request is processed in two phases. In the first phase, the query is forwarded to **all involved shards**. Each shard executes the search and generates a sorted list of results, local to that shard. Each shard returns **just enough information** to the coordinating node to allow it merge and re-sort the shard level results into a globally sorted set of results, of maximum length `size`.
+
+During the second phase, the coordinating node requests the document content (and highlighted snippets, if any) from **only the relevant shards**.
+
+**Note：**This is the default setting, if you do not specify a `search_type` in your request.
+
+#### Dfs, Query Then Fetch
+
+Parameter value: **dfs_query_then_fetch**.
+
+Same as "Query Then Fetch", except for an initial scatter phase which goes and computes the distributed term frequencies for more accurate scoring.
+
+### 检索的时候指定search_type
+
+```java
+ ClientInterface clientUtil = ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesqlMapper.xml");
+        Map<String,Object> queryMap = new HashMap<>();
+        // 指定商品类目作为过滤器
+        queryMap.put("titleName","雨伞");
+        // 指定需要field_value_factor运算的参数
+        queryMap.put("valueFactorName","sales");
+        // testFieldValueFactor 就是上文定义的dsl模板名，queryMap 为查询条件，Student为实体类
+        //通过search_type参数指定search_type值即可，两个值：query_then_fetch和dfs_query_then_fetch
+        ESDatas<Item> esDatast = clientUtil.searchList("items/_search?search_type=dfs_query_then_fetch", "testFieldValueFactor", queryMap, Item.class);
+        List<Item> esCrmOrderStudentList = esDatast.getDatas();
+        logger.debug(esCrmOrderStudentList.toString());
+        System.out.println(esCrmOrderStudentList.toString());
+```
 
 
-## 4.9 @JsonProperty注解使用
+
+## 4.10 @JsonProperty注解使用
 
 当elasticsearch索引表字段名称和java bean的字段名称不一致的情况下，采用@JsonProperty注解用来定义elasticsearch和java bean的field名称转换映射关系，使用实例如下：
 
@@ -1118,7 +1167,7 @@ refreshOption 使用实例：
 private Double maxScore;
 ```
 
-## 4.10 在es7+使用的api
+## 4.11 在es7+使用的api
 
 es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api，参考文档：
 
@@ -1726,13 +1775,21 @@ $方式的变量还用于逻辑判断和foreach循环。
 本小节总结#[xxx]和$xxx两种模式变量的区别：
 
 1. \#[xxx]自动对变量值中的特殊字符进行转义处理，而$xxx不会进行处理直接输出原始值
-2. \#[xxx]自动在String类型变量两边加上双引号""
-3. \#[xxx]自动对日期类型变量值采用Utc标准时间格式（yyyy-MM-dd'T'HH:mm:ss.SSS'Z'）进行格式化处理，而$xxx不会进行处理直接输出原始值
+2. \#[xxx]自动在String类型变量两边加上双引号""，如果不需要双引号，就写成这样：#[xxx,quoted=false]
+3. \#[xxx]自动对日期类型变量值采用Utc标准时间格式（yyyy-MM-dd'T'HH\\:mm\\:ss.SSS'Z'）进行格式化处理，而$xxx不会进行处理直接输出原始值
 4. 因此如果$xxx模式变量参数中包含有特殊字符或者是日期类型，请在程序中自行处理好
 5. $xxx可用于逻辑判断、循环处理语句，#[xxx]不能用于逻辑判断、循环处理语句
 6. $xxx变量参数值拼接到dsl中需要特别注意，如果变量的值不确定，变化频繁，在高并发的场景下回导致严重的性能问题；$xxx用在foreach和if/else语法中不会存在这个问题
 
 **建议**:**在dsl拼接中采用#[xxx]替代$xxx模式变量，在foreach和if/else语法中使用$xxx.**
+
+某些情况的的foreach循环可以进行优化编写，例如：
+
+"terms":{"$sourceField":[#foreach($source in $sourceValue) #if($velocityCount > 0),#end "$source"#end ]}
+
+调整为：
+
+"terms":{#[sourceField]:#[sourceValue,serialJson=true]}
 
 ### **5.3.6 @{pianduan}-片段变量使用**
 

@@ -299,7 +299,50 @@ clientInterface.closeIndex("demo");//关闭索引
 clientInterface.openIndex("demo");//打开索引
 ```
 
-# 11 索引分片离线重分配延迟时间设置
+# 11 索引segment段合并
+
+```java
+ClientInterface clientInterface =  ElasticSearchHelper.getRestClientUtil();
+
+		clientInterface.forcemerge();//强制合并所以索引的segment
+
+		MergeOption mergeOption = new MergeOption();
+		mergeOption.setFlush(true);
+		mergeOption.setMaxnumSegments(1);
+		mergeOption.setOnlyExpungeDeletes(false);
+
+		clientInterface.forcemerge(mergeOption );//强制合并所以索引的segment，并指定合并参数选项
+
+		clientInterface.forcemerge("indice1");//强制合并索引indice1的segment
+
+		clientInterface.forcemerge("indice1,indice2");//强制合并索引indice1和indice2的segment
+
+		mergeOption = new MergeOption();
+		mergeOption.setFlush(false);
+		mergeOption.setMaxnumSegments(1);
+		mergeOption.setOnlyExpungeDeletes(false);
+
+		clientInterface.forcemerge("indice1",mergeOption );//强制合并索引indice1的segment，并指定合并参数选项
+
+		clientInterface.forcemerge("indice1,indice2",mergeOption );//强制合并索引indice1和indice2的segment，并指定合并参数选项
+```
+
+关于mergeoption的说明
+
+Request Parameters
+
+The force merge API accepts the following request parameters:
+
+| `max_num_segments`     | The number of segments to merge to. To fully merge the index, set it to `1`. Defaults to simply checking if a merge needs to execute, and if so, executes it. |
+| ---------------------- | ------------------------------------------------------------ |
+| `only_expunge_deletes` | Should the merge process only expunge segments with deletes in it. In Lucene, a document is not deleted from a segment, just marked as deleted. During a merge process of segments, a new segment is created that does not have those deletes. This flag allows to only merge segments that have deletes. Defaults to `false`. Note that this won’t override the`index.merge.policy.expunge_deletes_allowed` threshold. |
+| `flush`                | Should a flush be performed after the forced merge. Defaults to `true`. |
+
+参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+
+# 12 索引分片离线重分配延迟时间设置
 
 ```java
 ClientInterface clientInterface =  ElasticSearchHelper.getRestClientUtil();
@@ -310,7 +353,7 @@ clientInterface.unassignedNodeLeftDelayedTimeout("cms_document","3d");//直接�
 System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//获取索引cms_document配置
 ```
 
-# 12 管理索引副本数
+# 13 管理索引副本数
 
 ```java
 @Test
@@ -326,7 +369,7 @@ System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//
 	}
 ```
 
-# 13 禁用/启用shared迁移
+# 14 禁用/启用shared迁移
 
 ```java
 /**
@@ -345,7 +388,7 @@ System.out.println(clientInterface.getIndiceSetting("cms_document","pretty"));//
    }
 ```
 
-# 14 通用修改索引配置的方法
+# 15 通用修改索引配置的方法
 
 ```java
 @Test
@@ -368,7 +411,7 @@ public void testSetting(){
 }
 ```
 
-# 15 通用修改集群配置的方法
+# 16 通用修改集群配置的方法
 
 
 
@@ -442,7 +485,7 @@ public void updateClusterSettings(){
 }
 ```
 
-# 16 案例源码工程下载
+# 17 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -450,7 +493,7 @@ public void updateClusterSettings(){
 
 
 
-# 17 开发交流
+# 18 开发交流
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
@@ -467,6 +510,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

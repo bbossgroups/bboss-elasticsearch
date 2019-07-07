@@ -1480,7 +1480,7 @@ build/distributions/db-elasticsearch-tool-1.0.0-released.zip
 
 包的目录结构如下：
 
-![img](https://esdoc.bbossgroups.com/_images/db-es-dist.png)
+![img](_images/db-es-dist.png)
 
 运行里面的即可启动作业：
 

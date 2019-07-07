@@ -1,13 +1,13 @@
 # bboss http负载均衡器使用指南
 
-bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
+bboss http一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
 项目源码
 https://github.com/bbossgroups/bboss-http
 
 # 1.负载均衡器特色
 
-bboss 5.5.0版本新增了一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，具有以下特色
+bboss http基于http协议实现客户端点到点的负载均衡和集群容灾功能，具有以下特色
 
 ```properties
 1.服务负载均衡（目前提供RoundRobin负载算法）
@@ -70,7 +70,22 @@ HttpRequestProxy.startHttpPools(String configFile);
 HttpRequestProxy.startHttpPools("application.properties");
 ```
 
-加载Map属性配置启动负载均衡器示例
+加载Map属性配置启动负载均衡器示例-
+
+**简单的配置和启动**
+
+```java
+Map<String,Object> configs = new HashMap<String,Object>();
+
+configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机制
+
+//如果指定hosts那么就会采用配置的地址作为初始化地址清单
+configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3:9200");
+
+HttpRequestProxy.startHttpPools(configs);
+```
+
+**启动时指定服务发现机制**
 
 ```java
        Map<String,Object> configs = new HashMap<String,Object>();
@@ -512,9 +527,9 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 
 
 
-bboss elasticsearch交流：166471282
+bboss http交流：166471282
 
-**bboss elasticsearch微信公众号：**
+**bboss http微信公众号：**
 
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
