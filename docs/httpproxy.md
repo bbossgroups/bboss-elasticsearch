@@ -284,7 +284,7 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
        // https服务必须带https://协议头,例如https://192.168.137.1:808
       HttpHost host = new HttpHost("192.168.137.1:808");
       hosts.add(host);
-      if(count != 2) {
+      if(count != 2) {//模拟添加和去除节点
          host = new HttpHost("192.168.137.1:809");
          hosts.add(host);
       }
@@ -455,16 +455,16 @@ ip:port|routing
 
 ```properties
 #指定了每个地址对应的地区信息，可以按照地区信息进行路由
-schedule.http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810|shanghai
+http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810|shanghai
 ```
 
-需要在客户端配置指定本地区信息
+指定本地区信息或者主节点标识信息
 
 ```properties
 # 指定本地区信息，系统按地区部署时，指定地区信息，
 # 不同的地区请求只路由到本地区（beijing）对应的服务器，shanghai的服务器作为backup服务器，
 # 当本地(beijing)的服务器都不可用时，才将请求转发到可用的上海服务器
-schedule.http.routing=beijing
+http.routing=beijing
 ```
 
 带路由信息的服务发现机制：可以动态变化服务地址的routing信息
@@ -492,14 +492,14 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 		List<HttpHost> hosts = new ArrayList<HttpHost>();
 		HttpHost host = new HttpHost("192.168.137.1:808|beijing");
 		hosts.add(host);
-		if(count != 2) {
+		if(count != 2) {//模拟添加和去除节点
 			host = new HttpHost("192.168.137.1:809|beijing");
 			hosts.add(host);
 		}
 		else{
 			System.out.println("aa");
 		}
-        //可以动态变化服务地址的routing信息
+        //可以动态变化服务地址的routing信息，模拟改变路由信息
 		if(count > 10 && count < 15) {
 			host = new HttpHost("192.168.137.1:810|beijing");
 		}
@@ -523,7 +523,25 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 
 ```
 
-# 6.开发交流
+# 6.健康检查服务
+
+可以通过http.health属性指定健康检查服务，服务为相对地址，不需要指定ip和端口，例如：
+
+- 设置默认集群组健康服务
+
+```java
+configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机
+```
+
+- 设置特定集群组健康服务
+
+```java
+configs.put("report.http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机
+```
+
+**bboss以get方式发送http.health对应的健康检查服务请求，健康检查服务只需要响应状态码为200-300即认为服务节点健康可用**。
+
+# 7.开发交流
 
 
 
@@ -535,7 +553,7 @@ bboss http交流：166471282
 
 
 
-# 6.支持我们
+# 8.支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">

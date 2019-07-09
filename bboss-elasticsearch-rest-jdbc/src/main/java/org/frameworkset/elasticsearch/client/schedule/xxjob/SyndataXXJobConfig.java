@@ -72,7 +72,7 @@ public class SyndataXXJobConfig {
         xxlJobExecutor = new XxlJobExecutor();
         xxlJobExecutor.setAdminAddresses(propertiesContainer.getProperty("xxl.job.admin.addresses"));
         xxlJobExecutor.setAppName(propertiesContainer.getProperty("xxl.job.executor.appname"));
-        xxlJobExecutor.setIp(propertiesContainer.getProperty("xxl.job.executor.ip"));
+        xxlJobExecutor.setIp(propertiesContainer.getSystemEnvProperty("xxl.job.executor.ip"));
         xxlJobExecutor.setPort(Integer.valueOf(propertiesContainer.getProperty("xxl.job.executor.port")));
         xxlJobExecutor.setAccessToken(propertiesContainer.getProperty("xxl.job.accessToken"));
         xxlJobExecutor.setLogPath(propertiesContainer.getProperty("xxl.job.executor.logpath"));
