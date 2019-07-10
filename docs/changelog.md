@@ -16,6 +16,14 @@ https://esdoc.bbossgroups.com/#/development
 6. 提供快速而高效的数据导入ES工具
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
+# v5.8.1 功能改进
+
+1. 升级bboss框架到5.5.2
+2. 升级bboss http到5.5.3
+3. 增加script函数管理api（新增、删除、获取脚本函数）
+4. 完善http负载均衡组件
+
+
 # v5.8.0 功能改进
 
 1. 升级框架到5.5.2
