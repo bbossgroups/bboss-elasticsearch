@@ -40,19 +40,11 @@ Elasticsearch source filter检索案例分享
         #if($includes || $excludes) ## 只有指定了includes或者excludes才需要添加source filter
             "_source": {
                 #if($includes ) ##设置includes filter
-                    "includes": [
-                        #foreach($include in $includes)
-                             #if($velocityCount > 0),#end "$include"
-                        #end
-                    ]
-                    #if($excludes ),#end ##如果还存在排斥字段，则需要加一个逗号
+                    "includes": #[includes,serialJson=true]
+                #if($excludes ),#end ##如果还存在排斥字段，则需要加一个逗号
                 #end
                 #if($excludes )  ##设置excludes filter
-                    "excludes": [
-                        #foreach($exclude in $excludes)
-                             #if($velocityCount > 0),#end "$exclude"
-                        #end
-                    ]
+                    "excludes": #[excludes,serialJson=true]
                 #end
             },
         #end
@@ -62,10 +54,7 @@ Elasticsearch source filter检索案例分享
                     #if($applicationNames && $applicationNames.size() > 0) ##只有传递了需要检索的应用名称集合，才需要添加下面的条件
                         {  ## 多值检索，查找多个应用名称对应的文档记录
                             "terms": {
-                                "applicationName.keyword":[
-                                    #foreach($applicationName in $applicationNames)
-                                         #if($velocityCount > 0),#end "$applicationName"
-                                    #end
+                                "applicationName.keyword":#[applicationNames,serialJson=true]
                                 ]
                             }
                         },
@@ -206,6 +195,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

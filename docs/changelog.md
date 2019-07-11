@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.8.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.8.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -19,9 +19,22 @@ https://esdoc.bbossgroups.com/#/development
 # v5.8.1 功能改进
 
 1. 升级bboss框架到5.5.2
+
 2. 升级bboss http到5.5.3
-3. 增加script函数管理api（新增、删除、获取脚本函数）
-4. 完善http负载均衡组件
+
+3. 属性配置支持从jvm system环境参数和OS 环境变量取值，例如：
+
+   ```properties
+   #引用环境变量job_executor_ip
+   
+   xxl.job.executor.ip=#[job_executor_ip]
+   ```
+
+   
+
+4. 增加script函数管理api（新增、删除、获取脚本函数）
+
+5. 完善http负载均衡组件
 
 
 # v5.8.0 功能改进

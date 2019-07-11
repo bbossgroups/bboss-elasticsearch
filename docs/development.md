@@ -1783,15 +1783,29 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 **建议**:**在dsl拼接中采用#[xxx]替代$xxx模式变量，在foreach和if/else语法中使用$xxx.**
 
-某些情况的的foreach循环可以进行优化编写，例如：
+### 5.3.6 foreach循环中变量使用优化
 
-"terms":{"$sourceField":[#foreach($source in $sourceValue) #if($velocityCount > 0),#end "$source"#end ]}
+某些情况（比如list集合、数组或者对象转json的转换处理场景）的的foreach循环可以进行优化编写，例如：
+
+```json
+
+
+"terms":{"sourceFields":[#foreach($source in $sourceValue) #if($velocityCount > 0),#end 
+
+#[sourceValue[$velocityCount]] #end ]}
+
+
+```
 
 调整为：
 
-"terms":{#[sourceField]:#[sourceValue,serialJson=true]}
+```json
+"terms":{"sourceFields":#[sourceValue,serialJson=true]}
+```
 
-### **5.3.6 @{pianduan}-片段变量使用**
+
+
+### **5.3.7 @{pianduan}-片段变量使用**
 
 @{}类型变量用于在query dsl中引用脚本片段。很多的dsl脚本会包含一些公共内容，比如查询条件，聚合操作脚本等待，可以把这些公共部分抽取出来定义成dsl片段；另外，一些复杂的搜索聚合查询的dsl脚本很长，由很多比较通用独立的部分组成，这样也可以将独立部分剥离形成片段，这样dsl的结构更加清晰，更加易于维护。**片段定义一定要定义在引用片段的dsl脚本前面**，片段引用变量示例如下：
 
@@ -1976,7 +1990,7 @@ $方式的变量还用于逻辑判断和foreach循环。
 
 
 
-### **5.3.7 不同dsl配置文件之间的dsl语句引用**
+### **5.3.8 不同dsl配置文件之间的dsl语句引用**
 
 bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
@@ -1994,7 +2008,7 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 
 
-### **5.3.8 sql语句中回车换行符替换指示语法以及变量使用注意事项**
+### **5.3.9 sql语句中回车换行符替换指示语法以及变量使用注意事项**
 
 \#""" """,包含在这个中间的dsl片段中包含的回车换行符会被替换成空格，使用示例及注意事项:
 
@@ -2017,7 +2031,7 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 ![img](https://oscimg.oschina.net/oscnet/2e1115df01f4ef89faa689ce4747870db82.jpg)
 
-### **5.3.9 变量使用注意事项**
+### **5.3.10 变量使用注意事项**
 
 bboss dsl语法支持#[channelId]和$channelId两种模式的变量定义，在sql语句中使用变量需要注意几个地方，下面的举例说明。
 
@@ -2076,7 +2090,7 @@ public void testObjectSQLQueryFromDSL(){
 
 
 
-### **5.3.10** 文本块脚本配置语法用法
+### **5.3.11** 文本块脚本配置语法用法
 
 在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，bboss提供了以下语法了对这些值进行处理：
 
@@ -2309,7 +2323,7 @@ public void testObjectSQLQueryFromDSL(){
 
 
 
-### **5.3.11 逻辑判断和foreach循环用法**
+### **5.3.12 逻辑判断和foreach循环用法**
 
 逻辑判断语法：#if-#else-#end,#if-#elseif-#else-#end
 
@@ -2700,7 +2714,7 @@ foreach嵌套dsl脚本定义
 
 
 
-### 5.3.12 日期类型使用方法
+### 5.3.13 日期类型使用方法
 
 bboss对于日期类型的映射处理比较简单，分为两种情况：
 
@@ -2739,7 +2753,7 @@ protected Date agentStarttime;
 
 
 
-### 5.3.13 dsl配置文件中关于dsl解析语法树缓存相关配置
+### 5.3.14 dsl配置文件中关于dsl解析语法树缓存相关配置
 
 可以在配置文件中直接指定dsl语法解析缓存参数（一般采用默认配置即可）
 
