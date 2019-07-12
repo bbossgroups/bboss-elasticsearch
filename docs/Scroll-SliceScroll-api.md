@@ -27,7 +27,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 [esmapper/scroll.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/scroll.xml)
 
-```
+```xml
 <properties>
     <!--
     简单的scroll query案例，复杂的条件修改query dsl即可
@@ -36,15 +36,15 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
         <![CDATA[
          {
             "size":#[size],
-            "query": {"match_all": {}}
+            "query": {"match_all": {}},
+            "sort": [
+                "_doc"
+            ]
         }
         ]]>
     </property>
     <!--
         简单的slice scroll query案例，复杂的条件修改query dsl即可
-        max参数：要分成max个slice，比如max为6，就要分成6个slice
-        id参数：分成max个slice后，对应的每个slice序号
-
     -->
     <property name="scrollSliceQuery">
         <![CDATA[
@@ -54,7 +54,10 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
                 "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
             },
             "size":#[size],
-            "query": {"match_all": {}}
+            "query": {"match_all": {}},
+            "sort": [
+                "_doc"
+            ]
         }
         ]]>
     </property>
@@ -67,7 +70,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 #  2.基本scroll api使用
 
-```
+```java
 	@Test
 	public void testSimleScrollAPI(){
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
@@ -92,7 +95,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 ## 串行
 
-```
+```java
 	@Test
 	public void testSimleScrollAPIHandler(){
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
@@ -145,7 +148,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 ##  串行
 
-```
+```java
 	/**
 	 * 串行方式执行slice scroll操作
 	 */
@@ -171,7 +174,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 ##  并行
 
-```
+```java
 	/**
 	 * 并行方式执行slice scroll操作
 	 */
@@ -202,7 +205,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 ## 串行
 
-```
+```java
 	/**
 	 * 串行方式执行slice scroll操作
 	 */
@@ -236,7 +239,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 ## 并行
 
-```
+```java
 	/**
 	 * 并行方式执行slice scroll操作
 	 */
@@ -275,7 +278,7 @@ elasticsearch.sliceScrollThreadQueue 默认值500
 
 ## ES之间数据导入导出
 
-并行方式执行slice scroll操作：slice scroll实现ES之间数据导入导出，将一个es的数据导入另外一个es，需要在application.properties文件中定义一个es233的集群，[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
+并行方式执行slice scroll操作：slice scroll实现ES之间数据导入导出，将一个es的数据导入另外一个es，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
 
 ```java
 /**
@@ -283,21 +286,21 @@ elasticsearch.sliceScrollThreadQueue 默认值500
  */
 @Test
 public void testSimpleSliceScrollApiParralHandlerExport() {
-   ClientInterface clientUtil522 = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
-
-   final ClientInterface clientUtil234 = ElasticSearchHelper.getRestClientUtil("es233");
-   //scroll slice分页检索,max对应并行度
+   ClientInterface clientUtil522 = ElasticSearchHelper.getConfigRestClientUtil("default","esmapper/scroll.xml");//定义一个对应源集群default的客户端组件实例，并且加载配置了scrollSliceQuery dsl的xml配置文件
+  
+   final ClientInterface clientUtil234 = ElasticSearchHelper.getRestClientUtil("es233"); //定义一个对应目标集群es233的客户端组件实例
+   //scroll slice分页检索,max对应并行度，与源表shards数一致即可
    int max = 6;
    Map params = new HashMap();
    params.put("sliceMax", max);//最多6个slice，不能大于share数，必须使用sliceMax作为变量名称
-   params.put("size", 1000);//每页1000条记录
+   params.put("size", 5000);//每批5000条记录
    //采用自定义handler函数处理每个slice scroll的结果集后，sliceResponse中只会包含总记录数，不会包含记录集合
-   //scroll上下文有效期1分钟
+   //scroll上下文有效期1分钟，从源集群索引demo中查询数据
    ESDatas<Map> sliceResponse = clientUtil522.scrollSliceParallel("demo/_search",
          "scrollSliceQuery", params,"1m",Map.class, new ScrollHandler<Map>() {
             public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
                List<Map> datas = response.getDatas();
-               clientUtil234.addDocuments("index233","indextype233",datas);
+               clientUtil234.addDocuments("index233","indextype233",datas);//将分批查询的数据导入目标集群索引index233，索引类型为indextype233，如果是elasticsearch 7以上的版本，可以去掉索引类型参数
                long totalSize = response.getTotalSize();
                System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
             }
@@ -309,7 +312,7 @@ public void testSimpleSliceScrollApiParralHandlerExport() {
 }
 ```
 
-
+其中esmapper/scroll.xml配置文件参考章节[**1.dsl配置文件定义**](https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api?id=_1dsl配置文件定义)
 
 # 6 开发交流
 
@@ -326,6 +329,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

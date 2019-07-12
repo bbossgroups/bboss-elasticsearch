@@ -6,7 +6,7 @@
 
 https://github.com/rookie-ygl/bboss-wiki
 
-# function\_score介绍
+# 1.function\_score介绍
 
 在Elasticsearch中function_score是用于处理文档分值的 DSL，它会在查询结束后对每一个匹配的文档进行一系列的重打分操作，最后以生成的最终分数进行排序。它提供了几种默认的计算分值的函数：
 
@@ -60,9 +60,9 @@ function_score的作用就是综合各个函数的得分，因此注意两点：
 
 接下来本文将举例详细介绍这些函数的用法，以及它们的使用场景。
 
-# function_score使用案例
+# 2.function_score使用案例
 
-## 案例准备工作
+## 2.1 案例准备工作
 
 本文以一个商品检索作为案例来介绍function_score的具体用法。
 
@@ -72,7 +72,7 @@ resources/esmapper/functionscore.xml
 
 本文中涉及的dsl配置都会加到这个配置文件里面。
 
-### 定义索引-商品索引mapping定义和配置
+### 2.1.1 定义索引-商品索引mapping定义和配置
 
 在配置文件中添加商品索引mapping定义-createItemsIndice
 
@@ -126,7 +126,7 @@ resources/esmapper/functionscore.xml
 </property>
 ```
 
-### 创建索引-加载配置文件并创建索引
+### 2.1.2 创建索引-加载配置文件并创建索引
 
 ```java
 /**
@@ -142,7 +142,7 @@ public void dropAndCreateItemsIndice() {
 }
 ```
 
-### 准备测试数据-批量添加商品数据
+### 2.1.3 准备测试数据-批量添加商品数据
 
 通过以下代码向item索引中添加不同的测试数据：
 
@@ -193,12 +193,12 @@ public void insertItemsData() {
 
 以上创建索引和添加数据的代码的类似代码不再重复贴出，也可以用kibana添加数据。
 
-## weight
+## 2.2 weight
 
 weight 的用法最为简单，只需要设置一个数字作为权重，文档的分数就会乘以该权重。
 他最大的用途应该就是和过滤器一起使用了，因为过滤器只会筛选出符合标准的文档，而不会去详细的计算每个文档的具体得分，所以只要满足条件的文档的分数都是 1，而 weight 可以将其更换为你想要的数值。
 
-## field\_value\_factor
+## 2.3 field\_value\_factor
 
 field\_value\_factor 的目的是通过文档中某个字段的值计算出一个分数，它有以下属性：
 
@@ -312,7 +312,7 @@ Items：
 1. **`field_value_score`函数产生的分数必须是非负数**
 2. **避免将log（n）设为0或负数等数学错误，会抛出异常**
 
-## random_score
+## 2.4 random_score
 
 这个函数的使用相当简单，只需要调用一下就可以返回一个 0 到 1 的分数（但不包括1）。为每个用户都使用一个不同的随机评分对结果排序，但对某一具体用户来说，排序规则保持一致。
 它有一个非常有用的特性是可以通过seed属性设置一个随机种子，该函数保证在随机种子相同时返回值也相同，这点使得它可以轻松地实现对于用户的个性化推荐。
@@ -372,7 +372,7 @@ public void testRandomScoreDSL() {
 
 目前个人理解是给每一个文档一个随机的小于1的浮点数，并自动排序（排序规则也是随机的）。而seed相等的用户排序规则一致。
 
-## 衰减函数decay functions
+## 2.5 衰减函数decay functions
 
 衰减函数（Decay Function）提供了一个更为复杂的公式，它描述了这样一种情况：对于一个字段，它有一个理想的值，而字段实际的值越偏离这个理想值（无论是增大还是减小），就越不符合期望。这个函数可以很好的应用于数值、日期和地理位置类型，由以下属性组成：
 
@@ -438,7 +438,7 @@ public void testRandomScoreDSL() {
 
 我们希望租房的位置在`40, 116`坐标附近，`5km`以内是满意的距离，`15km`以内是可以接受的距离。
 
-#### 衰减函数Java实现
+### 2.5.1 衰减函数Java实现
 
 在bboss配置文件中esmapper/functionscore.xml定义一个名称为testRandomScore的根据距离推荐的租房用 DSL
 
@@ -504,7 +504,7 @@ public void testDecayFunctionsByGeoPonit() {
 }
 ```
 
-## script_score
+## 2.6 script_score
 
 虽然强大的field_value_factor和衰减函数已经可以解决大部分问题了，但是也可以看出它们还有一定的局限性：
 
@@ -658,13 +658,13 @@ public void testScriptScoreByIncloudScript() {
 }
 ```
 
-## 同时使用多个函数
+## 2.7 同时使用多个函数
 
 ​	上面的例子都只是调用某一个函数并与查询得到的_score进行合并处理，而在实际应用中肯定会出现在多个点上计算分值并合并，虽然脚本也许可以解决这个问题，但是应该没人愿意维护一个复杂的脚本吧。这时候通过多个函数将每个分值都计算出在合并才是更好的选择。
 
 ​	在 function_score中可以使用functions属性指定多个函数。它是一个数组，所以原有函数不需要发生改动。同时还可以通过score_mode指定各个函数分值之间的合并处理，值跟最开始提到的boost_mode相同。下面举两个例子介绍一些多个函数混用的场景。
 
-### 大众点评的餐厅应用
+### 2.7.1 大众点评的餐厅应用
 
 ​	第一个例子是类似于大众点评的餐厅应用。该应用希望向用户推荐一些不错的餐馆，特征是：范围要在当前位置的 5km 以内，有停车位是最重要的，餐厅的评分（1 分到 5 分）越高越好，并且对不同用户最好展示不同的结果以增加随机性。
 
@@ -755,7 +755,7 @@ public void testFunctionScore() {
 
 这样一个餐厅的最高得分应该是 2 分（有停车位）+ 1 分（有 wifi）+ 6 分（评分 5 分 \* 1.2）+ 1 分（随机评分）。
 
-### 新浪微博的社交网站
+### 2.7.2 新浪微博的社交网站
 
 另一个例子是类似于新浪微博的社交网站。现在要优化搜索功能，使其以文本相关度排序为主，但是越新的微博会排在相对靠前的位置，点赞（忽略相同计算方式的转发和评论）数较高的微博也会排在较前面。如果这篇微博购买了推广并且是创建不到 24 小时（同时满足），它的位置会非常靠前。
 
@@ -844,7 +844,7 @@ public void testSinaFunctionScore() {
 
 
 
-# 相关资料
+# 3.相关资料
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
 
@@ -858,14 +858,21 @@ https://blog.csdn.net/wwd0501/article/details/78652850?tdsourcetag=s_pcqq_aiomsg
 
 https://esdoc.bbossgroups.com/#/development?id=_49-%E6%8C%87%E5%AE%9A%E6%A3%80%E7%B4%A2search_type%E5%8F%82%E6%95%B0
 
-# 开发交流
+# 4.开发交流
+
+
 
 bboss elasticsearch交流：166471282
 
-bboss elasticsearch微信公众号：
+**bboss elasticsearch微信公众号：**
 
-![bboss.png](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
-# 支持我们
 
-![](images/alipay.png)
+
+# 5.支持我们
+
+<div align="left"></div>
+
+<img src="images/alipay.png"  height="200" width="200">
+
