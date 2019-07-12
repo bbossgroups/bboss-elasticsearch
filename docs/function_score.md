@@ -497,8 +497,8 @@ public void testDecayFunctionsByGeoPonit() {
         queryMap.put("from",0);
         queryMap.put("size",10);
     
-        ESDatas esDatast = clientUtil.searchList("hoses/_search?search_type=dfs_query_then_fetch","testDecayFunctionsByGeoPonit", queryMap, Object.class);
-        List datas = esDatast.getDatas();
+        ESDatas<Map> esDatast = clientUtil.searchList("hoses/_search?search_type=dfs_query_then_fetch","testDecayFunctionsByGeoPonit", queryMap, Map.class);
+        List<Map> datas = esDatast.getDatas();
         logger.debug(datas.toString());
         System.out.println(datas.toString());
 }
@@ -745,8 +745,8 @@ public void testFunctionScore() {
         queryMap.put("from",0);
         queryMap.put("size",10);
 
-        ESDatas esDatast = clientUtil.searchList("hell/_search", "testFunctionScore",queryMap,Object.class);
-        List datas = esDatast.getDatas();
+        ESDatas<Map> esDatast = clientUtil.searchList("hell/_search", "testFunctionScore",queryMap,Map.class);
+        List<Map> datas = esDatast.getDatas();
         logger.debug(datas.toString());
         System.out.println(datas.toString());
     }
@@ -835,8 +835,8 @@ public void testSinaFunctionScore() {
         queryMap.put("from",0);
         queryMap.put("size",10);
 
-        ESDatas esDatast = clientUtil.searchList("xinlang/_search?search_type=dfs_query_then_fetch", "testSinaFunctionScore",queryMap,Object.class);
-        List datas = esDatast.getDatas();
+        ESDatas<Map> esDatast = clientUtil.searchList("xinlang/_search?search_type=dfs_query_then_fetch", "testSinaFunctionScore",queryMap,Map.class);
+        List<Map> datas = esDatast.getDatas();
         logger.debug(datas.toString());
         System.out.println(datas.toString());
 }
@@ -873,6 +873,5 @@ bboss elasticsearch交流：166471282
 # 5.支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 
