@@ -94,7 +94,6 @@ public class ESTemplateHelper {
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
 	}
 	public static String evalTemplate(ESUtil esUtil,String templateName, Object params) {
-
 		if(params != null && params instanceof Map){
 			return evalTemplate(  esUtil,  templateName, (Map) params);
 		}
