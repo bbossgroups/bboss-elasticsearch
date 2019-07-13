@@ -464,6 +464,34 @@ public class Demo extends ESBaseData {
       System.out.println(totalSize);
 ```
 
+# 通过URL参数检索文档
+
+通过url参数检索文档，参数参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html
+
+```java
+
+	@Test
+	public void testQueryObject(){
+		//batchUuid:b13e998a-78c7-48f5-b067-d4b6d0b044a4
+
+		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+		Map data  = clientInterface.searchObject("terminalcontent-*/_search?q=batchUuid:b13e998a-78c7-48f5-b067-d4b6d0b044a4&size=1&terminate_after=1",Map.class);
+		System.out.println(data);
+	}
+
+	@Test
+	public void testQueryList(){
+		//batchUuid:b13e998a-78c7-48f5-b067-d4b6d0b044a4
+
+		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+		ESDatas<Map> data  = clientInterface.searchList("terminalcontent-*/_search?q=requestType:httprequest",Map.class);
+		System.out.println(data.getDatas());
+		System.out.println(data.getTotalSize());
+	}
+```
+
 # 执行多表查询操作
 
 执行多表查询操作，逗号分隔表名称
@@ -590,6 +618,39 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         }]]></property>
 ```
 
+# 从多表中检索一个文档
+
+```java
+public TerminalMessages getTerminalBase(String batchUuid) {   
+    Map<String,String> params = new HashMap<>(1);   params.put("batchUuid",batchUuid);   
+    return clientInterface.searchObject("terminalbase-*/_search","getTerminalBase",params,TerminalMessages.class);
+}
+```
+
+对应的dsl-getTerminalBase定义
+
+```xml
+<!--
+            根据请求id获取服务端报文
+        -->
+    <property name="getTerminalBase">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "term":{
+                                "batchUuid":#[batchUuid]
+                            }
+                        }
+                    ]
+                }
+            },
+            "size":1
+        }]]>
+    </property>
+```
+
 # 通过count统计索引文档数量
 
 ## count by condition
@@ -623,6 +684,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

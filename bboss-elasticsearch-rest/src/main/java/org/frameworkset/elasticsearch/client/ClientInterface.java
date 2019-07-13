@@ -1618,6 +1618,16 @@ public interface ClientInterface extends ClientInterfaceNew {
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException;
 
 	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html
+	 * @param path
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchList(String path,  Class<T> type) throws ElasticSearchException;
+
+	/**
 	 * 检索索引所有数据
 	 * @param index
 	 * @param fetchSize 指定每批次返回的数据，不指定默认为5000
@@ -1923,6 +1933,15 @@ public interface ClientInterface extends ClientInterfaceNew {
 
 	public abstract <T> T searchObject(String path, String entity, Class<T> type) throws ElasticSearchException;
 
+	/**
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html
+	 * @param path
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T searchObject(String path,  Class<T> type) throws ElasticSearchException;
 	/**
 	 * 聚合查询方法
 	 *

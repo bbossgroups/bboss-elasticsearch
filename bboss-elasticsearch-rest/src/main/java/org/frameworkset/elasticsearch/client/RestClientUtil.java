@@ -2278,6 +2278,8 @@ public class RestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchList(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException {
 	 	return null;
 	}
+
+
 	public <T> ESDatas<T> searchList(String path, String templateName, Object params,Class<T> type) throws ElasticSearchException {
 	 	return null;
 	}
@@ -2285,6 +2287,12 @@ public class RestClientUtil extends ClientUtil{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
 	}
+	@Override
+	public <T> ESDatas<T> searchList(String path, Class<T> type) throws ElasticSearchException {
+		RestResponse result = this.client.executeRequest(path, (String)null, new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
+		return ResultUtil.buildESDatas(result,type);
+	}
+
 
 	/**
 	 * 一次性返回scroll检索结果
@@ -2804,6 +2812,12 @@ public class RestClientUtil extends ClientUtil{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildObject(result, type);
 	}
+	@Override
+	public <T> T searchObject(String path, Class<T> type) throws ElasticSearchException {
+		RestResponse result = this.client.executeRequest(path, (String )null,new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
+		return ResultUtil.buildObject(result, type);
+	}
+
 
 
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Map params,Class<T> type,String aggs,String stats) throws ElasticSearchException{

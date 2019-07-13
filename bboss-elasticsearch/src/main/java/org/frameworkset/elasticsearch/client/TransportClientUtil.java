@@ -878,6 +878,11 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public <T> ESDatas<T> searchList(String path, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
 	public <T> ESDatas<T> searchAll(String index, int fetchSize, Class<T> type) throws ElasticSearchException {
 		return null;
 	}
@@ -1038,6 +1043,12 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <T> T searchObject(String path, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path, String entity, Map params, Class<T> type,
 			String aggs, String stats, ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException {

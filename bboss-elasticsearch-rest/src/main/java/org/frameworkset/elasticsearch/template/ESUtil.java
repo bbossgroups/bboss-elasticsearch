@@ -1014,6 +1014,9 @@ public class ESUtil {
 	}
 
 	public ESInfo getESInfo(  String templateName) {
+		if(templateName == null || templateName.equals("")){
+			throw new ElasticsearchParseException("Dsl templateName cann't been empty or null.");
+		}
 		if(assertDestoried())
 			return null;
 		ESInfo sql = null;
