@@ -92,9 +92,9 @@ elasticsearch.discoverHost=false
 
 如果开启discover机制，客户端就会具备自动发现新增的ES集群节点的能力，elasticsearch.rest.hostNames中就可以只配置初始的几个节点，不需要配置全部节点。
 
-注意：
+**注意**：
 
-在容器环境/虚拟机环境部署ES时，请关闭：elasticsearch.discoverHost=false
+访问容器环境/云环境或者其他通过代理转发环境中部署的Elasticsearch时，请关闭：elasticsearch.discoverHost=false
 
 
 
@@ -169,7 +169,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.8.1</version>
+            <version>5.8.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -198,7 +198,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.8.1</version>
+            <version>5.8.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

@@ -1,13 +1,13 @@
 # bboss http负载均衡器使用指南
 
-bboss http一个简单而功能强大的http负载均衡器模块，基于http协议实现客户端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
+bboss http一个简单而功能强大的http/https负载均衡器模块，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
 项目源码
 https://github.com/bbossgroups/bboss-http
 
 # 1.负载均衡器特色
 
-bboss http基于http协议实现客户端点到点的负载均衡和集群容灾功能，具有以下特色
+bboss http基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，具有以下特色
 
 ```properties
 1.服务负载均衡（目前提供RoundRobin负载算法）
@@ -458,7 +458,7 @@ ip:port|routing
 http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810|shanghai
 ```
 
-指定本地区信息或者主节点标识信息
+指定beijing地区路由信息或者主节点标识信息
 
 ```properties
 # 指定本地区信息，系统按地区部署时，指定地区信息，
@@ -466,6 +466,25 @@ http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810
 # 当本地(beijing)的服务器都不可用时，才将请求转发到可用的上海服务器
 http.routing=beijing
 ```
+
+指定shanghai地区路由信息或者主节点标识信息
+
+```properties
+# 指定本地区信息，系统按地区部署时，指定地区信息，
+# 不同的地区请求只路由到本地区（shanghai）对应的服务器，beijing的服务器作为backup服务器，
+# 当本地(shanghai)的服务器都不可用时，才将请求转发到可用的beijing服务器
+http.routing=shanghai
+```
+
+为了避免配置文件混乱，可以将http.routing对应的值做成环境变量，配置文件中只需要引用环境变量名称即可：
+
+```properties
+http.routing=#[area]
+#bboss支持混合模式的变量和常量拼接，例如
+#http.routing=#[county]aaac#[area]
+```
+
+这样我们在os(linux,unix,windows)中配置名称为area的环境变量即可。
 
 带路由信息的服务发现机制：可以动态变化服务地址的routing信息
 

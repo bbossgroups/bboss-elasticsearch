@@ -28,8 +28,6 @@ import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
@@ -289,17 +287,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.timeZone = timeZone;
 	}
 
-	public boolean next() throws SQLException {
-		return resultSet.next();
-	}
 
-	public ResultSet getResultSet() {
-		return resultSet;
-	}
 
-	public void setResultSet(ResultSet resultSet) {
-		this.resultSet = resultSet;
-	}
 
 	public Integer getEsRetryOnConflict() {
 		return esRetryOnConflict;
@@ -504,33 +493,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.dataRefactor = dataRefactor;
 	}
 
-	public Object getValue(  int i, String colName) throws Exception
-	{
-		Object value = this.resultSet.getObject(i+1);
-		return value;
-	}
 
-	public Object getValue( String colName) throws Exception
-	{
-		if(colName == null)
-			return null;
-		Object value = this.resultSet.getObject(colName);
-		return value;
-	}
-
-	public Object getDateTimeValue( String colName) throws Exception
-	{
-		if(colName == null)
-			return null;
-		try {
-			Object value = this.resultSet.getTimestamp(colName);
-			return value;
-		}
-		catch (Exception e){
-			Object value = this.resultSet.getDate(colName);
-			return value;
-		}
-	}
 
 	public void refactorData(Context context) throws Exception {
 		if(this.dataRefactor != null){

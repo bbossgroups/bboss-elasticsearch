@@ -657,7 +657,7 @@ public TerminalMessages getTerminalBase(String batchUuid) {
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
-long count = clientUtil.count("trace-*/_search",//查询操作，查询indices trace-*中符合条件的数据
+long count = clientUtil.count("trace1",//查询操作，查询indices trace-*中符合条件的数据
                                 "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
                                 traceExtraCriteria);//查询条件封装对象
 ```

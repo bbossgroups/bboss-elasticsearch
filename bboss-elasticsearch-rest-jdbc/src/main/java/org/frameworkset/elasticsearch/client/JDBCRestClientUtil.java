@@ -620,6 +620,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		for(int i =0; i < counts; i++)
 		{
 			String colName = metaData.getColumnLabelByIndex(i);
+			int sqlType = metaData.getColumnTypeByIndex(i);
 //			if("ROWNUM__".equals(colName))//去掉oracle的行伪列
 //				continue;
 			String javaName = null;
@@ -651,7 +652,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.write(javaName);
 			writer.write("\":");
 //			int colType = metaData.getColumnTypeByIndex(i);
-			Object value = esjdbc.getValue(     i,  colName);
+			Object value = esjdbc.getValue(     i,  colName,sqlType);
 			if(value != null) {
 				if (value instanceof String) {
 					writer.write("\"");
@@ -673,6 +674,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write(dataStr);
 					writer.write("\"");
 				}
+
 				else if(value instanceof Clob)
 				{
 					String dataStr = ValueExchange.getStringFromClob((Clob)value);
@@ -690,6 +692,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write("\"");
 				}
 				else {
+
 					writer.write(String.valueOf(value));
 				}
 			}

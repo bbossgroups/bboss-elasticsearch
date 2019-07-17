@@ -39,6 +39,7 @@ public class DefaultResultSetHandler extends ResultSetHandler {
 	public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
 		esjdbc.setResultSet(resultSet);
 		esjdbc.setMetaData(statementInfo.getMeta());
+		esjdbc.setDbadapter(statementInfo.getDbadapter());
 		JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
 		jdbcRestClientUtil.addDocuments(  esjdbc, esjdbc.getRefreshOption(), batchSize);
 	}
