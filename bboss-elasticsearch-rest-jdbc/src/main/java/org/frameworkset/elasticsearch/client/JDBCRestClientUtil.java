@@ -674,7 +674,6 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write(dataStr);
 					writer.write("\"");
 				}
-
 				else if(value instanceof Clob)
 				{
 					String dataStr = ValueExchange.getStringFromClob((Clob)value);
@@ -692,8 +691,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.write("\"");
 				}
 				else {
-
-					writer.write(String.valueOf(value));
+					SimpleStringUtil.object2json(value,writer);//					writer.write(String.valueOf(value));
 				}
 			}
 			else{
@@ -755,7 +753,6 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					else if(isBasePrimaryType(value.getClass())){
 						writer.write(String.valueOf(value));
 					}
-
 					else {
 						SimpleStringUtil.object2json(value,writer);
 					}
