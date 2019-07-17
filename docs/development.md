@@ -98,9 +98,11 @@ elasticsearch.discoverHost=false
 
 
 
-## 2.4 query dsl脚本调试日志开关
+## 2.4 DSL调试日志开关和日志组件配置
 
-query dsl脚本调试日志开关，将showTemplate设置为true，同时将日志级别设置为INFO，则会将query dsl脚本输出到日志文件中：
+### DSL脚本调试日志开关
+
+DSL脚本调试日志开关，将showTemplate设置为true，同时将日志级别设置为INFO，则会将query dsl脚本输出到日志文件中：
 
 ```
 elasticsearch.showTemplate=true
@@ -161,7 +163,9 @@ logging.level.org.apache=INFO
 
 在生产环境请关闭：elasticsearch.showTemplate=false
 
-如果需要使用log4j 2那么只需要在bboss的maven坐标中排除log4j的包导入log4j2的依赖库即可：
+### 日志组件切换
+
+如果需要使用其他日志组件，那么只需要在bboss的maven坐标中排除log4j的包，导入其他日志组件的依赖库即可，以log4j 2为示例进行说明：
 
 非spring boot项目
 
