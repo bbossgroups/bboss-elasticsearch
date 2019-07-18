@@ -39,14 +39,14 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.8.2</version>
+            <version>5.8.3</version>
         </dependency>
 ```
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.8.2"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.8.3"
 ```
 
 
@@ -204,6 +204,8 @@ spring:
 
 ## 3.2 单集群测试用例
 
+### 3.2.1 定义测试用例
+
 编写es单集群测试用例BBossESStarterTestCase
 
 ```java
@@ -302,6 +304,8 @@ public class BBossESStarterTestCase {
 
 }
 ```
+
+### 3.2.2 运行测试用例
 
 直接通过junit运行上述测试用例即可。
 
@@ -587,7 +591,9 @@ BBossESStarter bbossESStarterLogs  对应spring.elasticsearch.bboss.logs配置�
 
 
 
-## 4.3 定义多es集群测试用例
+## 4.3 多es集群测试用例
+
+### 4.3.1 定义测试用例
 
 多es集群测试用例MultiBBossESStartersTestCase
 
@@ -695,6 +701,8 @@ public class MultiBBossESStartersTestCase {
 	}
 }
 ```
+
+### 4.3.2 运行测试用例
 
 直接通过junit运行上述测试用例即可。
 

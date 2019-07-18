@@ -21,10 +21,11 @@ https://ip:port
 ip:port（默认http协议）
 多个地址用逗号分隔
 6.服务安全认证（配置basic账号和口令）
-7.主备路由/异地灾备特色
+7.服务采用http连接池
+8.主备路由/异地灾备特色
 
- 7.1.负载均衡器主备功能，如果主节点全部挂掉，请求转发到可用的备用节点，如果备用节点也挂了，就抛出异常，如果主节点恢复正常，那么请求重新发往主节点 
- 7.2. 异地灾备，服务采用异地灾备模式部署，服务优先调用本地，当本地服务全部挂掉，服务请求转发到异地服务，如果本地服务部分恢复或者全部恢复，那么请求重新发往本地服务
+ 8.1.负载均衡器主备功能，如果主节点全部挂掉，请求转发到可用的备用节点，如果备用节点也挂了，就抛出异常，如果主节点恢复正常，那么请求重新发往主节点 
+ 8.2. 异地灾备，服务采用异地灾备模式部署，服务优先调用本地，当本地服务全部挂掉，服务请求转发到异地服务，如果本地服务部分恢复或者全部恢复，那么请求重新发往本地服务
 
 
 ```
@@ -39,14 +40,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.5.3</version>
+   <version>5.5.5</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```
-implementation 'com.bbossgroups:bboss-http:5.5.3'
+implementation 'com.bbossgroups:bboss-http:5.5.5'
 ```
 
 # 3.负载均衡组件
@@ -375,7 +376,31 @@ Map data = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",Map.class);//
  String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");//在report集群上执行请求
 ```
 
+### 3.2.4 配置参数中使用环境变量
 
+可以在配置参数中使用环境变量，环境变量引用方式：
+
+简单方式
+
+http.routing=#[area]
+
+混合方式
+
+http.routing=#[area]dddd#[sadfasdf]
+
+需要在os(linux,unix,windows)中配置名称为area和sadfasdf的环境变量。
+
+以http.routing为例进行说明。
+
+为了避免配置文件混乱，可以将http.routing对应的值做成环境变量，配置文件中只需要引用环境变量名称即可：
+
+```properties
+http.routing=#[area]
+#bboss支持混合模式的变量和常量拼接，例如
+#http.routing=#[county]aaac#[area]
+```
+
+这样我们在os(linux,unix,windows)中配置名称为area的环境变量即可。
 
 ## 3.3 使用负载均衡器调用服务
 

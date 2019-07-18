@@ -167,13 +167,13 @@ logging.level.org.apache=INFO
 
 如果需要使用其他日志组件，那么只需要在bboss的maven坐标中排除log4j的包，导入其他日志组件的依赖库即可，以log4j 2为示例进行说明：
 
-非spring boot项目
+#### 非spring boot项目
 
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.8.2</version>
+            <version>5.8.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -196,13 +196,13 @@ logging.level.org.apache=INFO
 
 
 
-## spring boot项目
+#### spring boot项目
 
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.8.2</version>
+            <version>5.8.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
