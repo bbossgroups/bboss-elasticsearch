@@ -410,7 +410,7 @@ importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询�
 importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
 ```
 
-详细的增量导入案例
+详细的增量导入案例：
 
 源码文件 <https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
 
