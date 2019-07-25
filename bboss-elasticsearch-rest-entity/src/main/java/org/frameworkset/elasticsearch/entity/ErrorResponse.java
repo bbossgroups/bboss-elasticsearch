@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch.entity;
 
 import java.io.Serializable;
+
 public class ErrorResponse implements SearchResult,Serializable{
 	private ErrorInfo error;
 	private int status;

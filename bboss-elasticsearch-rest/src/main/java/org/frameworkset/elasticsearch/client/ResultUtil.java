@@ -845,9 +845,11 @@ public abstract class ResultUtil {
 		esBaseData.setFound(hit.isFound());
 		esBaseData.setNested(hit.getNested());
 		Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
-		esBaseData.setInnerHits(innerHits);
-		if (innerHits != null && innerHits.size() > 0) {
-			injectInnerHitBaseData(innerHits);
+		if(innerHits != null) {
+			esBaseData.setInnerHits(innerHits);
+			if (innerHits.size() > 0) {
+				injectInnerHitBaseData(innerHits);
+			}
 		}
 	}
 

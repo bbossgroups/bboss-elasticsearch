@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RestResponse  extends BaseRestResponse {
 	
 
