@@ -29,7 +29,7 @@ sourceSets {
 dependencies {
 
 
-	compile (
+	compileOnly (
 			//[group: 'joda-time', name: 'joda-time', version: "2.9.5",transitive: false],
 			[group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonversion}",transitive: false],
 			[group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonversion}",transitive: false],
@@ -38,6 +38,7 @@ dependencies {
 
 
 	)
+
 
 
 

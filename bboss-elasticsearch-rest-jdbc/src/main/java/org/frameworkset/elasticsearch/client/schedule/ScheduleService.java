@@ -606,8 +606,20 @@ public class ScheduleService {
 		else{
 			if(this.currentStatus.getLastValue() instanceof Date)
 				params.put(this.sqlInfo.getLastValueVarName(), this.currentStatus.getLastValue());
-			else
-				params.put(this.sqlInfo.getLastValueVarName(), new Date((Long)this.currentStatus.getLastValue()));
+			else {
+				if(this.currentStatus.getLastValue() instanceof Long) {
+					params.put(this.sqlInfo.getLastValueVarName(), new Date((Long)this.currentStatus.getLastValue()));
+				}
+				else if(this.currentStatus.getLastValue() instanceof Integer){
+					params.put(this.sqlInfo.getLastValueVarName(), new Date(((Integer) this.currentStatus.getLastValue()).longValue()));
+				}
+				else if(this.currentStatus.getLastValue() instanceof Short){
+					params.put(this.sqlInfo.getLastValueVarName(), new Date(((Short) this.currentStatus.getLastValue()).longValue()));
+				}
+				else{
+					params.put(this.sqlInfo.getLastValueVarName(), new Date(((Number) this.currentStatus.getLastValue()).longValue()));
+				}
+			}
 		}
 		if(logger.isInfoEnabled()){
 			logger.info(new StringBuilder().append("Current values: ").append(params).toString());
