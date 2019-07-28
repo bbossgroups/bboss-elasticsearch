@@ -27,7 +27,10 @@ sourceSets {
 
 
 dependencies {
+	compile(
+			compile([group: 'com.bbossgroups', name: 'bboss-core-entity', version: "${PROJ_BBOSS_VERSION}", transitive: false])
 
+	)
 
 	compileOnly (
 			//[group: 'joda-time', name: 'joda-time', version: "2.9.5",transitive: false],
