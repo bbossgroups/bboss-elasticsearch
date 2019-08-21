@@ -44,12 +44,12 @@ public class ESInnerHitDeserializer  extends BaseESHitDeserializer {
 		JsonStreamContext jsonStreamContext = p.getParsingContext().getParent();
 		InnerSearchHit hit = (InnerSearchHit) jsonStreamContext.getCurrentValue();
 		ESClass refs = null;
-		if(hit.getIndex() == null) {
-			refs = getESInnerTypeReferences(hit.getType());
-		}
-		else
-		{
-			refs = getESInnerTypeReferences(getTypeName(  p));
+		if(hit != null) {
+			if (hit.getIndex() == null) {
+				refs = getESInnerTypeReferences(hit.getType());
+			} else {
+				refs = getESInnerTypeReferences(getTypeName(p));
+			}
 		}
 		if(refs == null){
 			return ctxt.findRootValueDeserializer(ESSerialThreadLocal.getMapObjectType()).deserialize(p,ctxt);
