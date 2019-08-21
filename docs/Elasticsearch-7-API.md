@@ -20,15 +20,17 @@
 
 Elasticsearch 7.0.0与之前版本的差别，衔接ES 6和ES 8的中间版本，ES 7默认关闭indexType的支持，这样索引Index将不允许定义和使用indexType，ES 8完全去掉indexType的支持。
 
-bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持ES的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss 在v 5.6.1中提供了额外的控制属性：
+bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持Elasticsearch的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss 提供了额外的控制属性来开启elasticsearch 7.x的type特性：
 
 ```properties
 ## 设置为true，兼容ES 6的indexType
-## 设置为false，不能再index mapping和index Template中包含indexType
+## 设置为false（默认值），不能再index mapping和index Template中包含indexType
 elasticsearch.includeTypeName = true
+## spring boot中对应的配置项为
+# spring.elasticsearch.bboss.elasticsearch.includeTypeName = true
 ```
 
-在需要的时候开启，不需要的时候关闭。除了通过这个属性进行控制，同时也可以在请求参数上面指定参数进行控制：
+在需要的时候开启，不需要的时候关闭,默认关闭。除了通过这个属性进行控制，同时也可以在请求参数上面指定参数进行控制：
 
 https://www.elastic.co/guide/en/elasticsearch/reference/7.0/removal-of-types.html
 
@@ -1104,6 +1106,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

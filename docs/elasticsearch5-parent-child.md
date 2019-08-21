@@ -643,9 +643,10 @@ Elasticsearch 5.x 中has_child和has_parent查询的基本用法
     <property name="queryExamSearchByClientName">
         <![CDATA[
             {
+              ## 最多返回size变量对应的记录条数
+              "size":#[size], 
               "query": {
-                ## 最多返回size变量对应的记录条数
-                "size":#[size],
+                
                 "has_parent": {
                   "type": "basic",
                   "query": {
@@ -690,9 +691,10 @@ Elasticsearch 5.x 中has_child和has_parent查询的基本用法
     <property name="queryClientInfoByMedicalName">
         <![CDATA[
             {
-              "query": {
                 ## 最多返回size变量对应的记录条数
-                "size":#[size],
+                "size":#[size],            
+              "query": {
+
                 "has_child": {
                   "type":       "medical",
                   "score_mode": "max",
@@ -738,9 +740,10 @@ Elasticsearch 5.x 中has_child和has_parent查询的基本用法
     <property name="queryDiagnosisByClientName">
         <![CDATA[
             {
+            ## 最多返回size变量对应的记录条数
+                            "size":#[size],
               "query": {
-                ## 最多返回size变量对应的记录条数
-                "size":#[size],
+                
                 "has_parent": {
                   "type": "basic",
                   "query": {

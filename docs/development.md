@@ -335,11 +335,15 @@ elasticsearch.scrollBlockedWaitTimeout=0   #单位毫秒
 
  [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md) 
 
-## 2.9 Elasticsearch 7.0 索引类型兼容性配置
-Elasticsearch 7.0 索引类型兼容性配置，false禁用索引类型，es默认禁用，如果需要在Elasticsearch 7.x向下兼容es6和5的indextype，需要配置为true
+## 2.9 Elasticsearch 7.x 索引类型兼容性配置
+Elasticsearch 7.0 索引类型兼容性配置，false禁用索引类型，es默认禁用，如果需要在Elasticsearch 7.x向下兼容es6和5的indextype，可以在bboss中配置elasticsearch.includeTypeName 属性，配置为true开启，false 不开启（默认false，不开启）
 
-```
-elasticsearch.includeTypeName = false
+```properties
+## 设置为true，兼容ES 6的indexType
+## 设置为false（默认值），不能再index mapping和index Template中包含indexType
+elasticsearch.includeTypeName = true
+## spring boot中对应的配置项为
+# spring.elasticsearch.bboss.elasticsearch.includeTypeName = true
 ```
 
 
@@ -931,13 +935,13 @@ public abstract String addDocumentsWithIdKey(String indexName, String indexType,
 ClientOptions:主要用于新增/修改操作，可以指定以下属性：
 
 ```java
-*  String parentIdField;
-*  String idField;
-*  String esRetryOnConflictField;
-*  String versionField;
-*  String versionTypeField;
-*  String rountField;
-*  String refreshOption;
+	private String parentIdField;
+	private String idField;
+	private String esRetryOnConflictField;
+	private String versionField;
+	private String versionTypeField;
+	private String rountField;
+	private String refreshOption;
     /**
 	 * 自动按照日期分表：日期通过参数指定elasticsearch.dateFormat=yyyy.MM.dd
 	 * @param indexName
@@ -977,10 +981,11 @@ String response = clientUtil.addDocuments("demo",//索引表
 UpdateOptions：主要用户修改,可以设置以下属性
 
 ```java
-private String refreshOption;
-private String detectNoopField;
-private String docasupsertField;
-private String docIdField;
+	private String refreshOption;
+	private String detectNoopField;
+	private String docasupsertField;
+	private String parentIdField;
+	private String docIdField;
 ```
 
  
@@ -1086,9 +1091,44 @@ refreshOption 使用实例：
 
 
 
-## 4.8 为添加/修改文档指定控制参数
+## 4.8 指定控制参数
 
-【4.7】小节介绍了控制定时刷新的refresh参数，其实refreshOption中还可以指定其他文档操作的控制参数：
+### 4.8.1 基于refreshOption参数指定添加/修改文档控制参数
+
+bboss提供了带refreshOption参数一系列api，通过refreshOption参数，可以利用url参数的格式设定es操作的相关控制参数，例如：
+
+refresh=true&e&version=1
+
+下面列出了org.frameworkset.elasticsearch.client.ClientInterface接口提供的部分带refreshOption参数的api：
+
+```java
+public abstract String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException;
+	public abstract String addDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
+public abstract String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
+
+public abstract String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException;
+public abstract String addDateDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException;
+
+public abstract String addDateDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException;
+
+public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException;
+
+public abstract String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String refreshOption) throws ElasticSearchException;
+
+public abstract String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
+	public abstract String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException;
+	public abstract String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException;
+public abstract String addDocument(String indexName, String indexType, Object bean,Object docId,String refreshOption) throws ElasticSearchException;
+public abstract String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException;
+
+	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException;
+
+public String updateDocument(String index,String type,Object id,Object params,String refreshOption) throws ElasticSearchException;
+
+	public String updateDocument(String index,String type,Object id,Map params,String refreshOption) throws ElasticSearchException;
+```
+
+[【4.7】](https://esdoc.bbossgroups.com/#/development?id=_47-%e8%ae%be%e7%bd%ae%e7%b4%a2%e5%bc%95%e5%88%b7%e6%96%b0%e6%9c%ba%e5%88%b6)小节介绍了控制定时刷新的refresh参数，refreshOption中还可以指定其他文档操作的控制参数：
 
 | `retry_on_conflict`      | In between the get and indexing phases of the update, it is possible that another process might have already updated the same document. By default, the update will fail with a version conflict exception. The `retry_on_conflict` parameter controls how many times to retry the update before finally throwing an exception. |
 | ------------------------ | ------------------------------------------------------------ |
@@ -1119,15 +1159,78 @@ refreshOption 使用实例：
 				demo,"refresh=true&version=1");
 ```
 
-## 4.9 指定检索search_type参数
+### 4.8.2 基于ClientOption/UpdateOption指定添加/修改文档控制参数
 
-### 关于search_type的介绍如下
+可以基于ClientOption/UpdateOption指定控制参数，bboss带ClientOption/UpdateOption参数的部分api如下：
+
+```java
+	public abstract String addDocument(Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+	public abstract String addDocument(String indexName, String indexType, Object bean,ClientOptions clientOptions) throws ElasticSearchException;
+public abstract String addDateMapDocument(String indexName, String indexType, Map bean,ClientOptions clientOptions) throws ElasticSearchException;
+
+
+	public abstract String addDocuments(List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+
+	public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+
+	public abstract String updateDocuments( List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+
+	public abstract String updateDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException;
+
+	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+```
+
+使用案例
+
+ClientOptions:主要用于新增/修改操作，可以指定以下属性：
+
+```java
+	private String parentIdField;
+	private String idField;
+	private String esRetryOnConflictField;
+	private String versionField;
+	private String versionTypeField;
+	private String rountField;
+	private String refreshOption;
+```
+
+其中的refreshOption值的指定用法可以参考章节4.8.1 基于refreshOption参数指定控制参数，参数格式如下：
+
+refresh=true&e&version=1
+
+其他参数根据对应的api来进行配置即可
+
+ClientOptions示例代码
+
+```java
+//批量添加或者修改2万个文档，将两个对象添加到索引表demo中，批量添加2万条记录耗时1.8s，
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setRefreshOption("refresh=true&version=2");//为了测试效果,启用强制刷新机制，实际线上环境去掉最后一个参数"refresh=true"
+		clientOptions.setIdField("demoId");//指定采用demoId座位文档id
+		String response = clientUtil.addDocuments(
+				demos,clientOptions);
+```
+
+UpdateOptions：主要用于更新操作的控制参数，包含以下属性
+
+```java
+private String refreshOption;
+private String detectNoopField;
+private String docasupsertField;
+private String parentIdField;
+private String docIdField;
+```
+UpdateOptions的使用方法和ClientOptions类似，就不举例介绍了.
+
+### 4.8.3 指定检索控制参数
+
+#### 关于search_type的介绍
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-type.html
 
 Elasticsearch is very flexible and allows to control the type of search to execute on a **per search request** basis. The type can be configured by setting the **search_type** parameter in the query string. The types are:
 
-#### Query Then Fetch
+##### Query Then Fetch
 
 Parameter value: **query_then_fetch**.
 
@@ -1137,13 +1240,13 @@ During the second phase, the coordinating node requests the document content (an
 
 **Note：**This is the default setting, if you do not specify a `search_type` in your request.
 
-#### Dfs, Query Then Fetch
+##### Dfs, Query Then Fetch
 
 Parameter value: **dfs_query_then_fetch**.
 
 Same as "Query Then Fetch", except for an initial scatter phase which goes and computes the distributed term frequencies for more accurate scoring.
 
-### 检索的时候指定search_type
+#### 检索的时候指定search_type
 
 ```java
  ClientInterface clientUtil = ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesqlMapper.xml");
@@ -1159,6 +1262,14 @@ Same as "Query Then Fetch", except for an initial scatter phase which goes and c
         logger.debug(esCrmOrderStudentList.toString());
         System.out.println(esCrmOrderStudentList.toString());
 ```
+
+检索的其他参数参考都可以参考search_type参数的使用方法来追加到请求action url路径后面。
+
+## 4.9 通过URL参数来实现检索操作
+
+可以通过Url参数来实现文档检索操作，参考文档：
+
+[通过url参数检索文档](https://esdoc.bbossgroups.com/#/document-crud?id=通过url参数检索文档)
 
 
 
@@ -1705,6 +1816,24 @@ $类型的变量，只是做值替换，所以对于""这样的类型修饰符�
 ```
 
 $方式的变量还用于逻辑判断和foreach循环。
+
+变量如果是一个对象，可以通过以下方式引用对象中定义的属性：
+
+```java
+$customer.Address
+$purchase.Total
+或者
+$customer.getAddress()
+$purchase.getTotal()
+```
+
+List或者Array数组的size长度获取和为空判断方法：
+
+```
+$myarray.isEmpty()
+
+$myarray.size()
+```
 
 - 在dsl中定义$类型变量
 

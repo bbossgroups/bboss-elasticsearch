@@ -113,6 +113,8 @@ bboss 5.6.8新增了一组添加和修改文档的api，这组api没有带indexN
 @ESIndex提供了两个属性name和type，使用方法：
 
 ```java
+@ESIndex(name="demowithesindex") //es 7不需要指定type
+@ESIndex(name="demowithesindex",type="demowithesindex")
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
 索引类型为demowithesindex
 @ESIndex(name="demowithesindex-{agentStarttime,yyyy.MM.dd}",type="demowithesindex")
@@ -201,6 +203,21 @@ public   String updateDocuments( List<?> beans) throws ElasticSearchException;
 ```
 
 ## 定义带ESIndex注解的实体
+
+简单用法
+
+```java
+@ESIndex(name="demowithesindex",type="demowithesindex")
+public class DemoWithESIndex  {
+   private Object dynamicPriceTemplate;
+   //设定文档标识字段
+   @ESId(readSet = true,persistent = false)
+   private Long demoId;
+   。。。。。。。
+} 
+```
+
+复杂用法
 
 ```java
 /**
