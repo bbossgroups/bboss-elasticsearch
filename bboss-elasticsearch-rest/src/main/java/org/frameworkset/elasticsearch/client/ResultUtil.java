@@ -844,6 +844,9 @@ public abstract class ResultUtil {
 		esBaseData.setRouting(hit.getRouting());
 		esBaseData.setFound(hit.isFound());
 		esBaseData.setNested(hit.getNested());
+		esBaseData.setShard(hit.getShard());
+		esBaseData.setNode(hit.getNode());
+		esBaseData.setExplanation(hit.getExplanation());
 		Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
 		if(innerHits != null) {
 			esBaseData.setInnerHits(innerHits);

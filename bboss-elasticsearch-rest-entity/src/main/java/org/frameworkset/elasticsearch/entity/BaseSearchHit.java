@@ -29,6 +29,13 @@ public class BaseSearchHit implements Serializable {
 	private Map<String,Object> nested;
 	@JsonProperty("inner_hits")
 	private Map<String,Map<String,InnerSearchHits>> innerHits;
+	@JsonProperty("_shard")
+	private String shard;//"_index": "trace-2017.09.01",
+	@JsonProperty("_node")
+	private String node;//"_index": "trace-2017.09.01",
+
+	@JsonProperty("_explanation")
+	private Explanation explanation;//"_index": "trace-2017.09.01",
 	public Map<String, Map<String,InnerSearchHits>> getInnerHits() {
 		return innerHits;
 	}
@@ -149,5 +156,29 @@ public class BaseSearchHit implements Serializable {
 
 	public void setNested(Map<String, Object> nested) {
 		this.nested = nested;
+	}
+
+	public Explanation getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(Explanation explanation) {
+		this.explanation = explanation;
+	}
+
+	public String getShard() {
+		return shard;
+	}
+
+	public void setShard(String shard) {
+		this.shard = shard;
+	}
+
+	public String getNode() {
+		return node;
+	}
+
+	public void setNode(String node) {
+		this.node = node;
 	}
 }

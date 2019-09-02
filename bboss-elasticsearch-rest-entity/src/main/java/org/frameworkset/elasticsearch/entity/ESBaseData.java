@@ -21,6 +21,10 @@ public abstract class ESBaseData implements Serializable{
 	private boolean found;
 	private Map<String,Object> nested;
 	private Map<String,Map<String,InnerSearchHits>> innerHits;
+	private String shard;//"_index": "trace-2017.09.01",
+	private String node;//"_index": "trace-2017.09.01",
+
+	private Explanation explanation;//"_index": "trace-2017.09.01",
 	public String getType() {
 		return type;
 	}
@@ -124,5 +128,29 @@ public abstract class ESBaseData implements Serializable{
 
 	public void setInnerHits(Map<String, Map<String, InnerSearchHits>> innerHits) {
 		this.innerHits = innerHits;
+	}
+
+	public String getShard() {
+		return shard;
+	}
+
+	public void setShard(String shard) {
+		this.shard = shard;
+	}
+
+	public String getNode() {
+		return node;
+	}
+
+	public void setNode(String node) {
+		this.node = node;
+	}
+
+	public Explanation getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(Explanation explanation) {
+		this.explanation = explanation;
 	}
 }
