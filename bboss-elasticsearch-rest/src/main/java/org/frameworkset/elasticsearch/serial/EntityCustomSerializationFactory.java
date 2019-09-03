@@ -44,16 +44,17 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 		List<ClassUtil.PropertieDescription> esAnnonationProperties = classInfo.getEsAnnonationProperties();
 		if(esAnnonationProperties != null && esAnnonationProperties.size() > 0) {
 			for (ClassUtil.PropertieDescription esAnnonationProperty : esAnnonationProperties) {
-				if (esAnnonationProperty.getName().equals(propName)) {
-					if(!esAnnonationProperty.isPersistentESId()
-							&& !esAnnonationProperty.isPersistentESParentId()
-							&& !esAnnonationProperty.isPersistentESDocAsUpsert()
-							&& !esAnnonationProperty.isPersistentESRetryOnConflict()
-							&& !esAnnonationProperty.isPersistentESRouting()
-							&& !esAnnonationProperty.isPersistentESSource()
-							&& !esAnnonationProperty.isPersistentESVersion()
-							&& !esAnnonationProperty.isPersistentESVersionType()
-							)
+//				if (esAnnonationProperty.getName().equals(propName) ) {
+//					if(!esAnnonationProperty.isPersistentESId()
+//							&& !esAnnonationProperty.isPersistentESParentId()
+//							&& !esAnnonationProperty.isPersistentESDocAsUpsert()
+//							&& !esAnnonationProperty.isPersistentESRetryOnConflict()
+//							&& !esAnnonationProperty.isPersistentESRouting()
+//							&& !esAnnonationProperty.isPersistentESSource()
+//							&& !esAnnonationProperty.isPersistentESVersion()
+//							&& !esAnnonationProperty.isPersistentESVersionType()
+//							)
+				if (esAnnonationProperty.getName().equals(propName) && !esAnnonationProperty.isESPersistent()) {
 					find = true;
 					break;
 				}

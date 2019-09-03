@@ -26,6 +26,7 @@ import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.spi.remote.http.HttpRuntimeException;
 import org.frameworkset.util.BigFile;
 import org.frameworkset.util.ClassUtil;
+import org.frameworkset.util.ESPropertyDescripts;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.frameworkset.util.annotations.wraper.ColumnWraper;
 import org.slf4j.Logger;
@@ -885,24 +886,28 @@ public abstract class ResultUtil {
 				if(innerSearchHits != null && innerSearchHits.size() > 0){
 					Object source = innerSearchHits.get(0).getSource();
 					classInfo = ClassUtil.getClassInfo(source.getClass());
-
-					injectAnnotationESId = classInfo.getEsIdProperty();
-					injectAnnotationESParentId = classInfo.getEsParentProperty();
+					ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//					injectAnnotationESId = classInfo.getEsIdProperty();
+//					injectAnnotationESParentId = classInfo.getEsParentProperty();
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
 						isESId = ESId.class.isAssignableFrom(source.getClass());
 					}
-					if(isESBaseData || isESId || (injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-							|| (injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())) {
+//					if(isESBaseData || isESId || (injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//							|| (injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())) {
+					if(isESBaseData || isESId || esPropertyDescripts.isContainReadSetProperty()) {
 						for (int i = 0; i < innerSearchHits.size(); i++) {
 							InnerSearchHit innerSearchHit = innerSearchHits.get(i);
 							source = innerSearchHit.getSource();
 							if (source != null) {
-								if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-									injectAnnotationESId(injectAnnotationESId,  source,innerSearchHit);
-								if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
-									injectAnnotationESParentId(injectAnnotationESParentId,  source,innerSearchHit);
+//								if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//									injectAnnotationESId(injectAnnotationESId,  source,innerSearchHit);
+//								if(injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())
+//									injectAnnotationESParentId(injectAnnotationESParentId,  source,innerSearchHit);
+								if(esPropertyDescripts.isContainReadSetProperty()){
+									injectAnnotationESMetaDatas(esPropertyDescripts,source,innerSearchHit);
+								}
 								if(isESBaseData || isESId)
 									injectBaseData(source, innerSearchHit, isESBaseData, isESId);
 							}
@@ -940,22 +945,141 @@ public abstract class ResultUtil {
 		_injectAnnotationES( injectAnnotationESParentId,  data ,  hit,id);
 
 	}
+
+	private static void injectAnnotationESMetaDatas(ESPropertyDescripts esPropertyDescripts,Object data ,BaseSearchHit hit){
+
+		ClassUtil.PropertieDescription propertieDescription = esPropertyDescripts.getEsIdProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet() ){
+			Object id = hit.getId();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaIdProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet() ){
+			Object id = hit.getId();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+
+		propertieDescription = esPropertyDescripts.getEsParentProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getParent();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaParentIdProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getParent();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaExplanationProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getExplanation();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaFieldsProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getFields();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaFoundProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.isFound();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaHighlightProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getHighlight();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaIndexProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getIndex();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaInnerHitsProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getInnerHits();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaNestedProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getNested();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaNodeProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getNode();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaScoreProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getScore();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaShardProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getShard();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaSortProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getSort();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaTypeProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getType();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsRoutingProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getRouting();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaVersionProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getVersion();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+		propertieDescription = esPropertyDescripts.getEsVersionProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getVersion();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+	}
 	/**
 	 * 如果对象有ESId注解标识的字段，则注入parent和
 	 * @param data
 	 */
 	private static void _injectAnnotationES(ClassUtil.PropertieDescription propertieDescription,Object data ,BaseSearchHit hit,Object id ){
-		if(propertieDescription != null && propertieDescription.isEsIdReadSet()){
+//		if(propertieDescription != null && propertieDescription.isESReadSet()){
 
 			try {
 				propertieDescription.setValue(data,ValueObjectUtil.typeCast(id,propertieDescription.getPropertyType()));
 			} catch (IllegalAccessException e) {
-				logger.warn("设置属性失败："+propertieDescription.toString(),e);
+				logger.warn("Inject ES meta data failed:"+propertieDescription.toString(),e);
 			} catch (InvocationTargetException e) {
-				logger.warn("设置属性失败："+propertieDescription.toString(),e.getTargetException());
+				logger.warn("Inject ES meta data failed:"+propertieDescription.toString(),e.getTargetException());
 			}
 
-		}
+//		}
 
 	}
 	public static  <T> T buildObject(RestResponse result, Class<T> type){
@@ -971,13 +1095,17 @@ public abstract class ResultUtil {
 				Object data =  hit.getSource();
 				if(data != null) {
 					ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
+					ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
 
-					ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-					ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
-					if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-						injectAnnotationESId(injectAnnotationESId,  data,hit);
-					if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
-						injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+//					ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//					ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+//					if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//						injectAnnotationESId(injectAnnotationESId,  data,hit);
+//					if(injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())
+//						injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+					if(esPropertyDescripts.isContainReadSetProperty()){
+						injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
+					}
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
@@ -996,18 +1124,22 @@ public abstract class ResultUtil {
 			}
 			else{
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
-				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				boolean isESId = false;
 				if(!isESBaseData){
 					isESId = ESId.class.isAssignableFrom(type);
 				}
 				T data = (T) hit.getSource();
-				if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-					injectAnnotationESId(injectAnnotationESId,  data,hit);
-				if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isEsIdReadSet())
-					injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+//				if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//					injectAnnotationESId(injectAnnotationESId,  data,hit);
+//				if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isESReadSet())
+//					injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+				if(esPropertyDescripts.isContainReadSetProperty()){
+					injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
+				}
 				if (isESBaseData) {
 					buildESBaseData(hit, (ESBaseData) data);
 				}
@@ -1050,13 +1182,17 @@ public abstract class ResultUtil {
 			Object data =  result.getSource();
 			if(data != null) {
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
-				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
-
-				if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-					injectAnnotationESId(injectAnnotationESId,  data,result);
-				if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
-					injectAnnotationESParentId(injectAnnotationESParentId,  data,result);
+				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+//
+//				if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//					injectAnnotationESId(injectAnnotationESId,  data,result);
+//				if(injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())
+//					injectAnnotationESParentId(injectAnnotationESParentId,  data,result);
+				if(esPropertyDescripts.isContainReadSetProperty()){
+					injectAnnotationESMetaDatas(esPropertyDescripts,data,result);
+				}
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if(!isESBaseData){
@@ -1084,12 +1220,16 @@ public abstract class ResultUtil {
 
 			T data = (T) hit.getSource();
 			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
-			ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-			ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
-			if(injectAnnotationESId != null  && injectAnnotationESId.isEsIdReadSet())
-				injectAnnotationESId(injectAnnotationESId,  data,hit);
-			if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isEsIdReadSet())
-				injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+			ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//			ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//			ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+//			if(injectAnnotationESId != null  && injectAnnotationESId.isESReadSet())
+//				injectAnnotationESId(injectAnnotationESId,  data,hit);
+//			if(injectAnnotationESParentId != null  && injectAnnotationESParentId.isESReadSet())
+//				injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+			if(esPropertyDescripts.isContainReadSetProperty()){
+				injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
+			}
 			if (isESBaseData) {
 				buildESBaseData(hit, (ESBaseData) data);
 			}
@@ -1404,8 +1544,9 @@ public abstract class ResultUtil {
 			if(searchHits != null && searchHits.size() > 0) {
 				Object obj = searchHits.get(0).getSource();
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(obj.getClass());
-				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESId = false;
 				if (!isESBaseData) {
@@ -1418,10 +1559,13 @@ public abstract class ResultUtil {
 					//处理源对象
 					Object data = hit.getSource();
 					if (data != null) {
-						if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-							injectAnnotationESId(injectAnnotationESId,  data,hit);
-						if(injectAnnotationESParentId != null&& injectAnnotationESParentId.isEsIdReadSet())
-							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+//						if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//							injectAnnotationESId(injectAnnotationESId,  data,hit);
+//						if(injectAnnotationESParentId != null&& injectAnnotationESParentId.isESReadSet())
+//							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+						if(esPropertyDescripts.isContainReadSetProperty()){
+							injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
+						}
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 					else {
@@ -1441,8 +1585,9 @@ public abstract class ResultUtil {
 				List<T> hits = new ArrayList<T>(searchHits.size());
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
-				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
-				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
+//				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
+//				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
 				boolean isESId = false;
 				if (!isESBaseData) {
 					isESId = ESId.class.isAssignableFrom(type);
@@ -1452,10 +1597,13 @@ public abstract class ResultUtil {
 					data = (T) hit.getSource();
 					hits.add(data);
 					if (data != null) {
-						if(injectAnnotationESId != null && injectAnnotationESId.isEsIdReadSet())
-							injectAnnotationESId(injectAnnotationESId,  data,hit);
-						if(injectAnnotationESParentId != null && injectAnnotationESParentId.isEsIdReadSet())
-							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+//						if(injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
+//							injectAnnotationESId(injectAnnotationESId,  data,hit);
+//						if(injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())
+//							injectAnnotationESParentId(injectAnnotationESParentId,  data,hit);
+						if(esPropertyDescripts.isContainReadSetProperty()){
+							injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
+						}
 						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
 					}
 					else {
