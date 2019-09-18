@@ -1,22 +1,28 @@
 # Elasticsearch Demo
 
-spring booter必看demo1：
+# 1.Elasticsearch Demo
+
+spring boot必看demo1：
 
 [spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)
 
-spring booter必看demo2：
+spring boot必看demo2：
 
 [eshelloword-spring-boot-starter](https://github.com/bbossgroups/elasticsearch-springboot-example) （maven）
 
-其他项目参考demo1：
+spring boot必看demo3：
+
+[spring boot多个Elasticsearch集群环境案例web demo](https://github.com/bbossgroups/es_bboss_web/tree/multiesdatasource)
+
+maven项目参考demo1：
 
 [eshelloworld-example](https://github.com/bbossgroups/elasticsearch-example) （maven）
 
-其他项目参考demo2：
+gradle项目参考demo2：
 
 [elasticsearch-gradle-demo](https://github.com/bbossgroups/elasticsearch-gradle-example)  （gradle）
 
-# 快速集成和应用 
+# 2.快速集成和应用 
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md) 
@@ -29,7 +35,7 @@ bboss elasticsearch开发库使用文档：
 
 [How to use Elasticsearch BBoss](quickstart.md)
 
-# 4 开发交流
+# 3.开发交流
 
 
 
