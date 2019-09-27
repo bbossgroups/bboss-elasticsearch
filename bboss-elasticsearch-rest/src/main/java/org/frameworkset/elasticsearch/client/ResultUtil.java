@@ -892,8 +892,9 @@ public abstract class ResultUtil {
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
-						isESId = ESId.class.isAssignableFrom(source.getClass());
+						isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 					}
+					boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 //					if(isESBaseData || isESId || (injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
 //							|| (injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())) {
 					if(isESBaseData || isESId || esPropertyDescripts.isContainReadSetProperty()) {
@@ -1106,6 +1107,7 @@ public abstract class ResultUtil {
 					if(esPropertyDescripts.isContainReadSetProperty()){
 						injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
 					}
+					boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESBaseData = ESBaseData.class.isAssignableFrom(classInfo.getClazz());
 					boolean isESId = false;
 					if(!isESBaseData){
@@ -1127,6 +1129,7 @@ public abstract class ResultUtil {
 				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
 //				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
 //				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
+				boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				boolean isESId = false;
 				if(!isESBaseData){
@@ -1182,6 +1185,7 @@ public abstract class ResultUtil {
 			Object data =  result.getSource();
 			if(data != null) {
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(data.getClass());
+				boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
 //				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
 //				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
@@ -1220,6 +1224,7 @@ public abstract class ResultUtil {
 
 			T data = (T) hit.getSource();
 			ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
+			boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 			ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
 //			ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
 //			ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
@@ -1544,6 +1549,7 @@ public abstract class ResultUtil {
 			if(searchHits != null && searchHits.size() > 0) {
 				Object obj = searchHits.get(0).getSource();
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(obj.getClass());
+				boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();
 //				ClassUtil.PropertieDescription injectAnnotationESId = classInfo.getEsIdProperty();
 //				ClassUtil.PropertieDescription injectAnnotationESParentId = classInfo.getEsParentProperty();
@@ -1583,6 +1589,7 @@ public abstract class ResultUtil {
 		else{
 			if(searchHits != null && searchHits.size() > 0) {
 				List<T> hits = new ArrayList<T>(searchHits.size());
+				boolean isMetaMap = MetaMap.class.isAssignableFrom(type);
 				boolean isESBaseData = ESBaseData.class.isAssignableFrom(type);
 				ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(type);
 				ESPropertyDescripts esPropertyDescripts = classInfo.getEsPropertyDescripts();

@@ -31,8 +31,8 @@ dependencies {
 			project(':bboss-elasticsearch-rest-jdbc')
 	)
 	compileOnly(
-			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.1.6.RELEASE', transitive: true],
-			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.1.6.RELEASE', transitive: true]
+			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.1.8.RELEASE', transitive: true],
+			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.1.8.RELEASE', transitive: true]
 	)
 //	compile project(':bboss-elasticsearch-rest-jdbc')
 //	compile "org.springframework.boot:spring-boot-starter-data-redis:+"

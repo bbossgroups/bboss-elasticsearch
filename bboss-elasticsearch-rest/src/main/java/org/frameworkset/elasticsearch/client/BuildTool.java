@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client;/*
 
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
+import com.frameworkset.orm.annotation.NameParserException;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
@@ -24,14 +25,313 @@ import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.ClassUtil;
+import org.frameworkset.util.DataFormatUtil;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.frameworkset.elasticsearch.client.ClientInterfaceNew._doc;
+
 public abstract class BuildTool {
 	private static final ThreadLocal<BatchContext> batchContextThreadLocal = new ThreadLocal<BatchContext>();
+
+	public static void buildIndiceName(ESIndexWrapper esIndexWrapper,StringBuilder builder, ESIndexWrapper.GetVariableValue getVariableValue){
+		String name = esIndexWrapper.getName();
+		if(name != null){
+			builder.append(name);
+			return;
+		}
+		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
+		if(tokens == null || tokens.size() == 0){
+			return;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexName() != null){
+				builder.append(batchContext.getIndexName());
+				return;
+			}
+		}
+		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
+		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null?new StringBuilder():null;
+		for(int i = 0; i < tokens.size(); i ++){
+			nameGrammarToken = tokens.get(i);
+			if(!nameGrammarToken.varibletoken()) {
+				if(temp != null){
+					temp.append(nameGrammarToken.getText());
+				}
+				builder.append(nameGrammarToken.getText());
+			}
+			else{
+				if(nameGrammarToken.getFieldName() != null) {
+
+//						Object va = classInfo.getPropertyValue(bean, nameGrammarToken.getFieldName());
+					Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
+					if (va == null)
+						throw new NameParserException(new StringBuilder()
+								.append(esIndexWrapper.getNameInfo().toString())
+								.append(",property[")
+								.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
+					if (nameGrammarToken.getDateformat() != null) {
+						DateFormat dateFormat = DataFormatUtil.getSimpleDateFormat(nameGrammarToken.getDateformat());
+						if (va instanceof Date) {
+							builder.append(dateFormat.format((Date) va));
+						} else if (va instanceof Long) {
+							builder.append(dateFormat.format(new Date((Long) va)));
+
+						} else {
+							builder.append(va);
+						}
+					} else {
+						builder.append(va);
+					}
+				}
+				else{ //取当前时间作为索引名称
+					DateFormat dateFormat = DataFormatUtil.getSimpleDateFormat(nameGrammarToken.getDateformat());
+					Date date = new Date();
+					String d = dateFormat.format(date);
+					builder.append(d);
+					if(temp != null){
+						temp.append(d);
+					}
+
+				}
+			}
+		}
+		if(temp != null){
+			batchContext.setIndexName(temp.toString());
+		}
+	}
+
+	public static void buildIndiceName(ESIndexWrapper esIndexWrapper,Writer writer, ESIndexWrapper.GetVariableValue getVariableValue) throws IOException {
+		String name = esIndexWrapper.getName();
+		if(name != null){
+			writer.write(name);
+			return;
+		}
+		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
+		if(tokens == null || tokens.size() == 0){
+			return;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexName() != null){
+				writer.write(batchContext.getIndexName());
+				return;
+			}
+		}
+		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
+		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null?new StringBuilder():null;
+		for(int i = 0; i < tokens.size(); i ++){
+			nameGrammarToken = tokens.get(i);
+			if(!nameGrammarToken.varibletoken()) {
+				if(temp != null){
+					temp.append(nameGrammarToken.getText());
+				}
+				writer.write(nameGrammarToken.getText());
+			}
+			else{
+				if(nameGrammarToken.getFieldName() != null) {
+
+//						Object va = classInfo.getPropertyValue(bean, nameGrammarToken.getFieldName());
+					Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
+					if (va == null)
+						throw new NameParserException(new StringBuilder()
+								.append(esIndexWrapper.getNameInfo().toString())
+								.append(",property[")
+								.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
+					if (nameGrammarToken.getDateformat() != null) {
+						DateFormat dateFormat = DataFormatUtil.getSimpleDateFormat(nameGrammarToken.getDateformat());
+						if (va instanceof Date) {
+							writer.write(dateFormat.format((Date) va));
+						} else if (va instanceof Long) {
+							writer.write(dateFormat.format(new Date((Long) va)));
+
+						} else {
+							writer.write(String.valueOf(va));
+						}
+					} else {
+						writer.write(String.valueOf(va));
+					}
+				}
+				else{ //取当前时间作为索引名称
+					DateFormat dateFormat = DataFormatUtil.getSimpleDateFormat(nameGrammarToken.getDateformat());
+					Date date = new Date();
+					String d = dateFormat.format(date);
+					writer.write(d);
+					if(temp != null){
+						temp.append(d);
+					}
+
+				}
+			}
+		}
+		if(temp != null){
+			batchContext.setIndexName(temp.toString());
+		}
+	}
+
+
+
+	/**
+	 * ClassUtil.ClassInfo classInfo, Object bean
+
+	 * @return
+	 */
+	public static String buildIndiceName(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
+		String name = esIndexWrapper.getName();
+		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
+		if(name == null || name.equals("")){
+			if(tokens == null  || tokens.size() == 0 )
+				return null;
+		}
+		else{
+			return name;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexName() != null){
+				return batchContext.getIndexName();
+			}
+		}
+		StringBuilder builder = new StringBuilder();
+		buildIndiceName(esIndexWrapper,builder,  getVariableValue);
+		return builder.toString();
+	}
+
+	/**
+	 * ClassUtil.ClassInfo classInfo, Object bean
+	 * @param writer
+	 * @param getVariableValue
+	 */
+	public static void buildIndiceType(ESIndexWrapper esIndexWrapper,Writer writer, ESIndexWrapper.GetVariableValue getVariableValue) throws IOException {
+		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
+		if(typeInfo == null){
+			writer.write(_doc);
+			return;
+		}
+
+		String type = typeInfo.getType();
+		if(type != null){
+			writer.write(type);
+			return;
+		}
+		List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
+		if(tokens == null || tokens.size() == 0){
+			writer.write(_doc);
+			return;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexType() != null){
+				writer.write(batchContext.getIndexType());
+				return  ;
+			}
+		}
+		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
+		for(int i = 0; i < tokens.size(); i ++){
+			nameGrammarToken = tokens.get(i);
+			if(!nameGrammarToken.varibletoken()) {
+				writer.write(nameGrammarToken.getText());
+			}
+			else{
+//					Object va = classInfo.getPropertyValue(bean,nameGrammarToken.getFieldName());
+				Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
+				if(va == null)
+					throw new NameParserException(new StringBuilder()
+							.append(typeInfo.toString())
+							.append(",property[")
+							.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
+				writer.write(String.valueOf(va));
+			}
+		}
+
+
+	}
+
+	/**
+	 * ClassUtil.ClassInfo classInfo, Object bean
+	 * @param builder
+	 * @param getVariableValue
+	 */
+	public static void buildIndiceType(ESIndexWrapper esIndexWrapper,StringBuilder builder, ESIndexWrapper.GetVariableValue getVariableValue){
+		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
+		if(typeInfo == null){
+			builder.append(_doc);
+			return;
+		}
+		String type = typeInfo.getType();
+		if(type != null){
+			builder.append(type);
+			return;
+		}
+		List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
+		if(tokens == null || tokens.size() == 0){
+			builder.append(_doc);
+			return;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexType() != null){
+				builder.append(batchContext.getIndexType());
+				return  ;
+			}
+		}
+		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
+		for(int i = 0; i < tokens.size(); i ++){
+			nameGrammarToken = tokens.get(i);
+			if(!nameGrammarToken.varibletoken()) {
+				builder.append(nameGrammarToken.getText());
+			}
+			else{
+//					Object va = classInfo.getPropertyValue(bean,nameGrammarToken.getFieldName());
+				Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
+				if(va == null)
+					throw new NameParserException(new StringBuilder()
+							.append(typeInfo.toString())
+							.append(",property[")
+							.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
+				builder.append(va);
+			}
+		}
+
+
+	}
+
+	/**
+	 * ClassUtil.ClassInfo classInfo, Object bean
+	 * @param getVariableValue
+	 * @return
+	 */
+	public static String buildIndiceType(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
+		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
+		if(typeInfo == null){
+			return _doc;
+		}
+		String type = typeInfo.getType();
+		if(type == null || type.equals("")){
+			List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
+			if(tokens == null  || tokens.size() == 0 )
+				return _doc;
+		}
+		else{
+			return type;
+		}
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null ){
+			if(batchContext.getIndexType() != null){
+				return  (batchContext.getIndexType());
+			}
+		}
+		StringBuilder builder = new StringBuilder();
+		buildIndiceType(esIndexWrapper,builder,getVariableValue);
+		return builder.toString();
+	}
 	public static BatchContext initBatchContextThreadLocal(){
 		BatchContext batchContext = new BatchContext();
 		batchContextThreadLocal.set(batchContext);
@@ -466,7 +766,7 @@ public abstract class BuildTool {
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
 							.append(beanInfo != null ?beanInfo.toString():"").toString());
 				}
-				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
+				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
 			}
 			if(!upper7) {
 				writer.write("\", \"_type\" : \"");
@@ -478,7 +778,7 @@ public abstract class BuildTool {
 						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
 								.append(beanInfo != null ?beanInfo.toString():"").toString());
 					}
-					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
+					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
 				}
 			}
 			writer.write("\", \"_id\" : ");
@@ -531,7 +831,7 @@ public abstract class BuildTool {
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
 							.append(beanInfo != null ?beanInfo.toString():"").toString());
 				}
-				esIndexWrapper.buildIndexName(writer,restGetVariableValue);
+				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
 			}
 			if(!upper7) {
 				writer.write("\", \"_type\" : \"");
@@ -543,7 +843,7 @@ public abstract class BuildTool {
 						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
 								.append(beanInfo != null ?beanInfo.toString():"").toString());
 					}
-					esIndexWrapper.buildIndexType(writer,restGetVariableValue);
+					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
 				}
 
 			}

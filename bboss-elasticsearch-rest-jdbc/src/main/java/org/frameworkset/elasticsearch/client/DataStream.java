@@ -14,48 +14,14 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
-
-import java.util.List;
 
 public abstract class DataStream {
 
 
 	public void setExternalTimer(boolean externalTimer) {
 
-	}
-	protected void initOtherDSes(List<DBConfig> dbConfigs){
-		if(dbConfigs != null && dbConfigs.size() > 0){
-			for (DBConfig dbConfig:dbConfigs){
-				initDS( dbConfig);
-			}
-		}
-	}
-	protected void initDS(DBConfig dbConfig){
-		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
-			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
-					dbConfig.getDbDriver(),//oracle驱动
-					dbConfig.getDbUrl(),//mysql链接串
-					dbConfig.getDbUser(), dbConfig.getDbPassword(),//数据库账号和口令
-					null,//"false",
-					null,// "READ_UNCOMMITTED",
-					dbConfig.getValidateSQL(),//数据库连接校验sql
-					dbConfig.getDbName()+"_jndi",
-					dbConfig.getInitSize(),
-					dbConfig.getMinIdleSize(),
-					dbConfig.getMaxSize(),
-					dbConfig.isUsePool(),
-					false,
-					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
-			);
-		}
-	}
-
-	protected void initES(String applicationPropertiesFile){
-		if(SimpleStringUtil.isNotEmpty(applicationPropertiesFile ))
-			ElasticSearchBoot.boot(applicationPropertiesFile);
 	}
 
 	public abstract void execute() throws ESDataImportException;
@@ -72,7 +38,10 @@ public abstract class DataStream {
 
 	private String configString;
 
-
+	protected void initES(String applicationPropertiesFile){
+		if(SimpleStringUtil.isNotEmpty(applicationPropertiesFile ))
+			ElasticSearchBoot.boot(applicationPropertiesFile);
+	}
 	public void init() {
 	}
 }

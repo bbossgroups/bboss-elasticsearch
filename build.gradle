@@ -19,6 +19,7 @@ configure(allprojects) { project ->
 		}
 	}
 
+
 	tasks.withType(JavaCompile) {
 		
 		sourceCompatibility = SOURCE_COMPILER_LEVEL

@@ -24,41 +24,26 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public class MongoDBConfig {
-	private String statusTableDML;
-	private Integer jdbcFetchSize;
-	private String dbDriver;
-	private String dbUrl;
-	private String dbUser;
 
-	private String dbPassword;
+	private String name;
+	private String serverAddresses;
+	private String option;
+	private String writeConcern;
+	private String readPreference;
+	private Boolean autoConnectRetry = true;
 
-	private int initSize = 10;
-	private int minIdleSize = 10;
-	private int maxSize = 20;
+	private int connectionsPerHost = 50;
+
+	private int maxWaitTime = 120000;
+	private int socketTimeout = 0;
+	private int connectTimeout = 15000;
 
 	public static final String mysql_createStatusTableSQL = "CREATE TABLE $statusTableName ( ID bigint(10) NOT NULL, lasttime bigint(10) NOT NULL, lastvalue bigint(10) NOT NULL, lastvaluetype int(1) NOT NULL, PRIMARY KEY(ID)) ENGINE=InnoDB";
 	public static final String oracle_createStatusTableSQL = "CREATE TABLE $statusTableName ( ID NUMBER(10) NOT NULL, lasttime NUMBER(10) NOT NULL, lastvalue NUMBER(10) NOT NULL, lastvaluetype NUMBER(1) NOT NULL,constraint $statusTableName_PK primary key(ID))";
 
 	/**是否启用sql日志，true启用，false 不启用，*/
-	private boolean showSql;
-	private boolean usePool = false;
-	/**
-	 * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-	 * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
-	 */
-	private String dbtype ;
-	/**
-	 * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-	 * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
-	 */
-	private String dbAdaptor;
-	/**
-	 * 事务管理机制只有在一次性全量单线程导入的情况下才有用
-	 */
-	private boolean enableDBTransaction = false;
-	public String getDbDriver() {
-		return dbDriver;
-	}
+	private int threadsAllowedToBlockForConnectionMultiplier;
+	private Boolean socketKeepAlive = false;
 
 	public String getCreateStatusTableSQL(String dbtype){
 		if(dbtype.equals("mysql")){
@@ -69,132 +54,101 @@ public class MongoDBConfig {
 		}
 		throw new ESDataImportException("getCreateStatusTableSQL failed: unsupport dbtype "+ dbtype);
 	}
-	public void setDbDriver(String dbDriver) {
-		this.dbDriver = dbDriver;
+
+
+	public String getName() {
+		return name;
 	}
 
-	public String getDbUrl() {
-		return dbUrl;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setDbUrl(String dbUrl) {
-		this.dbUrl = dbUrl;
+	public String getServerAddresses() {
+		return serverAddresses;
 	}
 
-	public String getDbUser() {
-		return dbUser;
+	public void setServerAddresses(String serverAddresses) {
+		this.serverAddresses = serverAddresses;
 	}
 
-	public void setDbUser(String dbUser) {
-		this.dbUser = dbUser;
+	public String getOption() {
+		return option;
 	}
 
-	public String getDbPassword() {
-		return dbPassword;
+	public void setOption(String option) {
+		this.option = option;
 	}
 
-	public void setDbPassword(String dbPassword) {
-		this.dbPassword = dbPassword;
+	public String getWriteConcern() {
+		return writeConcern;
 	}
 
-	public String getValidateSQL() {
-		return validateSQL;
+	public void setWriteConcern(String writeConcern) {
+		this.writeConcern = writeConcern;
 	}
 
-	public void setValidateSQL(String validateSQL) {
-		this.validateSQL = validateSQL;
+	public String getReadPreference() {
+		return readPreference;
 	}
 
-	private String validateSQL;
-
-
-	public Integer getJdbcFetchSize() {
-		return jdbcFetchSize;
+	public void setReadPreference(String readPreference) {
+		this.readPreference = readPreference;
 	}
 
-	public void setJdbcFetchSize(Integer jdbcFetchSize) {
-		this.jdbcFetchSize = jdbcFetchSize;
+	public Boolean getAutoConnectRetry() {
+		return autoConnectRetry;
 	}
 
-	public String getDbName() {
-		return dbName;
+	public void setAutoConnectRetry(Boolean autoConnectRetry) {
+		this.autoConnectRetry = autoConnectRetry;
 	}
 
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
+	public int getConnectionsPerHost() {
+		return connectionsPerHost;
 	}
 
-	private String dbName;
-
-	public boolean isShowSql() {
-		return showSql;
+	public void setConnectionsPerHost(int connectionsPerHost) {
+		this.connectionsPerHost = connectionsPerHost;
 	}
 
-	public void setShowSql(boolean showSql) {
-		this.showSql = showSql;
+	public int getMaxWaitTime() {
+		return maxWaitTime;
 	}
 
-	public boolean isUsePool() {
-		return usePool;
+	public void setMaxWaitTime(int maxWaitTime) {
+		this.maxWaitTime = maxWaitTime;
 	}
 
-	public void setUsePool(boolean usePool) {
-		this.usePool = usePool;
+	public int getSocketTimeout() {
+		return socketTimeout;
 	}
 
-	public int getMaxSize() {
-		return maxSize;
+	public void setSocketTimeout(int socketTimeout) {
+		this.socketTimeout = socketTimeout;
 	}
 
-	public void setMaxSize(int maxSize) {
-		this.maxSize = maxSize;
+	public int getConnectTimeout() {
+		return connectTimeout;
 	}
 
-	public int getMinIdleSize() {
-		return minIdleSize;
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
 	}
 
-	public void setMinIdleSize(int minIdleSize) {
-		this.minIdleSize = minIdleSize;
+	public int getThreadsAllowedToBlockForConnectionMultiplier() {
+		return threadsAllowedToBlockForConnectionMultiplier;
 	}
 
-	public int getInitSize() {
-		return initSize;
+	public void setThreadsAllowedToBlockForConnectionMultiplier(int threadsAllowedToBlockForConnectionMultiplier) {
+		this.threadsAllowedToBlockForConnectionMultiplier = threadsAllowedToBlockForConnectionMultiplier;
 	}
 
-	public void setInitSize(int initSize) {
-		this.initSize = initSize;
+	public Boolean getSocketKeepAlive() {
+		return socketKeepAlive;
 	}
 
-	public String getStatusTableDML() {
-		return statusTableDML;
-	}
-
-	public void setStatusTableDML(String statusTableDML) {
-		this.statusTableDML = statusTableDML;
-	}
-
-	public String getDbtype() {
-		return dbtype;
-	}
-
-	public void setDbtype(String dbtype) {
-		this.dbtype = dbtype;
-	}
-
-	public String getDbAdaptor() {
-		return dbAdaptor;
-	}
-
-	public void setDbAdaptor(String dbAdaptor) {
-		this.dbAdaptor = dbAdaptor;
-	}
-
-	public boolean isEnableDBTransaction() {
-		return enableDBTransaction;
-	}
-
-	public void setEnableDBTransaction(boolean enableDBTransaction) {
-		this.enableDBTransaction = enableDBTransaction;
+	public void setSocketKeepAlive(Boolean socketKeepAlive) {
+		this.socketKeepAlive = socketKeepAlive;
 	}
 }

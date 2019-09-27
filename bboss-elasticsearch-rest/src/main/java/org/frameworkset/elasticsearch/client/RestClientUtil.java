@@ -695,10 +695,10 @@ public class RestClientUtil extends ClientUtil{
 				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
 			}
 			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,bean);
-			esIndexWrapper.buildIndexName(builder,restGetVariableValue);
+			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
 			builder.append("/");
 			if(indexType == null){
-				esIndexWrapper.buildIndexType(builder,restGetVariableValue);
+				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
 			}
 			else{
 				builder.append("/").append(indexType);
@@ -707,7 +707,12 @@ public class RestClientUtil extends ClientUtil{
 		}
 		else {
 			builder.append(indexName);
-			builder.append("/").append(indexType);
+			if(indexType == null || indexType.equals("")) {
+				builder.append("/").append(_doc);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
 
 		}
 

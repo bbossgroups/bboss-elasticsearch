@@ -14,16 +14,13 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
-import org.frameworkset.persitent.util.SQLInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -31,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 数据库同步到Elasticsearch
  */
 public class MongoDB2ESDataStreamImpl extends DataStream{
-	private ESJDBC esjdbc;
+	private ESMongoDB esjdbc;
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 	private boolean inited;
@@ -49,8 +46,8 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 		try {
 			lock.lock();
 			this.initES(esjdbc.getApplicationPropertiesFile());
-			this.initDS(esjdbc.getDbConfig());
-			initOtherDSes(esjdbc.getConfigs());
+			this.initMongoDB(esjdbc.getConfig());
+//			initOtherDSes(esjdbc.getConfigs());
 			this.initSQLInfo();
 			this.initSchedule();
 			inited = true;
@@ -64,6 +61,26 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 
 			lock.unlock();
 		}
+	}
+
+	protected void initMongoDB(MongoDBConfig dbConfig){
+//		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
+//			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
+//					dbConfig.getDbDriver(),//oracle驱动
+//					dbConfig.getDbUrl(),//mysql链接串
+//					dbConfig.getDbUser(), dbConfig.getDbPassword(),//数据库账号和口令
+//					null,//"false",
+//					null,// "READ_UNCOMMITTED",
+//					dbConfig.getValidateSQL(),//数据库连接校验sql
+//					dbConfig.getDbName()+"_jndi",
+//					dbConfig.getInitSize(),
+//					dbConfig.getMinIdleSize(),
+//					dbConfig.getMaxSize(),
+//					dbConfig.isUsePool(),
+//					false,
+//					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
+//			);
+//		}
 	}
 
 	@Override
@@ -110,22 +127,10 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 	}
 	public void initSQLInfo(){
 
-		if(esjdbc.getSql() == null || esjdbc.getSql().equals("")){
 
-			try {
-				ConfigSQLExecutor executor = new ConfigSQLExecutor(esjdbc.getSqlFilepath());
-				SQLInfo sqlInfo = executor.getSqlInfo(esjdbc.getSqlName());
-				esjdbc.setSql(sqlInfo.getSql());
-				esjdbc.setExecutor(executor);
-			}
-			catch (SQLException e){
-				throw new ESDataImportException(e);
-			}
-
-		}
-		esjdbc.setStatusTableId(esjdbc.getSql().hashCode());
+		esjdbc.setStatusTableId("");
 	}
-	public void setEsjdbc(ESJDBC esjdbc){
+	public void setESMongoDB(ESMongoDB esjdbc){
 		this.esjdbc = esjdbc;
 	}
 

@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 数据库同步到Elasticsearch
  */
-public class DB2ESDataStreamImpl extends DataStream{
+public class DB2ESDataStreamImpl extends DBESDataStream{
 	private ESJDBC esjdbc;
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);

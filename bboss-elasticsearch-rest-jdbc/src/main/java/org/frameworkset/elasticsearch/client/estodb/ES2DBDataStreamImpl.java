@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client.estodb;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.DBESDataStream;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 数据库同步到Elasticsearch
  */
-public class ES2DBDataStreamImpl extends DataStream{
+public class ES2DBDataStreamImpl extends DBESDataStream {
 	private ES2DB es2DB;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 

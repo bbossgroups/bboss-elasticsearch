@@ -439,7 +439,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if (esIndexWrapper == null ) {
 				throw new ESDataImportException(" ESIndex not seted." );
 			}
-			esIndexWrapper.buildIndexName(writer,jdbcGetVariableValue);
+			BuildTool.buildIndiceName(esIndexWrapper,writer,jdbcGetVariableValue);
 
 			writer.write("\"");
 			if(!upper7) {
@@ -447,7 +447,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				if (esIndexWrapper == null ) {
 					throw new ESDataImportException(" ESIndex type not seted." );
 				}
-				esIndexWrapper.buildIndexType(writer,jdbcGetVariableValue);
+				BuildTool.buildIndiceType(esIndexWrapper,writer,jdbcGetVariableValue);
 				writer.write("\"");
 			}
 			writer.write(", \"_id\" : ");
@@ -501,14 +501,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			if (esIndexWrapper == null ) {
 				throw new ESDataImportException(" ESIndex not seted." );
 			}
-			esIndexWrapper.buildIndexName(writer,jdbcGetVariableValue);
+			BuildTool.buildIndiceName(esIndexWrapper,writer,jdbcGetVariableValue);
 			writer.write("\"");
 			if(!upper7) {
 				writer.write(", \"_type\" : \"");
 				if (esIndexWrapper == null ) {
 					throw new ESDataImportException(" ESIndex type not seted." );
 				}
-				esIndexWrapper.buildIndexType(writer,jdbcGetVariableValue);
+				BuildTool.buildIndiceType(esIndexWrapper,writer,jdbcGetVariableValue);
 				writer.write("\"");
 
 			}
