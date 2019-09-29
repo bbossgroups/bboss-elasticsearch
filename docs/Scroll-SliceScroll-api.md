@@ -278,11 +278,48 @@ elasticsearch.sliceScrollThreadQueue 默认值500
 
 ## ES之间数据导入导出
 
-并行方式执行slice scroll操作：slice scroll实现ES之间数据导入导出，将一个es的数据导入另外一个es，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
+可以使用并行方式执行slice scroll操作来实现ES之间数据导入导出，将一个elasticsearch的数据导入另外一个elasticsearch，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），default对应目标集群，es233对应源集群，目标集群和源集群的elasticsearch版本可以为elasticsearch 1.x,2.x,5.x,6.x,7.x，+；[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
+
+### 源库索引全量数据导入
 
 ```java
 /**
- * 并行方式执行slice scroll操作：将一个es的数据导入另外一个es数据，需要在application.properties文件中定义一个es233的集群
+ * 并行方式执行slice scroll操作：将一个es的数据导入另外一个es数据，需要在application.properties文件中定义default和es233的两个集群
+ */
+@Test
+public void testSimpleSliceScrollApiParralHandlerExport() {
+   ClientInterface clientUtil522 = ElasticSearchHelper.getRestClientUtil("default");//定义一个对应目标集群default的客户端组件实例
+  
+   final ClientInterface clientUtil234 = ElasticSearchHelper.getRestClientUtil("es233"); //定义一个对应源集群es233的客户端组件实例   
+   
+   //从源集群索引demo中按每批10000笔记录查询数据，在handler中通过addDocuments将批量检索出的数据导入目标库
+   ESDatas<Map> sliceResponse = clientUtil522.searchAll("demo",10000, new ScrollHandler<Map>() {
+            public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
+               List<Map> datas = response.getDatas();
+                 clientUtil234.addDocuments("index233","indextype233",datas);
+               //将分批查询的数据导入目标集群索引index233，索引类型为indextype233，如果是elasticsearch 7以上的版本，可以去掉索引类型参数，例如：
+                //clientUtil234.addDocuments("index233",datas);
+               long totalSize = response.getTotalSize();
+               System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+            }
+         },Map.class //指定检索的文档封装类型
+         ,6);//6个工作线程并发导入
+
+   long totalSize = sliceResponse.getTotalSize();
+   System.out.println("totalSize:"+totalSize);
+
+}
+```
+
+
+
+### 源库索引有查询条件的导入
+
+可以通过配置文件定义导入数据的dsl语句，将符合条件的数据导入目标库：其中esmapper/scroll.xml配置文件参考章节[**1.dsl配置文件定义**](https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api?id=_1dsl配置文件定义)
+
+```java
+/**
+ * 并行方式执行slice scroll操作：将一个es的数据导入另外一个es数据，需要在application.properties文件中定义default和es233的两个集群
  */
 @Test
 public void testSimpleSliceScrollApiParralHandlerExport() {
@@ -300,11 +337,13 @@ public void testSimpleSliceScrollApiParralHandlerExport() {
          "scrollSliceQuery", params,"1m",Map.class, new ScrollHandler<Map>() {
             public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
                List<Map> datas = response.getDatas();
-               clientUtil234.addDocuments("index233","indextype233",datas);//将分批查询的数据导入目标集群索引index233，索引类型为indextype233，如果是elasticsearch 7以上的版本，可以去掉索引类型参数
+                 clientUtil234.addDocuments("index233","indextype233",datas);
+               //将分批查询的数据导入目标集群索引index233，索引类型为indextype233，如果是elasticsearch 7以上的版本，可以去掉索引类型参数，例如：
+                //clientUtil234.addDocuments("index233",datas);
                long totalSize = response.getTotalSize();
                System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
             }
-         });//并行
+         });
 
    long totalSize = sliceResponse.getTotalSize();
    System.out.println("totalSize:"+totalSize);
@@ -312,7 +351,7 @@ public void testSimpleSliceScrollApiParralHandlerExport() {
 }
 ```
 
-其中esmapper/scroll.xml配置文件参考章节[**1.dsl配置文件定义**](https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api?id=_1dsl配置文件定义)
+
 
 # 6 开发交流
 

@@ -1821,7 +1821,7 @@ public class RestClientUtil extends ClientUtil{
 				}
 			};
 
-			return _slice(index + "/_search", scrollHandler, type, max, "1m", sliceScroll);
+			return _slice(index + "/_search", scrollHandler, type, max, "10m", sliceScroll);
 		}
 		else{
 			StringBuilder builder = new StringBuilder();
