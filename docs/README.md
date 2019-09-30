@@ -10,7 +10,7 @@
 
 1. 采用类似于[mybatis](https://www.oschina.net/p/mybatis)的方式配置语法配置和管理访问es的qsl脚本，简洁而直观，支持配置文件热加载功能；提供丰富的逻辑判断语法；支持qsl脚本片段和片段引用功能；
 2. 提供高效可定制的[db到elasticsearch数据导入能力](db-es-tool.md)
-3. 支持[elasticsearch sql](Elasticsearch-SQL-ORM.md)，可替代es jdbc模块；引入bboss不仅可以拥有bboss的客户端自动发现和负载容灾能力、对es、jdk、spring boot的兼容性能力，还可以拥有es jdbc的所有功能，同时还解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
+3. 支持[elasticsearch sql](Elasticsearch-SQL-ORM.md)，可替代es jdbc模块，解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
    orm
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
    分页
@@ -21,11 +21,11 @@
 7. 支持获取索引文档字段元数据
 8. 提供简洁易用的全文检索api，[聚合检索和统计api](agg.md)；支持o/mapping功能，支持检索和聚合查询结果快速转换为java对象或者java对象列表；支持分页检索功能和[关键词高亮显示](highlight.md)；支持多索引表查询；支持[父子关系](elasticsearch5-parent-child.md)检索；支持[地理位置检索](Elasticsearch-geo.md)；提供检索和聚合查询结果的回调处理接口，可以自定义结果封装处理逻辑。
 9. 支持[关键字自动联想和自动纠错的api](https://gitee.com/bboss/elasticsearchdemo/tree/master/src/test/java/org/frameworkset/elasticsearch/suggest)
-10. 提供客户端自动负载均衡和容灾恢复机制，高效可靠
+10. 提供客户端自动负载均衡和容灾恢复机制，elasticsearch节点断连恢复后可自动重连，高效可靠
 11. 内置http 连接池管理
 12. 支持自动发现es服务端新加节点或者剔除节点
 13. 支持基于[X-Pack](https://www.elastic.co/cn/products/x-pack)和searchguard两种安全认证机制
-14. 除了提供高阶的o/r mapping API，还提供了简单易用的原生restful api和基于tcp的Transport api，可以根据实际需要使用合适的API  
+14. 除了提供高阶的o/r mapping API，还提供了简单易用的原生restful api，可以根据实际需要使用合适的API  
 15. ClientUtil组件可以指定elasticsearch服务器，支持多es集群，可以在指定的elasticsearch集群上执行操作
 16. 提供自动清理历史索引数据的[工具](elasticsearch-indexclean-task.md)
 17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x,7.x****,+**
@@ -91,6 +91,5 @@ bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的�
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 
