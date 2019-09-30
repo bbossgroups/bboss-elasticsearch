@@ -1432,18 +1432,23 @@ es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api�
 初始化bboss elasticsearch组件ClientInterface 时，可以指定elasticsearch服务器，支持在指定的elasticsearch服务器集群进行操作,例如：
 
 ```java
-ClientInterface clientUtil = ElasticSearchHelper
-                 .getConfigRestClientUtil("logs",//指定logs对应的es集群服务器
-                                          "estrace/ESTracesqlMapper.xml");
+
+//没有dsl配置文件
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil("logs");//指定集群名称logs
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();//默认组件方法
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil("default");//默认组件方法
+
+//有dsl配置文件
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("logs",configFile);//指定集群名称logs
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("estrace/ESTracesqlMapper.xml");//默认组件方法
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("default","estrace/ESTracesqlMapper.xml");//默认组件方法
 ```
 
 logs对应的es集群服务器相关参数配置，请参考文档：
 
-[快速集成Elasticsearch Restful API案例分享](https://my.oschina.net/bboss/blog/1801273)
+[maven项目多集群配置](https://esdoc.bbossgroups.com/#/common-project-with-bboss?id=_22%e5%a4%9a%e9%9b%86%e7%be%a4%e9%85%8d%e7%bd%ae)
 
-中的章节【***2.2多集群配置***】
-
-
+[spring boot多集群配置](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=_4%e5%a4%9aes%e9%9b%86%e7%be%a4%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b)
 
 ## **5.3 dsl配置规范**
 

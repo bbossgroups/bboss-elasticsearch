@@ -176,8 +176,7 @@ spring:
           hostNames: 192.168.8.25:9200
           ##hostNames: 192.168.8.25:9200,192.168.8.26:9200,192.168.8.27:9200  ##集群地址配置
         dateFormat: yyyy.MM.dd
-        timeZone: Asia/Shanghai
-        ttl: 2d
+        timeZone: Asia/Shanghai        
         showTemplate: true
         discoverHost: false
       dslfile:
@@ -452,7 +451,6 @@ spring:
             ##hostNames: 127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202 
           dateFormat: yyyy.MM.dd
           timeZone: Asia/Shanghai
-          ttl: 2d
           showTemplate: true
           discoverHost: false
         dslfile:
