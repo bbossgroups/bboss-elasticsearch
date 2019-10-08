@@ -25,6 +25,8 @@ public abstract class ESBaseData implements Serializable{
 	private String node;//"_index": "trace-2017.09.01",
 
 	private Explanation explanation;//"_index": "trace-2017.09.01",
+	private long seqNo;//"_index": "trace-2017.09.01",
+	private long primaryTerm;//"_index": "trace-2017.09.01",
 	public String getType() {
 		return type;
 	}
@@ -152,5 +154,21 @@ public abstract class ESBaseData implements Serializable{
 
 	public void setExplanation(Explanation explanation) {
 		this.explanation = explanation;
+	}
+
+	public long getSeqNo() {
+		return seqNo;
+	}
+
+	public void setSeqNo(long seqNo) {
+		this.seqNo = seqNo;
+	}
+
+	public long getPrimaryTerm() {
+		return primaryTerm;
+	}
+
+	public void setPrimaryTerm(long primaryTerm) {
+		this.primaryTerm = primaryTerm;
 	}
 }

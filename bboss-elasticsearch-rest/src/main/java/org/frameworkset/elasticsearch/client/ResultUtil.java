@@ -848,6 +848,8 @@ public abstract class ResultUtil {
 		esBaseData.setShard(hit.getShard());
 		esBaseData.setNode(hit.getNode());
 		esBaseData.setExplanation(hit.getExplanation());
+		esBaseData.setSeqNo(hit.getSeqNo());
+		esBaseData.setPrimaryTerm(hit.getPrimaryTerm());
 		Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
 		if(innerHits != null) {
 			esBaseData.setInnerHits(innerHits);
@@ -1058,11 +1060,20 @@ public abstract class ResultUtil {
 			_injectAnnotationES( propertieDescription,  data ,  hit,id );
 		}
 
-		propertieDescription = esPropertyDescripts.getEsVersionProperty();
+		propertieDescription = esPropertyDescripts.getEsMetaSeqNoProperty();
 		if(propertieDescription != null && propertieDescription.isESReadSet()){
-			Object id = hit.getVersion();
+			Object id = hit.getSeqNo();
 			_injectAnnotationES( propertieDescription,  data ,  hit,id );
 		}
+
+		propertieDescription = esPropertyDescripts.getEsMetaPrimaryTermProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getPrimaryTerm();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
+
+
+		 
 
 	}
 	/**

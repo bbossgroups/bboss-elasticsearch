@@ -121,7 +121,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		this.includeTypeName = includeTypeName;
 	}
 
-	protected boolean includeTypeName = true;
+	protected boolean includeTypeName = false;
 
 	protected IndexNameBuilder indexNameBuilder;
 

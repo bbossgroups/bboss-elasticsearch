@@ -36,6 +36,10 @@ public class BaseSearchHit implements Serializable {
 
 	@JsonProperty("_explanation")
 	private Explanation explanation;//"_index": "trace-2017.09.01",
+	@JsonProperty("_seq_no")
+	private long seqNo;//"_index": "trace-2017.09.01",
+	@JsonProperty("_primary_term")
+	private long primaryTerm;//"_index": "trace-2017.09.01",
 	public Map<String, Map<String,InnerSearchHits>> getInnerHits() {
 		return innerHits;
 	}
@@ -180,5 +184,21 @@ public class BaseSearchHit implements Serializable {
 
 	public void setNode(String node) {
 		this.node = node;
+	}
+
+	public long getSeqNo() {
+		return seqNo;
+	}
+
+	public void setSeqNo(long seqNo) {
+		this.seqNo = seqNo;
+	}
+
+	public long getPrimaryTerm() {
+		return primaryTerm;
+	}
+
+	public void setPrimaryTerm(long primaryTerm) {
+		this.primaryTerm = primaryTerm;
 	}
 }
