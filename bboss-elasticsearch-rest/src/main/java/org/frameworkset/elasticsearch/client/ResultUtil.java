@@ -1501,7 +1501,9 @@ public abstract class ResultUtil {
 	}
 
 	public static boolean isDateType(ColumnMeta columnMeta){
-		return columnMeta.getType().equals("date");
+		return columnMeta.getType().equals("date")
+				|| columnMeta.getType().equals("datetime")
+				|| columnMeta.getType().equals("timestamp");
 	}
 	private static Object convert(Object value, Class type, Class javaType,ColumnWraper columnWraper,ColumnMeta columnMeta,DateFormat defaultDateFormat) {
 		try {
