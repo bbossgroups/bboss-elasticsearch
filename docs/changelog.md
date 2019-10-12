@@ -22,6 +22,9 @@ https://esdoc.bbossgroups.com/#/development
 
 2.includeTypeName配置默认设置为false
 
+3.BUG fixed: sql查询日期处理问题 [#11](https://github.com/bbossgroups/bboss-elasticsearch/issues/11) 
+
+
 # v5.8.8 功能改进
 
 1.改进检索Meta数据：增加explanation属性。
