@@ -8,7 +8,7 @@
 
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
 
-  - [Spring booter集成和配置bboss ](spring-booter-with-bboss.md) 
+  - [Spring boot集成和配置bboss ](spring-booter-with-bboss.md) 
 
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 
