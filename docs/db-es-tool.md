@@ -811,9 +811,10 @@ db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=tr
 db.jdbcFetchSize = 10000
 ```
 
-**机制二**  配置fetchsize为最新整数来采用mysql的默认实现机制（适用mysql各版本）
+**机制二**  配置jdbcFetchSize为最小整数来采用mysql的默认实现机制（适用mysql各版本）
 
 ```properties
+# 注意：url中不要带useCursorFetch参数
 db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
 # Integer.MIN_VALUE
 db.jdbcFetchSize = -2147483648

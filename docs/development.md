@@ -1053,7 +1053,7 @@ public abstract String addDateDocument(String indexName, String indexType, Objec
 public abstract String addDateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException;
 ```
 
-bboss在相关的api增加了refreshOption参数，refreshOption参数的值为，通过指定不同的值来指定索引刷新策略：
+bboss可以在相关的api上指定不同的refreshOption值来指定索引刷新策略：
 
 ```java
 refresh=wait_for
@@ -1082,11 +1082,17 @@ point after the request returns.
 
 refreshOption 使用实例：
 
-```
+```java
 		//强制刷新
 		String response = clientUtil.addDocument("demo",//索引表
 				"demo",//索引类型
 				demo,"refresh=true");
+```
+
+refreshOption参数可以用于指定其他的控制参数（4.8章节详细介绍），采用标准的url请求参数格式，例如：
+
+```properties
+refresh=true&version=1
 ```
 
 
