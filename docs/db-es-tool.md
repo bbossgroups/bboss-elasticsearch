@@ -158,7 +158,7 @@ db.jdbcFetchSize = 10000
 		 */
 		importBuilder
 				.setIndex("dbclobdemo") //必填项
-				.setIndexType("dbclobdemo") //必填项
+				.setIndexType("dbclobdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
@@ -216,7 +216,7 @@ db.jdbcFetchSize = 10000
 		 */
 		importBuilder
 				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //必填项
+				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
@@ -283,7 +283,7 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 		 */
 		importBuilder
 				.setIndex("dbclobdemo") //必填项
-				.setIndexType("dbclobdemo") //必填项
+				.setIndexType("dbclobdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setEsIdField("documentId")//可选项
@@ -442,7 +442,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 		 */
 		importBuilder
 				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //必填项
+				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 //				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
@@ -509,7 +509,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 		 */
 		importBuilder
 				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //必填项
+				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 //				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
@@ -983,7 +983,7 @@ public class Dbdemo {
        */
       importBuilder
             .setIndex("dbdemo") //必填项
-            .setIndexType("dbdemo") //必填项
+            .setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 //          .setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
             .setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
             .setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
@@ -1644,7 +1644,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 			 */
 			importBuilder
 					.setIndex("quartz") //必填项
-					.setIndexType("quartz") //必填项
+					.setIndexType("quartz") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 //				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 					.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
 					.setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
