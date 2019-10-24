@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.estodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -17,8 +17,9 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.common.poolman.BatchHandler;
 import com.frameworkset.util.SimpleStringUtil;
-import org.frameworkset.elasticsearch.client.estodb.ES2DB;
-import org.frameworkset.elasticsearch.client.estodb.ES2DBDataStreamImpl;
+import org.frameworkset.elasticsearch.client.BaseBuilder;
+import org.frameworkset.elasticsearch.client.DataStream;
+import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -321,7 +322,7 @@ public class ES2DBExportBuilder extends BaseBuilder{
 		this.sliceSize = sliceSize;
 		return this;
 	}
-	public ES2DBExportBuilder addParam(String key,Object value){
+	public ES2DBExportBuilder addParam(String key, Object value){
 		if(params == null)
 			params = new HashMap();
 		this.params.put(key,value);

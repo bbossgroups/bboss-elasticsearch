@@ -15,9 +15,9 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
 
 /**
  * <p>Description: </p>

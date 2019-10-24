@@ -40,6 +40,18 @@ public class ImportIncreamentConfig {
 	private String lastValueStoreTableName;
 	private boolean fromFirst;//true 每次都重新从开始导入数据
 
+
+	/**
+	 * 根据导入的sql的hashcode决定导入作业的增量导入状态记录主键
+	 */
+	private int statusTableId = 0;
+	public int getStatusTableId() {
+		return statusTableId;
+	}
+
+	public void setStatusTableId(int statusTableId) {
+		this.statusTableId = statusTableId;
+	}
 	public String getDateLastValueColumn() {
 		return dateLastValueColumn;
 	}

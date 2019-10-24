@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.db2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.ResultUtil;
+import org.frameworkset.elasticsearch.client.TaskCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

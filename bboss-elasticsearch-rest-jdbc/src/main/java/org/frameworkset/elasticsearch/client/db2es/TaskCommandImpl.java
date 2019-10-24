@@ -30,6 +30,16 @@ import org.slf4j.LoggerFactory;
  */
 public class TaskCommandImpl implements TaskCommand<String,String> {
 	private String refreshOption;
+
+	public DB2ESImportContext getDb2ESImportContext() {
+		return db2ESImportContext;
+	}
+
+	public void setDb2ESImportContext(DB2ESImportContext db2ESImportContext) {
+		this.db2ESImportContext = db2ESImportContext;
+	}
+
+	private DB2ESImportContext db2ESImportContext;
 	private ClientInterface clientInterface;
 
 	public String getRefreshOption() {
@@ -44,12 +54,8 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 		return datas;
 	}
 
-	public ESJDBC getEsjdbc() {
-		return esjdbc;
-	}
 
 	private String datas;
-	private ESJDBC esjdbc;
 	private int tryCount;
 
 	public void setRefreshOption(String refreshOption) {
@@ -64,21 +70,19 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 		this.datas = datas;
 	}
 
-	public void setEsjdbc(ESJDBC esjdbc) {
-		this.esjdbc = esjdbc;
-	}
+
 
 
 
 	private static Logger logger = LoggerFactory.getLogger(TaskCommand.class);
 	public String execute(){
 		String data = null;
-		if(this.esjdbc.getMaxRetry() > 0){
-			if(this.tryCount >= this.esjdbc.getMaxRetry())
-				throw new TaskFailedException("task execute failed:reached max retry times "+this.esjdbc.getMaxRetry());
+		if(this.db2ESImportContext.getMaxRetry() > 0){
+			if(this.tryCount >= this.db2ESImportContext.getMaxRetry())
+				throw new TaskFailedException("task execute failed:reached max retry times "+this.db2ESImportContext.getMaxRetry());
 		}
 		this.tryCount ++;
-		if(esjdbc.isDebugResponse()) {
+		if(db2ESImportContext.isDebugResponse()) {
 
 			if (refreshOption == null) {
 				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
@@ -91,7 +95,7 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 			}
 		}
 		else{
-			if(esjdbc.isDiscardBulkResponse() && esjdbc.getExportResultHandler() == null) {
+			if(db2ESImportContext.isDiscardBulkResponse() && db2ESImportContext.getExportResultHandler() == null) {
 				ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
 				if (refreshOption == null) {
 					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);

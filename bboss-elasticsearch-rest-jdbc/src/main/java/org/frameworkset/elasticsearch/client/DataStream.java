@@ -14,19 +14,57 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.util.SimpleStringUtil;
-import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DataStream {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected ImportContext importContext;
 
 
-	public void setExternalTimer(boolean externalTimer) {
+	/**
+	 *
+	 * @throws ESDataImportException
+	 */
+	public void execute() throws ESDataImportException{
 
+		try {
+			this.init();
+			importContext.importData();
+//			if(this.scheduleService == null) {//一次性执行数据导入操作
+//
+//				long importStartTime = System.currentTimeMillis();
+////				firstImportData();
+//				this.dataTranPlugin.importData(new ImportContext() {
+//
+//				});
+//				long importEndTime = System.currentTimeMillis();
+//				if( this.dataTranPlugin.isPrintTaskLog() && logger.isInfoEnabled())
+//					logger.info(new StringBuilder().append("Execute job Take ").append((importEndTime - importStartTime)).append(" ms").toString());
+//			}
+//			else{//定时增量导入数据操作
+//				if(!this.dataTranPlugin.isExternalTimer()) {//内部定时任务引擎
+//					scheduleService.timeSchedule();
+//				}
+//				else{ //外部定时任务引擎执行的方法，比如quartz之类的
+//					scheduleService.externalTimeSchedule();
+//				}
+//			}
+		}
+		catch (Exception e) {
+			throw new ESDataImportException(e);
+		}
+		finally{
+
+		}
 	}
 
-	public abstract void execute() throws ESDataImportException;
+	public void stop() {
+		if(importContext != null)
+			this.importContext.destroy();
 
-	public abstract void stop();
+//		this.esjdbc.stop();
+	}
 
 	public String getConfigString() {
 		return configString;
@@ -38,10 +76,7 @@ public abstract class DataStream {
 
 	private String configString;
 
-	protected void initES(String applicationPropertiesFile){
-		if(SimpleStringUtil.isNotEmpty(applicationPropertiesFile ))
-			ElasticSearchBoot.boot(applicationPropertiesFile);
-	}
+
 	public void init() {
 	}
 }

@@ -55,9 +55,39 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		this.esUtil = ESUtil.getInstance(configFile);
 	}
 
- 
 
-	 
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param actionUrl reindex请求相对url，例如：
+	 *                  _reindex
+	 *                  _reindex?slices=5&refresh
+	 * @param dslName  xml配置文件中dsl对应的name
+	 * @param params dslName 中对应的变量参数信息
+	 * @return
+	 */
+	public String reindexByDsl(String actionUrl,String dslName,Object params){
+		return this.client.executeHttp(actionUrl,ESTemplateHelper.evalTemplate(esUtil,dslName, params),ClientUtil.HTTP_POST);
+	}
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param actionUrl reindex请求相对url，例如：
+	 *                  _reindex
+	 *                  _reindex?slices=5&refresh
+	 * @param dslName xml配置文件中dsl对应的name
+	 * @return
+	 */
+	public String reindexByDsl(String actionUrl,String dslName){
+		return this.client.executeHttp(actionUrl,ESTemplateHelper.evalTemplate(esUtil,dslName, (Map)null),ClientUtil.HTTP_POST);
+	}
 
 	/**
 	 * @param path

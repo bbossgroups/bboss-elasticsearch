@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.schedule;
+package org.frameworkset.elasticsearch.client.config;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,16 +15,13 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/4/13 13:01
+ * @Date 2019/10/24 10:19
  * @author biaoping.yin
  * @version 1.0
  */
-public interface DataStreamBuilder {
-	public DB2ESImportBuilder builder(Object params);
+public abstract class ImportConfig {
 }

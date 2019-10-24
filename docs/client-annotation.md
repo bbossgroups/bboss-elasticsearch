@@ -149,7 +149,9 @@ reponse报文这里不做介绍，如果被标准的returnSource属性为true，
 元数据注解以及对应的注解字段的类型说明如下：
 
 ```java
-    @ESMetaType  //文档对应索引类型信息
+   @ESMetaId
+   private String docid;//文档_id
+   @ESMetaType  //文档对应索引类型信息
 	private String  type;
 	@ESMetaFields //文档对应索引字段信息
 	private Map<String, List<Object>> fields;

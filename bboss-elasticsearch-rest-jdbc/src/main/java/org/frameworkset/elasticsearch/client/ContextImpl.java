@@ -15,10 +15,17 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
+import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.elasticsearch.client.db2es.ESJDBC;
+import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -36,11 +43,46 @@ public class ContextImpl implements Context {
 	private Map<String,String> newfieldNames;
 	private Map<String,ColumnData> newfieldName2ndColumnDatas;
 	private ESJDBC esjdbc;
+	private JDBCResultSet jdbcResultSet;
 	private BatchContext batchContext;
 	private boolean drop;
-	public ContextImpl(ESJDBC esjdbc, BatchContext batchContext){
-		this.esjdbc = esjdbc;
+	private DB2ESImportContext importContext;
+	public ContextImpl(DB2ESImportContext importContext, JDBCResultSet jdbcResultSet,BatchContext batchContext){
+		this.esjdbc = importContext.getEsjdbc();
+		this.importContext = importContext;
+		this.jdbcResultSet = jdbcResultSet;
 		this.batchContext = batchContext;
+	}
+	public PoolManResultSetMetaData getMetaData(){
+		return jdbcResultSet.getMetaData();
+
+	}
+	public Boolean getEsReturnSource() {
+		return esjdbc.getEsReturnSource();
+	}
+	public Boolean getEsDocAsUpsert() {
+		return this.esjdbc.getEsDocAsUpsert();
+	}
+	public List<FieldMeta> getESJDBCFieldValues() {
+		return esjdbc.getFieldValues();
+	}
+	public Boolean getUseLowcase() {
+		return esjdbc.getUseLowcase();
+	}
+	public Object getValue(     int i,String  colName,int sqlType) throws Exception {
+		return jdbcResultSet.getValue(i,colName,sqlType);
+	}
+	public Boolean getUseJavaName() {
+		return esjdbc.getUseJavaName();
+	}
+	public DateFormat getDateFormat(){
+		return esjdbc.getFormat();
+	}
+	public void refactorData() throws Exception{
+		this.esjdbc.refactorData(this);
+	}
+	public DB2ESImportContext getDB2ESImportContext(){
+		return importContext;
 	}
 	public List<FieldMeta> getFieldValues(){
 		return this.fieldValues;
@@ -132,7 +174,7 @@ public class ContextImpl implements Context {
 	}
 
 	public Object getValue(String fieldName) throws Exception{
-		return esjdbc.getValue(fieldName);
+		return jdbcResultSet.getValue(fieldName);
 	}
 	public FieldMeta getMappingName(String colName){
 		if(fieldMetaMap != null) {
@@ -165,7 +207,7 @@ public class ContextImpl implements Context {
 
 	@Override
 	public IpInfo getIpInfo(String fieldName) throws Exception{
-		Object _ip = esjdbc.getValue(fieldName);
+		Object _ip = jdbcResultSet.getValue(fieldName);
 		if(_ip == null){
 			return null;
 		}
@@ -200,5 +242,36 @@ public class ContextImpl implements Context {
 
 	public BatchContext getBatchContext() {
 		return batchContext;
+	}
+
+	public  Object getParentId() throws Exception {
+		if(esjdbc.getEsParentIdField() != null) {
+			return jdbcResultSet.getValue(esjdbc.getEsParentIdField());
+		}
+		else
+			return esjdbc.getEsParentIdValue();
+	}
+
+	public Object getRouting() throws Exception{
+
+		Object routing =  jdbcResultSet.getValue(esjdbc.getRoutingField());
+		if(routing == null)
+			routing = esjdbc.getRoutingValue();
+		return routing;
+	}
+	public Object getEsRetryOnConflict(){
+		return esjdbc.getEsRetryOnConflict();
+	}
+	public ESIndexWrapper getESIndexWrapper(){
+		return esjdbc.getEsIndexWrapper();
+	}
+
+	public Object getVersion() throws Exception {
+		Object version = esjdbc.getEsVersionField() !=null? jdbcResultSet.getValue(esjdbc.getEsVersionField()):esjdbc.getEsVersionValue();
+		return version;
+	}
+
+	public Object getEsVersionType(){
+		return esjdbc.getEsVersionType();
 	}
 }

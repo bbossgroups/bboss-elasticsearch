@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.db2es;
 
 import com.frameworkset.common.poolman.handle.ValueExchange;
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
@@ -7,9 +7,11 @@ import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.db2es.JDBCGetVariableValue;
+import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.template.ESUtil;
+import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
@@ -25,25 +27,48 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JDBCRestClientUtil extends ErrorWrapper{
 	private static Logger logger = LoggerFactory.getLogger(JDBCRestClientUtil.class);
 	private ClientInterface clientInterface;
 	private static Object dummy = new Object();
-	private ESJDBC jdbcResultSet;
-
-	public JDBCRestClientUtil( ) {
+	private DB2ESImportContext db2ESImportContext;
+	private JDBCResultSet jdbcResultSet;
+	public JDBCRestClientUtil(JDBCResultSet jdbcResultSet) {
 		clientInterface = ElasticSearchHelper.getRestClientUtil();
+		this.jdbcResultSet = jdbcResultSet;
 	}
 
-	public JDBCRestClientUtil( String esCluster) {
+	public JDBCRestClientUtil(String esCluster) {
 		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
 	}
 
+	private ExecutorService blockedExecutor;
+	private AtomicInteger rejectCounts = new AtomicInteger();
+	public ExecutorService buildThreadPool(){
+		if(blockedExecutor != null)
+			return blockedExecutor;
+		synchronized (this) {
+			if(blockedExecutor == null) {
 
+				blockedExecutor = new ThreadPoolExecutor(db2ESImportContext.getThreadCount(), db2ESImportContext.getThreadCount(),
+						0L, TimeUnit.MILLISECONDS,
+						new ArrayBlockingQueue<Runnable>(db2ESImportContext.getQueue()),
+						new ThreadFactory() {
+							private AtomicInteger threadCount = new AtomicInteger(0);
+
+							@Override
+							public Thread newThread(Runnable r) {
+								int num = threadCount.incrementAndGet();
+								return new DBESThread(r, num);
+							}
+						}, new BlockedTaskRejectedExecutionHandler(rejectCounts));
+			}
+		}
+		return blockedExecutor;
+	}
 	/**
 	 * 并行批处理导入
 
@@ -56,7 +81,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		String ret = null;
-		ExecutorService	service = jdbcResultSet.buildThreadPool();
+		ExecutorService	service = buildThreadPool();
 		List<Future> tasks = new ArrayList<Future>();
 		int taskNo = 0;
 		ImportCount totalCount = new ImportCount();
@@ -64,12 +89,14 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Object lastValue = null;
 		try {
 			BatchContext batchContext = new BatchContext();
+			ESJDBC esjdbc = db2ESImportContext.getEsjdbc();
+			DataTranPlugin dataTranPlugin = db2ESImportContext.getDataTranPlugin();
 			while (jdbcResultSet.next()) {
 				if(!assertCondition()) {
 					throw error;
 				}
-				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(  batchContext,writer, jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				lastValue = getLastValue();
+				Context context = evalBuilk(this.jdbcResultSet,  batchContext,writer, db2ESImportContext, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -80,7 +107,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
-					tasks.add(service.submit(new TaskCall(refreshOption,  datas,this,taskNo,totalCount,batchsize,jdbcResultSet.isPrintTaskLog())));
+					tasks.add(service.submit(new TaskCall(db2ESImportContext,refreshOption,  datas,this,taskNo,totalCount,batchsize,db2ESImportContext.isPrintTaskLog())));
 
 					taskNo ++;
 
@@ -88,12 +115,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 			if (count > 0) {
-				if(this.error != null && !jdbcResultSet.isContinueOnError()) {
+				if(this.error != null && !db2ESImportContext.isContinueOnError()) {
 					throw error;
 				}
 				writer.flush();
 				String datas = builder.toString();
-				tasks.add(service.submit(new TaskCall(refreshOption,datas,this,taskNo,totalCount,count,jdbcResultSet.isPrintTaskLog())));
+				tasks.add(service.submit(new TaskCall(db2ESImportContext,refreshOption,datas,this,taskNo,totalCount,count,db2ESImportContext.isPrintTaskLog())));
 				taskNo ++;
 				if(isPrintTaskLog())
 					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
@@ -115,7 +142,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			waitTasksComplete(  jdbcResultSet, tasks,  service,exception,  lastValue,totalCount );
+			waitTasksComplete(   tasks,  service,exception,  lastValue,totalCount );
 			try {
 				writer.close();
 			} catch (Exception e) {
@@ -148,8 +175,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			istart = start;
 			BatchContext batchContext = new BatchContext();
 			while (jdbcResultSet.next()) {
-				lastValue = jdbcResultSet.getLastValue();
-				Context context = evalBuilk(  batchContext,writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
+				lastValue = getLastValue();
+				Context context = evalBuilk(  this.jdbcResultSet,batchContext,writer,   db2ESImportContext, "index",clientInterface.isVersionUpper7());
 				if(context.isDrop())
 					continue;
 				count++;
@@ -162,8 +189,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					count = 0;
 					taskNo ++;
 
-					ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
-					jdbcResultSet.flushLastValue(lastValue);
+					ret = TaskCall.call(refreshOption,clientInterface,datas,db2ESImportContext);
+					db2ESImportContext.flushLastValue(lastValue);
 
 
 					if(isPrintTaskLog())  {
@@ -182,8 +209,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.flush();
 				String datas = builder.toString();
 				taskNo ++;
-				ret = TaskCall.call(refreshOption,clientInterface,datas,jdbcResultSet);
-				jdbcResultSet.flushLastValue(lastValue);
+				ret = TaskCall.call(refreshOption,clientInterface,datas,db2ESImportContext);
+				db2ESImportContext.flushLastValue(lastValue);
 				if(isPrintTaskLog())  {
 					end = System.currentTimeMillis();
 					logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take time:").append((end - istart)).append("ms")
@@ -210,8 +237,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			if(exception != null && !getESJDBC().isContinueOnError()){
-				getESJDBC().stop();
+			if(exception != null && !db2ESImportContext.isContinueOnError()){
+				stop();
 			}
 			try {
 				writer.close();
@@ -222,7 +249,19 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		return ret;
 	}
-	private String serialExecute(ESJDBC jdbcResultSet, String refreshOption, int batchsize){
+	private void stop(){
+		try {
+			if (blockedExecutor != null) {
+				blockedExecutor.shutdown();
+			}
+		}
+		catch(Exception e){
+
+		}
+		db2ESImportContext.stop();
+
+	}
+	private String serialExecute(  String refreshOption, int batchsize){
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		Object lastValue = null;
@@ -234,8 +273,8 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			BatchContext batchContext =  new BatchContext();
 			while (jdbcResultSet.next()) {
 				try {
-					lastValue = jdbcResultSet.getLastValue();
-					Context context = evalBuilk(  batchContext,writer,   jdbcResultSet, "index",clientInterface.isVersionUpper7());
+					lastValue = getLastValue();
+					Context context = evalBuilk(this.jdbcResultSet,  batchContext,writer,  this.db2ESImportContext,  "index",clientInterface.isVersionUpper7());
 					if(context.isDrop())
 						continue;
 					totalCount ++;
@@ -247,12 +286,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.flush();
 			String ret = null;
 			if(builder.length() > 0) {
-				ret = TaskCall.call(refreshOption, clientInterface, builder.toString(), jdbcResultSet);
+				ret = TaskCall.call(refreshOption, clientInterface, builder.toString(), db2ESImportContext);
 			}
 			else{
 				ret = "{\"took\":0,\"errors\":false}";
 			}
-			jdbcResultSet.flushLastValue(lastValue);
+			db2ESImportContext.flushLastValue(lastValue);
 			if(isPrintTaskLog()) {
 
 				long end = System.currentTimeMillis();
@@ -266,30 +305,30 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			if(exception != null && !getESJDBC().isContinueOnError()){
-				getESJDBC().stop();
+			if(exception != null && !db2ESImportContext.isContinueOnError()){
+				stop();
 			}
 		}
 	}
-	public String addDocuments(String indexName,String indexType,ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException{
+	public String addDocuments(String indexName,String indexType,DB2ESImportContext db2ESImportContext, String refreshOption, int batchsize) throws ElasticSearchException{
 		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(indexName,indexType);
-		jdbcResultSet.setEsIndexWrapper(esIndexWrapper);
-		return addDocuments( jdbcResultSet,  refreshOption, batchsize);
+		db2ESImportContext.setEsIndexWrapper(esIndexWrapper);
+		return addDocuments( db2ESImportContext,  refreshOption, batchsize);
 
 	}
-	public String addDocuments(ESJDBC jdbcResultSet, String refreshOption, int batchsize) throws ElasticSearchException {
-		if(jdbcResultSet == null || jdbcResultSet.getResultSet() == null)
+	public String addDocuments(DB2ESImportContext db2ESImportContext, String refreshOption, int batchsize) throws ElasticSearchException {
+		this.db2ESImportContext = db2ESImportContext;
+		if(jdbcResultSet == null)
 			return null;
-		this.jdbcResultSet = jdbcResultSet;
 		if(isPrintTaskLog()) {
-			logger.info(new StringBuilder().append("import data to IndexName[").append(jdbcResultSet.getEsIndexWrapper().getIndex())
-							.append("] IndexType[").append(jdbcResultSet.getEsIndexWrapper().getType())
+			logger.info(new StringBuilder().append("import data to IndexName[").append(db2ESImportContext.getEsIndexWrapper().getIndex())
+							.append("] IndexType[").append(db2ESImportContext.getEsIndexWrapper().getType())
 							.append("] start.").toString());
 		}
 		if (batchsize <= 0) {
-			return serialExecute(      jdbcResultSet,   refreshOption,   batchsize);
+			return serialExecute(         refreshOption,   batchsize);
 		} else {
-			if(jdbcResultSet.getThreadCount() > 0 && jdbcResultSet.isParallel()){
+			if(db2ESImportContext.getThreadCount() > 0 && db2ESImportContext.isParallel()){
 				return this.parallelBatchExecute( batchsize,refreshOption);
 			}
 			else{
@@ -300,25 +339,25 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	}
 	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ){
-		if (jdbcResultSet.getScheduleService() == null) {//作业定时调度执行的话，需要关闭线程池
+		if (db2ESImportContext.getScheduleService() == null) {//作业定时调度执行的话，需要关闭线程池
 			service.shutdown();
 		}
 		else{
 			if(this.assertCondition(exception)){
-				jdbcResultSet.flushLastValue( lastValue );
+				db2ESImportContext.flushLastValue( lastValue );
 			}
 			else{
 				service.shutdown();
-				this.getESJDBC().stop();
+				this.stop();
 			}
 		}
 	}
 	private boolean isPrintTaskLog(){
-		return getESJDBC().isPrintTaskLog() && logger.isInfoEnabled();
+		return db2ESImportContext.isPrintTaskLog() && logger.isInfoEnabled();
 	}
-	private void waitTasksComplete(ESJDBC jdbcResultSet,final List<Future> tasks,
+	private void waitTasksComplete(final List<Future> tasks,
 								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount  ){
-		if(!jdbcResultSet.isAsyn() || jdbcResultSet.getScheduleService() != null) {
+		if(!db2ESImportContext.isAsyn() || db2ESImportContext.getScheduleService() != null) {
 			int count = 0;
 			for (Future future : tasks) {
 				try {
@@ -340,7 +379,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				}
 			}
 			if(isPrintTaskLog()) {
-				logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import ").append(totalCount.getTotalCount()).append(" records.").toString());
+				logger.info(new StringBuilder().append("Complete tasks:")
+						.append(count).append(",Total import ")
+						.append(totalCount.getTotalCount()).append(" records.").toString());
 			}
 			jobComplete(  service,exception,lastValue );
 		}
@@ -365,7 +406,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 						}
 					}
 					if(isPrintTaskLog()) {
-						logger.info(new StringBuilder().append("Complete tasks:").append(count).append(",Total import ").append(totalCount.getTotalCount()).append(" records.").toString());
+						logger.info(new StringBuilder().append("Complete tasks:")
+								.append(count).append(",Total import ")
+								.append(totalCount.getTotalCount())
+								.append(" records.").toString());
 					}
 					jobComplete(  service,null,null);
 				}
@@ -400,34 +444,23 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 	}
 
 
-	private static Object getEsParentId(ESJDBC jdbcResultSet) throws Exception {
-		if(jdbcResultSet.getEsParentIdField() != null) {
-			return jdbcResultSet.getValue(jdbcResultSet.getEsParentIdField());
-		}
-		else
-			return jdbcResultSet.getEsParentIdValue();
-	}
 
-	public static void buildMeta(Context context,Writer writer ,ESJDBC jdbcResultSet,String action,boolean upper7) throws Exception {
-		String indexType;
-		String indexName;
+
+	public static void buildMeta(Context context,Writer writer ,String action,boolean upper7) throws Exception {
+
 		Object id = context.getEsId();
-		Object parentId = getEsParentId(  jdbcResultSet);
-		Object routing = jdbcResultSet.getValue(jdbcResultSet.getRoutingField());
-		if(routing == null)
-			routing = jdbcResultSet.getRoutingValue();
-		Object esRetryOnConflict = jdbcResultSet.getEsRetryOnConflict();
+		Object parentId = context.getParentId();
+		Object routing = context.getRouting();
+
+		Object esRetryOnConflict = context.getEsRetryOnConflict();
 
 
-		buildMeta( context, writer ,    jdbcResultSet,  action,  id,  parentId,routing,esRetryOnConflict,upper7);
+		buildMeta( context, writer ,      action,  id,  parentId,routing,esRetryOnConflict,upper7);
 	}
-	private static Object getVersion(ESJDBC esjdbc) throws Exception {
-		Object version = esjdbc.getEsVersionField() !=null? esjdbc.getValue(esjdbc.getEsVersionField()):esjdbc.getEsVersionValue();
-		return version;
-	}
-	public static void buildMeta(Context context,Writer writer , ESJDBC esjdbc,String action,
+
+	public static void buildMeta(Context context,Writer writer ,String action,
 								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws Exception {
-		ESIndexWrapper esIndexWrapper = esjdbc.getEsIndexWrapper();
+		ESIndexWrapper esIndexWrapper = context.getESIndexWrapper();
 
 		JDBCGetVariableValue jdbcGetVariableValue = new JDBCGetVariableValue(context);
 
@@ -472,7 +505,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
-			Object version = getVersion(  esjdbc);
+			Object version = context.getVersion();
 
 			if (version != null) {
 
@@ -482,7 +515,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 
-			Object versionType = esjdbc.getEsVersionType();
+			Object versionType = context.getEsVersionType();
 			if(versionType != null) {
 				writer.write(",\"_version_type\":\"");
 				writer.write(String.valueOf(versionType));
@@ -534,7 +567,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				writer.write(",\"_retry_on_conflict\":");
 				writer.write(String.valueOf(esRetryOnConflict));
 			}
-			Object version = getVersion(  esjdbc);
+			Object version = context.getVersion();
 			if (version != null) {
 
 				writer.write(",\"_version\":");
@@ -543,7 +576,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 
-			Object versionType = esjdbc.getEsVersionType();
+			Object versionType = context.getEsVersionType();
 			if(versionType != null) {
 				writer.write(",\"_version_type\":\"");
 				writer.write(String.valueOf(versionType));
@@ -553,33 +586,33 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 	}
 
-	public static Context evalBuilk(BatchContext batchContext,Writer writer,  ESJDBC jdbcResultSet, String action,boolean upper7) throws Exception {
+	public static Context evalBuilk(JDBCResultSet jdbcResultSet,BatchContext batchContext, Writer writer, DB2ESImportContext importContext, String action, boolean upper7) throws Exception {
 		Context context = null;
-		if (jdbcResultSet != null) {
-			context = new ContextImpl(jdbcResultSet,batchContext);
-			jdbcResultSet.refactorData(context);
+		if (importContext != null) {
+			context = new ContextImpl(importContext,jdbcResultSet,batchContext);
+			context.refactorData();
 			if(context.isDrop()){
 				return context;
 			}
-			buildMeta( context, writer ,     jdbcResultSet,action,  upper7);
+			buildMeta( context, writer ,     action,  upper7);
 
 			if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
-				serialResult(  writer,jdbcResultSet,context);
+				serialResult(  writer,context);
 			}
 			else
 			{
 
 				writer.write("{\"doc\":");
-				serialResult(  writer,jdbcResultSet,context);
-				if(jdbcResultSet.getEsDocAsUpsert() != null){
+				serialResult(  writer,context);
+				if(context.getEsDocAsUpsert() != null){
 					writer.write(",\"doc_as_upsert\":");
-					writer.write(String.valueOf(jdbcResultSet.getEsDocAsUpsert()));
+					writer.write(String.valueOf(context.getEsDocAsUpsert()));
 				}
 
-				if(jdbcResultSet.getEsReturnSource() != null){
+				if(context.getEsReturnSource() != null){
 					writer.write(",\"_source\":");
-					writer.write(String.valueOf(jdbcResultSet.getEsReturnSource()));
+					writer.write(String.valueOf(context.getEsReturnSource()));
 				}
 				writer.write("}\n");
 
@@ -591,15 +624,16 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 	}
 
-	private static void serialResult( Writer writer, ESJDBC esjdbc,Context context) throws Exception {
-		PoolManResultSetMetaData metaData = esjdbc.getMetaData();
+	private static void serialResult( Writer writer,  Context context) throws Exception {
+
+		PoolManResultSetMetaData metaData = context.getMetaData();
 		int counts = metaData.getColumnCount();
 		writer.write("{");
-		Boolean useJavaName = esjdbc.getUseJavaName();
+		Boolean useJavaName = context.getUseJavaName();
 		if(useJavaName == null)
 			useJavaName = true;
 
-		Boolean useLowcase = esjdbc.getUseLowcase();
+		Boolean useLowcase = context.getUseLowcase();
 
 
 		if(useJavaName == null) {
@@ -614,9 +648,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Map<String,Object> addedFields = new HashMap<String,Object>();
 
 		List<FieldMeta> fieldValueMetas = context.getFieldValues();//context优先级高于，全局配置，全局配置高于字段值
-		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted,addedFields);
-		fieldValueMetas = esjdbc.getFieldValues();
-		hasSeted = appendFieldValues(  writer,   esjdbc, fieldValueMetas,  hasSeted,addedFields);
+		hasSeted = appendFieldValues(  writer,   context, fieldValueMetas,  hasSeted,addedFields);
+		fieldValueMetas = context.getESJDBCFieldValues();
+		hasSeted = appendFieldValues(  writer,   context, fieldValueMetas,  hasSeted,addedFields);
 		for(int i =0; i < counts; i++)
 		{
 			String colName = metaData.getColumnLabelByIndex(i);
@@ -652,7 +686,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			writer.write(javaName);
 			writer.write("\":");
 //			int colType = metaData.getColumnTypeByIndex(i);
-			Object value = esjdbc.getValue(     i,  colName,sqlType);
+			Object value = context.getValue(     i,  colName,sqlType);
 			if(value != null) {
 				if (value instanceof String) {
 					writer.write("\"");
@@ -668,7 +702,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 						}
 					}
 					if(dateFormat == null)
-						dateFormat = esjdbc.getFormat();
+						dateFormat = context.getDateFormat();
 					String dataStr = ESUtil.getDate((Date) value,dateFormat);
 					writer.write("\"");
 					writer.write(dataStr);
@@ -702,7 +736,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 		writer.write("}\n");
 	}
-	private static boolean appendFieldValues(Writer writer, ESJDBC esjdbc,
+	private static boolean appendFieldValues(Writer writer,Context context,
 										  List<FieldMeta> fieldValueMetas,boolean hasSeted,Map<String,Object> addedFields) throws IOException {
 		if(fieldValueMetas != null && fieldValueMetas.size() > 0){
 			for(int i =0; i < fieldValueMetas.size(); i++)
@@ -712,7 +746,10 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 				String javaName = fieldMeta.getEsFieldName();
 				if(addedFields.containsKey(javaName)) {
 					if(logger.isInfoEnabled()){
-						logger.info(new StringBuilder().append("Ignore adding duplicate field[").append(javaName).append("] value[").append(fieldMeta.getValue()).append("].").toString());
+						logger.info(new StringBuilder().append("Ignore adding duplicate field[")
+								.append(javaName).append("] value[")
+								.append(fieldMeta.getValue())
+								.append("].").toString());
 					}
 					continue;
 				}
@@ -744,7 +781,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 							}
 						}
 						if(dateFormat == null)
-							dateFormat = esjdbc.getFormat();
+							dateFormat = context.getDateFormat();
 						String dataStr = ESUtil.getDate((Date) value,dateFormat);
 						writer.write("\"");
 						writer.write(dataStr);
@@ -797,9 +834,38 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 	public ClientInterface getClientInterface() {
 		return this.clientInterface;
 	}
-	public ESJDBC getESJDBC(){
-		return this.jdbcResultSet;
-	}
 
+	public Object getLastValue() throws ESDataImportException {
+
+
+		if(db2ESImportContext.getLastValueClumnName() == null){
+			return null;
+		}
+
+//			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
+//				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
+//			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
+//				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
+//			}
+//			else if (this.dataTranPlugin.getSqlInfo().getLastValueVarName() != null) {
+//				return this.getValue(this.dataTranPlugin.getSqlInfo().getLastValueVarName());
+//			}
+		try {
+			if (db2ESImportContext.getLastValueType() == null || db2ESImportContext.getLastValueType().intValue() == ImportIncreamentConfig.NUMBER_TYPE)
+				return jdbcResultSet.getValue(db2ESImportContext.getLastValueClumnName());
+			else if (db2ESImportContext.getLastValueType().intValue() == ImportIncreamentConfig.TIMESTAMP_TYPE) {
+				return jdbcResultSet.getDateTimeValue(db2ESImportContext.getLastValueClumnName());
+			}
+		}
+		catch (ESDataImportException e){
+			throw (e);
+		}
+		catch (Exception e){
+			throw new ESDataImportException(e);
+		}
+		return null;
+
+
+	}
 
 }

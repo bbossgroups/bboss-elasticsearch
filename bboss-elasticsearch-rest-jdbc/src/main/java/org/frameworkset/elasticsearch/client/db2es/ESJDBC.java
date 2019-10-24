@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;/*
+package org.frameworkset.elasticsearch.client.db2es;/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,11 @@ package org.frameworkset.elasticsearch.client;/*
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
-import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
-import org.frameworkset.elasticsearch.util.ESJDBCResultSet;
-import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.spi.geoip.GeoIPUtil;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
@@ -31,27 +29,14 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
+public class ESJDBC {
 	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
-	private ScheduleService scheduleService;
 	private List<DBConfig> configs;
-	public boolean isExternalTimer() {
-		if(getScheduleConfig() != null) {
-			return this.getScheduleConfig().isExternalTimer();
-		}
-		else {
-			return false;
-		}
-	}
 
 
 
-//	private String indexType;
-	private ErrorWrapper errorWrapper;
-	private volatile boolean forceStop = false;
+
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 
@@ -60,7 +45,6 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * 增量导入状态存储数据源
 	 */
 	private DBConfig statusDbConfig;
-	private ExecutorService blockedExecutor;
 	public boolean isPagine() {
 		return pagine;
 	}
@@ -74,43 +58,13 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * 打印任务日志
 	 */
 	private boolean printTaskLog = false;
-	public void setForceStop(){
-		this.forceStop = true;
-	}
+
 	/**
 	 * 定时任务拦截器
 	 */
 	private List<CallInterceptor> callInterceptors;
 	private DB2ESExportResultHandler exportResultHandler;
-	public ErrorWrapper getErrorWrapper() {
-		return errorWrapper;
-	}
 
-	public void setErrorWrapper(ErrorWrapper errorWrapper) {
-		this.errorWrapper = errorWrapper;
-	}
-	
-	/**
-	 * 判断执行条件是否成立，成立返回true，否则返回false
-	 * @return
-	 */
-	public boolean assertCondition(){
-		if(forceStop)
-			return false;
-		if(errorWrapper != null)
-			return errorWrapper.assertCondition();
-		return true;
-	}
-
-	/**
-	 * 判断执行条件是否成立，成立返回true，否则返回false
-	 * @return
-	 */
-	public boolean assertCondition(Exception e){
-		if(errorWrapper != null)
-			return errorWrapper.assertCondition(e);
-		return true;
-	}
 
 	public String getApplicationPropertiesFile() {
 		return applicationPropertiesFile;
@@ -167,11 +121,12 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private String sql;
 	private String sqlFilepath;
 	private String sqlName;
-
+	private String refreshOption;
+	private int batchSize;
 	private ConfigSQLExecutor executor;
 
-	private String refreshOption;
-	private int batchSize = 1000;
+
+
 	private Integer scheduleBatchSize ;
 //	private String index;
 
@@ -186,12 +141,8 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private ESIndexWrapper esIndexWrapper;
 
 
-	private AtomicInteger rejectCounts = new AtomicInteger();
 	private boolean asyn;
-	/**
-	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
-	 */
-	private boolean continueOnError = true;
+	private boolean continueOnError;
 
 	/**
 	 * 是否不需要返回响应，不需要的情况下，可以设置为true，默认为true
@@ -205,18 +156,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	private ScheduleConfig scheduleConfig;
 	private ImportIncreamentConfig importIncreamentConfig;
 
-	public int getStatusTableId() {
-		return statusTableId;
-	}
 
-	public void setStatusTableId(int statusTableId) {
-		this.statusTableId = statusTableId;
-	}
-
-	/**
-	 * 根据导入的sql的hashcode决定导入作业的增量导入状态记录主键
-	 */
-	private int statusTableId = 0;
 
 	public String getSql() {
 		return sql;
@@ -229,21 +169,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 
 
-	public String getRefreshOption() {
-		return refreshOption;
-	}
 
-	public void setRefreshOption(String refreshOption) {
-		this.refreshOption = refreshOption;
-	}
-
-	public int getBatchSize() {
-		return batchSize;
-	}
-
-	public void setBatchSize(int batchSize) {
-		this.batchSize = batchSize;
-	}
 
 //	public String getIndex() {
 //		return index;
@@ -395,9 +321,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void destroy(){
 		this.format = null;
-		if(blockedExecutor != null){
-			blockedExecutor.shutdown();
-		}
+
 	}
 
 	public void setFieldMetaMap(Map<String, FieldMeta> fieldMetaMap) {
@@ -428,29 +352,6 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.threadCount = threadCount;
 	}
 
-	public ExecutorService buildThreadPool(){
- 		if(blockedExecutor != null)
- 			return blockedExecutor;
- 		synchronized (this) {
-			if(blockedExecutor == null) {
-
-				blockedExecutor = new ThreadPoolExecutor(this.getThreadCount(), this.getThreadCount(),
-						0L, TimeUnit.MILLISECONDS,
-						new ArrayBlockingQueue<Runnable>(this.getQueue()),
-						new ThreadFactory() {
-							private java.util.concurrent.atomic.AtomicInteger threadCount = new AtomicInteger(0);
-
-							@Override
-							public Thread newThread(Runnable r) {
-								int num = threadCount.incrementAndGet();
-								return new DBESThread(r, num);
-							}
-						}, new BlockedTaskRejectedExecutionHandler(rejectCounts));
-			}
-		}
-		return blockedExecutor;
-	}
-
 
 	public int getQueue() {
 		return queue;
@@ -469,13 +370,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.asyn = asyn;
 	}
 
-	public boolean isContinueOnError() {
-		return continueOnError;
-	}
 
-	public void setContinueOnError(boolean continueOnError) {
-		this.continueOnError = continueOnError;
-	}
 
 	public List<FieldMeta> getFieldValues() {
 		return fieldValues;
@@ -517,7 +412,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * @param value
 	 * @return
 	 */
-	public ESJDBC addFieldValue(String fieldName,Object value){
+	public ESJDBC addFieldValue(String fieldName, Object value){
 		this.importBuilder.addFieldValue(fieldName,value);
 		return this;
 	}
@@ -529,7 +424,7 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * @param value
 	 * @return
 	 */
-	public ESJDBC addFieldValue(String fieldName,String dateFormat,Object value){
+	public ESJDBC addFieldValue(String fieldName, String dateFormat, Object value){
 		this.importBuilder.addFieldValue(fieldName,dateFormat,value);
 		return this;
 	}
@@ -541,12 +436,12 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	 * @param value
 	 * @return
 	 */
-	public ESJDBC addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone){
+	public ESJDBC addFieldValue(String fieldName, String dateFormat, Object value, String locale, String timeZone){
 		this.importBuilder.addFieldValue(fieldName,dateFormat,value,  locale,  timeZone);
 		return this;
 	}
 
-	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName){
+	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName){
 		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName);
 		return this;
 	}
@@ -556,17 +451,16 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		return this;
 	}
 
-	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName,String dateFormat){
+	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName, String dateFormat){
 		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat);
 		return this;
 	}
 
-	public ESJDBC addFieldMapping(String dbColumnName,String esFieldName,String dateFormat,String locale,String timeZone){
+	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName, String dateFormat, String locale, String timeZone){
 		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat,locale,  timeZone);
 		return this;
 	}
 
-	@Override
 	public String getEsParentIdValue() {
 		return esParentIdValue;
 	}
@@ -575,7 +469,6 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 		this.esParentIdValue = esParentIdValue;
 	}
 
-	@Override
 	public Object getEsVersionValue() {
 		return esVersionValue;
 	}
@@ -611,6 +504,63 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public ImportIncreamentConfig getImportIncreamentConfig() {
 		return importIncreamentConfig;
 	}
+	public void setStatusTableId(int statusTableId) {
+		if(importIncreamentConfig != null)
+			importIncreamentConfig.setStatusTableId(statusTableId);
+	}
+//	public String getLastValueStoreTableName() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getLastValueStoreTableName():null;
+//	}
+//
+//	public String getLastValueStorePath() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getLastValueStorePath():null;
+//	}
+//
+//	public String getDateLastValueColumn() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getDateLastValueColumn():null;
+//	}
+//	public String getNumberLastValueColumn() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getNumberLastValueColumn():null;
+//	}
+//
+//	public Integer getLastValueType() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getLastValueType():null;
+//	}
+//	public void setImportIncreamentConfig(ImportIncreamentConfig importIncreamentConfig) {
+//		this.importIncreamentConfig = importIncreamentConfig;
+//	}
+//
+//	public boolean isFromFirst() {
+//		return importIncreamentConfig != null?importIncreamentConfig.isFromFirst():false;
+//	}
+//
+//	public Long getConfigLastValue() {
+//		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
+//	}
+
+	public String getSqlFilepath() {
+		return sqlFilepath;
+	}
+
+	public void setSqlFilepath(String sqlFilepath) {
+		this.sqlFilepath = sqlFilepath;
+	}
+
+
+
+
+	public Integer getScheduleBatchSize() {
+		return scheduleBatchSize;
+	}
+
+	public void setScheduleBatchSize(Integer scheduleBatchSize) {
+		this.scheduleBatchSize = scheduleBatchSize;
+	}
+
+
+	public boolean isFromFirst() {
+		return importIncreamentConfig != null?importIncreamentConfig.isFromFirst():false;
+	}
 
 	public String getLastValueStoreTableName() {
 		return importIncreamentConfig != null?importIncreamentConfig.getLastValueStoreTableName():null;
@@ -630,80 +580,19 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 	public Integer getLastValueType() {
 		return importIncreamentConfig != null?importIncreamentConfig.getLastValueType():null;
 	}
-	public void setImportIncreamentConfig(ImportIncreamentConfig importIncreamentConfig) {
-		this.importIncreamentConfig = importIncreamentConfig;
-	}
 
-	public boolean isFromFirst() {
-		return importIncreamentConfig != null?importIncreamentConfig.isFromFirst():false;
-	}
 
 	public Long getConfigLastValue() {
 		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
 	}
-
-	public String getSqlFilepath() {
-		return sqlFilepath;
+	public int getStatusTableId() {
+		return this.importIncreamentConfig != null ?importIncreamentConfig.getStatusTableId():null;
 	}
 
-	public void setSqlFilepath(String sqlFilepath) {
-		this.sqlFilepath = sqlFilepath;
-	}
-
-
-
-	public ScheduleService getScheduleService() {
-		return scheduleService;
-	}
-
-	public void setScheduleService(ScheduleService scheduleService) {
-		this.scheduleService = scheduleService;
-	}
-
-	public Integer getScheduleBatchSize() {
-		return scheduleBatchSize;
-	}
-
-	public void setScheduleBatchSize(Integer scheduleBatchSize) {
-		this.scheduleBatchSize = scheduleBatchSize;
-	}
-
-
-
-	public Object getLastValue() throws Exception {
-
-		if(scheduleService != null) {
-
-			if(scheduleService.getLastValueClumnName() == null){
-				return null;
-			}
-
-//			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
-//			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
-//			}
-//			else if (this.scheduleService.getSqlInfo().getLastValueVarName() != null) {
-//				return this.getValue(this.scheduleService.getSqlInfo().getLastValueVarName());
-//			}
-			if(this.getLastValueType() == null || this.getLastValueType().intValue() ==  ImportIncreamentConfig.NUMBER_TYPE)
-				return this.getValue(scheduleService.getLastValueClumnName());
-			else if(this.getLastValueType().intValue() ==  ImportIncreamentConfig.TIMESTAMP_TYPE){
-				return this.getDateTimeValue(scheduleService.getLastValueClumnName());
-			}
-
-		}
-		return null;
-	}
-
-	public void flushLastValue(Object lastValue) {
-		if(scheduleService != null && lastValue != null)
-			this.scheduleService.flushLastValue(lastValue);
-	}
 	public void stop(){
-		if(scheduleService != null) {
-			scheduleService.stop();
-		}
+//		if(dataTranPlugin != null) {
+//			dataTranPlugin.stop();
+//		}
 	}
 
 	public List<CallInterceptor> getCallInterceptors() {
@@ -814,5 +703,40 @@ public class ESJDBC extends JDBCResultSet implements ESJDBCResultSet {
 
 	public void setConfigs(List<DBConfig> configs) {
 		this.configs = configs;
+	}
+
+	public String getRefreshOption() {
+		return refreshOption;
+	}
+
+	public void setRefreshOption(String refreshOption) {
+		this.refreshOption = refreshOption;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+	public boolean isContinueOnError() {
+		return continueOnError;
+	}
+
+	public void setContinueOnError(boolean continueOnError) {
+		this.continueOnError = continueOnError;
+	}
+
+	public void setImportIncreamentConfig(ImportIncreamentConfig importIncreamentConfig) {
+		this.importIncreamentConfig = importIncreamentConfig;
+	}
+
+	public boolean isExternalTimer() {
+		if(this.scheduleConfig != null){
+			return scheduleConfig.isExternalTimer();
+		}
+		return false;
 	}
 }

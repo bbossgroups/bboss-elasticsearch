@@ -156,6 +156,16 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
+	public String reindexByDsl(String actionUrl, String dslName, Object params) {
+		return null;
+	}
+
+	@Override
+	public String reindexByDsl(String actionUrl, String dsl) {
+		return null;
+	}
+
+	@Override
 	public String reindex(String sourceIndice, String destIndice, String versionType) {
 		return null;
 	}

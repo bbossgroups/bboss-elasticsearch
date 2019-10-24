@@ -361,9 +361,34 @@ RestClientUtil：通用组件，提供所有不依赖dsl的功能，也可以直
 
 ConfigRestClientUtil：加载配置文件中的dsl来实现对es的操作
 
-这两个组件分别通过org.frameworkset.elasticsearch.ElasticSearchHelper中提供的静态工厂方法获取其单实例对象，这些单实例对象是多线程并发安全的，分别说明如下：
+这两个组件在不同的环境实例化的方法有所区别
 
+**普通项目环境**
 
+通过org.frameworkset.elasticsearch.ElasticSearchHelper中提供的静态工厂方法获取其单实例对象，这些单实例对象是多线程并发安全的：
+
+```java
+//创建加载配置文件的客户端工具，单实例多线程安全
+//Get a ConfigRestClientUtil instance
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
+//Build a RestClientUtil instance, single instance multi-thread security
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
+```
+
+**spring boot环境**
+
+通过BBossESStarter中提供的工厂方法获取其单实例对象，这些单实例对象是多线程并发安全的：
+
+```java
+   @Autowired
+	private BBossESStarter bbossESStarter;
+//Get a ConfigRestClientUtil instance to load configuration files, single instance multithreaded security
+	ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
+		//Build a RestClientUtil instance, single instance multi-thread security
+		ClientInterface clientUtil = bbossESStarter.getRestClient();	
+```
+
+下面基于普通项目的管理实例方式来讲解RestClientUtil和ConfigRestClientUtil的用法
 
 ## **3.1** 加载配置文件中的dsl来实现对es的操作模式
 
@@ -1294,6 +1319,139 @@ es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api�
 
  [Elasticsearch-7-API](Elasticsearch-7-API.md) 
 
+## 4.12 DSL中使用变量案例
+
+在DSL配置文件中定义dsl时，可以使用变量来设置检索时需要参数和查询条件，在代码中通过Map或者Java PO对象传递实际的参数值，本节举例说明。
+
+### 定义包含变量的dsl
+
+在工程的resources目录下面准备一个xml配置文件demo.xml，其中定义名称为searchDatas的dsl
+
+```xml
+<property name="searchDatas">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## Multi-terms search, find multiple application name corresponding to the document records
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## Time range search, return the corresponding time range of records
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##Statistical start time
+                                    "lt": #[endTime]  ##Statistical end time
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## Up to 1000 records are returned
+            "size":#[size]
+        }]]>
+    </property>
+```
+
+在上面的dsl中使用了applicationName1、applicationName2、startTime、endTime、size5个变量，还包含了## 开头的注释，这样就准备好了dsl配置文件了，相关语法可以参考章节：【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl%e9%85%8d%e7%bd%ae%e8%a7%84%e8%8c%83)】，接下来看看在代码里面如何加载配置文件，传递检索需要的变量参数值，实现检索操作
+
+### spring boot 检索代码
+
+spring boot项目通过bbossESStarter组件来创建加载配置文件demo.xml的ClientInterface实例
+
+```java
+//Create a load DSL file demo.xml client instance to retrieve documents use spring boot helper component bbossESStarter, single instance multithread security
+		ClientInterface clientUtil = bbossESStarter.getConfigRestClient("demo.xml");
+		//Set query conditions, pass variable parameter values via map,key for variable names in DSL
+		//通过Map或者Java PO对象传递实际的参数值
+		Map<String,Object> params = new HashMap<String,Object>();
+		//Set the values of applicationName1 and applicationName2 variables
+		params.put("applicationName1","app1");//设置变量applicationName1值
+		params.put("applicationName2","app2");//设置变量applicationName2值
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//Set the time range, and accept the Date or long value as the time parameter
+		try {
+            //设置变量startTime值
+			params.put("startTime",dateFormat.parse("2017-09-02 00:00:00"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        //设置变量endTime值
+		params.put("endTime",new Date());
+        //设置变量size值
+        params.put("size",1000);
+
+
+		//Execute the query
+		ESDatas<Demo> esDatas =  //ESDatas contains a collection of currently retrieved records, up to 1000 records, specified by the size attribute in the DSL
+				clientUtil.searchList("demo/_search",//demo as the indice, _search as the search action
+				"searchDatas",//DSL statement name defined in demo.xml
+				params,//Query parameters,传递上面定义的变量参数map
+				Demo.class);//Data object type Demo returned
+
+
+		//Gets a list of result objects and returns max up to 1000 records (specified in DSL)
+		List<Demo> demos = esDatas.getDatas();
+
+//		String json = clientUtil.executeRequest("demo/_search",//demo as the index table, _search as the search action
+//				"searchDatas",//DSL statement name defined in esmapper/demo.xml
+//				params);//Query parameters
+
+//		String json = com.frameworkset.util.SimpleStringUtil.object2json(demos);
+		//Gets the total number of records
+		long totalSize = esDatas.getTotalSize();
+```
+
+### 普通项目检索代码
+
+普通项目通过ElasticSearchHelper组件来创建加载配置文件demo.xml的ClientInterface实例
+
+```java
+//Create a load DSL file demo.xml client instance to retrieve documents use ElasticSearchHelper component , single instance multithread security
+		//创建加载配置文件的客户端工具，单实例多线程安全
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("demo.xml");
+		//Set query conditions, pass variable parameter values via map,key for variable names in DSL
+		//通过Map或者Java PO对象传递实际的参数值
+		Map<String,Object> params = new HashMap<String,Object>();
+		//Set the values of applicationName1 and applicationName2 variables
+		params.put("applicationName1","app1");//设置变量applicationName1值
+		params.put("applicationName2","app2");//设置变量applicationName2值
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//Set the time range, and accept the Date or long value as the time parameter
+		try {
+            //设置变量startTime值
+			params.put("startTime",dateFormat.parse("2017-09-02 00:00:00"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        //设置变量endTime值
+		params.put("endTime",new Date());
+        //设置变量size值
+        params.put("size",1000);
+
+
+		//Execute the query
+		ESDatas<Demo> esDatas =  //ESDatas contains a collection of currently retrieved records, up to 1000 records, specified by the size attribute in the DSL
+				clientUtil.searchList("demo/_search",//demo as the indice, _search as the search action
+				"searchDatas",//DSL statement name defined in esmapper/demo.xml
+				params,//Query parameters,传递上面定义的变量参数map
+				Demo.class);//Data object type Demo returned
+
+
+		//Gets a list of result objects and returns max up to 1000 records (specified in DSL)
+		List<Demo> demos = esDatas.getDatas();
+
+//		String json = clientUtil.executeRequest("demo/_search",//demo as the index table, _search as the search action
+//				"searchDatas",//DSL statement name defined in esmapper/demo.xml
+//				params);//Query parameters
+
+//		String json = com.frameworkset.util.SimpleStringUtil.object2json(demos);
+		//Gets the total number of records
+		long totalSize = esDatas.getTotalSize();
+```
+
 
 
 # **5 进阶**
@@ -1302,9 +1460,15 @@ es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api�
 
 ## 5.1 操作Elasticsearch通用服务API
 
+Elasticsearch提供了非常多的rest api服务，参考文档：
+
+ https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html 
+
+bboss对里面的常用的服务进行了很好的封装，详见[ClientInterface](https://github.com/bbossgroups/bboss-elasticsearch/blob/master/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterface.java)接口。通过ClientInterface 接口提供的通用executeHttp api，可以非常方便地实现未封装的Elasticsearch rest 服务调用
+
 ### 5.1.1 通用服务API
 
-通过ClientInterface 接口提供的以下通用executeHttp api，我们可以非常方便地实现es中所有带请求报文的功能
+通过ClientInterface 接口提供的通用executeHttp api，可以非常方便地实现未封装的Elasticsearch rest 服务调用：
 
 ```java
         /**

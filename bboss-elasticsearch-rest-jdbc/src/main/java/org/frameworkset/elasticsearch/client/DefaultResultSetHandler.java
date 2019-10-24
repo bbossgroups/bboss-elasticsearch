@@ -17,6 +17,9 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.elasticsearch.client.db2es.JDBCRestClientUtil;
+import org.frameworkset.persitent.util.JDBCResultSet;
 
 import java.sql.ResultSet;
 
@@ -29,18 +32,21 @@ import java.sql.ResultSet;
  * @version 1.0
  */
 public class DefaultResultSetHandler extends ResultSetHandler {
-	private ESJDBC esjdbc;
 	private int batchSize;
-	public DefaultResultSetHandler(ESJDBC esjdbc,int batchSize){
-		this.esjdbc = esjdbc;
-		this.batchSize = batchSize;
+	private DB2ESImportContext importContext ;
+	public DefaultResultSetHandler(DB2ESImportContext importContext){
+		this.batchSize = importContext.getStoreBatchSize();
+		this.importContext = importContext;
+
 	}
 	@Override
 	public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-		esjdbc.setResultSet(resultSet);
-		esjdbc.setMetaData(statementInfo.getMeta());
-		esjdbc.setDbadapter(statementInfo.getDbadapter());
-		JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-		jdbcRestClientUtil.addDocuments(  esjdbc, esjdbc.getRefreshOption(), batchSize);
+		JDBCResultSet jdbcResultSet = new JDBCResultSet();
+		jdbcResultSet.setResultSet(resultSet);
+		jdbcResultSet.setMetaData(statementInfo.getMeta());
+		jdbcResultSet.setDbadapter(statementInfo.getDbadapter());
+		JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
+
+		jdbcRestClientUtil.addDocuments(  importContext, importContext.getRefreshOption(), batchSize);
 	}
 }

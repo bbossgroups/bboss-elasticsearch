@@ -5,6 +5,8 @@ import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.persitent.util.JDBCResultSet;
 import org.junit.Test;
 
 import java.sql.ResultSet;
@@ -29,14 +31,19 @@ public class TestESJDBC {
 		catch (Exception e){
 
 		}
+		final DB2ESImportContext importContext = new DB2ESImportContext();
+
 		SQLExecutor.queryByNullRowHandler(new ResultSetHandler() {
 			@Override
 			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-				ESJDBC esjdbcResultSet = new ESJDBC();
-				esjdbcResultSet.setResultSet(resultSet);
-				esjdbcResultSet.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-				jdbcRestClientUtil.addDocuments("dbdemo","dbdemo",esjdbcResultSet,"refresh",98);
+
+
+				JDBCResultSet jdbcResultSet = new JDBCResultSet();
+
+				jdbcResultSet.setResultSet(resultSet);
+				jdbcResultSet.setMetaData(statementInfo.getMeta());
+				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
+				jdbcRestClientUtil.addDocuments("dbdemo","dbdemo",importContext,"refresh",98);
 			}
 		},"select * from td_sm_log");
 
@@ -55,15 +62,16 @@ public class TestESJDBC {
 		catch (Exception e){
 
 		}
-
+		final DB2ESImportContext importContext = new DB2ESImportContext();
 		SQLExecutor.queryByNullRowHandler(new ResultSetHandler() {
 			@Override
 			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
-				ESJDBC esjdbcResultSet = new ESJDBC();
-				esjdbcResultSet.setResultSet(resultSet);
-				esjdbcResultSet.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil();
-				jdbcRestClientUtil.addDocuments("dbclobdemo","dbclobdemo",esjdbcResultSet,"refresh",1000);
+				JDBCResultSet jdbcResultSet = new JDBCResultSet();
+
+				jdbcResultSet.setResultSet(resultSet);
+				jdbcResultSet.setMetaData(statementInfo.getMeta());
+				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
+				jdbcRestClientUtil.addDocuments("dbclobdemo","dbclobdemo",importContext,"refresh",1000);
 			}
 		},"select * from td_cms_document");
 

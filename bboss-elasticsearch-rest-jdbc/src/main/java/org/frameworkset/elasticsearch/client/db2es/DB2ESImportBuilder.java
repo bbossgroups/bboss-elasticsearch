@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;/*
+package org.frameworkset.elasticsearch.client.db2es;/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client;/*
 import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -439,9 +440,9 @@ public class DB2ESImportBuilder extends BaseBuilder{
 		catch (Exception e){
 
 		}
-		ESJDBC esjdbcResultSet = this.buildESJDBCConfig();
+		ESJDBC esjdbc = this.buildESJDBCConfig();
 		DB2ESDataStreamImpl  dataStream = new DB2ESDataStreamImpl();
-		dataStream.setEsjdbc(esjdbcResultSet);
+		dataStream.setEsjdbc(esjdbc);
 		dataStream.setConfigString(this.toString());
 		dataStream.init();
 		return dataStream;

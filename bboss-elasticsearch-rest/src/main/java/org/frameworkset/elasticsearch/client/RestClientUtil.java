@@ -3655,6 +3655,38 @@ public class RestClientUtil extends ClientUtil{
 	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
 	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
 	 *
+	 * @param actionUrl reindex请求相对url，例如：
+	 *                  _reindex
+	 *                  _reindex?slices=5&refresh
+	 * @param dslName  xml配置文件中dsl对应的name
+	 * @param params dslName 中对应的变量参数信息
+	 * @return
+	 */
+	public String reindexByDsl(String actionUrl,String dslName,Object params){
+		throw new UnsupportedOperationException("reindexByDsl(String actionUrl,String dslName,Object params)");
+	}
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
+	 * @param actionUrl reindex请求相对url，例如：
+	 *                  _reindex
+	 *                  _reindex?slices=5&refresh
+	 * @param dsl reindex对应的dsl脚本
+	 * @return
+	 */
+	public String reindexByDsl(String actionUrl,String dsl){
+		return this.client.executeHttp(actionUrl,dsl,ClientUtil.HTTP_POST);
+	}
+
+	/**
+	 *
+	 * Reindex does not attempt to set up the destination index.
+	 * It does not copy the settings of the source index. You should set up the destination index prior to running a _reindex action, including setting up mappings, shard counts, replicas, etc.
+	 * more detail see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+	 *
 	 * @param sourceIndice
 	 * @param destIndice
 	 * @return

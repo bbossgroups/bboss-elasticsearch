@@ -15,9 +15,6 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * <p>Description: </p>
  * <p></p>
@@ -26,53 +23,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class ErrorWrapper {
-	/**
-	 * see https://www.cnblogs.com/dolphin0520/p/3920373.html
-	 */
-	protected volatile Exception error;
-	private Lock lock = new ReentrantLock();
-
-	public void setError(Exception error) {
-		if(this.error == null) {//only set the first exception
-			try {
-				lock.lock();
-				if (this.error == null) {//only set the first exception
-					this.error = error;
-					this.getESJDBC().setErrorWrapper(this);
-				}
-			} finally {
-				lock.unlock();
-			}
-		}
-	}
-
-	/**
-	 * 判断执行条件是否成立，成立返回true，否则返回false
-	 * @return
-	 */
-	public boolean assertCondition(){
-
-		if(this.error != null && !getESJDBC().isContinueOnError()) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 判断执行条件是否成立，成立返回true，否则返回false
-	 * @return
-	 */
-	public boolean assertCondition(Exception e){
-		if((this.error != null || e != null) && !getESJDBC().isContinueOnError()) {
-			return false;
-		}
-		return true;
-	}
+public abstract class ErrorWrapper extends TranErrorWrapper {
 
 
 	public abstract ClientInterface getClientInterface();
-	public abstract ESJDBC getESJDBC();
+
 
 
 

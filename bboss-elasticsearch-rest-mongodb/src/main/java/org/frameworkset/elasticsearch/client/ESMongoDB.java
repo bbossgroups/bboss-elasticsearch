@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
+import org.frameworkset.nosql.mongodb.MongoDBConfig;
 
 /**
  * <p>Description: </p>
@@ -26,6 +27,12 @@ import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
  * @version 1.0
  */
 public class ESMongoDB extends ESJDBC{
+
+	private MongoDBConfig dbConfig;
+	public void init(MongoDBConfig dbConfig){
+		this.dbConfig = dbConfig;
+
+	}
 	public void setExternalTimer(boolean externalTimer) {
 	}
 
@@ -44,9 +51,7 @@ public class ESMongoDB extends ESJDBC{
 		return false;
 	}
 
-	public String StatusTableId() {
-		return "";
-	}
+
 
 	public void setStatusTableId(String statusTableId) {
 	}
@@ -54,4 +59,7 @@ public class ESMongoDB extends ESJDBC{
 	public ScheduleConfig getScheduleConfig() {
 		return null;
 	}
+
+
+
 }

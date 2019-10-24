@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ESJDBC;
+import org.frameworkset.elasticsearch.client.ImportContext;
 
 /**
  * <p>Description: </p>
@@ -26,12 +26,12 @@ import org.frameworkset.elasticsearch.client.ESJDBC;
  * @version 1.0
  */
 public class TaskContext {
-	public TaskContext(ESJDBC esjdbc){
-		this.esjdbc = esjdbc;
+	public TaskContext(ImportContext importContext){
+		this.importContext = importContext;
 	}
-	private ESJDBC esjdbc;
+	private ImportContext importContext;
 
-	public ESJDBC getEsjdbc() {
-		return esjdbc;
+	public ImportContext getImportContext() {
+		return importContext;
 	}
 }

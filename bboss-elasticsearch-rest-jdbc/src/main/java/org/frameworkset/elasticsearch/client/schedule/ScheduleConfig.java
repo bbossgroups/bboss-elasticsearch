@@ -32,6 +32,7 @@ public class ScheduleConfig {
 	private Long period;
 	private Boolean fixedRate;
 
+
 	public boolean isExternalTimer() {
 		return externalTimer;
 	}

@@ -15,9 +15,14 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
+import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.elasticsearch.client.db2es.ESJDBC;
 import org.frameworkset.spi.geoip.IpInfo;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +41,24 @@ public interface Context {
 	public Context addFieldValue(String fieldName,String dateFormat,Object value,String locale,String timeZone);
 	public Context addIgnoreFieldMapping(String dbColumnName);
 	public ESJDBC getEsjdbc();
+	public ESIndexWrapper getESIndexWrapper();
+	public Object getVersion() throws Exception;
+	public Object getEsVersionType();
+	public void refactorData() throws Exception;
+	public PoolManResultSetMetaData getMetaData();
+	public DateFormat getDateFormat();
+	public Boolean getUseJavaName();
+	public Boolean getUseLowcase();
+	public Boolean getEsDocAsUpsert();
+	public Boolean getEsReturnSource();
+	public List<FieldMeta> getESJDBCFieldValues();
+	public Object getValue(     int i,String  colName,int sqlType) throws Exception;
+	public DB2ESImportContext getDB2ESImportContext();
 	public String getDBName();
 	public Object getValue(String fieldName) throws Exception;
+	public Object getParentId() throws Exception;
+	public Object getRouting() throws Exception;
+	public Object getEsRetryOnConflict();
 	public long getLongValue(String fieldName) throws Exception;
 	public double getDoubleValue(String fieldName) throws Exception;
 	public float getFloatValue(String fieldName) throws Exception;

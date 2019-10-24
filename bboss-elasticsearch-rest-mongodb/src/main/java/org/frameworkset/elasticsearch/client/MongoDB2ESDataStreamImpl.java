@@ -18,6 +18,8 @@ import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
+import org.frameworkset.nosql.mongodb.MongoDB;
+import org.frameworkset.nosql.mongodb.MongoDBConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,26 +30,26 @@ import java.util.concurrent.locks.ReentrantLock;
  * 数据库同步到Elasticsearch
  */
 public class MongoDB2ESDataStreamImpl extends DataStream{
-	private ESMongoDB esjdbc;
+	private ESMongoDB esmongoDB;
 	private ScheduleService scheduleService;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 	private boolean inited;
 	public void setExternalTimer(boolean externalTimer) {
-		this.esjdbc.setExternalTimer(externalTimer);
+		this.esmongoDB.setExternalTimer(externalTimer);
 	}
 	private Lock lock = new ReentrantLock();
 	public void init(){
 		if(inited )
 			return;
-		if(esjdbc == null){
-			throw new ESDataImportException("ESJDBC is null.");
+		if(esmongoDB == null){
+			throw new ESDataImportException("ESMongoDB is null.");
 		}
 
 		try {
 			lock.lock();
-			this.initES(esjdbc.getApplicationPropertiesFile());
-			this.initMongoDB(esjdbc.getConfig());
-//			initOtherDSes(esjdbc.getConfigs());
+			this.initES(esmongoDB.getApplicationPropertiesFile());
+			this.initMongoDB(esmongoDB.getConfig());
+//			initOtherDSes(esmongoDB.getConfigs());
 			this.initSQLInfo();
 			this.initSchedule();
 			inited = true;
@@ -62,8 +64,10 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 			lock.unlock();
 		}
 	}
-
+	private MongoDB mongoDB;
 	protected void initMongoDB(MongoDBConfig dbConfig){
+		this.mongoDB = new MongoDB();
+		this.mongoDB.init(dbConfig);
 //		if(SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
 //			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
 //					dbConfig.getDbDriver(),//oracle驱动
@@ -85,8 +89,8 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 
 	@Override
 	public void stop() {
-		if(esjdbc != null)
-			this.esjdbc.stop();
+		if(esmongoDB != null)
+			this.esmongoDB.stop();
 	}
 
 	@Override
@@ -106,7 +110,7 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 				long importStartTime = System.currentTimeMillis();
 				firstImportData();
 				long importEndTime = System.currentTimeMillis();
-				if(esjdbc != null && this.esjdbc.isPrintTaskLog() && logger.isInfoEnabled())
+				if(esmongoDB != null && this.esmongoDB.isPrintTaskLog() && logger.isInfoEnabled())
 					logger.info(new StringBuilder().append("Execute job Take ").append((importEndTime - importStartTime)).append(" ms").toString());
 			}
 			else{//定时增量导入数据操作
@@ -128,28 +132,28 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 	public void initSQLInfo(){
 
 
-		esjdbc.setStatusTableId("");
+		esmongoDB.setStatusTableId("");
 	}
-	public void setESMongoDB(ESMongoDB esjdbc){
-		this.esjdbc = esjdbc;
+	public void setESMongoDB(ESMongoDB esmongoDB){
+		this.esmongoDB = esmongoDB;
 	}
 
 	public void initSchedule(){
-		if(this.esjdbc.getScheduleConfig() != null) {
+		if(this.esmongoDB.getScheduleConfig() != null) {
 			this.scheduleService = new ScheduleService();
-			this.scheduleService.init(this.esjdbc);
+			this.scheduleService.init(this.esmongoDB);
 		}
 	}
 
 
 
 	private void firstImportData() throws Exception {
-		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esjdbc,esjdbc.getBatchSize());
-		if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
-			if (esjdbc.getExecutor() == null) {
-				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(esmongoDB,esmongoDB.getBatchSize());
+		if(esmongoDB.getDataRefactor() == null || !esmongoDB.getDbConfig().isEnableDBTransaction()){
+			if (esmongoDB.getExecutor() == null) {
+				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esmongoDB.getDbConfig().getDbName(), esmongoDB.getSql());
 			} else {
-				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+				esmongoDB.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esmongoDB.getDbConfig().getDbName(), esmongoDB.getSqlName());
 			}
 		}
 		else {
@@ -157,10 +161,10 @@ public class MongoDB2ESDataStreamImpl extends DataStream{
 			TransactionManager transactionManager = new TransactionManager();
 			try {
 				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if (esjdbc.getExecutor() == null) {
-					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+				if (esmongoDB.getExecutor() == null) {
+					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esmongoDB.getDbConfig().getDbName(), esmongoDB.getSql());
 				} else {
-					esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+					esmongoDB.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esmongoDB.getDbConfig().getDbName(), esmongoDB.getSqlName());
 				}
 				transactionManager.commit();
 			} finally {
