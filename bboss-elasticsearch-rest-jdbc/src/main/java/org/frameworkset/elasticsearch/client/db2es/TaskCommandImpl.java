@@ -15,7 +15,11 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ClientUtil;
+import org.frameworkset.elasticsearch.client.TaskCommand;
+import org.frameworkset.elasticsearch.client.TaskFailedException;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.handler.ESVoidResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +35,15 @@ import org.slf4j.LoggerFactory;
 public class TaskCommandImpl implements TaskCommand<String,String> {
 	private String refreshOption;
 
-	public DB2ESImportContext getDb2ESImportContext() {
+	public ImportContext getImportContext() {
 		return db2ESImportContext;
 	}
 
-	public void setDb2ESImportContext(DB2ESImportContext db2ESImportContext) {
+	public void setImportContext(ImportContext db2ESImportContext) {
 		this.db2ESImportContext = db2ESImportContext;
 	}
 
-	private DB2ESImportContext db2ESImportContext;
+	private ImportContext db2ESImportContext;
 	private ClientInterface clientInterface;
 
 	public String getRefreshOption() {

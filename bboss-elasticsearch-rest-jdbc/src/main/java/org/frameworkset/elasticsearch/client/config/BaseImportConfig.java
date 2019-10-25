@@ -1,22 +1,23 @@
-package org.frameworkset.elasticsearch.client.db2es;/*
- *  Copyright 2008 biaoping.yin
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+package org.frameworkset.elasticsearch.client.config;
+/**
+ * Copyright 2008 biaoping.yin
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -30,8 +31,16 @@ import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
 
-public class ESJDBC {
-	private static Logger logger = LoggerFactory.getLogger(ESJDBC.class);
+/**
+ * <p>Description: </p>
+ * <p></p>
+ * <p>Copyright (c) 2018</p>
+ * @Date 2019/10/24 10:19
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public abstract class BaseImportConfig {
+	private static Logger logger = LoggerFactory.getLogger(DB2ESImportConfig.class);
 	private List<DBConfig> configs;
 
 
@@ -63,7 +72,7 @@ public class ESJDBC {
 	 * 定时任务拦截器
 	 */
 	private List<CallInterceptor> callInterceptors;
-	private DB2ESExportResultHandler exportResultHandler;
+	private WrapedExportResultHandler exportResultHandler;
 
 
 	public String getApplicationPropertiesFile() {
@@ -73,7 +82,7 @@ public class ESJDBC {
 	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
 		this.applicationPropertiesFile = applicationPropertiesFile;
 	}
-	private DB2ESImportBuilder importBuilder;
+//	private BaseImportBuilder importBuilder;
 	/**
 	 * use parallel import:
 	 *  true yes
@@ -115,15 +124,15 @@ public class ESJDBC {
 	/**
 	 * 以字段的小写名称为key
 	 */
-	private Map<String,FieldMeta> fieldMetaMap;
+	private Map<String, FieldMeta> fieldMetaMap;
 	private List<FieldMeta> fieldValues;
 	private DataRefactor dataRefactor;
-	private String sql;
-	private String sqlFilepath;
-	private String sqlName;
+//	private String sql;
+//	private String sqlFilepath;
+//	private String sqlName;
 	private String refreshOption;
 	private int batchSize;
-	private ConfigSQLExecutor executor;
+//	private ConfigSQLExecutor executor;
 
 
 
@@ -158,14 +167,6 @@ public class ESJDBC {
 
 
 
-	public String getSql() {
-		return sql;
-	}
-
-
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
 
 
 
@@ -390,76 +391,69 @@ public class ESJDBC {
 
 
 
-	public void refactorData(Context context) throws Exception {
-		if(this.dataRefactor != null){
 
-			dataRefactor.refactor(context);
+//	public BaseImportBuilder getImportBuilder() {
+//		return importBuilder;
+//	}
+//
+//	public void setImportBuilder(BaseImportBuilder importBuilder) {
+//		this.importBuilder = importBuilder;
+//	}
 
-		}
-	}
+//	/**
+//	 * 补充额外的字段和值
+//	 * @param fieldName
+//	 * @param value
+//	 * @return
+//	 */
+//	public BaseImportConfig addFieldValue(String fieldName, Object value){
+//		this.importBuilder.addFieldValue(fieldName,value);
+//		return this;
+//	}
 
-	public DB2ESImportBuilder getImportBuilder() {
-		return importBuilder;
-	}
+//	/**
+//	 * 补充额外的字段和值
+//	 * @param fieldName
+//	 * @param dateFormat
+//	 * @param value
+//	 * @return
+//	 */
+//	public BaseImportConfig addFieldValue(String fieldName, String dateFormat, Object value){
+//		this.importBuilder.addFieldValue(fieldName,dateFormat,value);
+//		return this;
+//	}
 
-	public void setImportBuilder(DB2ESImportBuilder importBuilder) {
-		this.importBuilder = importBuilder;
-	}
-
-	/**
-	 * 补充额外的字段和值
-	 * @param fieldName
-	 * @param value
-	 * @return
-	 */
-	public ESJDBC addFieldValue(String fieldName, Object value){
-		this.importBuilder.addFieldValue(fieldName,value);
-		return this;
-	}
-
-	/**
-	 * 补充额外的字段和值
-	 * @param fieldName
-	 * @param dateFormat
-	 * @param value
-	 * @return
-	 */
-	public ESJDBC addFieldValue(String fieldName, String dateFormat, Object value){
-		this.importBuilder.addFieldValue(fieldName,dateFormat,value);
-		return this;
-	}
-
-	/**
-	 * 补充额外的字段和值
-	 * @param fieldName
-	 * @param dateFormat
-	 * @param value
-	 * @return
-	 */
-	public ESJDBC addFieldValue(String fieldName, String dateFormat, Object value, String locale, String timeZone){
-		this.importBuilder.addFieldValue(fieldName,dateFormat,value,  locale,  timeZone);
-		return this;
-	}
-
-	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName){
-		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName);
-		return this;
-	}
-
-	public ESJDBC addIgnoreFieldMapping(String dbColumnName){
-		this.importBuilder.addIgnoreFieldMapping(dbColumnName);
-		return this;
-	}
-
-	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName, String dateFormat){
-		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat);
-		return this;
-	}
-
-	public ESJDBC addFieldMapping(String dbColumnName, String esFieldName, String dateFormat, String locale, String timeZone){
-		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat,locale,  timeZone);
-		return this;
-	}
+//	/**
+//	 * 补充额外的字段和值
+//	 * @param fieldName
+//	 * @param dateFormat
+//	 * @param value
+//	 * @return
+//	 */
+//	public BaseImportConfig addFieldValue(String fieldName, String dateFormat, Object value, String locale, String timeZone){
+//		this.importBuilder.addFieldValue(fieldName,dateFormat,value,  locale,  timeZone);
+//		return this;
+//	}
+//
+//	public BaseImportConfig addFieldMapping(String dbColumnName, String esFieldName){
+//		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName);
+//		return this;
+//	}
+//
+//	public BaseImportConfig addIgnoreFieldMapping(String dbColumnName){
+//		this.importBuilder.addIgnoreFieldMapping(dbColumnName);
+//		return this;
+//	}
+//
+//	public BaseImportConfig addFieldMapping(String dbColumnName, String esFieldName, String dateFormat){
+//		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat);
+//		return this;
+//	}
+//
+//	public BaseImportConfig addFieldMapping(String dbColumnName, String esFieldName, String dateFormat, String locale, String timeZone){
+//		this.importBuilder.addFieldMapping(dbColumnName,  esFieldName,  dateFormat,locale,  timeZone);
+//		return this;
+//	}
 
 	public String getEsParentIdValue() {
 		return esParentIdValue;
@@ -538,14 +532,6 @@ public class ESJDBC {
 //		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
 //	}
 
-	public String getSqlFilepath() {
-		return sqlFilepath;
-	}
-
-	public void setSqlFilepath(String sqlFilepath) {
-		this.sqlFilepath = sqlFilepath;
-	}
-
 
 
 
@@ -611,21 +597,7 @@ public class ESJDBC {
 		this.printTaskLog = printTaskLog;
 	}
 
-	public String getSqlName() {
-		return sqlName;
-	}
 
-	public void setSqlName(String sqlName) {
-		this.sqlName = sqlName;
-	}
-
-	public ConfigSQLExecutor getExecutor() {
-		return executor;
-	}
-
-	public void setExecutor(ConfigSQLExecutor executor) {
-		this.executor = executor;
-	}
 
 	public EsIdGenerator getEsIdGenerator() {
 		return esIdGenerator;
@@ -666,11 +638,11 @@ public class ESJDBC {
 		this.dbConfig = dbConfig;
 	}
 
-	public DB2ESExportResultHandler getExportResultHandler() {
+	public WrapedExportResultHandler getExportResultHandler() {
 		return exportResultHandler;
 	}
 
-	public void setExportResultHandler(DB2ESExportResultHandler exportResultHandler) {
+	public void setExportResultHandler(WrapedExportResultHandler exportResultHandler) {
 		this.exportResultHandler = exportResultHandler;
 	}
 	public int getMaxRetry(){
@@ -738,5 +710,13 @@ public class ESJDBC {
 			return scheduleConfig.isExternalTimer();
 		}
 		return false;
+	}
+
+	/**
+	 * 回填lastValueType
+	 * @param lastValueType
+	 */
+	public void setLastValueType(int lastValueType) {
+		importIncreamentConfig.setLastValueType(lastValueType);
 	}
 }

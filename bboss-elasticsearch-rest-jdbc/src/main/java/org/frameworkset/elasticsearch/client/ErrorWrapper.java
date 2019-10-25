@@ -26,7 +26,6 @@ package org.frameworkset.elasticsearch.client;
 public abstract class ErrorWrapper extends TranErrorWrapper {
 
 
-	public abstract ClientInterface getClientInterface();
 
 
 

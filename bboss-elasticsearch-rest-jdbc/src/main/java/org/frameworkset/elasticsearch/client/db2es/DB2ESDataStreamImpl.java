@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 数据库同步到Elasticsearch
  */
 public class DB2ESDataStreamImpl extends DataStream{
-	private ESJDBC esjdbc;
+	private DB2ESImportConfig db2ESImportConfig;
 
 
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
@@ -39,13 +39,13 @@ public class DB2ESDataStreamImpl extends DataStream{
 	public void init(){
 		if(inited )
 			return;
-		if(esjdbc == null){
-			throw new ESDataImportException("ESJDBC is null.");
+		if(db2ESImportConfig == null){
+			throw new ESDataImportException("DB2ESImportConfig is null.");
 		}
 
 		try {
 			lock.lock();
-			this.importContext = new DB2ESImportContext(esjdbc);
+			this.importContext = new DB2ESImportContext(db2ESImportConfig);
 
 
 //			this.initES(esjdbc.getApplicationPropertiesFile());
@@ -75,8 +75,8 @@ public class DB2ESDataStreamImpl extends DataStream{
 
 
 
-	public void setEsjdbc(ESJDBC esjdbc){
-		this.esjdbc = esjdbc;
+	public void setEsjdbc(DB2ESImportConfig db2ESImportConfig){
+		this.db2ESImportConfig = db2ESImportConfig;
 	}
 
 

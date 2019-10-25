@@ -22,6 +22,7 @@ import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.orm.transaction.TransactionManager;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
 import org.frameworkset.util.tokenizer.TextGrammarParser;
 
@@ -38,33 +39,35 @@ import java.util.List;
  */
 public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlugin {
 	private SQLInfo sqlInfo;
-	private ESJDBC esjdbc;
-	public DBDataTranPlugin(DB2ESImportContext importContext,ESJDBC esjdbc){
-		super(importContext);
-		this.esjdbc = esjdbc;
-	}
+	private ConfigSQLExecutor executor;
+	private DBContext dbContext;
 
+	public DBDataTranPlugin(ImportContext importContext){
+		super(importContext);
+		dbContext = (DBContext)importContext;
+
+	}
 	public void initSQLInfo(){
 
-		if(esjdbc.getSql() == null || esjdbc.getSql().equals("")){
+		if(dbContext.getSql() == null || dbContext.getSql().equals("")){
 
 			try {
-				ConfigSQLExecutor executor = new ConfigSQLExecutor(esjdbc.getSqlFilepath());
-				org.frameworkset.persitent.util.SQLInfo sqlInfo = executor.getSqlInfo(esjdbc.getSqlName());
-				esjdbc.setSql(sqlInfo.getSql());
-				esjdbc.setExecutor(executor);
+				ConfigSQLExecutor executor = new ConfigSQLExecutor(dbContext.getSqlFilepath());
+				org.frameworkset.persitent.util.SQLInfo sqlInfo = executor.getSqlInfo(dbContext.getSqlName());
+				this.executor = executor;
+				dbContext.setSql(sqlInfo.getSql());
 			}
 			catch (SQLException e){
 				throw new ESDataImportException(e);
 			}
 
 		}
-		esjdbc.getImportIncreamentConfig().setStatusTableId(esjdbc.getSql().hashCode());
+		importContext.setStatusTableId(dbContext.getSql().hashCode());
 		initSQLInfoParams();
 
 	}
 	private void initSQLInfoParams(){
-		String originSQL = esjdbc.getSql();
+		String originSQL = dbContext.getSql();
 		List<TextGrammarParser.GrammarToken> tokens =
 				TextGrammarParser.parser(originSQL, "#[", "]");
 		SQLInfo _sqlInfo = new SQLInfo();
@@ -102,11 +105,11 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 
 
 	private void commonImportData(ResultSetHandler resultSetHandler) throws Exception {
-		if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
-			if (esjdbc.getExecutor() == null) {
-				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+		if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
+			if (executor == null) {
+				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql());
 			} else {
-				esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+				executor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName());
 			}
 		}
 		else {
@@ -114,10 +117,10 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 			TransactionManager transactionManager = new TransactionManager();
 			try {
 				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if (esjdbc.getExecutor() == null) {
-					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+				if (executor == null) {
+					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql());
 				} else {
-					esjdbc.getExecutor().queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName());
+					executor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName());
 				}
 				transactionManager.commit();
 			} finally {
@@ -127,11 +130,11 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 	}
 
 	private void increamentImportData(ResultSetHandler resultSetHandler) throws Exception {
-		if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
-			if (esjdbc.getExecutor() == null) {
-				SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+		if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
+			if (executor == null) {
+				SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql(), getParamValue());
 			} else {
-				esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+				executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName(), getParamValue());
 
 			}
 		}
@@ -139,10 +142,10 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 			TransactionManager transactionManager = new TransactionManager();
 			try {
 				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if (esjdbc.getExecutor() == null) {
-					SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+				if (executor == null) {
+					SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql(), getParamValue());
 				} else {
-					esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+					executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName(), getParamValue());
 
 				}
 			} finally {
@@ -153,25 +156,25 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 
 	public void doImportData()  throws ESDataImportException{
 
-		ResultSetHandler resultSetHandler = new DefaultResultSetHandler((DB2ESImportContext)importContext);
+		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(importContext);
 
 		try {
 			if (sqlInfo.getParamSize() == 0) {
-//			if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
-//				if (esjdbc.getExecutor() == null) {
-//					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+//			if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
+//				if (executor == null) {
+//					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql());
 //				} else {
-//					esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), (Map) null);
+//					executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), (Map) null);
 //				}
 //			}
 //			else {
 //				TransactionManager transactionManager = new TransactionManager();
 //				try {
 //					transactionManager.begin(TransactionManager.RW_TRANSACTION);
-//					if (esjdbc.getExecutor() == null) {
-//						SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql());
+//					if (executor == null) {
+//						SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql());
 //					} else {
-//						esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), (Map) null);
+//						executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), (Map) null);
 //					}
 //					transactionManager.commit();
 //				} finally {
@@ -184,11 +187,11 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 				if (!isIncreamentImport()) {
 					setForceStop();
 				} else {
-//				if(esjdbc.getDataRefactor() == null || !esjdbc.getDbConfig().isEnableDBTransaction()){
-//					if (esjdbc.getExecutor() == null) {
-//						SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+//				if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
+//					if (executor == null) {
+//						SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql(), getParamValue());
 //					} else {
-//						esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+//						executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), getParamValue());
 //
 //					}
 //				}
@@ -196,10 +199,10 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 //					TransactionManager transactionManager = new TransactionManager();
 //					try {
 //						transactionManager.begin(TransactionManager.RW_TRANSACTION);
-//						if (esjdbc.getExecutor() == null) {
-//							SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSql(), getParamValue());
+//						if (executor == null) {
+//							SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql(), getParamValue());
 //						} else {
-//							esjdbc.getExecutor().queryBeanWithDBNameByNullRowHandler(resultSetHandler, esjdbc.getDbConfig().getDbName(), esjdbc.getSqlName(), getParamValue());
+//							executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), getParamValue());
 //
 //						}
 //					} finally {
@@ -228,7 +231,7 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 	@Override
 	public void destroy() {
 		super.destroy();
-		this.esjdbc.destroy();
+		this.importContext.destroy();
 	}
 
 
@@ -264,9 +267,9 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 
 	@Override
 	public void beforeInit() {
-		this.initES(esjdbc.getApplicationPropertiesFile());
-		this.initDS(esjdbc.getDbConfig());
-		initOtherDSes(esjdbc.getConfigs());
+		this.initES(importContext.getApplicationPropertiesFile());
+		this.initDS(importContext.getDbConfig());
+		initOtherDSes(importContext.getConfigs());
 		this.initSQLInfo();
 
 	}
@@ -276,9 +279,9 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 		if(sqlInfo != null
 				&& sqlInfo.getParamSize() > 0
 				&& !this.isIncreamentImport()){
-			throw new TaskFailedException("Parameter variables cannot be set in non-incremental import SQL statements："+esjdbc.getSql());
+			throw new TaskFailedException("Parameter variables cannot be set in non-incremental import SQL statements："+dbContext.getSql());
 		}
-//		this.externalTimer = this.esjdbc.isExternalTimer();
+//		this.externalTimer = this.importContext.isExternalTimer();
 	}
 
 

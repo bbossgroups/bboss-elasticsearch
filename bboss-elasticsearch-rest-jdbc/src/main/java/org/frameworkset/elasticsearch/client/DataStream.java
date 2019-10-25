@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

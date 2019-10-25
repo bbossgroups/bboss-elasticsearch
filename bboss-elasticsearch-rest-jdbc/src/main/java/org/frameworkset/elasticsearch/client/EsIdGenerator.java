@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.context.Context;
+
 /**
  * <p>Description: </p>
  * <p></p>

@@ -363,7 +363,9 @@ ConfigRestClientUtil：加载配置文件中的dsl来实现对es的操作
 
 这两个组件在不同的环境实例化的方法有所区别
 
-**普通项目环境**
+## 3.1 获取客户端组件实例
+
+### **3.1.1 普通项目环境**
 
 通过org.frameworkset.elasticsearch.ElasticSearchHelper中提供的静态工厂方法获取其单实例对象，这些单实例对象是多线程并发安全的：
 
@@ -375,7 +377,7 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapp
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
 ```
 
-**spring boot环境**
+### **3.1.2 spring boot环境**
 
 通过BBossESStarter中提供的工厂方法获取其单实例对象，这些单实例对象是多线程并发安全的：
 

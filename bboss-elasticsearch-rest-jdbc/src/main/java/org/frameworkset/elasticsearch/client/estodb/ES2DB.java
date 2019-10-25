@@ -19,14 +19,12 @@ import com.frameworkset.common.poolman.BatchHandler;
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.DBConfig;
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,9 +35,8 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DB {
+public class ES2DB extends BaseImportConfig {
 	//scroll分页检索，每批查询数据大小
-	private int batchSize = 5000;
 	private Integer insertBatchSize ;
 
 	private String sql ;//= "insert into batchtest (name) values(?)";
@@ -49,35 +46,14 @@ public class ES2DB {
 	private String dsl2ndSqlFile;// = "esmapper/dsl2ndSqlFile.xml";
 	private String scrollLiveTime ;//= "100m";
 	private BatchHandler<Map> batchHandler;
-	private DBConfig dbConfig;
-	private DBConfig statusDbConfig;
-	private List<DBConfig> configs;
 	private ConfigSQLExecutor configSQLExecutor;
 	private ExportCount exportCount;
-	/**
-	 * use parallel import:
-	 *  true yes
-	 *  false no
-	 */
-	private boolean parallel;
-	/**
-	 * parallel import work thread nums,default 200
-	 */
-	private int threadCount = 200;
-	private int queue = Integer.MAX_VALUE;
-	private String applicationPropertiesFile;
-	/**
-	 * 是否同步等待批处理作业结束，true 等待 false 不等待
-	 */
-	private boolean asyn;
+
+
 
 	private boolean sliceQuery;
 	private int sliceSize;
-	/**
-	 * 并行执行过程中出现异常终端后续作业处理，已经创建的作业会执行完毕
-	 */
-	private boolean continueOnError = true;
-	private ExportResultHandler exportResultHandler;
+
 	private static Logger logger = LoggerFactory.getLogger(ES2DB.class);
 	public Map getParams() {
 		return params;
@@ -89,13 +65,6 @@ public class ES2DB {
 
 	private Map params;
 
-	public int getBatchSize() {
-		return batchSize;
-	}
-
-	public void setBatchSize(int batchSize) {
-		this.batchSize = batchSize;
-	}
 
 	public String getSql() {
 		return sql;
@@ -182,61 +151,6 @@ public class ES2DB {
 		}
 	}
 
-	public DBConfig getDbConfig() {
-		return dbConfig;
-	}
-
-	public void setDbConfig(DBConfig dbConfig) {
-		this.dbConfig = dbConfig;
-	}
-
-	public String getApplicationPropertiesFile() {
-		return applicationPropertiesFile;
-	}
-
-	public void setApplicationPropertiesFile(String applicationPropertiesFile) {
-		this.applicationPropertiesFile = applicationPropertiesFile;
-	}
-
-	public int getQueue() {
-		return queue;
-	}
-
-	public void setQueue(int queue) {
-		this.queue = queue;
-	}
-
-	public int getThreadCount() {
-		return threadCount;
-	}
-
-	public void setThreadCount(int threadCount) {
-		this.threadCount = threadCount;
-	}
-
-	public boolean isParallel() {
-		return parallel;
-	}
-
-	public void setParallel(boolean parallel) {
-		this.parallel = parallel;
-	}
-
-	public boolean isAsyn() {
-		return asyn;
-	}
-
-	public void setAsyn(boolean asyn) {
-		this.asyn = asyn;
-	}
-
-	public boolean isContinueOnError() {
-		return continueOnError;
-	}
-
-	public void setContinueOnError(boolean continueOnError) {
-		this.continueOnError = continueOnError;
-	}
 
 	public Integer getInsertBatchSize() {
 		return insertBatchSize;
@@ -279,27 +193,4 @@ public class ES2DB {
 		return exportCount;
 	}
 
-	public ExportResultHandler getExportResultHandler() {
-		return exportResultHandler;
-	}
-
-	public void setExportResultHandler(ExportResultHandler exportResultHandler) {
-		this.exportResultHandler = exportResultHandler;
-	}
-
-	public DBConfig getStatusDbConfig() {
-		return statusDbConfig;
-	}
-
-	public void setStatusDbConfig(DBConfig statusDbConfig) {
-		this.statusDbConfig = statusDbConfig;
-	}
-
-	public List<DBConfig> getConfigs() {
-		return configs;
-	}
-
-	public void setConfigs(List<DBConfig> configs) {
-		this.configs = configs;
-	}
 }

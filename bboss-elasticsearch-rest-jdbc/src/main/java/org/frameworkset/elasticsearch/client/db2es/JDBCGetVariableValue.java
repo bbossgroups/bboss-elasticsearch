@@ -16,8 +16,8 @@ package org.frameworkset.elasticsearch.client.db2es;
  */
 
 import com.frameworkset.orm.annotation.BaseESGetVariableValue;
-import org.frameworkset.elasticsearch.client.Context;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.context.Context;
 
 /**
  * <p>Description: </p>

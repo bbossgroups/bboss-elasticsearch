@@ -15,28 +15,27 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.context.Context;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/4 9:19
+ * @Date 2019/10/25 15:03
  * @author biaoping.yin
  * @version 1.0
  */
-public interface DataRefactor {
+public interface WrapedExportResultHandler<DATA,RESULT> extends ExportResultHandler<DATA,RESULT> {
 	/**
-	 * 额外处理数据
-	 * @param context
-	 * @return
+	 * 处理导入数据结果，如果失败则可以通过重试失败数据
+	 * @param taskCommand
+	 * @param exception
+	 *
 	 */
-	public void refactor(Context context) throws Exception;
-
-//	/**
-//	 * 可以构建多个对象
-//	 * @param esjdbc
-//	 * @return
-//	 */
-//	public List<FieldMeta> refactors(ESJDBC esjdbc);
+	public void handleException(TaskCommand<DATA,RESULT> taskCommand, Exception exception);
+	/**
+	 * 处理导入数据结果，如果失败则可以通过重试失败数据
+	 * @param taskCommand
+	 * @param result
+	 *
+	 */
+	public void handleResult(TaskCommand<DATA,RESULT> taskCommand, String result);
 }

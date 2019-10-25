@@ -15,7 +15,9 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
+import org.frameworkset.elasticsearch.client.schedule.Status;
 
 /**
  * <p>Description: </p>
@@ -61,4 +63,6 @@ public interface DataTranPlugin {
 	String getLastValueClumnName();
 
 	boolean isContinueOnError();
+
+	Status getCurrentStatus();
 }

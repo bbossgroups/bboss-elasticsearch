@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.nosql.mongodb.MongoDBConfig;
 
@@ -26,7 +27,7 @@ import org.frameworkset.nosql.mongodb.MongoDBConfig;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESMongoDB extends ESJDBC{
+public class ESMongoDB extends BaseImportConfig {
 
 	private MongoDBConfig dbConfig;
 	public void init(MongoDBConfig dbConfig){

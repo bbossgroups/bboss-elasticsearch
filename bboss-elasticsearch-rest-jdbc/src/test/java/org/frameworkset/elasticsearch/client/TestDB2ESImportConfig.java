@@ -5,14 +5,16 @@ import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.elasticsearch.client.db2es.JDBCRestClientUtil;
 import org.frameworkset.persitent.util.JDBCResultSet;
 import org.junit.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TestESJDBC {
+public class TestDB2ESImportConfig {
 
 	private void initDBSource(){
 		SQLUtil.startNoPool("test",//数据源名称

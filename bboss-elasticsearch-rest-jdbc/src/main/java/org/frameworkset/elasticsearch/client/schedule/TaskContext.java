@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ImportContext;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 
 /**
  * <p>Description: </p>

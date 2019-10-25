@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.db2es;
+package org.frameworkset.elasticsearch.client.estodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DB2ESExportResultHandler implements WrapedExportResultHandler<String,String> {
-	private static Logger logger = LoggerFactory.getLogger(DB2ESExportResultHandler.class);
+public class ES2DBExportResultHandler implements WrapedExportResultHandler<String,String> {
+	private static Logger logger = LoggerFactory.getLogger(ES2DBExportResultHandler.class);
 	private ExportResultHandler exportResultHandler;
-	public DB2ESExportResultHandler(ExportResultHandler exportResultHandler){
+	public ES2DBExportResultHandler(ExportResultHandler exportResultHandler){
 		this.exportResultHandler = exportResultHandler;
 	}
 	public void success(TaskCommand<String,String> taskCommand, String result){

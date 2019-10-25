@@ -50,4 +50,6 @@ public interface ExportResultHandler<DATA,RESULT> {
 	 * @return
 	 */
 	public int getMaxRetry();
+
+
 }

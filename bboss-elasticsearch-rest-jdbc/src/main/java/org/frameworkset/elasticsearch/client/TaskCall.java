@@ -16,7 +16,8 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
+import org.frameworkset.elasticsearch.client.context.BaseImportContext;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,28 +40,29 @@ public class TaskCall implements Runnable {
 	private ImportCount totalCount;
 	private boolean printTaskLog;
 	private int currentSize;
-	private DB2ESImportContext db2ESImportContext;
-	public TaskCall(DB2ESImportContext db2ESImportContext,String refreshOption ,String datas,
+	private ImportContext db2ESImportContext;
+	public TaskCall(ImportContext db2ESImportContext  , String datas,
 					ErrorWrapper errorWrapper,
-					int taskNo,ImportCount totalCount,
-					int currentSize,boolean printTaskLog){
-		this.refreshOption = refreshOption;
-		this.clientInterface = errorWrapper.getClientInterface();
+					ClientInterface clientInterface ,
+					int taskNo, ImportCount totalCount,
+					int currentSize ){
+		this.refreshOption = db2ESImportContext.getRefreshOption();
+		this.clientInterface = clientInterface;
 		this.datas = datas;
 		this.errorWrapper = errorWrapper;
 		this.taskNo = taskNo;
 		this.currentSize = currentSize;
 		this.totalCount = totalCount;
-		this.printTaskLog = printTaskLog;
+		this.printTaskLog = db2ESImportContext.isPrintTaskLog();
 		this.db2ESImportContext = db2ESImportContext;
 	}
 
-	public static String call(String refreshOption, ClientInterface clientInterface, String datas, DB2ESImportContext db2ESImportContext){
+	public static String call(String refreshOption, ClientInterface clientInterface, String datas, ImportContext db2ESImportContext){
 		TaskCommandImpl taskCommand = new TaskCommandImpl();
 		taskCommand.setClientInterface(clientInterface);
 		taskCommand.setRefreshOption(refreshOption);
 		taskCommand.setDatas(datas);
-		taskCommand.setDb2ESImportContext(db2ESImportContext);
+		taskCommand.setImportContext(db2ESImportContext);
 		try {
 			String data = taskCommand.execute();
 
@@ -82,6 +84,7 @@ public class TaskCall implements Runnable {
 			throw new ElasticSearchException(e);
 		}
 	}
+
 	@Override
 	public void run()   {
 		if(!errorWrapper.assertCondition()) {

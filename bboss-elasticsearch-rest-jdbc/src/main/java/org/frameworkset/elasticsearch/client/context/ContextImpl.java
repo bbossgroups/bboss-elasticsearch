@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.context;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -18,9 +18,12 @@ package org.frameworkset.elasticsearch.client;
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
+import org.frameworkset.elasticsearch.client.ColumnData;
+import org.frameworkset.elasticsearch.client.DataRefactor;
+import org.frameworkset.elasticsearch.client.FieldMeta;
+import org.frameworkset.elasticsearch.client.ResultUtil;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
-import org.frameworkset.elasticsearch.client.db2es.ESJDBC;
 import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.spi.geoip.IpInfo;
 
@@ -42,13 +45,13 @@ public class ContextImpl implements Context {
 
 	private Map<String,String> newfieldNames;
 	private Map<String,ColumnData> newfieldName2ndColumnDatas;
-	private ESJDBC esjdbc;
+	private BaseImportConfig esjdbc;
 	private JDBCResultSet jdbcResultSet;
 	private BatchContext batchContext;
 	private boolean drop;
-	private DB2ESImportContext importContext;
-	public ContextImpl(DB2ESImportContext importContext, JDBCResultSet jdbcResultSet,BatchContext batchContext){
-		this.esjdbc = importContext.getEsjdbc();
+	private ImportContext importContext;
+	public ContextImpl(ImportContext importContext, JDBCResultSet jdbcResultSet,BatchContext batchContext){
+		this.esjdbc = importContext.getImportConfig();
 		this.importContext = importContext;
 		this.jdbcResultSet = jdbcResultSet;
 		this.batchContext = batchContext;
@@ -79,9 +82,14 @@ public class ContextImpl implements Context {
 		return esjdbc.getFormat();
 	}
 	public void refactorData() throws Exception{
-		this.esjdbc.refactorData(this);
+		DataRefactor dataRefactor = esjdbc.getDataRefactor();
+		if(dataRefactor != null){
+
+			dataRefactor.refactor(this);
+
+		}
 	}
-	public DB2ESImportContext getDB2ESImportContext(){
+	public ImportContext getImportContext(){
 		return importContext;
 	}
 	public List<FieldMeta> getFieldValues(){
@@ -123,9 +131,7 @@ public class ContextImpl implements Context {
 		return this;
 	}
 
-	public ESJDBC getEsjdbc() {
-		return esjdbc;
-	}
+
 	public String getDBName(){
 		return esjdbc.getDbConfig().getDbName();
 	}

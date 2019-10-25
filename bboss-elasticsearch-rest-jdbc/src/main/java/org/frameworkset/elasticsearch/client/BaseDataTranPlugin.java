@@ -19,6 +19,7 @@ import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
@@ -210,8 +211,24 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 		Status currentStatus = new Status();
 		currentStatus.setId(importContext.getStatusTableId());
 		currentStatus.setTime(new Date().getTime());
-		if(lastValueType == 1) {
-			currentStatus.setLastValue(initLastDate.getTime());
+		if(lastValueType == ImportIncreamentConfig.TIMESTAMP_TYPE) {
+			if(importContext.getConfigLastValue() != null){
+				if(importContext.getConfigLastValue() instanceof Date) {
+					currentStatus.setLastValue(((Date) importContext.getConfigLastValue()).getTime());
+				}
+				else if(importContext.getConfigLastValue() instanceof Long){
+					currentStatus.setLastValue(((Date) importContext.getConfigLastValue()));
+				}
+				else{
+					if(logger.isInfoEnabled()) {
+						logger.info("Last Value Illegal:{}", importContext.getConfigLastValue());
+					}
+					throw new ESDataImportException("Last Value Illegal:"+importContext.getConfigLastValue() );
+				}
+			}
+			else {
+				currentStatus.setLastValue(initLastDate.getTime());
+			}
 		}
 		else if(importContext.getConfigLastValue() != null){
 
@@ -397,6 +414,10 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 			} else {
 				this.lastValueType = ImportIncreamentConfig.NUMBER_TYPE;
 			}
+			/**
+			 * 回填值类型
+			 */
+			importContext.setLastValueType(this.lastValueType);
 
 
 			existSQL = new StringBuilder().append("select 1 from ").append(statusTableName).toString();
@@ -415,7 +436,9 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 	public boolean isIncreamentImport() {
 		return increamentImport;
 	}
-
+	public Status getCurrentStatus(){
+		return this.currentStatus;
+	}
 	public void flushLastValue(Object lastValue) {
 		if(lastValue != null) {
 			this.currentStatus.setTime(System.currentTimeMillis());

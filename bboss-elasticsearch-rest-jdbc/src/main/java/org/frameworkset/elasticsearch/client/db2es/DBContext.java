@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.config;
+package org.frameworkset.elasticsearch.client.db2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -19,9 +19,16 @@ package org.frameworkset.elasticsearch.client.config;
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/24 10:19
+ * @Date 2019/10/25 11:17
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class ImportConfig {
+public interface DBContext {
+	String getSql();
+
+	String getSqlFilepath();
+
+	String getSqlName();
+
+	void setSql(String sql);
 }
