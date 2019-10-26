@@ -16,7 +16,6 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.slf4j.Logger;
@@ -35,14 +34,14 @@ public class TaskCall implements Runnable {
 	private String refreshOption;
 	private ClientInterface clientInterface;
 	private String datas;
-	private ErrorWrapper errorWrapper;
+	private TranErrorWrapper errorWrapper;
 	private int taskNo;
 	private ImportCount totalCount;
 	private boolean printTaskLog;
 	private int currentSize;
 	private ImportContext db2ESImportContext;
 	public TaskCall(ImportContext db2ESImportContext  , String datas,
-					ErrorWrapper errorWrapper,
+					TranErrorWrapper errorWrapper,
 					ClientInterface clientInterface ,
 					int taskNo, ImportCount totalCount,
 					int currentSize ){

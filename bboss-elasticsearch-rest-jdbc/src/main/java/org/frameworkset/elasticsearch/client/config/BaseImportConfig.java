@@ -568,7 +568,7 @@ public abstract class BaseImportConfig {
 	}
 
 
-	public Long getConfigLastValue() {
+	public Object getConfigLastValue() {
 		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
 	}
 	public int getStatusTableId() {
@@ -718,5 +718,9 @@ public abstract class BaseImportConfig {
 	 */
 	public void setLastValueType(int lastValueType) {
 		importIncreamentConfig.setLastValueType(lastValueType);
+	}
+
+	public boolean isLastValueDateType() {
+		return this.getLastValueType() == ImportIncreamentConfig.TIMESTAMP_TYPE;
 	}
 }

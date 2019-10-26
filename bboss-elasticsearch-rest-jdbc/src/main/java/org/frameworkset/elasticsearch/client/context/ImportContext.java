@@ -70,6 +70,8 @@ public interface ImportContext {
 
 	Integer getLastValueType();
 
+	boolean isLastValueDateType();
+
 	DBConfig getStatusDbConfig();
 
 	boolean isExternalTimer();

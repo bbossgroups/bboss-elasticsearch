@@ -53,7 +53,7 @@ public class Status implements java.lang.Cloneable{
 		StringBuilder ret = new StringBuilder();
 		ret.append("id:").append(id)
 				.append(",time:").append(new Date(time))
-				.append(",lastValue:").append(lastValueType == 0?this.lastValue:new Date((Long)lastValue));
+				.append(",lastValue:").append(this.lastValue);
 		return ret.toString();
 	}
 

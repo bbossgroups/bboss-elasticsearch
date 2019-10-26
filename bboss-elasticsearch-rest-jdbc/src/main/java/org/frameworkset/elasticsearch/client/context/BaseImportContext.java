@@ -146,6 +146,10 @@ public abstract  class BaseImportContext implements ImportContext {
 	public void flushLastValue(Object lastValue){
 		this.dataTranPlugin.flushLastValue(lastValue);
 	}
+	public boolean isLastValueDateType()
+	{
+		return baseImportConfig.isLastValueDateType();
+	}
 	public Integer getLastValueType() {
 		return baseImportConfig.getLastValueType();
 	}

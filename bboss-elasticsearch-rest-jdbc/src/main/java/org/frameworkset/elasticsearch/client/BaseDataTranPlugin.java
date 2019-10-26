@@ -213,12 +213,13 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 		currentStatus.setTime(new Date().getTime());
 		if(lastValueType == ImportIncreamentConfig.TIMESTAMP_TYPE) {
 			if(importContext.getConfigLastValue() != null){
-				if(importContext.getConfigLastValue() instanceof Date) {
-					currentStatus.setLastValue(((Date) importContext.getConfigLastValue()).getTime());
+				if(importContext.getConfigLastValue() instanceof Long){
+					currentStatus.setLastValue(new Date((Long)importContext.getConfigLastValue()));
 				}
-				else if(importContext.getConfigLastValue() instanceof Long){
-					currentStatus.setLastValue(((Date) importContext.getConfigLastValue()));
+				else if(importContext.getConfigLastValue() instanceof Date) {
+					currentStatus.setLastValue(importContext.getConfigLastValue());
 				}
+
 				else{
 					if(logger.isInfoEnabled()) {
 						logger.info("Last Value Illegal:{}", importContext.getConfigLastValue());
@@ -227,7 +228,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 				}
 			}
 			else {
-				currentStatus.setLastValue(initLastDate.getTime());
+				currentStatus.setLastValue(initLastDate);
 			}
 		}
 		else if(importContext.getConfigLastValue() != null){
@@ -247,11 +248,10 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 		this.currentStatus = currentStatus;
 		this.firstStatus = (Status) currentStatus.clone();
 //		insertedCheck = true;
-		logger.info("init LastValue Status: "+currentStatus.toString());
+		if(logger.isInfoEnabled())
+			logger.info("init LastValue Status: "+currentStatus.toString());
 	}
-	public void addStatus(Status currentStatus) throws Exception {
-		SQLExecutor.insertWithDBName(statusDbname,insertSQL,currentStatus.getId(),currentStatus.getTime(),currentStatus.getLastValue(),lastValueType);
-	}
+
 
 	
 
@@ -265,13 +265,16 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 
 			} catch (Exception e) {
 				String tsql = createStatusTableSQL;
-				logger.info(statusTableName + " table not exist，" + statusTableName + "：" + tsql + ".");
+				if(logger.isInfoEnabled())
+					logger.info(statusTableName + " table not exist，" + statusTableName + "：" + tsql + ".");
 				try {
 					SQLExecutor.updateWithDBName(statusDbname, tsql);
-					logger.info("table " + statusTableName + " create success：" + tsql + ".");
+					if(logger.isInfoEnabled())
+						logger.info("table " + statusTableName + " create success：" + tsql + ".");
 
 				} catch (Exception e1) {
-					logger.info("table " + statusTableName + " create success：" + tsql + ".", e1);
+					if(logger.isInfoEnabled())
+						logger.info("table " + statusTableName + " create success：" + tsql + ".", e1);
 					throw new ESDataImportException(e1);
 
 				}
@@ -442,6 +445,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 	public void flushLastValue(Object lastValue) {
 		if(lastValue != null) {
 			this.currentStatus.setTime(System.currentTimeMillis());
+
 			this.currentStatus.setLastValue(lastValue);
 			if (this.isIncreamentImport())
 				this.storeStatus();
@@ -471,9 +475,13 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 //		}
 
 	}
-
+	public void addStatus(Status currentStatus) throws Exception {
+		Object lastValue = !importContext.isLastValueDateType()?currentStatus.getLastValue():((Date)currentStatus.getLastValue()).getTime();
+		SQLExecutor.insertWithDBName(statusDbname,insertSQL,currentStatus.getId(),currentStatus.getTime(),lastValue,lastValueType);
+	}
 	public void updateStatus(Status currentStatus) throws Exception {
-		SQLExecutor.updateWithDBName(statusDbname,updateSQL, currentStatus.getTime(), currentStatus.getLastValue(), lastValueType,currentStatus.getId());
+		Object lastValue = !importContext.isLastValueDateType()?currentStatus.getLastValue():((Date)currentStatus.getLastValue()).getTime();
+		SQLExecutor.updateWithDBName(statusDbname,updateSQL, currentStatus.getTime(), lastValue, lastValueType,currentStatus.getId());
 	}
 
 

@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,21 +28,27 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class TranErrorWrapper {
-	protected DataTranPlugin dataTranPlugin;
+public class TranErrorWrapper {
+	protected ImportContext importContext;
+
 	/**
 	 * see https://www.cnblogs.com/dolphin0520/p/3920373.html
 	 */
 	protected volatile Exception error;
 	private Lock lock = new ReentrantLock();
-
+	public TranErrorWrapper(ImportContext importContext){
+		this.importContext = importContext;
+	}
+	public void throwError() throws Exception{
+		throw error;
+	}
 	public void setError(Exception error) {
 		if(this.error == null) {//only set the first exception
 			try {
 				lock.lock();
 				if (this.error == null) {//only set the first exception
 					this.error = error;
-					dataTranPlugin.setErrorWrapper(this);
+//					dataTranPlugin.setErrorWrapper(this);
 				}
 			} finally {
 				lock.unlock();
@@ -54,7 +62,7 @@ public abstract class TranErrorWrapper {
 	 */
 	public boolean assertCondition(){
 
-		if(this.error != null && !dataTranPlugin.isContinueOnError()) {
+		if(this.error != null && !importContext.isContinueOnError()) {
 			return false;
 		}
 		return true;
@@ -65,7 +73,7 @@ public abstract class TranErrorWrapper {
 	 * @return
 	 */
 	public boolean assertCondition(Exception e){
-		if((this.error != null || e != null) && !dataTranPlugin.isContinueOnError()) {
+		if((this.error != null || e != null) && !importContext.isContinueOnError()) {
 			return false;
 		}
 		return true;

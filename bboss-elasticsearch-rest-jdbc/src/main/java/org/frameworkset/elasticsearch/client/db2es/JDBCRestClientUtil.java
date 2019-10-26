@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class JDBCRestClientUtil extends ErrorWrapper{
+public class JDBCRestClientUtil{
 	private static Logger logger = LoggerFactory.getLogger(JDBCRestClientUtil.class);
 	private ClientInterface clientInterface;
 	private static Object dummy = new Object();
@@ -77,10 +77,9 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 	 * 并行批处理导入
 
 	 * @param batchsize
-	 * @param refreshOption
 	 * @return
 	 */
-	private String parallelBatchExecute( int batchsize,String refreshOption){
+	private String parallelBatchExecute( int batchsize){
 		int count = 0;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
@@ -93,11 +92,13 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
 		Object lastValue = null;
+		TranErrorWrapper tranErrorWrapper = new TranErrorWrapper(importContext);
 		try {
+
 			BatchContext batchContext = new BatchContext();
 			while (jdbcResultSet.next()) {
-				if(!assertCondition()) {
-					throw error;
+				if(!tranErrorWrapper.assertCondition()) {
+					tranErrorWrapper.throwError();
 				}
 				if(lastValue == null)
 					lastValue = importContext.max(currentValue,getLastValue());
@@ -115,7 +116,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
-					tasks.add(service.submit(new TaskCall(importContext,  datas,this,clientInterface,taskNo,totalCount,batchsize)));
+					tasks.add(service.submit(new TaskCall(importContext,  datas,tranErrorWrapper,clientInterface,taskNo,totalCount,batchsize)));
 
 					taskNo ++;
 
@@ -123,12 +124,15 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 
 			}
 			if (count > 0) {
-				if(this.error != null && !importContext.isContinueOnError()) {
-					throw error;
+				if(!tranErrorWrapper.assertCondition()) {
+					tranErrorWrapper.throwError();
 				}
+//				if(this.error != null && !importContext.isContinueOnError()) {
+//					throw error;
+//				}
 				writer.flush();
 				String datas = builder.toString();
-				tasks.add(service.submit(new TaskCall(importContext,datas,this,clientInterface,taskNo,totalCount,count)));
+				tasks.add(service.submit(new TaskCall(importContext,datas,tranErrorWrapper,clientInterface,taskNo,totalCount,count)));
 				taskNo ++;
 				if(isPrintTaskLog())
 					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
@@ -150,7 +154,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			waitTasksComplete(   tasks,  service,exception,  lastValue,totalCount );
+			waitTasksComplete(   tasks,  service,exception,  lastValue,totalCount ,tranErrorWrapper);
 			try {
 				writer.close();
 			} catch (Exception e) {
@@ -348,7 +352,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 			return serialExecute(         refreshOption,   batchsize);
 		} else {
 			if(importContext.getThreadCount() > 0 && importContext.isParallel()){
-				return this.parallelBatchExecute( batchsize,refreshOption);
+				return this.parallelBatchExecute( batchsize);
 			}
 			else{
 				return this.batchExecute( batchsize,refreshOption);
@@ -357,12 +361,12 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		}
 
 	}
-	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ){
+	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ,TranErrorWrapper tranErrorWrapper){
 		if (importContext.getScheduleService() == null) {//作业定时调度执行的话，需要关闭线程池
 			service.shutdown();
 		}
 		else{
-			if(this.assertCondition(exception)){
+			if(tranErrorWrapper.assertCondition(exception)){
 				importContext.flushLastValue( lastValue );
 			}
 			else{
@@ -375,7 +379,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 		return importContext.isPrintTaskLog() && logger.isInfoEnabled();
 	}
 	private void waitTasksComplete(final List<Future> tasks,
-								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount  ){
+								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount ,final TranErrorWrapper tranErrorWrapper ){
 		if(!importContext.isAsyn() || importContext.getScheduleService() != null) {
 			int count = 0;
 			for (Future future : tasks) {
@@ -402,7 +406,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 						.append(count).append(",Total import ")
 						.append(totalCount.getTotalCount()).append(" records.").toString());
 			}
-			jobComplete(  service,exception,lastValue );
+			jobComplete(  service,exception,lastValue ,tranErrorWrapper);
 		}
 		else{
 			Thread completeThread = new Thread(new Runnable() {
@@ -430,7 +434,7 @@ public class JDBCRestClientUtil extends ErrorWrapper{
 								.append(totalCount.getTotalCount())
 								.append(" records.").toString());
 					}
-					jobComplete(  service,null,null);
+					jobComplete(  service,null,null,tranErrorWrapper);
 				}
 			});
 			completeThread.start();

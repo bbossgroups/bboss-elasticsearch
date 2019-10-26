@@ -605,7 +605,7 @@ public abstract class BaseImportBuilder {
 		return this;
 	}
 
-	public BaseImportBuilder setLastValue(Long lastValue) {
+	public BaseImportBuilder setLastValue(Object lastValue) {
 		if(importIncreamentConfig == null){
 			importIncreamentConfig = new ImportIncreamentConfig();
 		}

@@ -31,13 +31,14 @@ public class ImportIncreamentConfig {
 	/**
 	 * 设置起始值，如果lastValueType为
 	 */
-	private Long lastValue;
+	private Object lastValue;
 	/**
 	 * 设置其实值类型：0 数字  1 日期
 	 */
 	private Integer lastValueType;
 	private String lastValueStorePath;
 	private String lastValueStoreTableName;
+	private boolean lastValueDateType;
 	private boolean fromFirst;//true 每次都重新从开始导入数据
 
 
@@ -92,11 +93,11 @@ public class ImportIncreamentConfig {
 		this.fromFirst = fromFirst;
 	}
 
-	public Long getLastValue() {
+	public Object getLastValue() {
 		return lastValue;
 	}
 
-	public void setLastValue(Long lastValue) {
+	public void setLastValue(Object lastValue) {
 		this.lastValue = lastValue;
 	}
 
@@ -106,5 +107,14 @@ public class ImportIncreamentConfig {
 
 	public void setLastValueType(Integer lastValueType) {
 		this.lastValueType = lastValueType;
+		this.lastValueDateType = lastValueType == TIMESTAMP_TYPE;
+	}
+
+	public boolean isLastValueDateType() {
+		return lastValueDateType;
+	}
+
+	public void setLastValueDateType(boolean lastValueDateType) {
+		this.lastValueDateType = lastValueDateType;
 	}
 }
