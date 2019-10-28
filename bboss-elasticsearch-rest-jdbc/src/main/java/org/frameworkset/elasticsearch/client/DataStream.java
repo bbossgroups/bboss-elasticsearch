@@ -14,14 +14,25 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public abstract class DataStream {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	protected ImportContext importContext;
+	protected BaseImportConfig importConfig ;
 
+	private boolean inited;
+	//	public void setExternalTimer(boolean externalTimer) {
+//		this.esjdbc.setExternalTimer(externalTimer);
+//	}
+	private Lock lock = new ReentrantLock();
+	protected abstract ImportContext buildImportContext(BaseImportConfig importConfig);
 
 	/**
 	 *
@@ -78,6 +89,33 @@ public abstract class DataStream {
 	private String configString;
 
 
-	public void init() {
+	public void init(){
+		if(inited )
+			return;
+		if(importConfig == null){
+			throw new ESDataImportException("import Config is null.");
+		}
+
+		try {
+			lock.lock();
+			this.importContext = this.buildImportContext(importConfig);
+
+
+//			this.initES(esjdbc.getApplicationPropertiesFile());
+//			this.initDS(esjdbc.getDbConfig());
+//			initOtherDSes(esjdbc.getConfigs());
+//			this.initSQLInfo();
+//			this.initSchedule();
+			inited = true;
+		}
+		catch (Exception e) {
+			inited = true;
+			throw new ESDataImportException(e);
+		}
+		finally{
+
+
+			lock.unlock();
+		}
 	}
 }

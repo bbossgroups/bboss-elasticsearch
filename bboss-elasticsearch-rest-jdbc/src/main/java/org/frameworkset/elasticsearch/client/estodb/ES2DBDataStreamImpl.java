@@ -16,6 +16,8 @@ package org.frameworkset.elasticsearch.client.estodb;/*
 
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +25,13 @@ import org.slf4j.LoggerFactory;
  * 数据库同步到Elasticsearch
  */
 public class ES2DBDataStreamImpl extends DataStream {
-	private ES2DB es2DB;
+	private ES2DBImportConfig es2DBImportConfig;
 	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
-
+	protected ImportContext buildImportContext(BaseImportConfig importConfig){
+		return new ES2DBImportContext(es2DBImportConfig);
+	}
 	public void execute() throws ESDataImportException{
-		if(es2DB == null){
+		if(es2DBImportConfig == null){
 			throw new ESDataImportException("es2DB is null.");
 		}
 		try {
@@ -35,7 +39,8 @@ public class ES2DBDataStreamImpl extends DataStream {
 			initES(es2DB.getApplicationPropertiesFile());
 			initDS(es2DB.getDbConfig());
 			initOtherDSes(es2DB.getConfigs());*/
-			es2DB.exportData2DB();
+			this.importContext = new ES2DBImportContext(es2DBImportConfig);
+//			es2DBImportConfig.exportData2DB();
 		}
 		catch (Exception e) {
 			throw new ESDataImportException(e);
@@ -45,15 +50,11 @@ public class ES2DBDataStreamImpl extends DataStream {
 		}
 	}
 
-	@Override
-	public void stop() {
-
-	}
 
 
 
-
-	public void setEs2DB(ES2DB es2DB) {
-		this.es2DB = es2DB;
+	public void setEs2DBImportConfig(ES2DBImportConfig es2DBImportConfig) {
+		this.es2DBImportConfig = es2DBImportConfig;
+		this.importConfig = es2DBImportConfig;
 	}
 }

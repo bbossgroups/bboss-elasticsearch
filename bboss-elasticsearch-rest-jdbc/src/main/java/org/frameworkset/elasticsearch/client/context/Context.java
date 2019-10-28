@@ -15,10 +15,10 @@ package org.frameworkset.elasticsearch.client.context;
  * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.FieldMeta;
+import org.frameworkset.elasticsearch.client.tran.TranMeta;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.text.DateFormat;
@@ -43,7 +43,7 @@ public interface Context {
 	public Object getVersion() throws Exception;
 	public Object getEsVersionType();
 	public void refactorData() throws Exception;
-	public PoolManResultSetMetaData getMetaData();
+	public TranMeta getMetaData();
 	public DateFormat getDateFormat();
 	public Boolean getUseJavaName();
 	public Boolean getUseLowcase();

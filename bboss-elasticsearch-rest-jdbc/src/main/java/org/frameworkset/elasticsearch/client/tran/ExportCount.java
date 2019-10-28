@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.scroll;
+package org.frameworkset.elasticsearch.client.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,17 +15,30 @@ package org.frameworkset.elasticsearch.scroll;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.ESDatas;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/4 11:45
+ * @Date 2018/10/15 19:20
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ScrollHandler<T> {
-	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception;
+public class ExportCount {
+	private ReentrantLock lock = new ReentrantLock();
+	private int tasks;
+
+	public int increamentCount() {
+		try {
+			lock.lock();
+			tasks ++;
+			return tasks;
+		}finally {
+			lock.unlock();
+		}
+
+	}
+
 
 }

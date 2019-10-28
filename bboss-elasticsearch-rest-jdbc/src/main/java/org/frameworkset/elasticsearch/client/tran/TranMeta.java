@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.scroll;
+package org.frameworkset.elasticsearch.client.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,17 +15,24 @@ package org.frameworkset.elasticsearch.scroll;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/9/4 11:45
+ * @Date 2019/10/27 10:42
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ScrollHandler<T> {
-	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception;
+public interface TranMeta {
+	int getColumnCount() throws ESDataImportException;
 
+	String getColumnLabelByIndex(int i) throws ESDataImportException;
+
+	int getColumnTypeByIndex(int i) throws ESDataImportException;
+
+	String getColumnJavaNameByIndex(int i) throws ESDataImportException;
+
+	String getColumnLabelLowerByIndex(int i) throws ESDataImportException;
 }

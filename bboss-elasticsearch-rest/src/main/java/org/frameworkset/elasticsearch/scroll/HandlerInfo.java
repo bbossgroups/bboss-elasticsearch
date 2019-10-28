@@ -30,6 +30,13 @@ public class HandlerInfo implements Serializable {
 	private String scrollId;
 	private Integer sliceId;
 
+	/**
+	 * 标识是否中断后续scroll的运行
+	 * 没有异常的情况下起作用，如果有异常请关注：
+	 * @see BaseScrollHandler isContinueOneError()
+	 */
+	private boolean breakScroll;
+
 	public Integer getTaskId() {
 		return taskId;
 	}
@@ -52,5 +59,21 @@ public class HandlerInfo implements Serializable {
 
 	public void setSliceId(Integer sliceId) {
 		this.sliceId = sliceId;
+	}
+	/**
+	 * 标识是否中断后续scroll的运行
+	 * 没有异常的情况下起作用，如果有异常请关注：
+	 * @see BaseScrollHandler isContinueOneError()
+	 */
+	public boolean isBreakScroll() {
+		return breakScroll;
+	}
+	/**
+	 * 标识是否中断后续scroll的运行
+	 * 没有异常的情况下起作用，如果有异常请关注：
+	 * @see BaseScrollHandler isContinueOneError()
+	 */
+	public void setBreakScroll(boolean breakScroll) {
+		this.breakScroll = breakScroll;
 	}
 }

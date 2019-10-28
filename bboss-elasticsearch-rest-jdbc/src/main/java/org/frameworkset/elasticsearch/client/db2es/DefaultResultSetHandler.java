@@ -18,7 +18,6 @@ package org.frameworkset.elasticsearch.client.db2es;
 import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.persitent.util.JDBCResultSet;
 
 import java.sql.ResultSet;
 
@@ -31,10 +30,8 @@ import java.sql.ResultSet;
  * @version 1.0
  */
 public class DefaultResultSetHandler extends ResultSetHandler {
-	private int batchSize;
 	private ImportContext importContext ;
 	public DefaultResultSetHandler(ImportContext importContext){
-		this.batchSize = importContext.getStoreBatchSize();
 		this.importContext = importContext;
 
 	}
@@ -44,8 +41,8 @@ public class DefaultResultSetHandler extends ResultSetHandler {
 		jdbcResultSet.setResultSet(resultSet);
 		jdbcResultSet.setMetaData(statementInfo.getMeta());
 		jdbcResultSet.setDbadapter(statementInfo.getDbadapter());
-		JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
+		DB2ESDataTran db2ESDataTran = new DB2ESDataTran(jdbcResultSet,importContext);
 
-		jdbcRestClientUtil.addDocuments(  importContext, importContext.getRefreshOption(), batchSize);
+		db2ESDataTran.tran(  );
 	}
 }

@@ -1,7 +1,6 @@
-package org.frameworkset.elasticsearch.client.db2es;
+package org.frameworkset.elasticsearch.client.tran;
 
 import com.frameworkset.common.poolman.handle.ValueExchange;
-import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
@@ -11,11 +10,11 @@ import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.client.context.Context;
 import org.frameworkset.elasticsearch.client.context.ContextImpl;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.db2es.JDBCGetVariableValue;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.template.ESUtil;
-import org.frameworkset.persitent.util.JDBCResultSet;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
@@ -27,64 +26,43 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-public class JDBCRestClientUtil{
-	private static Logger logger = LoggerFactory.getLogger(JDBCRestClientUtil.class);
+public abstract class BaseElasticsearchDataTran extends BaseDataTran{
+	private static Logger logger = LoggerFactory.getLogger(BaseElasticsearchDataTran.class);
 	private ClientInterface clientInterface;
-	private static Object dummy = new Object();
-	private ImportContext importContext;
-	private JDBCResultSet jdbcResultSet;
-	public JDBCRestClientUtil(JDBCResultSet jdbcResultSet) {
+
+	public BaseElasticsearchDataTran(TranResultSet jdbcResultSet,ImportContext importContext) {
+		super(jdbcResultSet,importContext);
 		clientInterface = ElasticSearchHelper.getRestClientUtil();
-		this.jdbcResultSet = jdbcResultSet;
 	}
 
-	public JDBCRestClientUtil(String esCluster) {
+	public BaseElasticsearchDataTran(TranResultSet jdbcResultSet,ImportContext importContext, String esCluster) {
+		super(jdbcResultSet,importContext);
 		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
 	}
 
-	private ExecutorService blockedExecutor;
-	private AtomicInteger rejectCounts = new AtomicInteger();
-	public ExecutorService buildThreadPool(){
-		if(blockedExecutor != null)
-			return blockedExecutor;
-		synchronized (this) {
-			if(blockedExecutor == null) {
+//	public BaseDataTran(String esCluster) {
+//		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
+//	}
 
-				blockedExecutor = new ThreadPoolExecutor(importContext.getThreadCount(), importContext.getThreadCount(),
-						0L, TimeUnit.MILLISECONDS,
-						new ArrayBlockingQueue<Runnable>(importContext.getQueue()),
-						new ThreadFactory() {
-							private AtomicInteger threadCount = new AtomicInteger(0);
 
-							@Override
-							public Thread newThread(Runnable r) {
-								int num = threadCount.incrementAndGet();
-								return new DBESThread(r, num);
-							}
-						}, new BlockedTaskRejectedExecutionHandler(rejectCounts));
-			}
-		}
-		return blockedExecutor;
-	}
+
 	/**
 	 * 并行批处理导入
 
-	 * @param batchsize
 	 * @return
 	 */
-	private String parallelBatchExecute( int batchsize){
+	public String parallelBatchExecute( ){
 		int count = 0;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		String ret = null;
-		ExecutorService	service = buildThreadPool();
+		ExecutorService	service = importContext.buildThreadPool();
 		List<Future> tasks = new ArrayList<Future>();
 		int taskNo = 0;
 		ImportCount totalCount = new ImportCount();
@@ -93,6 +71,7 @@ public class JDBCRestClientUtil{
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
 		Object lastValue = null;
 		TranErrorWrapper tranErrorWrapper = new TranErrorWrapper(importContext);
+		int batchsize = importContext.getStoreBatchSize();
 		try {
 
 			BatchContext batchContext = new BatchContext();
@@ -105,9 +84,13 @@ public class JDBCRestClientUtil{
 				else{
 					lastValue = importContext.max(lastValue,getLastValue());
 				}
-				Context context = evalBuilk(this.jdbcResultSet,  batchContext,writer, importContext, "index",clientInterface.isVersionUpper7());
-				if(context.isDrop())
+
+				Context context = new ContextImpl(importContext, jdbcResultSet, batchContext);
+				context.refactorData();
+				if (context.isDrop()) {
 					continue;
+				}
+				evalBuilk(this.jdbcResultSet,  batchContext,writer, context, "index",clientInterface.isVersionUpper7());
 				count++;
 				if (count == batchsize) {
 					writer.flush();
@@ -167,11 +150,9 @@ public class JDBCRestClientUtil{
 	/**
 	 * 串行批处理导入
 
-	 * @param batchsize
-	 * @param refreshOption
 	 * @return
 	 */
-	private String batchExecute( int batchsize,String refreshOption){
+	public String batchExecute(  ){
 		int count = 0;
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
@@ -185,6 +166,8 @@ public class JDBCRestClientUtil{
 		long istart = 0;
 		long end = 0;
 		long totalCount = 0;
+		int batchsize = importContext.getStoreBatchSize();
+		String refreshOption = importContext.getRefreshOption();
 		try {
 			istart = start;
 			BatchContext batchContext = new BatchContext();
@@ -194,9 +177,12 @@ public class JDBCRestClientUtil{
 				else{
 					lastValue = importContext.max(lastValue,getLastValue());
 				}
-				Context context = evalBuilk(  this.jdbcResultSet,batchContext,writer,   importContext, "index",clientInterface.isVersionUpper7());
-				if(context.isDrop())
+				Context context = new ContextImpl(importContext, jdbcResultSet, batchContext);
+				context.refactorData();
+				if (context.isDrop()) {
 					continue;
+				}
+				evalBuilk(  this.jdbcResultSet,batchContext,writer,   context, "index",clientInterface.isVersionUpper7());
 				count++;
 				if (count == batchsize) {
 					writer.flush();
@@ -267,19 +253,10 @@ public class JDBCRestClientUtil{
 
 		return ret;
 	}
-	private void stop(){
-		try {
-			if (blockedExecutor != null) {
-				blockedExecutor.shutdown();
-			}
-		}
-		catch(Exception e){
 
-		}
-		importContext.stop();
-
-	}
-	private String serialExecute(  String refreshOption, int batchsize){
+	public String serialExecute(  ){
+		String refreshOption = importContext.getRefreshOption();
+		int batchsize = importContext.getStoreBatchSize();
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		Object lastValue = null;
@@ -293,13 +270,16 @@ public class JDBCRestClientUtil{
 			while (jdbcResultSet.next()) {
 				try {
 					if(lastValue == null)
-						lastValue = getLastValue();
+						lastValue = importContext.max(currentValue,getLastValue());
 					else{
 						lastValue = importContext.max(lastValue,getLastValue());
 					}
-					Context context = evalBuilk(this.jdbcResultSet,  batchContext,writer,  this.importContext,  "index",clientInterface.isVersionUpper7());
-					if(context.isDrop())
+					Context context = new ContextImpl(importContext, jdbcResultSet, batchContext);
+					context.refactorData();
+					if (context.isDrop()) {
 						continue;
+					}
+					evalBuilk(this.jdbcResultSet,  batchContext,writer,  context,  "index",clientInterface.isVersionUpper7());
 					totalCount ++;
 				} catch (Exception e) {
 					throw new ElasticSearchException(e);
@@ -333,139 +313,11 @@ public class JDBCRestClientUtil{
 			}
 		}
 	}
-	public String addDocuments(String indexName,String indexType,ImportContext importContext, String refreshOption, int batchsize) throws ElasticSearchException{
+	public String tran(String indexName,String indexType) throws ElasticSearchException{
 		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(indexName,indexType);
 		importContext.setEsIndexWrapper(esIndexWrapper);
-		return addDocuments( importContext,  refreshOption, batchsize);
-
+		return tran();
 	}
-	public String addDocuments(ImportContext importContext, String refreshOption, int batchsize) throws ElasticSearchException {
-		this.importContext = importContext;
-		if(jdbcResultSet == null)
-			return null;
-		if(isPrintTaskLog()) {
-			logger.info(new StringBuilder().append("import data to IndexName[").append(importContext.getEsIndexWrapper().getIndex())
-							.append("] IndexType[").append(importContext.getEsIndexWrapper().getType())
-							.append("] start.").toString());
-		}
-		if (batchsize <= 0) {
-			return serialExecute(         refreshOption,   batchsize);
-		} else {
-			if(importContext.getThreadCount() > 0 && importContext.isParallel()){
-				return this.parallelBatchExecute( batchsize);
-			}
-			else{
-				return this.batchExecute( batchsize,refreshOption);
-			}
-
-		}
-
-	}
-	private void jobComplete(ExecutorService service,Exception exception,Object lastValue ,TranErrorWrapper tranErrorWrapper){
-		if (importContext.getScheduleService() == null) {//作业定时调度执行的话，需要关闭线程池
-			service.shutdown();
-		}
-		else{
-			if(tranErrorWrapper.assertCondition(exception)){
-				importContext.flushLastValue( lastValue );
-			}
-			else{
-				service.shutdown();
-				this.stop();
-			}
-		}
-	}
-	private boolean isPrintTaskLog(){
-		return importContext.isPrintTaskLog() && logger.isInfoEnabled();
-	}
-	private void waitTasksComplete(final List<Future> tasks,
-								   final ExecutorService service,Exception exception,Object lastValue,final ImportCount totalCount ,final TranErrorWrapper tranErrorWrapper ){
-		if(!importContext.isAsyn() || importContext.getScheduleService() != null) {
-			int count = 0;
-			for (Future future : tasks) {
-				try {
-					future.get();
-					count ++;
-				} catch (ExecutionException e) {
-					if(exception == null)
-						exception = e;
-					if( logger.isErrorEnabled()) {
-						if (e.getCause() != null)
-							logger.error("", e.getCause());
-						else
-							logger.error("", e);
-					}
-				}catch (Exception e) {
-					if(exception == null)
-						exception = e;
-					if( logger.isErrorEnabled()) logger.error("",e);
-				}
-			}
-			if(isPrintTaskLog()) {
-				logger.info(new StringBuilder().append("Complete tasks:")
-						.append(count).append(",Total import ")
-						.append(totalCount.getTotalCount()).append(" records.").toString());
-			}
-			jobComplete(  service,exception,lastValue ,tranErrorWrapper);
-		}
-		else{
-			Thread completeThread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					int count = 0;
-					for (Future future : tasks) {
-						try {
-							future.get();
-							count ++;
-						} catch (ExecutionException e) {
-							if( logger.isErrorEnabled()) {
-								if (e.getCause() != null)
-									logger.error("", e.getCause());
-								else
-									logger.error("", e);
-							}
-						}catch (Exception e) {
-							if( logger.isErrorEnabled()) logger.error("",e);
-						}
-					}
-					if(isPrintTaskLog()) {
-						logger.info(new StringBuilder().append("Complete tasks:")
-								.append(count).append(",Total import ")
-								.append(totalCount.getTotalCount())
-								.append(" records.").toString());
-					}
-					jobComplete(  service,null,null,tranErrorWrapper);
-				}
-			});
-			completeThread.start();
-		}
-	}
-
-	private Object handleDate(ResultSet row,int i)
-	{
-		Object value = null;
-		try {
-			try {
-				value = row.getTimestamp(i+1);
-				if(value != null)
-					value = ((java.sql.Timestamp)value).getTime();
-				else
-					value  = 0;
-			} catch (Exception e) {
-				value = row.getDate(i+1);
-				if(value != null)
-					value = ((java.sql.Date)value).getTime();
-				else
-					value  = 0;
-
-			}
-
-		} catch (Exception e) {
-			value  = 0;
-		}
-		return value;
-	}
-
 
 
 
@@ -609,47 +461,37 @@ public class JDBCRestClientUtil{
 		}
 	}
 
-	public static Context evalBuilk(JDBCResultSet jdbcResultSet,BatchContext batchContext, Writer writer, ImportContext importContext, String action, boolean upper7) throws Exception {
-		Context context = null;
-		if (importContext != null) {
-			context = new ContextImpl(importContext,jdbcResultSet,batchContext);
-			context.refactorData();
-			if(context.isDrop()){
-				return context;
-			}
-			buildMeta( context, writer ,     action,  upper7);
+	public static void evalBuilk(TranResultSet jdbcResultSet,BatchContext batchContext, Writer writer, Context context, String action, boolean upper7) throws Exception {
 
-			if(!action.equals("update")) {
+		buildMeta( context, writer ,     action,  upper7);
+
+		if(!action.equals("update")) {
 //				SerialUtil.object2json(param,writer);
-				serialResult(  writer,context);
-			}
-			else
-			{
-
-				writer.write("{\"doc\":");
-				serialResult(  writer,context);
-				if(context.getEsDocAsUpsert() != null){
-					writer.write(",\"doc_as_upsert\":");
-					writer.write(String.valueOf(context.getEsDocAsUpsert()));
-				}
-
-				if(context.getEsReturnSource() != null){
-					writer.write(",\"_source\":");
-					writer.write(String.valueOf(context.getEsReturnSource()));
-				}
-				writer.write("}\n");
-
-
-
-			}
+			serialResult(  writer,context);
 		}
-		return context;
+		else
+		{
+
+			writer.write("{\"doc\":");
+			serialResult(  writer,context);
+			if(context.getEsDocAsUpsert() != null){
+				writer.write(",\"doc_as_upsert\":");
+				writer.write(String.valueOf(context.getEsDocAsUpsert()));
+			}
+
+			if(context.getEsReturnSource() != null){
+				writer.write(",\"_source\":");
+				writer.write(String.valueOf(context.getEsReturnSource()));
+			}
+			writer.write("}\n");
+			}
+
 
 	}
 
 	private static void serialResult( Writer writer,  Context context) throws Exception {
 
-		PoolManResultSetMetaData metaData = context.getMetaData();
+		TranMeta metaData = context.getMetaData();
 		int counts = metaData.getColumnCount();
 		writer.write("{");
 		Boolean useJavaName = context.getUseJavaName();

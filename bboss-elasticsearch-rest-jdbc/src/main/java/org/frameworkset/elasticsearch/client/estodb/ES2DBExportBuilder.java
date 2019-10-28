@@ -72,24 +72,24 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 		catch (Exception e){
 
 		}
-		ES2DB es2DB = new ES2DB();
-		es2DB.setDsl2ndSqlFile(this.dsl2ndSqlFile);
-		es2DB.setSqlName(sqlName);
-		es2DB.setSql(this.sql);
+		ES2DBImportConfig es2DBImportConfig = new ES2DBImportConfig();
+		es2DBImportConfig.setDsl2ndSqlFile(this.dsl2ndSqlFile);
+		es2DBImportConfig.setSqlName(sqlName);
+		es2DBImportConfig.setSql(this.sql);
 
 
-		es2DB.setQueryUrl(this.queryUrl);
-		es2DB.setScrollLiveTime(this.scrollLiveTime);
+		es2DBImportConfig.setQueryUrl(this.queryUrl);
+		es2DBImportConfig.setScrollLiveTime(this.scrollLiveTime);
 
 
-		es2DB.setInsertBatchSize(this.insertBatchSize);
-		es2DB.setBatchHandler(this.batchHandler);
-		es2DB.setDslName(this.dslName);
-		es2DB.setSliceQuery(this.sliceQuery);
-		es2DB.setSliceSize(this.sliceSize);
-		es2DB.setParams(this.params);
+		es2DBImportConfig.setInsertBatchSize(this.insertBatchSize);
+		es2DBImportConfig.setBatchHandler(this.batchHandler);
+		es2DBImportConfig.setDslName(this.dslName);
+		es2DBImportConfig.setSliceQuery(this.sliceQuery);
+		es2DBImportConfig.setSliceSize(this.sliceSize);
+		es2DBImportConfig.setParams(this.params);
 		ES2DBDataStreamImpl dataStream = new ES2DBDataStreamImpl();
-		dataStream.setEs2DB(es2DB);
+		dataStream.setEs2DBImportConfig(es2DBImportConfig);
 		return dataStream;
 	}
 

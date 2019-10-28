@@ -571,7 +571,7 @@ public abstract class BaseImportConfig {
 	public Object getConfigLastValue() {
 		return importIncreamentConfig != null?importIncreamentConfig.getLastValue():null;
 	}
-	public int getStatusTableId() {
+	public Integer getStatusTableId() {
 		return this.importIncreamentConfig != null ?importIncreamentConfig.getStatusTableId():null;
 	}
 

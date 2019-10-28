@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.DataTranPlugin;
+import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 
 /**

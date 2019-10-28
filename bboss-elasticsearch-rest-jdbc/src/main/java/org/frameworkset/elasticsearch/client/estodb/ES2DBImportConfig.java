@@ -16,15 +16,10 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.BatchHandler;
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
-import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +30,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DB extends BaseImportConfig {
+public class ES2DBImportConfig extends BaseImportConfig {
 	//scroll分页检索，每批查询数据大小
 	private Integer insertBatchSize ;
 
@@ -46,15 +41,14 @@ public class ES2DB extends BaseImportConfig {
 	private String dsl2ndSqlFile;// = "esmapper/dsl2ndSqlFile.xml";
 	private String scrollLiveTime ;//= "100m";
 	private BatchHandler<Map> batchHandler;
-	private ConfigSQLExecutor configSQLExecutor;
-	private ExportCount exportCount;
+
 
 
 
 	private boolean sliceQuery;
 	private int sliceSize;
 
-	private static Logger logger = LoggerFactory.getLogger(ES2DB.class);
+	private static Logger logger = LoggerFactory.getLogger(ES2DBImportConfig.class);
 	public Map getParams() {
 		return params;
 	}
@@ -114,42 +108,42 @@ public class ES2DB extends BaseImportConfig {
 	public void setBatchHandler(BatchHandler batchHandler) {
 		this.batchHandler = batchHandler;
 	}
-
-	public void exportData2DB(){
-		Map params = getParams() != null ?getParams():new HashMap();
-		params.put("size", getBatchSize());//每页5000条记录
-		if(this.sliceQuery){
-			params.put("sliceMax",this.sliceSize);
-		}
-		final int insertBatchSize = this.insertBatchSize == null ?this.getBatchSize():this.insertBatchSize;
-		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
-		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
-		configSQLExecutor = getSql() == null ?new ConfigSQLExecutor(getDsl2ndSqlFile()):null;
-		exportCount = new ExportCount();
-		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(this.getDsl2ndSqlFile());
-		ESExporterScrollHandler esExporterScrollHandler = new ESExporterScrollHandler(this);
-		ESDatas<Map> response = null;
-		if(!this.sliceQuery) {
-			if(!this.isParallel()) {
-				response = clientUtil.scroll(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
-			}
-			else
-			{
-				response = clientUtil.scrollParallel(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
-			}
-		}
-		else{
-			response = clientUtil.scrollSliceParallel(getQueryUrl(), getDslName(),  params, getScrollLiveTime(),Map.class, esExporterScrollHandler);
-		}
-		if(logger.isInfoEnabled()) {
-			if(response != null) {
-				logger.info("Export compoleted and export total {} records.", response.getTotalSize());
-			}
-			else{
-				logger.info("Export compoleted and export no records or failed.");
-			}
-		}
-	}
+//
+//	public void exportData2DB(){
+//		Map params = getParams() != null ?getParams():new HashMap();
+//		params.put("size", getBatchSize());//每页5000条记录
+//		if(this.sliceQuery){
+//			params.put("sliceMax",this.sliceSize);
+//		}
+//		final int insertBatchSize = this.insertBatchSize == null ?this.getBatchSize():this.insertBatchSize;
+//		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
+//		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
+//		configSQLExecutor = getSql() == null ?new ConfigSQLExecutor(getDsl2ndSqlFile()):null;
+//		exportCount = new ExportCount();
+//		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(this.getDsl2ndSqlFile());
+//		ESExporterScrollHandler esExporterScrollHandler = new ESExporterScrollHandler(this);
+//		ESDatas<Map> response = null;
+//		if(!this.sliceQuery) {
+//			if(!this.isParallel()) {
+//				response = clientUtil.scroll(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+//			}
+//			else
+//			{
+//				response = clientUtil.scrollParallel(getQueryUrl(), getDslName(), getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+//			}
+//		}
+//		else{
+//			response = clientUtil.scrollSliceParallel(getQueryUrl(), getDslName(),  params, getScrollLiveTime(),Map.class, esExporterScrollHandler);
+//		}
+//		if(logger.isInfoEnabled()) {
+//			if(response != null) {
+//				logger.info("Export compoleted and export total {} records.", response.getTotalSize());
+//			}
+//			else{
+//				logger.info("Export compoleted and export no records or failed.");
+//			}
+//		}
+//	}
 
 
 	public Integer getInsertBatchSize() {
@@ -183,14 +177,12 @@ public class ES2DB extends BaseImportConfig {
 	public void setSliceSize(int sliceSize) {
 		this.sliceSize = sliceSize;
 	}
-	public ConfigSQLExecutor getConfigSQLExecutor(){
-		return this.configSQLExecutor;
-	}
+//	public ConfigSQLExecutor getConfigSQLExecutor(){
+//		return this.configSQLExecutor;
+//	}
 
 
 
-	public ExportCount getExportCount() {
-		return exportCount;
-	}
+
 
 }

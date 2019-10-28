@@ -15,30 +15,35 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import java.util.concurrent.locks.ReentrantLock;
+import com.frameworkset.common.poolman.BatchHandler;
+import org.frameworkset.elasticsearch.client.db2es.DBContext;
+
+import java.util.Map;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/10/15 19:20
+ * @Date 2019/10/28 14:11
  * @author biaoping.yin
  * @version 1.0
  */
-public class ExportCount {
-	private ReentrantLock lock = new ReentrantLock();
-	private int tasks;
+public interface ES2DBContext extends DBContext {
+	Map getParams();
 
-	public int increamentCount() {
-		try {
-			lock.lock();
-			tasks ++;
-			return tasks;
-		}finally {
-			lock.unlock();
-		}
+	boolean isSliceQuery();
 
-	}
+	int getSliceSize();
 
+	Integer getInsertBatchSize();
 
+	String getQueryUrl();
+
+	String getDslName();
+
+	String getScrollLiveTime();
+
+	String getDslFile();
+
+	BatchHandler getBatchHandler();
 }

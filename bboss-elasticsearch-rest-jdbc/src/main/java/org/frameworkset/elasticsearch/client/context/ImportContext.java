@@ -24,8 +24,10 @@ import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.client.schedule.Status;
+import org.frameworkset.elasticsearch.client.tran.ExportCount;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * <p>Description: </p>
@@ -37,9 +39,10 @@ import java.util.List;
  */
 public interface ImportContext {
 	boolean isPrintTaskLog();
-
+	void setRefreshOption(String refreshOption);
+	void setBatchSize(int batchSize);
 	void destroy();
-
+	public ExportCount getExportCount();
 	void importData();
 	public Object max(Object oldValue,Object newValue);
 	boolean isContinueOnError();
@@ -54,7 +57,7 @@ public interface ImportContext {
 
 	void doImportData();
 
-	int getStatusTableId();
+	Integer getStatusTableId();
 
 	boolean isFromFirst();
 
@@ -122,7 +125,9 @@ public interface ImportContext {
 
 	boolean isAsyn();
 
-	int getStoreBatchSize();
+	Integer getStoreBatchSize();
+
+	ExecutorService buildThreadPool();
 //	public Object getValue(String columnName) throws ESDataImportException;
 //	public Object getDateTimeValue(String columnName) throws ESDataImportException;
 

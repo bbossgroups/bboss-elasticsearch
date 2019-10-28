@@ -16,16 +16,17 @@ package org.frameworkset.elasticsearch.client.context;
  */
 
 import com.frameworkset.orm.annotation.ESIndexWrapper;
-import org.frameworkset.elasticsearch.client.DBConfig;
-import org.frameworkset.elasticsearch.client.DataRefactor;
-import org.frameworkset.elasticsearch.client.DataTranPlugin;
-import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
+import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.*;
+import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.elasticsearch.client.tran.ExportCount;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>Description: </p>
@@ -39,6 +40,7 @@ public abstract  class BaseImportContext implements ImportContext {
 	protected BaseImportConfig baseImportConfig;
 //	private JDBCResultSet jdbcResultSet;
 	private DataTranPlugin dataTranPlugin;
+
 	public BaseImportContext(){
 
 	}
@@ -46,6 +48,9 @@ public abstract  class BaseImportContext implements ImportContext {
 		this.baseImportConfig = baseImportConfig;
 		dataTranPlugin = buildDataTranPlugin();
 		dataTranPlugin.init();
+	}
+	public ExportCount getExportCount(){
+		return dataTranPlugin.getExportCount();
 	}
 	@Override
 	public void setStatusTableId(int hashCode) {
@@ -216,6 +221,9 @@ public abstract  class BaseImportContext implements ImportContext {
 	public Object max(Object oldValue,Object newValue){
 		if(newValue == null)
 			return oldValue;
+
+		if(oldValue == null)
+			return newValue;
 //		this.getLastValueType()
 		if(this.getLastValueType() == ImportIncreamentConfig.TIMESTAMP_TYPE) {
 			Date oldValueDate = (Date)oldValue;
@@ -277,6 +285,14 @@ public abstract  class BaseImportContext implements ImportContext {
 	}
 	public void stop(){
 		this.dataTranPlugin.destroy();
+		try {
+			if (blockedExecutor != null) {
+				blockedExecutor.shutdown();
+			}
+		}
+		catch(Exception e){
+
+		}
 	}
 	public int getQueue(){
 		return baseImportConfig.getQueue();
@@ -309,10 +325,37 @@ public abstract  class BaseImportContext implements ImportContext {
 //
 //	}
 
-	public int getStoreBatchSize(){
+	private AtomicInteger rejectCounts = new AtomicInteger();
+	private ExecutorService blockedExecutor;
+	public ExecutorService buildThreadPool(){
+		if(blockedExecutor != null)
+			return blockedExecutor;
+		synchronized (this) {
+			if(blockedExecutor == null) {
+
+				blockedExecutor = new ThreadPoolExecutor(getThreadCount(), getThreadCount(),
+						0L, TimeUnit.MILLISECONDS,
+						new ArrayBlockingQueue<Runnable>(getQueue()),
+						new ThreadFactory() {
+							private AtomicInteger threadCount = new AtomicInteger(0);
+
+							@Override
+							public Thread newThread(Runnable r) {
+								int num = threadCount.incrementAndGet();
+								return new DBESThread(r, num);
+							}
+						}, new BlockedTaskRejectedExecutionHandler(rejectCounts));
+			}
+		}
+		return blockedExecutor;
+	}
+	public Integer getStoreBatchSize(){
+		if(baseImportConfig.getScheduleBatchSize() == null){
+			return baseImportConfig.getBatchSize();
+		}
 		return baseImportConfig.getScheduleBatchSize();
 	}
-	public int getStatusTableId(){
+	public Integer getStatusTableId(){
 		return this.baseImportConfig.getStatusTableId();
 	}
 	public boolean isFromFirst(){
@@ -322,6 +365,14 @@ public abstract  class BaseImportContext implements ImportContext {
 	@Override
 	public String getDateLastValueColumn() {
 		return baseImportConfig.getDateLastValueColumn();
+	}
+
+	public void setRefreshOption(String refreshOption){
+		baseImportConfig.setRefreshOption(refreshOption);
+	}
+
+	public void setBatchSize(int batchSize){
+		baseImportConfig.setBatchSize(batchSize);
 	}
 
 

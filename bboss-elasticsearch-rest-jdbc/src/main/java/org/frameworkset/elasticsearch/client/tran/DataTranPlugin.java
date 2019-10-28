@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.client.schedule.Status;
@@ -51,12 +53,12 @@ public interface DataTranPlugin {
 	void destroy();
 
 
-	public void init();
+	void init();
 
 //	Object getValue(String columnName) throws ESDataImportException;
 //
 //	Object getDateTimeValue(String columnName) throws ESDataImportException;
-	public void setForceStop();
+	void setForceStop();
 //	public Object getLastValue() throws ESDataImportException;
 
 
@@ -65,4 +67,6 @@ public interface DataTranPlugin {
 	boolean isContinueOnError();
 
 	Status getCurrentStatus();
+
+	ExportCount getExportCount();
 }

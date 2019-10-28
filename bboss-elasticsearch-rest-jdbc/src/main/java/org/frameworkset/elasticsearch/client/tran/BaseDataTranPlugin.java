@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -19,6 +19,9 @@ import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
+import org.frameworkset.elasticsearch.client.DBConfig;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -42,9 +45,14 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class BaseDataTranPlugin implements DataTranPlugin{
+public abstract class BaseDataTranPlugin implements DataTranPlugin {
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	private boolean increamentImport = true;
+	private ExportCount exportCount;
+	public ExportCount getExportCount() {
+		return exportCount;
+	}
+
 
 	public BaseDataTranPlugin(ImportContext importContext){
 		this.importContext = importContext;
@@ -118,7 +126,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin{
 	public abstract void afterInit();
 	@Override
 	public void init() {
-
+		exportCount = new ExportCount();
 		beforeInit();
 		this.initSchedule();
 		initLastValueClumnName();

@@ -15,7 +15,9 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.scroll.HandlerInfo;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
@@ -33,11 +35,15 @@ import java.util.List;
  * @version 1.0
  */
 public class ESExporterScrollHandler<T> implements ScrollHandler<T> {
-	private ES2DB es2DB;
+	private ImportContext importContext ;
+	private ES2DBContext es2DBContext ;
+	private ConfigSQLExecutor configSQLExecutor;
 	private static Logger logger = LoggerFactory.getLogger(ESExporterScrollHandler.class);
 
-	public ESExporterScrollHandler(ES2DB es2DB) {
-		this.es2DB = es2DB;
+	public ESExporterScrollHandler(ImportContext importContext,ConfigSQLExecutor configSQLExecutor ) {
+		this.importContext = importContext;
+		this.es2DBContext = (ES2DBContext)importContext;
+		this.configSQLExecutor = configSQLExecutor;
 
 	}
 
@@ -46,7 +52,7 @@ public class ESExporterScrollHandler<T> implements ScrollHandler<T> {
 
 		long totalSize = response.getTotalSize();
 		List<T> datas = response.getDatas();
-		int batchNo = es2DB.getExportCount().increamentCount();
+		int batchNo = importContext.getExportCount().increamentCount();
 		if(totalSize == 0 || datas == null || datas.size() == 0){
 			if(logger.isInfoEnabled()){
 				logger.info("Igonre Execute export task {}:zero or null datas.",batchNo);
@@ -54,15 +60,17 @@ public class ESExporterScrollHandler<T> implements ScrollHandler<T> {
 			return;
 
 		}
-
+		final int insertBatchSize = es2DBContext.getInsertBatchSize() == null ?importContext.getStoreBatchSize():es2DBContext.getInsertBatchSize();
 		if(logger.isInfoEnabled()){
 			logger.info("Execute task {} start.",batchNo);
 		}
-		if(es2DB.getSql() == null) {
-			es2DB.getConfigSQLExecutor().executeBatch(es2DB.getDbConfig().getDbName(),es2DB.getSqlName(), datas, es2DB.getBatchSize(), es2DB.getBatchHandler());
+		if(es2DBContext.getSql() == null) {
+			configSQLExecutor.executeBatch(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName(),
+					datas, insertBatchSize, es2DBContext.getBatchHandler());
 		}
 		else{
-			SQLExecutor.executeBatch(es2DB.getDbConfig().getDbName(),es2DB.getSql(), datas, es2DB.getBatchSize(), es2DB.getBatchHandler());
+			SQLExecutor.executeBatch(importContext.getDbConfig().getDbName(),
+					es2DBContext.getSql(), datas, insertBatchSize, es2DBContext.getBatchHandler());
 		}
 		if(logger.isInfoEnabled()){
 			logger.info("Execute task {} complete and export data {} record.",batchNo,datas.size());

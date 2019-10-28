@@ -15,7 +15,6 @@ package org.frameworkset.elasticsearch.client.context;
  * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.ColumnData;
@@ -24,7 +23,8 @@ import org.frameworkset.elasticsearch.client.FieldMeta;
 import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
-import org.frameworkset.persitent.util.JDBCResultSet;
+import org.frameworkset.elasticsearch.client.tran.TranMeta;
+import org.frameworkset.elasticsearch.client.tran.TranResultSet;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.math.BigDecimal;
@@ -46,17 +46,17 @@ public class ContextImpl implements Context {
 	private Map<String,String> newfieldNames;
 	private Map<String,ColumnData> newfieldName2ndColumnDatas;
 	private BaseImportConfig esjdbc;
-	private JDBCResultSet jdbcResultSet;
+	private TranResultSet jdbcResultSet;
 	private BatchContext batchContext;
 	private boolean drop;
 	private ImportContext importContext;
-	public ContextImpl(ImportContext importContext, JDBCResultSet jdbcResultSet,BatchContext batchContext){
+	public ContextImpl(ImportContext importContext, TranResultSet jdbcResultSet, BatchContext batchContext){
 		this.esjdbc = importContext.getImportConfig();
 		this.importContext = importContext;
 		this.jdbcResultSet = jdbcResultSet;
 		this.batchContext = batchContext;
 	}
-	public PoolManResultSetMetaData getMetaData(){
+	public TranMeta getMetaData(){
 		return jdbcResultSet.getMetaData();
 
 	}

@@ -14,10 +14,17 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+
 /**
  * 数据库同步到Elasticsearch
  */
 public class MongoDB2ESDataStreamImpl extends DataStream{
+	@Override
+	protected ImportContext buildImportContext(BaseImportConfig importConfig) {
+		return null;
+	}
 //	private ESMongoDB esmongoDB;
 //	private ScheduleService scheduleService;
 //	private static Logger logger = LoggerFactory.getLogger(DataStream.class);

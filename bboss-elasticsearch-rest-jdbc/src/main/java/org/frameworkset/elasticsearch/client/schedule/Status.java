@@ -26,7 +26,7 @@ import java.util.Date;
  * @version 1.0
  */
 public class Status implements java.lang.Cloneable{
-	private int id;
+	private Integer id;
 	private long time;
 	/**
 	 * 0 数字类型
@@ -42,11 +42,11 @@ public class Status implements java.lang.Cloneable{
 		this.time = time;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String toString(){

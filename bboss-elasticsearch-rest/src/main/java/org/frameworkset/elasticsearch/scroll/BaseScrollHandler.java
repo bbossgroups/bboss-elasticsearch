@@ -15,8 +15,6 @@ package org.frameworkset.elasticsearch.scroll;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.ESDatas;
-
 /**
  * <p>Description: </p>
  * <p></p>
@@ -25,7 +23,10 @@ import org.frameworkset.elasticsearch.entity.ESDatas;
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ScrollHandler<T> {
-	public void handle(ESDatas<T> response,HandlerInfo handlerInfo) throws Exception;
-
+public interface BaseScrollHandler<T> extends ScrollHandler<T>{
+	/**
+	 * 标注是否在出错的情况下继续进行数据处理，全局配置
+	 * @return
+	 */
+	public boolean isContinueOneError();
 }

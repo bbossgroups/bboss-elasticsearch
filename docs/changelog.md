@@ -16,6 +16,11 @@ https://esdoc.bbossgroups.com/#/development
 6. 提供快速而高效的数据导入ES工具
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
+# v5.9.0 功能改进
+1.数据同步工具改进：完善增量数据同步机制，增量字段无需排序即可实现增量同步功能，提升同步性能
+
+2.数据同步工具bug修复：解决增量同步状态更新可能存在的不正确问题
+
 # v5.8.9 功能改进
 
 1.改进检索Meta数据：增加seqNo和primaryTerm属性。

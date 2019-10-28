@@ -7,8 +7,8 @@ import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportContext;
-import org.frameworkset.elasticsearch.client.db2es.JDBCRestClientUtil;
-import org.frameworkset.persitent.util.JDBCResultSet;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESDataTran;
+import org.frameworkset.elasticsearch.client.db2es.JDBCResultSet;
 import org.junit.Test;
 
 import java.sql.ResultSet;
@@ -34,7 +34,8 @@ public class TestDB2ESImportConfig {
 
 		}
 		final DB2ESImportContext importContext = new DB2ESImportContext();
-
+		importContext.setBatchSize(10);
+		importContext.setRefreshOption("refresh=true");
 		SQLExecutor.queryByNullRowHandler(new ResultSetHandler() {
 			@Override
 			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
@@ -44,8 +45,9 @@ public class TestDB2ESImportConfig {
 
 				jdbcResultSet.setResultSet(resultSet);
 				jdbcResultSet.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
-				jdbcRestClientUtil.addDocuments("dbdemo","dbdemo",importContext,"refresh",98);
+				jdbcResultSet.setDbadapter(statementInfo.getDbadapter());
+				DB2ESDataTran db2ESDataTran = new DB2ESDataTran(jdbcResultSet,importContext);
+				db2ESDataTran.tran("dbdemo","dbdemo");
 			}
 		},"select * from td_sm_log");
 
@@ -65,6 +67,8 @@ public class TestDB2ESImportConfig {
 
 		}
 		final DB2ESImportContext importContext = new DB2ESImportContext();
+		importContext.setBatchSize(10);
+		importContext.setRefreshOption("refresh=true");
 		SQLExecutor.queryByNullRowHandler(new ResultSetHandler() {
 			@Override
 			public void handleResult(ResultSet resultSet, StatementInfo statementInfo) throws Exception {
@@ -72,8 +76,9 @@ public class TestDB2ESImportConfig {
 
 				jdbcResultSet.setResultSet(resultSet);
 				jdbcResultSet.setMetaData(statementInfo.getMeta());
-				JDBCRestClientUtil jdbcRestClientUtil = new JDBCRestClientUtil(jdbcResultSet);
-				jdbcRestClientUtil.addDocuments("dbclobdemo","dbclobdemo",importContext,"refresh",1000);
+				jdbcResultSet.setDbadapter(statementInfo.getDbadapter());
+				DB2ESDataTran db2ESDataTran = new DB2ESDataTran(jdbcResultSet,importContext);
+				db2ESDataTran.tran("dbclobdemo","dbclobdemo");
 			}
 		},"select * from td_cms_document");
 

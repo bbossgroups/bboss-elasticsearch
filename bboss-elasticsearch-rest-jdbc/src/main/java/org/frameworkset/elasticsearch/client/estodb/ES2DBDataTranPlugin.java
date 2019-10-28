@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.db2es;
+package org.frameworkset.elasticsearch.client.estodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,20 +16,24 @@ package org.frameworkset.elasticsearch.client.db2es;
  */
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
-import com.frameworkset.common.poolman.SQLExecutor;
-import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.common.poolman.util.SQLUtil;
-import com.frameworkset.orm.transaction.TransactionManager;
 import com.frameworkset.util.SimpleStringUtil;
-import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.DBConfig;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.TaskFailedException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.util.tokenizer.TextGrammarParser;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -39,14 +43,14 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlugin {
+public class ES2DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlugin {
 	private SQLInfo sqlInfo;
 	private ConfigSQLExecutor executor;
-	private DBContext dbContext;
+	private ES2DBContext dbContext;
 
-	public DBDataTranPlugin(ImportContext importContext){
+	public ES2DBDataTranPlugin(ImportContext importContext){
 		super(importContext);
-		dbContext = (DBContext)importContext;
+		dbContext = (ES2DBContext)importContext;
 
 	}
 	public void initSQLInfo(){
@@ -109,114 +113,70 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 
 
 
-	private void commonImportData(ResultSetHandler resultSetHandler) throws Exception {
-		if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
-			if (executor == null) {
-				SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql());
-			} else {
-				executor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName());
+	private void commonImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
+		Map params = dbContext.getParams() != null ?dbContext.getParams():new HashMap();
+		params.put("size", importContext.getStoreBatchSize());//每页5000条记录
+		if(dbContext.isSliceQuery()){
+			params.put("sliceMax",dbContext.getSliceSize());
+		}
+		exportESData(  esExporterScrollHandler,  params);
+	}
+
+	private void exportESData(ESExporterScrollHandler<Map> esExporterScrollHandler,Map params){
+
+		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
+		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
+
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(dbContext.getDslFile());
+
+		ESDatas<Map> response = null;
+		if(!dbContext.isSliceQuery()) {
+			if(!importContext.isParallel()) {
+				response = clientUtil.scroll(dbContext.getQueryUrl(), dbContext.getDslName(), dbContext.getScrollLiveTime(), params, Map.class, esExporterScrollHandler);
+			}
+			else
+			{
+				response = clientUtil.scrollParallel(dbContext.getQueryUrl(),
+						dbContext.getDslName(), dbContext.getScrollLiveTime(),
+						params, Map.class, esExporterScrollHandler);
 			}
 		}
-		else {
-
-			TransactionManager transactionManager = new TransactionManager();
-			try {
-				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if (executor == null) {
-					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql());
-				} else {
-					executor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName());
-				}
-				transactionManager.commit();
-			} finally {
-				transactionManager.releasenolog();
+		else{
+			response = clientUtil.scrollSliceParallel(dbContext.getQueryUrl(), dbContext.getDslName(),  params, dbContext.getScrollLiveTime(),Map.class, esExporterScrollHandler);
+		}
+		if(logger.isInfoEnabled()) {
+			if(response != null) {
+				logger.info("Export compoleted and export total {} records.", response.getTotalSize());
+			}
+			else{
+				logger.info("Export compoleted and export no records or failed.");
 			}
 		}
 	}
-
-	private void increamentImportData(ResultSetHandler resultSetHandler) throws Exception {
-		if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
-			if (executor == null) {
-				SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql(), getParamValue());
-			} else {
-				executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName(), getParamValue());
-
-			}
+	private void increamentImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
+		Map params = dbContext.getParams() != null ?dbContext.getParams():new HashMap();
+		params.put("size", importContext.getStoreBatchSize());//每页5000条记录
+		if(dbContext.isSliceQuery()){
+			params.put("sliceMax",dbContext.getSliceSize());
 		}
-		else {
-			TransactionManager transactionManager = new TransactionManager();
-			try {
-				transactionManager.begin(TransactionManager.RW_TRANSACTION);
-				if (executor == null) {
-					SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSql(), getParamValue());
-				} else {
-					executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), dbContext.getSqlName(), getParamValue());
+		params.put(importContext.getLastValueClumnName(),getParamValue());
+		exportESData(  esExporterScrollHandler,  params);
 
-				}
-			} finally {
-				transactionManager.releasenolog();
-			}
-		}
 	}
 
 	public void doImportData()  throws ESDataImportException{
 
-		ResultSetHandler resultSetHandler = new DefaultResultSetHandler(importContext);
+		ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext,executor);
 
 		try {
-			if (sqlInfo.getParamSize() == 0) {
-//			if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
-//				if (executor == null) {
-//					SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql());
-//				} else {
-//					executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), (Map) null);
-//				}
-//			}
-//			else {
-//				TransactionManager transactionManager = new TransactionManager();
-//				try {
-//					transactionManager.begin(TransactionManager.RW_TRANSACTION);
-//					if (executor == null) {
-//						SQLExecutor.queryWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql());
-//					} else {
-//						executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), (Map) null);
-//					}
-//					transactionManager.commit();
-//				} finally {
-//					transactionManager.releasenolog();
-//				}
-//			}
-				commonImportData(resultSetHandler);
+			if (!isIncreamentImport()) {
+
+				commonImportData(esExporterScrollHandler);
 
 			} else {
-				if (!isIncreamentImport()) {
-					setForceStop();
-				} else {
-//				if(importContext.getDataRefactor() == null || !importContext.getDbConfig().isEnableDBTransaction()){
-//					if (executor == null) {
-//						SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql(), getParamValue());
-//					} else {
-//						executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), getParamValue());
-//
-//					}
-//				}
-//				else {
-//					TransactionManager transactionManager = new TransactionManager();
-//					try {
-//						transactionManager.begin(TransactionManager.RW_TRANSACTION);
-//						if (executor == null) {
-//							SQLExecutor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSql(), getParamValue());
-//						} else {
-//							executor.queryBeanWithDBNameByNullRowHandler(resultSetHandler, importContext.getDbConfig().getDbName(), importContext.getSqlName(), getParamValue());
-//
-//						}
-//					} finally {
-//						transactionManager.releasenolog();
-//					}
-//				}
-					increamentImportData(resultSetHandler);
 
-				}
+				increamentImportData(  esExporterScrollHandler);
+
 			}
 		}
 		catch (ESDataImportException e){
@@ -226,6 +186,7 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 			throw new ESDataImportException(e);
 		}
 	}
+
 
 
 	public String getLastValueVarName(){

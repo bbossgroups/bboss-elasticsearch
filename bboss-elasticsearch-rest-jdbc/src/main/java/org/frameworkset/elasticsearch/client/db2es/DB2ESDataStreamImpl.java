@@ -15,12 +15,8 @@ package org.frameworkset.elasticsearch.client.db2es;/*
  */
 
 import org.frameworkset.elasticsearch.client.DataStream;
-import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 
 /**
  * 数据库同步到Elasticsearch
@@ -29,65 +25,17 @@ public class DB2ESDataStreamImpl extends DataStream{
 	private DB2ESImportConfig db2ESImportConfig;
 
 
-	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
-	private boolean inited;
-//	public void setExternalTimer(boolean externalTimer) {
-//		this.esjdbc.setExternalTimer(externalTimer);
-//	}
-	private Lock lock = new ReentrantLock();
-
-	public void init(){
-		if(inited )
-			return;
-		if(db2ESImportConfig == null){
-			throw new ESDataImportException("DB2ESImportConfig is null.");
-		}
-
-		try {
-			lock.lock();
-			this.importContext = new DB2ESImportContext(db2ESImportConfig);
+//	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 
 
-//			this.initES(esjdbc.getApplicationPropertiesFile());
-//			this.initDS(esjdbc.getDbConfig());
-//			initOtherDSes(esjdbc.getConfigs());
-//			this.initSQLInfo();
-//			this.initSchedule();
-			inited = true;
-		}
-		catch (Exception e) {
-			inited = true;
-			throw new ESDataImportException(e);
-		}
-		finally{
-
-
-			lock.unlock();
-		}
+	protected ImportContext buildImportContext(BaseImportConfig importConfig){
+		return new DB2ESImportContext(db2ESImportConfig);
 	}
-
-
-
-	@Override
-	public String getConfigString() {
-		return this.toString();
-	}
-
 
 
 	public void setEsjdbc(DB2ESImportConfig db2ESImportConfig){
 		this.db2ESImportConfig = db2ESImportConfig;
+		this.importConfig = db2ESImportConfig;
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 }
