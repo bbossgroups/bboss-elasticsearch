@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class ES2DBExportBuilder extends BaseImportBuilder {
 	private static Logger logger = LoggerFactory.getLogger(ES2DBExportBuilder.class);
-	private Integer insertBatchSize ;
+
 	private String scrollLiveTime = "100m";
 	private BatchHandler<Map> batchHandler;
 	private Map params;
@@ -73,6 +73,7 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 
 		}
 		ES2DBImportConfig es2DBImportConfig = new ES2DBImportConfig();
+		super.buildImportConfig(es2DBImportConfig);
 		es2DBImportConfig.setDsl2ndSqlFile(this.dsl2ndSqlFile);
 		es2DBImportConfig.setSqlName(sqlName);
 		es2DBImportConfig.setSql(this.sql);
@@ -82,7 +83,6 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setScrollLiveTime(this.scrollLiveTime);
 
 
-		es2DBImportConfig.setInsertBatchSize(this.insertBatchSize);
 		es2DBImportConfig.setBatchHandler(this.batchHandler);
 		es2DBImportConfig.setDslName(this.dslName);
 		es2DBImportConfig.setSliceQuery(this.sliceQuery);
@@ -110,18 +110,6 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 
 	public ES2DBExportBuilder setSqlName(String sqlName) {
 		this.sqlName = sqlName;
-		return this;
-	}
-
-
-
-
-	public Integer getInsertBatchSize() {
-		return insertBatchSize;
-	}
-
-	public ES2DBExportBuilder setInsertBatchSize(Integer insertBatchSize) {
-		this.insertBatchSize = insertBatchSize;
 		return this;
 	}
 

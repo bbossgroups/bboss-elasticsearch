@@ -33,7 +33,7 @@ public class DB2ESDataStreamImpl extends DataStream{
 	}
 
 
-	public void setEsjdbc(DB2ESImportConfig db2ESImportConfig){
+	public void setImportConfig(DB2ESImportConfig db2ESImportConfig){
 		this.db2ESImportConfig = db2ESImportConfig;
 		this.importConfig = db2ESImportConfig;
 	}

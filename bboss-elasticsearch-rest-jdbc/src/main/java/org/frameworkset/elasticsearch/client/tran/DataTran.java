@@ -15,8 +15,10 @@ package org.frameworkset.elasticsearch.client.tran;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.ImportCount;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
+import org.frameworkset.elasticsearch.scroll.BreakableScrollHandler;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -48,8 +50,8 @@ public interface DataTran {
 	 * 逐条导入
 	 * @return
 	 */
-	String serialExecute(   );
-
+	String serialExecute(   ) throws ESDataImportException;
+	public BreakableScrollHandler getBreakableScrollHandler();
 	void waitTasksComplete(final List<Future> tasks,
 						   final ExecutorService service, Exception exception, Object lastValue, final ImportCount totalCount , final TranErrorWrapper tranErrorWrapper );
 }

@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.scroll;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,28 +15,24 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.context.ImportContext;
-
 /**
- * <p>Description: </p>
+ * <p>Description: 可以终端scroll查询的处理器</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 11:32
+ * @Date 2018/9/4 11:45
  * @author biaoping.yin
  * @version 1.0
  */
-public interface TaskCommand<DATA,RESULT> {
-
-	public DATA getDatas() ;
-
-
-	public void setDatas(DATA datas) ;
-
-
-	public RESULT execute();
-
-	public int getTryCount() ;
-	public ImportContext getImportContext();
-
-
+public interface  BreakableScrollHandler {
+	public void setBreaked(boolean breaked);
+	/**
+	 * 是否中断scroll查询
+	 * @return
+	 */
+	public boolean isBreaked();
+//	/**
+//	 * 更加错误异常信息，判断是否在出错的情况下继续进行数据处理，全局配置
+//	 * @return
+//	 */
+//	public boolean isContinueOneError(Throwable throwable);
 }

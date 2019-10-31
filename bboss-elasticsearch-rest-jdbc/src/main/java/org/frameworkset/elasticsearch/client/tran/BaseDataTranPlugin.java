@@ -56,8 +56,11 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 
 	public BaseDataTranPlugin(ImportContext importContext){
 		this.importContext = importContext;
+		init(importContext);
 	}
+	protected void init(ImportContext importContext){
 
+	}
 	@Override
 	public ImportContext getImportContext() {
 		return importContext;

@@ -63,7 +63,8 @@ public class JDBCResultSet implements TranResultSet {
 			}
 		}
 		catch (Exception ex){
-			throw new ESDataImportException(ex);
+			throw new ESDataImportException(new StringBuilder().append("getValue(  ")
+					.append(i).append(", ").append(colName).append(",").append(sqlType).append(")").toString(),ex);
 		}
 
 	}
@@ -77,7 +78,7 @@ public class JDBCResultSet implements TranResultSet {
 			return value;
 		}
 		catch (Exception ex){
-			throw new ESDataImportException(ex);
+			throw new ESDataImportException(new StringBuilder().append("getValue(").append(colName).append(")").toString(),ex);
 		}
 
 	}
@@ -96,7 +97,8 @@ public class JDBCResultSet implements TranResultSet {
 			}
 		}
 		catch (Exception ex){
-			throw new ESDataImportException(ex);
+			throw new ESDataImportException(new StringBuilder().append("getValue(  ")
+					.append(colName).append(",").append(sqlType).append(")").toString(),ex);
 		}
 
 
@@ -116,7 +118,7 @@ public class JDBCResultSet implements TranResultSet {
 				return value;
 			}
 			catch (Exception ex){
-				throw new ESDataImportException(ex);
+				throw new ESDataImportException(new StringBuilder().append("getValue(").append(colName).append(")").toString(),ex);
 			}
 
 		}

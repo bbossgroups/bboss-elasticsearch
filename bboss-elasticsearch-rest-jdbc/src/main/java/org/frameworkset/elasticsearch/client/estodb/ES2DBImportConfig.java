@@ -31,8 +31,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class ES2DBImportConfig extends BaseImportConfig {
-	//scroll分页检索，每批查询数据大小
-	private Integer insertBatchSize ;
+
 
 	private String sql ;//= "insert into batchtest (name) values(?)";
 	private String queryUrl;// = "demo/_search";
@@ -145,14 +144,6 @@ public class ES2DBImportConfig extends BaseImportConfig {
 //		}
 //	}
 
-
-	public Integer getInsertBatchSize() {
-		return insertBatchSize;
-	}
-
-	public void setInsertBatchSize(Integer insertBatchSize) {
-		this.insertBatchSize = insertBatchSize;
-	}
 
 	public String getQueryUrl() {
 		return queryUrl;

@@ -41,6 +41,8 @@ public interface ImportContext {
 	boolean isPrintTaskLog();
 	void setRefreshOption(String refreshOption);
 	void setBatchSize(int batchSize);
+	public Integer getFetchSize() ;
+
 	void destroy();
 	public ExportCount getExportCount();
 	void importData();

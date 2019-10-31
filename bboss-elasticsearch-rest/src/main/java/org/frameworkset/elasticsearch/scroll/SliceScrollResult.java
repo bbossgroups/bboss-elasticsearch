@@ -25,7 +25,7 @@ import org.frameworkset.elasticsearch.entity.ESDatas;
  * @author biaoping.yin
  * @version 1.0
  */
-public class SliceScrollResult<T> implements SliceScrollResultInf<T> {
+public class SliceScrollResult<T> extends BreakableSliceScrollResult   implements SliceScrollResultInf<T> {
 	//用来存放实际slice检索总记录数
 	private volatile long realTotalSize = 0L;
 	private ESDatas<T> sliceResponse;
@@ -70,6 +70,11 @@ public class SliceScrollResult<T> implements SliceScrollResultInf<T> {
 		this.scrollHandler = scrollHandler;
 		if(scrollHandler instanceof DefualtScrollHandler){
 			useDefaultScrollHandler = true;
+		}
+		else{
+			if(scrollHandler instanceof BreakableScrollHandler){
+				breakableScrollHandler = (BreakableScrollHandler)scrollHandler;
+			}
 		}
 		return this.scrollHandler;
 	}

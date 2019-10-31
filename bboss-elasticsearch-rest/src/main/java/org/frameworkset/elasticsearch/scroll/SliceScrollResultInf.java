@@ -40,4 +40,5 @@ public interface SliceScrollResultInf<T> {
 	public ScrollHandler<T> getScrollHandler() ;
 	public ScrollHandler<T> setScrollHandler(ScrollHandler<T> scrollHandler);
 	public ScrollHandler<T> setScrollHandler(ESDatas<T> sliceResponse,HandlerInfo handlerInfo) throws Exception;
+	public boolean isBreaked();
 }

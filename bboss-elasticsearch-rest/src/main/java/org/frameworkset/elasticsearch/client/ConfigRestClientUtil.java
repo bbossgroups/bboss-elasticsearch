@@ -1159,10 +1159,13 @@ public class ConfigRestClientUtil extends RestClientUtil {
 			int i = j;
 			try {
 				params.put("sliceId", i);
+				if(sliceScrollResult.isBreaked())
+					break;
 				_doSliceScroll( i, _path,
 						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
 						sliceScrollResult,false);
+
 
 			} catch (ElasticSearchException e) {
 				throw e;

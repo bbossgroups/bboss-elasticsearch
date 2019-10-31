@@ -16,17 +16,33 @@ package org.frameworkset.elasticsearch.scroll;
  */
 
 /**
- * <p>Description: </p>
+ * <p>Description: 可以中断串行scroll查询的处理器</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
  * @Date 2018/9/4 11:45
  * @author biaoping.yin
  * @version 1.0
  */
-public interface BaseScrollHandler<T> extends ScrollHandler<T>{
+public abstract class SerialBreakableScrollHandler<T> implements BreakableScrollHandler, ScrollHandler<T>{
+	private boolean breaked ;
+
 	/**
-	 * 标注是否在出错的情况下继续进行数据处理，全局配置
+	 * 是否中断scroll查询
 	 * @return
 	 */
-	public boolean isContinueOneError();
+	public boolean isBreaked(){
+		 return breaked;
+	}
+	public void setBreaked(boolean breaked){
+
+		this.breaked = breaked;
+
+
+	}
+
+//	/**
+//	 * 更加错误异常信息，判断是否在出错的情况下继续进行数据处理，全局配置
+//	 * @return
+//	 */
+//	public boolean isContinueOneError(Throwable throwable);
 }

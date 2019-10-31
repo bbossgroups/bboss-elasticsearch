@@ -16,12 +16,14 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.common.poolman.SQLExecutor;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.scroll.HandlerInfo;
-import org.frameworkset.elasticsearch.scroll.ParralBreakableScrollHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -31,28 +33,20 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESExporterScrollHandler<T> extends ParralBreakableScrollHandler<T> {
-	protected ImportContext importContext ;
-	protected ES2DBContext es2DBContext ;
-	protected ConfigSQLExecutor configSQLExecutor;
-	private static Logger logger = LoggerFactory.getLogger(ESExporterScrollHandler.class);
+public class ESDirectExporterScrollHandler<T> extends ESExporterScrollHandler<T>  {
+
+	private static Logger logger = LoggerFactory.getLogger(ESDirectExporterScrollHandler.class);
 //	private ESTranResultSet esTranResultSet ;
-	protected ES2DBDataTran es2DBDataTran ;
-	public ESExporterScrollHandler(ImportContext importContext,ConfigSQLExecutor configSQLExecutor,ES2DBDataTran es2DBDataTran ) {
-		this.importContext = importContext;
-		this.es2DBContext = (ES2DBContext)importContext;
-		this.configSQLExecutor = configSQLExecutor;
-		this.es2DBDataTran = es2DBDataTran;
-		this.es2DBDataTran.setBreakableScrollHandler(this);
+	public ESDirectExporterScrollHandler(ImportContext importContext, ConfigSQLExecutor configSQLExecutor, ES2DBDataTran es2DBDataTran ) {
+		super(  importContext,   configSQLExecutor,   es2DBDataTran);
 	}
 
 	public void handle(ESDatas<T> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 
 //		ES2DBDataTran es2DBDataTran = new ES2DBDataTran(esTranResultSet,importContext);
-		es2DBDataTran.appendData(response,this);
 
 
-		/**
+
 		long totalSize = response.getTotalSize();
 		List<T> datas = response.getDatas();
 		int batchNo = importContext.getExportCount().increamentCount();
@@ -63,22 +57,22 @@ public class ESExporterScrollHandler<T> extends ParralBreakableScrollHandler<T> 
 			return;
 
 		}
-		final int insertBatchSize = es2DBContext.getInsertBatchSize() == null ?importContext.getStoreBatchSize():es2DBContext.getInsertBatchSize();
+		final int batchSize = importContext.getStoreBatchSize();
 		if(logger.isInfoEnabled()){
 			logger.info("Execute task {} start.",batchNo);
 		}
 		if(es2DBContext.getSql() == null) {
 			configSQLExecutor.executeBatch(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName(),
-					datas, insertBatchSize, es2DBContext.getBatchHandler());
+					datas, batchSize, es2DBContext.getBatchHandler());
 		}
 		else{
 			SQLExecutor.executeBatch(importContext.getDbConfig().getDbName(),
-					es2DBContext.getSql(), datas, insertBatchSize, es2DBContext.getBatchHandler());
+					es2DBContext.getSql(), datas, batchSize, es2DBContext.getBatchHandler());
 		}
 		if(logger.isInfoEnabled()){
 			logger.info("Execute task {} complete and export data {} record.",batchNo,datas.size());
 		}
-		 */
+
 	}
 
 

@@ -38,6 +38,7 @@ import java.util.*;
 public abstract class BaseImportBuilder {
 	private DBConfig dbConfig ;
 	private DBConfig statusDbConfig ;
+	private Integer fetchSize = 5000;
 	/**
 	 * 是否不需要返回响应，不需要的情况下，可以设置为true，
 	 * 提升性能，如果debugResponse设置为true，那么强制返回并打印响应到日志文件中
@@ -944,7 +945,7 @@ public abstract class BaseImportBuilder {
 		baseImportConfig.setEsVersionField(esVersionField);
 		baseImportConfig.setEsVersionValue(esVersionValue);
 		baseImportConfig.setEsVersionType(esVersionType);
-
+		baseImportConfig.setFetchSize(this.fetchSize);
 		baseImportConfig.setRoutingField(this.routingField);
 		baseImportConfig.setRoutingValue(this.routingValue);
 		baseImportConfig.setUseJavaName(this.useJavaName);
@@ -959,8 +960,10 @@ public abstract class BaseImportBuilder {
 		baseImportConfig.setConfigs(this.configs);
 		baseImportConfig.setRefreshOption(this.refreshOption);
 		baseImportConfig.setBatchSize(this.batchSize);
-		ESIndexWrapper esIndexWrapper = new ESIndexWrapper(index,indexType);
-		baseImportConfig.setEsIndexWrapper(esIndexWrapper);
+		if(index != null) {
+			ESIndexWrapper esIndexWrapper = new ESIndexWrapper(index, indexType);
+			baseImportConfig.setEsIndexWrapper(esIndexWrapper);
+		}
 //		importConfig.setIndex(index);
 //		importConfig.setIndexPattern(this.splitIndexName(index));
 //		importConfig.setIndexType(indexType);
@@ -1142,4 +1145,12 @@ public abstract class BaseImportBuilder {
 	}
 
 
+	public Integer getFetchSize() {
+		return fetchSize;
+	}
+
+	public BaseImportBuilder setFetchSize(Integer fetchSize) {
+		this.fetchSize = fetchSize;
+		return this;
+	}
 }

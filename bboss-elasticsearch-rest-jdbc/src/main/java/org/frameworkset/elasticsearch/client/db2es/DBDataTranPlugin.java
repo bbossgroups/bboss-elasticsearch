@@ -15,21 +15,13 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
-import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.orm.transaction.TransactionManager;
-import com.frameworkset.util.SimpleStringUtil;
-import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
-import org.frameworkset.elasticsearch.client.tran.BaseDataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.util.tokenizer.TextGrammarParser;
-
-import java.sql.SQLException;
-import java.util.List;
+import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
 
 /**
  * <p>Description: </p>
@@ -39,70 +31,13 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlugin {
-	private SQLInfo sqlInfo;
-	private ConfigSQLExecutor executor;
-	private DBContext dbContext;
+public class DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTranPlugin {
 
 	public DBDataTranPlugin(ImportContext importContext){
 		super(importContext);
-		dbContext = (DBContext)importContext;
-
-	}
-	public void initSQLInfo(){
-
-		if(dbContext.getSql() == null || dbContext.getSql().equals("")){
-
-			if(dbContext.getSqlFilepath() != null && !dbContext.getSqlFilepath().equals(""))
-			try {
-				ConfigSQLExecutor executor = new ConfigSQLExecutor(dbContext.getSqlFilepath());
-				org.frameworkset.persitent.util.SQLInfo sqlInfo = executor.getSqlInfo(dbContext.getSqlName());
-				this.executor = executor;
-				dbContext.setSql(sqlInfo.getSql());
-			}
-			catch (SQLException e){
-				throw new ESDataImportException(e);
-			}
-
-		}
-		if(dbContext.getSql() != null && !dbContext.getSql().equals("")) {
-			importContext.setStatusTableId(dbContext.getSql().hashCode());
-			initSQLInfoParams();
-		}
-
-	}
-	private void initSQLInfoParams(){
-		String originSQL = dbContext.getSql();
-		List<TextGrammarParser.GrammarToken> tokens =
-				TextGrammarParser.parser(originSQL, "#[", "]");
-		SQLInfo _sqlInfo = new SQLInfo();
-		int paramSize = 0;
-		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < tokens.size(); i ++){
-			TextGrammarParser.GrammarToken token = tokens.get(i);
-			if(token.texttoken()){
-				builder.append(token.getText());
-			}
-			else {
-				builder.append("?");
-				if(paramSize == 0){
-					_sqlInfo.setLastValueVarName(token.getText());
-				}
-				paramSize ++;
-
-			}
-		}
-		_sqlInfo.setParamSize(paramSize);
-		_sqlInfo.setSql(builder.toString());
-		this.sqlInfo = _sqlInfo;
 
 
 	}
-	public SQLInfo getSqlInfo() {
-		return sqlInfo;
-	}
-
-
 
 
 
@@ -227,90 +162,6 @@ public class DBDataTranPlugin extends BaseDataTranPlugin implements DataTranPlug
 		}
 	}
 
-
-	public String getLastValueVarName(){
-		return this.sqlInfo != null?this.sqlInfo.getLastValueVarName():null;
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		this.stopDS(importContext.getDbConfig());
-		this.stopOtherDSES(importContext.getConfigs());
-
-//		this.importContext.destroy();
-
-	}
-
-
-
-	protected void initDS(DBConfig dbConfig){
-		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
-			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
-					dbConfig.getDbDriver(),//oracle驱动
-					dbConfig.getDbUrl(),//mysql链接串
-					dbConfig.getDbUser(), dbConfig.getDbPassword(),//数据库账号和口令
-					null,//"false",
-					null,// "READ_UNCOMMITTED",
-					dbConfig.getValidateSQL(),//数据库连接校验sql
-					dbConfig.getDbName()+"_jndi",
-					dbConfig.getInitSize(),
-					dbConfig.getMinIdleSize(),
-					dbConfig.getMaxSize(),
-					dbConfig.isUsePool(),
-					false,
-					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
-			);
-		}
-	}
-	protected void initOtherDSes(List<DBConfig> dbConfigs){
-		if(dbConfigs != null && dbConfigs.size() > 0){
-			for (DBConfig dbConfig:dbConfigs){
-				initDS( dbConfig);
-			}
-		}
-	}
-
-	private void stopDS(DBConfig dbConfig){
-		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())){
-			try {
-				SQLUtil.stopPool(dbConfig.getDbName());
-			} catch (Exception e) {
-				if(logger.isErrorEnabled())
-					logger.error("SQLUtil.stopPool("+dbConfig.getDbName()+") failed:",e);
-			}
-		}
-	}
-
-	private void stopOtherDSES(List<DBConfig> dbConfigs){
-
-		if(dbConfigs != null && dbConfigs.size() > 0){
-			for(DBConfig dbConfig:dbConfigs){
-				stopDS(dbConfig);
-			}
-		}
-	}
-
-	@Override
-	public void beforeInit() {
-		this.initES(importContext.getApplicationPropertiesFile());
-		this.initDS(importContext.getDbConfig());
-		initOtherDSes(importContext.getConfigs());
-		this.initSQLInfo();
-
-	}
-
-	@Override
-	public void afterInit(){
-		if(sqlInfo != null
-				&& sqlInfo.getParamSize() > 0
-				&& !this.isIncreamentImport()){
-			throw new TaskFailedException("Parameter variables cannot be set in non-incremental import SQL statements："+dbContext.getSql());
-		}
-//		this.externalTimer = this.importContext.isExternalTimer();
-	}
 
 
 

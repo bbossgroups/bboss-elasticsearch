@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.BatchHandler;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 
@@ -34,14 +35,16 @@ public class ES2DBImportContext extends BaseImportContext implements ES2DBContex
 	protected  DataTranPlugin buildDataTranPlugin(){
 		return new ES2DBDataTranPlugin(this);
 	}
-
+	protected void init(BaseImportConfig baseImportConfig){
+		es2DBImportConfig = (ES2DBImportConfig)baseImportConfig;
+	}
 	public ES2DBImportContext(){
 		this(new ES2DBImportConfig());
 
 	}
 	public ES2DBImportContext(ES2DBImportConfig baseImportConfig){
 		super(baseImportConfig);
-		es2DBImportConfig = (ES2DBImportConfig)baseImportConfig;
+
 	}
 
 	@Override
@@ -79,10 +82,7 @@ public class ES2DBImportContext extends BaseImportContext implements ES2DBContex
 		return es2DBImportConfig.getSliceSize();
 	}
 
-	@Override
-	public Integer getInsertBatchSize() {
-		return es2DBImportConfig.getInsertBatchSize();
-	}
+
 
 	@Override
 	public String getQueryUrl() {

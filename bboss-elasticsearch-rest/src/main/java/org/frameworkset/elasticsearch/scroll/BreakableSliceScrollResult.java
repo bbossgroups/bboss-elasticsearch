@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.scroll;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,28 +15,25 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.context.ImportContext;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 11:32
+ * @Date 2018/9/4 12:55
  * @author biaoping.yin
  * @version 1.0
  */
-public interface TaskCommand<DATA,RESULT> {
+public abstract class BreakableSliceScrollResult {
 
-	public DATA getDatas() ;
+	protected BreakableScrollHandler breakableScrollHandler;
 
+	public BreakableSliceScrollResult(){
+	}
 
-	public void setDatas(DATA datas) ;
-
-
-	public RESULT execute();
-
-	public int getTryCount() ;
-	public ImportContext getImportContext();
-
-
+	public boolean isBreaked(){
+		if(breakableScrollHandler != null){
+			return breakableScrollHandler.isBreaked();
+		}
+		return false;
+	}
 }

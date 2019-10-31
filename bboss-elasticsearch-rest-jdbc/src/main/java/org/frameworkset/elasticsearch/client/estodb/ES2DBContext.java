@@ -35,7 +35,6 @@ public interface ES2DBContext extends DBContext {
 
 	int getSliceSize();
 
-	Integer getInsertBatchSize();
 
 	String getQueryUrl();
 

@@ -1974,6 +1974,9 @@ public class RestClientUtil extends ClientUtil{
 				ESDatas<T> _sliceResponse = null;
 				List<T> _sliceDatas = null;
 				do {
+					if(sliceScrollResult.isBreaked()){
+						break;
+					}
 					_sliceResponse = searchScroll(scroll, scrollId, type);
 					String sliceScrollId = _sliceResponse.getScrollId();
 					if (sliceScrollId != null)
@@ -2367,11 +2370,15 @@ public class RestClientUtil extends ClientUtil{
 			ExecutorService executorService = this.client.getScrollQueryExecutorService();
 			List<T> datas = response.getDatas();//第一页数据
 			ScrollTask<T> scrollTask = null;
+			BreakableScrollHandler breakedScrollHandler = null;
 			if(scrollHandler == null){
 				scrollHandler = new DefualtScrollHandler<T>(response);
 				useDefaultScrollHandler = true;
 			}
 			else{
+				if(scrollHandler instanceof BreakableScrollHandler){
+					breakedScrollHandler = (BreakableScrollHandler)scrollHandler;
+				}
 				if (datas != null && datas.size() > 0) {
 					tasks = new ArrayList<Future>();
 					HandlerInfo handlerInfo = new HandlerInfo();
@@ -2401,7 +2408,9 @@ public class RestClientUtil extends ClientUtil{
 				ESDatas<T> _response = null;
 				List<T> _datas = null;
 				do {
-
+					 if(breakedScrollHandler != null && breakedScrollHandler.isBreaked()){
+					 	break;
+					 }
 					_response = searchScroll(scroll, scrollId, type);
 
 					String _scrollId = _response.getScrollId();//每页的scrollid
@@ -2568,11 +2577,15 @@ public class RestClientUtil extends ClientUtil{
 			ESDatas<T> response =  ResultUtil.buildESDatas(result,type);
 			int taskId = 0;
 			boolean useDefaultScrollHandler = false;
+			BreakableScrollHandler breakedScrollHandler = null;
 			if(scrollHandler == null){
 				scrollHandler = new DefualtScrollHandler<T>(response);
 				useDefaultScrollHandler = true;
 			}
 			else{
+				if(scrollHandler instanceof BreakableScrollHandler){
+					breakedScrollHandler = (BreakableScrollHandler)scrollHandler;
+				}
 				HandlerInfo handlerInfo = new HandlerInfo();
 				handlerInfo.setTaskId(taskId);
 				taskId ++;
@@ -2593,8 +2606,11 @@ public class RestClientUtil extends ClientUtil{
 				ESDatas<T> _response = null;
 				List<T> _datas = null;
 				do {
-
+					if(breakedScrollHandler != null && breakedScrollHandler.isBreaked()){
+						break;
+					}
 					_response = searchScroll(scroll, scrollId, type);
+
 					String _scrollId = _response.getScrollId();//每页的scrollid
 					if (scrollId != null)
 						scrollIds.add(_scrollId);

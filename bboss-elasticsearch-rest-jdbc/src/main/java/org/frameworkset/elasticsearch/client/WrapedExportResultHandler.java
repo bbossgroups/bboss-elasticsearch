@@ -37,5 +37,5 @@ public interface WrapedExportResultHandler<DATA,RESULT> extends ExportResultHand
 	 * @param result
 	 *
 	 */
-	public void handleResult(TaskCommand<DATA,RESULT> taskCommand, String result);
+	public void handleResult(TaskCommand<DATA,RESULT> taskCommand, RESULT result);
 }

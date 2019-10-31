@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 
@@ -30,31 +31,33 @@ public class DB2ESImportContext extends BaseImportContext implements DBContext{
 	protected  DataTranPlugin buildDataTranPlugin(){
 		return new DBDataTranPlugin(this);
 	}
-
+	private DB2ESImportConfig db2ESImportConfig;
 	public DB2ESImportContext(){
 		super(new DB2ESImportConfig());
 	}
 	public DB2ESImportContext(DB2ESImportConfig baseImportConfig){
 		super(baseImportConfig);
 	}
-
+	protected void init(BaseImportConfig baseImportConfig){
+		db2ESImportConfig = (DB2ESImportConfig)baseImportConfig;
+	}
 	@Override
 	public String getSql() {
-		return ((DB2ESImportConfig)baseImportConfig).getSql();
+		return db2ESImportConfig.getSql();
 	}
 
 	@Override
 	public String getSqlFilepath() {
-		return ((DB2ESImportConfig)baseImportConfig).getSqlFilepath();
+		return db2ESImportConfig.getSqlFilepath();
 	}
 
 	@Override
 	public String getSqlName() {
-		return ((DB2ESImportConfig)baseImportConfig).getSqlName();
+		return db2ESImportConfig.getSqlName();
 	}
 
 	@Override
 	public void setSql(String sql) {
-		((DB2ESImportConfig)baseImportConfig).setSql(sql);
+		db2ESImportConfig.setSql(sql);
 	}
 }

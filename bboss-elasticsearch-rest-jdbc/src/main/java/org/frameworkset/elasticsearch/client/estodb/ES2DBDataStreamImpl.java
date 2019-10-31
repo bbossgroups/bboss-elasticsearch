@@ -15,7 +15,6 @@ package org.frameworkset.elasticsearch.client.estodb;/*
  */
 
 import org.frameworkset.elasticsearch.client.DataStream;
-import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.slf4j.Logger;
@@ -30,25 +29,25 @@ public class ES2DBDataStreamImpl extends DataStream {
 	protected ImportContext buildImportContext(BaseImportConfig importConfig){
 		return new ES2DBImportContext(es2DBImportConfig);
 	}
-	public void execute() throws ESDataImportException{
-		if(es2DBImportConfig == null){
-			throw new ESDataImportException("es2DB is null.");
-		}
-		try {
-			/** fix
-			initES(es2DB.getApplicationPropertiesFile());
-			initDS(es2DB.getDbConfig());
-			initOtherDSes(es2DB.getConfigs());*/
-			this.importContext = new ES2DBImportContext(es2DBImportConfig);
-//			es2DBImportConfig.exportData2DB();
-		}
-		catch (Exception e) {
-			throw new ESDataImportException(e);
-		}
-		finally{
-
-		}
-	}
+//	public void execute() throws ESDataImportException{
+//		if(es2DBImportConfig == null){
+//			throw new ESDataImportException("es2DB is null.");
+//		}
+//		try {
+//			/** fix
+//			initES(es2DB.getApplicationPropertiesFile());
+//			initDS(es2DB.getDbConfig());
+//			initOtherDSes(es2DB.getConfigs());*/
+//			this.importContext = new ES2DBImportContext(es2DBImportConfig);
+////			es2DBImportConfig.exportData2DB();
+//		}
+//		catch (Exception e) {
+//			throw new ESDataImportException(e);
+//		}
+//		finally{
+//
+//		}
+//	}
 
 
 

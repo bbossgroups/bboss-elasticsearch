@@ -17,7 +17,6 @@ package org.frameworkset.elasticsearch.client;
 
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,54 +30,71 @@ import org.slf4j.LoggerFactory;
  */
 public class TaskCall implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(TaskCall.class);
-	private String refreshOption;
-	private ClientInterface clientInterface;
-	private String datas;
 	private TranErrorWrapper errorWrapper;
 	private int taskNo;
 	private ImportCount totalCount;
 	private boolean printTaskLog;
 	private int currentSize;
 	private ImportContext db2ESImportContext;
-	public TaskCall(ImportContext db2ESImportContext  , String datas,
+	private TaskCommand taskCommand;
+//	public TaskCall(ImportContext db2ESImportContext  , String datas,
+//					TranErrorWrapper errorWrapper,
+//					ClientInterface clientInterface ,
+//					int taskNo, ImportCount totalCount,
+//					int currentSize ){
+//
+//		this.refreshOption = db2ESImportContext.getRefreshOption();
+//		this.clientInterface = clientInterface;
+//		this.datas = datas;
+//		this.errorWrapper = errorWrapper;
+//		this.taskNo = taskNo;
+//		this.currentSize = currentSize;
+//		this.totalCount = totalCount;
+//		this.printTaskLog = db2ESImportContext.isPrintTaskLog();
+//		this.db2ESImportContext = db2ESImportContext;
+//	}
+
+	public TaskCall(TaskCommand taskCommand,
 					TranErrorWrapper errorWrapper,
-					ClientInterface clientInterface ,
 					int taskNo, ImportCount totalCount,
 					int currentSize ){
-		this.refreshOption = db2ESImportContext.getRefreshOption();
-		this.clientInterface = clientInterface;
-		this.datas = datas;
+		this.taskCommand = taskCommand;
 		this.errorWrapper = errorWrapper;
 		this.taskNo = taskNo;
 		this.currentSize = currentSize;
 		this.totalCount = totalCount;
 		this.printTaskLog = db2ESImportContext.isPrintTaskLog();
-		this.db2ESImportContext = db2ESImportContext;
+		this.db2ESImportContext = taskCommand.getImportContext();
 	}
 
-	public static String call(String refreshOption, ClientInterface clientInterface, String datas, ImportContext db2ESImportContext){
-		TaskCommandImpl taskCommand = new TaskCommandImpl();
-		taskCommand.setClientInterface(clientInterface);
-		taskCommand.setRefreshOption(refreshOption);
-		taskCommand.setDatas(datas);
-		taskCommand.setImportContext(db2ESImportContext);
-		try {
-			String data = taskCommand.execute();
+//	public static String call(String refreshOption, ClientInterface clientInterface, String datas, ImportContext db2ESImportContext){
+//		TaskCommandImpl taskCommand = new TaskCommandImpl();
+//		taskCommand.setClientInterface(clientInterface);
+//		taskCommand.setRefreshOption(refreshOption);
+//		taskCommand.setDatas(datas);
+//		taskCommand.setImportContext(db2ESImportContext);
+//		return call(taskCommand);
+//	}
 
-			if (db2ESImportContext.getExportResultHandler() != null) {//处理返回值
-				db2ESImportContext.getExportResultHandler().handleResult(taskCommand, data);
+	public static <DATA,RESULT> RESULT call(TaskCommand<DATA,RESULT> taskCommand){
+		ImportContext importContext = taskCommand.getImportContext();
+		try {
+			RESULT data = taskCommand.execute();
+
+			if (importContext.getExportResultHandler() != null) {//处理返回值
+				importContext.getExportResultHandler().handleResult(taskCommand, data);
 			}
 			return data;
 		}
 		catch (ElasticSearchException e){
-			if (db2ESImportContext.getExportResultHandler() != null) {
-				db2ESImportContext.getExportResultHandler().handleException(taskCommand, e);
+			if (importContext.getExportResultHandler() != null) {
+				importContext.getExportResultHandler().handleException(taskCommand, e);
 			}
 			throw e;
 		}
 		catch (Exception e){
-			if (db2ESImportContext.getExportResultHandler() != null) {
-				db2ESImportContext.getExportResultHandler().handleException(taskCommand, e);
+			if (importContext.getExportResultHandler() != null) {
+				importContext.getExportResultHandler().handleException(taskCommand, e);
 			}
 			throw new ElasticSearchException(e);
 		}
@@ -120,7 +136,7 @@ public class TaskCall implements Runnable {
 //					clientInterface.executeHttp("_bulk?" + refreshOption, datas, ClientUtil.HTTP_POST);
 //				}
 //			}
-			call(refreshOption,clientInterface,datas,db2ESImportContext);
+			call(taskCommand);
 			totalSize = totalCount.increamentTotalCount((long)currentSize);
 		}
 		catch (Exception e){

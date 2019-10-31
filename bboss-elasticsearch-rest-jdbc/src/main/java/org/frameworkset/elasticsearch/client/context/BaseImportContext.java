@@ -44,8 +44,16 @@ public abstract  class BaseImportContext implements ImportContext {
 	public BaseImportContext(){
 
 	}
+	@Override
+	public Integer getFetchSize() {
+		return baseImportConfig.getFetchSize();
+	}
+	protected void init(BaseImportConfig baseImportConfig){
+
+	}
 	public BaseImportContext(BaseImportConfig baseImportConfig){
 		this.baseImportConfig = baseImportConfig;
+		init(baseImportConfig);
 		dataTranPlugin = buildDataTranPlugin();
 		dataTranPlugin.init();
 	}
@@ -235,12 +243,40 @@ public abstract  class BaseImportContext implements ImportContext {
 		}
 		else{
 //			Method compareTo = oldValue.getClass().getMethod("compareTo");
-			if(oldValue instanceof BigDecimal || newValue instanceof BigDecimal){
+			if(oldValue instanceof Integer && newValue instanceof Integer){
+				int e = ((Integer)oldValue).compareTo ((Integer)newValue);
+				if(e < 0)
+					return newValue;
+				else
+					return oldValue;
+			}
+			else if(oldValue instanceof Long || newValue instanceof Long){
+				int e = Long.compare(((Number)oldValue).longValue(), ((Number)newValue).longValue());
+				if(e < 0)
+					return newValue;
+				else
+					return oldValue;
+			}
+			else if(oldValue instanceof BigDecimal && newValue instanceof BigDecimal){
 				int e = ((BigDecimal)oldValue).compareTo ((BigDecimal)newValue);
 				if(e < 0)
 					return newValue;
 				else
 					return oldValue;
+			}
+			else if(oldValue instanceof BigDecimal && newValue instanceof Integer){
+				boolean e = ((BigDecimal)oldValue).longValue() > ((Integer)newValue).intValue();
+				if(!e )
+					return newValue;
+				else
+					return oldValue;
+			}
+			else if(oldValue instanceof Integer && newValue instanceof BigDecimal){
+				boolean e = ((BigDecimal)newValue).longValue() > ((Integer)oldValue).intValue();
+				if(!e )
+					return oldValue;
+				else
+					return newValue;
 			}
 			else if(oldValue instanceof Double || newValue instanceof Double){
 				int e = Double.compare(((Number)oldValue).doubleValue(), ((Number)newValue).doubleValue());
@@ -256,8 +292,9 @@ public abstract  class BaseImportContext implements ImportContext {
 				else
 					return oldValue;
 			}
-			else if(oldValue instanceof Long || newValue instanceof Long){
-				int e = Long.compare(((Number)oldValue).longValue(), ((Number)newValue).longValue());
+
+			else if(oldValue instanceof BigDecimal || newValue instanceof BigDecimal){
+				int e = Double.compare(((Number)oldValue).doubleValue(), ((Number)newValue).doubleValue());
 				if(e < 0)
 					return newValue;
 				else

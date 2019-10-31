@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ImportCount {
 	private ReentrantLock lock = new ReentrantLock();
+	private ReentrantLock ilock = new ReentrantLock();
 	public long getTotalCount() {
 		return totalCount;
 	}
@@ -43,5 +44,21 @@ public class ImportCount {
 	}
 
 	private long totalCount;
+
+	public long getIgnoreTotalCount() {
+		return ignoreTotalCount;
+	}
+
+	public long increamentIgnoreTotalCount() {
+		try {
+			ilock.lock();
+			this.ignoreTotalCount ++;
+			return ignoreTotalCount;
+		}finally {
+			ilock.unlock();
+		}
+	}
+
+	private long ignoreTotalCount;
 
 }

@@ -43,7 +43,16 @@ public abstract class BaseImportConfig {
 	private static Logger logger = LoggerFactory.getLogger(DB2ESImportConfig.class);
 	private List<DBConfig> configs;
 
+	public Integer getFetchSize() {
+		return fetchSize;
+	}
 
+	public void setFetchSize(Integer fetchSize) {
+		this.fetchSize = fetchSize;
+	}
+
+	//scroll分页检索，每批查询数据大小
+	private Integer fetchSize = 5000;
 
 
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();

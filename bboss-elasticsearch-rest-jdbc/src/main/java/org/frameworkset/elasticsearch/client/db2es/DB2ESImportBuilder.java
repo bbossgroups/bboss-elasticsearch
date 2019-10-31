@@ -87,18 +87,18 @@ public class DB2ESImportBuilder extends BaseImportBuilder {
 		catch (Exception e){
 
 		}
-		DB2ESImportConfig esjdbc = new DB2ESImportConfig();
+		DB2ESImportConfig importConfig = new DB2ESImportConfig();
 //		esjdbc.setImportBuilder(this);
-		super.buildImportConfig(esjdbc);
+		super.buildImportConfig(importConfig);
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());
 //		esjdbcResultSet.setResultSet(resultSet);
 
-		esjdbc.setSqlFilepath(this.sqlFilepath);
-		esjdbc.setSqlName(sqlName);
+		importConfig.setSqlFilepath(this.sqlFilepath);
+		importConfig.setSqlName(sqlName);
 		if(SimpleStringUtil.isNotEmpty(sql))
-			esjdbc.setSql(this.sql);
+			importConfig.setSql(this.sql);
 		DB2ESDataStreamImpl  dataStream = new DB2ESDataStreamImpl();
-		dataStream.setEsjdbc(esjdbc);
+		dataStream.setImportConfig(importConfig);
 		dataStream.setConfigString(this.toString());
 		dataStream.init();
 		return dataStream;

@@ -1,11 +1,11 @@
 package org.frameworkset.elasticsearch.client.tran;
 
-import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.ImportCount;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
+import org.frameworkset.elasticsearch.scroll.BreakableScrollHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +21,16 @@ public abstract class BaseDataTran implements DataTran{
 	protected static Object dummy = new Object();
 	protected ImportContext importContext;
 	protected TranResultSet jdbcResultSet;
+
+	public BreakableScrollHandler getBreakableScrollHandler() {
+		return breakableScrollHandler;
+	}
+
+	public void setBreakableScrollHandler(BreakableScrollHandler breakableScrollHandler) {
+		this.breakableScrollHandler = breakableScrollHandler;
+	}
+
+	private BreakableScrollHandler breakableScrollHandler;
 	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext) {
 		this.jdbcResultSet = jdbcResultSet;
 		this.importContext = importContext;
@@ -35,13 +45,14 @@ public abstract class BaseDataTran implements DataTran{
 
 
 	protected void stop(){
-
+		if(breakableScrollHandler != null) {
+			breakableScrollHandler.setBreaked(true);
+		}
 		importContext.stop();
 
 	}
 
-	public String tran() throws ElasticSearchException {
-		this.importContext = importContext;
+	public String tran() throws ESDataImportException {
 		if(jdbcResultSet == null)
 			return null;
 		if(isPrintTaskLog()) {
