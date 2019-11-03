@@ -62,10 +62,14 @@ public class TranErrorWrapper {
 	 */
 	public boolean assertCondition(){
 
-		if(this.error != null && !importContext.isContinueOnError()) {
-			return false;
-		}
-		return true;
+//		if(this.error != null && !importContext.isContinueOnError()) {
+//			return false;
+//		}
+//		if(importContext.isCurrentStoped()){
+//			return false;
+//		}
+//		return true;
+		return assertCondition(error, importContext);
 	}
 
 	/**
@@ -73,7 +77,23 @@ public class TranErrorWrapper {
 	 * @return
 	 */
 	public boolean assertCondition(Exception e){
-		if((this.error != null || e != null) && !importContext.isContinueOnError()) {
+		if(error == null && e != null){
+			this.setError(e);
+		}
+		return assertCondition(error,importContext);
+	}
+
+	/**
+	 * 判断执行条件是否成立，成立返回true，否则返回false
+	 * @return
+	 */
+	public static boolean assertCondition(Exception e,ImportContext importContext){
+
+		if(e != null && !importContext.isContinueOnError() ) {
+
+			return false;
+		}
+		if(importContext.isCurrentStoped()){
 			return false;
 		}
 		return true;

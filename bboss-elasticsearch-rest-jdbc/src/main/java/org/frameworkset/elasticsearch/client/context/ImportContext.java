@@ -48,7 +48,7 @@ public interface ImportContext {
 	void importData();
 	public Object max(Object oldValue,Object newValue);
 	boolean isContinueOnError();
-
+	boolean isCurrentStoped();
 	boolean assertCondition();
 
 	Boolean getFixedRate();
@@ -130,6 +130,8 @@ public interface ImportContext {
 	Integer getStoreBatchSize();
 
 	ExecutorService buildThreadPool();
+
+	void resume();
 //	public Object getValue(String columnName) throws ESDataImportException;
 //	public Object getDateTimeValue(String columnName) throws ESDataImportException;
 

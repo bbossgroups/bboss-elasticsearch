@@ -71,9 +71,11 @@ public abstract class DataStream {
 		}
 	}
 
-	public void stop() {
+	public void destroy() {
 		if(importContext != null)
 			this.importContext.destroy();
+
+
 
 //		this.esjdbc.stop();
 	}
@@ -90,8 +92,10 @@ public abstract class DataStream {
 
 
 	public void init(){
-		if(inited )
+		if(inited ) {
+			importContext.resume();
 			return;
+		}
 		if(importConfig == null){
 			throw new ESDataImportException("import Config is null.");
 		}

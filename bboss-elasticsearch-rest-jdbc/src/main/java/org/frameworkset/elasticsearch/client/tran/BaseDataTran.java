@@ -34,6 +34,11 @@ public abstract class BaseDataTran implements DataTran{
 	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext) {
 		this.jdbcResultSet = jdbcResultSet;
 		this.importContext = importContext;
+		init();
+	}
+
+	protected void init(){
+
 	}
 
 

@@ -15,13 +15,19 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.ResultSetHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
+import org.frameworkset.util.tokenizer.TextGrammarParser;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -40,6 +46,70 @@ public class DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTranP
 	}
 
 
+	public void initSQLInfo(){
+
+		if(dbContext.getSql() == null || dbContext.getSql().equals("")){
+
+			if(dbContext.getSqlFilepath() != null && !dbContext.getSqlFilepath().equals(""))
+				try {
+					ConfigSQLExecutor executor = new ConfigSQLExecutor(dbContext.getSqlFilepath());
+					org.frameworkset.persitent.util.SQLInfo sqlInfo = executor.getSqlInfo(importContext.getDbConfig().getDbName(),dbContext.getSqlName());
+					this.executor = executor;
+					dbContext.setSql(sqlInfo.getSql());
+				}
+				catch (SQLException e){
+					throw new ESDataImportException(e);
+				}
+
+		}
+		if(dbContext.getSql() != null && !dbContext.getSql().equals("")) {
+			importContext.setStatusTableId(dbContext.getSql().hashCode());
+			initSQLInfoParams();
+		}
+
+	}
+	private void initSQLInfoParams(){
+		String originSQL = dbContext.getSql();
+		List<TextGrammarParser.GrammarToken> tokens =
+				TextGrammarParser.parser(originSQL, "#[", "]");
+		SQLInfo _sqlInfo = new SQLInfo();
+		int paramSize = 0;
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < tokens.size(); i ++){
+			TextGrammarParser.GrammarToken token = tokens.get(i);
+			if(token.texttoken()){
+				builder.append(token.getText());
+			}
+			else {
+				builder.append("?");
+				if(paramSize == 0){
+					_sqlInfo.setLastValueVarName(token.getText());
+				}
+				paramSize ++;
+
+			}
+		}
+		_sqlInfo.setParamSize(paramSize);
+		_sqlInfo.setSql(builder.toString());
+		this.sqlInfo = _sqlInfo;
+
+
+	}
+	public SQLInfo getSqlInfo() {
+		return sqlInfo;
+	}
+	@Override
+	public void beforeInit() {
+		this.initES(importContext.getApplicationPropertiesFile());
+		this.initDS(importContext.getDbConfig());
+		initOtherDSes(importContext.getConfigs());
+		this.initSQLInfo();
+
+	}
+
+	public String getLastValueVarName(){
+		return this.sqlInfo != null?this.sqlInfo.getLastValueVarName():null;
+	}
 
 
 

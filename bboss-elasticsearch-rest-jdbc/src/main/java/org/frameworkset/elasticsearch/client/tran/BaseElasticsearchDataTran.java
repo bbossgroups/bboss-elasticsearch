@@ -12,7 +12,6 @@ import org.frameworkset.elasticsearch.client.context.ContextImpl;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.JDBCGetVariableValue;
 import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
-import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.template.ESUtil;
@@ -263,7 +262,8 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			if(exception != null && !importContext.isContinueOnError()){
+
+			if(!TranErrorWrapper.assertCondition(exception ,importContext)){
 				stop();
 			}
 			try {
@@ -340,7 +340,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			if(exception != null && !importContext.isContinueOnError()){
+			if(!TranErrorWrapper.assertCondition(exception ,importContext)){
 				stop();
 			}
 		}
@@ -727,39 +727,5 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 	}
 
 
-
-
-	public Object getLastValue() throws ESDataImportException {
-
-
-		if(importContext.getLastValueClumnName() == null){
-			return null;
-		}
-
-//			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
-//			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
-//			}
-//			else if (this.dataTranPlugin.getSqlInfo().getLastValueVarName() != null) {
-//				return this.getValue(this.dataTranPlugin.getSqlInfo().getLastValueVarName());
-//			}
-		try {
-			if (importContext.getLastValueType() == null || importContext.getLastValueType().intValue() == ImportIncreamentConfig.NUMBER_TYPE)
-				return jdbcResultSet.getValue(importContext.getLastValueClumnName());
-			else if (importContext.getLastValueType().intValue() == ImportIncreamentConfig.TIMESTAMP_TYPE) {
-				return jdbcResultSet.getDateTimeValue(importContext.getLastValueClumnName());
-			}
-		}
-		catch (ESDataImportException e){
-			throw (e);
-		}
-		catch (Exception e){
-			throw new ESDataImportException(e);
-		}
-		return null;
-
-
-	}
 
 }

@@ -22,6 +22,7 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
 import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.template.ESInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +48,28 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 
 	}
 
+	@Override
+	public void beforeInit() {
+		this.initES(importContext.getApplicationPropertiesFile());
+		this.initDS(importContext.getDbConfig());
+		initOtherDSes(importContext.getConfigs());
+		this.initDSLInfo();
 
+	}
+	@Override
+	public void afterInit(){
+	}
+	public void initDSLInfo(){
+		if(es2DBContext.getDslFile() != null && !es2DBContext.getDslFile().equals(""))
+		try {
+			ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil(es2DBContext.getDslFile());
+			ESInfo esInfo = clientInterface.getESInfo(es2DBContext.getDslName());
+			importContext.setStatusTableId(esInfo.getTemplate().hashCode());
+		}
+		catch (Exception e){
+			throw new ESDataImportException(e);
+		}
+	}
 
 
 
@@ -101,7 +123,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 		if(es2DBContext.isSliceQuery()){
 			params.put("sliceMax",es2DBContext.getSliceSize());
 		}
-		params.put(importContext.getLastValueClumnName(),getParamValue());
+		putLastParamValue(params);
 		exportESData(  esExporterScrollHandler,  params);
 
 	}
@@ -130,6 +152,8 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			}
 		}
 		else {
+			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,
+					es2DBDataTran);
 			Thread tranThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -137,8 +161,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 				}
 			});
 			tranThread.start();
-			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,
-					es2DBDataTran);
+
 
 			try {
 				if (!isIncreamentImport()) {
@@ -158,13 +181,8 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 		}
 	}
 
-
-
-
-
-
-
-
-
-
+	@Override
+	public String getLastValueVarName() {
+		return importContext.getLastValueClumnName();
+	}
 }

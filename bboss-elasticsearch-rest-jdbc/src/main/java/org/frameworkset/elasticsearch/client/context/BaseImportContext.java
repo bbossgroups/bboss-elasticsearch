@@ -40,6 +40,7 @@ public abstract  class BaseImportContext implements ImportContext {
 	protected BaseImportConfig baseImportConfig;
 //	private JDBCResultSet jdbcResultSet;
 	private DataTranPlugin dataTranPlugin;
+	private boolean currentStoped = false;
 
 	public BaseImportContext(){
 
@@ -92,9 +93,10 @@ public abstract  class BaseImportContext implements ImportContext {
 
 	@Override
 	public void destroy() {
-		if(dataTranPlugin != null){
-			dataTranPlugin.destroy();
-		}
+//		if(dataTranPlugin != null){
+//			dataTranPlugin.destroy();
+//		}
+		stop();
 	}
 
 	@Override
@@ -115,7 +117,9 @@ public abstract  class BaseImportContext implements ImportContext {
 	public List<CallInterceptor> getCallInterceptors(){
 		return baseImportConfig.getCallInterceptors();
 	}
-
+	public boolean isCurrentStoped(){
+		return this.currentStoped;
+	}
 	@Override
 	public void doImportData() {
 		if(dataTranPlugin != null)
@@ -330,6 +334,7 @@ public abstract  class BaseImportContext implements ImportContext {
 		catch(Exception e){
 
 		}
+		currentStoped = true;
 	}
 	public int getQueue(){
 		return baseImportConfig.getQueue();
@@ -361,6 +366,9 @@ public abstract  class BaseImportContext implements ImportContext {
 //		}
 //
 //	}
+	public void resume(){
+		this.currentStoped = false;
+	}
 
 	private AtomicInteger rejectCounts = new AtomicInteger();
 	private ExecutorService blockedExecutor;

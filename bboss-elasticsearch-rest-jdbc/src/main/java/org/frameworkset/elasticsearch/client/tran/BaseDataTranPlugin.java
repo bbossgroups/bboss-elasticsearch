@@ -24,7 +24,6 @@ import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
-import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.slf4j.Logger;
@@ -122,7 +121,6 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 
 
 
-	protected ScheduleConfig scheduleConfig;
 
 
 	public abstract void beforeInit();
@@ -153,16 +151,43 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 			scheduleService.stop();
 		}
 		try {
-			SQLUtil.stopPool(this.statusDbname);
+			if(statusDbname != null && !statusDbname.equals(""))
+				SQLUtil.stopPool(this.statusDbname);
 		}
 		catch (Exception e){
-			logger.error("",e);
+			logger.error("Stop status db pool["+statusDbname+"] failed:",e);
 		}
+
 
 	}
 
 
-
+	public void putLastParamValue(Map params){
+		if(this.lastValueType == ImportIncreamentConfig.NUMBER_TYPE) {
+			params.put(getLastValueVarName(), this.currentStatus.getLastValue());
+		}
+		else{
+			if(this.currentStatus.getLastValue() instanceof Date)
+				params.put(getLastValueVarName(), this.currentStatus.getLastValue());
+			else {
+				if(this.currentStatus.getLastValue() instanceof Long) {
+					params.put(getLastValueVarName(), new Date((Long)this.currentStatus.getLastValue()));
+				}
+				else if(this.currentStatus.getLastValue() instanceof Integer){
+					params.put(getLastValueVarName(), new Date(((Integer) this.currentStatus.getLastValue()).longValue()));
+				}
+				else if(this.currentStatus.getLastValue() instanceof Short){
+					params.put(getLastValueVarName(), new Date(((Short) this.currentStatus.getLastValue()).longValue()));
+				}
+				else{
+					params.put(getLastValueVarName(), new Date(((Number) this.currentStatus.getLastValue()).longValue()));
+				}
+			}
+		}
+		if(logger.isInfoEnabled()){
+			logger.info(new StringBuilder().append("Current values: ").append(params).toString());
+		}
+	}
 
 
 

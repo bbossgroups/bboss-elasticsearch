@@ -25,9 +25,11 @@ import java.util.concurrent.Future;
 public class ES2DBDataTran extends BaseDataTran {
 	private static Logger logger = LoggerFactory.getLogger(ES2DBDataTran.class);
 	private ES2DBContext es2DBContext ;
-	private ConfigSQLExecutor configSQLExecutor;
 	private ESTranResultSet esTranResultSet;
-
+	protected void init(){
+		es2DBContext = (ES2DBContext)importContext;
+		esTranResultSet = (ESTranResultSet)jdbcResultSet;
+	}
 	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 	}
@@ -37,6 +39,7 @@ public class ES2DBDataTran extends BaseDataTran {
 
 	public void stop(){
 		esTranResultSet.stop();
+		super.stop();
 	}
 	public String serialExecute(  ){
 		Object lastValue = null;
@@ -50,7 +53,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		try {
 
 			//		GetCUDResult CUDResult = null;
-
+			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
 			String sql = sqlinfo.getSql();
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
@@ -104,7 +107,10 @@ public class ES2DBDataTran extends BaseDataTran {
 
 		} finally {
 
-			if(exception != null && !importContext.isContinueOnError()){
+			if(!TranErrorWrapper.assertCondition(exception ,importContext)){
+				stop();
+			}
+			if(importContext.isCurrentStoped()){
 				stop();
 			}
 
@@ -156,6 +162,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		TranErrorWrapper tranErrorWrapper = new TranErrorWrapper(importContext);
 		int batchsize = importContext.getStoreBatchSize();
 		try {
+			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
 			String sql = sqlinfo.getSql();
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
@@ -241,6 +248,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
 		Object lastValue = null;
+		TranErrorWrapper tranErrorWrapper = new TranErrorWrapper(importContext);
 		long start = System.currentTimeMillis();
 		long istart = 0;
 		long end = 0;
@@ -250,12 +258,16 @@ public class ES2DBDataTran extends BaseDataTran {
 		String refreshOption = importContext.getRefreshOption();
 		try {
 			istart = start;
+			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
 			String sql = sqlinfo.getSql();
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
 			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
 			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
+				if(!tranErrorWrapper.assertCondition()) {
+					tranErrorWrapper.throwError();
+				}
 				if(lastValue == null)
 					lastValue = importContext.max(currentValue,getLastValue());
 				else{
@@ -291,7 +303,9 @@ public class ES2DBDataTran extends BaseDataTran {
 
 			}
 			if (count > 0) {
-
+				if(!tranErrorWrapper.assertCondition()) {
+					tranErrorWrapper.throwError();
+				}
 				taskNo ++;
 				TaskCommandImpl taskCommand = new TaskCommandImpl(sql,importContext,records);
 				ret = TaskCall.call(taskCommand);
@@ -319,7 +333,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			throw new ElasticSearchException(e);
 		}
 		finally {
-			if(exception != null && !importContext.isContinueOnError()){
+			if(!tranErrorWrapper.assertCondition(exception)){
 				stop();
 			}
 
