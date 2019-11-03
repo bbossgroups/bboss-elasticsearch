@@ -520,8 +520,15 @@ public class ESUtil {
 					if (bean.containsKey(variable.getVariableName()))
 						builder.append("null");
 					else {
-						throw new ElasticsearchParseException(new StringBuilder().append("No value are specified for variable").append("[").append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
+						throw new ElasticsearchParseException(new StringBuilder()
+								.append("No value are specified for variable")
+								.append("[")
+								.append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
 								.append(template).append("]@").append(this.templatecontext.getConfigfile())
+								.append(" Error dsl:\r\n")
+								.append(builder.toString())
+								.append("\r\n Dsl from config file:\r\n")
+								.append(templateStruction.getUrl())
 								.toString());
 					}
 				} else {

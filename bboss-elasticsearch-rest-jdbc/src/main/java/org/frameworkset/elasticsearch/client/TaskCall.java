@@ -33,7 +33,6 @@ public class TaskCall implements Runnable {
 	private TranErrorWrapper errorWrapper;
 	private int taskNo;
 	private ImportCount totalCount;
-	private boolean printTaskLog;
 	private int currentSize;
 	private ImportContext db2ESImportContext;
 	private TaskCommand taskCommand;
@@ -63,7 +62,6 @@ public class TaskCall implements Runnable {
 		this.taskNo = taskNo;
 		this.currentSize = currentSize;
 		this.totalCount = totalCount;
-		this.printTaskLog = db2ESImportContext.isPrintTaskLog();
 		this.db2ESImportContext = taskCommand.getImportContext();
 	}
 
@@ -109,12 +107,12 @@ public class TaskCall implements Runnable {
 		}
 		long start = System.currentTimeMillis();
 		StringBuilder info = null;
-		if(printTaskLog) {
+		if(db2ESImportContext.isPrintTaskLog()) {
 			info = new StringBuilder();
 		}
 		long totalSize = 0;
 		try {
-			if(printTaskLog&& logger.isInfoEnabled()) {
+			if(db2ESImportContext.isPrintTaskLog()&& logger.isInfoEnabled()) {
 
 					info.append("Task[").append(this.taskNo).append("] starting ......");
 					logger.info(info.toString());
@@ -141,7 +139,7 @@ public class TaskCall implements Runnable {
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
-			if(printTaskLog && logger.isInfoEnabled()) {
+			if(db2ESImportContext.isPrintTaskLog() && logger.isInfoEnabled()) {
 				long end = System.currentTimeMillis();
 				info.setLength(0);
 				info.append("Task[").append(this.taskNo).append("] failed,take time:").append((end - start)).append("ms");
@@ -156,7 +154,7 @@ public class TaskCall implements Runnable {
 					logger.error(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed,but continue On Error!").toString(),e);
 			}
 		}
-		if(printTaskLog&& logger.isInfoEnabled()) {
+		if(db2ESImportContext.isPrintTaskLog()&& logger.isInfoEnabled()) {
 			long end = System.currentTimeMillis();
 			info.setLength(0);
 			info.append("Task[").append(this.taskNo).append("] finish,import ").append(this.currentSize).append(" records,Total import ").append(totalSize).append(" records,Take time:").append((end - start)).append("ms");

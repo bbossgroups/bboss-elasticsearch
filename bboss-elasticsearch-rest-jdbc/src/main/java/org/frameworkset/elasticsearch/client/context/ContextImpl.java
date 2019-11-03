@@ -178,6 +178,27 @@ public class ContextImpl implements Context {
 		}
 		throw new IllegalArgumentException("Convert date value failed:"+value );
 	}
+	@Override
+	public Date getDateValue(String fieldName,DateFormat dateFormat) throws Exception {
+		Object value = this.getValue(fieldName);
+		if(value == null)
+			return null;
+		else if(value instanceof Date){
+			return (Date)value;
+
+		}
+		else if(value instanceof BigDecimal){
+			return new Date(((BigDecimal)value).longValue());
+		}
+		else if(value instanceof Long){
+			return new Date(((Long)value).longValue());
+		}
+		else if(value instanceof String){
+//			SerialUtil.getDateFormateMeta().toDateFormat();
+			return dateFormat.parse((String) value);
+		}
+		throw new IllegalArgumentException("Convert date value failed:"+value );
+	}
 
 	public Object getValue(String fieldName) throws Exception{
 		return jdbcResultSet.getValue(fieldName);

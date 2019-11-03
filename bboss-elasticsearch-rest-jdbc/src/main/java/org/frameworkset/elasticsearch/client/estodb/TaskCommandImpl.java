@@ -16,9 +16,8 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.DBUtil;
+import com.frameworkset.common.poolman.NestedSQLException;
 import com.frameworkset.common.poolman.StatementInfo;
-import com.frameworkset.common.poolman.util.JDBCPool;
-import com.frameworkset.common.poolman.util.SQLManager;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.TaskCommand;
 import org.frameworkset.elasticsearch.client.TaskFailedException;
@@ -42,7 +41,6 @@ import java.util.List;
  */
 public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Param>>, String> {
 	private String sql;
-	private int batchsize = 0;
 
 	public TaskCommandImpl(String sql, ImportContext importContext, List<List<ES2DBDataTran.Param>> datas) {
 		this.sql = sql;
@@ -79,6 +77,18 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 		this.datas = datas;
 	}
 	private static Logger logger = LoggerFactory.getLogger(TaskCommandImpl.class);
+
+	private void debugDB(String name){
+		DBUtil.debugStatus(name);
+
+//		java.util.List<AbandonedTraceExt> traceobjects = DBUtil.getGoodTraceObjects(name);
+//		for(int i = 0; traceobjects != null && i < traceobjects.size() ; i ++){
+//			AbandonedTraceExt abandonedTraceExt = traceobjects.get(i);
+//			if(abandonedTraceExt.getStackInfo() != null)
+//				logger.info(abandonedTraceExt.getStackInfo());
+//		}
+//		logger.info("{}",traceobjects);
+	}
 	public String execute(){
 		String data = null;
 		if(this.importContext.getMaxRetry() > 0){
@@ -91,10 +101,13 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 		StatementInfo stmtInfo = null;
 		PreparedStatement statement = null;
 		Connection con_ = null;
+		int batchsize = importContext.getStoreBatchSize();
 		try {
 
 //		GetCUDResult CUDResult = null;
 			String dbname = importContext.getDbConfig().getDbName();
+//			logger.info("DBUtil.getConection(dbname)");
+//			debugDB(dbname);
 			con_ = DBUtil.getConection(dbname);
 			stmtInfo = new StatementInfo(dbname,
 					null,
@@ -103,7 +116,6 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 					false);
 			stmtInfo.init();
 
-			JDBCPool pool = SQLManager.getInstance().getPool(dbname);
 
 			statement = stmtInfo
 					.prepareStatement(sql);
@@ -114,7 +126,12 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 						ES2DBDataTran.Param param = record.get(i);
 						statement.setObject(param.getIndex(),param.getValue());
 					}
-					statement.addBatch();
+					try {
+						statement.addBatch();
+					}
+					catch (SQLException e){
+						throw new NestedSQLException(record.toString(),e);
+					}
 				}
 				statement.executeBatch();
 			}
@@ -147,10 +164,10 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 				try {
 					stmtInfo.errorHandle(error);
 				} catch (SQLException ex) {
-					throw new ElasticSearchException(error);
+					throw new ElasticSearchException(sql,error);
 				}
 			}
-			throw new ElasticSearchException(error);
+			throw new ElasticSearchException(sql,error);
 		}
 		catch (Exception e) {
 			if(stmtInfo != null) {
@@ -158,14 +175,24 @@ public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Para
 				try {
 					stmtInfo.errorHandle(e);
 				} catch (SQLException ex) {
-					throw new ElasticSearchException(e);
+					throw new ElasticSearchException(sql,e);
 				}
 			}
-			throw new ElasticSearchException(e);
+			throw new ElasticSearchException(sql,e);
 
 		} finally {
 			if(stmtInfo != null)
 				stmtInfo.dofinally();
+			if(con_ != null){
+				try {
+					con_.close();
+				}
+				catch (Exception e){
+
+				}
+			}
+//			logger.info("stmtInfo.dofinally()");
+//			debugDB(importContext.getDbConfig().getDbName());
 			stmtInfo = null;
 
 

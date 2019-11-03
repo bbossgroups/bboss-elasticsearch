@@ -1742,12 +1742,20 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 ### **5.3.2 在dsl中使用注释**
 
-dsl注释是用多个#号来标识的，大段注释用 #* 和 *#包起来
-单行注释：##注释内容
+dsl注释是用多个#号来标识的，大段注释用 #* 和\*#包起来
+单行注释：
+
+```
+##注释内容
+```
+
 多行注释：
-\#*
+
+```
+#*
 注释内容
 *#
+```
 
 使用示例
 
@@ -2748,22 +2756,6 @@ public void testObjectSQLQueryFromDSL(){
 
 适合集合值不固定，或者长度不固定，或者可能包含特殊字符等多种场景 
 
-```json
-#if($sortColumn) #从map中获取所有的排序字段
-	"sort":[             
-        
-            #foreach( $key in $columnMap.keySet() ) 
-            #if($velocityCount > 0),#end
-            {
-               "$key": {
-                   "order" :#[columnMap[$key]]
-                }				 
-            }
-            #end
-   ],            
-#end 
-```
-
 将map中key-value拼接为多个match检索条件：
 
 ```json
@@ -2784,6 +2776,24 @@ public void testObjectSQLQueryFromDSL(){
             },
             "size": 1000
         }
+```
+
+排序字段遍历拼接：
+
+```json
+#if($sortColumn) #从map中获取所有的排序字段
+	"sort":[             
+        
+            #foreach( $key in $columnMap.keySet() ) 
+            #if($velocityCount > 0),#end
+            {
+               "$key": {
+                   "order" :#[columnMap[$key]]
+                }				 
+            }
+            #end
+   ],            
+#end 
 ```
 
 

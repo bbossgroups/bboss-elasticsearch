@@ -62,7 +62,7 @@ public interface Context {
 	public float getFloatValue(String fieldName) throws Exception;
 	public int getIntegerValue(String fieldName) throws Exception;
 	public Date getDateValue(String fieldName) throws Exception;
-
+	public Date getDateValue(String fieldName,DateFormat dateFormat) throws Exception;
 	public List<FieldMeta> getFieldValues();
 	public Map<String,FieldMeta> getFieldMetaMap();
 	public FieldMeta getMappingName(String colName);

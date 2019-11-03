@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.client.estodb;
 
+import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -11,6 +12,7 @@ import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTran;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.persitent.util.SQLInfo;
+import org.frameworkset.soa.BBossStringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,54 @@ public class ES2DBDataTran extends BaseDataTran {
 		esTranResultSet.stop();
 		super.stop();
 	}
+	private VelocityContext buildVelocityContext()
+	{
+
+
+		VelocityContext context_ = new VelocityContext();
+
+//		com.frameworkset.common.poolman.Param temp = null;
+//		if(sqlparams != null && sqlparams.size()>0)
+//		{
+//
+//			Iterator<Map.Entry<String, com.frameworkset.common.poolman.Param>> it = sqlparams.entrySet().iterator();
+//			while(it.hasNext())
+//			{
+//				Map.Entry<String, com.frameworkset.common.poolman.Param> entry = it.next();
+//				temp = entry.getValue();
+//
+//				if(!temp.getType().equals(NULL))
+//					context_.put(entry.getKey(), temp.getData());
+//			}
+//		}
+		return context_;
+
+	}
+	private String parserSQL(SQLInfo sqlinfo){
+		String sql = null;
+		if(sqlinfo.istpl())
+		{
+			sqlinfo.getSqltpl().process();//识别sql语句是不是真正的velocity sql模板
+			if(sqlinfo.istpl())
+			{
+				VelocityContext vcontext = buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
+
+				BBossStringWriter sw = new BBossStringWriter();
+				sqlinfo.getSqltpl().merge(vcontext,sw);
+				sql = sw.toString();
+			}
+			else
+			{
+				sql = sqlinfo.getSql();
+			}
+
+		}
+		else
+		{
+			sql = sqlinfo.getSql();
+		}
+		return sql;
+	}
 	public String serialExecute(  ){
 		Object lastValue = null;
 		Exception exception = null;
@@ -61,8 +111,9 @@ public class ES2DBDataTran extends BaseDataTran {
 			//		GetCUDResult CUDResult = null;
 			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = sqlinfo.getSql();
+			String sql = parserSQL(  sqlinfo);
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
+			sql = sqlstruction.getSql();
 			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
 			Object temp = null;
 			Param param = null;
@@ -146,7 +197,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			}
 			param = new Param();
 			param.setVariable(var);
-			param.setIndex(i +1);
+			param.setIndex(var.getPosition()  +1);
 			param.setValue(temp);
 			param.setName(var.getVariableName());
 			record.add(param);
@@ -170,8 +221,9 @@ public class ES2DBDataTran extends BaseDataTran {
 		try {
 			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = sqlinfo.getSql();
+			String sql = parserSQL(  sqlinfo);
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
+			sql = sqlstruction.getSql();
 			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
 			Object temp = null;
 			Param param = null;
@@ -266,8 +318,9 @@ public class ES2DBDataTran extends BaseDataTran {
 			istart = start;
 			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = sqlinfo.getSql();
+			String sql = parserSQL(  sqlinfo);
 			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
+			sql = sqlstruction.getSql();
 			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
 			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
@@ -365,7 +418,7 @@ public class ES2DBDataTran extends BaseDataTran {
 				if(variable.getVariableName().equals(fieldMeta.getEsFieldName())){
 					param = new Param();
 					param.setVariable(variable);
-					param.setIndex(i +1);
+					param.setIndex(variable.getPosition() +1);
 					param.setValue(fieldMeta.getValue());
 					param.setName(variable.getVariableName());
 					record.add(param);
@@ -387,6 +440,13 @@ public class ES2DBDataTran extends BaseDataTran {
 		private VariableHandler.Variable variable;
 		public String getName() {
 			return name;
+		}
+		public String toString(){
+			StringBuilder builder = new StringBuilder();
+			builder.append("{name:").append(name)
+					.append(",value:").append(value)
+					.append(",postion:").append(index).append("}");
+			return builder.toString();
 		}
 
 		public void setName(String name) {
