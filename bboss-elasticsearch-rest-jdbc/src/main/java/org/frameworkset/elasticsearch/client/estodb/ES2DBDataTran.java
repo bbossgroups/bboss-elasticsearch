@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -26,6 +27,7 @@ public class ES2DBDataTran extends BaseDataTran {
 	private static Logger logger = LoggerFactory.getLogger(ES2DBDataTran.class);
 	private ES2DBContext es2DBContext ;
 	private ESTranResultSet esTranResultSet;
+
 	protected void init(){
 		es2DBContext = (ES2DBContext)importContext;
 		esTranResultSet = (ESTranResultSet)jdbcResultSet;
@@ -33,9 +35,13 @@ public class ES2DBDataTran extends BaseDataTran {
 	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 	}
+	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
+		super(jdbcResultSet,importContext,countDownLatch);
+	}
 	public void appendData(ESDatas datas, ESExporterScrollHandler exporterScrollHandler){
 		esTranResultSet.appendData(datas,    exporterScrollHandler);
 	}
+
 
 	public void stop(){
 		esTranResultSet.stop();

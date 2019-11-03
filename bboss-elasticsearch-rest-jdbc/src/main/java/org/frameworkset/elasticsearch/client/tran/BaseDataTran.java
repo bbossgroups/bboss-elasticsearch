@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -21,7 +22,7 @@ public abstract class BaseDataTran implements DataTran{
 	protected static Object dummy = new Object();
 	protected ImportContext importContext;
 	protected TranResultSet jdbcResultSet;
-
+	private CountDownLatch countDownLatch;
 	public BreakableScrollHandler getBreakableScrollHandler() {
 		return breakableScrollHandler;
 	}
@@ -34,6 +35,12 @@ public abstract class BaseDataTran implements DataTran{
 	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext) {
 		this.jdbcResultSet = jdbcResultSet;
 		this.importContext = importContext;
+		init();
+	}
+	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext,CountDownLatch countDownLatch) {
+		this.jdbcResultSet = jdbcResultSet;
+		this.importContext = importContext;
+		this.countDownLatch = countDownLatch;
 		init();
 	}
 
@@ -58,23 +65,28 @@ public abstract class BaseDataTran implements DataTran{
 	}
 
 	public String tran() throws ESDataImportException {
-		if(jdbcResultSet == null)
-			return null;
-		if(isPrintTaskLog()) {
-			logger.info(new StringBuilder().append("import data to IndexName[").append(importContext.getEsIndexWrapper().getIndex())
-							.append("] IndexType[").append(importContext.getEsIndexWrapper().getType())
-							.append("] start.").toString());
-		}
-		if (importContext.getStoreBatchSize() <= 0) {
-			return serialExecute(        );
-		} else {
-			if(importContext.getThreadCount() > 0 && importContext.isParallel()){
-				return this.parallelBatchExecute( );
+		try {
+			if (jdbcResultSet == null)
+				return null;
+			if (isPrintTaskLog()) {
+				logger.info(new StringBuilder().append("import data to IndexName[").append(importContext.getEsIndexWrapper().getIndex())
+						.append("] IndexType[").append(importContext.getEsIndexWrapper().getType())
+						.append("] start.").toString());
 			}
-			else{
-				return this.batchExecute(  );
-			}
+			if (importContext.getStoreBatchSize() <= 0) {
+				return serialExecute();
+			} else {
+				if (importContext.getThreadCount() > 0 && importContext.isParallel()) {
+					return this.parallelBatchExecute();
+				} else {
+					return this.batchExecute();
+				}
 
+			}
+		}
+		finally {
+			if(this.countDownLatch != null)
+				countDownLatch.countDown();
 		}
 
 	}

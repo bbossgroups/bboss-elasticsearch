@@ -26,6 +26,7 @@ import org.frameworkset.elasticsearch.template.ESInfo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * <p>Description: </p>
@@ -130,9 +131,10 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 
 	public void doImportData()  throws ESDataImportException{
 		ESTranResultSet jdbcResultSet = new ESTranResultSet();
-		final ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext);
+
 		if(es2DBContext.getBatchHandler() != null)
 		{
+			ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext);
 			ESDirectExporterScrollHandler esDirectExporterScrollHandler = new ESDirectExporterScrollHandler(importContext,
 					executor,es2DBDataTran);
 			try {
@@ -152,18 +154,23 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			}
 		}
 		else {
+
+			final CountDownLatch countDownLatch = new CountDownLatch(1);
+			final ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext,countDownLatch);
 			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,
 					es2DBDataTran);
-			Thread tranThread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					es2DBDataTran.tran();
-				}
-			});
-			tranThread.start();
+
+
 
 
 			try {
+				Thread tranThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						es2DBDataTran.tran();
+					}
+				});
+				tranThread.start();
 				if (!isIncreamentImport()) {
 
 					commonImportData(esExporterScrollHandler);
@@ -178,6 +185,16 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			} catch (Exception e) {
 				throw new ESDataImportException(e);
 			}
+			finally {
+				jdbcResultSet.reachEend();
+				try {
+					countDownLatch.await();
+				} catch (InterruptedException e) {
+					if(logger.isErrorEnabled())
+						logger.error("",e);
+				}
+			}
+
 		}
 	}
 

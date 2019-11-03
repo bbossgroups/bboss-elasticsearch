@@ -87,6 +87,10 @@ public class ESTranResultSet  implements TranResultSet {
 	public void stop(){
 		status = STATUS_STOP;
 	}
+	private boolean reachEnd;
+	public void reachEend(){
+		this.reachEnd = true;
+	}
 
 	@Override
 	public boolean next() throws ESDataImportException {
@@ -111,12 +115,15 @@ public class ESTranResultSet  implements TranResultSet {
 				}
 				if(datas == null || size == 0)
 				{
+
 					do{
 						datas = queue.poll(1000, TimeUnit.MILLISECONDS);
-						if(status == STATUS_STOP){
+						if(status == STATUS_STOP ){
 							return false;
 						}
 						if(datas == null){
+							if(reachEnd)
+								break;
 							continue;
 						}
 						this.records = datas.getDatas();
@@ -124,6 +131,9 @@ public class ESTranResultSet  implements TranResultSet {
 						if(size > 0)
 							break;
 					}while (true);
+					if(datas == null && reachEnd){
+						return false;
+					}
 				}
 
 				pos = 0;

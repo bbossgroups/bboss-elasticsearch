@@ -2764,6 +2764,28 @@ public void testObjectSQLQueryFromDSL(){
 #end 
 ```
 
+将map中key-value拼接为多个match检索条件：
+
+```json
+        {
+            "query": {
+                "bool": {
+                    "must": [
+                        #foreach($key in $condition.keySet())
+                        #if($velocityCount > 0),#end
+                        {
+                            "match": {
+                                "$key": #[condition[$key]]
+                            }
+                        }
+                        #end
+                    ]
+                }
+            },
+            "size": 1000
+        }
+```
+
 
 
 #### 案例7 #if-#else-#end结合$xxx变量
