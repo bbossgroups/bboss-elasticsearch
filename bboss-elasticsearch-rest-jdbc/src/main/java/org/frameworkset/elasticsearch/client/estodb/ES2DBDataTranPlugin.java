@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
@@ -23,8 +25,11 @@ import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.template.ESInfo;
+import org.frameworkset.persitent.util.SQLInfo;
 
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -42,6 +47,30 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 	protected void init(ImportContext importContext){
 		super.init(importContext);
 		es2DBContext = (ES2DBContext)importContext;
+
+	}
+
+	private void initSQLInfo() throws ESDataImportException {
+		ES2DBImportContext.SQLInfo sqlInfo = new ES2DBImportContext.SQLInfo();
+
+		ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
+
+		try {
+			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
+			sqlInfo.setOriginSQL(sqlinfo.getSql());
+			String sql = parserSQL(  sqlinfo);
+
+			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
+			sql = sqlstruction.getSql();
+			sqlInfo.setSql(sql);
+			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
+			sqlInfo.setVars(vars);
+			es2DBContext.setSqlInfo(sqlInfo);
+		} catch (SQLException e) {
+			throw new ESDataImportException("Init SQLInfo failed",e);
+		}
+
+
 	}
 	public ES2DBDataTranPlugin(ImportContext importContext){
 		super(importContext);
@@ -59,6 +88,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 	}
 	@Override
 	public void afterInit(){
+		initSQLInfo();
 	}
 	public void initDSLInfo(){
 		if(es2DBContext.getDslFile() != null && !es2DBContext.getDslFile().equals(""))

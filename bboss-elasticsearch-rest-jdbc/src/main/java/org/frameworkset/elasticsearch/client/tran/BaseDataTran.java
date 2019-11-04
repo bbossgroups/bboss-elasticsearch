@@ -63,15 +63,14 @@ public abstract class BaseDataTran implements DataTran{
 		importContext.stop();
 
 	}
-
+	public abstract void logTaskStart(Logger logger);
 	public String tran() throws ESDataImportException {
 		try {
 			if (jdbcResultSet == null)
 				return null;
 			if (isPrintTaskLog()) {
-				logger.info(new StringBuilder().append("import data to IndexName[").append(importContext.getEsIndexWrapper().getIndex())
-						.append("] IndexType[").append(importContext.getEsIndexWrapper().getType())
-						.append("] start.").toString());
+				logTaskStart(logger);
+
 			}
 			if (importContext.getStoreBatchSize() <= 0) {
 				return serialExecute();
@@ -133,7 +132,8 @@ public abstract class BaseDataTran implements DataTran{
 			if(isPrintTaskLog()) {
 				logger.info(new StringBuilder().append("Complete tasks:")
 						.append(count).append(",Total import ")
-						.append(totalCount.getTotalCount()).append(" records.").toString());
+						.append(totalCount.getTotalCount()).append(" records,IgnoreTotalCount ")
+						.append(totalCount.getIgnoreTotalCount()).append(" records.").toString());
 			}
 			jobComplete(  service,exception,lastValue ,tranErrorWrapper);
 		}
@@ -161,7 +161,8 @@ public abstract class BaseDataTran implements DataTran{
 						logger.info(new StringBuilder().append("Complete tasks:")
 								.append(count).append(",Total import ")
 								.append(totalCount.getTotalCount())
-								.append(" records.").toString());
+								.append(" records,IgnoreTotalCount ")
+								.append(totalCount.getIgnoreTotalCount()).append(" records.").toString());
 					}
 					jobComplete(  service,null,null,tranErrorWrapper);
 				}

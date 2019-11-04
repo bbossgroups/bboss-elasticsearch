@@ -1,7 +1,5 @@
 package org.frameworkset.elasticsearch.client.estodb;
 
-import bboss.org.apache.velocity.VelocityContext;
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.*;
@@ -11,8 +9,6 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTran;
 import org.frameworkset.elasticsearch.entity.ESDatas;
-import org.frameworkset.persitent.util.SQLInfo;
-import org.frameworkset.soa.BBossStringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +25,18 @@ public class ES2DBDataTran extends BaseDataTran {
 	private static Logger logger = LoggerFactory.getLogger(ES2DBDataTran.class);
 	private ES2DBContext es2DBContext ;
 	private ESTranResultSet esTranResultSet;
-
+	@Override
+	public void logTaskStart(Logger logger) {
+		logger.info(new StringBuilder().append("import data to db[").append(importContext.getDbConfig().getDbUrl())
+				.append("] dbuser[").append(importContext.getDbConfig().getDbUser()).append(" sql[").append(es2DBContext.getSqlInfo().getOriginSQL()).append("] start.").toString());
+	}
 	protected void init(){
 		es2DBContext = (ES2DBContext)importContext;
 		esTranResultSet = (ESTranResultSet)jdbcResultSet;
+
 	}
+
+
 	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 	}
@@ -49,54 +52,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		esTranResultSet.stop();
 		super.stop();
 	}
-	private VelocityContext buildVelocityContext()
-	{
 
-
-		VelocityContext context_ = new VelocityContext();
-
-//		com.frameworkset.common.poolman.Param temp = null;
-//		if(sqlparams != null && sqlparams.size()>0)
-//		{
-//
-//			Iterator<Map.Entry<String, com.frameworkset.common.poolman.Param>> it = sqlparams.entrySet().iterator();
-//			while(it.hasNext())
-//			{
-//				Map.Entry<String, com.frameworkset.common.poolman.Param> entry = it.next();
-//				temp = entry.getValue();
-//
-//				if(!temp.getType().equals(NULL))
-//					context_.put(entry.getKey(), temp.getData());
-//			}
-//		}
-		return context_;
-
-	}
-	private String parserSQL(SQLInfo sqlinfo){
-		String sql = null;
-		if(sqlinfo.istpl())
-		{
-			sqlinfo.getSqltpl().process();//识别sql语句是不是真正的velocity sql模板
-			if(sqlinfo.istpl())
-			{
-				VelocityContext vcontext = buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
-
-				BBossStringWriter sw = new BBossStringWriter();
-				sqlinfo.getSqltpl().merge(vcontext,sw);
-				sql = sw.toString();
-			}
-			else
-			{
-				sql = sqlinfo.getSql();
-			}
-
-		}
-		else
-		{
-			sql = sqlinfo.getSql();
-		}
-		return sql;
-	}
 	public String serialExecute(  ){
 		Object lastValue = null;
 		Exception exception = null;
@@ -109,12 +65,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		try {
 
 			//		GetCUDResult CUDResult = null;
-			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
-			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = parserSQL(  sqlinfo);
-			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
-			sql = sqlstruction.getSql();
-			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
+			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
 			Object temp = null;
 			Param param = null;
 			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
@@ -131,7 +82,7 @@ public class ES2DBDataTran extends BaseDataTran {
 						ignoreTotalCount ++;
 						continue;
 					}
-					List<ES2DBDataTran.Param> record = buildRecord(  context,  vars );
+					List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 
 					records.add(record);
 					//						evalBuilk(this.jdbcResultSet, batchContext, writer, context, "index", clientInterface.isVersionUpper7());
@@ -140,7 +91,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					throw new ElasticSearchException(e);
 				}
 			}
-			TaskCommand<List<List<Param>>, String> taskCommand = new TaskCommandImpl(sql,importContext,records);
+			TaskCommand<List<List<Param>>, String> taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
 			TaskCall.call(taskCommand);
 			importContext.flushLastValue(lastValue);
 			if(isPrintTaskLog()) {
@@ -219,12 +170,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		TranErrorWrapper tranErrorWrapper = new TranErrorWrapper(importContext);
 		int batchsize = importContext.getStoreBatchSize();
 		try {
-			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
-			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = parserSQL(  sqlinfo);
-			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
-			sql = sqlstruction.getSql();
-			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
+			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
 			Object temp = null;
 			Param param = null;
 			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
@@ -244,14 +190,14 @@ public class ES2DBDataTran extends BaseDataTran {
 					totalCount.increamentIgnoreTotalCount();
 					continue;
 				}
-				List<ES2DBDataTran.Param> record = buildRecord(  context,  vars );
+				List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 				records.add(record);
 				//						evalBuilk(this.jdbcResultSet, batchContext, writer, context, "index", clientInterface.isVersionUpper7());
 				count++;
 				if (count == batchsize) {
 
 					count = 0;
-					TaskCommandImpl taskCommand = new TaskCommandImpl(sql,importContext,records);
+					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
 					records = new ArrayList<>();
 					tasks.add(service.submit(new TaskCall(taskCommand,  tranErrorWrapper,taskNo,totalCount,batchsize)));
 
@@ -267,7 +213,7 @@ public class ES2DBDataTran extends BaseDataTran {
 //				if(this.error != null && !importContext.isContinueOnError()) {
 //					throw error;
 //				}
-				TaskCommandImpl taskCommand = new TaskCommandImpl(sql,importContext,records);
+				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
 				tasks.add(service.submit(new TaskCall(taskCommand,tranErrorWrapper,taskNo,totalCount,count)));
 				taskNo ++;
 				if(isPrintTaskLog())
@@ -316,12 +262,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		String refreshOption = importContext.getRefreshOption();
 		try {
 			istart = start;
-			ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
-			SQLInfo sqlinfo = configSQLExecutor.getSqlInfo(importContext.getDbConfig().getDbName(), es2DBContext.getSqlName());
-			String sql = parserSQL(  sqlinfo);
-			VariableHandler.SQLStruction sqlstruction = sqlinfo.getSqlutil().getSQLStruction(sqlinfo,sql);
-			sql = sqlstruction.getSql();
-			List<VariableHandler.Variable> vars = sqlstruction.getVariables();
+			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
 			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
 				if(!tranErrorWrapper.assertCondition()) {
@@ -338,13 +279,13 @@ public class ES2DBDataTran extends BaseDataTran {
 					ignoreTotalCount ++;
 					continue;
 				}
-				List<ES2DBDataTran.Param> record = buildRecord(  context,  vars );
+				List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 				records.add(record);
 				count++;
 				if (count == batchsize) {
 					count = 0;
 					taskNo ++;
-					TaskCommandImpl taskCommand = new TaskCommandImpl(sql,importContext,records);
+					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
 					records = new ArrayList<>();
 					ret = TaskCall.call(taskCommand);
 					importContext.flushLastValue(lastValue);
@@ -366,7 +307,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					tranErrorWrapper.throwError();
 				}
 				taskNo ++;
-				TaskCommandImpl taskCommand = new TaskCommandImpl(sql,importContext,records);
+				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
 				ret = TaskCall.call(taskCommand);
 				importContext.flushLastValue(lastValue);
 				if(isPrintTaskLog())  {

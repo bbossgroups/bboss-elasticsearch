@@ -45,4 +45,7 @@ public interface ES2DBContext extends DBContext {
 	String getDslFile();
 
 	BatchHandler getBatchHandler();
+	public ES2DBImportContext.SQLInfo getSqlInfo() ;
+
+	public void setSqlInfo(ES2DBImportContext.SQLInfo sqlInfo) ;
 }

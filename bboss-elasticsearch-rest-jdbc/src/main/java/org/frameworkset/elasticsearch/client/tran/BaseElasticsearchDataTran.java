@@ -36,7 +36,14 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 	private static Logger logger = LoggerFactory.getLogger(BaseElasticsearchDataTran.class);
 	private ClientInterface clientInterface;
 
-	public BaseElasticsearchDataTran(TranResultSet jdbcResultSet,ImportContext importContext) {
+	@Override
+	public void logTaskStart(Logger logger) {
+		logger.info(new StringBuilder().append("import data to IndexName[").append(importContext.getEsIndexWrapper().getIndex())
+				.append("] IndexType[").append(importContext.getEsIndexWrapper().getType())
+				.append("] start.").toString());
+	}
+
+	public BaseElasticsearchDataTran(TranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 		clientInterface = ElasticSearchHelper.getRestClientUtil();
 	}
@@ -238,7 +245,8 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 				if(isPrintTaskLog())  {
 					end = System.currentTimeMillis();
 					logger.info(new StringBuilder().append("Task[").append(taskNo).append("] complete,take time:").append((end - istart)).append("ms")
-							.append(",import ").append(count).append(" records.").toString());
+							.append(",import ").append(count).append(" records,IgnoreTotalCount ")
+							.append(ignoreTotalCount).append(" records.").toString());
 
 				}
 				totalCount += count;
