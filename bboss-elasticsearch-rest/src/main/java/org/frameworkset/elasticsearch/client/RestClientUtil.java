@@ -1866,6 +1866,8 @@ public class RestClientUtil extends ClientUtil{
 //			SliceRunTask<T> sliceRunTask = null;
 			SerialContext serialContext = ESInnerHitSerialThreadLocal.buildSerialContext();
 			for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
+				if(sliceScrollResult.isBreaked())
+					break;
 				String sliceDsl = sliceScroll.buildSliceDsl(j,max);
 //				final String sliceDsl = builder.append("{\"slice\": {\"id\": ").append(i).append(",\"max\": ")
 //									.append(max).append("},\"size\":").append(fetchSize).append(",\"query\": {\"match_all\": {}}}").toString();
@@ -1927,6 +1929,9 @@ public class RestClientUtil extends ClientUtil{
 									SliceScrollResultInf<T> sliceScrollResult,boolean parallel) throws Exception {
 		List<Future> tasks = null;
 		try{
+			if(sliceScrollResult.isBreaked()){ //other slice query has breaked continue to slice scroll query.
+				return;
+			}
 			RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 			ESDatas<T> sliceResponse = ResultUtil.buildESDatas(result,type);
 			int taskId = 0;

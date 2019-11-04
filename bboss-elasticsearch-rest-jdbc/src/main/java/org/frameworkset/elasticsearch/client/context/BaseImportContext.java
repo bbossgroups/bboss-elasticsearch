@@ -90,7 +90,9 @@ public abstract  class BaseImportContext implements ImportContext {
 	public boolean isPrintTaskLog(){
 		return baseImportConfig.isPrintTaskLog();
 	}
-
+	public void setDataRefactor( DataRefactor dataRefactor){
+		this.baseImportConfig.setDataRefactor(dataRefactor);
+	}
 	@Override
 	public void destroy() {
 //		if(dataTranPlugin != null){

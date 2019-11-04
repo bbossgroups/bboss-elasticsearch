@@ -45,7 +45,9 @@ public class DB2ESImportContext extends BaseImportContext implements DBContext{
 	public String getSql() {
 		return db2ESImportConfig.getSql();
 	}
-
+	public void setEsIdField(String esIdField){
+		db2ESImportConfig.setEsIdField(esIdField);
+	}
 	@Override
 	public String getSqlFilepath() {
 		return db2ESImportConfig.getSqlFilepath();

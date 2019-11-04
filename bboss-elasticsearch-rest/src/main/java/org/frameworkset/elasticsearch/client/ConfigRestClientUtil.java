@@ -1156,11 +1156,12 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		if(scrollHandler != null)
 			sliceScrollResult.setScrollHandler(scrollHandler);
 		for (int j = 0; j < max; j++) {//启动max个线程，并行处理每个slice任务
+			if(sliceScrollResult.isBreaked())
+				break;
 			int i = j;
 			try {
 				params.put("sliceId", i);
-				if(sliceScrollResult.isBreaked())
-					break;
+
 				_doSliceScroll( i, _path,
 						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
 						scroll, type,
