@@ -369,7 +369,15 @@ public abstract  class BaseImportContext implements ImportContext {
 	public void resume(){
 		this.currentStoped = false;
 	}
-
+	public String getDateFormat(){
+		return this.baseImportConfig.getDateFormat();
+	}
+	public String getLocale(){
+		return this.baseImportConfig.getLocale();
+	}
+	public String getTimeZone(){
+		return this.baseImportConfig.getTimeZone();
+	}
 	private AtomicInteger rejectCounts = new AtomicInteger();
 	private ExecutorService blockedExecutor;
 	public ExecutorService buildThreadPool(){

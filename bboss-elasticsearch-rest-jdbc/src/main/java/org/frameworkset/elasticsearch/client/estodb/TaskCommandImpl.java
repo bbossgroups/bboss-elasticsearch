@@ -19,9 +19,10 @@ import com.frameworkset.common.poolman.DBUtil;
 import com.frameworkset.common.poolman.NestedSQLException;
 import com.frameworkset.common.poolman.StatementInfo;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.TaskCommand;
-import org.frameworkset.elasticsearch.client.TaskFailedException;
+import org.frameworkset.elasticsearch.client.ImportCount;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
+import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,25 +40,18 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class TaskCommandImpl implements TaskCommand<List<List<ES2DBDataTran.Param>>, String> {
+public class TaskCommandImpl extends BaseTaskCommand<List<List<ES2DBDataTran.Param>>, String> {
 	private String sql;
 
-	public TaskCommandImpl(String sql, ImportContext importContext, List<List<ES2DBDataTran.Param>> datas) {
+	public TaskCommandImpl(String sql, ImportCount importCount, ImportContext importContext, List<List<ES2DBDataTran.Param>> datas,int taskNo,String jobNo) {
+		super(importCount,importContext,datas.size(),  taskNo,  jobNo);
 		this.sql = sql;
-//		this.batchsize = importContext.getStoreBatchSize();
 		this.importContext = importContext;
 		this.datas = datas;
 	}
 
-	public ImportContext getImportContext() {
-		return importContext;
-	}
 
-	public void setImportContext(ImportContext db2ESImportContext) {
-		this.importContext = db2ESImportContext;
-	}
 
-	private ImportContext importContext;
 
 
 

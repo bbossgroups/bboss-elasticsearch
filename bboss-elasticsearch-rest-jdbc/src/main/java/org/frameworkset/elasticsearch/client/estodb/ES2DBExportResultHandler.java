@@ -16,8 +16,7 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.ResultUtil;
-import org.frameworkset.elasticsearch.client.TaskCommand;
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,12 +84,8 @@ public class ES2DBExportResultHandler implements WrapedExportResultHandler<Strin
 
 		 }
 		 */
-		if(!ResultUtil.bulkResponseError(result)){
-			success(  taskCommand,   result);
-		}
-		else{
-			error(  taskCommand,   result);
-		}
+		success(  taskCommand,   result);
+
 
 	}
 

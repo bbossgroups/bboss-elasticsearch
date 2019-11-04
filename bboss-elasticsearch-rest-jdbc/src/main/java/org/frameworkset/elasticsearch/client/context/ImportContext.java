@@ -132,6 +132,10 @@ public interface ImportContext {
 	ExecutorService buildThreadPool();
 
 	void resume();
+
+	String getDateFormat();
+	public String getLocale();
+	public String getTimeZone();
 //	public Object getValue(String columnName) throws ESDataImportException;
 //	public Object getDateTimeValue(String columnName) throws ESDataImportException;
 

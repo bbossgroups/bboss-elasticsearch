@@ -16,6 +16,8 @@ package org.frameworkset.elasticsearch.client.tran;/*
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 
+import java.util.Date;
+
 public interface TranResultSet {
 
 	public Object getValue(  int i, String colName,int sqlType) throws ESDataImportException;
@@ -25,7 +27,7 @@ public interface TranResultSet {
 
 	public Object getValue( String colName,int sqlType) throws ESDataImportException;
 
-	public Object getDateTimeValue( String colName) throws ESDataImportException;
+	public Date getDateTimeValue(String colName) throws ESDataImportException;
 
 	public boolean next() throws ESDataImportException ;
 	public TranMeta getMetaData();

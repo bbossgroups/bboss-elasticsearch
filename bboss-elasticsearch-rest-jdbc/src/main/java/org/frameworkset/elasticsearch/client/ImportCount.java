@@ -15,7 +15,11 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import java.util.concurrent.locks.ReentrantLock;
+import com.frameworkset.util.UUID;
+
+import java.util.Date;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <p>Description: </p>
@@ -26,39 +30,112 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0
  */
 public class ImportCount {
-	private ReentrantLock lock = new ReentrantLock();
-	private ReentrantLock ilock = new ReentrantLock();
-	public long getTotalCount() {
-		return totalCount;
-	}
-
-	public long increamentTotalCount(long count) {
-		try {
-			lock.lock();
-			this.totalCount += count;
-			return totalCount;
-		}finally {
-			lock.unlock();
-		}
-
-	}
-
+	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private Lock readLock = lock.readLock();
+	private Lock writeLock = lock.writeLock();
+	private Date jobStartTime;
+	private Date jobEndTime;
+	private String jobNo;
 	private long totalCount;
+	private long failedCount;
+	private long successCount;
+	private long ignoreTotalCount;
+	public ImportCount(){
+		jobNo = UUID.randomUUID().toString();
+		this.jobStartTime = new Date();
+	}
+	public long getTotalCount() {
+		try {
+			readLock.lock();
+			return totalCount;
+		}
+		finally {
+			readLock.unlock();
+		}
+	}
+
+	public long getFailedCount() {
+
+		try {
+			readLock.lock();
+			return failedCount;
+		}
+		finally {
+			readLock.unlock();
+		}
+	}
+
 
 	public long getIgnoreTotalCount() {
-		return ignoreTotalCount;
-	}
+		try {
+			readLock.lock();
+			return ignoreTotalCount;
+		}
+		finally {
+			readLock.unlock();
+		}
 
+	}
+	public long[] increamentFailedCount(long failedCount) {
+		try {
+			writeLock.lock();
+			this.failedCount = failedCount+this.failedCount;
+			this.totalCount = totalCount + failedCount;
+			return new long[]{this.failedCount,this.totalCount};
+		}finally {
+			writeLock.unlock();
+		}
+	}
 	public long increamentIgnoreTotalCount() {
 		try {
-			ilock.lock();
+			writeLock.lock();
 			this.ignoreTotalCount ++;
+			this.totalCount ++;
 			return ignoreTotalCount;
 		}finally {
-			ilock.unlock();
+			writeLock.unlock();
 		}
 	}
 
-	private long ignoreTotalCount;
 
+	public long getSuccessCount() {
+		try {
+			readLock.lock();
+			return successCount;
+		}
+		finally {
+			readLock.unlock();
+		}
+
+	}
+	public long[] increamentSuccessCount(long successCount) {
+		try {
+			writeLock.lock();
+			this.successCount = this.successCount+successCount;
+			this.totalCount = totalCount + successCount;
+			return new long[]{this.successCount,this.totalCount};
+		}finally {
+			writeLock.unlock();
+		}
+	}
+
+	public Date getJobStartTime() {
+		return jobStartTime;
+	}
+
+	public void setJobStartTime(Date jobStartTime) {
+		this.jobStartTime = jobStartTime;
+	}
+
+	public Date getJobEndTime() {
+		return jobEndTime;
+	}
+
+	public void setJobEndTime(Date jobEndTime) {
+		this.jobEndTime = jobEndTime;
+	}
+
+	public String getJobNo() {
+		return jobNo;
+	}
 }

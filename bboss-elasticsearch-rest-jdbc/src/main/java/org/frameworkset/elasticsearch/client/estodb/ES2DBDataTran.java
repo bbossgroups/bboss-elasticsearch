@@ -3,20 +3,19 @@ package org.frameworkset.elasticsearch.client.estodb;
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.context.Context;
 import org.frameworkset.elasticsearch.client.context.ContextImpl;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.Status;
+import org.frameworkset.elasticsearch.client.task.TaskCall;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTran;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -59,6 +58,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		long start = System.currentTimeMillis();
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
+		ImportCount importCount = new ImportCount();
 		long totalCount = 0;
 		long ignoreTotalCount = 0;
 
@@ -91,7 +91,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					throw new ElasticSearchException(e);
 				}
 			}
-			TaskCommand<List<List<Param>>, String> taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
+			TaskCommand<List<List<Param>>, String> taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importCount,importContext,records,1,importCount.getJobNo());
 			TaskCall.call(taskCommand);
 			importContext.flushLastValue(lastValue);
 			if(isPrintTaskLog()) {
@@ -121,7 +121,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			if(importContext.isCurrentStoped()){
 				stop();
 			}
-
+			importCount.setJobEndTime(new Date());
 		}
 		return null;
 
@@ -197,11 +197,12 @@ public class ES2DBDataTran extends BaseDataTran {
 				if (count == batchsize) {
 
 					count = 0;
-					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
-					records = new ArrayList<>();
-					tasks.add(service.submit(new TaskCall(taskCommand,  tranErrorWrapper,taskNo,totalCount,batchsize)));
-
 					taskNo ++;
+					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),totalCount,importContext,records,taskNo,totalCount.getJobNo());
+					records = new ArrayList<>();
+					tasks.add(service.submit(new TaskCall(taskCommand,  tranErrorWrapper)));
+
+
 
 				}
 
@@ -213,9 +214,10 @@ public class ES2DBDataTran extends BaseDataTran {
 //				if(this.error != null && !importContext.isContinueOnError()) {
 //					throw error;
 //				}
-				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
-				tasks.add(service.submit(new TaskCall(taskCommand,tranErrorWrapper,taskNo,totalCount,count)));
 				taskNo ++;
+				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),totalCount,importContext,records,taskNo,totalCount.getJobNo());
+				tasks.add(service.submit(new TaskCall(taskCommand,tranErrorWrapper)));
+
 				if(isPrintTaskLog())
 					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
 			}
@@ -237,7 +239,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		}
 		finally {
 			waitTasksComplete(   tasks,  service,exception,  lastValue,totalCount ,tranErrorWrapper);
-
+			totalCount.setJobEndTime(new Date());
 		}
 
 		return null;
@@ -258,6 +260,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		long end = 0;
 		long totalCount = 0;
 		long ignoreTotalCount = 0;
+		ImportCount importCount = new ImportCount();
 		int batchsize = importContext.getStoreBatchSize();
 		String refreshOption = importContext.getRefreshOption();
 		try {
@@ -276,7 +279,7 @@ public class ES2DBDataTran extends BaseDataTran {
 				Context context = new ContextImpl(importContext, jdbcResultSet, null);
 				context.refactorData();
 				if (context.isDrop()) {
-					ignoreTotalCount ++;
+					importCount.increamentIgnoreTotalCount();
 					continue;
 				}
 				List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
@@ -285,7 +288,7 @@ public class ES2DBDataTran extends BaseDataTran {
 				if (count == batchsize) {
 					count = 0;
 					taskNo ++;
-					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
+					TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importCount,importContext,records,taskNo,importCount.getJobNo());
 					records = new ArrayList<>();
 					ret = TaskCall.call(taskCommand);
 					importContext.flushLastValue(lastValue);
@@ -307,7 +310,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					tranErrorWrapper.throwError();
 				}
 				taskNo ++;
-				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importContext,records);
+				TaskCommandImpl taskCommand = new TaskCommandImpl(sqlinfo.getSql(),importCount,importContext,records,taskNo,importCount.getJobNo());
 				ret = TaskCall.call(taskCommand);
 				importContext.flushLastValue(lastValue);
 				if(isPrintTaskLog())  {
@@ -336,7 +339,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			if(!tranErrorWrapper.assertCondition(exception)){
 				stop();
 			}
-
+			importCount.setJobEndTime(new Date());
 		}
 
 		return ret;

@@ -79,14 +79,16 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 	protected String existSQL;
 	protected int lastValueType = 0;
 	//	protected int id = 1;
-	protected DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 	protected Date initLastDate = null;
 	protected String statusDbname;
 	protected String statusTableName;
 	protected String statusStorePath;
 	protected String lastValueClumnName;
 	protected ScheduleService scheduleService;
-
+	protected boolean isPrintTaskLog(){
+		return importContext.isPrintTaskLog() && logger.isInfoEnabled();
+	}
 	@Override
 	public void importData() throws ESDataImportException {
 
@@ -96,7 +98,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 //				firstImportData();
 			this.doImportData();
 			long importEndTime = System.currentTimeMillis();
-			if( importContext.isPrintTaskLog() && logger.isInfoEnabled())
+			if( isPrintTaskLog())
 				logger.info(new StringBuilder().append("Execute job Take ").append((importEndTime - importStartTime)).append(" ms").toString());
 		}
 		else{//定时增量导入数据操作
@@ -184,7 +186,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 				}
 			}
 		}
-		if(logger.isInfoEnabled()){
+		if(isPrintTaskLog()){
 			logger.info(new StringBuilder().append("Current values: ").append(params).toString());
 		}
 	}
@@ -214,7 +216,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 				}
 			}
 		}
-		if(logger.isInfoEnabled()){
+		if(isPrintTaskLog()){
 			logger.info(new StringBuilder().append("Current values: ").append(params).toString());
 		}
 		return params;
@@ -285,7 +287,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 		this.firstStatus = (Status) currentStatus.clone();
 //		insertedCheck = true;
 		if(logger.isInfoEnabled())
-			logger.info("init LastValue Status: "+currentStatus.toString());
+			logger.info("Init LastValue Status: "+currentStatus.toString());
 	}
 
 
@@ -295,6 +297,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 	protected void initTableAndStatus(){
 		if(this.isIncreamentImport()) {
 			try {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				initLastDate = dateFormat.parse("1970-01-01");
 				//SQLExecutor.updateWithDBName("gencode","drop table BBOSS_GENCODE");
 				SQLExecutor.queryObjectWithDBName(int.class, statusDbname, existSQL);

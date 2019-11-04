@@ -17,7 +17,7 @@ package org.frameworkset.elasticsearch.client.db2es;
 
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.ResultUtil;
-import org.frameworkset.elasticsearch.client.TaskCommand;
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

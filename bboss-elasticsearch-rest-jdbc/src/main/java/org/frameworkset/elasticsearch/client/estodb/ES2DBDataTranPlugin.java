@@ -83,22 +83,23 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 		this.initES(importContext.getApplicationPropertiesFile());
 		this.initDS(importContext.getDbConfig());
 		initOtherDSes(importContext.getConfigs());
-		this.initDSLInfo();
+
 
 	}
 	@Override
 	public void afterInit(){
 		initSQLInfo();
+		this.initDSLInfo();
 	}
 	public void initDSLInfo(){
-		if(es2DBContext.getDslFile() != null && !es2DBContext.getDslFile().equals(""))
-		try {
-			ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil(es2DBContext.getDslFile());
-			ESInfo esInfo = clientInterface.getESInfo(es2DBContext.getDslName());
-			importContext.setStatusTableId(esInfo.getTemplate().hashCode());
-		}
-		catch (Exception e){
-			throw new ESDataImportException(e);
+		if(isIncreamentImport() && es2DBContext.getDslFile() != null && !es2DBContext.getDslFile().equals("")) {
+			try {
+				ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil(es2DBContext.getDslFile());
+				ESInfo esInfo = clientInterface.getESInfo(es2DBContext.getDslName());
+				importContext.setStatusTableId(esInfo.getTemplate().hashCode());
+			} catch (Exception e) {
+				throw new ESDataImportException(e);
+			}
 		}
 	}
 
@@ -160,7 +161,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 	}
 
 	public void doImportData()  throws ESDataImportException{
-		ESTranResultSet jdbcResultSet = new ESTranResultSet();
+		ESTranResultSet jdbcResultSet = new ESTranResultSet(importContext);
 
 		if(es2DBContext.getBatchHandler() != null)
 		{

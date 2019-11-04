@@ -16,10 +16,13 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.TranMeta;
 import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.elasticsearch.client.util.TranUtil;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -42,9 +45,10 @@ public class ESTranResultSet  implements TranResultSet {
 	public static int STATUS_STOP = 1;
 	private int status;
 	private BlockingQueue<ESDatas> queue ;
-
-	public ESTranResultSet() {
+	private ImportContext importContext;
+	public ESTranResultSet(ImportContext importContext) {
 		queue = new ArrayBlockingQueue<ESDatas>(10);
+		this.importContext = importContext;
 	}
 
 
@@ -81,8 +85,12 @@ public class ESTranResultSet  implements TranResultSet {
 	}
 
 	@Override
-	public Object getDateTimeValue(String colName) throws ESDataImportException {
-		return getValue(  colName);
+	public Date getDateTimeValue(String colName) throws ESDataImportException {
+		Object value = getValue(  colName);
+		if(value == null)
+			return null;
+		return TranUtil.getDateTimeValue(colName,value,importContext);
+
 	}
 	public void stop(){
 		status = STATUS_STOP;

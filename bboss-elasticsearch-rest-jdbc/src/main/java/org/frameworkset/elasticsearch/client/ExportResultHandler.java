@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
+
 /**
  * <p>Description: 任务执行结果处理接口，<DATA,RESULT>中的DATA标识处理数据的类型，RESULT标识返回结果的类型</p>
  * <p></p>

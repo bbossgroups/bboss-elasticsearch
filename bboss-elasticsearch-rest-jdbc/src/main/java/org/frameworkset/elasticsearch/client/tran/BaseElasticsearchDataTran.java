@@ -13,6 +13,7 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.JDBCGetVariableValue;
 import org.frameworkset.elasticsearch.client.db2es.TaskCommandImpl;
 import org.frameworkset.elasticsearch.client.schedule.Status;
+import org.frameworkset.elasticsearch.client.task.TaskCall;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.soa.BBossStringWriter;
@@ -106,14 +107,14 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
-					TaskCommandImpl taskCommand = new TaskCommandImpl();
+					taskNo ++;
+					TaskCommandImpl taskCommand = new TaskCommandImpl(totalCount,importContext,batchsize,taskNo,totalCount.getJobNo());
 					taskCommand.setClientInterface(clientInterface);
 					taskCommand.setRefreshOption(importContext.getRefreshOption());
 					taskCommand.setDatas(datas);
-					taskCommand.setImportContext(importContext);
-					tasks.add(service.submit(new TaskCall(taskCommand,  tranErrorWrapper,taskNo,totalCount,batchsize)));
+					tasks.add(service.submit(new TaskCall(taskCommand,  tranErrorWrapper)));
 
-					taskNo ++;
+
 
 				}
 
@@ -127,13 +128,13 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 //				}
 				writer.flush();
 				String datas = builder.toString();
-				TaskCommandImpl taskCommand = new TaskCommandImpl();
+				taskNo ++;
+				TaskCommandImpl taskCommand = new TaskCommandImpl(totalCount,importContext,count,taskNo,totalCount.getJobNo());
 				taskCommand.setClientInterface(clientInterface);
 				taskCommand.setRefreshOption(importContext.getRefreshOption());
 				taskCommand.setDatas(datas);
-				taskCommand.setImportContext(importContext);
-				tasks.add(service.submit(new TaskCall(taskCommand,tranErrorWrapper,taskNo,totalCount,count)));
-				taskNo ++;
+				tasks.add(service.submit(new TaskCall(taskCommand,tranErrorWrapper)));
+
 				if(isPrintTaskLog())
 					logger.info(new StringBuilder().append("submit tasks:").append(taskNo).toString());
 			}
@@ -160,6 +161,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			} catch (Exception e) {
 
 			}
+			totalCount.setJobEndTime(new Date());
 		}
 
 		return ret;
@@ -183,6 +185,8 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 		long end = 0;
 		long totalCount = 0;
 		long ignoreTotalCount = 0;
+
+		ImportCount importCount = new ImportCount();
 		int batchsize = importContext.getStoreBatchSize();
 		String refreshOption = importContext.getRefreshOption();
 		try {
@@ -197,7 +201,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 				Context context = new ContextImpl(importContext, jdbcResultSet, batchContext);
 				context.refactorData();
 				if (context.isDrop()) {
-					ignoreTotalCount ++;
+					importCount.increamentIgnoreTotalCount();
 					continue;
 				}
 				evalBuilk(  this.jdbcResultSet,batchContext,writer,   context, "index",clientInterface.isVersionUpper7());
@@ -209,12 +213,12 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 					writer.close();
 					writer = new BBossStringWriter(builder);
 					count = 0;
+
 					taskNo ++;
-					TaskCommandImpl taskCommand = new TaskCommandImpl();
+					TaskCommandImpl taskCommand = new TaskCommandImpl(importCount,importContext,batchsize,taskNo,importCount.getJobNo());
 					taskCommand.setClientInterface(clientInterface);
 					taskCommand.setRefreshOption(refreshOption);
 					taskCommand.setDatas(datas);
-					taskCommand.setImportContext(importContext);
 					ret = TaskCall.call(taskCommand);
 					importContext.flushLastValue(lastValue);
 
@@ -234,12 +238,12 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			if (count > 0) {
 				writer.flush();
 				String datas = builder.toString();
+
 				taskNo ++;
-				TaskCommandImpl taskCommand = new TaskCommandImpl();
+				TaskCommandImpl taskCommand = new TaskCommandImpl(importCount,importContext,count,taskNo,importCount.getJobNo());
 				taskCommand.setClientInterface(clientInterface);
 				taskCommand.setRefreshOption(refreshOption);
 				taskCommand.setDatas(datas);
-				taskCommand.setImportContext(importContext);
 				ret = TaskCall.call(taskCommand);
 				importContext.flushLastValue(lastValue);
 				if(isPrintTaskLog())  {
@@ -279,6 +283,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			} catch (Exception e) {
 
 			}
+			importCount.setJobEndTime(new Date());
 		}
 
 		return ret;
@@ -294,6 +299,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
 		long totalCount = 0;
+		ImportCount importCount = new ImportCount();
 		long ignoreTotalCount = 0;
 		try {
 			BatchContext batchContext =  new BatchContext();
@@ -307,7 +313,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 					Context context = new ContextImpl(importContext, jdbcResultSet, batchContext);
 					context.refactorData();
 					if (context.isDrop()) {
-						ignoreTotalCount ++;
+						importCount.increamentIgnoreTotalCount();
 						continue;
 					}
 					evalBuilk(this.jdbcResultSet,  batchContext,writer,  context,  "index",clientInterface.isVersionUpper7());
@@ -320,11 +326,11 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			writer.flush();
 			String ret = null;
 			if(builder.length() > 0) {
-				TaskCommandImpl taskCommand = new TaskCommandImpl();
+
+				TaskCommandImpl taskCommand = new TaskCommandImpl(importCount,importContext,totalCount,1,importCount.getJobNo());
 				taskCommand.setClientInterface(clientInterface);
 				taskCommand.setRefreshOption(refreshOption);
 				taskCommand.setDatas(builder.toString());
-				taskCommand.setImportContext(importContext);
 				ret = TaskCall.call(taskCommand);
 			}
 			else{
@@ -351,6 +357,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 			if(!TranErrorWrapper.assertCondition(exception ,importContext)){
 				stop();
 			}
+			importCount.setJobEndTime(new Date());
 		}
 	}
 	public String tran(String indexName,String indexType) throws ElasticSearchException{

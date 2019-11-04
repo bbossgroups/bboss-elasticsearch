@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.task;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,9 +16,13 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.client.ImportCount;
+import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * <p>Description: </p>
@@ -31,9 +35,7 @@ import org.slf4j.LoggerFactory;
 public class TaskCall implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(TaskCall.class);
 	private TranErrorWrapper errorWrapper;
-	private int taskNo;
-	private ImportCount totalCount;
-	private int currentSize;
+
 	private ImportContext db2ESImportContext;
 	private TaskCommand taskCommand;
 //	public TaskCall(ImportContext db2ESImportContext  , String datas,
@@ -47,21 +49,16 @@ public class TaskCall implements Runnable {
 //		this.datas = datas;
 //		this.errorWrapper = errorWrapper;
 //		this.taskNo = taskNo;
-//		this.currentSize = currentSize;
+//		taskCommand.getDataSize() = currentSize;
 //		this.totalCount = totalCount;
 //		this.printTaskLog = db2ESImportContext.isPrintTaskLog();
 //		this.db2ESImportContext = db2ESImportContext;
 //	}
 
 	public TaskCall(TaskCommand taskCommand,
-					TranErrorWrapper errorWrapper,
-					int taskNo, ImportCount totalCount,
-					int currentSize ){
+					TranErrorWrapper errorWrapper){
 		this.taskCommand = taskCommand;
 		this.errorWrapper = errorWrapper;
-		this.taskNo = taskNo;
-		this.currentSize = currentSize;
-		this.totalCount = totalCount;
 		this.db2ESImportContext = taskCommand.getImportContext();
 	}
 
@@ -73,48 +70,83 @@ public class TaskCall implements Runnable {
 //		taskCommand.setImportContext(db2ESImportContext);
 //		return call(taskCommand);
 //	}
-
+	protected boolean isPrintTaskLog(){
+		return db2ESImportContext.isPrintTaskLog() && logger.isInfoEnabled();
+	}
 	public static <DATA,RESULT> RESULT call(TaskCommand<DATA,RESULT> taskCommand){
 		ImportContext importContext = taskCommand.getImportContext();
+		ImportCount importCount = taskCommand.getImportCount();
+		TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+		taskMetrics.setJobStartTime(importCount.getJobStartTime());
+		taskMetrics.setTaskStartTime(new Date());
 		try {
 			RESULT data = taskCommand.execute();
-
+			long[] metrics = importCount.increamentSuccessCount((long)taskCommand.getDataSize());
+			taskMetrics.setTotalSuccessRecords(metrics[0]);
+			taskMetrics.setTotalRecords(metrics[1]);
+			taskMetrics.setSuccessRecords((long)taskCommand.getDataSize());
+			taskMetrics.setTaskEndTime(new Date());
 			if (importContext.getExportResultHandler() != null) {//处理返回值
-				importContext.getExportResultHandler().handleResult(taskCommand, data);
+				try {
+					importContext.getExportResultHandler().handleResult(taskCommand, data);
+				}
+				catch (Exception e){
+					logger.warn("",e);
+				}
 			}
 			return data;
 		}
 		catch (ElasticSearchException e){
+			long[] metrics = importCount.increamentFailedCount(taskCommand.getDataSize());
+			taskMetrics.setFailedRecords(taskCommand.getDataSize());
+			taskMetrics.setTotalRecords(metrics[1]);
+			taskMetrics.setTotalFailedRecords(metrics[0]);
+			taskMetrics.setTaskEndTime(new Date());
 			if (importContext.getExportResultHandler() != null) {
-				importContext.getExportResultHandler().handleException(taskCommand, e);
+				try {
+					importContext.getExportResultHandler().handleException(taskCommand, e);
+				}
+				catch (Exception ee){
+					logger.warn("",e);
+				}
 			}
 			throw e;
 		}
 		catch (Exception e){
+			long[] metrics = importCount.increamentFailedCount(taskCommand.getDataSize());
+			taskMetrics.setFailedRecords(taskCommand.getDataSize());
+			taskMetrics.setTotalRecords(metrics[1]);
+			taskMetrics.setTotalFailedRecords(metrics[0]);
+			taskMetrics.setTaskEndTime(new Date());
 			if (importContext.getExportResultHandler() != null) {
-				importContext.getExportResultHandler().handleException(taskCommand, e);
+				try {
+					importContext.getExportResultHandler().handleException(taskCommand, e);
+				}
+				catch (Exception ee){
+					logger.warn("",e);
+				}
 			}
 			throw new ElasticSearchException(e);
 		}
+
 	}
 
 	@Override
 	public void run()   {
 		if(!errorWrapper.assertCondition()) {
 			if(logger.isWarnEnabled())
-				logger.warn(new StringBuilder().append("Task[").append(this.taskNo).append("] Assert Execute Condition Failed, Ignore").toString());
+				logger.warn(new StringBuilder().append("Task[").append(taskCommand.getTaskNo()).append("] Assert Execute Condition Failed, Ignore").toString());
 			return;
 		}
 		long start = System.currentTimeMillis();
 		StringBuilder info = null;
-		if(db2ESImportContext.isPrintTaskLog()) {
+		if(isPrintTaskLog()) {
 			info = new StringBuilder();
 		}
-		long totalSize = 0;
 		try {
-			if(db2ESImportContext.isPrintTaskLog()&& logger.isInfoEnabled()) {
+			if(isPrintTaskLog()) {
 
-					info.append("Task[").append(this.taskNo).append("] starting ......");
+					info.append("Task[").append(taskCommand.getTaskNo()).append("] starting ......");
 					logger.info(info.toString());
 
 			}
@@ -135,31 +167,48 @@ public class TaskCall implements Runnable {
 //				}
 //			}
 			call(taskCommand);
-			totalSize = totalCount.increamentTotalCount((long)currentSize);
+			if(isPrintTaskLog()) {
+				long end = System.currentTimeMillis();
+				info.setLength(0);
+				info.append("Task[").append(taskCommand.getTaskNo()).append("] finish,import ")
+						.append(taskCommand.getDataSize())
+						.append(" records,Total import ")
+						.append(taskCommand.getTaskMetrics().getTotalSuccessRecords()).append(" records,Take time:")
+						.append((end - start)).append("ms");
+				logger.info(info.toString());
+			}
 		}
 		catch (Exception e){
 			errorWrapper.setError(e);
-			if(db2ESImportContext.isPrintTaskLog() && logger.isInfoEnabled()) {
-				long end = System.currentTimeMillis();
-				info.setLength(0);
-				info.append("Task[").append(this.taskNo).append("] failed,take time:").append((end - start)).append("ms");
-				logger.info(info.toString());
-			}
 
-			if(!db2ESImportContext.isContinueOnError())
-				throw new TaskFailedException(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed").toString(),e);
+			if(!db2ESImportContext.isContinueOnError()) {
+				if (isPrintTaskLog()) {
+					long end = System.currentTimeMillis();
+					info.setLength(0);
+					info.append("Task[").append(taskCommand.getTaskNo()).append("] failed: ")
+						.append(taskCommand.getDataSize())
+						.append(" records, Take time:").append((end - start)).append("ms");
+					logger.info(info.toString());
+				}
+				throw new TaskFailedException(new StringBuilder().append("Task[").append(taskCommand.getTaskNo()).append("] Execute Failed: ")
+						.append(taskCommand.getDataSize())
+						.append(" records,").toString(), e);
+			}
 			else
 			{
-				if(logger.isErrorEnabled())
-					logger.error(new StringBuilder().append("Task[").append(this.taskNo).append("] Execute Failed,but continue On Error!").toString(),e);
+				if(isPrintTaskLog()) {
+					long end = System.currentTimeMillis();
+					info.setLength(0);
+					info.append("Task[").append(taskCommand.getTaskNo()).append("] failed: ")
+						.append(taskCommand.getDataSize())
+						.append(" records,but continue On Error! Take time:").append((end - start)).append("ms");
+					logger.info(info.toString(),e);
+				}
+
 			}
+
 		}
-		if(db2ESImportContext.isPrintTaskLog()&& logger.isInfoEnabled()) {
-			long end = System.currentTimeMillis();
-			info.setLength(0);
-			info.append("Task[").append(this.taskNo).append("] finish,import ").append(this.currentSize).append(" records,Total import ").append(totalSize).append(" records,Take time:").append((end - start)).append("ms");
-			logger.info(info.toString());
-		}
+
 
 
 	}

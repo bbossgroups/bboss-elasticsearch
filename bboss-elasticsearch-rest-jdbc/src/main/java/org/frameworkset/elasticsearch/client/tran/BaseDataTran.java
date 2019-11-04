@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -129,13 +130,17 @@ public abstract class BaseDataTran implements DataTran{
 					if( logger.isErrorEnabled()) logger.error("",e);
 				}
 			}
+			totalCount.setJobEndTime(new Date());
 			if(isPrintTaskLog()) {
+
 				logger.info(new StringBuilder().append("Complete tasks:")
-						.append(count).append(",Total import ")
-						.append(totalCount.getTotalCount()).append(" records,IgnoreTotalCount ")
-						.append(totalCount.getIgnoreTotalCount()).append(" records.").toString());
+						.append(count).append(",Total success import ")
+						.append(totalCount.getSuccessCount()).append(" records,Ignore Total ")
+						.append(totalCount.getIgnoreTotalCount()).append(" records,failed total")
+						.append(totalCount.getFailedCount()).append(" records.").toString());
 			}
 			jobComplete(  service,exception,lastValue ,tranErrorWrapper);
+			totalCount.setJobEndTime(new Date());
 		}
 		else{
 			Thread completeThread = new Thread(new Runnable() {
@@ -159,12 +164,13 @@ public abstract class BaseDataTran implements DataTran{
 					}
 					if(isPrintTaskLog()) {
 						logger.info(new StringBuilder().append("Complete tasks:")
-								.append(count).append(",Total import ")
-								.append(totalCount.getTotalCount())
-								.append(" records,IgnoreTotalCount ")
-								.append(totalCount.getIgnoreTotalCount()).append(" records.").toString());
+								.append(count).append(",Total success import ")
+								.append(totalCount.getSuccessCount()).append(" records,Ignore Total ")
+								.append(totalCount.getIgnoreTotalCount()).append(" records,failed total")
+								.append(totalCount.getFailedCount()).append(" records.").toString());
 					}
 					jobComplete(  service,null,null,tranErrorWrapper);
+					totalCount.setJobEndTime(new Date());
 				}
 			});
 			completeThread.start();

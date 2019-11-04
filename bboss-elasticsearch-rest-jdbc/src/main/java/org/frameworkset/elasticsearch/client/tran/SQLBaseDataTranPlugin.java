@@ -20,7 +20,7 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.DBConfig;
-import org.frameworkset.elasticsearch.client.TaskFailedException;
+import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.DBContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;

@@ -15,11 +15,11 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.ClientUtil;
-import org.frameworkset.elasticsearch.client.TaskCommand;
-import org.frameworkset.elasticsearch.client.TaskFailedException;
+import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.frameworkset.elasticsearch.handler.ESVoidResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,18 +32,16 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class TaskCommandImpl implements TaskCommand<String,String> {
+public class TaskCommandImpl extends BaseTaskCommand<String,String> {
 	private String refreshOption;
 
-	public ImportContext getImportContext() {
-		return db2ESImportContext;
+	public TaskCommandImpl(ImportCount importCount,ImportContext importContext,long dataSize,int taskNo,String jobNo) {
+		super(importCount,importContext,  dataSize,  taskNo,  jobNo);
 	}
 
-	public void setImportContext(ImportContext db2ESImportContext) {
-		this.db2ESImportContext = db2ESImportContext;
-	}
 
-	private ImportContext db2ESImportContext;
+
+
 	private ClientInterface clientInterface;
 
 	public String getRefreshOption() {
@@ -81,12 +79,12 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 	private static Logger logger = LoggerFactory.getLogger(TaskCommand.class);
 	public String execute(){
 		String data = null;
-		if(this.db2ESImportContext.getMaxRetry() > 0){
-			if(this.tryCount >= this.db2ESImportContext.getMaxRetry())
-				throw new TaskFailedException("task execute failed:reached max retry times "+this.db2ESImportContext.getMaxRetry());
+		if(this.importContext.getMaxRetry() > 0){
+			if(this.tryCount >= this.importContext.getMaxRetry())
+				throw new TaskFailedException("task execute failed:reached max retry times "+this.importContext.getMaxRetry());
 		}
 		this.tryCount ++;
-		if(db2ESImportContext.isDebugResponse()) {
+		if(importContext.isDebugResponse()) {
 
 			if (refreshOption == null) {
 				data = clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST);
@@ -99,7 +97,7 @@ public class TaskCommandImpl implements TaskCommand<String,String> {
 			}
 		}
 		else{
-			if(db2ESImportContext.isDiscardBulkResponse() && db2ESImportContext.getExportResultHandler() == null) {
+			if(importContext.isDiscardBulkResponse() && importContext.getExportResultHandler() == null) {
 				ESVoidResponseHandler esVoidResponseHandler = new ESVoidResponseHandler();
 				if (refreshOption == null) {
 					clientInterface.executeHttp("_bulk", datas, ClientUtil.HTTP_POST,esVoidResponseHandler);

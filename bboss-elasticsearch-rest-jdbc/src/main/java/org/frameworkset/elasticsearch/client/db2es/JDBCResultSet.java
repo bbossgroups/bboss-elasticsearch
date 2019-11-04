@@ -21,6 +21,7 @@ import org.frameworkset.elasticsearch.client.tran.TranMeta;
 import org.frameworkset.elasticsearch.client.tran.TranResultSet;
 
 import java.sql.ResultSet;
+import java.util.Date;
 
 public class JDBCResultSet implements TranResultSet {
 	protected ResultSet resultSet;
@@ -104,17 +105,17 @@ public class JDBCResultSet implements TranResultSet {
 
 	}
 
-	public Object getDateTimeValue( String colName) throws ESDataImportException
+	public Date getDateTimeValue(String colName) throws ESDataImportException
 	{
 		if(colName == null)
 			return null;
 		try {
-			Object value = this.resultSet.getTimestamp(colName);
+			Date value = this.resultSet.getTimestamp(colName);
 			return value;
 		}
 		catch (Exception e){
 			try {
-				Object value = this.resultSet.getDate(colName);
+				Date value = this.resultSet.getDate(colName);
 				return value;
 			}
 			catch (Exception ex){
