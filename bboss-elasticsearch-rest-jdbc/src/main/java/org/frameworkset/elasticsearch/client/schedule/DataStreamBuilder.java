@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.schedule;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
+import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 
 /**
  * <p>Description: </p>
@@ -26,5 +26,5 @@ import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
  * @version 1.0
  */
 public interface DataStreamBuilder {
-	public DB2ESImportBuilder builder(Object params);
+	public BaseImportBuilder builder(Object params);
 }

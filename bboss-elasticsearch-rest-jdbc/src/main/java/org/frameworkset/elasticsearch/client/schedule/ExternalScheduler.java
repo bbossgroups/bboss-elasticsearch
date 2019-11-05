@@ -17,7 +17,7 @@ package org.frameworkset.elasticsearch.client.schedule;
 
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
+import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 
 /**
  * <p>Description: </p>
@@ -40,7 +40,7 @@ public class ExternalScheduler {
 			try {
 //				lock.lock();
 				if(dataStream == null) {
-					DB2ESImportBuilder db2ESImportBuilder = dataStreamBuilder.builder( params);
+					BaseImportBuilder db2ESImportBuilder = dataStreamBuilder.builder( params);
 					if (!db2ESImportBuilder.isExternalTimer())//强制设置为外部定时器模式
 						db2ESImportBuilder.setExternalTimer(true);
 					if(db2ESImportBuilder.isAsyn()){//强制设置为同步等待模式

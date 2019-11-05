@@ -1153,4 +1153,5 @@ public abstract class BaseImportBuilder {
 		this.fetchSize = fetchSize;
 		return this;
 	}
+	public abstract DataStream builder();
 }
