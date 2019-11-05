@@ -19,7 +19,6 @@ package org.frameworkset.spi.geoip;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.entity.geo.GeoPoint;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
-import org.frameworkset.spi.remote.http.MapResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,40 +244,40 @@ public class GeoIPUtil {
 			return ipInfo;
 		}
 		else{//如果没有
-			StringBuilder url = new StringBuilder();
-			url.append(ipUrl).append("?ip=").append(ip);
-			try {
-				Map header = new HashMap();
-//		StringBuilder url = new StringBuilder();
-				header.put("Content-Type","text/html;charset=UTF-8");
-				header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36");
-				Map<String, Object> data = HttpRequestUtil.httpGetforString(url.toString(), header, new MapResponseHandler());
-				Integer code = (Integer) data.get("code");
-				if (code != null && code == 0) {
-					Map<String, Object> ipdata = (Map<String, Object>) data.get("data");
+//			StringBuilder url = new StringBuilder();
+//			url.append(ipUrl).append("?ip=").append(ip);
+//			try {
+//				Map header = new HashMap();
+////		StringBuilder url = new StringBuilder();
+//				header.put("Content-Type","text/html;charset=UTF-8");
+//				header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36");
+//				Map<String, Object> data = HttpRequestUtil.httpGetforString(url.toString(), header, new MapResponseHandler());
+//				Integer code = (Integer) data.get("code");
+//				if (code != null && code == 0) {
+//					Map<String, Object> ipdata = (Map<String, Object>) data.get("data");
+//					IpInfo ipInfo = new IpInfo();
+//					ipInfo.setArea((String) ipdata.get("area"));
+//					ipInfo.setAreaId((String) ipdata.get("area_id"));
+//					ipInfo.setCity((String) ipdata.get("city"));
+//					ipInfo.setCityId((String) ipdata.get("city_id"));
+//					ipInfo.setCountry((String) ipdata.get("country"));
+//					ipInfo.setCountryId((String) ipdata.get("country_Id"));
+//					ipInfo.setCounty((String) ipdata.get("county"));
+//					ipInfo.setCountyId((String) ipdata.get("county_id"));
+//					ipInfo.setIp((String) ipdata.get("ip"));
+//					ipInfo.setIsp((String) ipdata.get("isp"));
+//					ipInfo.setIspId((Integer) ipdata.get("isp_id"));
+//					ipInfo.setRegion((String) ipdata.get("region"));
+//					ipInfo.setRegionId((String) ipdata.get("region_id"));
+//					//					Float latitude = (Float) geoData_.get("latitude");
+//					//					Float longitude = (Float) geoData_.get("longitude");
+//					//					ipInfo.setLatitude(latitude);
+//					//					ipInfo.setLongitude(longitude);
+//					return ipInfo;
+//				} else {
 					IpInfo ipInfo = new IpInfo();
-					ipInfo.setArea((String) ipdata.get("area"));
-					ipInfo.setAreaId((String) ipdata.get("area_id"));
-					ipInfo.setCity((String) ipdata.get("city"));
-					ipInfo.setCityId((String) ipdata.get("city_id"));
-					ipInfo.setCountry((String) ipdata.get("country"));
-					ipInfo.setCountryId((String) ipdata.get("country_Id"));
-					ipInfo.setCounty((String) ipdata.get("county"));
-					ipInfo.setCountyId((String) ipdata.get("county_id"));
-					ipInfo.setIp((String) ipdata.get("ip"));
-					ipInfo.setIsp((String) ipdata.get("isp"));
-					ipInfo.setIspId((Integer) ipdata.get("isp_id"));
-					ipInfo.setRegion((String) ipdata.get("region"));
-					ipInfo.setRegionId((String) ipdata.get("region_id"));
-					//					Float latitude = (Float) geoData_.get("latitude");
-					//					Float longitude = (Float) geoData_.get("longitude");
-					//					ipInfo.setLatitude(latitude);
-					//					ipInfo.setLongitude(longitude);
-					return ipInfo;
-				} else {
-					IpInfo ipInfo = new IpInfo();
-					ipInfo.setArea("未知");
-					ipInfo.setAreaId("未知");
+					ipInfo.setArea("");
+					ipInfo.setAreaId("");
 					ipInfo.setCity("未知");
 					ipInfo.setCityId("未知");
 					ipInfo.setCountry("未知");
@@ -291,15 +290,15 @@ public class GeoIPUtil {
 					ipInfo.setRegion("未知");
 					ipInfo.setRegionId("未知");
 					return ipInfo;
-				}
-			}
-			 catch (Exception e) {
-				url.setLength(0);
-				url.append("获取运营商区域信息异常:").append(ipUrl).append("?ip=").append(ip)
-						.append(",User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36")
-						.append(",Content-Type:text/html;charset=UTF-8");
-				throw new GeoIPHandlerException("获取运营商区域信息异常:"+url.toString(),e);
-			}
+//				}
+//			}
+//			 catch (Exception e) {
+//				url.setLength(0);
+//				url.append("获取运营商区域信息异常:").append(ipUrl).append("?ip=").append(ip)
+//						.append(",User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36")
+//						.append(",Content-Type:text/html;charset=UTF-8");
+//				throw new GeoIPHandlerException("获取运营商区域信息异常:"+url.toString(),e);
+//			}
 		}
 	}
 

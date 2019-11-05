@@ -19,7 +19,7 @@ import com.frameworkset.common.poolman.DBUtil;
 import com.frameworkset.common.poolman.NestedSQLException;
 import com.frameworkset.common.poolman.StatementInfo;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
 import org.frameworkset.elasticsearch.client.task.TaskFailedException;

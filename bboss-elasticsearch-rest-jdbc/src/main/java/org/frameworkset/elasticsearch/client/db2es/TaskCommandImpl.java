@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client.db2es;
  */
 
 import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
 import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class TaskCommandImpl extends BaseTaskCommand<String,String> {
 	private String refreshOption;
 
-	public TaskCommandImpl(ImportCount importCount,ImportContext importContext,long dataSize,int taskNo,String jobNo) {
+	public TaskCommandImpl(ImportCount importCount, ImportContext importContext, long dataSize, int taskNo, String jobNo) {
 		super(importCount,importContext,  dataSize,  taskNo,  jobNo);
 	}
 

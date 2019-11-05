@@ -16,7 +16,7 @@ package org.frameworkset.elasticsearch.client.tran;
  */
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.scroll.BreakableScrollHandler;
 

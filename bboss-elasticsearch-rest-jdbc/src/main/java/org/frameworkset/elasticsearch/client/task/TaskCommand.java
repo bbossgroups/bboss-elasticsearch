@@ -15,8 +15,9 @@ package org.frameworkset.elasticsearch.client.task;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.metrics.TaskMetrics;
 
 /**
  * <p>Description: </p>

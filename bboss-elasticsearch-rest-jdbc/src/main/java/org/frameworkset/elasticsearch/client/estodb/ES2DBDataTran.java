@@ -3,6 +3,9 @@ package org.frameworkset.elasticsearch.client.estodb;
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.client.*;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ParallImportCount;
+import org.frameworkset.elasticsearch.client.metrics.SerialImportCount;
 import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.context.Context;
 import org.frameworkset.elasticsearch.client.context.ContextImpl;
@@ -58,7 +61,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		long start = System.currentTimeMillis();
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
-		ImportCount importCount = new ImportCount();
+		ImportCount importCount = new SerialImportCount();
 		long totalCount = 0;
 		long ignoreTotalCount = 0;
 
@@ -162,7 +165,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		ExecutorService service = importContext.buildThreadPool();
 		List<Future> tasks = new ArrayList<Future>();
 		int taskNo = 0;
-		ImportCount totalCount = new ImportCount();
+		ImportCount totalCount = new ParallImportCount();
 		Exception exception = null;
 		Status currentStatus = importContext.getCurrentStatus();
 		Object currentValue = currentStatus != null? currentStatus.getLastValue():null;
@@ -260,7 +263,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		long end = 0;
 		long totalCount = 0;
 		long ignoreTotalCount = 0;
-		ImportCount importCount = new ImportCount();
+		ImportCount importCount = new SerialImportCount();
 		int batchsize = importContext.getStoreBatchSize();
 		String refreshOption = importContext.getRefreshOption();
 		try {

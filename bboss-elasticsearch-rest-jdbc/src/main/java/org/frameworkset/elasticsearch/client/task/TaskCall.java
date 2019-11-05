@@ -16,9 +16,10 @@ package org.frameworkset.elasticsearch.client.task;
  */
 
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.metrics.TaskMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

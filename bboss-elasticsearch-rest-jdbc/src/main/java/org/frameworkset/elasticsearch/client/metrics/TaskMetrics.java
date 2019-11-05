@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.task;
+package org.frameworkset.elasticsearch.client.metrics;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -36,7 +36,6 @@ public class TaskMetrics {
 	private long successRecords;
 	private long failedRecords;
 	private long ignoreRecords;
-	private long records;
 	private int taskNo;
 	private String jobNo;
 
@@ -88,13 +87,6 @@ public class TaskMetrics {
 		this.ignoreRecords = ignoreRecords;
 	}
 
-	public long getRecords() {
-		return records;
-	}
-
-	public void setRecords(long records) {
-		this.records = records;
-	}
 
 	public int getTaskNo() {
 		return taskNo;

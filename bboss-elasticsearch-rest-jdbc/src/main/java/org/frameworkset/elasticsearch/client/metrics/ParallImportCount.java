@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.metrics;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,9 +15,6 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import com.frameworkset.util.UUID;
-
-import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -29,20 +26,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ImportCount {
+public class ParallImportCount extends ImportCount{
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private Lock readLock = lock.readLock();
 	private Lock writeLock = lock.writeLock();
-	private Date jobStartTime;
-	private Date jobEndTime;
-	private String jobNo;
-	private long totalCount;
-	private long failedCount;
-	private long successCount;
-	private long ignoreTotalCount;
-	public ImportCount(){
-		jobNo = UUID.randomUUID().toString();
-		this.jobStartTime = new Date();
+
+	public ParallImportCount(){
+		super();
 	}
 	public long getTotalCount() {
 		try {
@@ -119,23 +109,6 @@ public class ImportCount {
 		}
 	}
 
-	public Date getJobStartTime() {
-		return jobStartTime;
-	}
 
-	public void setJobStartTime(Date jobStartTime) {
-		this.jobStartTime = jobStartTime;
-	}
 
-	public Date getJobEndTime() {
-		return jobEndTime;
-	}
-
-	public void setJobEndTime(Date jobEndTime) {
-		this.jobEndTime = jobEndTime;
-	}
-
-	public String getJobNo() {
-		return jobNo;
-	}
 }

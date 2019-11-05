@@ -853,6 +853,86 @@ importBuilder.setSqlFilepath("sql.xml")
            .setSqlName("demoexportFull");
 ```
 
+## 5.16 设置ES数据导入控制参数
+
+可以通过以下方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
+
+```java
+importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
+				.setEsParentIdField("documentParentid") //可选项,如果不指定，文档父子关系父id对应的字段
+				.setRoutingField("routingId") //可选项		importBuilder.setRoutingValue("1");
+				.setEsDocAsUpsert(true)//可选项
+				.setEsRetryOnConflict(3)//可选项
+				.setEsReturnSource(false)//可选项
+				.setEsVersionField(“versionNo”)//可选项
+				.setEsVersionType("internal")//可选项
+                .setRefreshOption("refresh=true&version=1");//可选项，通过RefreshOption可以通过url参数的方式任意组合各种控制参数
+```
+
+参考文档：
+
+ [基于refreshoption参数指定添加修改文档控制参数](https://esdoc.bbossgroups.com/#/development?id=_481-基于refreshoption参数指定添加修改文档控制参数) 
+
+Elasticsearch控制参数参考文档：
+
+ https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html 
+
+## 5.17 数据同步任务执行统计信息获取
+
+通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
+
+```java
+importBuilder.setExportResultHandler(new ExportResultHandler() {
+			@Override
+			public void success(TaskCommand taskCommand, Object result) {
+				System.out.println("success");
+				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+			}
+
+			@Override
+			public void error(TaskCommand taskCommand, Object result) {
+				System.out.println("error");
+				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+			}
+
+			@Override
+			public void exception(TaskCommand taskCommand, Exception exception) {
+				System.out.println("exception");
+				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+			}
+
+			@Override
+			public int getMaxRetry() {
+				return -1;
+			}
+		});
+
+```
+
+输出的结果如下：
+
+```json
+{
+    "jobStartTime": 1572920403541, //作业开始时间，date类型，输出json时被转换为long值
+    "taskStartTime": 1572920403571,//当前任务开始时间，date类型，输出json时被转换为long值
+    "taskEndTime": 1572920403585,//当前任务结束时间，date类型，输出json时被转换为long值
+    "totalRecords": 4, //作业处理总记录数
+    "totalFailedRecords": 0,//作业处理总失败记录数
+    "totalIgnoreRecords": 0,//作业处理总忽略记录数
+    "totalSuccessRecords": 4,//作业处理总成功记录数
+    "successRecords": 2,//当前任务处理总成功记录数
+    "failedRecords": 0,//当前任务处理总失败记录数
+    "ignoreRecords": 0,//当前任务处理总忽略记录数    
+    "taskNo": 3,//当前任务编号
+    "jobNo": "eece3d34320b490a980d3f501cb7ae8c" //任务对应的作业编号，一个作业会被拆分为多个任务执行
+}
+```
+
+
+
 # 6.DB-ES数据同步工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
