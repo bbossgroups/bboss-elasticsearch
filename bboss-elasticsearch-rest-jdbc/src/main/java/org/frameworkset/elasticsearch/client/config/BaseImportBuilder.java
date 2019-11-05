@@ -39,6 +39,17 @@ public abstract class BaseImportBuilder {
 	private DBConfig dbConfig ;
 	private DBConfig statusDbConfig ;
 	private Integer fetchSize = 5000;
+
+	public boolean isSortLastValue() {
+		return sortLastValue;
+	}
+
+	public BaseImportBuilder setSortLastValue(boolean sortLastValue) {
+		this.sortLastValue = sortLastValue;
+		return this;
+	}
+
+	private boolean sortLastValue = true;
 	/**
 	 * 是否不需要返回响应，不需要的情况下，可以设置为true，
 	 * 提升性能，如果debugResponse设置为true，那么强制返回并打印响应到日志文件中
@@ -952,7 +963,7 @@ public abstract class BaseImportBuilder {
 		baseImportConfig.setFieldMetaMap(this.fieldMetaMap);
 		baseImportConfig.setFieldValues(fieldValues);
 		baseImportConfig.setDataRefactor(this.dataRefactor);
-
+		baseImportConfig.setSortLastValue(this.sortLastValue);
 //		DBConfig dbConfig = new DBConfig();
 		baseImportConfig.setDbConfig(dbConfig);
 		baseImportConfig.setStatusDbConfig(statusDbConfig);

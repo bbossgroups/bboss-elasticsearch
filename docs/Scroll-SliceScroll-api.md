@@ -118,6 +118,39 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 	}
 ```
 
+## 串行中断
+
+在一定的条件下，可以中断整个串行scroll的处理，通过抽象类SerialBreakableScrollHandler的setBreaked(true)方法来实现中断串行scroll执行：
+
+```java
+@Test
+	public void testSimleBreakableScrollAPIHandler(){
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+		//scroll分页检索
+		Map params = new HashMap();
+		params.put("size", 10);//每页5000条记录
+		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
+		//scroll上下文有效期1分钟
+		final AtomicInteger count = new AtomicInteger();
+		ESDatas<Map> response = clientUtil.scroll("demo/_search", "scrollQuery", "1m", params, Map.class, new SerialBreakableScrollHandler<Map>() {
+			public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
+				List<Map> datas = response.getDatas();
+				long totalSize = response.getTotalSize();
+				int test = count.incrementAndGet();
+//				final AtomicInteger count = new AtomicInteger();
+				if(test % 2 == 1) //到第三条数据时，中断scroll执行
+				 	this.setBreaked(true);
+				System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+			}
+		});
+
+		System.out.println("response realzie:"+response.getTotalSize());
+
+	}
+```
+
+
+
 ## 并行
 
 ```java
@@ -141,6 +174,38 @@ public void testSimleScrollParallelAPIHandler(){
 
 }
 ```
+
+## 并行中断
+
+在一定的条件下，可以中断整个并行scroll的处理，通过抽象类ParralBreakableScrollHandler的setBreaked(true)方法来实现中断并行scroll执行：
+
+```java
+@Test
+	public void testSimleBreakableScrollParallelAPIHandler(){
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+		//scroll分页检索
+		Map params = new HashMap();
+		params.put("size", 10);//每页5000条记录
+		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
+		final AtomicInteger count = new AtomicInteger();
+		//scroll上下文有效期1分钟
+		ESDatas<Map> response = clientUtil.scrollParallel("demo/_search", "scrollQuery", "1m", params, Map.class, new ParralBreakableScrollHandler<Map>() {
+			public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
+				List<Map> datas = response.getDatas();
+				long totalSize = response.getTotalSize();
+				int test = count.incrementAndGet();
+				if(test % 2 == 1) //到第三条数据时，中断scroll执行
+					this.setBreaked(true);
+				System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+			}
+		});
+
+		System.out.println("response realzie:"+response.getTotalSize());
+
+	}
+```
+
+
 
 # 4.slice api使用
 
@@ -169,8 +234,6 @@ public void testSimleScrollParallelAPIHandler(){
 		System.out.println("realSize size:"+sliceResponse.getDatas().size());
 	}
 ```
-
-
 
 ##  并行
 
@@ -235,6 +298,40 @@ public void testSimleScrollParallelAPIHandler(){
 	}
 ```
 
+## 串行中断
+
+在一定的条件下，可以中断整个串行slice scroll的处理，通过抽象类SerialBreakableScrollHandler的setBreaked(true)方法来实现中断串行slice scroll执行：
+
+```java
+@Test
+	public void testSimpleBreakableSliceScrollApiHandler() {
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+		//scroll slice分页检索,max对应并行度
+		int max = 6;
+		Map params = new HashMap();
+		params.put("sliceMax", max);//最多6个slice，不能大于share数，必须使用sliceMax作为变量名称
+		params.put("size", 10);//每页1000条记录
+		//采用自定义handler函数处理每个slice scroll的结果集后，sliceResponse中只会包含总记录数，不会包含记录集合
+		//scroll上下文有效期1分钟
+		final AtomicInteger count = new AtomicInteger();
+		ESDatas<Map> sliceResponse = clientUtil.scrollSlice("demo/_search",
+				"scrollSliceQuery", params,"1m",Map.class, new SerialBreakableScrollHandler<Map>() {
+					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
+						List<Map> datas = response.getDatas();
+						long totalSize = response.getTotalSize();
+						int test = count.incrementAndGet();
+						int r = test % 7;
+						if(r == 6) //到第6条数据时，中断scroll执行
+							this.setBreaked(true);
+						System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+					}
+				});//串行
+		long totalSize = sliceResponse.getTotalSize();
+
+		System.out.println("totalSize:"+totalSize);
+	}
+```
+
 
 
 ## 并行
@@ -275,6 +372,43 @@ public void testSimleScrollParallelAPIHandler(){
 elasticsearch.sliceScrollThreadCount 默认值500
 
 elasticsearch.sliceScrollThreadQueue 默认值500
+
+## 并行中断
+
+在一定的条件下，可以中断整个并行slice scroll的处理，通过抽象类ParralBreakableScrollHandler的setBreaked(true)方法来实现中断并行slice scroll执行：
+
+```java
+@Test
+	public void testSimpleBreakableSliceScrollApiParralHandler() {
+		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/scroll.xml");
+		//scroll slice分页检索,max对应并行度
+		int max = 6;
+		Map params = new HashMap();
+		params.put("sliceMax", max);//最多6个slice，不能大于share数，必须使用sliceMax作为变量名称
+		params.put("size", 1000);//每页1000条记录
+		//采用自定义handler函数处理每个slice scroll的结果集后，sliceResponse中只会包含总记录数，不会包含记录集合
+		//scroll上下文有效期1分钟
+		final AtomicInteger count = new AtomicInteger();
+		ESDatas<Map> sliceResponse = clientUtil.scrollSliceParallel("demo/_search",
+				"scrollSliceQuery", params,"1m",Map.class, new ParralBreakableScrollHandler<Map>() {
+					public void handle(ESDatas<Map> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果,注意结果是异步检索的
+						List<Map> datas = response.getDatas();
+						long totalSize = response.getTotalSize();
+						int test = count.incrementAndGet();
+						int r = test % 7;
+						if(r == 6) //到第6条数据时，中断scroll执行
+							this.setBreaked(true);
+						System.out.println("totalSize:"+totalSize+",datas.size:"+datas.size());
+					}
+				});//并行
+
+		long totalSize = sliceResponse.getTotalSize();
+		System.out.println("totalSize:"+totalSize);
+
+	}
+```
+
+
 
 ## ES之间数据导入导出
 

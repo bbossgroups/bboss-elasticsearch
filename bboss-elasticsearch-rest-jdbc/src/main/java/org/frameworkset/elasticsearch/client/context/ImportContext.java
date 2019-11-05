@@ -52,7 +52,7 @@ public interface ImportContext {
 	boolean assertCondition();
 
 	Boolean getFixedRate();
-
+	public boolean isSortLastValue();
 	ScheduleConfig getScheduleConfig();
 
 	List<CallInterceptor> getCallInterceptors();

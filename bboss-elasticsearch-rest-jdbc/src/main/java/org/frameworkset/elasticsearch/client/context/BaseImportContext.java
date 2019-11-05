@@ -45,6 +45,9 @@ public abstract  class BaseImportContext implements ImportContext {
 	public BaseImportContext(){
 
 	}
+	public boolean isSortLastValue() {
+		return baseImportConfig.isSortLastValue();
+	}
 	@Override
 	public Integer getFetchSize() {
 		return baseImportConfig.getFetchSize();

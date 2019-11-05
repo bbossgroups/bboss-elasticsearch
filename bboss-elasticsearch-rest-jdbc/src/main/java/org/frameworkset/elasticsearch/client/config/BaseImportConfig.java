@@ -42,7 +42,7 @@ import java.util.Map;
 public abstract class BaseImportConfig {
 	private static Logger logger = LoggerFactory.getLogger(DB2ESImportConfig.class);
 	private List<DBConfig> configs;
-
+	private boolean sortLastValue ;
 	public Integer getFetchSize() {
 		return fetchSize;
 	}
@@ -731,5 +731,13 @@ public abstract class BaseImportConfig {
 
 	public boolean isLastValueDateType() {
 		return this.getLastValueType() == ImportIncreamentConfig.TIMESTAMP_TYPE;
+	}
+
+	public boolean isSortLastValue() {
+		return sortLastValue;
+	}
+
+	public void setSortLastValue(boolean sortLastValue) {
+		this.sortLastValue = sortLastValue;
 	}
 }

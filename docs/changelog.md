@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.8.8 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.0 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -20,6 +20,20 @@ https://esdoc.bbossgroups.com/#/development
 1.数据同步工具改进：完善增量数据同步机制，增量字段无需排序即可实现增量同步功能，提升同步性能
 
 2.数据同步工具bug修复：解决增量同步状态更新可能存在的不正确问题
+
+3.数据同步工具改进：增加数据同步监控指标数据的采集，参考文档：[数据同步任务执行统计信息获取](https://esdoc.bbossgroups.com/#/db-es-tool?id=_517-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
+
+4.数据同步工具新增功能：elasticsearch到db的数据同步功能，支持全量、增量定时同步，内置jdk timer同步器，支持quartz、xxl-job任务调度引擎，使用参考：
+
+ [elasticsearch-db数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_9-elasticsearch-db数据同步使用方法) 
+
+5.简化数据同步程序开发调试工作：可以直接在同步程序的main中方法进行同步功能开发和调试
+
+6.Scroll/Slice scroll检索功能改进：支持在hanlder结果回调处理函数中中断scroll/slice croll的执行，参考文档：
+
+ https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api 
+
+7.json库fastjackson升级到2.10.0 
 
 # v5.8.9 功能改进
 

@@ -50,7 +50,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.8.9</version>
+<version>5.9.0</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1939,9 +1939,27 @@ linux: restart.sh
 
 ![运行报表](images/jobstatic.png)
 
-## 
+# 9 Elasticsearch-db数据同步使用方法
 
-# 9 开发交流
+Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可：
+
+## jdk timer同步器demo
+
+ https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
+
+ https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java 
+
+ https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
+
+## quartz同步器demo
+
+ https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
+
+## xxl-job同步器demo
+
+ https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
+
+# 10 开发交流
 
 完整的数据导入demo工程
 
@@ -1959,7 +1977,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 支持我们
+# 11 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">
