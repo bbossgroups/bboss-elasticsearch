@@ -4,11 +4,17 @@
 
  
 
-*The best elasticsearch highlevel java rest api-----bboss* 
+*The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
 
-基于bboss持久层和bboss elasticsearch客户端实现数据库数据导入es案例分享（支持各种数据库和各种es版本）
+bboss数据同步可以方便地实现DB-ES,ES-DB之间的数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch和Elasticsearch-DB数据同步案例（支持各种数据库和各种es版本）
 
-通过bboss，可以非常方便地将数据库表数据导入到es中：
+通过bboss，可以非常方便地实现：
+
+1. 将数据库表数据导入到Elasticsearch
+
+2. 将Elasticsearch数据导入到数据库表
+
+导入的方式支持
 
 - 支持逐条数据导入
 - 批量数据导入
@@ -36,15 +42,9 @@
 
 
 
-# 1.案例对应的源码
+# 1.准备工作
 
-批量导入：https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java
-
-定时增量导入：https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java
-
-
-
-# 2.在工程中导入jdbc es maven坐标
+## 1.1 在工程中导入jdbc es maven坐标
 
 ```xml
 <dependency>
@@ -92,11 +92,19 @@ mysql 8.x驱动依赖包(mysql 8必须采用相应版本的驱动，否则不能
 <version>8.0.16</version>
 </dependency>
 ```
-# 3.索引表结构定义
+# 2.数据库表数据导入到Elasticsearch
+
+## 2.1.案例对应的源码
+
+批量导入：https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java
+
+定时增量导入：https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java
+
+## 2.2.索引表结构定义
 
 Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
 
-# 4.配置es地址
+## 2.2.配置es地址
 
 新建application.properties文件，内容为：
 
@@ -108,7 +116,7 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 
 
 
-# 5.编写简单的导入代码
+## 2.3.编写简单的导入代码
 
 批量导入关键配置：
 
@@ -129,7 +137,7 @@ db.jdbcFetchSize = 10000
 
 [5.14 Mysql ResultSet Stream机制说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_514-mysql-resultset-stream机制说明)
 
-## 5.1同步批量导入
+### 2.3.1同步批量导入
 
 ```java
 	public void testSimpleImportBuilder(){
@@ -177,7 +185,7 @@ db.jdbcFetchSize = 10000
 
 
 
-## **5.2 异步批量导入**
+### **2.3.2 异步批量导入**
 
 异步批量导入关键配置：
 
@@ -254,7 +262,7 @@ thread_pool.bulk.queue_size: 1000   es线程等待队列长度
 
 thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
-## 5.3 一个有字段属性映射的稍微复杂案例实现
+### 2.3.3 一个有字段属性映射的稍微复杂案例实现
 
 ```java
 	public void testImportBuilder(){
@@ -353,7 +361,7 @@ thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
 
 
-## 5.4 设置文档id机制
+### 2.3.4 设置文档id机制
 
 bboss充分利用elasticsearch的文档id生成机制，同步数据的时候提供了以下3种生成文档Id的机制：
 
@@ -380,7 +388,7 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 
 
-## 5.5 定时增量导入
+### 2.3.5 定时增量导入
 
 支持按照数字字段和时间字段进行增量导入，增量导入sql的语法格式：
 
@@ -486,7 +494,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 
 
 
-## 5.6 定时全量导入
+### 2.3.6 定时全量导入
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -545,7 +553,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 	}
 ```
 
-## 5.7 定时任务指定执行拦截器使用
+### 2.3.7 定时任务指定执行拦截器使用
 
 可以为同步定时任务指定执行拦截器，示例如下：
 
@@ -587,7 +595,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 
 
 
-## 5.8 定时任务调度说明
+### 2.3.8 定时任务调度说明
 
 定时增量导入的关键配置：
 
@@ -625,21 +633,23 @@ importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说�
 importBuilder.setExternalTimer(true);
 ```
 
-## 5.9 增量导入注意事项
+### 2.3.9 增量导入注意事项
 
-### 排序设置
+#### 排序设置
 
-如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显示对查询的数据进行排序，否则需要在sql语句中显示基于增量字段升序排序：
+bboss 5.8.9及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显示对查询的数据进行排序，否则需要在sql语句中显示基于增量字段升序排序：
 
 ```java
 importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
 ```
 
-### 增量状态存储数据库
+bboss 5.9.0及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能。
+
+#### 增量状态存储数据库
 
 采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
-## 5.10 灵活控制文档数据结构
+### 2.3.10 灵活控制文档数据结构
 
 bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，举例说明如下：
 
@@ -700,7 +710,7 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ***注意：内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 
-## 5.11 IP转换为地理坐标城市运营商信息
+### 2.3.11 IP转换为地理坐标城市运营商信息
 
 在DataRefactor中，可以获取ip对应的运营商和区域信息，举例说明：
 
@@ -731,7 +741,7 @@ ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
 ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 ```
 
-## 5.12 设置任务执行结果回调处理函数
+### 2.3.12 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
@@ -775,7 +785,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
-## 5.13 灵活指定索引名称和索引类型
+### 2.3.13 灵活指定索引名称和索引类型
 
 ```java
 importBuilder
@@ -800,7 +810,7 @@ demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 或者{typeFieldName}
 ```
 
-## 5.14 Mysql ResultSet Stream机制说明
+### 2.3.14 Mysql ResultSet Stream机制说明
 
 同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
@@ -822,7 +832,7 @@ db.jdbcFetchSize = -2147483648
 
 机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
 
-## 5.15 用配置文件来管理同步sql
+### 2.3.15 用配置文件来管理同步sql
 
 如果同步的sql很长，那么可以在配置文件中管理同步的sql
 
@@ -853,7 +863,7 @@ importBuilder.setSqlFilepath("sql.xml")
            .setSqlName("demoexportFull");
 ```
 
-## 5.16 设置ES数据导入控制参数
+### 2.3.16 设置ES数据导入控制参数
 
 可以通过以下方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
 
@@ -877,7 +887,7 @@ Elasticsearch控制参数参考文档：
 
  https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html 
 
-## 5.17 数据同步任务执行统计信息获取
+### 2.3.17 数据同步任务执行统计信息获取
 
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
@@ -933,11 +943,11 @@ importBuilder.setExportResultHandler(new ExportResultHandler() {
 
 
 
-# 6.DB-ES数据同步工具使用方法
+## 2.4.DB-ES数据同步工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
 
-## 环境准备
+### 2.4.1 环境准备
 
 首先需要从Github下载最新的工具源码：
 
@@ -949,7 +959,7 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 安装和配置好gradle，就可以将db-elasticsearch-tool工程导入idea或者eclipse，然后进行数据同步逻辑的开发、调试以及构建打包工作。
 
-## 同步代码主程序定义-Dbdemo
+### 2.4.2 同步代码主程序定义-Dbdemo
 
 Dbdemo-提供了上述文中提供的各种导入数据的方法，可以根据自己的要求实效自己的方法逻辑，然后在Dbdemo的main方法中指定要执行的方法即可：
 
@@ -1252,7 +1262,7 @@ Dbdemo对应功能测试和debug类DbdemoTest（开发测试调试的时候跑�
 
 <https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/test/java/org/frameworkset/elasticsearch/imp/DbdemoTest.java>
 
-## es数据源配置
+### 2.4.3 es数据源配置
 
 修改配置文件src\test\resources\application.properties
 
@@ -1297,7 +1307,7 @@ http.hostnameVerifier =
 dslfile.refreshInterval = 3000
 ```
 
-## 数据库数据源配置
+### 2.4.4 数据库数据源配置
 
 修改配置文件src\test\resources\application.properties，以mysql未来介绍数据源配置：
 
@@ -1313,7 +1323,7 @@ db.jdbcFetchSize = 10000
 db.showsql = true
 ```
 
-## 自定义适配器数据源配置
+### 2.4.5 自定义适配器数据源配置
 
 定义达梦数据库的适配器： 
 
@@ -1371,7 +1381,7 @@ api方式配置自定义适配器：
 importBuilder.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor");
 ```
 
-## 保存增量状态的数据源配置
+### 2.4.6 保存增量状态的数据源配置
 
 采用分布式作业调度引擎时，定时增量导入需要指定保存增量状态的数据源：
 
@@ -1399,9 +1409,9 @@ config.db.name=test
 #config.db.statusTableDML = CREATE TABLE $statusTableName ( ID bigint(10) NOT NULL AUTO_INCREMENT, lasttime bigint(10) NOT NULL, lastvalue bigint(10) NOT NULL, lastvaluetype int(1) NOT NULL, PRIMARY KEY(ID)) ENGINE=InnoDB
 ```
 
-## 测试以及调试同步代码
+### 2.4.7 测试以及调试同步代码
 
-在test源码目录新增DbdemoTest类，并添加main方法，在其中添加Dbdemo执行代码即可运行调试同步代码：
+在Dbdemo类添加main方法，在其中添加Dbdemo执行代码，即可运行调试同步代码：
 
 ```java
 public static void main(String args[]){
@@ -1418,57 +1428,15 @@ public static void main(String args[]){
    }
 ```
 
-## 测试调试过程中异常说明
-
-**如果在运行的过程中，出现以下问题，则说明在eclipse或者idea中开发调试的时候直接运行了Dbdemo，正确的做法是运行test下面的DbdemoTest：参考**[测试调试方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=%E6%B5%8B%E8%AF%95%E4%BB%A5%E5%8F%8A%E8%B0%83%E8%AF%95%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81)
-
-```
-16:04:11.306 [main] ERROR org.frameworkset.elasticsearch.ElasticSearch - ElasticSearch Rest Client started failed
-org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.0.1:9200] can't been connected.
-	at org.frameworkset.elasticsearch.client.RoundRobinList.get(RoundRobinList.java:97) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient._executeHttp(ElasticSearchRestClient.java:522) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.discover(ElasticSearchRestClient.java:649) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.discover(ElasticSearchRestClient.java:475) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.RestClientUtil.discover(RestClientUtil.java:1448) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.initVersionInfo(ElasticSearchRestClient.java:194) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.init(ElasticSearchRestClient.java:232) ~[bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.ElasticSearch.start(ElasticSearch.java:363) [bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.ElasticSearchHelper.booter(ElasticSearchHelper.java:170) [bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:54) [bboss-elasticsearch-rest-booter-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:28) [bboss-elasticsearch-rest-booter-5.5.3.jar:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_162]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_162]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_162]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_162]
-	at org.frameworkset.elasticsearch.ElasticSearchHelper.init(ElasticSearchHelper.java:279) [bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.ElasticSearchHelper.getRestClientUtil(ElasticSearchHelper.java:334) [bboss-elasticsearch-rest-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.imp.Dbdemo.scheduleFullImportData(Dbdemo.java:779) [classes/:?]
-	at org.frameworkset.elasticsearch.imp.Dbdemo.main(Dbdemo.java:41) [classes/:?]
-
-** ERROR: Unable to parse XML file poolman.xml: java.io.FileNotFoundException: E:\workspace\bbossgroups\security\poolman.xml (系统找不到指定的文件。)
-16:04:12.781 [Timer-0] ERROR org.frameworkset.elasticsearch.client.schedule.ScheduleService - scheduleImportData failed:
-java.lang.NullPointerException: 获取默认数据源名称失败：请确保数据源正常启动，检查配置文件是否配置正确.
-	at com.frameworkset.common.poolman.util.SQLManager.getDefaultDBName(SQLManager.java:405) ~[bboss-persistent-5.2.2.jar:?]
-	at com.frameworkset.common.poolman.PreparedDBUtil.<init>(PreparedDBUtil.java:97) ~[bboss-persistent-5.2.2.jar:?]
-	at com.frameworkset.common.poolman.SQLInfoDBUtil.<init>(SQLInfoDBUtil.java:24) ~[bboss-persistent-5.2.2.jar:?]
-	at com.frameworkset.common.poolman.SQLInfoExecutor.queryWithDBNameByNullRowHandler(SQLInfoExecutor.java:1449) ~[bboss-persistent-5.2.2.jar:?]
-	at com.frameworkset.common.poolman.SQLExecutor.queryWithDBNameByNullRowHandler(SQLExecutor.java:1405) ~[bboss-persistent-5.2.2.jar:?]
-	at org.frameworkset.elasticsearch.client.schedule.ScheduleService.scheduleImportData(ScheduleService.java:137) ~[bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.schedule.ScheduleService.access$200(ScheduleService.java:44) ~[bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
-	at org.frameworkset.elasticsearch.client.schedule.ScheduleService$1.run(ScheduleService.java:219) [bboss-elasticsearch-rest-jdbc-5.5.3.jar:?]
-	at java.util.TimerThread.mainLoop(Timer.java:555) [?:1.8.0_162]
-	at java.util.TimerThread.run(Timer.java:505) [?:1.8.0_162]
-
-Process finished with exit code -1
-```
 
 
 
-## 查看任务执行详细日志
+
+### 2.4.8 查看任务执行详细日志
 
 如果要查看任务执行过程中的详细日志，只需设置以下参数即可：
 
-```
+```java
 importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
 ```
 
@@ -1487,7 +1455,7 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 
 
 
-## 数据导入不完整原因分析及处理
+### 2.4.9 数据导入不完整原因分析及处理
 
 如果在任务执行完毕后，发现es中的数据与数据库源表的数据不匹配，可能的原因如下：
 
@@ -1558,7 +1526,7 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
          }
 ```
 
-## 作业运行jvm内存配置
+### 2.4.9 作业运行jvm内存配置
 
 修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -1571,7 +1539,7 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
 
-## 发布版本
+### 2.4.10 发布版本
 
 代码写好并经过调试后，就可以执行gradle指令构建发布db-elasticsearch-tool运行包，需要安装最新版本的gradle并配置好gradle环境变量。
 
@@ -1582,7 +1550,7 @@ gradle安装和配置参考文档：https://esdoc.bbossgroups.com/#/bboss-build
 ```gradle
 先切换到工程的根目录
 cd D:\workspace\bbossesdemo\db-elasticsearch-tool
-gradle clean releaseVersion
+release.bat
 ```
 
 构建成功后，将会在工程目录下面生成可部署的二进制包：
@@ -1599,7 +1567,7 @@ windows: restart.bat
 
 linux: restart.sh
 
-# 7 作业参数配置
+## 2.5 作业参数配置
 
 在使用[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)时，为了避免调试过程中不断打包发布数据同步工具，可以将需要调整的参数配置到启动配置文件src\test\resources\application.properties中,然后在代码中通过以下方法获取配置的参数：
 
@@ -1641,11 +1609,11 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
 **注意：这些参数只有在正式发布后，用shell脚本启动作业才会从配置文件中读取并生效，所以需要指定默认值，在开发调试的时候采用参数默认值来运行作业。**
 
-# 8 基于xxjob 同步DB-Elasticsearch数据
+## 2.6 基于xxjob 同步DB-Elasticsearch数据
 
 bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
-## 首先定义一个xxjob的同步作业
+### 2.6.1 首先定义一个xxjob的同步作业
 
 ```java
 package org.frameworkset.elasticsearch.imp.jobhandler;
@@ -1867,7 +1835,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 
 ```
 
-## 作业注册配置
+### 2.6.2 作业注册配置
 
 然后将作业配置到application.propperties中：
 
@@ -1890,7 +1858,7 @@ xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJ
 ## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
 ```
 
-## 任务构建和运行
+### 2.6.3  任务构建和运行
 
 1. 下载完整的demo
    https://github.com/bbossgroups/db-elasticsearch-xxjob
@@ -1901,7 +1869,7 @@ xxl.job.task.XXJobImportTask = org.frameworkset.elasticsearch.imp.jobhandler.XXJ
 
 3. 在工程db-elasticsearch-xxjob根目录下运行gradle构建指令
 
-   gradle clean releaseVersion
+   release.bat
 
 4. 启动作业
 
@@ -1915,7 +1883,7 @@ windows: restart.bat
 
 linux: restart.sh
 
-## xxjob运行效果
+### 2.6.4  xxjob运行效果
 
 任务启动后，可以在xxjob的挂你控制台看到刚注册的执行器和作业：
 
@@ -1939,11 +1907,25 @@ linux: restart.sh
 
 ![运行报表](images/jobstatic.png)
 
-# 9 Elasticsearch-db数据同步使用方法
+# 3 Elasticsearch-db数据同步使用方法
 
-Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可：
+Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，Elasticsearch-db数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下Elasticsearch-DB同步特有的参数：
 
-## jdk timer同步器demo
+```java
+                importBuilder.setDsl2ndSqlFile("dsl2ndSqlFile.xml")//配置从Elasticsearch检索数据的DSl语句和往数据库插入数据的insert sql语句
+				.setDslName("scrollSliceQuery")//指定配置文件中dsl的名称
+				.setScrollLiveTime("10m")//指定scroll上下文的有效时间
+				.setSliceQuery(true) //指定是否是slicescroll查询
+				.setSliceSize(5) //指定slice scroll查询的slice数量
+				.setSqlName("insertSQLnew") //指定数据库插入数据的insert sql语句
+				.setQueryUrl("dbdemo/_search") //设置需要检索的索引表和对应的操作
+//				//配置dsl中需要用到的参数及参数值
+				.addParam("var1","v1")
+				.addParam("var2","v2")
+				.addParam("var3","v3");
+```
+
+## 3.1 jdk timer同步器demo
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
 
@@ -1951,15 +1933,15 @@ Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
 
-## quartz同步器demo
+## 3.2 quartz同步器demo
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
 
-## xxl-job同步器demo
+## 3.3 xxl-job同步器demo
 
  https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
 
-# 10 开发交流
+# 4 开发交流
 
 完整的数据导入demo工程
 
@@ -1977,7 +1959,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 11 支持我们
+# 5 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">
