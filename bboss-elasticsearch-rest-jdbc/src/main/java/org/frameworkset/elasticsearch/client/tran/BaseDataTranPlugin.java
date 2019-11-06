@@ -329,6 +329,12 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 					if (importContext.isFromFirst()) {
 						initLastValueStatus(true);
 					} else {
+						if(currentStatus.getLastValueType() == ImportIncreamentConfig.TIMESTAMP_TYPE){
+							Object lastValue = currentStatus.getLastValue();
+							if(lastValue instanceof Long){
+								currentStatus.setLastValue(new Date((Long)lastValue));
+							}
+						}
 						this.firstStatus = (Status) currentStatus.clone();
 					}
 				}
