@@ -1912,6 +1912,9 @@ linux: restart.sh
 Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，Elasticsearch-db数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下Elasticsearch-DB同步特有的参数：
 
 ```java
+                importBuilder.setBatchSize(2) //批量写入数据库的数据量
+                             .setFetchSize(10); //按批从elasticsearch拉取数据的大小
+ 
                 importBuilder.setDsl2ndSqlFile("dsl2ndSqlFile.xml")//配置从Elasticsearch检索数据的DSl语句和往数据库插入数据的insert sql语句
 				.setDslName("scrollSliceQuery")//指定配置文件中dsl的名称
 				.setScrollLiveTime("10m")//指定scroll上下文的有效时间
