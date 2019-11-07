@@ -16,6 +16,42 @@ https://esdoc.bbossgroups.com/#/development
 6. 提供快速而高效的数据导入ES工具
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
+# v5.9.2 功能改进
+
+1.增加MetaMap类：MetaMap继承HashMap，为map 增加meta元数据相关的属性信息，参考示例：
+
+```java
+//创建批量创建文档的客户端对象，单实例多线程安全
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+		MetaMap newDemo = clientUtil.getDocument("demo",//索引表
+				"demo",//索引类型
+				"1",//文档id
+				MetaMap.class
+		);
+		System.out.println(newDemo);
+		System.out.println("getId:"+newDemo.getId());
+		System.out.println("getIndex:"+newDemo.getIndex());
+		System.out.println("getNode:"+newDemo.getNode());
+		System.out.println("getShard:"+newDemo.getShard());
+		System.out.println("getType:"+newDemo.getType());
+		System.out.println("getExplanation:"+newDemo.getExplanation());
+		System.out.println("getFields:"+newDemo.getFields());
+		System.out.println("getHighlight:"+newDemo.getHighlight());
+		System.out.println("getInnerHits:"+newDemo.getInnerHits());
+		System.out.println("getNested:"+newDemo.getNested());
+		System.out.println("getPrimaryTerm:"+newDemo.getPrimaryTerm());
+		System.out.println("getScore:"+newDemo.getScore());
+		System.out.println("getSeqNo:"+newDemo.getSeqNo());
+		System.out.println("getVersion:"+newDemo.getVersion());
+		System.out.println("getParent:"+newDemo.getParent());
+		System.out.println("getRouting:"+newDemo.getRouting());
+		System.out.println("getSort:"+newDemo.getSort());
+		System.out.println("isFound:"+newDemo.isFound());
+```
+
+
+
+
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错
 
@@ -24,11 +60,11 @@ https://esdoc.bbossgroups.com/#/development
 
 2.数据同步工具bug修复：解决增量同步状态更新可能存在的不正确问题
 
-3.数据同步工具改进：增加数据同步监控指标数据的采集，参考文档：[数据同步任务执行统计信息获取](https://esdoc.bbossgroups.com/#/db-es-tool?id=_517-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
+3.数据同步工具改进：增加数据同步监控指标数据的采集，参考文档：[数据同步任务执行统计信息获取](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
 
 4.数据同步工具新增功能：elasticsearch到db的数据同步功能，支持全量、增量定时同步，内置jdk timer同步器，支持quartz、xxl-job任务调度引擎，使用参考：
 
- [elasticsearch-db数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_9-elasticsearch-db数据同步使用方法) 
+ [elasticsearch-db数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_3-elasticsearch-db%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95) 
 
 5.简化数据同步程序开发调试工作：可以直接在同步程序的main中方法进行同步功能开发和调试
 

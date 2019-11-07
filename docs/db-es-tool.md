@@ -734,6 +734,12 @@ final AtomicInteger s = new AtomicInteger(0);
 
 需要在appliction.properties文件中配置geoip的ip地址信息库：
 
+首先从以下地址下载ip信息库：
+
+ https://dev.maxmind.com/geoip/geoip2/geolite2/#Downloads 
+
+然后在application.properties文件中配置对应的ip信息库文件地址
+
 ```properties
 ip.cachesize = 2000
 # geoip的ip地址信息库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
@@ -1909,6 +1915,8 @@ linux: restart.sh
 
 # 3 Elasticsearch-db数据同步使用方法
 
+## 3.1 同步参数设置
+
 Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，Elasticsearch-db数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下Elasticsearch-DB同步特有的参数：
 
 ```java
@@ -1928,7 +1936,117 @@ Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法
 				.addParam("var3","v3");
 ```
 
-## 3.1 jdk timer同步器demo
+dsl2ndSqlFile.xml放置到工程resources目录下即可，示例内容如下：
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置数据导入的dsl和sql
+         ]]>
+    </description>
+    <!--
+          条件片段
+     -->
+    <property name="queryCondition">
+        <![CDATA[
+         "query": {
+                "bool": {
+                    "filter": [
+                        ## 可以设置同步数据的过滤参数条件
+                        #*
+                        {
+                            "term": {
+                                "var1.keyword": #[var1]
+                            }
+                        },
+                        {
+                            "term": {
+                                "var2.keyword": #[var2]
+                            }
+                        },
+                        {
+                            "term": {
+                                "var3.keyword": #[var3]
+                            }
+                        },
+                        *#
+                        ## 根据fullImport参数控制是否设置增量检索条件，true 全量检索 false增量检索
+                        #if(!$fullImport)
+                        {   ## 增量检索范围，可以是时间范围，也可以是数字范围，这里采用的是数字增量字段
+                            "range": {
+                                #if($logId)
+                                "logId": {
+                                    "gt": #[logId] ## 数字增量检索字段
+                                }
+                                #end
+                                #if($logOpertime)
+                                "logOpertime": {
+                                    "gt": #[logOpertime] ## 时间增量检索字段
+                                }
+                                #end
+                            }
+                        }
+                        #end
+                    ]
+                }
+            }
+        ]]>
+    </property>
+
+    <!--
+       简单的scroll query案例，复杂的条件修改queryCondition即可
+       -->
+    <property name="scrollQuery">
+        <![CDATA[
+         {
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+    <!--
+        简单的slice scroll query案例，复杂的条件修改queryCondition即可
+    -->
+    <property name="scrollSliceQuery">
+        <![CDATA[
+         {
+           "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
+            },
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+
+
+    <!--
+    插入数据sql
+    -->
+    <property name="insertSQLnew">
+        <![CDATA[INSERT INTO batchtest ( name, author, content, title, optime, oper, subtitle, collecttime,ipinfo)
+                VALUES ( #[operModule],  ## 来源dbdemo索引中的 operModule字段
+                         #[author], ## 通过datarefactor增加的字段
+                         #[logContent], ## 来源dbdemo索引中的 logContent字段
+                         #[title], ## 通过datarefactor增加的字段
+                         #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段
+                         #[logOperuser],  ## 来源dbdemo索引中的 logOperuser字段
+                         #[subtitle], ## 通过datarefactor增加的字段
+                         #[collecttime], ## 通过datarefactor增加的字段
+                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段
+]]>
+    </property>
+</properties>
+
+
+```
+
+
+
+## 3.2 jdk timer同步器demo
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
 
@@ -1936,11 +2054,11 @@ Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
 
-## 3.2 quartz同步器demo
+## 3.3 quartz同步器demo
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
 
-## 3.3 xxl-job同步器demo
+## 3.4 xxl-job同步器demo
 
  https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
 

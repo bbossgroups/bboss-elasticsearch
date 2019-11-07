@@ -859,17 +859,47 @@ public abstract class ResultUtil {
 		}
 	}
 
+	public static  void buildESMetaMapData(BaseSearchHit hit,MetaMap esBaseData){
+		esBaseData.setFields(hit.getFields());
+		esBaseData.setHighlight( hit.getHighlight());
+		esBaseData.setId(hit.getId());
+		esBaseData.setScore(hit.getScore());
+		esBaseData.setSort(hit.getSort());
+		esBaseData.setType(hit.getType());
+		esBaseData.setVersion(hit.getVersion());
+		esBaseData.setIndex(hit.getIndex());
+		esBaseData.setParent(hit.getParent());
+		esBaseData.setRouting(hit.getRouting());
+		esBaseData.setFound(hit.isFound());
+		esBaseData.setNested(hit.getNested());
+		esBaseData.setShard(hit.getShard());
+		esBaseData.setNode(hit.getNode());
+		esBaseData.setExplanation(hit.getExplanation());
+		esBaseData.setSeqNo(hit.getSeqNo());
+		esBaseData.setPrimaryTerm(hit.getPrimaryTerm());
+		Map<String, Map<String, InnerSearchHits>> innerHits = hit.getInnerHits();
+		if(innerHits != null) {
+			esBaseData.setInnerHits(innerHits);
+			if (innerHits.size() > 0) {
+				injectInnerHitBaseData(innerHits);
+			}
+		}
+	}
+
 	public static  void buildESId(BaseSearchHit hit,ESId esBaseData){
 
 		esBaseData.setId(hit.getId());
 
 	}
-	public static  void injectBaseData(Object data,BaseSearchHit hit,boolean isESBaseData,boolean isESId){
+	public static  void injectBaseData(Object data,BaseSearchHit hit,boolean isESBaseData,boolean isESId,boolean isMetaMap){
 
 		if (isESBaseData) {
 			buildESBaseData(hit, (ESBaseData) data);
 		} else if (isESId) {
 			buildESId(hit, (ESId) data);
+		}
+		else if(isMetaMap){
+			buildESMetaMapData(hit, (MetaMap) data);
 		}
 	}
 
@@ -899,7 +929,7 @@ public abstract class ResultUtil {
 					boolean isMetaMap = MetaMap.class.isAssignableFrom(classInfo.getClazz());
 //					if(isESBaseData || isESId || (injectAnnotationESId != null && injectAnnotationESId.isESReadSet())
 //							|| (injectAnnotationESParentId != null && injectAnnotationESParentId.isESReadSet())) {
-					if(isESBaseData || isESId || esPropertyDescripts.isContainReadSetProperty()) {
+					if(isESBaseData || isESId || isMetaMap || esPropertyDescripts.isContainReadSetProperty()) {
 						for (int i = 0; i < innerSearchHits.size(); i++) {
 							InnerSearchHit innerSearchHit = innerSearchHits.get(i);
 							source = innerSearchHit.getSource();
@@ -911,8 +941,8 @@ public abstract class ResultUtil {
 								if(esPropertyDescripts.isContainReadSetProperty()){
 									injectAnnotationESMetaDatas(esPropertyDescripts,source,innerSearchHit);
 								}
-								if(isESBaseData || isESId)
-									injectBaseData(source, innerSearchHit, isESBaseData, isESId);
+								if(isESBaseData || isESId || isMetaMap)
+									injectBaseData(source, innerSearchHit, isESBaseData, isESId ,isMetaMap);
 							}
 						}
 					}
@@ -1124,7 +1154,7 @@ public abstract class ResultUtil {
 					if(!isESBaseData){
 						isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 					}
-					injectBaseData(data,hit,isESBaseData,isESId);
+					injectBaseData(data,hit,isESBaseData,isESId,isMetaMap);
 				}
 				else {
 					//处理InnerHit对象
@@ -1160,6 +1190,9 @@ public abstract class ResultUtil {
 				else if(isESId)
 				{
 					buildESId(hit,(ESId )data);
+				}
+				else if(isMetaMap){
+					buildESMetaMapData(hit, (MetaMap) data);
 				}
 				return data;
 			}
@@ -1213,7 +1246,7 @@ public abstract class ResultUtil {
 				if(!isESBaseData){
 					isESId = ESId.class.isAssignableFrom(classInfo.getClazz());
 				}
-				injectBaseData(data,result,isESBaseData,isESId);
+				injectBaseData(data,result,isESBaseData,isESId,isMetaMap);
 			}
 			else {
 				//处理InnerHit对象
@@ -1252,6 +1285,9 @@ public abstract class ResultUtil {
 			else if(isESId)
 			{
 				buildESId(hit,(ESId )data);
+			}
+			else if(isMetaMap){
+				buildESMetaMapData(hit, (MetaMap) data);
 			}
 			return data;
 		}
@@ -1585,7 +1621,7 @@ public abstract class ResultUtil {
 						if(esPropertyDescripts.isContainReadSetProperty()){
 							injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
 						}
-						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
+						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId,isMetaMap);
 					}
 					else {
 
@@ -1624,7 +1660,7 @@ public abstract class ResultUtil {
 						if(esPropertyDescripts.isContainReadSetProperty()){
 							injectAnnotationESMetaDatas(esPropertyDescripts,data,hit);
 						}
-						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId);
+						ResultUtil.injectBaseData(data, hit, isESBaseData, isESId,isMetaMap);
 					}
 					else {
 						//处理InnerHit对象

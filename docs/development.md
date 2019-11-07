@@ -2101,6 +2101,8 @@ $myarray.size()
 
 **建议**:**在dsl拼接中采用#[xxx]替代$xxx模式变量，在foreach和if/else语法中使用$xxx.**
 
+ **${xxx}都是硬解析的，除了if-else和foreach条件、foreach循环下标变量velocityCount中使用，其他地方都尽量避免使用  ${xxx}模式变量**
+
 ### 5.3.6 foreach循环中变量使用优化
 
 某些情况（比如list集合、数组或者对象转json的转换处理场景）的的foreach循环可以进行优化编写，例如：
