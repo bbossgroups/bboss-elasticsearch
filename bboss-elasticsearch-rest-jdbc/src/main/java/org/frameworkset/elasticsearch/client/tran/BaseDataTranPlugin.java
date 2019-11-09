@@ -95,7 +95,6 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 		if(this.scheduleService == null) {//一次性执行数据导入操作
 
 			long importStartTime = System.currentTimeMillis();
-//				firstImportData();
 			this.doImportData();
 			long importEndTime = System.currentTimeMillis();
 			if( isPrintTaskLog())

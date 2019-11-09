@@ -55,6 +55,9 @@ public abstract  class BaseImportContext implements ImportContext {
 	protected void init(BaseImportConfig baseImportConfig){
 
 	}
+	public int getTranDataBufferQueue(){
+		return baseImportConfig.getTranDataBufferQueue();
+	}
 	public BaseImportContext(BaseImportConfig baseImportConfig){
 		this.baseImportConfig = baseImportConfig;
 		init(baseImportConfig);

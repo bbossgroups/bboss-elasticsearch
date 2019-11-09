@@ -49,7 +49,7 @@ public class ESExporterScrollHandler<T> extends ParralBreakableScrollHandler<T> 
 	public void handle(ESDatas<T> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 
 //		ES2DBDataTran es2DBDataTran = new ES2DBDataTran(esTranResultSet,importContext);
-		es2DBDataTran.appendData(response,this);
+		es2DBDataTran.appendData(response);
 
 
 		/**

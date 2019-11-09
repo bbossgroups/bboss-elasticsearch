@@ -1008,6 +1008,7 @@ public abstract class BaseImportBuilder {
 			baseImportConfig.setExportResultHandler(buildExportResultHandler( exportResultHandler));
 		}
 		baseImportConfig.setPagine(this.pagine);
+		baseImportConfig.setTranDataBufferQueue(this.tranDataBufferQueue);
 	}
 	protected abstract WrapedExportResultHandler buildExportResultHandler(ExportResultHandler exportResultHandler);
 	public BaseImportBuilder setIndexType(String indexType) {
@@ -1165,4 +1166,14 @@ public abstract class BaseImportBuilder {
 		return this;
 	}
 	public abstract DataStream builder();
+	public BaseImportBuilder setTranDataBufferQueue(int tranDataBufferQueue) {
+		this.tranDataBufferQueue = tranDataBufferQueue;
+		return this;
+	}
+
+	/**
+	 * 源数据批量预加载队列大小，需要用到的最大缓冲内存为：
+	 *  tranDataBufferQueue * fetchSize * 单条记录mem大小
+	 */
+	private int tranDataBufferQueue = 10;
 }

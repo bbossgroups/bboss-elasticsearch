@@ -45,8 +45,8 @@ public class ES2DBDataTran extends BaseDataTran {
 	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
 		super(jdbcResultSet,importContext,countDownLatch);
 	}
-	public void appendData(ESDatas datas, ESExporterScrollHandler exporterScrollHandler){
-		esTranResultSet.appendData(datas,    exporterScrollHandler);
+	public void appendData(ESDatas datas){
+		esTranResultSet.appendData(new ESDatasWraper(datas));
 	}
 
 

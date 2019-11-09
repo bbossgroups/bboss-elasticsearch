@@ -54,7 +54,15 @@ public abstract class BaseImportConfig {
 	//scroll分页检索，每批查询数据大小
 	private Integer fetchSize = 5000;
 
+	public void setTranDataBufferQueue(int tranDataBufferQueue) {
+		this.tranDataBufferQueue = tranDataBufferQueue;
+	}
 
+	/**
+	 * 源数据批量预加载队列大小，需要用到的最大缓冲内存为：
+	 *  tranDataBufferQueue * fetchSize * 单条记录mem大小
+	 */
+	private int tranDataBufferQueue = 10;
 	public static EsIdGenerator DEFAULT_EsIdGenerator = new DefaultEsIdGenerator();
 	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
 
@@ -739,5 +747,9 @@ public abstract class BaseImportConfig {
 
 	public void setSortLastValue(boolean sortLastValue) {
 		this.sortLastValue = sortLastValue;
+	}
+
+	public int getTranDataBufferQueue() {
+		return tranDataBufferQueue;
 	}
 }

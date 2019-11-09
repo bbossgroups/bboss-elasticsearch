@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.elasticsearch.client.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,22 +15,17 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.BaseTranResultSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/28 22:37
+ * @Date 2019/11/7 23:50
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESTranResultSet extends BaseTranResultSet<ESDatasWraper> {
-
-	public ESTranResultSet(ImportContext importContext) {
-		super(importContext);
-	}
-
-
+public interface Data {
+	List<Map<String,Object>> getDatas();
 }

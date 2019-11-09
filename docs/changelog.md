@@ -49,14 +49,20 @@ https://esdoc.bbossgroups.com/#/development
 		System.out.println("isFound:"+newDemo.isFound());
 ```
 
-
-
-
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错
 
 # v5.9.0 功能改进
 1.数据同步工具改进：完善增量数据同步机制，增量字段无需排序即可实现增量同步功能，提升同步性能
+
+改进后部分类（比如Context）包路径做了调整，但是api完全兼容，可以到以下地址下载改进后最新的工具:
+
+- jdk timer和quartz demo工程
+  https://github.com/bbossgroups/db-elasticsearch-tool
+
+- xxl-job demo工程
+  https://github.com/bbossgroups/db-elasticsearch-xxjob
+
 
 2.数据同步工具bug修复：解决增量同步状态更新可能存在的不正确问题
 

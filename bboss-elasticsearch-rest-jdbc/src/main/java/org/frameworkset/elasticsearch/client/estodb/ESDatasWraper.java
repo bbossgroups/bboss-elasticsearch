@@ -15,22 +15,27 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.BaseTranResultSet;
+import org.frameworkset.elasticsearch.client.tran.Data;
+import org.frameworkset.elasticsearch.entity.ESDatas;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/28 22:37
+ * @Date 2019/11/7 23:54
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESTranResultSet extends BaseTranResultSet<ESDatasWraper> {
-
-	public ESTranResultSet(ImportContext importContext) {
-		super(importContext);
+public class ESDatasWraper implements Data {
+	private ESDatas esDatas;
+	public ESDatasWraper(ESDatas esDatas){
+		this.esDatas = esDatas;
 	}
-
-
+	@Override
+	public List<Map<String, Object>> getDatas() {
+		return esDatas.getDatas();
+	}
 }

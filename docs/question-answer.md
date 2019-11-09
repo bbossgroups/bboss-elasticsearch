@@ -55,4 +55,24 @@ public class DocumentCRUD {
    }
 ```
 
-​	
+# 问题2 添加文档时，如何将值为null的字段忽略掉
+
+在对象上面添加注解@JsonInclude(Include.NON_NULL),例如:
+
+```java
+@JsonInclude(Include.NON_NULL) 
+public class Order {
+  ....
+}
+```
+# 问题3 检索文档时，如何在返回的对象或者map中包含文档id等元数据信息
+
+在返回的对象或者map中包含文档id等元数据信息，有以下三种途径:
+
+1.如果返回的对象是Map类型，那么直接使用MetaMap作为返回类型即可
+
+2.如果是po对象，那么可以通过元数据注解来标注对象里面作为元数据属性的字段
+参考文档： [元数据注解](https://esdoc.bbossgroups.com/#/client-annotation?id=_2元数据注解) 	
+
+3.接触ESId和ESBaseData对象（不推荐使用，继承的父类中定义的属性可能会和对象本身的属性冲突）
+

@@ -136,6 +136,7 @@ public interface ImportContext {
 	String getDateFormat();
 	public String getLocale();
 	public String getTimeZone();
+	public int getTranDataBufferQueue();
 //	public Object getValue(String columnName) throws ESDataImportException;
 //	public Object getDateTimeValue(String columnName) throws ESDataImportException;
 	void setDataRefactor( DataRefactor dataRefactor);
