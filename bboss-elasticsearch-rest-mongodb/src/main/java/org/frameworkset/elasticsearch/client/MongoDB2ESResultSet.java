@@ -49,7 +49,7 @@ public class MongoDB2ESResultSet implements TranResultSet {
 
 	@Override
 	public Object getValue(String colName) throws ESDataImportException {
-		return null;
+		return record.get(colName);
 	}
 
 	@Override

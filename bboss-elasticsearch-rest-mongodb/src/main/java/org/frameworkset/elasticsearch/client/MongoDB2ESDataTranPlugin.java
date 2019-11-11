@@ -128,47 +128,10 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 		MongoDB2ESResultSet mongoDB2ESResultSet = new MongoDB2ESResultSet(importContext,dbCursor);
 		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);
 		mongoDB2ESDataTran.tran();
-//		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
-//		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
-//
-//		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(es2DBContext.getDslFile());
-//
-//		ESDatas<Map> response = null;
-//		if(!es2DBContext.isSliceQuery()) {
-//
-//			if(importContext.isParallel() && esExporterScrollHandler instanceof ESDirectExporterScrollHandler) {
-//				response = clientUtil.scrollParallel(es2DBContext.getQueryUrl(),
-//						es2DBContext.getDslName(), es2DBContext.getScrollLiveTime(),
-//						params, Map.class, esExporterScrollHandler);
-//			}
-//			else
-//			{
-//				response = clientUtil.scroll(es2DBContext.getQueryUrl(),
-//						es2DBContext.getDslName(), es2DBContext.getScrollLiveTime(),
-//						params, Map.class, esExporterScrollHandler);
-//			}
-//		}
-//		else{
-//			response = clientUtil.scrollSliceParallel(es2DBContext.getQueryUrl(), es2DBContext.getDslName(),
-//					params, es2DBContext.getScrollLiveTime(),Map.class, esExporterScrollHandler);
-//		}
-//		if(logger.isInfoEnabled()) {
-//			if(response != null) {
-//				logger.info("Export compoleted and export total {} records.", response.getTotalSize());
-//			}
-//			else{
-//				logger.info("Export compoleted and export no records or failed.");
-//			}
-//		}
+
 	}
 	private void increamentImportData() throws Exception {
-//		Map params = es2DBContext.getParams() != null ?es2DBContext.getParams():new HashMap();
-//		params.put("size", importContext.getFetchSize());//每页5000条记录
-//		if(es2DBContext.isSliceQuery()){
-//			params.put("sliceMax",es2DBContext.getSliceSize());
-//		}
-//		putLastParamValue(params);
-//		exportESData(  esExporterScrollHandler,  params);
+
 		DBObject dbObject = es2DBContext.getQuery();
 		if(dbObject == null)
 			dbObject = new BasicDBObject();
