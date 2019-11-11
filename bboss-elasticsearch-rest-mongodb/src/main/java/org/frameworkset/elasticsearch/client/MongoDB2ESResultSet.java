@@ -77,6 +77,6 @@ public class MongoDB2ESResultSet implements TranResultSet {
 
 	@Override
 	public TranMeta getMetaData() {
-		return null;
+		return new MongoDB2ESTranMetaData(record.keySet());
 	}
 }

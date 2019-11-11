@@ -48,7 +48,7 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 
 	private String mode;
 	private DBCollectionFindOptions dbCollectionFindOptions;
-	private DBObject dbObject;
+	private DBObject query;
 	private String dbCollection;
 	private String db;
 
@@ -161,7 +161,7 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 	}
 
 	public DBObject getQuery() {
-		return dbObject;
+		return query;
 	}
 
 	public String getDBCollection() {
@@ -176,8 +176,8 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 		this.dbCollectionFindOptions = dbCollectionFindOptions;
 	}
 
-	public void setDbObject(DBObject dbObject) {
-		this.dbObject = dbObject;
+	public void setQuery(DBObject query) {
+		this.query = query;
 	}
 
 	public void setDbCollection(String dbCollection) {

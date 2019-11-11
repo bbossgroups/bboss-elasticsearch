@@ -51,7 +51,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 	private String mode;
 
 	private DBCollectionFindOptions dbCollectionFindOptions;
-	private DBObject dbObject;
+	private DBObject query;
 	private String dbCollection;
 	private String db;
 
@@ -218,7 +218,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setMode( mode);
 
 		es2DBImportConfig.setDbCollectionFindOptions( this.dbCollectionFindOptions);
-		es2DBImportConfig.setDbObject( this.dbObject);
+		es2DBImportConfig.setQuery( this.query);
 		es2DBImportConfig.setDbCollection( this.dbCollection);
 		es2DBImportConfig.setDb( this.db);
 		MongoDB2ESDataStreamImpl dataStream = new MongoDB2ESDataStreamImpl();
@@ -231,7 +231,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 	}
 
 	public DBObject getQuery() {
-		return dbObject;
+		return query;
 	}
 
 	public String getDBCollection() {
@@ -247,8 +247,8 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		return this;
 	}
 
-	public MongoDB2ESExportBuilder setDbObject(DBObject dbObject) {
-		this.dbObject = dbObject;
+	public MongoDB2ESExportBuilder setQuery(DBObject dbObject) {
+		this.query = dbObject;
 		return this;
 	}
 
