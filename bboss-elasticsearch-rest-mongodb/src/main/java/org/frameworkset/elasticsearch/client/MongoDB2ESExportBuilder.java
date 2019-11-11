@@ -16,6 +16,8 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import com.frameworkset.util.SimpleStringUtil;
+import com.mongodb.DBObject;
+import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 
 /**
@@ -48,7 +50,10 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 
 	private String mode;
 
-
+	private DBCollectionFindOptions dbCollectionFindOptions;
+	private DBObject dbObject;
+	private String dbCollection;
+	private String db;
 
 	public String getName() {
 		return name;
@@ -211,12 +216,51 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setSocketKeepAlive(socketKeepAlive);//private Boolean socketKeepAlive = false;
 
 		es2DBImportConfig.setMode( mode);
+
+		es2DBImportConfig.setDbCollectionFindOptions( this.dbCollectionFindOptions);
+		es2DBImportConfig.setDbObject( this.dbObject);
+		es2DBImportConfig.setDbCollection( this.dbCollection);
+		es2DBImportConfig.setDb( this.db);
 		MongoDB2ESDataStreamImpl dataStream = new MongoDB2ESDataStreamImpl();
 		dataStream.setMongoDB2ESImportConfig(es2DBImportConfig);
 		return dataStream;
 	}
 
+	public DBCollectionFindOptions getDBCollectionFindOptions() {
+		return this.dbCollectionFindOptions;
+	}
 
+	public DBObject getQuery() {
+		return dbObject;
+	}
+
+	public String getDBCollection() {
+		return dbCollection;
+	}
+
+	public String getDB() {
+		return db;
+	}
+
+	public MongoDB2ESExportBuilder setDbCollectionFindOptions(DBCollectionFindOptions dbCollectionFindOptions) {
+		this.dbCollectionFindOptions = dbCollectionFindOptions;
+		return this;
+	}
+
+	public MongoDB2ESExportBuilder setDbObject(DBObject dbObject) {
+		this.dbObject = dbObject;
+		return this;
+	}
+
+	public MongoDB2ESExportBuilder setDbCollection(String dbCollection) {
+		this.dbCollection = dbCollection;
+		return this;
+	}
+
+	public MongoDB2ESExportBuilder setDb(String db) {
+		this.db = db;
+		return this;
+	}
 
 
 }

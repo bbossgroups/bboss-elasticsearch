@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.mongodb.DBObject;
+import com.mongodb.client.model.DBCollectionFindOptions;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -27,6 +30,10 @@ public interface MongoDB2ESContext  {
 
 	public String getName() ;
 
+	public String getDB();
+	public String getDBCollection();
+	public DBObject getQuery();
+	public DBCollectionFindOptions getDBCollectionFindOptions();
 	public String getServerAddresses() ;
 
 	public String getOption() ;

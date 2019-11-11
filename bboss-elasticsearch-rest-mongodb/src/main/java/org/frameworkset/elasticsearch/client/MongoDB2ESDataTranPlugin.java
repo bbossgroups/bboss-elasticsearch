@@ -15,14 +15,17 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.mongodb.*;
+import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.estodb.ESExporterScrollHandler;
+import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.nosql.mongodb.MongoDB;
 import org.frameworkset.nosql.mongodb.MongoDBConfig;
 import org.frameworkset.nosql.mongodb.MongoDBHelper;
 
-import java.util.Map;
+import java.util.Date;
 
 /**
  * <p>Description: </p>
@@ -85,17 +88,46 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 	}
 
 
-	private void commonImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
-//		Map params = es2DBContext.getParams() != null ?es2DBContext.getParams():new HashMap();
-//		params.put("size", importContext.getFetchSize());//每页5000条记录
-//		if(es2DBContext.isSliceQuery()){
-//			params.put("sliceMax",es2DBContext.getSliceSize());
-//		}
-//		exportESData(  esExporterScrollHandler,  params);
+	private void commonImportData() throws Exception {
+
+		DBObject dbObject = es2DBContext.getQuery();
+		if(dbObject == null)
+			dbObject = new BasicDBObject();
+
+		exportESData(  dbObject);
+		/**
+		 * JDBCResultSet jdbcResultSet = new JDBCResultSet();
+		 * 		jdbcResultSet.setResultSet(resultSet);
+		 * 		jdbcResultSet.setMetaData(statementInfo.getMeta());
+		 * 		jdbcResultSet.setDbadapter(statementInfo.getDbadapter());
+		 * 		DB2ESDataTran db2ESDataTran = new DB2ESDataTran(jdbcResultSet,importContext);
+		 *
+		 * 		db2ESDataTran.tran(  );
+		 */
 	}
 
-	private void exportESData(ESExporterScrollHandler<Map> esExporterScrollHandler,Map params){
+	private void exportESData(DBObject dbObject){
+		MongoDB mogodb = MongoDBHelper.getMongoDB(es2DBContext.getName());
+		DB db = mogodb.getDB(es2DBContext.getDB());
+		DBCollection dbCollection = db.getCollection(es2DBContext.getDBCollection());
+		DBCollectionFindOptions dbCollectionFindOptions = null;
+		if(es2DBContext.getDBCollectionFindOptions() != null){
+			dbCollectionFindOptions = es2DBContext.getDBCollectionFindOptions();
+			dbCollectionFindOptions.batchSize(importContext.getFetchSize());
+		}
+		else
+		{
+			dbCollectionFindOptions = new DBCollectionFindOptions();
+			dbCollectionFindOptions.batchSize(importContext.getFetchSize());
+		}
 
+
+//		dbCollectionFindOptions.
+
+		DBCursor dbCursor = dbCollection.find(dbObject,dbCollectionFindOptions);
+		MongoDB2ESResultSet mongoDB2ESResultSet = new MongoDB2ESResultSet(importContext,dbCursor);
+		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);
+		mongoDB2ESDataTran.tran();
 //		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
 //		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
 //
@@ -129,7 +161,7 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 //			}
 //		}
 	}
-	private void increamentImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
+	private void increamentImportData() throws Exception {
 //		Map params = es2DBContext.getParams() != null ?es2DBContext.getParams():new HashMap();
 //		params.put("size", importContext.getFetchSize());//每页5000条记录
 //		if(es2DBContext.isSliceQuery()){
@@ -137,76 +169,65 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 //		}
 //		putLastParamValue(params);
 //		exportESData(  esExporterScrollHandler,  params);
-
+		DBObject dbObject = es2DBContext.getQuery();
+		if(dbObject == null)
+			dbObject = new BasicDBObject();
+		putLastParamValue((BasicDBObject)dbObject);
+		exportESData(  dbObject);
+	}
+	public void putLastParamValue(BasicDBObject query){
+		if(this.lastValueType == ImportIncreamentConfig.NUMBER_TYPE) {
+			query.append(getLastValueVarName(),
+					new BasicDBObject("$gt", this.currentStatus.getLastValue()));
+//			params.put(getLastValueVarName(), this.currentStatus.getLastValue());
+		}
+		else{
+			Object lv = null;
+			if(this.currentStatus.getLastValue() instanceof Date) {
+				lv = this.currentStatus.getLastValue();
+//				params.put(getLastValueVarName(), this.currentStatus.getLastValue());
+			}
+			else {
+				if(this.currentStatus.getLastValue() instanceof Long) {
+					lv =   new Date((Long)this.currentStatus.getLastValue());
+				}
+				else if(this.currentStatus.getLastValue() instanceof Integer){
+					lv =  new Date(((Integer) this.currentStatus.getLastValue()).longValue());
+				}
+				else if(this.currentStatus.getLastValue() instanceof Short){
+					lv =  new Date(((Short) this.currentStatus.getLastValue()).longValue());
+				}
+				else{
+					lv =  new Date(((Number) this.currentStatus.getLastValue()).longValue());
+				}
+			}
+			query.append(getLastValueVarName(),
+					new BasicDBObject("$gt", lv));
+		}
+		if(isPrintTaskLog()){
+			logger.info(new StringBuilder().append("Current values: ").append(query).toString());
+		}
 	}
 
 	public void doImportData()  throws ESDataImportException{
-//		ESTranResultSet jdbcResultSet = new ESTranResultSet(importContext);
-//
-//		if(es2DBContext.getBatchHandler() != null)
-//		{
-//			ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext);
-//			ESDirectExporterScrollHandler esDirectExporterScrollHandler = new ESDirectExporterScrollHandler(importContext,
-//					executor,es2DBDataTran);
-//			try {
-//				if (!isIncreamentImport()) {
-//
-//					commonImportData(esDirectExporterScrollHandler);
-//
-//				} else {
-//
-//					increamentImportData(esDirectExporterScrollHandler);
-//
-//				}
-//			} catch (ESDataImportException e) {
-//				throw e;
-//			} catch (Exception e) {
-//				throw new ESDataImportException(e);
-//			}
-//		}
-//		else {
-//
-//			final CountDownLatch countDownLatch = new CountDownLatch(1);
-//			final ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext,countDownLatch);
-//			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,
-//					es2DBDataTran);
-//
-//
-//
-//
-//			try {
-//				Thread tranThread = new Thread(new Runnable() {
-//					@Override
-//					public void run() {
-//						es2DBDataTran.tran();
-//					}
-//				});
-//				tranThread.start();
-//				if (!isIncreamentImport()) {
-//
-//					commonImportData(esExporterScrollHandler);
-//
-//				} else {
-//
-//					increamentImportData(esExporterScrollHandler);
-//
-//				}
-//			} catch (ESDataImportException e) {
-//				throw e;
-//			} catch (Exception e) {
-//				throw new ESDataImportException(e);
-//			}
-//			finally {
-//				jdbcResultSet.reachEend();
-//				try {
-//					countDownLatch.await();
-//				} catch (InterruptedException e) {
-//					if(logger.isErrorEnabled())
-//						logger.error("",e);
-//				}
-//			}
-//
-//		}
+
+
+			try {
+				if (!isIncreamentImport()) {
+
+					commonImportData( );
+
+				} else {
+
+					increamentImportData( );
+
+				}
+			} catch (ESDataImportException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new ESDataImportException(e);
+			}
+
 	}
 
 	@Override

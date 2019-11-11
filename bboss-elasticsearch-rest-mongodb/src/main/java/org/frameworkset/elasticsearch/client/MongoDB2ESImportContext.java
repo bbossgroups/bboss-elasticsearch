@@ -15,9 +15,10 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.mongodb.DBObject;
+import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
-import org.frameworkset.elasticsearch.client.estodb.ES2DBDataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 
 /**
@@ -52,6 +53,25 @@ public class MongoDB2ESImportContext extends BaseImportContext implements MongoD
 		return es2DBImportConfig.getName();
 	}
 
+	@Override
+	public String getDB() {
+		return es2DBImportConfig.getDB();
+	}
+
+	@Override
+	public String getDBCollection() {
+		return es2DBImportConfig.getDBCollection();
+	}
+
+	@Override
+	public DBObject getQuery() {
+		return es2DBImportConfig.getQuery();
+	}
+
+	@Override
+	public DBCollectionFindOptions getDBCollectionFindOptions() {
+		return es2DBImportConfig.getDBCollectionFindOptions();
+	}
 
 
 	public String getServerAddresses() {

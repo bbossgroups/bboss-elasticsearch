@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import com.mongodb.DBObject;
+import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 
 /**
@@ -45,6 +47,10 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 	private Boolean socketKeepAlive = false;
 
 	private String mode;
+	private DBCollectionFindOptions dbCollectionFindOptions;
+	private DBObject dbObject;
+	private String dbCollection;
+	private String db;
 
 	public String getName() {
 		return name;
@@ -148,5 +154,37 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 
 	public void setMode(String mode) {
 		this.mode = mode;
+	}
+
+	public DBCollectionFindOptions getDBCollectionFindOptions() {
+		return this.dbCollectionFindOptions;
+	}
+
+	public DBObject getQuery() {
+		return dbObject;
+	}
+
+	public String getDBCollection() {
+		return dbCollection;
+	}
+
+	public String getDB() {
+		return db;
+	}
+
+	public void setDbCollectionFindOptions(DBCollectionFindOptions dbCollectionFindOptions) {
+		this.dbCollectionFindOptions = dbCollectionFindOptions;
+	}
+
+	public void setDbObject(DBObject dbObject) {
+		this.dbObject = dbObject;
+	}
+
+	public void setDbCollection(String dbCollection) {
+		this.dbCollection = dbCollection;
+	}
+
+	public void setDb(String db) {
+		this.db = db;
 	}
 }
