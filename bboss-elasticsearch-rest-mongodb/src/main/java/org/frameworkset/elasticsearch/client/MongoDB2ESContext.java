@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.elasticsearch.client;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,22 +15,40 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/10/28 14:11
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBExportResultHandler extends BaseExportResultHandler<String,String> {
-	public ES2DBExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
-	}
+public interface MongoDB2ESContext  {
 
+	public String getName() ;
 
+	public String getServerAddresses() ;
 
+	public String getOption() ;
+
+	public String getWriteConcern();
+
+	public String getReadPreference() ;
+
+	public Boolean getAutoConnectRetry() ;
+
+	public int getConnectionsPerHost() ;
+
+	public int getMaxWaitTime() ;
+
+	public int getSocketTimeout() ;
+
+	public int getConnectTimeout() ;
+
+	public int getThreadsAllowedToBlockForConnectionMultiplier();
+
+	public Boolean getSocketKeepAlive() ;
+;
+
+	public String getMode() ;
 }

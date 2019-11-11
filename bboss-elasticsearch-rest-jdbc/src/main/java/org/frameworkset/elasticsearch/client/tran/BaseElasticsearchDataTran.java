@@ -22,7 +22,6 @@ import org.frameworkset.elasticsearch.template.ESUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -37,7 +36,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public abstract class BaseElasticsearchDataTran extends BaseDataTran{
-	private static Logger logger = LoggerFactory.getLogger(BaseElasticsearchDataTran.class);
 	private ClientInterface clientInterface;
 
 	@Override
@@ -511,7 +509,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 		}
 	}
 
-	public static void evalBuilk(TranResultSet jdbcResultSet,BatchContext batchContext, Writer writer, Context context, String action, boolean upper7) throws Exception {
+	public  void evalBuilk(TranResultSet jdbcResultSet,BatchContext batchContext, Writer writer, Context context, String action, boolean upper7) throws Exception {
 
 		buildMeta( context, writer ,     action,  upper7);
 
@@ -539,7 +537,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 
 	}
 
-	private static void serialResult( Writer writer,  Context context) throws Exception {
+	private  void serialResult( Writer writer,  Context context) throws Exception {
 
 		TranMeta metaData = context.getMetaData();
 		int counts = metaData.getColumnCount();
@@ -651,7 +649,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 
 		writer.write("}\n");
 	}
-	private static boolean appendFieldValues(Writer writer,Context context,
+	private  boolean appendFieldValues(Writer writer,Context context,
 										  List<FieldMeta> fieldValueMetas,boolean hasSeted,Map<String,Object> addedFields) throws IOException {
 		if(fieldValueMetas != null && fieldValueMetas.size() > 0){
 			for(int i =0; i < fieldValueMetas.size(); i++)

@@ -17,16 +17,11 @@ package org.frameworkset.elasticsearch.client.tran;
 
 import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
-import com.frameworkset.common.poolman.util.SQLUtil;
-import com.frameworkset.util.SimpleStringUtil;
-import org.frameworkset.elasticsearch.client.DBConfig;
-import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.db2es.DBContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
+import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.frameworkset.soa.BBossStringWriter;
-
-import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -95,65 +90,9 @@ public abstract class SQLBaseDataTranPlugin extends BaseDataTranPlugin {
 		return sql;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		this.stopDS(importContext.getDbConfig());
-		this.stopOtherDSES(importContext.getConfigs());
-
-//		this.importContext.destroy();
-
-	}
 
 
 
-	protected void initDS(DBConfig dbConfig){
-		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
-			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
-					dbConfig.getDbDriver(),//oracle驱动
-					dbConfig.getDbUrl(),//mysql链接串
-					dbConfig.getDbUser(), dbConfig.getDbPassword(),//数据库账号和口令
-					null,//"false",
-					null,// "READ_UNCOMMITTED",
-					dbConfig.getValidateSQL(),//数据库连接校验sql
-					dbConfig.getDbName()+"_jndi",
-					dbConfig.getInitSize(),
-					dbConfig.getMinIdleSize(),
-					dbConfig.getMaxSize(),
-					dbConfig.isUsePool(),
-					false,
-					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
-			);
-		}
-	}
-	protected void initOtherDSes(List<DBConfig> dbConfigs){
-		if(dbConfigs != null && dbConfigs.size() > 0){
-			for (DBConfig dbConfig:dbConfigs){
-				initDS( dbConfig);
-			}
-		}
-	}
-
-	private void stopDS(DBConfig dbConfig){
-		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())){
-			try {
-				SQLUtil.stopPool(dbConfig.getDbName());
-			} catch (Exception e) {
-				if(logger.isErrorEnabled())
-					logger.error("SQLUtil.stopPool("+dbConfig.getDbName()+") failed:",e);
-			}
-		}
-	}
-
-	private void stopOtherDSES(List<DBConfig> dbConfigs){
-
-		if(dbConfigs != null && dbConfigs.size() > 0){
-			for(DBConfig dbConfig:dbConfigs){
-				stopDS(dbConfig);
-			}
-		}
-	}
 
 
 

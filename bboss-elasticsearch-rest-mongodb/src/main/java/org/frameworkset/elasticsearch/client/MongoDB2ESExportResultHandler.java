@@ -15,50 +15,19 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
-import org.frameworkset.nosql.mongodb.MongoDBConfig;
+import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/9/20 11:46
+ * @Date 2019/3/1 10:20
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESMongoDB extends BaseImportConfig {
-
-	private MongoDBConfig dbConfig;
-	public void init(MongoDBConfig dbConfig){
-		this.dbConfig = dbConfig;
-
-	}
-	public void setExternalTimer(boolean externalTimer) {
-	}
-
-	public String getApplicationPropertiesFile() {
-		return null;
-	}
-
-	public MongoDBConfig getConfig() {
-		return null;
-	}
-
-	public void stop() {
-	}
-
-	public boolean isPrintTaskLog() {
-		return false;
-	}
-
-
-
-	public void setStatusTableId(String statusTableId) {
-	}
-
-	public ScheduleConfig getScheduleConfig() {
-		return null;
+public class MongoDB2ESExportResultHandler extends BaseExportResultHandler<String,String> {
+	public MongoDB2ESExportResultHandler(ExportResultHandler exportResultHandler){
+		super(exportResultHandler);
 	}
 
 

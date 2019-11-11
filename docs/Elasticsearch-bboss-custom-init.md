@@ -59,6 +59,9 @@ properties.put("elasticsearch.rest.hostNames","10.13.11.6:9200");
 properties.put("elasticsearch.showTemplate","true");
 //集群节点自动发现
 properties.put("elasticsearch.discoverHost","true");
+properties.put("http.timeoutSocket","60000");
+properties.put("http.timeoutConnection","40000");
+properties.put("http.connectionRequestTimeout","70000");
 ElasticSearchBoot.boot(properties);
 ```
 
@@ -91,6 +94,9 @@ properties.put("default.elasticsearch.rest.hostNames","10.13.11.6:9200");
 properties.put("default.elasticsearch.showTemplate","true");
 //集群节点自动发现
 properties.put("default.elasticsearch.discoverHost","true");
+properties.put("default.http.timeoutSocket","60000");
+properties.put("default.http.timeoutConnection","40000");
+properties.put("default.http.connectionRequestTimeout","70000");
 
 /**
  * es233数据源配置，每个配置项必须以es233.前缀开始
@@ -103,6 +109,9 @@ properties.put("es233.elasticsearch.rest.hostNames","192.168.137.1:9200");
 properties.put("es233.elasticsearch.showTemplate","true");
 //集群节点自动发现
 properties.put("es233.elasticsearch.discoverHost","true");
+properties.put("es233.http.timeoutSocket","60000");
+properties.put("es233.http.timeoutConnection","40000");
+properties.put("es233.http.connectionRequestTimeout","70000");
 ElasticSearchBoot.boot(properties);
 ```
 

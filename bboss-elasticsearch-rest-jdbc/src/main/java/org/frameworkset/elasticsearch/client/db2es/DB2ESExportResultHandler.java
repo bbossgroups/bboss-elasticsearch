@@ -18,9 +18,7 @@ package org.frameworkset.elasticsearch.client.db2es;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.frameworkset.elasticsearch.client.task.TaskCommand;
-import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
 
 /**
  * <p>Description: </p>
@@ -30,28 +28,11 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DB2ESExportResultHandler implements WrapedExportResultHandler<String,String> {
-	private static Logger logger = LoggerFactory.getLogger(DB2ESExportResultHandler.class);
-	private ExportResultHandler exportResultHandler;
+public class DB2ESExportResultHandler extends BaseExportResultHandler<String,String> {
 	public DB2ESExportResultHandler(ExportResultHandler exportResultHandler){
-		this.exportResultHandler = exportResultHandler;
-	}
-	public void success(TaskCommand<String,String> taskCommand, String result){
-		this.exportResultHandler.success(  taskCommand,   result);
-	}
-	public void error(TaskCommand<String,String> taskCommand, String result){
-		this.exportResultHandler.error(  taskCommand,   result);
+		super(exportResultHandler);
 	}
 
-	@Override
-	public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
-		this.exportResultHandler.exception(  taskCommand,   exception);
-	}
-
-	@Override
-	public int getMaxRetry() {
-		return this.exportResultHandler.getMaxRetry();
-	}
 
 	/**
 	 * 处理导入数据结果，如果失败则可以通过重试失败数据
@@ -61,30 +42,7 @@ public class DB2ESExportResultHandler implements WrapedExportResultHandler<Strin
 	 */
 	public void handleResult(TaskCommand<String,String> taskCommand, String result){
 
-		/**
-		 if(result == null){
-		 error(  taskCommand,   result);
-		 return ;
-		 }
-		 int errorStartIdx = result.indexOf("\"errors\":");
-		 if(errorStartIdx < 0) {
-		 error(taskCommand, result);
-		 return;
-		 }
-		 int errorEndIdx = result.indexOf(",",errorStartIdx);
-		 if(errorEndIdx < 0){
-		 error(taskCommand, result);
-		 return;
-		 }
-		 String errorInfo = result.substring(errorStartIdx,errorEndIdx);
-		 if(errorInfo.equals("\"errors\":false")){
-		 success(  taskCommand,   result);
-		 }
-		 else{
-		 error(  taskCommand,   result);
 
-		 }
-		 */
 		if(!ResultUtil.bulkResponseError(result)){
 			success(  taskCommand,   result);
 		}
@@ -94,20 +52,7 @@ public class DB2ESExportResultHandler implements WrapedExportResultHandler<Strin
 
 	}
 
-	/**
-	 * 处理导入数据结果，如果失败则可以通过重试失败数据
-	 * @param taskCommand
-	 * @param exception
-	 *
-	 */
-	public void handleException(TaskCommand<String,String> taskCommand, Exception exception){
-		try {
-			exception(taskCommand, exception);
-		}
-		catch (Exception e){
-			logger.warn("Handle Task Exception failed:",e);
-		}
-	}
+
 
 
 }

@@ -1,17 +1,17 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.*;
-import org.frameworkset.elasticsearch.client.metrics.ImportCount;
-import org.frameworkset.elasticsearch.client.metrics.ParallImportCount;
-import org.frameworkset.elasticsearch.client.metrics.SerialImportCount;
-import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.context.Context;
 import org.frameworkset.elasticsearch.client.context.ContextImpl;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.estodb.*;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
+import org.frameworkset.elasticsearch.client.metrics.ParallImportCount;
+import org.frameworkset.elasticsearch.client.metrics.SerialImportCount;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.client.task.TaskCall;
+import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.tran.BaseDataTran;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
@@ -23,29 +23,29 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class ES2DBDataTran extends BaseDataTran {
-	private ES2DBContext es2DBContext ;
-	private ESTranResultSet esTranResultSet;
+public class MongoDB2ESDataTran extends BaseDataTran {
+	private MongoDB2ESContext es2DBContext ;
+	private MongoDB2ESResultSet esTranResultSet;
 	@Override
 	public void logTaskStart(Logger logger) {
-		logger.info(new StringBuilder().append("import data to db[").append(importContext.getDbConfig().getDbUrl())
-				.append("] dbuser[").append(importContext.getDbConfig().getDbUser()).append(" sql[").append(es2DBContext.getSqlInfo().getOriginSQL()).append("] start.").toString());
+		logger.info(new StringBuilder().append("import data to elasticsearch[").append(es2DBContext.getServerAddresses())
+				.append("] start.").toString());
 	}
 	protected void init(){
-		es2DBContext = (ES2DBContext)importContext;
-		esTranResultSet = (ESTranResultSet)jdbcResultSet;
+		es2DBContext = (MongoDB2ESContext)importContext;
+		esTranResultSet = (MongoDB2ESResultSet)jdbcResultSet;
 
 	}
 
 
-	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext) {
+	public MongoDB2ESDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 	}
-	public ES2DBDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
+	public MongoDB2ESDataTran(ESTranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
 		super(jdbcResultSet,importContext,countDownLatch);
 	}
-	public void appendData(ESDatas datas){
-		esTranResultSet.appendData(new ESDatasWraper(datas));
+	public void appendData(List<Map<String,Object>> datas){
+		esTranResultSet.appendData(new MongoDB2ESDatasWraper(datas));
 	}
 
 
@@ -70,7 +70,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
 			Object temp = null;
 			Param param = null;
-			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
+			List<List<MongoDB2ESDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
 				try {
 					if (lastValue == null)
@@ -84,7 +84,7 @@ public class ES2DBDataTran extends BaseDataTran {
 						ignoreTotalCount ++;
 						continue;
 					}
-					List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
+					List<MongoDB2ESDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 
 					records.add(record);
 					//						evalBuilk(this.jdbcResultSet, batchContext, writer, context, "index", clientInterface.isVersionUpper7());
@@ -128,10 +128,10 @@ public class ES2DBDataTran extends BaseDataTran {
 		return null;
 
 	}
-	private List<ES2DBDataTran.Param> buildRecord(Context context,List<VariableHandler.Variable> vars ){
+	private List<MongoDB2ESDataTran.Param> buildRecord(Context context, List<VariableHandler.Variable> vars ){
 		Object temp = null;
 		Param param = null;
-		List<ES2DBDataTran.Param> record = new ArrayList<>();
+		List<MongoDB2ESDataTran.Param> record = new ArrayList<>();
 		Map<String,Object> addedFields = new HashMap<String,Object>();
 
 		List<FieldMeta> fieldValueMetas = context.getFieldValues();//context优先级高于，全局配置，全局配置高于字段值
@@ -175,7 +175,7 @@ public class ES2DBDataTran extends BaseDataTran {
 			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
 			Object temp = null;
 			Param param = null;
-			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
+			List<List<MongoDB2ESDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
 				if(!tranErrorWrapper.assertCondition()) {
 					tranErrorWrapper.throwError();
@@ -192,7 +192,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					totalCount.increamentIgnoreTotalCount();
 					continue;
 				}
-				List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
+				List<MongoDB2ESDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 				records.add(record);
 				//						evalBuilk(this.jdbcResultSet, batchContext, writer, context, "index", clientInterface.isVersionUpper7());
 				count++;
@@ -268,7 +268,7 @@ public class ES2DBDataTran extends BaseDataTran {
 		try {
 			istart = start;
 			ES2DBImportContext.SQLInfo sqlinfo = es2DBContext.getSqlInfo();
-			List<List<ES2DBDataTran.Param>> records = new ArrayList<>();
+			List<List<MongoDB2ESDataTran.Param>> records = new ArrayList<>();
 			while (jdbcResultSet.next()) {
 				if(!tranErrorWrapper.assertCondition()) {
 					tranErrorWrapper.throwError();
@@ -284,7 +284,7 @@ public class ES2DBDataTran extends BaseDataTran {
 					importCount.increamentIgnoreTotalCount();
 					continue;
 				}
-				List<ES2DBDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
+				List<MongoDB2ESDataTran.Param> record = buildRecord(  context,  sqlinfo.getVars() );
 				records.add(record);
 				count++;
 				if (count == batchsize) {
@@ -348,7 +348,7 @@ public class ES2DBDataTran extends BaseDataTran {
 	}
 
 
-	private void appendFieldValues(List<ES2DBDataTran.Param> record,
+	private void appendFieldValues(List<MongoDB2ESDataTran.Param> record,
 			List<VariableHandler.Variable> vars,
 			List<FieldMeta> fieldValueMetas,
 			Map<String, Object> addedFields) {

@@ -21,8 +21,6 @@ import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +34,10 @@ import java.util.Map;
  * @version 1.0
  */
 public class ES2DBExportBuilder extends BaseImportBuilder {
-	private static Logger logger = LoggerFactory.getLogger(ES2DBExportBuilder.class);
 
 	private String scrollLiveTime = "100m";
-	private BatchHandler<Map> batchHandler;
+
+	private transient BatchHandler<Map> batchHandler;
 	private Map params;
 	/**indexName/_search*/
 	private String queryUrl;

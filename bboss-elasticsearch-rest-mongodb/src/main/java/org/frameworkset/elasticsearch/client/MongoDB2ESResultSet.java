@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.elasticsearch.client;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,22 +15,22 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.tran.BaseTranResultSet;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/8/3 12:27
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBExportResultHandler extends BaseExportResultHandler<String,String> {
-	public ES2DBExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
-	}
+public class MongoDB2ESResultSet extends BaseTranResultSet<MongoDB2ESDatasWraper> {
 
+	public MongoDB2ESResultSet(ImportContext importContext) {
+		super(importContext);
+	}
 
 
 }

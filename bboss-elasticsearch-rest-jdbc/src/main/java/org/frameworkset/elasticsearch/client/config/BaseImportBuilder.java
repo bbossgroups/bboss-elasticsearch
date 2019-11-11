@@ -18,14 +18,17 @@ package org.frameworkset.elasticsearch.client.config;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.*;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.util.annotations.DateFormateMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static org.frameworkset.elasticsearch.client.config.BaseImportConfig.DEFAULT_EsIdGenerator;
 
 /**
  * <p>Description: </p>
@@ -36,6 +39,7 @@ import java.util.*;
  * @version 1.0
  */
 public abstract class BaseImportBuilder {
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	private DBConfig dbConfig ;
 	private DBConfig statusDbConfig ;
 	private Integer fetchSize = 5000;
@@ -85,28 +89,8 @@ public abstract class BaseImportBuilder {
 	private List<DBConfig> configs;
 
 
-	/**
-	 * 是否删除indice
-	 */
-	private boolean dropIndice;
 
-//	/**是否启用sql日志，true启用，false 不启用，*/
-//	protected boolean showSql;
-//
-//	/**抽取数据的sql语句*/
-//	protected String dbName;
-//	/**抽取数据的sql语句*/
-//	protected String dbDriver;
-//	/**抽取数据的sql语句*/
-//	protected String dbUrl;
-//	/**抽取数据的sql语句*/
-//	protected String dbUser;
-//	/**抽取数据的sql语句*/
-//	protected String dbPassword;
-//	/**抽取数据的sql语句*/
-//	protected String validateSQL;
-//	/**抽取数据的sql语句*/
-//	protected boolean usePool = false;
+
 
 	/**批量获取数据大小*/
 	private int batchSize = 1000;
@@ -177,14 +161,14 @@ public abstract class BaseImportBuilder {
 	/**抽取数据的sql语句*/
 	private Boolean useJavaName;
 
-//	private Integer jdbcFetchSize;
 	protected ExportResultHandler exportResultHandler;
+	public static final String DEFAULT_CONFIG_FILE = "application.properties";
 	protected void buildDBConfig(){
 		if(!freezen) {
 			PropertiesContainer propertiesContainer = new PropertiesContainer();
 
 			if(this.applicationPropertiesFile == null) {
-				propertiesContainer.addConfigPropertiesFile("application.properties");
+				propertiesContainer.addConfigPropertiesFile(DEFAULT_CONFIG_FILE);
 			}
 			else{
 				propertiesContainer.addConfigPropertiesFile(applicationPropertiesFile);
@@ -207,13 +191,7 @@ public abstract class BaseImportBuilder {
 	}
 
 
-	public boolean isDropIndice() {
-		return dropIndice;
-	}
 
-	public void setDropIndice(boolean dropIndice) {
-		this.dropIndice = dropIndice;
-	}
 	public BaseImportBuilder setEsIdGenerator(EsIdGenerator esIdGenerator) {
 		if(esIdGenerator != null)
 			this.esIdGenerator = 	esIdGenerator;
@@ -260,18 +238,18 @@ public abstract class BaseImportBuilder {
 			if(thirdDatasources == null || thirdDatasources.equals(""))
 				return;
 			String[] names = thirdDatasources.split(",");
-			List<DBConfig> configs = new ArrayList<DBConfig>();
+			List<DBConfig> dbConfigs = new ArrayList<>();
 			for(int i = 0; i < names.length; i ++ ) {
 				String prefix = names[i].trim();
 				if(prefix.equals(""))
 					continue;
 
 
-				DBConfig statusDbConfig = new DBConfig();
-				_buildDBConfig(propertiesContainer, prefix, statusDbConfig, prefix+".");
-				configs.add(statusDbConfig);
+				DBConfig dbConfig = new DBConfig();
+				_buildDBConfig(propertiesContainer, prefix, dbConfig, prefix+".");
+				dbConfigs.add(dbConfig);
 			}
-			this.configs = configs;
+			this.configs = dbConfigs;
 
 	}
 
@@ -328,17 +306,7 @@ public abstract class BaseImportBuilder {
 		}
 		String statusTableDML  = propertiesContainer.getProperty(prefix+"db.statusTableDML");
 		dbConfig.setStatusTableDML(statusTableDML);
-//
-//		/**
-//		 * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-//		 * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
-//		 */
-//		private String dbtype ;
-//		/**
-//		 * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-//		 * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
-//		 */
-//		private String dbAdaptor;
+
 		String dbAdaptor  = propertiesContainer.getProperty(prefix+"db.dbAdaptor");
 		dbConfig.setDbAdaptor(dbAdaptor);
 		String dbtype  = propertiesContainer.getProperty(prefix+"db.dbtype");
@@ -817,10 +785,10 @@ public abstract class BaseImportBuilder {
 	private String locale;
 	/**抽取数据的sql语句*/
 	private String timeZone;
-	private EsIdGenerator esIdGenerator = DB2ESImportConfig.DEFAULT_EsIdGenerator;
-	private Map<String,FieldMeta> fieldMetaMap = new HashMap<String,FieldMeta>();
+	private EsIdGenerator esIdGenerator = DEFAULT_EsIdGenerator;
+	private Map<String,FieldMeta> fieldMetaMap = new HashMap<>();
 
-	private List<FieldMeta> fieldValues = new ArrayList<FieldMeta>();
+	private List<FieldMeta> fieldValues = new ArrayList<>();
 	private DataRefactor dataRefactor;
 	public DateFormateMeta buildDateFormateMeta(String dateFormat){
 		return dateFormat == null?null:DateFormateMeta.buildDateFormateMeta(dateFormat,locale,timeZone);
@@ -942,8 +910,7 @@ public abstract class BaseImportBuilder {
 
 	protected void buildImportConfig(BaseImportConfig baseImportConfig){
 
-//		esjdbcResultSet.setMetaData(statementInfo.getMeta());
-//		esjdbcResultSet.setResultSet(resultSet);
+
 		baseImportConfig.setDateFormat(dateFormat);
 		baseImportConfig.setLocale(locale);
 		baseImportConfig.setTimeZone(this.timeZone);
@@ -964,7 +931,6 @@ public abstract class BaseImportBuilder {
 		baseImportConfig.setFieldValues(fieldValues);
 		baseImportConfig.setDataRefactor(this.dataRefactor);
 		baseImportConfig.setSortLastValue(this.sortLastValue);
-//		DBConfig dbConfig = new DBConfig();
 		baseImportConfig.setDbConfig(dbConfig);
 		baseImportConfig.setStatusDbConfig(statusDbConfig);
 
@@ -975,9 +941,7 @@ public abstract class BaseImportBuilder {
 			ESIndexWrapper esIndexWrapper = new ESIndexWrapper(index, indexType);
 			baseImportConfig.setEsIndexWrapper(esIndexWrapper);
 		}
-//		importConfig.setIndex(index);
-//		importConfig.setIndexPattern(this.splitIndexName(index));
-//		importConfig.setIndexType(indexType);
+
 
 		baseImportConfig.setApplicationPropertiesFile(this.applicationPropertiesFile);
 		baseImportConfig.setParallel(this.parallel);

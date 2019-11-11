@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public abstract class BaseDataTran implements DataTran{
-	private static Logger logger = LoggerFactory.getLogger(BaseDataTran.class);
+	protected  Logger logger = LoggerFactory.getLogger(this.getClass());
 	protected static Object dummy = new Object();
 	protected ImportContext importContext;
 	protected TranResultSet jdbcResultSet;
@@ -51,9 +51,6 @@ public abstract class BaseDataTran implements DataTran{
 
 
 
-//	public BaseDataTran(String esCluster) {
-//		clientInterface = ElasticSearchHelper.getRestClientUtil(esCluster);
-//	}
 
 
 
@@ -215,14 +212,7 @@ public abstract class BaseDataTran implements DataTran{
 			return null;
 		}
 
-//			if (this.importIncreamentConfig.getDateLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getDateLastValueColumn());
-//			} else if (this.importIncreamentConfig.getNumberLastValueColumn() != null) {
-//				return this.getValue(this.importIncreamentConfig.getNumberLastValueColumn());
-//			}
-//			else if (this.dataTranPlugin.getSqlInfo().getLastValueVarName() != null) {
-//				return this.getValue(this.dataTranPlugin.getSqlInfo().getLastValueVarName());
-//			}
+
 		try {
 			if (importContext.getLastValueType() == null || importContext.getLastValueType().intValue() == ImportIncreamentConfig.NUMBER_TYPE)
 				return jdbcResultSet.getValue(importContext.getLastValueClumnName());

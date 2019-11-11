@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,7 +79,6 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 	protected String selectSQL;
 	protected String existSQL;
 	protected int lastValueType = 0;
-	//	protected int id = 1;
 
 	protected Date initLastDate = null;
 	protected String statusDbname;
@@ -136,8 +136,6 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 		initDatasource();
 		initTableAndStatus();
 		afterInit();
-//		this.externalTimer = this.esjdbc.isExternalTimer();
-//		this.esjdbc.setDataTranPlugin(this);
 	}
 	public String getLastValueClumnName(){
 		return this.lastValueClumnName;
@@ -158,7 +156,8 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 		catch (Exception e){
 			logger.error("Stop status db pool["+statusDbname+"] failed:",e);
 		}
-
+		this.stopDS(importContext.getDbConfig());
+		this.stopOtherDSES(importContext.getConfigs());
 
 	}
 
@@ -230,10 +229,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 		} else if (importContext.getNumberLastValueColumn() != null) {
 			lastValueClumnName = importContext.getNumberLastValueColumn();
 		} else if (this.getLastValueVarName() != null) {
-//			if(logger.isInfoEnabled())
-//				logger.info(new StringBuilder().append("NumberLastValueColumn and DateLastValueColumn not setted,use LastValueVarName[")
-//						.append(this. getLastValueVarName())
-//						.append("] in sql[ ").append(getSql()).append("]").toString());
+
 			lastValueClumnName =  getLastValueVarName();
 		}
 
@@ -284,9 +280,8 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 			updateStatus(currentStatus);
 		this.currentStatus = currentStatus;
 		this.firstStatus = (Status) currentStatus.clone();
-//		insertedCheck = true;
 		if(logger.isInfoEnabled())
-			logger.info("Init LastValue Status: "+currentStatus.toString());
+			logger.info("Init LastValue Status: {}",currentStatus.toString());
 	}
 
 
@@ -298,13 +293,12 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 			try {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				initLastDate = dateFormat.parse("1970-01-01");
-				//SQLExecutor.updateWithDBName("gencode","drop table BBOSS_GENCODE");
 				SQLExecutor.queryObjectWithDBName(int.class, statusDbname, existSQL);
 
 			} catch (Exception e) {
 				String tsql = createStatusTableSQL;
 				if(logger.isInfoEnabled())
-					logger.info(statusTableName + " table not exist，" + statusTableName + "：" + tsql + ".");
+					logger.info( "{} table not exist，{}：{}.",statusTableName,statusTableName,tsql);
 				try {
 					SQLExecutor.updateWithDBName(statusDbname, tsql);
 					if(logger.isInfoEnabled())
@@ -364,9 +358,7 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 			if (statusTableName == null) {
 				statusTableName = "increament_tab";
 			}
-//			throw new ESDataImportException("Must set lastValueStoreTableName by ImportBuilder.");
 			if (importContext.getLastValueStorePath() == null || importContext.getLastValueStorePath().equals("")) {
-//				throw new ESDataImportException("Must set lastValueStorePath by ImportBuilder.");
 				statusStorePath = "StatusStoreDB";
 			} else {
 				statusStorePath = importContext.getLastValueStorePath();
@@ -611,14 +603,52 @@ public abstract class BaseDataTranPlugin implements DataTranPlugin {
 			this.scheduleService.init(importContext);
 		}
 	}
-//	@Override
-//	public Object getValue(String columnName) throws ESDataImportException {
-//		return importContext.getValue(columnName);
-//	}
-//
-//	@Override
-//	public Object getDateTimeValue(String columnName) throws ESDataImportException {
-//		return importContext.getDateTimeValue(columnName);
-//	}
+
+	protected void initDS(DBConfig dbConfig){
+		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())) {
+			SQLUtil.startPool(dbConfig.getDbName(),//数据源名称
+					dbConfig.getDbDriver(),//oracle驱动
+					dbConfig.getDbUrl(),//mysql链接串
+					dbConfig.getDbUser(), dbConfig.getDbPassword(),//数据库账号和口令
+					null,//"false",
+					null,// "READ_UNCOMMITTED",
+					dbConfig.getValidateSQL(),//数据库连接校验sql
+					dbConfig.getDbName()+"_jndi",
+					dbConfig.getInitSize(),
+					dbConfig.getMinIdleSize(),
+					dbConfig.getMaxSize(),
+					dbConfig.isUsePool(),
+					false,
+					null, dbConfig.isShowSql(), false,dbConfig.getJdbcFetchSize() == null?0:dbConfig.getJdbcFetchSize(),dbConfig.getDbtype(),dbConfig.getDbAdaptor()
+			);
+		}
+	}
+	protected void initOtherDSes(List<DBConfig> dbConfigs){
+		if(dbConfigs != null && dbConfigs.size() > 0){
+			for (DBConfig dbConfig:dbConfigs){
+				initDS( dbConfig);
+			}
+		}
+	}
+
+	protected void stopDS(DBConfig dbConfig){
+		if(dbConfig != null && SimpleStringUtil.isNotEmpty(dbConfig.getDbDriver()) && SimpleStringUtil.isNotEmpty(dbConfig.getDbUrl())){
+			try {
+				SQLUtil.stopPool(dbConfig.getDbName());
+			} catch (Exception e) {
+				if(logger.isErrorEnabled())
+					logger.error("SQLUtil.stopPool("+dbConfig.getDbName()+") failed:",e);
+			}
+		}
+	}
+
+	protected void stopOtherDSES(List<DBConfig> dbConfigs){
+
+		if(dbConfigs != null && dbConfigs.size() > 0){
+			for(DBConfig dbConfig:dbConfigs){
+				stopDS(dbConfig);
+			}
+		}
+	}
 
 }

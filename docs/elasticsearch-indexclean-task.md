@@ -10,7 +10,7 @@ Spring booter 1.x,2.x,+
 
 # 2.功能介绍
 
-基于quartz 2.3.0，定期清理es索引数据，支持多个elasticsearch集群数据清理
+基于quartz 2.3.2，定期清理es索引数据，支持多个elasticsearch集群数据清理
 索引要求：只支持按日期时间分索引的索引数据清理，
 
 数据保留时间：通过data.livetime指定需要保留多少天的数据
@@ -137,7 +137,10 @@ elasticsearch.dateFormat=yyyy.MM.dd
 ## 4.2 利用gradle构建发布版本
 利用gradle构建发布版本，在下载的源码根目录的cmd下运行下面的指令:
 
-gradle releaseVersion
+release.bat
+
+![](images\cleanTask.png)
+
 
 ## 4.3 运行作业
 gradle构建成功后，在build/distributions目录下会生成可以运行的zip包，解压后启动和运行quartz作业即可：
@@ -182,6 +185,5 @@ bboss elasticsearch交流：166471282
 # 支持我们
 
 <div align="left"></div>
-
 <img src="images/alipay.png"  height="200" width="200">
 

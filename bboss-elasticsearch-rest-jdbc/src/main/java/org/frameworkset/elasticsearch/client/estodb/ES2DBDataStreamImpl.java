@@ -17,15 +17,12 @@ package org.frameworkset.elasticsearch.client.estodb;/*
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 数据库同步到Elasticsearch
  */
 public class ES2DBDataStreamImpl extends DataStream {
 	private ES2DBImportConfig es2DBImportConfig;
-	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 	protected ImportContext buildImportContext(BaseImportConfig importConfig){
 		return new ES2DBImportContext(es2DBImportConfig);
 	}

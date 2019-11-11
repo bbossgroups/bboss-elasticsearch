@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.elasticsearch.client;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,22 +15,26 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
+import org.frameworkset.elasticsearch.client.tran.Data;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/11/7 23:54
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBExportResultHandler extends BaseExportResultHandler<String,String> {
-	public ES2DBExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
+public class MongoDB2ESDatasWraper implements Data {
+	private List<Map<String, Object>> datas;
+	public MongoDB2ESDatasWraper(List<Map<String, Object>> datas){
+		this.datas = datas;
 	}
-
-
-
+	@Override
+	public List<Map<String, Object>> getDatas() {
+		return datas;
+	}
 }

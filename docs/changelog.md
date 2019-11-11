@@ -48,6 +48,7 @@ https://esdoc.bbossgroups.com/#/development
 		System.out.println("getSort:"+newDemo.getSort());
 		System.out.println("isFound:"+newDemo.isFound());
 ```
+2.修改自定义启动客户端bug：设置数字参数和boolean参数不起作用问题修改
 
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错

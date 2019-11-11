@@ -14,19 +14,13 @@ package org.frameworkset.elasticsearch.client.db2es;/*
  *  limitations under the License.
  */
 
-import com.frameworkset.common.poolman.StatementInfo;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.ResultSet;
 
 public class DB2ESImportBuilder extends BaseImportBuilder {
-	private static Logger logger = LoggerFactory.getLogger(DB2ESImportBuilder.class);
 	protected String sqlFilepath;
 	protected String sql;
 	protected String sqlName;
@@ -45,10 +39,7 @@ public class DB2ESImportBuilder extends BaseImportBuilder {
 		return this;
 	}
 
-	/**抽取数据的sql语句*/
-	private ResultSet resultSet;
-	/**抽取数据的sql语句*/
-	private StatementInfo statementInfo;
+
 
 
 	public String getSql() {
@@ -61,15 +52,8 @@ public class DB2ESImportBuilder extends BaseImportBuilder {
 	public static DB2ESImportBuilder newInstance(){
 		return new DB2ESImportBuilder();
 	}
-	public DB2ESImportBuilder setResultSet(ResultSet resultSet){
-		this.resultSet = resultSet;
-		return this;
-	}
 
-	public DB2ESImportBuilder setStatementInfo(StatementInfo statementInfo){
-		this.statementInfo = statementInfo;
-		return this;
-	}
+
 
 
 
