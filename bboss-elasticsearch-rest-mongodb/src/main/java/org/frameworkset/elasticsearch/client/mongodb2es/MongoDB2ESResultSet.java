@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
 
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.TranMeta;
@@ -50,7 +51,15 @@ public class MongoDB2ESResultSet implements TranResultSet {
 
 	@Override
 	public Object getValue(String colName) throws ESDataImportException {
-		return record.get(colName);
+		Object value = record.get(colName);
+		if(value != null) {
+			if (colName.equals("_id") && value instanceof ObjectId) {
+				return ((ObjectId)value).toString();
+			}
+
+		}
+		return value;
+
 	}
 
 	@Override

@@ -125,7 +125,9 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 
 
 //		dbCollectionFindOptions.
-
+		if(es2DBContext.getFetchFields() != null){
+			dbCollectionFindOptions.projection(es2DBContext.getFetchFields());
+		}
 		DBCursor dbCursor = dbCollection.find(dbObject,dbCollectionFindOptions);
 		MongoDB2ESResultSet mongoDB2ESResultSet = new MongoDB2ESResultSet(importContext,dbCursor);
 		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);

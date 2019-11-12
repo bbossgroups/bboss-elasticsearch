@@ -567,6 +567,12 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 		for(int i =0; i < counts; i++)
 		{
 			String colName = metaData.getColumnLabelByIndex(i);
+			if(colName.equals("_id")){
+				if(logger.isDebugEnabled()){
+					logger.debug("Field [_id] is a metadata field and cannot be added inside a document. Use the index API request parameters.");
+				}
+				continue;
+			}
 			int sqlType = metaData.getColumnTypeByIndex(i);
 //			if("ROWNUM__".equals(colName))//去掉oracle的行伪列
 //				continue;

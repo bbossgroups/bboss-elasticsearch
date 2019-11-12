@@ -59,6 +59,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 
 	private DBCollectionFindOptions dbCollectionFindOptions;
 	private DBObject query;
+	private DBObject fetchFields;
 	private String dbCollection;
 	private String db;
 	private List<ClientMongoCredential> credentials;
@@ -66,10 +67,8 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		return name;
 	}
 
-	public MongoDB2ESExportBuilder buildClientMongoCredential( String mechanism,
-			 String userName,
-			 String database,
-			 String password){
+	public MongoDB2ESExportBuilder buildClientMongoCredential( String database,String userName,
+															   String password,String mechanism){
 		if(credentials == null){
 			credentials = new ArrayList<>();
 		}
@@ -289,4 +288,13 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 	}
 
 
+	public DBObject getFetchFields() {
+		return fetchFields;
+	}
+
+	public MongoDB2ESExportBuilder setFetchFields(DBObject fetchFields) {
+		this.fetchFields = fetchFields;
+		return this;
+		
+	}
 }

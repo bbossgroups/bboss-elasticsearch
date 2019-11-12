@@ -16,7 +16,7 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
  */
 
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
+import org.frameworkset.elasticsearch.client.db2es.DB2ESExportResultHandler;
 
 /**
  * <p>Description: </p>
@@ -26,7 +26,7 @@ import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESExportResultHandler extends BaseExportResultHandler<String,String> {
+public class MongoDB2ESExportResultHandler extends DB2ESExportResultHandler{
 	public MongoDB2ESExportResultHandler(ExportResultHandler exportResultHandler){
 		super(exportResultHandler);
 	}

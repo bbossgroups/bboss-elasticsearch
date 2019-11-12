@@ -37,14 +37,8 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 	private String writeConcern;
 	private String readPreference;
 	private Boolean autoConnectRetry = true;
+	private DBObject fetchFields;
 
-	public List<ClientMongoCredential> getCredentials() {
-		return credentials;
-	}
-
-	public void setCredentials(List<ClientMongoCredential> credentials) {
-		this.credentials = credentials;
-	}
 
 	private List<ClientMongoCredential> credentials;
 	private int connectionsPerHost = 50;
@@ -198,5 +192,20 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 
 	public void setDb(String db) {
 		this.db = db;
+	}
+	public List<ClientMongoCredential> getCredentials() {
+		return credentials;
+	}
+
+	public void setCredentials(List<ClientMongoCredential> credentials) {
+		this.credentials = credentials;
+	}
+
+	public DBObject getFetchFields() {
+		return fetchFields;
+	}
+
+	public void setFetchFields(DBObject fetchFields) {
+		this.fetchFields = fetchFields;
 	}
 }

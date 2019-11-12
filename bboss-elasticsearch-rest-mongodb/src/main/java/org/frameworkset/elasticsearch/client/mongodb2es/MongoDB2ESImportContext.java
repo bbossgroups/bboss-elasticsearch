@@ -57,7 +57,9 @@ public class MongoDB2ESImportContext extends BaseImportContext implements MongoD
 	public String getName() {
 		return es2DBImportConfig.getName();
 	}
-
+	public DBObject getFetchFields(){
+		return es2DBImportConfig.getFetchFields();
+	}
 	@Override
 	public String getDB() {
 		return es2DBImportConfig.getDB();

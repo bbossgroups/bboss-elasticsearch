@@ -58,7 +58,7 @@ public interface MongoDB2ESContext  {
 	public int getThreadsAllowedToBlockForConnectionMultiplier();
 
 	public Boolean getSocketKeepAlive() ;
-;
+	public DBObject getFetchFields();
 
 	public String getMode() ;
 	public List<ClientMongoCredential> getCredentials() ;
