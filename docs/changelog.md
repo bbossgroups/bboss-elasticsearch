@@ -49,6 +49,9 @@ https://esdoc.bbossgroups.com/#/development
 		System.out.println("isFound:"+newDemo.isFound());
 ```
 2.修改自定义启动客户端bug：设置数字参数和boolean参数不起作用问题修改
+3.数据同步工具：增加mongodb到elasticsearch同步功能，工具demo：
+https://github.com/bbossgroups/mongodb-elasticsearch
+4.数据同步工具改进：如果同步字段中包含名称为_id的属性，则忽略之，否则会导致数据无法正常导入Elasticsearch
 
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错
