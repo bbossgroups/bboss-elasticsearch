@@ -64,6 +64,7 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 	protected void initMongoDB(){
 		MongoDBConfig mongoDBConfig = new MongoDBConfig();
 		mongoDBConfig.setName(es2DBContext.getName());
+		mongoDBConfig.setCredentials(es2DBContext.getCredentials());
 		mongoDBConfig.setServerAddresses(es2DBContext.getServerAddresses());
 		mongoDBConfig.setOption(es2DBContext.getOption());//private String option;
 		mongoDBConfig.setWriteConcern(es2DBContext.getWriteConcern());//private String writeConcern;

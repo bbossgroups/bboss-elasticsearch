@@ -18,6 +18,9 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -35,6 +38,15 @@ public class MongoDB2ESImportConfig extends BaseImportConfig {
 	private String readPreference;
 	private Boolean autoConnectRetry = true;
 
+	public List<ClientMongoCredential> getCredentials() {
+		return credentials;
+	}
+
+	public void setCredentials(List<ClientMongoCredential> credentials) {
+		this.credentials = credentials;
+	}
+
+	private List<ClientMongoCredential> credentials;
 	private int connectionsPerHost = 50;
 
 	private int maxWaitTime = 120000;

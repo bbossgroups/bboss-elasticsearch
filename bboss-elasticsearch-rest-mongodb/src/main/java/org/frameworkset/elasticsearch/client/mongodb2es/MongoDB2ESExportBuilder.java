@@ -22,6 +22,10 @@ import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
+import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -57,9 +61,25 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 	private DBObject query;
 	private String dbCollection;
 	private String db;
-
+	private List<ClientMongoCredential> credentials;
 	public String getName() {
 		return name;
+	}
+
+	public MongoDB2ESExportBuilder buildClientMongoCredential( String mechanism,
+			 String userName,
+			 String database,
+			 String password){
+		if(credentials == null){
+			credentials = new ArrayList<>();
+		}
+		ClientMongoCredential clientMongoCredential = new ClientMongoCredential();
+		clientMongoCredential.setDatabase(database);
+		clientMongoCredential.setMechanism(mechanism);
+		clientMongoCredential.setUserName(userName);
+		clientMongoCredential.setPassword(password);
+		credentials.add(clientMongoCredential);
+		return this;
 	}
 
 	public MongoDB2ESExportBuilder setName(String name) {
@@ -226,6 +246,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setQuery( this.query);
 		es2DBImportConfig.setDbCollection( this.dbCollection);
 		es2DBImportConfig.setDb( this.db);
+		es2DBImportConfig.setCredentials(this.credentials);
 		MongoDB2ESDataStreamImpl dataStream = new MongoDB2ESDataStreamImpl();
 		dataStream.setMongoDB2ESImportConfig(es2DBImportConfig);
 		return dataStream;

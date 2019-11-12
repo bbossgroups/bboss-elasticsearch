@@ -20,6 +20,9 @@ import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -48,7 +51,9 @@ public class MongoDB2ESImportContext extends BaseImportContext implements MongoD
 
 	}
 
-
+	public List<ClientMongoCredential> getCredentials() {
+		return es2DBImportConfig.getCredentials();
+	}
 	public String getName() {
 		return es2DBImportConfig.getName();
 	}

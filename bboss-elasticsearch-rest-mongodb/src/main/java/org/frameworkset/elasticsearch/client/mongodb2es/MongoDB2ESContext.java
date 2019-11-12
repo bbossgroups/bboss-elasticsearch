@@ -17,6 +17,9 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
 
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
+import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -58,4 +61,5 @@ public interface MongoDB2ESContext  {
 ;
 
 	public String getMode() ;
+	public List<ClientMongoCredential> getCredentials() ;
 }
