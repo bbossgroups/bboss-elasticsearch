@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.mongodb2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.client;
 
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.TranMeta;
 import org.frameworkset.elasticsearch.client.tran.TranResultSet;

@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.mongodb2es;
 
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.BaseElasticsearchDataTran;

@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.mongodb2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>

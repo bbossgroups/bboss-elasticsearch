@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.mongodb2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -18,6 +18,9 @@ package org.frameworkset.elasticsearch.client;
 import com.frameworkset.util.SimpleStringUtil;
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
+import org.frameworkset.elasticsearch.client.DataStream;
+import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 
 /**
@@ -45,7 +48,7 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 
 
 	/**是否启用sql日志，true启用，false 不启用，*/
-	private int threadsAllowedToBlockForConnectionMultiplier;
+	private int threadsAllowedToBlockForConnectionMultiplier = 5;
 	private Boolean socketKeepAlive = false;
 
 	private String mode;
@@ -63,7 +66,9 @@ public class MongoDB2ESExportBuilder extends BaseImportBuilder {
 		this.name = name;
 		return this;
 	}
-
+	public static MongoDB2ESExportBuilder newInstance(){
+		return new MongoDB2ESExportBuilder();
+	}
 	public String getServerAddresses() {
 		return serverAddresses;
 	}

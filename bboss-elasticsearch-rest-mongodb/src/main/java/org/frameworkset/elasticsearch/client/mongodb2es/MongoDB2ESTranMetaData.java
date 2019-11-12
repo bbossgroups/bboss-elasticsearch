@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.client.mongodb2es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.tran.TranMeta;
 
 import java.util.Set;

@@ -1,4 +1,5 @@
-package org.frameworkset.elasticsearch.client;/*
+package org.frameworkset.elasticsearch.client.mongodb2es;
+/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +15,14 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 
 /**
  * 数据库同步到Elasticsearch
  */
-public class MongoDB2ESDataStreamImpl extends DataStream{
+public class MongoDB2ESDataStreamImpl extends DataStream {
 	private MongoDB2ESImportConfig esMongoDBConfig;
 	protected ImportContext buildImportContext(BaseImportConfig importConfig){
 		return new MongoDB2ESImportContext(esMongoDBConfig);
