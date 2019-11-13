@@ -9,7 +9,7 @@
 # **bboss-elastic特色**
 
 1. 采用类似于[mybatis](https://www.oschina.net/p/mybatis)的方式配置语法配置和管理访问es的qsl脚本，简洁而直观，支持配置文件热加载功能；提供丰富的逻辑判断语法；支持qsl脚本片段和片段引用功能；
-2. 提供高效可定制的[db到elasticsearch数据导入能力](db-es-tool.md)
+2. 提供高效可定制的[db到elasticsearch、elasticsearch到db、mongodb到elasticsearch数据同步导入能力](db-es-tool.md)
 3. 支持[elasticsearch sql](Elasticsearch-SQL-ORM.md)，可替代es jdbc模块，解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
    orm
    <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
@@ -30,7 +30,7 @@
 16. 提供自动清理历史索引数据的[工具](elasticsearch-indexclean-task.md)
 17. **bboss es不依赖elasticsearch官方任何jar文件，兼容elasticsearch版本:1.x,2.x,5.x,6.x,7.x****,+**
 18. **bboss es jdk兼容性： jdk 1.7+**
-19. **bboss es兼容spring boot各个版本,零配置集成，提供spring booter es starter**
+19. **bboss es兼容spring boot各个版本,零配置集成，提供spring boot es starter**
 20. **提供bboss es pinpoint监控插件,[插件地址和监控效果浏览](https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss)**，监控es访问性能和协助处理ES操作故障和问题
 21. bboss es环境搭建及开发视频教程（依赖的版本以最新的[maven中央库版本](https://search.maven.org/search?q=g:com.bbossgroups.plugins)为准）：[下载](https://pan.baidu.com/s/1kXjAOKn)
 
