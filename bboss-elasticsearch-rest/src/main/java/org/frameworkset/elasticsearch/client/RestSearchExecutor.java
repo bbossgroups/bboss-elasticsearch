@@ -17,11 +17,13 @@ package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.entity.SlowDsl;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -64,7 +66,14 @@ public class RestSearchExecutor {
 
 						}
 					}else {
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  (String)null,  time,   slowDslThreshold,   entity);
+						SlowDsl slowDsl = new SlowDsl();
+						slowDsl.setUrl(url);
+						slowDsl.setTime(time);
+						slowDsl.setSlowDslThreshold(slowDslThreshold);
+						slowDsl.setEntity(entity);
+						slowDsl.setStartTime(new Date(start));
+						slowDsl.setEndTime(new Date(end));
+						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
 					}
 
 				}
@@ -101,7 +110,15 @@ public class RestSearchExecutor {
 
 						}
 					}else {
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+						SlowDsl slowDsl = new SlowDsl();
+						slowDsl.setUrl(url);
+						slowDsl.setAction(action);
+						slowDsl.setTime(time);
+						slowDsl.setSlowDslThreshold(slowDslThreshold);
+						slowDsl.setEntity(entity);
+						slowDsl.setStartTime(new Date(start));
+						slowDsl.setEndTime(new Date(end));
+						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
 					}
 
 				}
@@ -138,7 +155,15 @@ public class RestSearchExecutor {
 
 						}
 					}else {
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+						SlowDsl slowDsl = new SlowDsl();
+						slowDsl.setUrl(url);
+						slowDsl.setAction(action);
+						slowDsl.setTime(time);
+						slowDsl.setSlowDslThreshold(slowDslThreshold);
+						slowDsl.setEntity(entity);
+						slowDsl.setStartTime(new Date(start));
+						slowDsl.setEndTime(new Date(end));
+						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
 					}
 
 				}
@@ -188,7 +213,14 @@ public class RestSearchExecutor {
 
 						}
 					}else {
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  (String)null,  time,   slowDslThreshold,   entity);
+						SlowDsl slowDsl = new SlowDsl();
+						slowDsl.setUrl(url);
+						slowDsl.setTime(time);
+						slowDsl.setSlowDslThreshold(slowDslThreshold);
+						slowDsl.setEntity(entity);
+						slowDsl.setStartTime(new Date(start));
+						slowDsl.setEndTime(new Date(end));
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
 					}
 
 				}
@@ -223,7 +255,15 @@ public class RestSearchExecutor {
 
 						}
 					}else {
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+						SlowDsl slowDsl = new SlowDsl();
+						slowDsl.setUrl(url);
+						slowDsl.setAction(action);
+						slowDsl.setTime(time);
+						slowDsl.setSlowDslThreshold(slowDslThreshold);
+						slowDsl.setEntity(entity);
+						slowDsl.setStartTime(new Date(start));
+						slowDsl.setEndTime(new Date(end));
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
 					}
 
 				}

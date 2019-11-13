@@ -15,6 +15,8 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.entity.SlowDsl;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -24,5 +26,5 @@ package org.frameworkset.elasticsearch.client;
  * @version 1.0
  */
 public interface SlowDslCallback {
-	void slowDslHandle( String url,String action,long time, int slowDslThreshold, String entity);
+	void slowDslHandle( SlowDsl slowDsl);
 }

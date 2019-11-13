@@ -62,12 +62,12 @@ https://github.com/bbossgroups/mongodb-elasticsearch
   如果没有指定回调处理接口，将直接打印警告信息到日志文件，WARN级别
   否则调用SlowDslCallback接口方法slowDslHandle传递慢dsl的相关信息：
   public interface SlowDslCallback {
-      	void slowDslHandle( String url,String action,long time, int slowDslThreshold, String entity);
+      	void slowDslHandle( SlowDsl slowDsl);
       }
       slowDslCallback配置：
-   elasticsearch.slowDslCallback=com.demo.TestSlowDslCallback
+   elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
      spring boot配置项
-     spring.elasticsearch.bboss.elasticsearch.slowDslCallback=com.demo.TestSlowDslCallback
+     spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
 
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错
