@@ -9,12 +9,20 @@ https://esdoc.bbossgroups.com/#/development
 # **主要功能特色**
 
 1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,+
+
 2. JDK兼容性： jdk 1.7+
+
 3. Spring boot兼容性:1.x,2.x
+
 4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
+
 5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
+
 6. 提供快速而高效的数据导入ES工具
-7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+
+7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
+
+   https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
 # v5.9.2 功能改进
 
@@ -53,6 +61,8 @@ https://esdoc.bbossgroups.com/#/development
 3.数据同步工具：增加mongodb到elasticsearch同步功能，工具demo：
 
 https://github.com/bbossgroups/mongodb-elasticsearch
+
+ 参考文档：[mongodb-elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_4-mongodb-elasticsearch数据同步使用方法) 
 
 4.数据同步工具改进：如果同步字段中包含名称为_id的属性，则忽略之，否则会导致数据无法正常导入Elasticsearch
 

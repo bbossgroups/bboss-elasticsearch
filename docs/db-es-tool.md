@@ -6,13 +6,13 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
 
-bboss数据同步可以方便地实现DB-ES,ES-DB之间的数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch和Elasticsearch-DB数据同步案例（支持各种数据库和各种es版本）
+bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch和Elasticsearch-DB数据同步案例（支持各种数据库和各种es版本）
 
 通过bboss，可以非常方便地实现：
 
-1. 将数据库表数据导入到Elasticsearch
-
-2. 将Elasticsearch数据导入到数据库表
+1. 将数据库表数据同步到Elasticsearch
+2. 将Elasticsearch数据同步到数据库表
+3. 将mongodb数据同步到Elasticsearch
 
 导入的方式支持
 
@@ -22,7 +22,7 @@ bboss数据同步可以方便地实现DB-ES,ES-DB之间的数据同步，后续�
 - 定时全量（串行/并行）数据导入
 - 定时增量（串行/并行）数据导入
 
-支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive等
+支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
 
 支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
 
@@ -1944,6 +1944,14 @@ linux: restart.sh
 
 # 3 Elasticsearch-db数据同步使用方法
 
+完整的示例工程：
+
+https://github.com/bbossgroups/db-elasticsearch-tool
+
+工程基于gradle管理，可以参考文档配置gradle环境：
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
 ## 3.1 同步参数设置
 
 Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，Elasticsearch-db数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下Elasticsearch-DB同步特有的参数：
@@ -2485,7 +2493,259 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
  https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
 
-# 4 开发交流
+# 4 Mongodb-Elasticsearch数据同步使用方法
+
+Mongodb-Elasticsearch数据同步案例工程
+
+https://github.com/bbossgroups/mongodb-elasticsearch
+
+工程基于gradle管理，可以参考文档配置gradle环境：
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
+mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下mongodb-elasticseach同步特有的参数：
+
+```java
+        //mongodb的相关配置参数
+		importBuilder.setName("session")
+				.setDb("sessiondb")
+				.setDbCollection("sessionmonitor_sessions")
+				.setConnectTimeout(10000)
+				.setWriteConcern("JOURNAL_SAFE")
+				.setReadPreference("")
+				.setMaxWaitTime(10000)
+				.setSocketTimeout(1500).setSocketKeepAlive(true)
+				.setConnectionsPerHost(100)
+				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				.setServerAddresses("127.0.0.1:27017\n127.0.0.1:27018")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+				//String database,String userName,String password,String mechanism
+				//https://www.iteye.com/blog/yin-bp-2064662
+//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//				.setOption("")
+				.setAutoConnectRetry(true);
+```
+
+一个完整的jdk timer同步器demo
+
+```java
+public class Mongodb2ESdemo {
+	private static Logger logger = LoggerFactory.getLogger(Mongodb2ESdemo.class);
+	public static void main(String args[]){
+		Mongodb2ESdemo dbdemo = new Mongodb2ESdemo();
+		boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
+
+		dbdemo.scheduleTimestampImportData(dropIndice);
+	}
+
+
+
+	/**
+	 * elasticsearch地址和数据库地址都从外部配置文件application.properties中获取，加载数据源配置和es配置
+	 */
+	public void scheduleTimestampImportData(boolean dropIndice){
+		MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
+		//增量定时任务不要删表，但是可以通过删表来做初始化操作
+		if(dropIndice) {
+			try {
+				//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+				String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("mongodbdemo");
+				System.out.println(repsonse);
+			} catch (Exception e) {
+			}
+		}
+
+
+		//mongodb的相关配置参数
+
+		importBuilder.setName("session")
+				.setDb("sessiondb")
+				.setDbCollection("sessionmonitor_sessions")
+				.setConnectTimeout(10000)
+				.setWriteConcern("JOURNAL_SAFE")
+				.setReadPreference("")
+				.setMaxWaitTime(10000)
+				.setSocketTimeout(1500).setSocketKeepAlive(true)
+				.setConnectionsPerHost(100)
+				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				.setServerAddresses("127.0.0.1:27017\n127.0.0.1:27018")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+				//String database,String userName,String password,String mechanism
+				//https://www.iteye.com/blog/yin-bp-2064662
+//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//				.setOption("")
+				.setAutoConnectRetry(true);
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		/**
+		 * es相关配置
+		 */
+		importBuilder
+				.setIndex("mongodbdemo") //必填项，索引名称
+				.setIndexType("mongodbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+				.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
+				.setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+
+		//定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		//定时任务配置结束
+//
+//		//设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器
+//		importBuilder.addCallInterceptor(new CallInterceptor() {
+//			@Override
+//			public void preCall(TaskContext taskContext) {
+//				System.out.println("preCall");
+//			}
+//
+//			@Override
+//			public void afterCall(TaskContext taskContext) {
+//				System.out.println("afterCall");
+//			}
+//
+//			@Override
+//			public void throwException(TaskContext taskContext, Exception e) {
+//				System.out.println("throwException");
+//			}
+//		}).addCallInterceptor(new CallInterceptor() {
+//			@Override
+//			public void preCall(TaskContext taskContext) {
+//				System.out.println("preCall 1");
+//			}
+//
+//			@Override
+//			public void afterCall(TaskContext taskContext) {
+//				System.out.println("afterCall 1");
+//			}
+//
+//			@Override
+//			public void throwException(TaskContext taskContext, Exception e) {
+//				System.out.println("throwException 1");
+//			}
+//		});
+//		//设置任务执行拦截器结束，可以添加多个
+		//增量配置开始
+		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段
+		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+//		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
+//		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型,ImportIncreamentConfig.TIMESTAMP_TYPE为时间类型
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date.getTime());
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
+		//增量配置结束
+
+		//映射和转换配置开始
+//		/**
+//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+//		 *
+//		 */
+//		importBuilder.addFieldMapping("document_id","docId")
+//				.addFieldMapping("docwtime","docwTime")
+//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
+//
+//
+//		/**
+//		 * 为每条记录添加额外的字段和值
+//		 * 可以为基本数据类型，也可以是复杂的对象
+//		 */
+//		importBuilder.addFieldValue("testF1","f1value");
+//		importBuilder.addFieldValue("testInt",0);
+//		importBuilder.addFieldValue("testDate",new Date());
+//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
+//		TestObject testObject = new TestObject();
+//		testObject.setId("testid");
+//		testObject.setName("jackson");
+//		importBuilder.addFieldValue("testObject",testObject);
+//
+//		/**
+//		 * 重新设置es数据结构
+//		 */
+		importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+				 //添加字段extfiled到记录中，值为1
+				 context.addFieldValue("extfiled",1);
+
+				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//				context.addIgnoreFieldMapping("author");
+//				context.addIgnoreFieldMapping("title");
+//				context.addIgnoreFieldMapping("subtitle");
+			}
+		});
+		//映射和转换配置结束
+
+		/**
+		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+		 */
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+		importBuilder.setEsIdField("_id");//设置文档主键，不设置，则自动产生文档id
+//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
+//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
+
+		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
+		importBuilder.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+			@Override
+			public void success(TaskCommand<String,String> taskCommand, String result) {
+				System.out.println(result);
+			}
+
+			@Override
+			public void error(TaskCommand<String,String> taskCommand, String result) {
+				System.out.println(result);
+			}
+
+			@Override
+			public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+
+			}
+
+			@Override
+			public int getMaxRetry() {
+				return 0;
+			}
+		});
+		/**
+		 importBuilder.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+		/**
+		 * 构建DataStream，执行mongodb数据到es的同步操作
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.execute();//执行同步操作
+
+		System.out.println();
+	}
+
+}
+```
+
+
+
+# 5 开发交流
 
 完整的数据导入demo工程
 
@@ -2503,7 +2763,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 5 支持我们
+# 6 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">
