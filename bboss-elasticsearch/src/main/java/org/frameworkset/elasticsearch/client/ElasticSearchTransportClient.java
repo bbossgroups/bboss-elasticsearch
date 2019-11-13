@@ -122,6 +122,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		return false;
 	}
 
+	@Override
+	public Integer slowDslThreshold() {
+		return null;
+	}
+
 	// /**
 	// * Local transport client only for testing
 	// *

@@ -150,6 +150,13 @@ public class ElasticSearchHelper {
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadQueue",configContext,"200"));
 			elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollBlockedWaitTimeout",configContext,"0"));
+			elasticsearchPropes.put("elasticsearch.healthCheckInterval",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.healthCheckInterval",configContext,"3000"));
+			String slowDslThreshold = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.slowDslThreshold",configContext,null);
+			if(slowDslThreshold != null) {
+				elasticsearchPropes.put("elasticsearch.slowDslThreshold",
+						slowDslThreshold);
+			}
 
 
 			final ElasticSearch elasticSearch = new ElasticSearch();

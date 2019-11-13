@@ -80,7 +80,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
  
 	protected FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy.MM.dd",
       TimeZone.getTimeZone("Etc/UTC"));
-    
+    protected Integer slowDslThreshold;
 	protected String dateFormat = "yyyy.MM.dd";
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
@@ -89,7 +89,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
 	}
-
+	public Integer slowDslThreshold(){
+		return slowDslThreshold;
+	}
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
 	private Map clusterInfo ;
@@ -303,6 +305,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	    
 	    String showTemplate_ = elasticsearchPropes.getProperty("elasticsearch.showTemplate");
 	    String httpPool = elasticsearchPropes.getProperty("elasticsearch.httpPool");
+
 	    if(httpPool == null || httpPool.equals("")){
 			httpPool = "default";
 		}
@@ -331,6 +334,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 			catch (Exception e){
 				logger.error("Parse Long healthCheckInterval parameter failed:"+healthCheckInterval_,e);
+			}
+		}
+		String _slowDslThreshold = elasticsearchPropes.getProperty("elasticsearch.slowDslThreshold");
+		if(_slowDslThreshold != null){
+			try {
+				this.slowDslThreshold = Integer.parseInt(_slowDslThreshold);
+			}
+			catch (Exception e){
+				logger.error("Parse Long slowDslThreshold parameter failed:"+_slowDslThreshold,e);
 			}
 		}
 		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");

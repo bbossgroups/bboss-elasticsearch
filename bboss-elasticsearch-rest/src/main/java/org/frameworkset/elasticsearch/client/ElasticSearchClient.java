@@ -42,6 +42,7 @@ public interface ElasticSearchClient {
 	public String getClusterVarcharInfo();
 	public String getClusterVersionInfo();
 	public boolean isV1();
+	public Integer slowDslThreshold();
 //	BulkRequestBuilder prepareBulk();
 //
 //	IndexRequestBuilder createIndexRequest(IndexNameBuilder indexNameBuilder, Event event) throws IOException;

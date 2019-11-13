@@ -405,7 +405,8 @@ public abstract class BaseESProperties {
 		private String sliceScrollThreadCount;
 		private String sliceScrollThreadQueue;
 		private String sliceScrollBlockedWaitTimeout;
-
+		private String healthCheckInterval;
+		private String slowDslThreshold;
 		public String getIncludeTypeName() {
 			return includeTypeName;
 		}
@@ -513,6 +514,22 @@ public abstract class BaseESProperties {
 
 		public void setScrollThreadCount(String scrollThreadCount) {
 			this.scrollThreadCount = scrollThreadCount;
+		}
+
+		public String getHealthCheckInterval() {
+			return healthCheckInterval;
+		}
+
+		public void setHealthCheckInterval(String healthCheckInterval) {
+			this.healthCheckInterval = healthCheckInterval;
+		}
+
+		public String getSlowDslThreshold() {
+			return slowDslThreshold;
+		}
+
+		public void setSlowDslThreshold(String slowDslThreshold) {
+			this.slowDslThreshold = slowDslThreshold;
 		}
 	}
 	public static class Dslfile{
@@ -650,6 +667,10 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getIncludeTypeName()))
 				properties.put(_name+"elasticsearch.includeTypeName",this.getElasticsearch().getIncludeTypeName());
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getHealthCheckInterval()))
+				properties.put(_name+"elasticsearch.healthCheckInterval",this.getElasticsearch().getHealthCheckInterval());
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslThreshold()))
+				properties.put(_name+"elasticsearch.slowDslThreshold",this.getElasticsearch().getSlowDslThreshold());
 
 
 		}

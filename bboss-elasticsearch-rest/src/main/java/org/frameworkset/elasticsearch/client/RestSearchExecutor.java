@@ -19,6 +19,8 @@ import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class RestSearchExecutor {
+	private static final Logger logger = LoggerFactory.getLogger(RestSearchExecutor.class);
 	private Map<String, String> headers;
 	private String httpPool;
 	private ElasticSearchClient elasticSearchClient;
@@ -40,9 +43,25 @@ public class RestSearchExecutor {
 		this.elasticSearchClient = elasticSearchClient;
 	}
 	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
-
-		String response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,responseHandler);
-		return response;
+		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
+		if(slowDslThreshold == null) {
+			String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+			return response;
+		}
+		else{
+			long start = System.currentTimeMillis();
+			try {
+				String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+				return response;
+			}
+			finally {
+				long end = System.currentTimeMillis();
+				long time = end - start;
+				if (time > slowDslThreshold.intValue()) {
+					logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+				}
+			}
+		}
 
 	}
 	/**
@@ -53,50 +72,27 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-		return _executeHttp(  url,   entity,  action, responseHandler);
-	}
-
-	/**
-
-	 * @param entity
-	 * @param action get,post,put,delete
-	 * @return
-	 * @throws ElasticSearchException
-	 */
-	private <T> T _executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-
-		T response = null;
-		if (entity == null){
-			if(action == null)
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers, responseHandler);
-			else if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,responseHandler);
-			else if( action == ClientUtil.HTTP_PUT)
-				response = HttpRequestUtil.httpPutforString(httpPool,url, null, headers,responseHandler);
-			else if(action == ClientUtil.HTTP_GET)
-				response = HttpRequestUtil.httpGetforString(httpPool,url, headers,responseHandler);
-			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url, null, headers,responseHandler);
-			else if(action == ClientUtil.HTTP_HEAD)
-				response = HttpRequestUtil.httpHead(httpPool,url, null, headers,responseHandler);
-			else
-				throw new IllegalArgumentException("not support http action:"+action);
+//		return _executeHttp(  url,   entity,  action, responseHandler);
+		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
+		if(slowDslThreshold == null) {
+			return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
 		}
-		else
-		{
-			if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,responseHandler);
-			else if( action == ClientUtil.HTTP_PUT)
-			{
-				response = HttpRequestUtil.putJson(httpPool,entity, url, headers,responseHandler);
+
+		else{
+			long start = System.currentTimeMillis();
+			try {
+				return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
 			}
-			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url,entity, null, headers,responseHandler);
-			else
-				throw new IllegalArgumentException("not support http action:"+action);
+			finally {
+				long end = System.currentTimeMillis();
+				long time = end - start;
+				if (time > slowDslThreshold.intValue()) {
+					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, end, slowDslThreshold.intValue(),  RestSearchExecutorUtil.chunkEntity(entity));
+				}
+			}
 		}
-		return response;
 	}
+
 
 	/**
 
@@ -106,7 +102,24 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-		return _executeHttp(  url,   entity,  action, responseHandler);
+		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
+		if(slowDslThreshold == null) {
+			return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+		}
+
+		else{
+			long start = System.currentTimeMillis();
+			try {
+				return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+			}
+			finally {
+				long end = System.currentTimeMillis();
+				long time = end - start;
+				if (time > slowDslThreshold.intValue()) {
+					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+				}
+			}
+		}
 	}
 
 
@@ -119,17 +132,36 @@ public class RestSearchExecutor {
 	 * @throws Exception
 	 */
 	public String executeSimpleRequest(String url, String entity,ESStringResponseHandler responseHandler) throws Exception {
-		String response = null;
-		if (entity == null) {
-			response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
-//			response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers);
+		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
+		if(slowDslThreshold == null) {
+			String response = null;
+			if (entity == null) {
+				response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+			} else {
+				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+			}
+
+			return response;
 		}
 		else {
-			response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
-//			response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers);
-		}
+			long start = System.currentTimeMillis();
+			try {
+				String response = null;
+				if (entity == null) {
+					response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+				} else {
+					response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+				}
 
-		return response;
+				return response;
+			} finally {
+				long end = System.currentTimeMillis();
+				long time = end - start;
+				if (time > slowDslThreshold.intValue()) {
+					logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+				}
+			}
+		}
 	}
 	/**
 	 * @param entity
@@ -138,39 +170,29 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeRequest(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-		T response = null;
-		if (entity == null){
-			if(action == null)
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
-			else if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
-			else if( action == ClientUtil.HTTP_PUT)
-				response = HttpRequestUtil.httpPutforString(httpPool,url, null, headers,  responseHandler);
-			else if(action == ClientUtil.HTTP_GET)
-				response = HttpRequestUtil.httpGetforString(httpPool,url, headers,  responseHandler);
-			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url, null, headers,  responseHandler);
-			else if(action == ClientUtil.HTTP_HEAD)
-				response = HttpRequestUtil.httpHead(httpPool,url, null, headers,  responseHandler);
-			else
-				throw new java.lang.IllegalArgumentException("not support http action:"+action);
-		}
-		else
-		{
-			if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
-			else if( action == ClientUtil.HTTP_PUT)
-			{
-				response = HttpRequestUtil.putJson(httpPool,entity, url, headers,  responseHandler);
-			}
-			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url, entity,null, headers,  responseHandler);
-			else
-				throw new java.lang.IllegalArgumentException("not support http action:"+action);
+		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
+		if(slowDslThreshold == null) {
 
+			return RestSearchExecutorUtil._executeRequest(httpPool,headers,url, entity,action, responseHandler);
 		}
-		return response;
+
+		else{
+			long start = System.currentTimeMillis();
+			try {
+				return RestSearchExecutorUtil._executeRequest(httpPool,headers,url, entity,action, responseHandler);
+			}
+			finally {
+				long end = System.currentTimeMillis();
+				long time = end - start;
+				if (time > slowDslThreshold.intValue()) {
+					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms],use DSL[{}] ", url,action, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+				}
+			}
+		}
+
 	}
+
+
 
 	public String getClusterVersionInfo(){
 		return this.elasticSearchClient.getClusterVersionInfo();
