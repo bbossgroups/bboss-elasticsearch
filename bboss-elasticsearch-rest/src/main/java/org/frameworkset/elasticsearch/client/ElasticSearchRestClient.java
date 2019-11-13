@@ -85,12 +85,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
 	protected  boolean discoverHost = false;
-
+	protected SlowDslCallback slowDslCallback;
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
 	}
 	public Integer slowDslThreshold(){
 		return slowDslThreshold;
+	}
+	public SlowDslCallback getSlowDslCallback(){
+		return slowDslCallback;
 	}
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
@@ -345,6 +348,20 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				logger.error("Parse Long slowDslThreshold parameter failed:"+_slowDslThreshold,e);
 			}
 		}
+
+		String _slowDslCallback = elasticsearchPropes.getProperty("elasticsearch.slowDslCallback");
+		if(_slowDslCallback != null){
+			try {
+				this.slowDslCallback = (SlowDslCallback) Class.forName(_slowDslCallback).newInstance();
+			}
+			catch (Exception e){
+				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);
+			}
+			catch (Throwable e){
+				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);
+			}
+		}
+
 		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");
 		if(discoverHost_ == null){
 

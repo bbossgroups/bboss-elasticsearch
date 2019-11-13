@@ -127,6 +127,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		return null;
 	}
 
+	@Override
+	public SlowDslCallback getSlowDslCallback() {
+		return null;
+	}
+
 	// /**
 	// * Local transport client only for testing
 	// *

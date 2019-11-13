@@ -52,6 +52,22 @@ https://esdoc.bbossgroups.com/#/development
 3.数据同步工具：增加mongodb到elasticsearch同步功能，工具demo：
 https://github.com/bbossgroups/mongodb-elasticsearch
 4.数据同步工具改进：如果同步字段中包含名称为_id的属性，则忽略之，否则会导致数据无法正常导入Elasticsearch
+5.增加慢请求服务调用日志信息记录，增加慢dsl时间条件参数配置
+  slowDslThreshold单位：ms 毫秒
+  elasticsearch.slowDslThreshold=10000
+  spring boot配置项
+  spring.elasticsearch.bboss.elasticsearch.slowDslThreshold=10000
+  
+  需要截取掉过长的dsl:超过2048的dsl将被截取掉超过的内容，替换为.....
+  如果没有指定回调处理接口，将直接打印警告信息到日志文件，WARN级别
+  否则调用SlowDslCallback接口方法slowDslHandle传递慢dsl的相关信息：
+  public interface SlowDslCallback {
+      	void slowDslHandle( String url,String action,long time, int slowDslThreshold, String entity);
+      }
+      slowDslCallback配置：
+   elasticsearch.slowDslCallback=com.demo.TestSlowDslCallback
+     spring boot配置项
+     spring.elasticsearch.bboss.elasticsearch.slowDslCallback=com.demo.TestSlowDslCallback
 
 # v5.9.1 功能改进
 修复bug：按时间增量同步问题,导致任务重启后同步报错

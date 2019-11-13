@@ -58,7 +58,15 @@ public class RestSearchExecutor {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+					if (elasticSearchClient.getSlowDslCallback() == null) {
+						if(logger.isWarnEnabled()) {
+							logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+
+						}
+					}else {
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  (String)null,  time,   slowDslThreshold,   entity);
+					}
+
 				}
 			}
 		}
@@ -87,7 +95,15 @@ public class RestSearchExecutor {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, end, slowDslThreshold.intValue(),  RestSearchExecutorUtil.chunkEntity(entity));
+					if (elasticSearchClient.getSlowDslCallback() == null) {
+						if(logger.isWarnEnabled()) {
+							logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, time, slowDslThreshold.intValue(),  RestSearchExecutorUtil.chunkEntity(entity));
+
+						}
+					}else {
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+					}
+
 				}
 			}
 		}
@@ -116,7 +132,15 @@ public class RestSearchExecutor {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+					if (elasticSearchClient.getSlowDslCallback() == null) {
+						if(logger.isWarnEnabled()) {
+							logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+
+						}
+					}else {
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+					}
+
 				}
 			}
 		}
@@ -158,7 +182,15 @@ public class RestSearchExecutor {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+					if (elasticSearchClient.getSlowDslCallback() == null) {
+						if(logger.isWarnEnabled()) {
+							logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+
+						}
+					}else {
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  (String)null,  time,   slowDslThreshold,   entity);
+					}
+
 				}
 			}
 		}
@@ -185,7 +217,15 @@ public class RestSearchExecutor {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms],use DSL[{}] ", url,action, end, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+					if (elasticSearchClient.getSlowDslCallback() == null) {
+						if(logger.isWarnEnabled()) {
+							logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms],use DSL[{}] ", url,action, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+
+						}
+					}else {
+						elasticSearchClient.getSlowDslCallback().slowDslHandle(  url,  action,  time,   slowDslThreshold,   entity);
+					}
+
 				}
 			}
 		}

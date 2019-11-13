@@ -157,6 +157,12 @@ public class ElasticSearchHelper {
 				elasticsearchPropes.put("elasticsearch.slowDslThreshold",
 						slowDslThreshold);
 			}
+			String slowDslCallback = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.slowDslCallback",configContext,null);
+			if(slowDslCallback != null) {
+				elasticsearchPropes.put("elasticsearch.slowDslCallback",
+						slowDslCallback);
+			}
+
 
 
 			final ElasticSearch elasticSearch = new ElasticSearch();

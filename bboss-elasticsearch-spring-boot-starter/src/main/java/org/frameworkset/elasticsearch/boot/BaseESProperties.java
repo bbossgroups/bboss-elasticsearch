@@ -407,6 +407,16 @@ public abstract class BaseESProperties {
 		private String sliceScrollBlockedWaitTimeout;
 		private String healthCheckInterval;
 		private String slowDslThreshold;
+
+		public String getSlowDslCallback() {
+			return slowDslCallback;
+		}
+
+		public void setSlowDslCallback(String slowDslCallback) {
+			this.slowDslCallback = slowDslCallback;
+		}
+
+		private String slowDslCallback;
 		public String getIncludeTypeName() {
 			return includeTypeName;
 		}
@@ -671,6 +681,9 @@ public abstract class BaseESProperties {
 				properties.put(_name+"elasticsearch.healthCheckInterval",this.getElasticsearch().getHealthCheckInterval());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslThreshold()))
 				properties.put(_name+"elasticsearch.slowDslThreshold",this.getElasticsearch().getSlowDslThreshold());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslCallback()))
+				properties.put(_name+"elasticsearch.slowDslCallback",this.getElasticsearch().getSlowDslCallback());
 
 
 		}
