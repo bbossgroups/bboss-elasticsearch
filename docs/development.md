@@ -371,6 +371,13 @@ elasticsearch.slowDslThreshold=10000
 elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback 
 ```
 
+对应的spring boot配置为：
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.slowDslThreshold = 10000
+spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
+```
+
 ***完成导入和配置，接下来就可以开始使用bboss操作和访问elasticsearch了。***
 
 
