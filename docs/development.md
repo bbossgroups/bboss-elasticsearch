@@ -348,7 +348,7 @@ elasticsearch.includeTypeName = true
 
 ## 2.10 采集慢Dsl数据
 
-bboss可以非常方便地采集耗时慢的dsl操作，与之相关的两个参数和含义说明如下：
+bboss能够非常方便地采集耗时慢的dsl操作， 可以将慢dsl打印到日志文件或者发送给接收慢dsl的回调接口函数 。与之相关的两个参数和含义说明如下：
 
 ```properties
 # 定义慢dsl耗时阈值，执行时间长超过指定阈值的dsl为慢dsl，必须指定大于0的数值
@@ -377,6 +377,8 @@ elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallba
 spring.elasticsearch.bboss.elasticsearch.slowDslThreshold = 10000
 spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
 ```
+
+ 如果没有指定回调处理接口，将直接打印警告信息到日志文件，WARN级别 ， 如果dsl过长，需要截取掉部分内容再打印到日志文件中:超过2048的dsl将被截取掉超过的内容，替换为.....，否则调用SlowDslCallback接口方法slowDslHandle传递慢dsl的相关信息 
 
 ***完成导入和配置，接下来就可以开始使用bboss操作和访问elasticsearch了。***
 

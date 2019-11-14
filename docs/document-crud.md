@@ -6,7 +6,7 @@
 
 本文介绍如何采用bboss es添加/修改/查询/删除/批量删除elasticsearch索引文档，直接看代码。
 
-# 添加/修改文档
+# 1. 添加/修改文档
 
 ```java
 
@@ -60,7 +60,7 @@ clientUtil.deleteDocuments("agentinfo",//索引表
       new String[]{"192.168.137.1","192.168.137.2","192.168.137.3"});//文档ids
 ```
 
-# 批量添加/修改文档
+# 2. 批量添加/修改文档
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -85,7 +85,7 @@ String response = clientUtil.addDocuments("demo",//索引表
 demos);
 ```
 
-# 根据文档id获取文档对象
+# 3. 根据文档id获取文档对象
 
 ```java
 //根据文档id获取文档对象，返回Demo对象
@@ -100,7 +100,7 @@ Map map = clientUtil.getDocument("demo",//索引表
       Map.class);      
 ```
 
-# @ESIndex注解使用
+# 4. @ESIndex注解使用
 
 bboss 5.6.8新增了一组添加和修改文档的api，这组api没有带indexName和indextype参数，对应的索引和索引type在po对象中通过@ESIndex注解来指定。
 
@@ -128,7 +128,7 @@ bboss 5.6.8新增了一组添加和修改文档的api，这组api没有带indexN
 
 
 
-## api清单
+## 4.1 api清单
 
 ```java
 /**
@@ -202,7 +202,7 @@ public String updateDocuments( List<?> beans,ClientOptions clientOptions) throws
 public   String updateDocuments( List<?> beans) throws ElasticSearchException;
 ```
 
-## 定义带ESIndex注解的实体
+## 4.2 定义带ESIndex注解的实体
 
 简单用法
 
@@ -233,7 +233,7 @@ public class DemoWithESIndex extends ESBaseData {
 } 
 ```
 
-## api使用
+## 4.3 api使用
 
 ```java
 /**
@@ -302,7 +302,7 @@ public void testBulkAddDocumentsWithESIndex() {
 }
 ```
 
-# 检索文档
+# 5. 检索文档
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
@@ -318,13 +318,37 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         long totalSize = data.getTotalSize();
 ```
 
-# 返回索引元数据的检索操作
+# 6. 返回索引元数据的检索操作
 
-检索文档的时候，除了返回要检索的业务数据，同时也可以返回索引元数据信息，只是返回的对象类必须继承父类：
+检索文档的时候，除了返回要检索的业务数据，同时也可以返回索引元数据信息，可以通过以下方式返回索引文档的元数据信息。
 
+1.对象类继承父类ESBaseData：
+
+```java
 org.frameworkset.elasticsearch.entity.ESBaseData
+```
 
-高亮检索和父子查询信息都通过这个机制实现，下面举例说明：
+返回高亮检索和父子查询信息也可以通过集成ESBaseData实现。
+
+2.如果只需要返回文档id则继承类ESId：
+
+```java
+org.frameworkset.elasticsearch.entity.ESId
+```
+
+3.元数据注解
+
+ESBaseData和ESId使用比较方便，但是如果对象本身的属性很容易和这两个父类中的属性产生同名冲突的问题，这时候我们可以采用元数据注解来实现索引文档元数据的注入，参考文档：
+
+[元数据使用介绍](https://esdoc.bbossgroups.com/#/client-annotation?id=_2%e5%85%83%e6%95%b0%e6%8d%ae%e6%b3%a8%e8%a7%a3)
+
+返回类型为Map对象时，如需返回索引文档元数据，则可以将返回类型指定为继承HashMap的子类 MetaMap
+
+```java
+org.frameworkset.elasticsearch.entity.MetaMap
+```
+
+## 6.1 ESBaseData和ESId使用实例
 
 首先定义一个Demo对象，继承ESBaseData
 
@@ -421,8 +445,6 @@ public class Demo extends ESBaseData {
 }
 ```
 
-
-
 执行查询，demo对象中除了包含返回的业务数据，还包含索引相关的元数据，下面是演示代码：
 
 ```java
@@ -481,7 +503,152 @@ public class Demo extends ESBaseData {
       System.out.println(totalSize);
 ```
 
-# 通过URL参数检索文档
+ESId使用
+
+```
+/**
+ * 测试实体，可以从ESId对象继承id属性，检索时会将文档的一下文档id设置到对象实例中
+ */
+public class Demo extends ESId {
+   private Object dynamicPriceTemplate;
+   //设定文档标识字段
+   
+   private String contentbody;
+   /**  当在mapping定义中指定了日期格式时，则需要指定以下两个注解,例如
+    *
+    "agentStarttime": {
+    "type": "date",###指定多个日期格式
+    "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+    }
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @Column(dataformat = "yyyy-MM-dd HH:mm:ss.SSS")
+    */
+
+   protected Date agentStarttime;
+   private String applicationName;
+   private String orderId;
+   private int contrastStatus;
+
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   private String name;
+
+   public String getContentbody() {
+      return contentbody;
+   }
+
+   public void setContentbody(String contentbody) {
+      this.contentbody = contentbody;
+   }
+
+   public Date getAgentStarttime() {
+      return agentStarttime;
+   }
+
+   public void setAgentStarttime(Date agentStarttime) {
+      this.agentStarttime = agentStarttime;
+   }
+
+   public String getApplicationName() {
+      return applicationName;
+   }
+
+   public void setApplicationName(String applicationName) {
+      this.applicationName = applicationName;
+   }
+
+   public Long getDemoId() {
+      return demoId;
+   }
+
+   public void setDemoId(Long demoId) {
+      this.demoId = demoId;
+   }
+
+   public Object getDynamicPriceTemplate() {
+      return dynamicPriceTemplate;
+   }
+
+   public void setDynamicPriceTemplate(Object dynamicPriceTemplate) {
+      this.dynamicPriceTemplate = dynamicPriceTemplate;
+   }
+
+   public String getOrderId() {
+      return orderId;
+   }
+
+   public void setOrderId(String orderId) {
+      this.orderId = orderId;
+   }
+
+   public int getContrastStatus() {
+      return contrastStatus;
+   }
+
+   public void setContrastStatus(int contrastStatus) {
+      this.contrastStatus = contrastStatus;
+   }
+}
+```
+
+## 6.2 带元数据的Map对象MetaMap使用
+
+检索返回对象类型为Map时，如果需要同时返回元数据，则可以将返回类型指定为继承HashMap的子类 org.frameworkset.elasticsearch.entity.MetaMap，使用示例如下：
+
+```java
+    //创建批量创建文档的客户端对象，单实例多线程安全
+        ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+        //单文档检索
+        MetaMap newDemo = clientUtil.getDocument("demo",//索引表
+                "demo",//索引类型
+                "1",//文档id
+                MetaMap.class
+        );
+        //打印metamap数据和返回的文档元数据信息
+        System.out.println(newDemo);
+        System.out.println("getId:"+newDemo.getId());
+        System.out.println("getIndex:"+newDemo.getIndex());
+        System.out.println("getNode:"+newDemo.getNode());
+        System.out.println("getShard:"+newDemo.getShard());
+        System.out.println("getType:"+newDemo.getType());
+        System.out.println("getExplanation:"+newDemo.getExplanation());
+        System.out.println("getFields:"+newDemo.getFields());
+        System.out.println("getHighlight:"+newDemo.getHighlight());
+        System.out.println("getInnerHits:"+newDemo.getInnerHits());
+        System.out.println("getNested:"+newDemo.getNested());
+        System.out.println("getPrimaryTerm:"+newDemo.getPrimaryTerm());
+        System.out.println("getScore:"+newDemo.getScore());
+        System.out.println("getSeqNo:"+newDemo.getSeqNo());
+        System.out.println("getVersion:"+newDemo.getVersion());
+        System.out.println("getParent:"+newDemo.getParent());
+        System.out.println("getRouting:"+newDemo.getRouting());
+        System.out.println("getSort:"+newDemo.getSort());
+        System.out.println("isFound:"+newDemo.isFound());
+        //列表检索
+        ESDatas<MetaMap> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("trace-*/_search",//查询操作，查询indices trace-*中符合条件的数据
+                                "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
+                                parmas,//查询条件,Map<key,value>
+                                MetaMap.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+//获取结果对象列表
+        List<MetaMap> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
+```
+
+## 6.3 索引文档元数据注解使用
+
+ESBaseData和ESId使用比较方便，但是如果对象本身的属性很容易和这两个父类中的属性产生同名冲突的问题，这时候我们可以采用元数据注解来实现索引文档元数据的注入，参考文档：
+
+[元数据注解使用](https://esdoc.bbossgroups.com/#/client-annotation?id=_2%e5%85%83%e6%95%b0%e6%8d%ae%e6%b3%a8%e8%a7%a3)
+
+# 7. 通过URL参数检索文档
 
 通过url参数检索文档，参数参考文档：
 
@@ -509,7 +676,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-b
 	}
 ```
 
-# 执行多表查询操作
+# 8. 执行多表查询操作
 
 执行多表查询操作，逗号分隔表名称
 
@@ -635,7 +802,7 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         }]]></property>
 ```
 
-# 从多表中检索一个文档
+# 9. 从多表中检索一个文档
 
 ```java
 public TerminalMessages getTerminalBase(String batchUuid) {   
@@ -668,9 +835,9 @@ public TerminalMessages getTerminalBase(String batchUuid) {
     </property>
 ```
 
-# 通过count统计索引文档数量
+# 10. 通过count统计索引文档数量
 
-## count by condition
+## 10.1 count by condition
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
@@ -679,14 +846,14 @@ long count = clientUtil.count("trace1",//查询操作，查询indices trace-*中
                                 traceExtraCriteria);//查询条件封装对象
 ```
 
-## count all documents
+## 10.2 count all documents
 
 ```java
 ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 long count  = clientInterface.countAll("trace");
 ```
 
-# 开发交流
+# 11. 开发交流
 
 
 
@@ -698,7 +865,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 支持我们
+# 12. 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">

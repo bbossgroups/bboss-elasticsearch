@@ -2524,6 +2524,7 @@ mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-
 //				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
 //				.setOption("")
 				.setAutoConnectRetry(true);
+        importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
 ```
 
 一个完整的jdk timer同步器demo
@@ -2575,8 +2576,8 @@ public class Mongodb2ESdemo {
 //				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
 //				.setOption("")
 				.setAutoConnectRetry(true);
-//		importBuilder.addIgnoreFieldMapping("remark1");
-//		importBuilder.setSql("select * from td_sm_log ");
+       importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
+        
 		/**
 		 * es相关配置
 		 */
