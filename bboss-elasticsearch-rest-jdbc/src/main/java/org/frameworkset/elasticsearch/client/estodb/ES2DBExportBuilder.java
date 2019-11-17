@@ -20,7 +20,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
-import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
+import org.frameworkset.tran.db.DBExportBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBExportBuilder extends BaseImportBuilder {
+public class ES2DBExportBuilder extends DBExportBuilder {
 
 	private String scrollLiveTime = "100m";
 
@@ -45,8 +45,7 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 	private String dslName;
 	private boolean sliceQuery;
 	private int sliceSize;
-	private String sqlName;
-	private String sql;
+
 	public String toString(){
 		StringBuilder ret = new StringBuilder();
 		ret.append(SimpleStringUtil.object2json(this));
@@ -73,9 +72,13 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 		ES2DBImportConfig es2DBImportConfig = new ES2DBImportConfig();
 		super.buildImportConfig(es2DBImportConfig);
 		es2DBImportConfig.setDsl2ndSqlFile(this.dsl2ndSqlFile);
-		es2DBImportConfig.setSqlName(sqlName);
-		es2DBImportConfig.setSql(this.sql);
-
+		if(this.getSqlFilepath() == null){
+			this.setSqlFilepath(this.dsl2ndSqlFile);
+		}
+//		es2DBImportConfig.setSqlFilepath(dsl2ndSqlFile);
+//		es2DBImportConfig.setSqlName(sqlName);
+//		es2DBImportConfig.setSql(this.sql);
+		super.buildDBImportConfig(es2DBImportConfig);
 
 		es2DBImportConfig.setQueryUrl(this.queryUrl);
 		es2DBImportConfig.setScrollLiveTime(this.scrollLiveTime);
@@ -87,29 +90,12 @@ public class ES2DBExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setSliceSize(this.sliceSize);
 		es2DBImportConfig.setParams(this.params);
 		ES2DBDataStreamImpl dataStream = new ES2DBDataStreamImpl();
-		dataStream.setEs2DBImportConfig(es2DBImportConfig);
+		dataStream.setImportConfig(es2DBImportConfig);
 		return dataStream;
 	}
 
 
-	public String getSql() {
-		return sql;
-	}
 
-	public ES2DBExportBuilder setSql(String sql) {
-		this.sql = sql;
-		return this;
-	}
-
-
-	public String getSqlName() {
-		return sqlName;
-	}
-
-	public ES2DBExportBuilder setSqlName(String sqlName) {
-		this.sqlName = sqlName;
-		return this;
-	}
 
 	public String getQueryUrl() {
 		return queryUrl;

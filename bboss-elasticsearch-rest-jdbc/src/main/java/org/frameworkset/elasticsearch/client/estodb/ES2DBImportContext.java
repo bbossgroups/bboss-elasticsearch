@@ -17,9 +17,8 @@ package org.frameworkset.elasticsearch.client.estodb;
 
 import com.frameworkset.common.poolman.BatchHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.tran.db.output.TranSQLInfo;
+import org.frameworkset.tran.db.DBImportContext;
 
 import java.util.Map;
 
@@ -31,53 +30,26 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBImportContext extends BaseImportContext implements ES2DBContext{
+public class ES2DBImportContext extends DBImportContext implements ES2DBContext{
 	private ES2DBImportConfig es2DBImportConfig;
 
-	public TranSQLInfo getSqlInfo() {
-		return sqlInfo;
-	}
 
-	public void setSqlInfo(TranSQLInfo sqlInfo) {
-		this.sqlInfo = sqlInfo;
-	}
-
-	private TranSQLInfo sqlInfo;
 	protected  DataTranPlugin buildDataTranPlugin(){
 		return new ES2DBDataTranPlugin(this);
 	}
 	protected void init(BaseImportConfig baseImportConfig){
+		super.init(baseImportConfig);
 		es2DBImportConfig = (ES2DBImportConfig)baseImportConfig;
 	}
 	public ES2DBImportContext(){
 		this(new ES2DBImportConfig());
 
 	}
-	public ES2DBImportContext(ES2DBImportConfig baseImportConfig){
+	public ES2DBImportContext(BaseImportConfig baseImportConfig){
 		super(baseImportConfig);
 
 	}
 
-	@Override
-	public String getSql() {
-		return es2DBImportConfig.getSql();
-	}
-
-
-	@Override
-	public String getSqlFilepath() {
-		return es2DBImportConfig.getDsl2ndSqlFile();
-	}
-
-	@Override
-	public String getSqlName() {
-		return es2DBImportConfig.getSqlName();
-	}
-
-	@Override
-	public void setSql(String sql) {
-		es2DBImportConfig.setSql(sql);
-	}
 
 	@Override
 	public Map getParams() {

@@ -1,4 +1,4 @@
-package org.frameworkset.tran.mongodb.input.es;
+package org.frameworkset.tran.mongodb.input.db;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,28 +15,24 @@ package org.frameworkset.tran.mongodb.input.es;
  * limitations under the License.
  */
 
-import com.mongodb.DBCursor;
-import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.tran.mongodb.MongoDBResultSet;
-import org.frameworkset.tran.mongodb.input.MongoDBInputPlugin;
+import org.frameworkset.elasticsearch.client.DataStream;
+import org.frameworkset.tran.mongodb.MongoDBExportBuilder;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/11/15 22:22
+ * @Date 2019/1/11 21:29
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESInputPlugin extends MongoDBInputPlugin {
-	public MongoDB2ESInputPlugin(ImportContext importContext) {
-		super(importContext);
+public class MongoDB2DBExportBuilder extends MongoDBExportBuilder {
+	public static MongoDB2DBExportBuilder newInstance(){
+		return new MongoDB2DBExportBuilder();
 	}
 
 	@Override
-	protected void doTran(DBCursor dbCursor) {
-		MongoDBResultSet mongoDB2ESResultSet = new MongoDBResultSet(importContext,dbCursor);
-		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);
-		mongoDB2ESDataTran.tran();
+	protected DataStream createDataStream() {
+		return new MongoDB2DBDataStreamImpl();
 	}
 }

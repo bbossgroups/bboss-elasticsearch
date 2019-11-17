@@ -18,9 +18,9 @@ package org.frameworkset.tran.mongodb;
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+import org.frameworkset.tran.db.DBImportContext;
 
 import java.util.List;
 
@@ -32,8 +32,8 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class MongoDBImportContext extends BaseImportContext implements MongoDBContext{
-	private MongoDBImportConfig es2DBImportConfig;
+public abstract class MongoDBImportContext extends DBImportContext implements MongoDBContext{
+	protected MongoDBImportConfig mongoDBImportConfig;
 
 
 	protected abstract DataTranPlugin buildDataTranPlugin();
@@ -41,7 +41,8 @@ public abstract class MongoDBImportContext extends BaseImportContext implements 
 //		return new MongoDB2ESInputPlugin(this);
 //	}
 	protected void init(BaseImportConfig baseImportConfig){
-		es2DBImportConfig = (MongoDBImportConfig)baseImportConfig;
+		super.init(baseImportConfig);
+		mongoDBImportConfig = (MongoDBImportConfig)baseImportConfig;
 	}
 	public MongoDBImportContext(){
 		this(new MongoDBImportConfig());
@@ -53,99 +54,99 @@ public abstract class MongoDBImportContext extends BaseImportContext implements 
 	}
 
 	public List<ClientMongoCredential> getCredentials() {
-		return es2DBImportConfig.getCredentials();
+		return mongoDBImportConfig.getCredentials();
 	}
 	public String getName() {
-		return es2DBImportConfig.getName();
+		return mongoDBImportConfig.getName();
 	}
 	public DBObject getFetchFields(){
-		return es2DBImportConfig.getFetchFields();
+		return mongoDBImportConfig.getFetchFields();
 	}
 	@Override
 	public String getDB() {
-		return es2DBImportConfig.getDB();
+		return mongoDBImportConfig.getDB();
 	}
 
 	@Override
 	public String getDBCollection() {
-		return es2DBImportConfig.getDBCollection();
+		return mongoDBImportConfig.getDBCollection();
 	}
 
 	@Override
 	public DBObject getQuery() {
-		return es2DBImportConfig.getQuery();
+		return mongoDBImportConfig.getQuery();
 	}
 
 	@Override
 	public DBCollectionFindOptions getDBCollectionFindOptions() {
-		return es2DBImportConfig.getDBCollectionFindOptions();
+		return mongoDBImportConfig.getDBCollectionFindOptions();
 	}
 
 
 	public String getServerAddresses() {
-		return es2DBImportConfig.getServerAddresses();
+		return mongoDBImportConfig.getServerAddresses();
 	}
 
 
 	public String getOption() {
-		return es2DBImportConfig.getOption();
+		return mongoDBImportConfig.getOption();
 	}
 
 
 	public String getWriteConcern() {
-		return es2DBImportConfig.getWriteConcern();
+		return mongoDBImportConfig.getWriteConcern();
 	}
 
 
 
 	public String getReadPreference() {
-		return es2DBImportConfig.getReadPreference();
+		return mongoDBImportConfig.getReadPreference();
 	}
 
 
 
 	public Boolean getAutoConnectRetry() {
-		return es2DBImportConfig.getAutoConnectRetry();
+		return mongoDBImportConfig.getAutoConnectRetry();
 	}
 
 
 
 	public int getConnectionsPerHost() {
-		return es2DBImportConfig.getConnectionsPerHost();
+		return mongoDBImportConfig.getConnectionsPerHost();
 	}
 
 
 	public int getMaxWaitTime() {
-		return es2DBImportConfig.getMaxWaitTime();
+		return mongoDBImportConfig.getMaxWaitTime();
 	}
 
 
 
 	public int getSocketTimeout() {
-		return es2DBImportConfig.getSocketTimeout();
+		return mongoDBImportConfig.getSocketTimeout();
 	}
 
 
 
 	public int getConnectTimeout() {
-		return es2DBImportConfig.getConnectTimeout();
+		return mongoDBImportConfig.getConnectTimeout();
 	}
 
 
 
 	public int getThreadsAllowedToBlockForConnectionMultiplier() {
-		return es2DBImportConfig.getThreadsAllowedToBlockForConnectionMultiplier();
+		return mongoDBImportConfig.getThreadsAllowedToBlockForConnectionMultiplier();
 	}
 
 
 
 	public Boolean getSocketKeepAlive() {
-		return es2DBImportConfig.getSocketKeepAlive();
+		return mongoDBImportConfig.getSocketKeepAlive();
 	}
 
 
 
 	public String getMode() {
-		return es2DBImportConfig.getMode();
+		return mongoDBImportConfig.getMode();
 	}
 }

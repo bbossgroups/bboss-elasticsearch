@@ -1,4 +1,4 @@
-package org.frameworkset.tran.mongodb.input.db;
+package org.frameworkset.tran.mongodb.input;
 /**
  * Copyright 2008 biaoping.yin
  * <p>

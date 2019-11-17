@@ -1,5 +1,4 @@
-package org.frameworkset.tran.mongodb;
-/*
+package org.frameworkset.tran.db;/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +14,41 @@ package org.frameworkset.tran.mongodb;
  *  limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.context.ImportContext;
 
-/**
- * 数据库同步到Elasticsearch
- */
-public abstract class MongoDBDataStreamImpl extends DataStream {
-	protected abstract ImportContext buildImportContext(BaseImportConfig importConfig);
+public class DBImportConfig extends BaseImportConfig {
 
+	private String sql;
+	private String sqlFilepath;
+	private String sqlName;
 
-
-
-
+	public String getSql() {
+		return sql;
+	}
 
 
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
 
+
+
+	public String getSqlFilepath() {
+		return sqlFilepath;
+	}
+
+	public void setSqlFilepath(String sqlFilepath) {
+		this.sqlFilepath = sqlFilepath;
+	}
+
+
+
+	public String getSqlName() {
+		return sqlName;
+	}
+
+	public void setSqlName(String sqlName) {
+		this.sqlName = sqlName;
+	}
 
 }

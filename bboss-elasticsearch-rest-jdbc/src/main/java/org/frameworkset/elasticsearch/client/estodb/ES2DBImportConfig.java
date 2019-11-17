@@ -16,9 +16,7 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.BatchHandler;
-import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.frameworkset.tran.db.DBImportConfig;
 
 import java.util.Map;
 
@@ -30,13 +28,11 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ES2DBImportConfig extends BaseImportConfig {
+public class ES2DBImportConfig extends DBImportConfig {
 
 
-	private String sql ;//= "insert into batchtest (name) values(?)";
 	private String queryUrl;// = "demo/_search";
 	private String dslName ;//= "scrollQuery";
-	private String sqlName ;//= "insertSQL";
 	private String dsl2ndSqlFile;// = "esmapper/dsl2ndSqlFile.xml";
 	private String scrollLiveTime ;//= "100m";
 	private BatchHandler<Map> batchHandler;
@@ -47,7 +43,6 @@ public class ES2DBImportConfig extends BaseImportConfig {
 	private boolean sliceQuery;
 	private int sliceSize;
 
-	private static Logger logger = LoggerFactory.getLogger(ES2DBImportConfig.class);
 	public Map getParams() {
 		return params;
 	}
@@ -59,14 +54,6 @@ public class ES2DBImportConfig extends BaseImportConfig {
 	private Map params;
 
 
-	public String getSql() {
-		return sql;
-	}
-
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
-
 
 	public String getDslName() {
 		return dslName;
@@ -76,13 +63,6 @@ public class ES2DBImportConfig extends BaseImportConfig {
 		this.dslName = dslName;
 	}
 
-	public String getSqlName() {
-		return sqlName;
-	}
-
-	public void setSqlName(String sqlName) {
-		this.sqlName = sqlName;
-	}
 
 	public String getDsl2ndSqlFile() {
 		return dsl2ndSqlFile;

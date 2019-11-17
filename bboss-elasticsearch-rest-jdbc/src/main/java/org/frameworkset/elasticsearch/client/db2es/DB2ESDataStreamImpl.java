@@ -22,20 +22,15 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
  * 数据库同步到Elasticsearch
  */
 public class DB2ESDataStreamImpl extends DataStream{
-	private DB2ESImportConfig db2ESImportConfig;
 
 
 //	private static Logger logger = LoggerFactory.getLogger(DataStream.class);
 
 
 	protected ImportContext buildImportContext(BaseImportConfig importConfig){
-		return new DB2ESImportContext(db2ESImportConfig);
+		return new DB2ESImportContext(importConfig);
 	}
 
 
-	public void setImportConfig(DB2ESImportConfig db2ESImportConfig){
-		this.db2ESImportConfig = db2ESImportConfig;
-		this.importConfig = db2ESImportConfig;
-	}
 
 }

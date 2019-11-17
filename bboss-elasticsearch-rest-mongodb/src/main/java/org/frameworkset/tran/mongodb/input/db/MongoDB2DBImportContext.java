@@ -1,4 +1,4 @@
-package org.frameworkset.tran.mongodb.input.es;
+package org.frameworkset.tran.mongodb.input.db;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,26 +15,28 @@ package org.frameworkset.tran.mongodb.input.es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.Data;
-
-import java.util.List;
-import java.util.Map;
+import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.mongodb.MongoDBImportConfig;
+import org.frameworkset.tran.mongodb.MongoDBImportContext;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/11/7 23:54
+ * @Date 2019/10/21 16:13
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESDatasWraper implements Data {
-	private List<Map<String, Object>> datas;
-	public MongoDB2ESDatasWraper(List<Map<String, Object>> datas){
-		this.datas = datas;
+public class MongoDB2DBImportContext extends MongoDBImportContext {
+
+	public MongoDB2DBImportContext(MongoDBImportConfig importConfig) {
+		super(importConfig);
 	}
-	@Override
-	public List<Map<String, Object>> getDatas() {
-		return datas;
+
+	protected DataTranPlugin buildDataTranPlugin()
+	{
+		return new MongoDB2DBInputPlugin(this);
 	}
+
+
 }

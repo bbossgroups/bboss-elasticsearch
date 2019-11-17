@@ -17,7 +17,6 @@ package org.frameworkset.elasticsearch.client.config;
 
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.*;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
@@ -40,7 +39,7 @@ import java.util.Map;
  * @version 1.0
  */
 public abstract class BaseImportConfig {
-	private static Logger logger = LoggerFactory.getLogger(DB2ESImportConfig.class);
+	protected  final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private List<DBConfig> configs;
 	private boolean sortLastValue ;
 	public Integer getFetchSize() {

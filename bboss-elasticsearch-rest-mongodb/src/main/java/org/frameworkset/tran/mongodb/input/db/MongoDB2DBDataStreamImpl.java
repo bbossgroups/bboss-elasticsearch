@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.tran;
+package org.frameworkset.tran.mongodb.input.db;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,23 +15,23 @@ package org.frameworkset.elasticsearch.client.tran;
  * limitations under the License.
  */
 
-import java.util.List;
-import java.util.Map;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.tran.mongodb.MongoDBDataStreamImpl;
+import org.frameworkset.tran.mongodb.MongoDBImportConfig;
+import org.frameworkset.tran.mongodb.input.es.MongoDB2ESImportContext;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/11/7 23:50
+ * @Date 2019/11/17 11:44
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefaultData implements Data{
-	private List<Map<String,Object>> datas;
-	public DefaultData(List<Map<String,Object>> datas){
-		this.datas = datas;
-	}
-	public List<Map<String,Object>> getDatas(){
-		return this.datas;
+public class MongoDB2DBDataStreamImpl extends MongoDBDataStreamImpl {
+	@Override
+	protected ImportContext buildImportContext(BaseImportConfig importConfig) {
+		return new MongoDB2ESImportContext((MongoDBImportConfig)importConfig);
 	}
 }

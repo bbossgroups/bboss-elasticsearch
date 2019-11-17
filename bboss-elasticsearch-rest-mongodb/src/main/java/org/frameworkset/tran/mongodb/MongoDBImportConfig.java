@@ -17,8 +17,8 @@ package org.frameworkset.tran.mongodb;
 
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
-import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+import org.frameworkset.tran.db.DBImportConfig;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDBImportConfig extends BaseImportConfig {
+public class MongoDBImportConfig extends DBImportConfig {
 	private String name;
 	private String serverAddresses;
 	private String option;

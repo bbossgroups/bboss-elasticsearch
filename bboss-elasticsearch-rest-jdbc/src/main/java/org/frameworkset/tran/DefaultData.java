@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.db2es;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,20 +15,26 @@ package org.frameworkset.elasticsearch.client.db2es;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.tran.Data;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/25 11:17
+ * @Date 2019/11/17 22:39
  * @author biaoping.yin
  * @version 1.0
  */
-public interface DBContext {
-	String getSql();
-
-	String getSqlFilepath();
-
-	String getSqlName();
-
-	void setSql(String sql);
+public class DefaultData implements Data {
+		private List<Map<String, Object>> datas;
+		public DefaultData(List<Map<String, Object>> datas){
+			this.datas = datas;
+		}
+		@Override
+		public List<Map<String, Object>> getDatas() {
+			return datas;
+		}
 }

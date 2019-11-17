@@ -19,6 +19,7 @@ import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
+import org.frameworkset.tran.db.DBImportConfig;
 
 public class DB2ESImportBuilder extends BaseImportBuilder {
 	protected String sqlFilepath;
@@ -71,7 +72,7 @@ public class DB2ESImportBuilder extends BaseImportBuilder {
 		catch (Exception e){
 
 		}
-		DB2ESImportConfig importConfig = new DB2ESImportConfig();
+		DBImportConfig importConfig = new DBImportConfig();
 //		esjdbc.setImportBuilder(this);
 		super.buildImportConfig(importConfig);
 //		esjdbcResultSet.setMetaData(statementInfo.getMeta());

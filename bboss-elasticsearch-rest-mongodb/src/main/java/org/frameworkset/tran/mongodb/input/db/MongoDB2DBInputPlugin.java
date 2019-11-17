@@ -18,6 +18,7 @@ package org.frameworkset.tran.mongodb.input.db;
 import com.mongodb.DBCursor;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.tran.mongodb.MongoDBResultSet;
+import org.frameworkset.tran.mongodb.input.MongoDBInputPlugin;
 
 /**
  * <p>Description: </p>
@@ -27,15 +28,15 @@ import org.frameworkset.tran.mongodb.MongoDBResultSet;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2DBInputPlugin extends MongoDBInputPlugin{
+public class MongoDB2DBInputPlugin extends MongoDBInputPlugin {
 	public MongoDB2DBInputPlugin(ImportContext importContext) {
 		super(importContext);
 	}
 
 	@Override
 	protected void doTran(DBCursor dbCursor) {
-		MongoDBResultSet mongoDB2ESResultSet = new MongoDBResultSet(importContext,dbCursor);
-		MongoDB2DBDataTran mongoDB2ESDataTran = new MongoDB2DBDataTran(mongoDB2ESResultSet,importContext);
+		MongoDBResultSet mongoDB2DBResultSet = new MongoDBResultSet(importContext,dbCursor);
+		MongoDB2DBDataTran mongoDB2ESDataTran = new MongoDB2DBDataTran(mongoDB2DBResultSet,importContext);
 		mongoDB2ESDataTran.tran();
 	}
 }

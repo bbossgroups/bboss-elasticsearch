@@ -21,8 +21,8 @@ import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
-import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 import org.frameworkset.nosql.mongodb.ClientMongoCredential;
+import org.frameworkset.tran.db.DBExportBuilder;
 import org.frameworkset.tran.es.ESExportResultHandler;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class MongoDBExportBuilder extends BaseImportBuilder {
+public abstract class MongoDBExportBuilder extends DBExportBuilder {
 
 	private String name;
 	private String serverAddresses;
@@ -249,6 +249,7 @@ public abstract class MongoDBExportBuilder extends BaseImportBuilder {
 		es2DBImportConfig.setCredentials(this.credentials);
 //		MongoDB2ESDataStreamImpl dataStream = new MongoDB2ESDataStreamImpl();
 //		dataStream.setMongoDB2ESImportConfig(es2DBImportConfig);
+		super.buildDBImportConfig(es2DBImportConfig);
 		DataStream dataStream = this.createDataStream();
 		dataStream.setImportConfig(es2DBImportConfig);
 		return dataStream;

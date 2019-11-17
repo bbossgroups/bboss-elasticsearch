@@ -18,10 +18,10 @@ package org.frameworkset.elasticsearch.client.tran;
 import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.db2es.DBContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
 import org.frameworkset.elasticsearch.client.task.TaskFailedException;
 import org.frameworkset.soa.BBossStringWriter;
+import org.frameworkset.tran.db.DBContext;
 
 /**
  * <p>Description: </p>

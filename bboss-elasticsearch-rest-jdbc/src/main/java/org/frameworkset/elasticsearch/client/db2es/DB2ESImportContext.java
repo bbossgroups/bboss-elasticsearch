@@ -17,7 +17,8 @@ package org.frameworkset.elasticsearch.client.db2es;
 
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.elasticsearch.client.context.BaseImportContext;
+import org.frameworkset.tran.db.DBImportConfig;
+import org.frameworkset.tran.db.DBImportContext;
 
 /**
  * <p>Description: </p>
@@ -27,39 +28,15 @@ import org.frameworkset.elasticsearch.client.context.BaseImportContext;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DB2ESImportContext extends BaseImportContext implements DBContext{
+public class DB2ESImportContext extends DBImportContext {
 	protected  DataTranPlugin buildDataTranPlugin(){
 		return new DBDataTranPlugin(this);
 	}
-	private DB2ESImportConfig db2ESImportConfig;
 	public DB2ESImportContext(){
-		super(new DB2ESImportConfig());
+		super(new DBImportConfig());
 	}
-	public DB2ESImportContext(DB2ESImportConfig baseImportConfig){
+	public DB2ESImportContext(BaseImportConfig baseImportConfig){
 		super(baseImportConfig);
 	}
-	protected void init(BaseImportConfig baseImportConfig){
-		db2ESImportConfig = (DB2ESImportConfig)baseImportConfig;
-	}
-	@Override
-	public String getSql() {
-		return db2ESImportConfig.getSql();
-	}
-	public void setEsIdField(String esIdField){
-		db2ESImportConfig.setEsIdField(esIdField);
-	}
-	@Override
-	public String getSqlFilepath() {
-		return db2ESImportConfig.getSqlFilepath();
-	}
 
-	@Override
-	public String getSqlName() {
-		return db2ESImportConfig.getSqlName();
-	}
-
-	@Override
-	public void setSql(String sql) {
-		db2ESImportConfig.setSql(sql);
-	}
 }

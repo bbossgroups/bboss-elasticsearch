@@ -22,35 +22,8 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
  * 数据库同步到Elasticsearch
  */
 public class ES2DBDataStreamImpl extends DataStream {
-	private ES2DBImportConfig es2DBImportConfig;
 	protected ImportContext buildImportContext(BaseImportConfig importConfig){
-		return new ES2DBImportContext(es2DBImportConfig);
+		return new ES2DBImportContext(importConfig);
 	}
-//	public void execute() throws ESDataImportException{
-//		if(es2DBImportConfig == null){
-//			throw new ESDataImportException("es2DB is null.");
-//		}
-//		try {
-//			/** fix
-//			initES(es2DB.getApplicationPropertiesFile());
-//			initDS(es2DB.getDbConfig());
-//			initOtherDSes(es2DB.getConfigs());*/
-//			this.importContext = new ES2DBImportContext(es2DBImportConfig);
-////			es2DBImportConfig.exportData2DB();
-//		}
-//		catch (Exception e) {
-//			throw new ESDataImportException(e);
-//		}
-//		finally{
-//
-//		}
-//	}
 
-
-
-
-	public void setEs2DBImportConfig(ES2DBImportConfig es2DBImportConfig) {
-		this.es2DBImportConfig = es2DBImportConfig;
-		this.importConfig = es2DBImportConfig;
-	}
 }
