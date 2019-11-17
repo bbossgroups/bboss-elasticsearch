@@ -54,10 +54,14 @@ public interface Context {
 	public ImportContext getImportContext();
 	public String getDBName();
 	public Object getValue(String fieldName) throws Exception;
+	public String getStringValue(String fieldName) throws Exception;
 	public Object getParentId() throws Exception;
 	public Object getRouting() throws Exception;
 	public Object getEsRetryOnConflict();
 	public long getLongValue(String fieldName) throws Exception;
+	public String getStringValue(String fieldName,String defaultValue) throws Exception;
+	public boolean getBooleanValue(String fieldName) throws Exception;
+	public boolean getBooleanValue(String fieldName,boolean defaultValue) throws Exception;
 	public double getDoubleValue(String fieldName) throws Exception;
 	public float getFloatValue(String fieldName) throws Exception;
 	public int getIntegerValue(String fieldName) throws Exception;

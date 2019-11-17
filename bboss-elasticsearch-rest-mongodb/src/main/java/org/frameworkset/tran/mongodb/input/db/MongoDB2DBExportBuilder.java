@@ -16,6 +16,9 @@ package org.frameworkset.tran.mongodb.input.db;
  */
 
 import org.frameworkset.elasticsearch.client.DataStream;
+import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
+import org.frameworkset.tran.DefualtExportResultHandler;
 import org.frameworkset.tran.mongodb.MongoDBExportBuilder;
 
 /**
@@ -34,5 +37,9 @@ public class MongoDB2DBExportBuilder extends MongoDBExportBuilder {
 	@Override
 	protected DataStream createDataStream() {
 		return new MongoDB2DBDataStreamImpl();
+	}
+	@Override
+	protected WrapedExportResultHandler buildExportResultHandler(ExportResultHandler exportResultHandler) {
+		return new DefualtExportResultHandler<Object,Object>(exportResultHandler);
 	}
 }

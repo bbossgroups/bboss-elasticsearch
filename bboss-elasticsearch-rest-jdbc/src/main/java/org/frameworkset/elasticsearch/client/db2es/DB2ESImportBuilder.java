@@ -20,6 +20,7 @@ import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
 import org.frameworkset.tran.db.DBImportConfig;
+import org.frameworkset.tran.es.ESExportResultHandler;
 
 public class DB2ESImportBuilder extends BaseImportBuilder {
 	protected String sqlFilepath;
@@ -108,7 +109,7 @@ public class DB2ESImportBuilder extends BaseImportBuilder {
 
 	@Override
 	protected WrapedExportResultHandler buildExportResultHandler(ExportResultHandler exportResultHandler) {
-		DB2ESExportResultHandler db2ESExportResultHandler = new DB2ESExportResultHandler(exportResultHandler);
+		ESExportResultHandler db2ESExportResultHandler = new ESExportResultHandler(exportResultHandler);
 		return db2ESExportResultHandler;
 	}
 

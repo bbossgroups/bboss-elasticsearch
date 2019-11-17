@@ -15,12 +15,10 @@ package org.frameworkset.elasticsearch.client.tran;
  * limitations under the License.
  */
 
-import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
 import org.frameworkset.elasticsearch.client.task.TaskFailedException;
-import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.tran.db.DBContext;
 
 /**
@@ -41,61 +39,6 @@ public abstract class SQLBaseDataTranPlugin extends BaseDataTranPlugin {
 	protected void init(ImportContext importContext){
 		dbContext = (DBContext)importContext;
 	}
-	private VelocityContext buildVelocityContext()
-	{
-
-
-		VelocityContext context_ = new VelocityContext();
-
-//		com.frameworkset.common.poolman.Param temp = null;
-//		if(sqlparams != null && sqlparams.size()>0)
-//		{
-//
-//			Iterator<Map.Entry<String, com.frameworkset.common.poolman.Param>> it = sqlparams.entrySet().iterator();
-//			while(it.hasNext())
-//			{
-//				Map.Entry<String, com.frameworkset.common.poolman.Param> entry = it.next();
-//				temp = entry.getValue();
-//
-//				if(!temp.getType().equals(NULL))
-//					context_.put(entry.getKey(), temp.getData());
-//			}
-//		}
-		return context_;
-
-	}
-	protected String parserSQL(org.frameworkset.persitent.util.SQLInfo sqlinfo){
-		String sql = null;
-		if(sqlinfo.istpl())
-		{
-			sqlinfo.getSqltpl().process();//识别sql语句是不是真正的velocity sql模板
-			if(sqlinfo.istpl())
-			{
-				VelocityContext vcontext = buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
-
-				BBossStringWriter sw = new BBossStringWriter();
-				sqlinfo.getSqltpl().merge(vcontext,sw);
-				sql = sw.toString();
-			}
-			else
-			{
-				sql = sqlinfo.getSql();
-			}
-
-		}
-		else
-		{
-			sql = sqlinfo.getSql();
-		}
-		return sql;
-	}
-
-
-
-
-
-
-
 	@Override
 	public void afterInit(){
 		if(sqlInfo != null

@@ -20,6 +20,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
+import org.frameworkset.tran.DefualtExportResultHandler;
 import org.frameworkset.tran.db.DBExportBuilder;
 
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class ES2DBExportBuilder extends DBExportBuilder {
 
 	@Override
 	protected WrapedExportResultHandler buildExportResultHandler(ExportResultHandler exportResultHandler) {
-		return new ES2DBExportResultHandler(exportResultHandler);
+		return new DefualtExportResultHandler<String,String>(exportResultHandler);
 	}
 
 

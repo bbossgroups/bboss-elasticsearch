@@ -143,6 +143,32 @@ public class ContextImpl implements Context {
 
 	}
 
+
+	@Override
+	public String getStringValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.stringValue(value,null);
+
+	}
+	@Override
+	public String getStringValue(String fieldName,String defaultValue) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.stringValue(value,defaultValue);
+
+	}
+
+	@Override
+	public boolean getBooleanValue(String fieldName) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.booleanValue(value,false);
+
+	}
+	@Override
+	public boolean getBooleanValue(String fieldName,boolean defaultValue) throws Exception {
+		Object value = this.getValue(fieldName);
+		return ResultUtil.booleanValue(value,defaultValue);
+
+	}
 	@Override
 	public double getDoubleValue(String fieldName) throws Exception {
 		Object value = this.getValue(fieldName);

@@ -19,7 +19,6 @@ import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.tran.mongodb.MongoDBDataStreamImpl;
 import org.frameworkset.tran.mongodb.MongoDBImportConfig;
-import org.frameworkset.tran.mongodb.input.es.MongoDB2ESImportContext;
 
 /**
  * <p>Description: </p>
@@ -32,6 +31,6 @@ import org.frameworkset.tran.mongodb.input.es.MongoDB2ESImportContext;
 public class MongoDB2DBDataStreamImpl extends MongoDBDataStreamImpl {
 	@Override
 	protected ImportContext buildImportContext(BaseImportConfig importConfig) {
-		return new MongoDB2ESImportContext((MongoDBImportConfig)importConfig);
+		return new MongoDB2DBImportContext((MongoDBImportConfig)importConfig);
 	}
 }

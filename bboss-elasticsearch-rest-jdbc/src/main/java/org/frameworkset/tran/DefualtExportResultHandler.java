@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.db2es;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,8 +16,6 @@ package org.frameworkset.elasticsearch.client.db2es;
  */
 
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.ResultUtil;
-import org.frameworkset.elasticsearch.client.task.TaskCommand;
 import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
 
 /**
@@ -28,31 +26,11 @@ import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DB2ESExportResultHandler extends BaseExportResultHandler<String,String> {
-	public DB2ESExportResultHandler(ExportResultHandler exportResultHandler){
+public class DefualtExportResultHandler<DATA,RESULT> extends BaseExportResultHandler<DATA,RESULT> {
+
+	public DefualtExportResultHandler(ExportResultHandler exportResultHandler){
 		super(exportResultHandler);
 	}
-
-
-	/**
-	 * 处理导入数据结果，如果失败则可以通过重试失败数据
-	 * @param taskCommand
-	 * @param result
-	 *
-	 */
-	public void handleResult(TaskCommand<String,String> taskCommand, String result){
-
-
-		if(!ResultUtil.bulkResponseError(result)){
-			success(  taskCommand,   result);
-		}
-		else{
-			error(  taskCommand,   result);
-		}
-
-	}
-
-
 
 
 }

@@ -214,7 +214,7 @@ public abstract class MongoDBExportBuilder extends DBExportBuilder {
 //		this.buildDBConfig();
 //		this.buildStatusDBConfig();
 		try {
-			logger.info("ES2DB Import Configs:");
+			logger.info("Import Configs:");
 			logger.info(this.toString());
 		}
 		catch (Exception e){

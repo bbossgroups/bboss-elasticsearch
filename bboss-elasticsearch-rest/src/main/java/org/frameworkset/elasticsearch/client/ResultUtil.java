@@ -203,7 +203,22 @@ public abstract class ResultUtil {
 			return Float.parseFloat(num.toString());
 		}
 	}
+	public static boolean booleanValue(Object value, boolean defaultValue) {
+		return ValueCastUtil.toBoolean(value,defaultValue);
+	}
+	public static  String stringValue(Object num,String defaultValue){
+		if(num == null)
+			return defaultValue;
+		if(num instanceof String)
+		{
+			return (String)num;
+		}
+		else
+		{
+			return String.valueOf(num);
+		}
 
+	}
 	public static  Double doubleValue(Object num,Double defaultValue){
 		if(num == null)
 			return defaultValue;
@@ -1829,4 +1844,6 @@ public abstract class ResultUtil {
 
 		}
 	}
+
+
 }
