@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb.input.db;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -25,6 +25,7 @@ import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.nosql.mongodb.MongoDB;
 import org.frameworkset.nosql.mongodb.MongoDBConfig;
 import org.frameworkset.nosql.mongodb.MongoDBHelper;
+import org.frameworkset.tran.mongodb.MongoDBContext;
 
 import java.util.Date;
 
@@ -36,17 +37,17 @@ import java.util.Date;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements DataTranPlugin {
+public abstract class MongoDBInputPlugin extends BaseDataTranPlugin implements DataTranPlugin {
 
-	private MongoDB2ESContext es2DBContext;
+	private MongoDBContext es2DBContext;
 	protected void init(ImportContext importContext){
 		super.init(importContext);
-		es2DBContext = (MongoDB2ESContext)importContext;
+		es2DBContext = (MongoDBContext)importContext;
 
 	}
 
 
-	public MongoDB2ESDataTranPlugin(ImportContext importContext){
+	public MongoDBInputPlugin(ImportContext importContext){
 		super(importContext);
 
 
@@ -129,11 +130,13 @@ public class MongoDB2ESDataTranPlugin extends BaseDataTranPlugin implements Data
 			dbCollectionFindOptions.projection(es2DBContext.getFetchFields());
 		}
 		DBCursor dbCursor = dbCollection.find(dbObject,dbCollectionFindOptions);
-		MongoDB2ESResultSet mongoDB2ESResultSet = new MongoDB2ESResultSet(importContext,dbCursor);
-		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);
-		mongoDB2ESDataTran.tran();
+//		MongoDBResultSet mongoDB2ESResultSet = new MongoDBResultSet(importContext,dbCursor);
+//		MongoDB2ESDataTran mongoDB2ESDataTran = new MongoDB2ESDataTran(mongoDB2ESResultSet,importContext);
+//		mongoDB2ESDataTran.tran();
+		doTran(  dbCursor);
 
 	}
+	protected abstract void doTran(DBCursor dbCursor);
 	private void increamentImportData() throws Exception {
 
 		DBObject dbObject = es2DBContext.getQuery();

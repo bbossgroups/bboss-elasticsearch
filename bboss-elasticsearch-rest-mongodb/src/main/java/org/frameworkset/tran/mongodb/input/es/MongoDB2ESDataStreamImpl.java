@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.tran.mongodb.input.es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,35 +15,22 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.BatchHandler;
-import org.frameworkset.tran.db.output.DBOutPutContext;
-
-import java.util.Map;
+import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.tran.mongodb.MongoDBDataStreamImpl;
+import org.frameworkset.tran.mongodb.MongoDBImportConfig;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/28 14:11
+ * @Date 2019/11/17 11:44
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ES2DBContext extends DBOutPutContext {
-	Map getParams();
-
-	boolean isSliceQuery();
-
-	int getSliceSize();
-
-
-	String getQueryUrl();
-
-	String getDslName();
-
-	String getScrollLiveTime();
-
-	String getDslFile();
-
-	BatchHandler getBatchHandler();
-
+public class MongoDB2ESDataStreamImpl extends MongoDBDataStreamImpl {
+	@Override
+	protected ImportContext buildImportContext(BaseImportConfig importConfig) {
+		return new MongoDB2ESImportContext((MongoDBImportConfig)importConfig);
+	}
 }

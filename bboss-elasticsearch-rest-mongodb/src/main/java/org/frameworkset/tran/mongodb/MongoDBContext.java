@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -29,7 +29,7 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public interface MongoDB2ESContext  {
+public interface MongoDBContext {
 
 	public String getName() ;
 

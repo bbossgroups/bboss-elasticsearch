@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb.input.db;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,22 +15,27 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
-import org.frameworkset.elasticsearch.client.db2es.DB2ESExportResultHandler;
+import com.mongodb.DBCursor;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.tran.mongodb.MongoDBResultSet;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/11/15 22:22
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESExportResultHandler extends DB2ESExportResultHandler{
-	public MongoDB2ESExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
+public class MongoDB2DBInputPlugin extends MongoDBInputPlugin{
+	public MongoDB2DBInputPlugin(ImportContext importContext) {
+		super(importContext);
 	}
 
-
-
+	@Override
+	protected void doTran(DBCursor dbCursor) {
+		MongoDBResultSet mongoDB2ESResultSet = new MongoDBResultSet(importContext,dbCursor);
+		MongoDB2DBDataTran mongoDB2ESDataTran = new MongoDB2DBDataTran(mongoDB2ESResultSet,importContext);
+		mongoDB2ESDataTran.tran();
+	}
 }

@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.tran.db.output;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -19,10 +19,11 @@ import com.frameworkset.common.poolman.DBUtil;
 import com.frameworkset.common.poolman.NestedSQLException;
 import com.frameworkset.common.poolman.StatementInfo;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
 import org.frameworkset.elasticsearch.client.task.TaskFailedException;
+import org.frameworkset.elasticsearch.client.tran.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +34,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * <p>Description: </p>
+ * <p>Description: import datas to database task command</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
  * @Date 2019/3/1 11:32
  * @author biaoping.yin
  * @version 1.0
  */
-public class TaskCommandImpl extends BaseTaskCommand<List<List<ES2DBDataTran.Param>>, String> {
+public class Base2DBTaskCommandImpl extends BaseTaskCommand<List<List<Param>>, String> {
 	private String sql;
 
-	public TaskCommandImpl(String sql, ImportCount importCount, ImportContext importContext, List<List<ES2DBDataTran.Param>> datas,int taskNo,String jobNo) {
+	public Base2DBTaskCommandImpl(String sql, ImportCount importCount, ImportContext importContext,
+								  List<List<Param>> datas, int taskNo, String jobNo) {
 		super(importCount,importContext,datas.size(),  taskNo,  jobNo);
 		this.sql = sql;
 		this.importContext = importContext;
@@ -57,20 +59,20 @@ public class TaskCommandImpl extends BaseTaskCommand<List<List<ES2DBDataTran.Par
 
 
 
-	public List<List<ES2DBDataTran.Param>> getDatas() {
+	public List<List<Param>> getDatas() {
 		return datas;
 	}
 
 
-	private List<List<ES2DBDataTran.Param>> datas;
+	private List<List<Param>> datas;
 	private int tryCount;
 
 
 
-	public void setDatas(List<List<ES2DBDataTran.Param>> datas) {
+	public void setDatas(List<List<Param>> datas) {
 		this.datas = datas;
 	}
-	private static Logger logger = LoggerFactory.getLogger(TaskCommandImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(Base2DBTaskCommandImpl.class);
 
 	private void debugDB(String name){
 		DBUtil.debugStatus(name);
@@ -114,10 +116,10 @@ public class TaskCommandImpl extends BaseTaskCommand<List<List<ES2DBDataTran.Par
 			statement = stmtInfo
 					.prepareStatement(sql);
 			if(batchsize <= 1 ) {//如果batchsize被设置为0或者1直接一次性批处理所有记录
-				for(List<ES2DBDataTran.Param> record:datas){
+				for(List<Param> record:datas){
 					for(int i = 0;i < record.size(); i ++)
 					{
-						ES2DBDataTran.Param param = record.get(i);
+						Param param = record.get(i);
 						statement.setObject(param.getIndex(),param.getValue());
 					}
 					try {
@@ -133,9 +135,9 @@ public class TaskCommandImpl extends BaseTaskCommand<List<List<ES2DBDataTran.Par
 			{
 				int point = batchsize - 1;
 				int count = 0;
-				for(List<ES2DBDataTran.Param> record:datas) {
+				for(List<Param> record:datas) {
 					for (int i = 0; i < record.size(); i++) {
-						ES2DBDataTran.Param param = record.get(i);
+						Param param = record.get(i);
 						statement.setObject(param.getIndex(), param.getValue());
 					}
 					statement.addBatch();

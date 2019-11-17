@@ -36,7 +36,7 @@ bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据�
 
 - jdk timer （内置）
 - quartz
-- xxjob
+- xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
 下面详细介绍本案例。
 
@@ -825,12 +825,12 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 ```java
 importBuilder
 				.setIndex("dbclobdemo") //必填项
-				.setIndexType("dbclobdemo") //必填项
+				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
 index和type可以有以下几种动态生成方法：
 
-```java
+```properties
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
 dbclobdemo-{agentStarttime,yyyy.MM.dd}
  
@@ -844,6 +844,22 @@ demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 {field=typeFieldName}
 或者{typeFieldName}
 ```
+
+示例如下：
+
+```java
+importBuilder
+				.setIndex("demo-{dateformat=yyyy.MM.dd}") //必填项
+				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
+```
+
+```java
+importBuilder
+				.setIndex("demo-{agentStarttime,yyyy.MM.dd}") //必填项
+				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
+```
+
+
 
 ### 2.3.14 Mysql ResultSet Stream机制说明
 

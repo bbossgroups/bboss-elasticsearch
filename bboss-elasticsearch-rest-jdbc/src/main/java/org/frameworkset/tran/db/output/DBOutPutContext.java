@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.estodb;
+package org.frameworkset.tran.db.output;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,35 +15,24 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import com.frameworkset.common.poolman.BatchHandler;
-import org.frameworkset.tran.db.output.DBOutPutContext;
-
-import java.util.Map;
+import org.frameworkset.tran.db.DBContext;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/28 14:11
+ * @Date 2019/11/15 21:27
  * @author biaoping.yin
  * @version 1.0
  */
-public interface ES2DBContext extends DBOutPutContext {
-	Map getParams();
+public interface DBOutPutContext extends DBContext {
+	/**
+	 * 数据库相关配置
+	 * @return
+	 */
+	public TranSQLInfo getSqlInfo() ;
 
-	boolean isSliceQuery();
+	public void setSqlInfo(TranSQLInfo sqlInfo) ;
 
-	int getSliceSize();
-
-
-	String getQueryUrl();
-
-	String getDslName();
-
-	String getScrollLiveTime();
-
-	String getDslFile();
-
-	BatchHandler getBatchHandler();
 
 }

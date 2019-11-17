@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb;
 /*
  *  Copyright 2008 biaoping.yin
  *
@@ -22,14 +22,16 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
 /**
  * 数据库同步到Elasticsearch
  */
-public class MongoDB2ESDataStreamImpl extends DataStream {
-	private MongoDB2ESImportConfig esMongoDBConfig;
-	protected ImportContext buildImportContext(BaseImportConfig importConfig){
-		return new MongoDB2ESImportContext(esMongoDBConfig);
-	}
-	public void setMongoDB2ESImportConfig(MongoDB2ESImportConfig esMongoDBConfig) {
-		this.esMongoDBConfig = esMongoDBConfig;
-		this.importConfig = esMongoDBConfig;
+public abstract class MongoDBDataStreamImpl extends DataStream {
+	private MongoDBImportConfig esMongoDBConfig;
+	protected abstract ImportContext buildImportContext(BaseImportConfig importConfig);
+//	{
+//		return new MongoDB2ESImportContext(esMongoDBConfig);
+//	}
+	public void setImportConfig(BaseImportConfig esMongoDBConfig) {
+		super.setImportConfig(esMongoDBConfig);
+		this.esMongoDBConfig = (MongoDBImportConfig)esMongoDBConfig;
+
 	}
 
 

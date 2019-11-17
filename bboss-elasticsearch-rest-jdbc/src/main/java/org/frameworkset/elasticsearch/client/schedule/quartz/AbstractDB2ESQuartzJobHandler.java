@@ -16,6 +16,8 @@ package org.frameworkset.elasticsearch.client.schedule.quartz;
  */
 
 import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,6 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0
  */
 public abstract class AbstractDB2ESQuartzJobHandler  {
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	protected ExternalScheduler externalScheduler;
 	private Lock lock = new ReentrantLock();
 	public abstract void init();

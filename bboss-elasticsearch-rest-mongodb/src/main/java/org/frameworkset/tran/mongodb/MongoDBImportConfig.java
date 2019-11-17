@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -30,7 +30,7 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESImportConfig extends BaseImportConfig {
+public class MongoDBImportConfig extends BaseImportConfig {
 	private String name;
 	private String serverAddresses;
 	private String option;

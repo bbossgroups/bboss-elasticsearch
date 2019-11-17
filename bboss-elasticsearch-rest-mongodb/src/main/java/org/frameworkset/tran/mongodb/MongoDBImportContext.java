@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -32,21 +32,22 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESImportContext extends BaseImportContext implements MongoDB2ESContext{
-	private MongoDB2ESImportConfig es2DBImportConfig;
+public abstract class MongoDBImportContext extends BaseImportContext implements MongoDBContext{
+	private MongoDBImportConfig es2DBImportConfig;
 
 
-	protected  DataTranPlugin buildDataTranPlugin(){
-		return new MongoDB2ESDataTranPlugin(this);
-	}
+	protected abstract DataTranPlugin buildDataTranPlugin();
+//	{
+//		return new MongoDB2ESInputPlugin(this);
+//	}
 	protected void init(BaseImportConfig baseImportConfig){
-		es2DBImportConfig = (MongoDB2ESImportConfig)baseImportConfig;
+		es2DBImportConfig = (MongoDBImportConfig)baseImportConfig;
 	}
-	public MongoDB2ESImportContext(){
-		this(new MongoDB2ESImportConfig());
+	public MongoDBImportContext(){
+		this(new MongoDBImportConfig());
 
 	}
-	public MongoDB2ESImportContext(MongoDB2ESImportConfig baseImportConfig){
+	public MongoDBImportContext(MongoDBImportConfig baseImportConfig){
 		super(baseImportConfig);
 
 	}

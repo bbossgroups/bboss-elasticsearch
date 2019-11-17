@@ -19,9 +19,6 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.scroll.HandlerInfo;
-import org.frameworkset.elasticsearch.scroll.ParralBreakableScrollHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Description: </p>
@@ -31,17 +28,11 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESExporterScrollHandler<T> extends ParralBreakableScrollHandler<T> {
-	protected ImportContext importContext ;
-	protected ES2DBContext es2DBContext ;
-	protected ConfigSQLExecutor configSQLExecutor;
-	private static Logger logger = LoggerFactory.getLogger(ESExporterScrollHandler.class);
-//	private ESTranResultSet esTranResultSet ;
-	protected ES2DBDataTran es2DBDataTran ;
-	public ESExporterScrollHandler(ImportContext importContext,ConfigSQLExecutor configSQLExecutor,ES2DBDataTran es2DBDataTran ) {
-		this.importContext = importContext;
-		this.es2DBContext = (ES2DBContext)importContext;
-		this.configSQLExecutor = configSQLExecutor;
+public class ESExporterScrollHandler<T>  extends BaseESExporterScrollHandler<T>{
+
+	protected ES2DBOutPutDataTran es2DBDataTran ;
+	public ESExporterScrollHandler(ImportContext importContext,ConfigSQLExecutor configSQLExecutor,ES2DBOutPutDataTran es2DBDataTran ) {
+		super(  importContext,  configSQLExecutor);
 		this.es2DBDataTran = es2DBDataTran;
 		this.es2DBDataTran.setBreakableScrollHandler(this);
 	}
@@ -49,7 +40,7 @@ public class ESExporterScrollHandler<T> extends ParralBreakableScrollHandler<T> 
 	public void handle(ESDatas<T> response, HandlerInfo handlerInfo) throws Exception {//自己处理每次scroll的结果
 
 //		ES2DBDataTran es2DBDataTran = new ES2DBDataTran(esTranResultSet,importContext);
-		es2DBDataTran.appendData(response);
+		es2DBDataTran.appendInData(response);
 
 
 		/**

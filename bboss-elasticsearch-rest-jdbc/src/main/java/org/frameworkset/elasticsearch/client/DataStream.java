@@ -33,7 +33,9 @@ public abstract class DataStream {
 //	}
 	private Lock lock = new ReentrantLock();
 	protected abstract ImportContext buildImportContext(BaseImportConfig importConfig);
-
+	public void setImportConfig(BaseImportConfig importConfig){
+		this.importConfig = importConfig;
+	}
 	/**
 	 *
 	 * @throws ESDataImportException

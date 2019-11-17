@@ -1,9 +1,9 @@
 package org.frameworkset.elasticsearch.client.tran;
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.TranErrorWrapper;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
 import org.frameworkset.elasticsearch.scroll.BreakableScrollHandler;
 import org.slf4j.Logger;
@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -23,7 +22,7 @@ public abstract class BaseDataTran implements DataTran{
 	protected static Object dummy = new Object();
 	protected ImportContext importContext;
 	protected TranResultSet jdbcResultSet;
-	private CountDownLatch countDownLatch;
+//	private CountDownLatch countDownLatch;
 	public BreakableScrollHandler getBreakableScrollHandler() {
 		return breakableScrollHandler;
 	}
@@ -38,12 +37,12 @@ public abstract class BaseDataTran implements DataTran{
 		this.importContext = importContext;
 		init();
 	}
-	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext,CountDownLatch countDownLatch) {
-		this.jdbcResultSet = jdbcResultSet;
-		this.importContext = importContext;
-		this.countDownLatch = countDownLatch;
-		init();
-	}
+//	public BaseDataTran(TranResultSet jdbcResultSet,ImportContext importContext,CountDownLatch countDownLatch) {
+//		this.jdbcResultSet = jdbcResultSet;
+//		this.importContext = importContext;
+//		this.countDownLatch = countDownLatch;
+//		init();
+//	}
 
 	protected void init(){
 
@@ -63,28 +62,23 @@ public abstract class BaseDataTran implements DataTran{
 	}
 	public abstract void logTaskStart(Logger logger);
 	public String tran() throws ESDataImportException {
-		try {
-			if (jdbcResultSet == null)
-				return null;
-			if (isPrintTaskLog()) {
-				logTaskStart(logger);
+		if (jdbcResultSet == null)
+			return null;
+		if (isPrintTaskLog()) {
+			logTaskStart(logger);
 
-			}
-			if (importContext.getStoreBatchSize() <= 0) {
-				return serialExecute();
+		}
+		if (importContext.getStoreBatchSize() <= 0) {
+			return serialExecute();
+		} else {
+			if (importContext.getThreadCount() > 0 && importContext.isParallel()) {
+				return this.parallelBatchExecute();
 			} else {
-				if (importContext.getThreadCount() > 0 && importContext.isParallel()) {
-					return this.parallelBatchExecute();
-				} else {
-					return this.batchExecute();
-				}
-
+				return this.batchExecute();
 			}
+
 		}
-		finally {
-			if(this.countDownLatch != null)
-				countDownLatch.countDown();
-		}
+
 
 	}
 	protected void jobComplete(ExecutorService service,Exception exception,Object lastValue ,TranErrorWrapper tranErrorWrapper){
@@ -133,7 +127,7 @@ public abstract class BaseDataTran implements DataTran{
 				logger.info(new StringBuilder().append("Complete tasks:")
 						.append(count).append(",Total success import ")
 						.append(totalCount.getSuccessCount()).append(" records,Ignore Total ")
-						.append(totalCount.getIgnoreTotalCount()).append(" records,failed total")
+						.append(totalCount.getIgnoreTotalCount()).append(" records,failed total ")
 						.append(totalCount.getFailedCount()).append(" records.").toString());
 			}
 			jobComplete(  service,exception,lastValue ,tranErrorWrapper);
@@ -163,7 +157,7 @@ public abstract class BaseDataTran implements DataTran{
 						logger.info(new StringBuilder().append("Complete tasks:")
 								.append(count).append(",Total success import ")
 								.append(totalCount.getSuccessCount()).append(" records,Ignore Total ")
-								.append(totalCount.getIgnoreTotalCount()).append(" records,failed total")
+								.append(totalCount.getIgnoreTotalCount()).append(" records,failed total ")
 								.append(totalCount.getFailedCount()).append(" records.").toString());
 					}
 					jobComplete(  service,null,null,tranErrorWrapper);

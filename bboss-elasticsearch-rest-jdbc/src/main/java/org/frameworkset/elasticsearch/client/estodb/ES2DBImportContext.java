@@ -16,12 +16,11 @@ package org.frameworkset.elasticsearch.client.estodb;
  */
 
 import com.frameworkset.common.poolman.BatchHandler;
-import com.frameworkset.util.VariableHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.context.BaseImportContext;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.db.output.TranSQLInfo;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,15 +34,15 @@ import java.util.Map;
 public class ES2DBImportContext extends BaseImportContext implements ES2DBContext{
 	private ES2DBImportConfig es2DBImportConfig;
 
-	public SQLInfo getSqlInfo() {
+	public TranSQLInfo getSqlInfo() {
 		return sqlInfo;
 	}
 
-	public void setSqlInfo(SQLInfo sqlInfo) {
+	public void setSqlInfo(TranSQLInfo sqlInfo) {
 		this.sqlInfo = sqlInfo;
 	}
 
-	private SQLInfo sqlInfo;
+	private TranSQLInfo sqlInfo;
 	protected  DataTranPlugin buildDataTranPlugin(){
 		return new ES2DBDataTranPlugin(this);
 	}
@@ -64,35 +63,6 @@ public class ES2DBImportContext extends BaseImportContext implements ES2DBContex
 		return es2DBImportConfig.getSql();
 	}
 
-	public static class SQLInfo{
-		private String originSQL;
-		private String sql;
-		private List<VariableHandler.Variable> vars;
-
-		public String getOriginSQL() {
-			return originSQL;
-		}
-
-		public void setOriginSQL(String originSQL) {
-			this.originSQL = originSQL;
-		}
-
-		public String getSql() {
-			return sql;
-		}
-
-		public void setSql(String sql) {
-			this.sql = sql;
-		}
-
-		public List<VariableHandler.Variable> getVars() {
-			return vars;
-		}
-
-		public void setVars(List<VariableHandler.Variable> vars) {
-			this.vars = vars;
-		}
-	}
 
 	@Override
 	public String getSqlFilepath() {

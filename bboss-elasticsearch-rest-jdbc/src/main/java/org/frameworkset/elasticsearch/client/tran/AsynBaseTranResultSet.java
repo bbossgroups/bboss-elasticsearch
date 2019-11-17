@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @author biaoping.yin
  * @version 1.0
  */
-public class BaseTranResultSet<T extends Data> implements TranResultSet {
+public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet<T> {
 	private Map<String,Object> record;
 	private List<Map<String,Object>> records;
 	private int pos = 0;
@@ -43,7 +43,7 @@ public class BaseTranResultSet<T extends Data> implements TranResultSet {
 	private int status;
 	private BlockingQueue<T> queue ;
 	private ImportContext importContext;
-	public BaseTranResultSet(ImportContext importContext) {
+	public AsynBaseTranResultSet(ImportContext importContext) {
 		queue = new ArrayBlockingQueue<T>(importContext.getTranDataBufferQueue());
 		this.importContext = importContext;
 	}

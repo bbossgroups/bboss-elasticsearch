@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.mongodb;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -34,11 +34,11 @@ import java.util.Date;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESResultSet implements TranResultSet {
+public class MongoDBResultSet implements TranResultSet {
 	private ImportContext importContext ;
 	private DBCursor dbCursor;
 	private DBObject record;
-	public MongoDB2ESResultSet(ImportContext importContext, DBCursor dbCursor) {
+	public MongoDBResultSet(ImportContext importContext, DBCursor dbCursor) {
 		this.importContext = importContext;
 		this.dbCursor = dbCursor;
 	}
@@ -87,6 +87,6 @@ public class MongoDB2ESResultSet implements TranResultSet {
 
 	@Override
 	public TranMeta getMetaData() {
-		return new MongoDB2ESTranMetaData(record.keySet());
+		return new MongoDBTranMetaData(record.keySet());
 	}
 }

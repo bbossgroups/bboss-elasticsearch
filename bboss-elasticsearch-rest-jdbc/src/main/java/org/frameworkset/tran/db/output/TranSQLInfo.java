@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.mongodb2es;
+package org.frameworkset.tran.db.output;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,26 +15,44 @@ package org.frameworkset.elasticsearch.client.mongodb2es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.Data;
+import com.frameworkset.util.VariableHandler;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/11/7 23:54
+ * @Date 2019/11/15 21:27
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDB2ESDatasWraper implements Data {
-	private List<Map<String, Object>> datas;
-	public MongoDB2ESDatasWraper(List<Map<String, Object>> datas){
-		this.datas = datas;
+public class TranSQLInfo {
+	private String originSQL;
+	private String sql;
+	private List<VariableHandler.Variable> vars;
+
+	public String getOriginSQL() {
+		return originSQL;
 	}
-	@Override
-	public List<Map<String, Object>> getDatas() {
-		return datas;
+
+	public void setOriginSQL(String originSQL) {
+		this.originSQL = originSQL;
+	}
+
+	public String getSql() {
+		return sql;
+	}
+
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+
+	public List<VariableHandler.Variable> getVars() {
+		return vars;
+	}
+
+	public void setVars(List<VariableHandler.Variable> vars) {
+		this.vars = vars;
 	}
 }

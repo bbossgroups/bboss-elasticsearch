@@ -21,11 +21,13 @@ import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.elasticsearch.client.tran.AsynBaseTranResultSet;
 import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
 import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.template.ESInfo;
 import org.frameworkset.persitent.util.SQLInfo;
+import org.frameworkset.tran.db.output.TranSQLInfo;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -51,7 +53,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 	}
 
 	private void initSQLInfo() throws ESDataImportException {
-		ES2DBImportContext.SQLInfo sqlInfo = new ES2DBImportContext.SQLInfo();
+		TranSQLInfo sqlInfo = new TranSQLInfo();
 
 		ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor(es2DBContext.getSqlFilepath());
 
@@ -105,7 +107,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 
 
 
-	private void commonImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
+	private void commonImportData(BaseESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
 		Map params = es2DBContext.getParams() != null ?es2DBContext.getParams():new HashMap();
 		params.put("size", importContext.getFetchSize());//每页5000条记录
 		if(es2DBContext.isSliceQuery()){
@@ -114,7 +116,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 		exportESData(  esExporterScrollHandler,  params);
 	}
 
-	private void exportESData(ESExporterScrollHandler<Map> esExporterScrollHandler,Map params){
+	private void exportESData(BaseESExporterScrollHandler<Map> esExporterScrollHandler,Map params){
 
 		//采用自定义handler函数处理每个scroll的结果集后，response中只会包含总记录数，不会包含记录集合
 		//scroll上下文有效期1分钟；大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
@@ -149,7 +151,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			}
 		}
 	}
-	private void increamentImportData(ESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
+	private void increamentImportData(BaseESExporterScrollHandler<Map> esExporterScrollHandler) throws Exception {
 		Map params = es2DBContext.getParams() != null ?es2DBContext.getParams():new HashMap();
 		params.put("size", importContext.getFetchSize());//每页5000条记录
 		if(es2DBContext.isSliceQuery()){
@@ -161,13 +163,13 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 	}
 
 	public void doImportData()  throws ESDataImportException{
-		ESTranResultSet jdbcResultSet = new ESTranResultSet(importContext);
+
 
 		if(es2DBContext.getBatchHandler() != null)
 		{
-			ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext);
+
 			ESDirectExporterScrollHandler esDirectExporterScrollHandler = new ESDirectExporterScrollHandler(importContext,
-					executor,es2DBDataTran);
+					executor);
 			try {
 				if (!isIncreamentImport()) {
 
@@ -185,15 +187,11 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			}
 		}
 		else {
-
+			AsynBaseTranResultSet jdbcResultSet = new AsynBaseTranResultSet(importContext);
 			final CountDownLatch countDownLatch = new CountDownLatch(1);
-			final ES2DBDataTran es2DBDataTran = new ES2DBDataTran(jdbcResultSet,importContext,countDownLatch);
+			final ES2DBOutPutDataTran es2DBDataTran = new ES2DBOutPutDataTran(jdbcResultSet,importContext,countDownLatch);
 			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,
 					es2DBDataTran);
-
-
-
-
 			try {
 				Thread tranThread = new Thread(new Runnable() {
 					@Override
