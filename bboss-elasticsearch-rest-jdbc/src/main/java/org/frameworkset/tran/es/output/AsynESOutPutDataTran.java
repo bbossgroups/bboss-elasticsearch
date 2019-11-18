@@ -1,16 +1,23 @@
-package org.frameworkset.tran.db.output;
+package org.frameworkset.tran.es.output;
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.tran.AsynTranResultSet;
+import org.frameworkset.elasticsearch.client.tran.BaseElasticsearchDataTran;
 import org.frameworkset.elasticsearch.client.tran.Data;
 import org.frameworkset.elasticsearch.client.tran.TranResultSet;
 
 import java.util.concurrent.CountDownLatch;
 
-public abstract class AsynDBOutPutDataTran<T> extends DBOutPutDataTran<T> {
+public abstract class AsynESOutPutDataTran<T> extends BaseElasticsearchDataTran {
 	protected AsynTranResultSet esTranResultSet;
 	private CountDownLatch countDownLatch;
+
+	public AsynESOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext, String esCluster, CountDownLatch countDownLatch) {
+		super(jdbcResultSet, importContext, esCluster);
+		this.countDownLatch = countDownLatch;
+	}
+
 	protected void init(){
 		super.init();
 		esTranResultSet = (AsynTranResultSet)jdbcResultSet;
@@ -18,10 +25,13 @@ public abstract class AsynDBOutPutDataTran<T> extends DBOutPutDataTran<T> {
 	}
 
 
-	public AsynDBOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext) {
+	public AsynESOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext) {
 		super(jdbcResultSet,importContext);
 	}
-	public AsynDBOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
+	public AsynESOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext,String cluster) {
+		super(jdbcResultSet,importContext,cluster);
+	}
+	public AsynESOutPutDataTran(TranResultSet jdbcResultSet, ImportContext importContext, CountDownLatch countDownLatch) {
 		super(jdbcResultSet,importContext);
 		this.countDownLatch = countDownLatch;
 	}

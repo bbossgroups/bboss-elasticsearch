@@ -540,7 +540,7 @@ public abstract class BaseElasticsearchDataTran extends BaseDataTran{
 	private  void serialResult( Writer writer,  Context context) throws Exception {
 
 		TranMeta metaData = context.getMetaData();
-		int counts = metaData.getColumnCount();
+		int counts = metaData != null ?metaData.getColumnCount():0;
 		writer.write("{");
 		Boolean useJavaName = context.getUseJavaName();
 		if(useJavaName == null)

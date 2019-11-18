@@ -42,8 +42,12 @@ public abstract  class BaseImportContext implements ImportContext {
 	private DataTranPlugin dataTranPlugin;
 	private boolean currentStoped = false;
 
+
 	public BaseImportContext(){
 
+	}
+	public boolean isMQ(){
+		return false;
 	}
 	public boolean isSortLastValue() {
 		return baseImportConfig.isSortLastValue();

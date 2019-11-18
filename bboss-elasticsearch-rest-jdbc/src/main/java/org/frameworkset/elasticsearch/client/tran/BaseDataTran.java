@@ -22,6 +22,7 @@ public abstract class BaseDataTran implements DataTran{
 	protected static Object dummy = new Object();
 	protected ImportContext importContext;
 	protected TranResultSet jdbcResultSet;
+
 //	private CountDownLatch countDownLatch;
 	public BreakableScrollHandler getBreakableScrollHandler() {
 		return breakableScrollHandler;

@@ -1,0 +1,33 @@
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+           
+        }
+        resources {
+			srcDir 'src/main/resources'
+			srcDir 'src/main/java'  exclude '**/*.java'
+        }
+        
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+           
+        }
+        resources {
+			srcDir 'src/test/resources'
+			srcDir 'src/test/java'  exclude '**/*.java'
+        }
+        
+    }
+    
+}
+
+
+dependencies {
+	compile project(':bboss-elasticsearch-rest-jdbc')
+	compile([group: 'com.bbossgroups.plugins', name: 'bboss-plugin-kafka', version: "${kafka2x_plugin}", transitive: true])
+
+}
+
