@@ -244,6 +244,7 @@ public abstract class MongoDBExportBuilder extends DBExportBuilder {
 
 		es2DBImportConfig.setDbCollectionFindOptions( this.dbCollectionFindOptions);
 		es2DBImportConfig.setQuery( this.query);
+		es2DBImportConfig.setFetchFields(this.fetchFields);
 		es2DBImportConfig.setDbCollection( this.dbCollection);
 		es2DBImportConfig.setDb( this.db);
 		es2DBImportConfig.setCredentials(this.credentials);
