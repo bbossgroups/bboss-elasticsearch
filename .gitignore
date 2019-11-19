@@ -7,3 +7,5 @@
 /.settings/
 /.idea/
 settings.gradle.bak
+/bboss-elasticsearch-rest-mongodb/build/
+/bboss-elasticsearch-rest-kafka2x/build/

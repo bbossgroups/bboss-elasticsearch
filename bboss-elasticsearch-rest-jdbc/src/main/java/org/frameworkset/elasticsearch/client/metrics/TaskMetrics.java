@@ -134,4 +134,20 @@ public class TaskMetrics {
 	public void setTaskEndTime(Date taskEndTime) {
 		this.taskEndTime = taskEndTime;
 	}
+	public String toString(){
+		StringBuilder builder = new StringBuilder();
+		builder.append("{taskNo:").append(taskNo)
+				.append(", jobNo:").append(jobNo)
+				.append(", jobStartTime:").append(jobStartTime)
+				.append(", taskStartTime:").append(taskStartTime)
+				.append(", taskEndTime:").append(taskEndTime)
+				.append(", totalRecords:").append(totalRecords)
+				.append(", totalSuccessRecords:").append(totalSuccessRecords)
+				.append(", totalIgnoreRecords:").append(totalIgnoreRecords)
+				.append(", totalFailedRecords:").append(totalFailedRecords)
+				.append(", successRecords:").append(successRecords)
+				.append(", ignoreRecords:").append(ignoreRecords)
+				.append(", failedRecords:").append(failedRecords).append("}");
+		return builder.toString();
+	}
 }

@@ -173,7 +173,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 					public void run() {
 						es2DBDataTran.tran();
 					}
-				});
+				},"Elasticsearch-DB-Tran");
 				tranThread.start();
 				if (!isIncreamentImport()) {
 

@@ -835,9 +835,27 @@ public TerminalMessages getTerminalBase(String batchUuid) {
     </property>
 ```
 
-# 10. 通过count统计索引文档数量
+# 10.从所有索引中检索数据
 
-## 10.1 count by condition
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
+//执行查询操作
+ESDatas<Map> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<Map>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("_search",//查询操作，查询所有索引中符合条件的数据
+                                "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
+                                traceExtraCriteria,//查询条件封装对象
+                                Map.class);//指定返回的map对象类型
+//获取结果对象列表
+        List<Map> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
+```
+
+
+
+# 11. 通过count统计索引文档数量
+
+## 11.1 count by condition
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
@@ -846,14 +864,14 @@ long count = clientUtil.count("trace1",//查询操作，查询indices trace-*中
                                 traceExtraCriteria);//查询条件封装对象
 ```
 
-## 10.2 count all documents
+## 11.2 count all documents
 
 ```java
 ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 long count  = clientInterface.countAll("trace");
 ```
 
-# 11. 开发交流
+# 12. 开发交流
 
 
 
@@ -865,7 +883,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 12. 支持我们
+# 13. 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">

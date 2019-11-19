@@ -23,8 +23,6 @@ import org.frameworkset.tran.kafka.KafkaContext;
 import org.frameworkset.tran.kafka.KafkaResultSet;
 import org.frameworkset.tran.kafka.input.es.Kafka2ESDataTran;
 
-import java.util.concurrent.CountDownLatch;
-
 /**
  * <p>Description: </p>
  * <p></p>
@@ -86,7 +84,7 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 
 	public void doImportData()  throws ESDataImportException{
 		KafkaResultSet kafkaResultSet = new KafkaResultSet(this.importContext);
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
+//		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final Kafka2ESDataTran kafka2ESDataTran = new Kafka2ESDataTran(kafkaResultSet,importContext);
 		final KafkaTranBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaTranBatchConsumer2ndStore(kafka2ESDataTran,kafkaContext);
 		Thread tranThread = null;
@@ -96,7 +94,7 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 				public void run() {
 					kafka2ESDataTran.tran();
 				}
-			});
+			},"kafka-elasticsearch-Tran");
 			tranThread.start();
 			kafkaBatchConsumer2ndStore.setTopic(kafkaContext.getKafkaTopic());
 			kafkaBatchConsumer2ndStore.setBatchsize(importContext.getFetchSize());
@@ -105,8 +103,8 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 			kafkaBatchConsumer2ndStore.setPartitions(kafkaContext.getConsumerThreads());
 			kafkaBatchConsumer2ndStore.setDiscardRejectMessage(kafkaContext.isDiscardRejectMessage());
 			kafkaBatchConsumer2ndStore.setPollTimeOut(kafkaContext.getPollTimeOut());
-			kafkaBatchConsumer2ndStore.init();
-			Thread consumerThread = new Thread(kafkaBatchConsumer2ndStore);
+			kafkaBatchConsumer2ndStore.afterPropertiesSet();
+			Thread consumerThread = new Thread(kafkaBatchConsumer2ndStore,"kafka-elasticsearch-BatchConsumer2ndStore");
 			consumerThread.start();
 		} catch (ESDataImportException e) {
 			throw e;
@@ -115,12 +113,12 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 		}
 		finally {
 //			kafkaResultSet.reachEend();
-			try {
-				countDownLatch.await();
-			} catch (InterruptedException e) {
-				if(logger.isErrorEnabled())
-					logger.error("",e);
-			}
+//			try {
+//				countDownLatch.await();
+//			} catch (InterruptedException e) {
+//				if(logger.isErrorEnabled())
+//					logger.error("",e);
+//			}
 		}
 
 	}
