@@ -2,10 +2,10 @@ package org.frameworkset.tran.es.output;
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.AsynTranResultSet;
-import org.frameworkset.elasticsearch.client.tran.BaseElasticsearchDataTran;
-import org.frameworkset.elasticsearch.client.tran.Data;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.AsynTranResultSet;
+import org.frameworkset.tran.BaseElasticsearchDataTran;
+import org.frameworkset.tran.Data;
+import org.frameworkset.tran.TranResultSet;
 
 import java.util.concurrent.CountDownLatch;
 

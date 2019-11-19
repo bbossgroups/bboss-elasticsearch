@@ -1,4 +1,4 @@
-package org.frameworkset.tran;
+package org.frameworkset.tran.es;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,20 +15,26 @@ package org.frameworkset.tran;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.context.ImportContext;
+import org.frameworkset.tran.AsynBaseTranResultSet;
+import org.frameworkset.tran.Record;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/10/28 22:37
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefualtExportResultHandler<DATA,RESULT> extends BaseExportResultHandler<DATA,RESULT> {
+public class ES2DBTranResultSet extends AsynBaseTranResultSet {
 
-	public DefualtExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
+	public ES2DBTranResultSet(ImportContext importContext) {
+		super(importContext);
+
+	}
+	protected Record buildRecord(Object data){
+		return new ESRecord(data);
 	}
 
 

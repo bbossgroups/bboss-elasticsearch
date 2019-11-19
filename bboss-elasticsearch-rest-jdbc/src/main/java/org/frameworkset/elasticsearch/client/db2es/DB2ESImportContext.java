@@ -16,7 +16,7 @@ package org.frameworkset.elasticsearch.client.db2es;
  */
 
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.tran.db.DBImportConfig;
 import org.frameworkset.tran.db.DBImportContext;
 

@@ -17,8 +17,8 @@ package org.frameworkset.tran.kafka.input;
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.BaseDataTranPlugin;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.BaseDataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.tran.kafka.KafkaContext;
 import org.frameworkset.tran.kafka.KafkaResultSet;
 import org.frameworkset.tran.kafka.input.es.Kafka2ESDataTran;
@@ -88,7 +88,7 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 		KafkaResultSet kafkaResultSet = new KafkaResultSet(this.importContext);
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final Kafka2ESDataTran kafka2ESDataTran = new Kafka2ESDataTran(kafkaResultSet,importContext);
-		final KafkaBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaBatchConsumer2ndStore(kafka2ESDataTran);
+		final KafkaTranBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaTranBatchConsumer2ndStore(kafka2ESDataTran);
 		Thread tranThread = null;
 		try {
 			tranThread = new Thread(new Runnable() {

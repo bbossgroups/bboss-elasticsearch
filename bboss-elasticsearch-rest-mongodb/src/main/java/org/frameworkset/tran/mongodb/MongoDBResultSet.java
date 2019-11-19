@@ -20,8 +20,9 @@ import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.TranMeta;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.DefaultTranMetaData;
+import org.frameworkset.tran.TranMeta;
+import org.frameworkset.tran.TranResultSet;
 import org.frameworkset.elasticsearch.client.util.TranUtil;
 
 import java.util.Date;
@@ -87,6 +88,6 @@ public class MongoDBResultSet implements TranResultSet {
 
 	@Override
 	public TranMeta getMetaData() {
-		return new MongoDBTranMetaData(record.keySet());
+		return new DefaultTranMetaData(record.keySet());
 	}
 }

@@ -17,6 +17,7 @@ package org.frameworkset.tran.kafka.input;
 
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.frameworkset.plugin.kafka.KafkaBatchConsumer2ndStore;
 import org.frameworkset.tran.es.output.AsynESOutPutDataTran;
 
 import java.util.ArrayList;
@@ -30,8 +31,8 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class KafkaBatchConsumer2ndStore extends org.frameworkset.plugin.kafka.KafkaBatchConsumer2ndStore {
-	public KafkaBatchConsumer2ndStore(AsynESOutPutDataTran asynESOutPutDataTran) {
+public class KafkaTranBatchConsumer2ndStore extends KafkaBatchConsumer2ndStore {
+	public KafkaTranBatchConsumer2ndStore(AsynESOutPutDataTran asynESOutPutDataTran) {
 		this.asynESOutPutDataTran = asynESOutPutDataTran;
 	}
 

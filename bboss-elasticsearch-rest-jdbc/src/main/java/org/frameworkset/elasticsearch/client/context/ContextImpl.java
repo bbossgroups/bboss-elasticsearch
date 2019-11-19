@@ -23,8 +23,8 @@ import org.frameworkset.elasticsearch.client.FieldMeta;
 import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.db2es.DB2ESImportBuilder;
-import org.frameworkset.elasticsearch.client.tran.TranMeta;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.TranMeta;
+import org.frameworkset.tran.TranResultSet;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.math.BigDecimal;

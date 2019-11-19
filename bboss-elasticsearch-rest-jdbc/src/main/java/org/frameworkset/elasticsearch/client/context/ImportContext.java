@@ -24,7 +24,7 @@ import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleConfig;
 import org.frameworkset.elasticsearch.client.schedule.ScheduleService;
 import org.frameworkset.elasticsearch.client.schedule.Status;
-import org.frameworkset.elasticsearch.client.tran.ExportCount;
+import org.frameworkset.tran.ExportCount;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

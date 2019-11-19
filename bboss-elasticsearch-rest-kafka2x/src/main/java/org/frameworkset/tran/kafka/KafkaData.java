@@ -16,10 +16,9 @@ package org.frameworkset.tran.kafka;
  */
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.frameworkset.elasticsearch.client.tran.Data;
+import org.frameworkset.tran.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -29,13 +28,13 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class KafkaData implements Data {
+public class KafkaData implements Data<ConsumerRecord<Object,Object>> {
 		private List<ConsumerRecord<Object,Object>> datas;
 		public KafkaData(List<ConsumerRecord<Object,Object>> datas){
 			this.datas = datas;
 		}
 		@Override
-		public List<Map<String, Object>> getDatas() {
-			throw new IllegalArgumentException("getDatas");
+		public List<ConsumerRecord<Object,Object>> getDatas() {
+			return datas;
 		}
 }

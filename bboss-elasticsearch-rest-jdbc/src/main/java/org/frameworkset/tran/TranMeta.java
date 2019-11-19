@@ -15,21 +15,24 @@ package org.frameworkset.tran;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ExportResultHandler;
+import org.frameworkset.elasticsearch.client.ESDataImportException;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/3/1 10:20
+ * @Date 2019/10/27 10:42
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefualtExportResultHandler<DATA,RESULT> extends BaseExportResultHandler<DATA,RESULT> {
+public interface TranMeta {
+	int getColumnCount() throws ESDataImportException;
 
-	public DefualtExportResultHandler(ExportResultHandler exportResultHandler){
-		super(exportResultHandler);
-	}
+	String getColumnLabelByIndex(int i) throws ESDataImportException;
 
+	int getColumnTypeByIndex(int i) throws ESDataImportException;
 
+	String getColumnJavaNameByIndex(int i) throws ESDataImportException;
+
+	String getColumnLabelLowerByIndex(int i) throws ESDataImportException;
 }

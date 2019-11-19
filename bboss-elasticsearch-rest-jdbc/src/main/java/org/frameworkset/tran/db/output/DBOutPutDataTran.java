@@ -13,9 +13,9 @@ import org.frameworkset.elasticsearch.client.metrics.SerialImportCount;
 import org.frameworkset.elasticsearch.client.schedule.Status;
 import org.frameworkset.elasticsearch.client.task.TaskCall;
 import org.frameworkset.elasticsearch.client.task.TaskCommand;
-import org.frameworkset.elasticsearch.client.tran.BaseDataTran;
-import org.frameworkset.elasticsearch.client.tran.Param;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.BaseDataTran;
+import org.frameworkset.tran.Param;
+import org.frameworkset.tran.TranResultSet;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;

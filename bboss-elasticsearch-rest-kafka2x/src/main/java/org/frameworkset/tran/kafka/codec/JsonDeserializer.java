@@ -53,4 +53,13 @@ public class JsonDeserializer implements Deserializer<Map<String,Object>> {
             throw new SerializationException("Error when deserializing byte[] to string due to unsupported encoding " + encoding);
         }
     }
+    /**
+     * Close this deserializer.
+     * <p>
+     * This method must be idempotent as it may be called multiple times.
+     */
+    @Override
+    public void close() {
+        // intentionally left blank
+    }
 }

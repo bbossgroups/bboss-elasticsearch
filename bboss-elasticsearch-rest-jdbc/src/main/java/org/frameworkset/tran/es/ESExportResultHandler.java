@@ -18,7 +18,7 @@ package org.frameworkset.tran.es;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.frameworkset.elasticsearch.client.task.TaskCommand;
-import org.frameworkset.elasticsearch.client.tran.BaseExportResultHandler;
+import org.frameworkset.tran.BaseExportResultHandler;
 
 /**
  * <p>Description: </p>

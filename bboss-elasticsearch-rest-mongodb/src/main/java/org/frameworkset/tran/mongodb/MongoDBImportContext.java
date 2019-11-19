@@ -18,7 +18,7 @@ package org.frameworkset.tran.mongodb;
 import com.mongodb.DBObject;
 import com.mongodb.client.model.DBCollectionFindOptions;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.nosql.mongodb.ClientMongoCredential;
 import org.frameworkset.tran.db.DBImportContext;
 

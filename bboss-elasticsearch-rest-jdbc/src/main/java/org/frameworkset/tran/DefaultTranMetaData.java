@@ -1,4 +1,4 @@
-package org.frameworkset.tran.mongodb;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,7 +16,6 @@ package org.frameworkset.tran.mongodb;
  */
 
 import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.tran.TranMeta;
 
 import java.util.Set;
 
@@ -28,9 +27,13 @@ import java.util.Set;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MongoDBTranMetaData implements TranMeta {
-	public MongoDBTranMetaData(Set<String> keys) {
-		this.keys = keys.toArray(new String[0]);
+public class DefaultTranMetaData implements TranMeta {
+	public DefaultTranMetaData(Set<String> keys) {
+		if(keys != null)
+			this.keys = keys.toArray(new String[0]);
+		else{
+			this.keys = new String[0];
+		}
 	}
 
 	private String[] keys;

@@ -17,7 +17,6 @@ package org.frameworkset.tran.kafka.input.es;
 
 import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.tran.kafka.KafkaExportBuilder;
-import org.frameworkset.tran.kafka.KafkaImportConfig;
 
 /**
  * <p>Description: </p>
@@ -35,29 +34,10 @@ public class Kafka2ESExportBuilder extends KafkaExportBuilder {
 
 
 	@Override
-	public DataStream builder() {
-		super.builderConfig();
-//		this.buildDBConfig();
-//		this.buildStatusDBConfig();
-		try {
-			logger.info("Kafka to Elasticsearch Import Configs:");
-			logger.info(this.toString());
-		}
-		catch (Exception e){
-
-		}
-		KafkaImportConfig es2DBImportConfig = new KafkaImportConfig();
-		super.buildImportConfig(es2DBImportConfig);
-		es2DBImportConfig.setCheckinterval(this.getCheckinterval());
-		es2DBImportConfig.setDiscardRejectMessage(this.isDiscardRejectMessage());
-		es2DBImportConfig.setKafkaConfigs(this.getKafkaConfigs());
-		es2DBImportConfig.setKafkaTopic(this.getKafkaTopic());
-		es2DBImportConfig.setPollTimeOut(this.getPollTimeOut());
-		es2DBImportConfig.setConsumerThreads(this.getConsumerThreads());
-		es2DBImportConfig.setCodec(this.getCodec());
-		Kafka2ESDataStreamImpl dataStream = new Kafka2ESDataStreamImpl();
-		dataStream.setImportConfig(es2DBImportConfig);
-		return dataStream;
+	protected DataStream createDataStream() {
+		return new Kafka2ESDataStreamImpl();
 	}
+
+
 
 }

@@ -2,7 +2,7 @@ package org.frameworkset.tran.kafka.input.es;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.TranResultSet;
 import org.frameworkset.tran.es.output.AsynESOutPutDataTran;
 import org.frameworkset.tran.kafka.KafkaData;
 

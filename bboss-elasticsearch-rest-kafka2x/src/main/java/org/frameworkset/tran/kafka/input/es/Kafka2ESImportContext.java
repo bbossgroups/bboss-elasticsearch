@@ -15,7 +15,7 @@ package org.frameworkset.tran.kafka.input.es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.tran.kafka.KafkaImportConfig;
 import org.frameworkset.tran.kafka.KafkaImportContext;
 

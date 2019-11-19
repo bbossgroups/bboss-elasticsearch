@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.tran;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -16,7 +16,6 @@ package org.frameworkset.elasticsearch.client.tran;
  */
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -26,6 +25,6 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public interface Data {
-	List<Map<String,Object>> getDatas();
+public interface Data<T> {
+	List<T> getDatas();
 }

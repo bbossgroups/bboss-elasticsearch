@@ -1,8 +1,8 @@
 package org.frameworkset.tran.mongodb.input.es;
 
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.BaseElasticsearchDataTran;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.BaseElasticsearchDataTran;
+import org.frameworkset.tran.TranResultSet;
 
 public class MongoDB2ESDataTran extends BaseElasticsearchDataTran {
 

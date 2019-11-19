@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.tran;/*
+package org.frameworkset.tran;/*
  *  Copyright 2008 biaoping.yin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +14,9 @@ package org.frameworkset.elasticsearch.client.tran;/*
  *  limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ESDataImportException;
-
-import java.util.Date;
-
-public interface TranResultSet {
-
-	public Object getValue(  int i, String colName,int sqlType) throws ESDataImportException;
-
-	public Object getValue( String colName) throws ESDataImportException;
+public interface AsynTranResultSet<T extends Data> extends TranResultSet{
 
 
-	public Object getValue( String colName,int sqlType) throws ESDataImportException;
-
-	public Date getDateTimeValue(String colName) throws ESDataImportException;
-
-	public boolean next() throws ESDataImportException ;
-	public TranMeta getMetaData();
+	public void appendData(T datas);
+	void stop();
 }

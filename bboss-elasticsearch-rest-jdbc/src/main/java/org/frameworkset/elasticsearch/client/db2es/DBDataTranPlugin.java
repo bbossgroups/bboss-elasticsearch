@@ -22,8 +22,8 @@ import com.frameworkset.orm.transaction.TransactionManager;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.schedule.SQLInfo;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
+import org.frameworkset.tran.SQLBaseDataTranPlugin;
 import org.frameworkset.util.tokenizer.TextGrammarParser;
 
 import java.sql.SQLException;

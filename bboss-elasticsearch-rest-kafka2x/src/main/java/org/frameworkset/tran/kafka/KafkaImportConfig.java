@@ -33,12 +33,21 @@ public class KafkaImportConfig extends BaseImportConfig {
 	private long checkinterval = 3000l;
 	private int consumerThreads;
 	private int pollTimeOut;
+	public static final String CODEC_TEXT = "text";
+	public static final String CODEC_LONG = "long";
+	public static final String CODEC_JSON = "json";
+	public static final String CODEC_INTEGER = "int";
+	/**
+	 * json
+	 * text
+	 */
+	private String valueCodec;
 
 	/**
 	 * json
 	 * text
 	 */
-	private String codec;
+	private String keyCodec;
 	/**
 	 * 并行消费处理消息
 	 */
@@ -91,11 +100,19 @@ public class KafkaImportConfig extends BaseImportConfig {
 		this.pollTimeOut = pollTimeOut;
 	}
 
-	public String getCodec() {
-		return codec;
+	public String getValueCodec() {
+		return valueCodec;
 	}
 
-	public void setCodec(String codec) {
-		this.codec = codec;
+	public void setValueCodec(String valueCodec) {
+		this.valueCodec = valueCodec;
+	}
+
+	public String getKeyCodec() {
+		return keyCodec;
+	}
+
+	public void setKeyCodec(String keyCodec) {
+		this.keyCodec = keyCodec;
 	}
 }

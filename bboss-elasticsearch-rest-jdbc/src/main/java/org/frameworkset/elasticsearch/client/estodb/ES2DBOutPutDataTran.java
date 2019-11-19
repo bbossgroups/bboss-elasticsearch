@@ -1,7 +1,7 @@
 package org.frameworkset.elasticsearch.client.estodb;
 
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.TranResultSet;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.tran.db.output.AsynDBOutPutDataTran;
 

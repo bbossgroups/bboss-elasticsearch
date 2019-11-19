@@ -15,8 +15,6 @@ package org.frameworkset.tran;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.Data;
-
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +26,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefaultData implements Data {
+public class DefaultData implements Data<Map<String, Object>> {
 		private List<Map<String, Object>> datas;
 		public DefaultData(List<Map<String, Object>> datas){
 			this.datas = datas;

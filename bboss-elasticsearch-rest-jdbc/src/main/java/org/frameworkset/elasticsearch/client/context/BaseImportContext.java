@@ -19,8 +19,8 @@ import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.*;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
 import org.frameworkset.elasticsearch.client.schedule.*;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.elasticsearch.client.tran.ExportCount;
+import org.frameworkset.tran.DataTranPlugin;
+import org.frameworkset.tran.ExportCount;
 
 import java.math.BigDecimal;
 import java.util.Date;

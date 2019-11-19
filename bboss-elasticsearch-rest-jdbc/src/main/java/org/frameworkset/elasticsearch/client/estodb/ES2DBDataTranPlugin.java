@@ -19,11 +19,12 @@ import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.AsynBaseTranResultSet;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
-import org.frameworkset.elasticsearch.client.tran.SQLBaseDataTranPlugin;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.frameworkset.elasticsearch.template.ESInfo;
+import org.frameworkset.tran.AsynBaseTranResultSet;
+import org.frameworkset.tran.DataTranPlugin;
+import org.frameworkset.tran.SQLBaseDataTranPlugin;
+import org.frameworkset.tran.es.ES2DBTranResultSet;
 import org.frameworkset.tran.util.TranUtil;
 
 import java.util.HashMap;
@@ -161,7 +162,7 @@ public class ES2DBDataTranPlugin extends SQLBaseDataTranPlugin implements DataTr
 			}
 		}
 		else {
-			AsynBaseTranResultSet jdbcResultSet = new AsynBaseTranResultSet(importContext);
+			AsynBaseTranResultSet jdbcResultSet = new ES2DBTranResultSet(importContext);
 			final CountDownLatch countDownLatch = new CountDownLatch(1);
 			final ES2DBOutPutDataTran es2DBDataTran = new ES2DBOutPutDataTran(jdbcResultSet,importContext,countDownLatch);
 			ESExporterScrollHandler<Map> esExporterScrollHandler = new ESExporterScrollHandler<Map>(importContext, executor,

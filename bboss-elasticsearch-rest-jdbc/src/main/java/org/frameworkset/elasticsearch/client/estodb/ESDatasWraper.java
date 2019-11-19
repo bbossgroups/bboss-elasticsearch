@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client.estodb;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.Data;
+import org.frameworkset.tran.Data;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESDatasWraper implements Data {
+public class ESDatasWraper implements Data<Map<String, Object>> {
 	private ESDatas esDatas;
 	public ESDatasWraper(ESDatas esDatas){
 		this.esDatas = esDatas;

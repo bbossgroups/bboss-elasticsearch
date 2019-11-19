@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.tran;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,24 +15,19 @@ package org.frameworkset.elasticsearch.client.tran;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ESDataImportException;
+import java.util.Set;
 
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/10/27 10:42
+ * @Date 2019/11/19 10:29
  * @author biaoping.yin
  * @version 1.0
  */
-public interface TranMeta {
-	int getColumnCount() throws ESDataImportException;
+public interface Record {
 
-	String getColumnLabelByIndex(int i) throws ESDataImportException;
-
-	int getColumnTypeByIndex(int i) throws ESDataImportException;
-
-	String getColumnJavaNameByIndex(int i) throws ESDataImportException;
-
-	String getColumnLabelLowerByIndex(int i) throws ESDataImportException;
+	Object getValue(String colName);
+	public Set<String> getKeys();
+	public Object getData();
 }

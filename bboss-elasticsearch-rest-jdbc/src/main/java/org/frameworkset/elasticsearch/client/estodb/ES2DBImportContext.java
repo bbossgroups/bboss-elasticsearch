@@ -17,7 +17,7 @@ package org.frameworkset.elasticsearch.client.estodb;
 
 import com.frameworkset.common.poolman.BatchHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportConfig;
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.tran.db.DBImportContext;
 
 import java.util.Map;

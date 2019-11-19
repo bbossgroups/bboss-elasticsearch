@@ -74,5 +74,11 @@ public abstract class KafkaImportContext extends BaseImportContext implements Ka
 		return kafkaImportConfig.getPollTimeOut();
 	}
 
+	public String getValueCodec(){
+		return kafkaImportConfig.getValueCodec();
+	}
 
+	public String getKeyCodec(){
+		return kafkaImportConfig.getKeyCodec();
+	}
 }

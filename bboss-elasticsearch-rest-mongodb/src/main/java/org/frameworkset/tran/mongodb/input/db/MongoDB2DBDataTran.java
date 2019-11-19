@@ -1,7 +1,7 @@
 package org.frameworkset.tran.mongodb.input.db;
 
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.TranResultSet;
+import org.frameworkset.tran.TranResultSet;
 import org.frameworkset.tran.db.output.DBOutPutDataTran;
 
 import java.util.List;

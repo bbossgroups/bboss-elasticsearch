@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client.tran;
+package org.frameworkset.tran;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -21,7 +21,6 @@ import org.frameworkset.elasticsearch.client.util.TranUtil;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -34,20 +33,20 @@ import java.util.concurrent.TimeUnit;
  * @author biaoping.yin
  * @version 1.0
  */
-public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet<T> {
-	private Map<String,Object> record;
-	private List<Map<String,Object>> records;
+public abstract class AsynBaseTranResultSet<T extends Data> implements AsynTranResultSet<T> {
+	private Record record;
+	private List<Object> records;
 	private int pos = 0;
 	private int size;
 	public static int STATUS_STOP = 1;
 	private int status;
 	private BlockingQueue<T> queue ;
-	private ImportContext importContext;
+	protected ImportContext importContext;
 	public AsynBaseTranResultSet(ImportContext importContext) {
 		queue = new ArrayBlockingQueue<T>(importContext.getTranDataBufferQueue());
 		this.importContext = importContext;
 	}
-
+	protected abstract Record buildRecord(Object data);
 
 	public void appendData(T datas){
 
@@ -73,7 +72,7 @@ public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet
 
 	@Override
 	public Object getValue(String colName) throws ESDataImportException {
-		return record.get(colName);
+		return record.getValue(colName);
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet
 	@Override
 	public boolean next() throws ESDataImportException {
 		if( pos < size){
-			record = records.get(pos);
+			record = buildRecord(records.get(pos));
 			pos ++;
 			return true;
 		}
@@ -142,7 +141,7 @@ public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet
 				}
 
 				pos = 0;
-				record = records.get(pos);
+				record = buildRecord(records.get(pos));
 				pos ++;
 				return true;
 			} catch (InterruptedException e) {
@@ -153,6 +152,6 @@ public class AsynBaseTranResultSet<T extends Data>  implements AsynTranResultSet
 
 	@Override
 	public TranMeta getMetaData() {
-		return null;
+		return new DefaultTranMetaData(record.getKeys());
 	}
 }

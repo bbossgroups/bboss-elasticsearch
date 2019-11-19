@@ -17,7 +17,7 @@ package org.frameworkset.elasticsearch.client.db2es;
 
 import com.frameworkset.common.poolman.sql.PoolManResultSetMetaData;
 import org.frameworkset.elasticsearch.client.ESDataImportException;
-import org.frameworkset.elasticsearch.client.tran.TranMeta;
+import org.frameworkset.tran.TranMeta;
 
 import java.sql.SQLException;
 

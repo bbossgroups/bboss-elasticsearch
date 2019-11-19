@@ -18,7 +18,7 @@ package org.frameworkset.elasticsearch.client.context;
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import org.frameworkset.elasticsearch.client.FieldMeta;
-import org.frameworkset.elasticsearch.client.tran.TranMeta;
+import org.frameworkset.tran.TranMeta;
 import org.frameworkset.spi.geoip.IpInfo;
 
 import java.text.DateFormat;

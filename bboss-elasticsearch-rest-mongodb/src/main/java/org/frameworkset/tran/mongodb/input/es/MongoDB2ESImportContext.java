@@ -15,7 +15,7 @@ package org.frameworkset.tran.mongodb.input.es;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.tran.DataTranPlugin;
+import org.frameworkset.tran.DataTranPlugin;
 import org.frameworkset.tran.mongodb.MongoDBImportConfig;
 import org.frameworkset.tran.mongodb.MongoDBImportContext;
 

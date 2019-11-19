@@ -23,7 +23,7 @@ import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.elasticsearch.client.metrics.ImportCount;
 import org.frameworkset.elasticsearch.client.task.BaseTaskCommand;
 import org.frameworkset.elasticsearch.client.task.TaskFailedException;
-import org.frameworkset.elasticsearch.client.tran.Param;
+import org.frameworkset.tran.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

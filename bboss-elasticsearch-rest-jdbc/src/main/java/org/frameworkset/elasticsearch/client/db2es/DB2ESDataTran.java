@@ -1,7 +1,7 @@
 package org.frameworkset.elasticsearch.client.db2es;
 
 import org.frameworkset.elasticsearch.client.context.ImportContext;
-import org.frameworkset.elasticsearch.client.tran.BaseElasticsearchDataTran;
+import org.frameworkset.tran.BaseElasticsearchDataTran;
 
 public class DB2ESDataTran extends BaseElasticsearchDataTran {
 

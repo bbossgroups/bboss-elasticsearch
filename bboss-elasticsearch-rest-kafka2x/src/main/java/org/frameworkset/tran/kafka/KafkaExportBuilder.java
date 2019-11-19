@@ -15,6 +15,7 @@ package org.frameworkset.tran.kafka;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.DataStream;
 import org.frameworkset.elasticsearch.client.ExportResultHandler;
 import org.frameworkset.elasticsearch.client.WrapedExportResultHandler;
 import org.frameworkset.elasticsearch.client.config.BaseImportBuilder;
@@ -37,21 +38,20 @@ public abstract class KafkaExportBuilder extends BaseImportBuilder {
 	private int consumerThreads;
 	private int pollTimeOut;
 
-	public String getCodec() {
-		return codec;
-	}
 
-	public KafkaExportBuilder setCodec(String codec) {
-		this.codec = codec;
-		return this;
-	}
+
+
 
 	/**
 	 * json
 	 * text
 	 */
-	private String codec;
-
+	private String valueCodec;
+	/**
+	 * json
+	 * text
+	 */
+	private String keyCodec;
 	/**
 	 * 并行消费处理消息
 	 */
@@ -116,6 +116,75 @@ public abstract class KafkaExportBuilder extends BaseImportBuilder {
 
 	public KafkaExportBuilder setConsumerThreads(int consumerThreads) {
 		this.consumerThreads = consumerThreads;
+		return this;
+	}
+	protected abstract DataStream createDataStream();
+	@Override
+	public DataStream builder() {
+		super.builderConfig();
+//		this.buildDBConfig();
+//		this.buildStatusDBConfig();
+		try {
+			logger.info("Import Configs:");
+			logger.info(this.toString());
+		}
+		catch (Exception e){
+
+		}
+		KafkaImportConfig es2DBImportConfig = new KafkaImportConfig();
+		super.buildImportConfig(es2DBImportConfig);
+		es2DBImportConfig.setCheckinterval(this.getCheckinterval());
+		es2DBImportConfig.setDiscardRejectMessage(this.isDiscardRejectMessage());
+		preHandlerCodec();
+		es2DBImportConfig.setKafkaConfigs(this.getKafkaConfigs());
+		es2DBImportConfig.setKafkaTopic(this.getKafkaTopic());
+		es2DBImportConfig.setPollTimeOut(this.getPollTimeOut());
+		es2DBImportConfig.setConsumerThreads(this.getConsumerThreads());
+		es2DBImportConfig.setValueCodec(this.getValueCodec());
+		DataStream dataStream = createDataStream();//new Kafka2ESDataStreamImpl();
+		dataStream.setImportConfig(es2DBImportConfig);
+		return dataStream;
+	}
+	private void preHandlerCodec(){
+		Properties properties = this.getKafkaConfigs();
+		if(!properties.containsKey("value.deserializer")){
+			if(this.getValueCodec() != null && KafkaImportConfig.CODEC_JSON.equals(this.getValueCodec())) {
+				properties.put("value.deserializer", "org.frameworkset.tran.kafka.codec.JsonDeserializer");
+			}
+			else{
+				properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+			}
+		}
+		if(!properties.containsKey("key.deserializer") && this.getKeyCodec() != null){
+			//key.deserializer","org.apache.kafka.common.serialization.LongDeserializer
+			if(KafkaImportConfig.CODEC_TEXT.equals(this.getKeyCodec())) {
+				properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+			}
+			else if(KafkaImportConfig.CODEC_LONG.equals(this.getKeyCodec())) {
+				properties.put("key.deserializer", "org.apache.kafka.common.serialization.LongDeserializer");
+			}
+			else if(KafkaImportConfig.CODEC_INTEGER.equals(this.getKeyCodec())) {
+				properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+			}
+		}
+
+	}
+
+	public String getValueCodec() {
+		return valueCodec;
+	}
+
+	public KafkaExportBuilder setValueCodec(String valueCodec) {
+		this.valueCodec = valueCodec;
+		return this;
+	}
+
+	public String getKeyCodec() {
+		return keyCodec;
+	}
+
+	public KafkaExportBuilder setKeyCodec(String keyCodec) {
+		this.keyCodec = keyCodec;
 		return this;
 	}
 }
