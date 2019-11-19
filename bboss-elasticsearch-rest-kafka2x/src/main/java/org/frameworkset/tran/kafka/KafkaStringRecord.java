@@ -15,7 +15,6 @@ package org.frameworkset.tran.kafka;
  * limitations under the License.
  */
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.tran.Record;
 
 import java.util.Set;
@@ -29,20 +28,23 @@ import java.util.Set;
  * @version 1.0
  */
 public class KafkaStringRecord implements Record {
-	private ConsumerRecord<Object,String> record;
-	public KafkaStringRecord(ConsumerRecord<Object,String> record){
+	private Object key;
+	private String record;
+	public KafkaStringRecord(Object key,String record){
 		this.record = record;
+		this.key = key;
 	}
 	@Override
 	public Object getValue(String colName) {
-		String r = record.value();
 
-		return r;
+
+		return record;
 	}
 	public Set<String> getKeys(){
 		return null;
 	}
 	public Object getData(){
-		return record;
+		return this;
 	}
+
 }

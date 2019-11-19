@@ -27,7 +27,7 @@ import java.util.Map;
  *  String encoding defaults to UTF8 and can be customized by setting the property key.deserializer.encoding,
  *  value.deserializer.encoding or deserializer.encoding. The first two take precedence over the last.
  */
-public class JsonDeserializer implements Deserializer<Map<String,Object>> {
+public class JsonDeserializer implements Deserializer<Object> {
     private String encoding = "UTF8";
 
     @Override
@@ -41,13 +41,13 @@ public class JsonDeserializer implements Deserializer<Map<String,Object>> {
     }
 
     @Override
-    public Map<String,Object> deserialize(String topic, byte[] data) {
+    public Object deserialize(String topic, byte[] data) {
         try {
             if (data == null)
                 return null;
             else {
 //                return new String(data, encoding);
-                return SimpleStringUtil.json2LHashObject(new ByteArrayInputStream(data),String.class,Object.class);
+                return SimpleStringUtil.json2Object(new ByteArrayInputStream(data),Object.class);
             }
         } catch (Exception e) {
             throw new SerializationException("Error when deserializing byte[] to string due to unsupported encoding " + encoding);

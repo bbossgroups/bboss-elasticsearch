@@ -47,4 +47,5 @@ public class ESRecord implements Record {
 	public Object getData(){
 		return data;
 	}
+
 }

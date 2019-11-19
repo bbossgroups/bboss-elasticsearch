@@ -304,7 +304,13 @@ public class ContextImpl implements Context {
 		else
 			return esjdbc.getEsParentIdValue();
 	}
-
+	/**
+	 * 获取原始记录对象
+	 * @return
+	 */
+	public Object getRecord(){
+		return jdbcResultSet.getRecord();
+	}
 	public Object getRouting() throws Exception{
 
 		Object routing =  jdbcResultSet.getValue(esjdbc.getRoutingField());

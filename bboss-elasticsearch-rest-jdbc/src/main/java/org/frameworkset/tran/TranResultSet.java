@@ -31,4 +31,6 @@ public interface TranResultSet {
 
 	public boolean next() throws ESDataImportException ;
 	public TranMeta getMetaData();
+
+	Object getRecord();
 }

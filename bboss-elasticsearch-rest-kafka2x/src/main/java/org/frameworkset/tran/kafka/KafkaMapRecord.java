@@ -15,7 +15,6 @@ package org.frameworkset.tran.kafka;
  * limitations under the License.
  */
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.tran.Record;
 
 import java.util.Map;
@@ -30,20 +29,22 @@ import java.util.Set;
  * @version 1.0
  */
 public class KafkaMapRecord implements Record {
-	private ConsumerRecord<Object,Map<String,Object>> record;
-	public KafkaMapRecord(ConsumerRecord<Object,Map<String,Object>> record){
+	private Object key;
+	private Map<String,Object> record;
+	public KafkaMapRecord(Object key, Map<String,Object> record){
 		this.record = record;
+		this.key = key;
 	}
 	@Override
 	public Object getValue(String colName) {
-		Map r = record.value();
 
-		return r.get(colName);
+		return record.get(colName);
 	}
 	public Set getKeys(){
-		return record.value().keySet();
+		return record.keySet();
 	}
 	public Object getData(){
-		return record;
+		return this;
 	}
+
 }

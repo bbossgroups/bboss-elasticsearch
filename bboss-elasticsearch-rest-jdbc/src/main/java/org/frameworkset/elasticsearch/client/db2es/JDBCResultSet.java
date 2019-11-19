@@ -41,6 +41,11 @@ public class JDBCResultSet implements TranResultSet {
 		return metaData;
 	}
 
+	@Override
+	public Object getRecord() {
+		return getResultSet();
+	}
+
 	public void setMetaData(PoolManResultSetMetaData metaData) {
 		this.metaData = new JDBCTranMetaData(metaData);
 	}

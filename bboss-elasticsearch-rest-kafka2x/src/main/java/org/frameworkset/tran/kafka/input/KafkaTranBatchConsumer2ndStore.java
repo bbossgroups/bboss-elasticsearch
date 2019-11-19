@@ -18,10 +18,16 @@ package org.frameworkset.tran.kafka.input;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.plugin.kafka.KafkaBatchConsumer2ndStore;
+import org.frameworkset.tran.Record;
 import org.frameworkset.tran.es.output.AsynESOutPutDataTran;
+import org.frameworkset.tran.kafka.KafkaContext;
+import org.frameworkset.tran.kafka.KafkaImportConfig;
+import org.frameworkset.tran.kafka.KafkaMapRecord;
+import org.frameworkset.tran.kafka.KafkaStringRecord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -32,26 +38,79 @@ import java.util.List;
  * @version 1.0
  */
 public class KafkaTranBatchConsumer2ndStore extends KafkaBatchConsumer2ndStore {
-	public KafkaTranBatchConsumer2ndStore(AsynESOutPutDataTran asynESOutPutDataTran) {
+	private KafkaContext kafkaContext;
+	public KafkaTranBatchConsumer2ndStore(AsynESOutPutDataTran asynESOutPutDataTran, KafkaContext kafkaContext) {
 		this.asynESOutPutDataTran = asynESOutPutDataTran;
+		this.kafkaContext = kafkaContext;
 	}
 
 	private AsynESOutPutDataTran asynESOutPutDataTran;
 	@Override
 	public void store(List<ConsumerRecord<Object,Object>> messages) throws Exception {
-//		for(ConsumerRecord<Object,Object> message:messages){
-//			Object data = message.value();
-//			Object key =  message.key();
-//			System.out.println("key="+key+",data="+data+",topic="+message.topic()+",partition="+message.partition()+",offset="+message.offset());
-//		}
-		asynESOutPutDataTran.appendInData(messages);
+
+		List<Record> records = parserData(messages);
+		asynESOutPutDataTran.appendInData(records);
 	}
 
 	@Override
 	public void store(ConsumerRecord<Object, Object> message) throws Exception {
 		List<ConsumerRecord<Object,Object>> messages = new ArrayList<>();
 		messages.add(message);
-		asynESOutPutDataTran.appendInData(messages);
+		store(messages);
+	}
+
+	protected List<Record> parserData(List<ConsumerRecord<Object,Object>> messages) {
+		List<Record> results = new ArrayList<>();
+		for(int k = 0; k < messages.size(); k ++) {
+			ConsumerRecord consumerRecord = messages.get(k);
+			if (this.kafkaContext.getValueCodec() == KafkaImportConfig.CODEC_JSON) {
+				Object value = consumerRecord.value();
+				if (value instanceof List) {
+					List<Map> rs = (List<Map>) value;
+
+					for (int i = 0; i < rs.size(); i++) {
+						results.add(new KafkaMapRecord(consumerRecord.key(), rs.get(i)));
+					}
+
+				} else {
+					results.add( new KafkaMapRecord(consumerRecord.key(), (Map<String, Object>) value));
+				}
+			} else if (this.kafkaContext.getValueCodec() == KafkaImportConfig.CODEC_TEXT) {
+				Object value = consumerRecord.value();
+				if (value instanceof List) {
+					List<String> rs = (List<String>) value;
+
+					for (int i = 0; i < rs.size(); i++) {
+						results.add(new KafkaStringRecord(consumerRecord.key(), rs.get(i)));
+					}
+					//return new KafkaMapRecord((ConsumerRecord<Object, List<Map<String, Object>>>) data);
+				} else {
+					results.add( new KafkaStringRecord(consumerRecord.key(), (String) value));
+				}
+			} else {
+				Object value = consumerRecord.value();
+
+				if (value instanceof List) {
+					List rs = (List) value;
+
+					for (int i = 0; i < rs.size(); i++) {
+						Object v = rs.get(i);
+						if (v instanceof Map) {
+							results.add(new KafkaMapRecord(consumerRecord.key(), (Map<String, Object>) v));
+						} else {
+							results.add(new KafkaStringRecord(consumerRecord.key(), (String) v));
+						}
+					}
+					//return new KafkaMapRecord((ConsumerRecord<Object, List<Map<String, Object>>>) data);
+				} else if (value instanceof Map) {
+					results.add( new KafkaMapRecord(consumerRecord.key(), (Map<String, Object>) value));
+				} else if (value instanceof String) {
+					results.add(new KafkaStringRecord(consumerRecord.key(), (String) value));
+				}
+				throw new IllegalArgumentException(new StringBuilder().append("unknown consumerRecord").append(consumerRecord.toString()).toString());
+			}
+		}
+		return results;
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 		KafkaResultSet kafkaResultSet = new KafkaResultSet(this.importContext);
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final Kafka2ESDataTran kafka2ESDataTran = new Kafka2ESDataTran(kafkaResultSet,importContext);
-		final KafkaTranBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaTranBatchConsumer2ndStore(kafka2ESDataTran);
+		final KafkaTranBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaTranBatchConsumer2ndStore(kafka2ESDataTran,kafkaContext);
 		Thread tranThread = null;
 		try {
 			tranThread = new Thread(new Runnable() {

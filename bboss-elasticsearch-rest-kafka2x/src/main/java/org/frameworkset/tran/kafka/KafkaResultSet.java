@@ -15,12 +15,9 @@ package org.frameworkset.tran.kafka;
  * limitations under the License.
  */
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.tran.AsynBaseTranResultSet;
 import org.frameworkset.tran.Record;
-
-import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -39,23 +36,7 @@ public class KafkaResultSet extends AsynBaseTranResultSet {
 
 	@Override
 	protected Record buildRecord(Object data) {
-		if(this.kafkaContext.getValueCodec() == KafkaImportConfig.CODEC_JSON) {
-			return new KafkaMapRecord((ConsumerRecord<Object, Map<String, Object>>) data);
-		}
-		else if(this.kafkaContext.getValueCodec() == KafkaImportConfig.CODEC_TEXT){
-			return new KafkaStringRecord((ConsumerRecord<Object, String>) data);
-		}
-		else{
-			ConsumerRecord consumerRecord = (ConsumerRecord)data;
-			Object value = consumerRecord.value();
-			if(value instanceof Map){
-				return new KafkaMapRecord(consumerRecord);
-			}
-			else if(value instanceof String){
-				return new KafkaStringRecord(consumerRecord);
-			}
-			throw new IllegalArgumentException(new StringBuilder().append("unknown consumerRecord").append(consumerRecord.toString()).toString());
-		}
+		 return (Record)data;
 	}
 
 

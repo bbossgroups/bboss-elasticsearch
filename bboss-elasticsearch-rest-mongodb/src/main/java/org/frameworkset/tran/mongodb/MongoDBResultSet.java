@@ -90,4 +90,9 @@ public class MongoDBResultSet implements TranResultSet {
 	public TranMeta getMetaData() {
 		return new DefaultTranMetaData(record.keySet());
 	}
+
+	@Override
+	public Object getRecord() {
+		return record;
+	}
 }

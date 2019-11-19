@@ -154,4 +154,7 @@ public abstract class AsynBaseTranResultSet<T extends Data> implements AsynTranR
 	public TranMeta getMetaData() {
 		return new DefaultTranMetaData(record.getKeys());
 	}
+	public Object getRecord(){
+		return record.getData();
+	}
 }

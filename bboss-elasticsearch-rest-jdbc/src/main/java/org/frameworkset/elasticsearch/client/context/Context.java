@@ -89,5 +89,11 @@ public interface Context {
 
 	public BatchContext getBatchContext();
 
+	/**
+	 * 获取原始记录对象
+	 * @return
+	 */
+	public Object getRecord();
+
 
 }
