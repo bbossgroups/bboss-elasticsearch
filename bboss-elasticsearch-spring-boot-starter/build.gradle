@@ -28,7 +28,7 @@ sourceSets {
 dependencies {
 
 	compile(
-			project(':bboss-elasticsearch-rest-jdbc')
+			project(':bboss-elasticsearch-rest-booter')
 	)
 	compileOnly(
 			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.2.0.RELEASE', transitive: true],

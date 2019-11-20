@@ -1,2 +1,0 @@
-mongodb-es
-mongodb-db
