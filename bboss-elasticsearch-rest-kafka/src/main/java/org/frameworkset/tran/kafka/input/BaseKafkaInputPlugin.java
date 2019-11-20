@@ -31,7 +31,7 @@ import org.frameworkset.tran.kafka.input.es.Kafka2ESDataTran;
  * @author biaoping.yin
  * @version 1.0
  */
-public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlugin {
+public abstract class BaseKafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlugin {
 	protected KafkaContext kafkaContext;
 	protected void init(ImportContext importContext){
 		super.init(importContext);
@@ -40,7 +40,7 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 	}
 
 
-	public KafkaInputPlugin(ImportContext importContext){
+	public BaseKafkaInputPlugin(ImportContext importContext){
 		super(importContext);
 
 
@@ -80,13 +80,13 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 	public void afterInit(){
 	}
 
-
+	protected abstract void initKafkaTranBatchConsumer2ndStore(Kafka2ESDataTran kafka2ESDataTran) throws Exception;
 
 	public void doImportData()  throws ESDataImportException{
 		KafkaResultSet kafkaResultSet = new KafkaResultSet(this.importContext);
 //		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final Kafka2ESDataTran kafka2ESDataTran = new Kafka2ESDataTran(kafkaResultSet,importContext);
-		final KafkaTranBatchConsumer2ndStore kafkaBatchConsumer2ndStore = new KafkaTranBatchConsumer2ndStore(kafka2ESDataTran,kafkaContext);
+
 		Thread tranThread = null;
 		try {
 			tranThread = new Thread(new Runnable() {
@@ -96,16 +96,8 @@ public class KafkaInputPlugin extends BaseDataTranPlugin implements DataTranPlug
 				}
 			},"kafka-elasticsearch-Tran");
 			tranThread.start();
-			kafkaBatchConsumer2ndStore.setTopic(kafkaContext.getKafkaTopic());
-			kafkaBatchConsumer2ndStore.setBatchsize(importContext.getFetchSize());
-			kafkaBatchConsumer2ndStore.setCheckinterval(kafkaContext.getCheckinterval());
-			kafkaBatchConsumer2ndStore.setConsumerPropes(kafkaContext.getKafkaConfigs());
-			kafkaBatchConsumer2ndStore.setPartitions(kafkaContext.getConsumerThreads());
-			kafkaBatchConsumer2ndStore.setDiscardRejectMessage(kafkaContext.isDiscardRejectMessage());
-			kafkaBatchConsumer2ndStore.setPollTimeOut(kafkaContext.getPollTimeOut());
-			kafkaBatchConsumer2ndStore.afterPropertiesSet();
-			Thread consumerThread = new Thread(kafkaBatchConsumer2ndStore,"kafka-elasticsearch-BatchConsumer2ndStore");
-			consumerThread.start();
+
+			this.initKafkaTranBatchConsumer2ndStore(kafka2ESDataTran);
 		} catch (ESDataImportException e) {
 			throw e;
 		} catch (Exception e) {

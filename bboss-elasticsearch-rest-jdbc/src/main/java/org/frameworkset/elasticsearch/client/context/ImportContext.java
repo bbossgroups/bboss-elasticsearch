@@ -140,6 +140,5 @@ public interface ImportContext {
 //	public Object getValue(String columnName) throws ESDataImportException;
 //	public Object getDateTimeValue(String columnName) throws ESDataImportException;
 	void setDataRefactor( DataRefactor dataRefactor);
-	boolean isMQ();
 
 }

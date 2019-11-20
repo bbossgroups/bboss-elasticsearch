@@ -15,7 +15,6 @@ package org.frameworkset.tran.kafka;
  * limitations under the License.
  */
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.frameworkset.tran.Data;
 
 import java.util.List;
@@ -28,13 +27,13 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class KafkaData implements Data<ConsumerRecord<Object,Object>> {
-		private List<ConsumerRecord<Object,Object>> datas;
-		public KafkaData(List<ConsumerRecord<Object,Object>> datas){
+public class KafkaData implements Data {
+		private List datas;
+		public KafkaData(List datas){
 			this.datas = datas;
 		}
 		@Override
-		public List<ConsumerRecord<Object,Object>> getDatas() {
+		public List getDatas() {
 			return datas;
 		}
 }

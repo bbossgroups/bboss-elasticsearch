@@ -27,7 +27,7 @@ sourceSets {
 
 dependencies {
 	compile project(':bboss-elasticsearch-rest-kafka')
-	compile([group: 'com.bbossgroups.plugins', name: 'bboss-plugin-kafka2x', version: "${kafka_plugin}", transitive: true])
+	compile([group: 'com.bbossgroups.plugins', name: 'bboss-plugin-kafka1x', version: "${kafka_plugin}", transitive: true])
 
 }
 

@@ -46,9 +46,7 @@ public abstract  class BaseImportContext implements ImportContext {
 	public BaseImportContext(){
 
 	}
-	public boolean isMQ(){
-		return false;
-	}
+
 	public boolean isSortLastValue() {
 		return baseImportConfig.isSortLastValue();
 	}

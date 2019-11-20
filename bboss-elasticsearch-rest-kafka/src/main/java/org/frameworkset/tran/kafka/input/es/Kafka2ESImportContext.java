@@ -15,9 +15,13 @@ package org.frameworkset.tran.kafka.input.es;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.context.ImportContext;
 import org.frameworkset.tran.DataTranPlugin;
+import org.frameworkset.tran.ESDataImportException;
 import org.frameworkset.tran.kafka.KafkaImportConfig;
 import org.frameworkset.tran.kafka.KafkaImportContext;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * <p>Description: </p>
@@ -29,17 +33,31 @@ import org.frameworkset.tran.kafka.KafkaImportContext;
  */
 public class Kafka2ESImportContext extends KafkaImportContext {
 
-
+	private static final String Kafka2ESInputPlugin = "org.frameworkset.tran.kafka.input.es.Kafka2ESInputPlugin";
 	public Kafka2ESImportContext(KafkaImportConfig importConfig) {
 		super(importConfig);
 	}
 
 	protected DataTranPlugin buildDataTranPlugin()
 	{
-		return new Kafka2ESInputPlugin(this);
+
+		try {
+			Class<DataTranPlugin> clazz = (Class<DataTranPlugin>) Class.forName(Kafka2ESInputPlugin);
+			return clazz.getConstructor(ImportContext.class).newInstance(this);// Kafka2ESInputPlugin(this);
+		} catch (ClassNotFoundException e) {
+			throw new ESDataImportException(Kafka2ESInputPlugin,e);
+		} catch (InstantiationException e) {
+			throw new ESDataImportException(Kafka2ESInputPlugin,e);
+		} catch (InvocationTargetException e) {
+			throw new ESDataImportException(Kafka2ESInputPlugin,e);
+		} catch (NoSuchMethodException e) {
+			throw new ESDataImportException(Kafka2ESInputPlugin,e);
+		} catch (IllegalAccessException e) {
+			throw new ESDataImportException(Kafka2ESInputPlugin,e);
+		}
+
+
 	}
-	public boolean isMQ(){
-		return true;
-	}
+
 
 }
