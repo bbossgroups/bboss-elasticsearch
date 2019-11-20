@@ -23,7 +23,28 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+# v5.9.3 功能改进
 
+1.数据同步工具功能扩展：
+
+  增加mongodb-db同步模块,支持mongodb各个版本，各种主流数据库
+  
+  https://github.com/bbossgroups/mongodb-elasticsearch
+  
+  增加kafka1x-elasticsearch同步模块兼容kafka_2.12-0.10.2.0系列版本,elasticsearch各个版本
+  
+  https://github.com/bbossgroups/kafka1x-elasticsearch
+  
+  增加kafka2x-elasticsearch同步模块兼容kafka_2.12-2.3.0 系列版本,elasticsearch各个版本
+  
+  https://github.com/bbossgroups/kafka2x-elasticsearch
+  
+  调整同步程序包路径，api兼容旧版本
+
+2.将数据同步模块从elasticsearch模块剥离，单独形成gradle工程  
+
+  https://github.com/bbossgroups/bboss-elastic-tran
+  
 # v5.9.2 功能改进
 
 1.增加MetaMap类：MetaMap继承HashMap，为map 增加meta元数据相关的属性信息，参考示例：
