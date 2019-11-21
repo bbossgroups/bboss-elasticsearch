@@ -46,13 +46,13 @@ ip:port（默认http协议）
 
 如果是gradle工程，导入方法如下：
 
-```
-implementation 'com.bbossgroups:bboss-http:5.5.9'
+```groovy
+implementation 'com.bbossgroups:bboss-http:5.6.0'
 ```
 
 # 3.负载均衡组件
 
-```
+```java
 org.frameworkset.spi.remote.http.HttpRequestProxy
 ```
 

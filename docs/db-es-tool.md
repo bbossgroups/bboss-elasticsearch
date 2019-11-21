@@ -6,13 +6,15 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
 
-bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch和Elasticsearch-DB数据同步案例（支持各种数据库和各种es版本）
+bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch、Elasticsearch-DB、mongodb-elasticsearch数据同步案例（支持各种数据库和各种es版本）
 
 通过bboss，可以非常方便地实现：
 
 1. 将数据库表数据同步到Elasticsearch
 2. 将Elasticsearch数据同步到数据库表
 3. 将mongodb数据同步到Elasticsearch
+4. 将mongodb数据同步到数据库表
+5. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
 
 导入的方式支持
 
