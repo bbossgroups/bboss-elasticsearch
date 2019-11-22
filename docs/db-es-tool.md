@@ -8,13 +8,16 @@
 
 bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch、Elasticsearch-DB、mongodb-elasticsearch数据同步案例（支持各种数据库和各种es版本）
 
+![](images\datasyn.png)
+
 通过bboss，可以非常方便地实现：
 
 1. 将数据库表数据同步到Elasticsearch
-2. 将Elasticsearch数据同步到数据库表
-3. 将mongodb数据同步到Elasticsearch
-4. 将mongodb数据同步到数据库表
-5. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
+2. 将数据库表数据同步到数据库表
+3. 将Elasticsearch数据同步到数据库表
+4. 将mongodb数据同步到Elasticsearch
+5. 将mongodb数据同步到数据库表
+6. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
 
 导入的方式支持
 
@@ -2727,6 +2730,13 @@ public class Mongodb2ESdemo {
 				//将long类型的creationTime字段转换为日期类型
 				long creationTime = context.getLongValue("creationTime");
 				context.addFieldValue("creationTime",new Date(creationTime));
+                //并将IpInfo添加到Elasticsearch文档中
+				String referip = context.getStringValue("referip");
+				if(referip != null){
+					IpInfo ipInfo = context.getIpInfoByIp(referip);
+					if(ipInfo != null)
+						context.addFieldValue("ipInfo",ipInfo);
+				}
 				 //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
 				DBObject record = (DBObject) context.getRecord();
 				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
