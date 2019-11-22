@@ -2545,7 +2545,9 @@ mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-
         importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
 ```
 
-一个完整的jdk timer同步器demo
+一个完整的jdk timer同步器demo：根据session最后访问时间将保存在mongodb中的session数据，根据一定的时间间隔增量同步到Elasitcsearch中，如需调试同步功能，直接运行和调试main方法即可，elasticsearch的配置在resources/application.properties中进行配置：
+
+ https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/resources/application.properties 
 
 ```java
 public class Mongodb2ESdemo {
@@ -2577,7 +2579,7 @@ public class Mongodb2ESdemo {
 
 		//mongodb的相关配置参数
 
-		importBuilder.setName("session")
+		importBuilder.setName("session") 
 				.setDb("sessiondb")
 				.setDbCollection("sessionmonitor_sessions")
 				.setConnectTimeout(10000)
@@ -2653,6 +2655,7 @@ public class Mongodb2ESdemo {
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 //		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型,ImportIncreamentConfig.TIMESTAMP_TYPE为时间类型
+        //设置增量查询的起始值lastvalue
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Date date = format.parse("2000-01-01");
@@ -2688,13 +2691,44 @@ public class Mongodb2ESdemo {
 //		importBuilder.addFieldValue("testObject",testObject);
 //
 //		/**
-//		 * 重新设置es数据结构
+//		 * 重新设置导入es数据结构,默认情况下，除了_id字段，其他所有的mongodb字段都会被同步到Elasticsearch中，可以通过DataRefactor来进行相关调整和处理数据，然后再导入es中。
 //		 */
 		importBuilder.setDataRefactor(new DataRefactor() {
 			public void refactor(Context context) throws Exception  {
-				 //添加字段extfiled到记录中，值为1
-				 context.addFieldValue("extfiled",1);
-
+				String id = context.getStringValue("_id");
+				//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中
+				if(id.equals("5dcaa59e9832797f100c6806"))
+					context.setDrop(true);
+				//添加字段extfiled2到记录中，值为2
+				context.addFieldValue("extfiled2",2);
+				//添加字段extfiled到记录中，值为1
+				context.addFieldValue("extfiled",1);
+				boolean httpOnly = context.getBooleanValue("httpOnly");
+				boolean secure = context.getBooleanValue("secure");
+				//空值处理
+				String userAccount = context.getStringValue("userAccount");
+				if(userAccount == null)
+					context.addFieldValue("userAccount","");
+				//空值处理
+				String testVO = context.getStringValue("testVO");
+				if(testVO == null)
+					context.addFieldValue("testVO","");
+				//空值处理
+				String privateAttr = context.getStringValue("privateAttr");
+				if(privateAttr == null)
+					context.addFieldValue("privateAttr","");
+				//空值处理
+				String local = context.getStringValue("local");
+				if(local == null)
+					context.addFieldValue("local","");
+				//将long类型的lastAccessedTime字段转换为日期类型
+				long lastAccessedTime = context.getLongValue("lastAccessedTime");
+				context.addFieldValue("lastAccessedTime",new Date(lastAccessedTime));
+				//将long类型的creationTime字段转换为日期类型
+				long creationTime = context.getLongValue("creationTime");
+				context.addFieldValue("creationTime",new Date(creationTime));
+				 //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
+				DBObject record = (DBObject) context.getRecord();
 				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
 //				context.addIgnoreFieldMapping("author");
 //				context.addIgnoreFieldMapping("title");
@@ -2711,26 +2745,27 @@ public class Mongodb2ESdemo {
 		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-		importBuilder.setEsIdField("_id");//设置文档主键，不设置，则自动产生文档id
+		importBuilder.setEsIdField("_id");//设置文档主键，不设置，则自动产生文档id,直接将mongodb的ObjectId设置为Elasticsearch的文档_id
 //		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
 //		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
 
 		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
 		importBuilder.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+		//设置任务处理结果回调接口
+		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
 			@Override
-			public void success(TaskCommand<String,String> taskCommand, String result) {
-				System.out.println(result);
+			public void success(TaskCommand<Object,String> taskCommand, String result) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 			}
 
 			@Override
-			public void error(TaskCommand<String,String> taskCommand, String result) {
-				System.out.println(result);
+			public void error(TaskCommand<Object,String> taskCommand, String result) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 			}
 
 			@Override
-			public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
-
+			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 			}
 
 			@Override
