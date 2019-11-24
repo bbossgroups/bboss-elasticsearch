@@ -24,6 +24,10 @@ https://esdoc.bbossgroups.com/#/development
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
+# v5.9.5 功能改进
+1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，已经修复，请升级版本到5.9.5！
+2.数据同步模块扩展：增加数据库到数据库的数据同步功能
+
 # v5.9.3 功能改进
 
   1.将数据同步模块从elasticsearch模块剥离，单独形成gradle工程 ，github地址： 
