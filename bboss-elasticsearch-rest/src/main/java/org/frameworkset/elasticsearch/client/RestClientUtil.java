@@ -2003,7 +2003,7 @@ public class RestClientUtil extends ClientUtil{
 //							scrollTask = new ScrollTask<T>(_scrollHandler, sliceResponse, handlerInfo,sliceScrollResult);
 //							tasks.add(executorService.submit(scrollTask));
 							runSliceScrollTask( tasks,  _scrollHandler,
-									 sliceResponse,   handlerInfo,
+									_sliceResponse,   handlerInfo,
 									  sliceScrollResult,
 									  executorService);
 						}
@@ -2434,7 +2434,7 @@ public class RestClientUtil extends ClientUtil{
 //							scrollTask = new ScrollTask<T>(scrollHandler, response, handlerInfo);
 //							tasks.add(executorService.submit(scrollTask));
 							runScrollTask( tasks, scrollHandler,
-									response,   handlerInfo,
+									_response,   handlerInfo,
 									executorService);
 						}
 						else {
