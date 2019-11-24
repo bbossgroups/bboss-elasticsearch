@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.5 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -16,7 +16,7 @@ https://esdoc.bbossgroups.com/#/development
 
 4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
 
-5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://my.oschina.net/bboss/blog/2221868)
+5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://esdoc.bbossgroups.com/#/Elasticsearch-JDBC)
 
 6. 提供快速而高效的数据导入ES工具
 
@@ -25,7 +25,8 @@ https://esdoc.bbossgroups.com/#/development
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
 
 # v5.9.5 功能改进
-1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，已经修复，请升级版本到5.9.5！
+1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.5！
+
 2.数据同步模块扩展：增加数据库到数据库的数据同步功能
 
 # v5.9.3 功能改进

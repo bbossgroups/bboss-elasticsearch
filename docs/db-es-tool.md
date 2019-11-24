@@ -55,7 +55,7 @@ bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.9.3</version>
+<version>5.9.5</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
