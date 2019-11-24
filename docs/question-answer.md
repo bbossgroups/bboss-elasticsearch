@@ -72,7 +72,33 @@ public class Order {
 1.如果返回的对象是Map类型，那么直接使用MetaMap作为返回类型即可
 
 2.如果是po对象，那么可以通过元数据注解来标注对象里面作为元数据属性的字段
-参考文档： [元数据注解](https://esdoc.bbossgroups.com/#/client-annotation?id=_2元数据注解) 	
+参考文档： [元数据注解](https://esdoc.bbossgroups.com/#/client-annotation?id=_2元数据注解) 
 
 3.接触ESId和ESBaseData对象（不推荐使用，继承的父类中定义的属性可能会和对象本身的属性冲突）
 
+# 问题4 Socket Timeout问题处理
+![](images\sockettimeout.png)
+
+如果检索返回数据过程耗时比较长，那么可能报sockettimeout异常，解决问题的办法主要有：
+
+1.优化检索的dsl，提升dsl执行效率
+
+2.限制返回数据的大小
+
+3.优化Elasticsearch配置，例如：集群扩容，加内存
+
+4.调整客户端sockettimeout参数配置
+
+这里我们说明一下在bboss里面对sockettimeout参数配置的方法，非常简单在appliction.properties文件中调整以下参数值即可，单位：毫秒
+
+http.timeoutSocket = 50000
+
+和通讯时长相关的其他几个参数：
+
+连接建立超时时间，单位：毫秒
+
+http.timeoutConnection = 5000
+
+从连接池中获取连接超时时间，单位：毫秒
+
+http.connectionRequestTimeout=10000
