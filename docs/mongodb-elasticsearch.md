@@ -81,11 +81,37 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
  https://github.com/bbossgroups/mongodb-elasticsearch 
 
-idea gradle配置
+![down](images/downmongodb2es.png)
 
-将工程导入idea、调整gradle配置、熟悉idea中使用gradle
+下载后解压到目录：
 
+![image-20191124223658972](images\mongodbdir.png)
 
+参考下面的向导将工程导入idea、调整gradle配置、熟悉idea中使用gradle
+
+第一步 导入工程
+
+![newproject](images\mongodb\newproject.png)
+
+![image-20191124233037071](\images\mongodb\selectproject.png)
+
+![image-20191124233257671](/images/mongodb/selectgradle.png)
+
+![image-20191124233257671](/images/mongodb/newwindow.png)
+
+![image-20191124233712833](/images/mongodb/importcomplete.png)
+
+进入setting，设置工程的gradle配置：
+
+![](images/mongodb/settingprojectgradle.png)
+
+设置完毕后，进入gradle面板
+
+![](E:\workspace\bbossgroups\bboss-elastic\docs\images\mongodb\importsuccess.png)
+
+可以选择gradle相关的任务进行clean和install构建操作：
+
+![image-20191124234308907](/images/mongodb/install.png)
 
 # 5.Mongodb-Elasticsearch同步作业实现、调试和发布
 
