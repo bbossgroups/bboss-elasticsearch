@@ -145,9 +145,10 @@ Spring boot use @Autowired	BBossESStarter  to get a elasticsearch rest client ap
     @Autowired
 	private BBossESStarter bbossESStarter;
 //Create a client tool to load configuration files, single instance multithreaded security
-	ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
+	ClientInterface configClientUtil = bbossESStarter.getConfigRestClient(mappath);
 		//Build a create/modify/get/delete document client object, single instance multi-thread security
 		ClientInterface clientUtil = bbossESStarter.getRestClient();	
+
 
 ```
 Spring boot Test Service example:  

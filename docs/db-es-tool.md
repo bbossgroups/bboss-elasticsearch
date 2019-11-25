@@ -6,7 +6,7 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
 
-bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据同步，后续还会支持更多的数据源之间的数据同步，本文介绍基于bboss实现DB-Elasticsearch、Elasticsearch-DB、mongodb-elasticsearch数据同步案例（支持各种数据库和各种es版本）
+bboss数据同步可以方便地实现多种数据源之间的数据同步功能，也可以从kafka1x和kafka2x系列版本消费数据写入elasticsearch，后续还会支持更多的数据源之间的数据同步，本文介绍各种数据同步案例（支持各种数据库和各种es版本）
 
 ![](images\datasyn.png)
 
@@ -42,6 +42,10 @@ bboss数据同步可以方便地实现DB-ES,ES-DB，mongodb-elasticsearch数据�
 - jdk timer （内置）
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
+
+bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包，能够非常方便地加工和处理需要同步的源数据，然后将最终的数据保存到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本，即可构建和发布出可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器。
+
+​	下面我们通过案例来介绍mongodb-elasticsearch的使用方法，你会发现整个过程下来，开发一个同步作业，其实就是在用大家熟悉的方式做一个简单的java开发编程的事情。
 
 下面详细介绍本案例。
 
@@ -2807,7 +2811,17 @@ public class Mongodb2ESdemo {
 }
 ```
 
+# 5 Database-Database数据同步使用方法
 
+ https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java 
+
+# 6 Kafka1x-Elasticsearch数据同步使用方法
+
+https://github.com/bbossgroups/kafka1x-elasticsearch
+
+# 7 Kafka2x-Elasticsearch数据同步使用方法
+
+https://github.com/bbossgroups/kafka2x-elasticsearch
 
 # 5 开发交流
 
