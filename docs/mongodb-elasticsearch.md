@@ -34,7 +34,7 @@ mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编�
 
 # 2.同步案例介绍-同步mongodb中的session数据到Elasticsearch
 
-场景比较简单，采用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。
+同步mongodb中的session数据到Elasticsearch场景比较简单，采用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。
 
 我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业，然后启动一个往mongodb中写入session数据的web应用，打开多个浏览器访问web应用，产生和修改session数据，然后观察同步作业的同步效果，演示两种调度机制效果：
 - 基于jdk timer
@@ -54,8 +54,8 @@ mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编�
 - jdk 1.8或以上
 - idea 2019
 - gradle最新版本  https://gradle.org/releases/ 
-- mongodb最新版本 
-- elasticsearch最新版本
+- mongodb 4.2.1 
+- elasticsearch版本6.5.0，亦可以采用最新的版本
 - 一个基于mongodb存储session数据的web应用(如有需要，可线下找我提供)
 - mongodb-elasticsearch工具工程（基于gradle）
 - xxl-job分布式定时任务引擎
@@ -155,42 +155,427 @@ src/main/resources/application.properties
 
 # 5.Mongodb-Elasticsearch同步作业程序开发和调试
 
-我们先新建一个基于jdk timer的数据同步作业类Mongodb2DB，定义main方法和同步方法，xxl-job的作业在此基础上进行改进即可。
+## 5.1 案例说明
+
+同步mongodb中的session数据到Elasticsearch场景比较简单，采用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。
+
+我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业，然后启动一个往mongodb中写入session数据的web应用，打开多个浏览器访问web应用，产生和修改session数据，然后观察同步作业的同步效果，演示两种调度机制效果：
+
+- 基于jdk timer
+
+- 基于xxl-job来调度作业
+
+  
+
+jdk timer调度作业对应的mongodb session表结构和elasticsearch索引表结构映射关系如下：（首先以默认的索引结构，然后可以自定义索引结构或者索引模板）
+
+mongodb对应的db：sessiondb
+
+mongodb对应的dbcollection：sessionmonitor_sessions
+
+elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
+
+对应的字段映射关系如下（后面做xxl-job分片数据同步时还会补充shardNo字段到Elasticsearch和mongodb属性中）：
+
+| mongodb             | 字段类型 | elasticsearch        | 字段类型 | 说明                                                         |
+| ------------------- | -------- | -------------------- | -------- | ------------------------------------------------------------ |
+| _id                 | String   | _id                  | text     | 文档唯一id                                                   |
+| userAccount         | String   | userAccount          | text     | session关联的用户账号                                        |
+| testVO              | xml      | testVO               | json     | session的对象属性数据,在datafactor进行类型转换               |
+| privateAttr         | xml      | privateAttr          | json     | session中的对象属性数据,在datafactor进行类型转换             |
+| referip             | String   | referip              | text     | session对应的客户端ip                                        |
+| requesturi          | String   | requesturi           | text     | 创建session对应的客户端请求url                               |
+| secure              | boolean  | secure               | boolean  | session是否启用https安全机制                                 |
+| sessionid           | String   | sessionid            | text     | session id                                                   |
+| host                | String   | host                 | text     | 创建session的服务器ip                                        |
+| httpOnly            | boolean  | httpOnly             | boolean  | session是否采用httpOly机制                                   |
+| lastAccessedHostIP  | String   | lastAccessedHostIP   | text     | 最近接收统一session请求的服务器ip                            |
+| lastAccessedTime    | long     | **lastAccessedTime** | Date     | session最近访问时间,在datafactor进行类型转换，会作为增量同步字段 |
+| lastAccessedUrl     | String   | lastAccessedUrl      | text     | 最近使用session的url                                         |
+| local               | String   | local                | text     | session中存放的local语言代码属性数据                         |
+| maxInactiveInterval | long     | maxInactiveInterval  | long     | session有效期                                                |
+| appKey              | String   | appKey               | text     | session关联的appKey                                          |
+| creationTime        | long     | creationTime         | Date     | session创建时间,在datafactor进行类型转换                     |
+|                     |          | extfiled             | int      | 在datafactor中添加的字段                                     |
+|                     |          | extfiled2            | int      | 在datafactor中添加的字段                                     |
+|                     |          | ipInfo               | json     | 在datafactor中添加的字段,根据referip计算出来的客户端ip地址信息（省市、地区、运营商、地理经纬度坐标等） |
+
+## 5.2 建立同步作业类-Mongodb2DB
+
+我们先新建一个基于jdk timer的数据同步作业类Mongodb2DB，定义main方法和同步方法scheduleImportData，后面的xxl-job的作业在此基础上进行改进即可。
 
 org.frameworkset.elasticsearch.imp.Mongodb2DB
 
 ![image-20191125223652299](images\mongodb\mongodb2db.png)
 
-jdk timer调度作业对应的mongodb session表结构和elasticsearch索引表结构映射关系如下：（首先以默认的索引结构，然后可以自定义索引结构或者索引模板）
+接下来在scheduleImportData方法中定义同步处理逻辑。
 
-| mongodb             | 字段类型 | elasticsearch       | 字段类型 | 说明                                                         |
-| ------------------- | -------- | ------------------- | -------- | ------------------------------------------------------------ |
-| _id                 | String   | _id                 | text     | 文档唯一id                                                   |
-| userAccount         | String   | userAccount         | text     | session关联的用户账号                                        |
-| testVO              | xml      | testVO              | json     | session的对象属性数据,在datafactor进行类型转换               |
-| privateAttr         | xml      | privateAttr         | json     | session中的对象属性数据,在datafactor进行类型转换             |
-| referip             | String   | referip             | text     | session对应的客户端ip                                        |
-| requesturi          | String   | requesturi          | text     | 创建session对应的客户端请求url                               |
-| secure              | boolean  | secure              | boolean  | session是否启用https安全机制                                 |
-| sessionid           | String   | sessionid           | text     | session id                                                   |
-| host                | String   | host                | text     | 创建session的服务器ip                                        |
-| httpOnly            | boolean  | httpOnly            | boolean  | session是否采用httpOly机制                                   |
-| lastAccessedHostIP  | String   | lastAccessedHostIP  | text     | 最近接收统一session请求的服务器ip                            |
-| lastAccessedTime    | long     | lastAccessedTime    | Date     | session最近访问时间,在datafactor进行类型转换                 |
-| lastAccessedUrl     | String   | lastAccessedUrl     | text     | 最近使用session的url                                         |
-| local               | String   | local               | text     | session中存放的local语言代码属性数据                         |
-| maxInactiveInterval | long     | maxInactiveInterval | long     | session有效期                                                |
-| appKey              | String   | appKey              | text     | session关联的appKey                                          |
-| creationTime        | long     | creationTime        | Date     | session创建时间,在datafactor进行类型转换                     |
-|                     |          | extfiled            | int      | 在datafactor中添加的字段                                     |
-|                     |          | extfiled2           | int      | 在datafactor中添加的字段                                     |
-|                     |          | ipInfo              | json     | 在datafactor中添加的字段,根据referip计算出来的客户端ip地址信息（省市、地区、运营商、地理经纬度坐标等） |
+## 5.2 同步作业方法代码实现
 
-同步前创建elasticsearch index mapping(可选)
+### 5.2.1 清理Elasticsearch索引表mongodbdemo(可选步骤)
 
-mongdodb主要参数配置
+在scheduleImportData方法的开始处添加删除Elasticsearch索引表mongodbdemo的代码
+
+```java
+//从application.properties配置文件中读取dropIndice属性，
+		// 是否清除elasticsearch索引，true清除，false不清除，指定了默认值false
+		boolean dropIndice = CommonLauncher.getBooleanAttribute("dropIndice",false);
+		//增量定时任务不要删表，但是可以通过删表来做初始化操作
+		if(dropIndice) {
+			try {
+				//清除测试表,导入的时候自动重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+				String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("mongodbdemo");
+				System.out.println(repsonse);
+			} catch (Exception e) {
+			}
+		}
+```
+
+代码作用：根据配置的boolean属性dropIndice，控制是否在启动作业时删除Elasticsearch中的索引表
+
+![image-20191126221535070](images/mongodb/dropindice.png)
+
+### 5.2.2 创建elasticsearch index mapping(可选)
+
+如果elasticsearch索引不存在，那么可以手动创建索引mongodbdemo：
+
+新建mapping定义文件-src\main\resources\dsl.xml，内容如下：
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置dsl和mapping的xml文件
+         ]]>
+    </description>
+    <!--创建索引mongoddbdemo mapping定义-->
+    <property name="createMongodbdemoIndice">
+        <![CDATA[{
+            "settings": {
+                "number_of_shards": 6,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "mongodbdemo": {
+                    "properties": {
+                        "_validate": {
+                            "type": "boolean"
+                        },
+                        "appKey": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "creationTime": {
+                            "type": "date"
+                        },
+                        "extfiled": {
+                            "type": "long"
+                        },
+                        "extfiled2": {
+                            "type": "long"
+                        },
+                        "host": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "httpOnly": {
+                            "type": "boolean"
+                        },
+                        "lastAccessedHostIP": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "lastAccessedTime": {
+                            "type": "date"
+                        },
+                        "lastAccessedUrl": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "local": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "maxInactiveInterval": {
+                            "type": "long"
+                        },
+                        "privateAttr": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "referip": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "requesturi": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "secure": {
+                            "type": "boolean"
+                        },
+                        "sessionid": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "testVO": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "userAccount": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+</properties>
+
+```
+
+在scheduleImportData方法的开始添加判断索引表mongodbdemo是否存在并创建mongodbdemo的代码：
+
+```java
+//判断mongodbdemo是否存在，如果不存在则创建mongodbdemo
+		boolean indiceExist = clientInterface.existIndice("mongodbdemo");
+		if(!indiceExist){
+			ClientInterface configClientInterface = ElasticSearchHelper.getConfigRestClientUtil("dsl.xml");
+			configClientInterface.createIndiceMapping("mongodbdemo","createMongoddbdemoIndice");
+		}
+```
+
+### 5.2.3 创建elasticsearch index template（可选）
+
+如果我们采用按照时间动态滚动索引表，如果需要定制索引结构，则需要创建索引模板(IndexTemplate):
+
+同样在src\main\resources\dsl.xml文件中定义一个indexTemplate的createMongoddbdemoTemplate：
+
+```xml
+<property name="createMongodbdemoTemplate">
+        <![CDATA[{
+            "index_patterns": "mongodbdemo-*", ## 5.x版本中请使用语法："template": "mongodbdemo-*"
+            "settings": {
+                "number_of_shards": 30,
+                "number_of_replicas" : 1,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "mongodbdemo": {
+                    "properties": {
+                        "_validate": {
+                            "type": "boolean"
+                        },
+                        "appKey": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "creationTime": {
+                            "type": "date"
+                        },
+                        "extfiled": {
+                            "type": "long"
+                        },
+                        "extfiled2": {
+                            "type": "long"
+                        },
+                        "host": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "httpOnly": {
+                            "type": "boolean"
+                        },
+                        "lastAccessedHostIP": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "lastAccessedTime": {
+                            "type": "date"
+                        },
+                        "lastAccessedUrl": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "local": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "maxInactiveInterval": {
+                            "type": "long"
+                        },
+                        "privateAttr": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "referip": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "requesturi": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "secure": {
+                            "type": "boolean"
+                        },
+                        "sessionid": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "testVO": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "userAccount": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+```
+
+mongodbdemo-开头的索引都会按照模板建立特定索引结构,例如mongodbdemo-2019.11.26，定义好createMongoddbdemoTemplate，就可以在scheduleImportData方法中添加判断名称为mongodbdemoTemplate是否存在并创建模板mongodbdemoTemplate的代码：
+
+```java
+	String template = clientInterface.getTempate("mongodbdemoTemplate");
+		if(template == null){
+			configClientInterface.createTempate("mongodbdemoTemplate","createMongoddbdemoTemplate");
+		}
+	}
+```
+
+5.2.1和5.2.2/5.2.3都是准备工作，其中5.2.2/5.2.3可以选择一个进行操作，接下来进入同步作业代码编写阶段。
+
+### 5.2.4 编写同步代码
+
+首先介绍一下同步作业使用的mongdodb主要参数
+
+| 参数名称 | 参数类型 | 参数说明 |
+| -------- | -------- | -------- |
+|          |          |          |
+|          |          |          |
+|          |          |          |
 
 elasticsearch主要参数配置（索引名称和索引类型、按日期动态索引名称）
+
+
 
 mongodb数据检索条件
 
@@ -213,6 +598,8 @@ mongodb数据检索条件
 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况和日志
 
 配置和发布作业/提取参数到配置文件中
+
+集成同步功能到自己的项目中
 
 # 6.Mongodb-Elasticsearch同步作业发布和部署
 
