@@ -21,7 +21,9 @@ Then change to cmd window under directory bboss-elasticsearch and run gradle bui
 gradle install
 ```
 
-Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+Build from source code guide:
+ 
+https://esdoc.bbossgroups.com/#/bboss-build
 
 # How to use Elasticsearch BBoss.
 
@@ -31,7 +33,7 @@ First add the maven dependency of BBoss to your pom.xml:
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.9.2</version>
+            <version>5.9.5</version>
         </dependency>
 ```
 
@@ -41,7 +43,7 @@ If it's a spring boot project, you can replace the Maven coordinate above with t
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.9.2</version>
+            <version>5.9.5</version>
         </dependency>
 ```
 

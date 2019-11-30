@@ -565,13 +565,18 @@ mongodbdemo-开头的索引都会按照模板建立特定索引结构,例如mong
 
 ### 5.2.4 编写同步代码
 
+同步组件：
+
+MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
+
 首先介绍一下同步作业使用的mongdodb主要参数
 
-| 参数名称 | 参数类型 | 参数说明 |
-| -------- | -------- | -------- |
-|          |          |          |
-|          |          |          |
-|          |          |          |
+| 参数名称       | 参数类型 | 参数说明                                |
+| -------------- | -------- | --------------------------------------- |
+| name           | String   | mongodb数据源名称，自定义命名即可       |
+| db             | String   | mongodb数据库名称                       |
+| dbCollection   | String   | mongodb数据库表名称                     |
+| connectTimeout | int      | 建立mongodb服务器连接超时时间，单位毫秒 |
 
 elasticsearch主要参数配置（索引名称和索引类型、按日期动态索引名称）
 

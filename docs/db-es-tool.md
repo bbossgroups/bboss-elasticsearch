@@ -954,29 +954,26 @@ Elasticsearch控制参数参考文档：
 ```java
 importBuilder.setExportResultHandler(new ExportResultHandler() {
 			@Override
-			public void success(TaskCommand taskCommand, Object result) {
-				System.out.println("success");
+			public void success(TaskCommand<String,String> taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+				logger.info(taskMetrics.toString());
 			}
 
 			@Override
-			public void error(TaskCommand taskCommand, Object result) {
-				System.out.println("error");
+			public void error(TaskCommand<String,String> taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+				logger.info(taskMetrics.toString());
 			}
 
 			@Override
-			public void exception(TaskCommand taskCommand, Exception exception) {
-				System.out.println("exception");
+			public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));//将统计数据转换为json打印到日志文件中
+				logger.info(taskMetrics.toString());
 			}
 
 			@Override
 			public int getMaxRetry() {
-				return -1;
+				return 0;
 			}
 		});
 
