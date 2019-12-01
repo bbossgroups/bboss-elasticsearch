@@ -23,6 +23,12 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+   
+# v5.9.6 功能改进
+
+1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错
+
+2.完善数据同步任务统计信息记录
 
 # v5.9.5 功能改进
 1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.5！

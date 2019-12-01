@@ -34,14 +34,17 @@ mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编�
 
 # 2.同步案例介绍-session数据同步
 
-同步保存在mongodb中的session数据到Elasticsearch场景比较简单，采用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。
+本文以一个session数据同步案例来介绍mongodb到Elasticsearch数据同步功能。场景比较简单：
 
-我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业，然后启动一个往mongodb中写入session数据的web应用，打开多个浏览器访问web应用，产生和修改session数据，然后观察同步作业的同步效果，演示两种调度机制效果：
+​	用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业。
+
+​	事先运行一个往mongodb中写入session数据的web应用，然后启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据，观察增量同步作业的同步效果，演示两种调度机制同步效果：
+
 - 基于jdk timer
 
-- 基于xxl-job来调度作业
+- 基于xxl-job来调度作业演示数据分片同步功能（内容过多，下一个主题进行介绍）
 
-  下面结合session数据同步案例，正式切入本文主题。
+下面结合session数据同步案例，正式切入本文主题。
 
 # 3.环境准备
 
@@ -51,7 +54,7 @@ mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编�
 
 - jdk 1.8或以上
 - idea 2019
-- gradle最新版本  https://gradle.org/releases/ 
+- gradle最新版本  [https://gradle.org/releases/](https://gradle.org/releases/) 
 - mongodb 4.2.1 
 - elasticsearch版本6.5.0，亦可以采用最新的版本
 - 一个基于mongodb存储session数据的web应用(如有需要，可线下找我提供)
@@ -70,7 +73,7 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 ![](https://esdoc.bbossgroups.com/images/env1.png)
 
-详细gradle安装和配置参考文档： https://esdoc.bbossgroups.com/#/bboss-build 
+详细gradle安装和配置参考文档： [https://esdoc.bbossgroups.com/#/bboss-build](https://esdoc.bbossgroups.com/#/bboss-build) 
 
 ​		**运行环境**
 
@@ -80,7 +83,7 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 我们无需从0开始搭建开发环境，可以到以下地址下载已经配置好的Mongodb-Elasticsearch开发环境：
 
- https://github.com/bbossgroups/mongodb-elasticsearch 
+ [https://github.com/bbossgroups/mongodb-elasticsearch](https://github.com/bbossgroups/mongodb-elasticsearch) 
 
 ![down](https://esdoc.bbossgroups.com/images/downmongodb2es.png)
 
@@ -151,7 +154,7 @@ src/main/resources/application.properties
 
 到此数据同步作业工程已经导入idea，接下来进入同步作业实现、调试开发环节。
 
-# 5.同步作业程序开发和调试
+# 5.同步作业程序开发调试发布
 
 ## 5.1 案例说明
 
@@ -172,6 +175,8 @@ mongodb对应的db：sessiondb
 mongodb对应的dbcollection：sessionmonitor_sessions
 
 elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
+
+### 5.1.1 字段映射关系
 
 对应的字段映射关系如下（后面做xxl-job分片数据同步时还会补充shardNo字段到Elasticsearch和mongodb属性中）：
 
@@ -197,6 +202,7 @@ elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
 |                     |          | extfiled             | int      | 在datafactor中添加的字段                                     |
 |                     |          | extfiled2            | int      | 在datafactor中添加的字段                                     |
 |                     |          | ipInfo               | json     | 在datafactor中添加的字段,根据referip计算出来的客户端ip地址信息（省市、地区、运营商、地理经纬度坐标等） |
+| shardNo             | int      | shardNo              | int      | session数据分片号，用于xxl-job同步作业分片同步数据功能       |
 
 ## 5.2 建立同步作业类-Mongodb2DB
 
@@ -591,7 +597,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 | query                                        | BasicDBObject | 可选，设置mongodb业务检索条件，不设置则进行全量检索或者按照增量字段进行检索 |
 | fetchFields                                  | BasicDBObject | 可选，设置mongodb检索返回字段列表，不设置则，返回所有字段    |
 
-#### 5.2.4.2 通过importBuilder设置mongodb参数：
+通过importBuilder设置mongodb参数：
 
 ```java
 //mongodb的相关配置参数
@@ -660,7 +666,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 
 ```
 
-#### 5.2.4.3 导入elasticsearch参数配置
+#### 5.2.4.2 导入elasticsearch参数配置
 
 导入elasticsearch参数配置（索引名称和索引类型、按日期动态索引名称），首先介绍相关参数
 
@@ -669,6 +675,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 | index                         | String   | 索引名称，支持固定的索引名称和动态索引名称，动态索引名称命名规范如下：demowithesindex-{dateformat=yyyy.MM.dd}  按照日期滚动索引名称，日期格式根据自己的需要指定即可                                                                                                     indexname-{field=fieldName} 按照字段值来动态设置索引名称                            dbclobdemo-{agentStarttime,yyyy.MM.dd} 按照字段值来动态设置索引名称,如果字段对应的值是个日期类型，可以指定日期类型的格式，本案例为：mongodbdemo |
 | indexType                     | String   | 索引类型，es 7以后的版本不需要设置indexType（或者直接设置为_doc），es7以前的版本必需设置indexType，可以动态指定indexType,例如：索引类型为typeFieldName字段对应的值，{field=typeFieldName}或者{typeFieldName}，本案例直接指定为：mongodbdemo |
 | batchSize                     | int      | 批量导入elasticsearch的记录大小                              |
+| esIdField                     | String   | 指定作为elasticsearch文档_id标识的mongodb表字段，如果不指定，并且没有指定EsIdGenerator插件，则由Elasticsearch默认为索引文档提供id字段 |
 | refreshOption                 | String   | 是否强制刷新索引数据，导入后立马生效，值可以设置为：refresh或者refresh=true，或者null（表示不实时刷新（默认值）），看测试效果可以设置强制刷新，正式运行不要配置 |
 | fetchSize                     | int      | 按批次从mongodb拉取数据的大小                                |
 | elasticUser                   | String   | 可选，认证账号（x-pack或者searchguard),在application.properties文件中配置 |
@@ -699,10 +706,51 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 				.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
 				.setBatchSize(10)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
 				.setFetchSize(100)  //按批从mongodb拉取数据的大小
+                .setEsIdField("_id")//设置文档主键，不设置，则自动产生文档id,直接将mongodb的ObjectId设置为Elasticsearch的文档_id
 				.setContinueOnError(true); // 忽略任务执行异常，任务执行过程抛出异常不中断任务执行
 ```
 
-####  5.2.4.4 jdk timer定时任务时间配置
+在application.properties文件中配置的参数示例（两部分：elasticsearch配置和http连接池配置）
+
+```properties
+# elasticsearch配置
+##x-pack或者searchguard账号和口令
+elasticUser=elastic
+elasticPassword=changeme
+
+#elasticsearch.rest.hostNames=10.1.236.88:9200
+#elasticsearch.rest.hostNames=127.0.0.1:9200
+#elasticsearch.rest.hostNames=10.21.20.168:9200
+elasticsearch.rest.hostNames=192.168.137.1:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
+ 
+#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
+elasticsearch.showTemplate=true
+elasticsearch.discoverHost=false
+
+##default连接池配置
+http.timeoutConnection = 5000
+http.timeoutSocket = 50000
+http.connectionRequestTimeout=10000
+http.retryTime = 1
+http.maxLineLength = -1
+http.maxHeaderCount = 200
+http.maxTotal = 200
+http.defaultMaxPerRoute = 100
+http.soReuseAddress = false
+http.soKeepAlive = false
+http.timeToLive = 3600000
+http.keepAlive = 3600000
+http.keystore =
+http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+http.hostnameVerifier =
+```
+
+
+
+####  5.2.4.3 jdk timer定时任务时间配置
 
 默认提供的jdk timer定时机制配置参数如下：
 
@@ -723,7 +771,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
-#### 5.2.4.5 并行任务配置
+#### 5.2.4.4 并行任务配置
 
 如果不指定并行任务执行参数，默认串行执行同步导入数据，可以通过以下两种方式提升导入速度：
 
@@ -751,9 +799,9 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 
 ```
 
-#### 5.2.4.6 数据加工处理
+#### 5.2.4.5 数据加工处理
 
-可以非常方便地对同步数据进行映射、加工和处理，下面列出几种常用的处理类型：
+如果不设置数据加工处理的相关机制，那么同步作业默认自动将mongodb的中表字段映射为es字段（自动忽略_id字段，因为elasticsearch的\_id字段是自动维护的），然后将数据导入elasticsearch。我们通过importBuilder组件全局设置数据映射关系，也可以通过Datarefactor接口进行记录级的数据转换处理，这样就可以非常方便地对同步数据进行映射、加工和处理，下面列出几种常用的处理类型：
 
 | 数据处理类型             | 全局处理 | 记录级别 | 举例(全局通过importBuilder组件实现，记录级别通过context接口实现) |
 | ------------------------ | -------- | -------- | ------------------------------------------------------------ |
@@ -774,7 +822,7 @@ importBuilder.addFieldValue("shardNo",0);
 
 其他的的数据处理转换都是记录级别的。
 
-session数据转换处理的代码如下（可根据上表中的数据处理类型，自行实现自己的转换处理功能）：
+session数据转换处理的代码，通过importBuilder组件的setDataRefactor方法设置DataRefactor接口（可根据上表中的数据处理类型，自行实现自己的转换处理功能）：
 
 ```java
         // 全局记录配置：添加数据分片号到elasticsearch的session记录中
@@ -829,35 +877,616 @@ session数据转换处理的代码如下（可根据上表中的数据处理类�
 		});
 ```
 
-设置同步作业结果回调处理函数
+#### 5.2.4.6 IP地理位置信息库配置
 
-关键参数配置：jvm内存）
+ip地址转换为地址位置信息时，还需要在application.properties文件中配置好geolite2地址库的路径：
+
+```properties
+# IP地理位置信息库配置
+# 缓存配置
+ip.cachesize = 2000000
+# 库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
+# geoip数据库文件地址配置
+ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+```
+
+数据库文件会定期更新，因此需要定期到以下地址下载最新的geolite2数据库文件：
+
+[https://dev.maxmind.com/geoip/geoip2/geolite2/](https://dev.maxmind.com/geoip/geoip2/geolite2/)
+
+#### 5.2.4.7 设置同步作业结果回调处理函数
+
+同步作业任务执行结果回调处理即可ExportResultHandler提供了4个接口方法
+
+- success方法：任务执行成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文）两个参数
+- error方法：任务执行成功但是es有部分记录没有处理成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文,包含错误记录信息）两个参数
+- exception方法：任务执行抛出异常时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和exception两个参数
+- getMaxRetry方法：返回当任务执行出错重试次数，一般返回0或者-1即可
+
+通过importBuilder组件的setExportResultHandler方法设置同步作业任务执行结果回调处理函数，非常简单，只打印任务执行情况：
+
+```java
+        //设置任务处理结果回调接口
+		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
+			@Override
+			public void success(TaskCommand<Object,String> taskCommand, String result) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+			}
+
+			@Override
+			public void error(TaskCommand<Object,String> taskCommand, String result) {			 
+                System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+				/**
+				//分析result，提取错误数据修改后重新执行,
+				Object datas = taskCommand.getDatas();
+				Object errorDatas = ... //分析result,从datas中提取错误数据，并设置到command中，通过execute重新执行任务
+				taskCommand.setDatas(errorDatas);
+				taskCommand.execute();
+				 */
+			}
+
+			@Override
+			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+			}
+
+			@Override
+			public int getMaxRetry() {
+				return 0;
+			}
+		});
+```
+
+#### 5.2.4.8 自定义Elasticsearch索引文档id生成机制
+
+同步作业支持三种方式设置索引文档id
+
+- 1.Elasticsearch默认机制
+
+- 2.指定esIdField字段（5.2.4.3 导入elasticsearch参数配置中有介绍）
+
+- 3.自定义Elasticsearch索引文档id生成机制（本节介绍）
+
+第2种和第3中只能设置一种，2，3都不设置就是第1种情况，下面介绍自定义Elasticsearch索引文档id生成机制，非常简单实现并设置EsIdGenerator接口即可：
+
+```java
+        //自定义Elasticsearch索引文档id生成机制
+		importBuilder.setEsIdGenerator(new EsIdGenerator() {
+			//如果指定EsIdGenerator，则根据下面的方法生成文档id，
+			// 否则根据setEsIdField方法设置的字段值作为文档id，
+			// 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+			@Override
+			public Object genId(Context context) throws Exception {
+				return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+			}
+		});
+```
 
 
 
 
+#### 5.2.4.9 设置增量字段信息
 
-默认自动进行映射导入elasticsearch、通过datarefactor修改默认关系
+在增量同步时必须指定增量同步字段，如果不指定那么将是全量同步；增量字段必须是可以递增的值，目前支持两种数据类型作为增量字段：数字和日期
 
-调试jdk-timer调度作业、观察作业执行情况和日志
+| 增量类型 | 设置案例                                                     |
+| -------- | ------------------------------------------------------------ |
+| 数字     | importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE); // 指定类型importBuilder.setLastValue(-1); |
+| 日期     | importBuilder.setDateLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE); // 指定类型SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");                                                  try {                                                                                                                                                                                         Date date = format.parse("2000-01-01");   importBuilder.setLastValue(date);                                }catch (Exception e){   e.printStackTrace();} |
+
+其他增量同步参数
+
+| 参数名称                | 参数类型 | 参数说明                                                     |
+| ----------------------- | -------- | ------------------------------------------------------------ |
+| fromFirst               | boolean  | 作业进程重启时是否需要从头开始同步数据，true 从头开始，false从上次成功结束的值开始同步（默认值） |
+| lastValueStorePath      | String   | 指定sqlite数据库文件地址，默认采用sqlite数据库来保存增量同步状态 |
+| lastValueStoreTableName | String   | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
+| config.db.name          | String   | 参数值在application.properties文件中配置                                   保存增量数据同步状态的表对应的数据源名称，当采用分布式任务调度引擎时需要设定和配置本参数，jdk timer和quartz调度机制不需要配置；可以指定一个已经有的数据源名称，比如数据库同步时的源数据源或者目标数据源名称，亦可以在application.properties文件中定义一个新的数据源，然后将新的数据源名称设置为config.db.name即可，例如： |
+
+在application.properties文件中配置完整的保存增量同步状态的config.db数据源：
+
+```properties
+config.db.name = testconfig
+config.db.user = root
+config.db.password = 123456
+config.db.driver = com.mysql.jdbc.Driver
+config.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+config.db.usePool = true
+config.db.validateSQL = select 1
+config.db.showsql = true
+```
+
+增量数据同步对应的增量字段lastAccessedTime为long类型，是一个数字值，通过importBuilder同步组件设置相关增量参数的代码如下：
+
+```java
+        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段
+		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+//		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
+//		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型,ImportIncreamentConfig.TIMESTAMP_TYPE为时间类型
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
+
+
+#### 5.2.4.10 添加执行作业代码
+
+到此同步作业的配置基本完成，接下来通过importBuilder组件构建一个DataStream对象，调用其execute方法启动同步作业任务：
+
+```java
+		/**
+		 * 构建DataStream，执行mongodb数据到es的同步操作
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.execute();//执行同步操作
+```
+
+添加上述两行代码后，整个同步作业方法就编写完成了。
+
+#### 5.2.4.12 同步作业主程序配置
+
+需要将编写的同步作业类配置到application.properties文件中：
+
+```properties
+#同步作业主程序配置
+mainclass=org.frameworkset.elasticsearch.imp.Mongodb2DB
+```
+
+
+
+#### 5.2.4.11 完整的同步作业类和作业配置文件
+
+来看看完整的数据同步作业类：
+
+```java
+package org.frameworkset.elasticsearch.imp;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.runtime.CommonLauncher;
+import org.frameworkset.spi.geoip.IpInfo;
+import org.frameworkset.tran.DataRefactor;
+import org.frameworkset.tran.DataStream;
+import org.frameworkset.tran.ExportResultHandler;
+import org.frameworkset.tran.context.Context;
+import org.frameworkset.tran.mongodb.input.es.MongoDB2ESExportBuilder;
+import org.frameworkset.tran.task.TaskCommand;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+/**
+ * <p>Description: </p>
+ * <p></p>
+ * <p>Copyright (c) 2018</p>
+ * @Date 2019/11/25 22:36
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public class Mongodb2DB {
+	/**
+	 * 启动运行同步作业主方法
+	 * @param args
+	 */
+	public static void main(String args){
+
+		Mongodb2DB dbdemo = new Mongodb2DB();
+		dbdemo.scheduleImportData();
+	}
+
+	/**
+	 * 同步作业实现和运行方法
+	 */
+	public void scheduleImportData(){
+		// 5.2.1 清理Elasticsearch索引表mongodbdemo(可选步骤)
+		//从application.properties配置文件中读取dropIndice属性，
+		// 是否清除elasticsearch索引，true清除，false不清除，指定了默认值false
+		boolean dropIndice = CommonLauncher.getBooleanAttribute("dropIndice",false);
+		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+		//增量定时任务不要删表，但是可以通过删表来做初始化操作
+		if(dropIndice) {
+			try {
+				//清除测试表,导入的时候自动重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+				String repsonse = clientInterface.dropIndice("mongodbdemo");
+				System.out.println(repsonse);
+			} catch (Exception e) {
+			}
+		}
+		// 5.2.1 创建elasticsearch index mapping(可选步骤)
+		//判断mongodbdemo是否存在，如果不存在则创建mongodbdemo
+		boolean indiceExist = clientInterface.existIndice("mongodbdemo");
+		ClientInterface configClientInterface = ElasticSearchHelper.getConfigRestClientUtil("dsl.xml");
+		if(!indiceExist){
+
+			configClientInterface.createIndiceMapping("mongodbdemo","createMongoddbdemoIndice");
+		}
+		// 5.2.3 创建elasticsearch index template(可选步骤)
+		String template = clientInterface.getTempate("mongodbdemoTemplate");
+		if(template == null){
+			configClientInterface.createTempate("mongodbdemoTemplate","createMongoddbdemoTemplate");
+		}
+		// 5.2.4 编写同步代码
+		//定义Mongodb到Elasticsearch数据同步组件
+		MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
+
+		// 5.2.4.1 设置mongodb参数
+		importBuilder.setName("session")
+				.setDb("sessiondb")
+				.setDbCollection("sessionmonitor_sessions")
+				.setConnectTimeout(10000)
+				.setWriteConcern("JOURNAL_SAFE")
+				.setReadPreference("")
+				.setMaxWaitTime(10000)
+				.setSocketTimeout(1500).setSocketKeepAlive(true)
+				.setConnectionsPerHost(100)
+				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+				//String database,String userName,String password,String mechanism
+				//https://www.iteye.com/blog/yin-bp-2064662
+//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//				.setOption("")
+				.setAutoConnectRetry(true);
+
+		//定义mongodb数据查询条件对象（可选步骤，全量同步可以不需要做条件配置）
+		BasicDBObject query = new BasicDBObject();
+		// 设定检索mongdodb session数据时间范围条件
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date start_date = format.parse("1099-01-01");
+			Date end_date = format.parse("2999-01-01");
+			query.append("creationTime",
+					new BasicDBObject("$gte", start_date.getTime()).append(
+							"$lte", end_date.getTime()));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+
+		// 设置按照host字段值进行正则匹配查找session数据条件（可选步骤，全量同步可以不需要做条件配置）
+		String host = "169.254.252.194-DESKTOP-U3V5C85";
+		Pattern hosts = Pattern.compile("^" + host + ".*$",
+				Pattern.CASE_INSENSITIVE);
+		query.append("host", new BasicDBObject("$regex",hosts));
+		importBuilder.setQuery(query);
+
+		//设定需要返回的session数据字段信息（可选步骤，同步全部字段时可以不需要做下面配置）
+		BasicDBObject fetchFields = new BasicDBObject();
+		fetchFields.put("appKey", 1);
+		fetchFields.put("sessionid", 1);
+		fetchFields.put("creationTime", 1);
+		fetchFields.put("lastAccessedTime", 1);
+		fetchFields.put("maxInactiveInterval", 1);
+		fetchFields.put("referip", 1);
+		fetchFields.put("_validate", 1);
+		fetchFields.put("host", 1);
+		fetchFields.put("requesturi", 1);
+		fetchFields.put("lastAccessedUrl", 1);
+		fetchFields.put("secure",1);
+		fetchFields.put("httpOnly", 1);
+		fetchFields.put("lastAccessedHostIP", 1);
+
+		fetchFields.put("userAccount",1);
+		fetchFields.put("testVO", 1);
+		fetchFields.put("privateAttr", 1);
+		fetchFields.put("local", 1);
+		importBuilder.setFetchFields(fetchFields);
+		// 5.2.4.3 导入elasticsearch参数配置
+		importBuilder
+				.setIndex("mongodbdemo") //必填项，索引名称
+				.setIndexType("mongodbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+				.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
+				.setBatchSize(10)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+				.setFetchSize(100)  //按批从mongodb拉取数据的大小
+		        .setEsIdField("_id")//设置文档主键，不设置，则自动产生文档id,直接将mongodb的ObjectId设置为Elasticsearch的文档_id
+				.setContinueOnError(true); // 忽略任务执行异常，任务执行过程抛出异常不中断任务执行
+
+		// 5.2.4.4 jdk timer定时任务时间配置（可选步骤，可以不需要做以下配置）
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+
+		// 5.2.4.5 并行任务配置（可选步骤，可以不需要做以下配置）
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
+
+		// 5.2.4.6 数据加工处理（可选步骤，可以不需要做以下配置）
+		// 全局记录配置：添加数据分片号到elasticsearch的session记录中
+		importBuilder.addFieldValue("shardNo",0);
+		// 数据记录级别的转换处理（可选步骤，可以不需要做以下配置）
+		importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+				String id = context.getStringValue("_id");
+				//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中
+				if(id.equals("5dcaa59e9832797f100c6806"))
+					context.setDrop(true);
+				//添加字段extfiled2到记录中，值为2
+				context.addFieldValue("extfiled2",2);
+				//添加字段extfiled到记录中，值为1
+				context.addFieldValue("extfiled",1);
+				boolean httpOnly = context.getBooleanValue("httpOnly");
+				boolean secure = context.getBooleanValue("secure");
+				//空值处理
+				String userAccount = context.getStringValue("userAccount");
+				if(userAccount == null)
+					context.addFieldValue("userAccount","");
+				//空值处理
+				String testVO = context.getStringValue("testVO");
+				if(testVO == null)
+					context.addFieldValue("testVO","");
+				//空值处理
+				String privateAttr = context.getStringValue("privateAttr");
+				if(privateAttr == null)
+					context.addFieldValue("privateAttr","");
+				//空值处理
+				String local = context.getStringValue("local");
+				if(local == null)
+					context.addFieldValue("local","");
+				//将long类型的lastAccessedTime字段转换为日期类型
+				long lastAccessedTime = context.getLongValue("lastAccessedTime");
+				context.addFieldValue("lastAccessedTime",new Date(lastAccessedTime));
+				//将long类型的creationTime字段转换为日期类型
+				long creationTime = context.getLongValue("creationTime");
+				context.addFieldValue("creationTime",new Date(creationTime));
+				//根据session访问客户端ip，获取对应的客户地理位置经纬度信息、运营商信息、省地市信息IpInfo对象
+				//并将IpInfo添加到Elasticsearch文档中
+				String referip = context.getStringValue("referip");
+				if(referip != null){
+					IpInfo ipInfo = context.getIpInfoByIp(referip);
+					if(ipInfo != null)
+						context.addFieldValue("ipInfo",ipInfo);
+				}
+				//除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
+				DBObject record = (DBObject) context.getRecord();
+			}
+		});
+
+		// 5.2.4.7 设置同步作业结果回调处理函数（可选步骤，可以不需要做以下配置）
+		//设置任务处理结果回调接口
+		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
+			@Override
+			public void success(TaskCommand<Object,String> taskCommand, String result) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+			}
+
+			@Override
+			public void error(TaskCommand<Object,String> taskCommand, String result) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+				/**
+				//分析result，提取错误数据修改后重新执行,
+				Object datas = taskCommand.getDatas();
+				Object errorDatas = ... //分析result,从datas中提取错误数据，并设置到command中，通过execute重新执行任务
+				taskCommand.setDatas(errorDatas);
+				taskCommand.execute();
+				 */
+			}
+
+			@Override
+			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
+			}
+
+			@Override
+			public int getMaxRetry() {
+				return 0;
+			}
+		});
+
+		/**
+		// 5.2.4.8 自定义Elasticsearch索引文档id生成机制（可选步骤，可以不需要做以下配置）
+		//自定义Elasticsearch索引文档id生成机制
+		importBuilder.setEsIdGenerator(new EsIdGenerator() {
+			//如果指定EsIdGenerator，则根据下面的方法生成文档id，
+			// 否则根据setEsIdField方法设置的字段值作为文档id，
+			// 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+			@Override
+			public Object genId(Context context) throws Exception {
+				return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+			}
+		});*/
+
+		// 5.2.4.9 设置增量字段信息（可选步骤，全量同步不需要做以下配置）
+		//增量配置开始
+		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+
+		// 5.2.4.10 执行作业
+		/**
+		 * 构建DataStream，执行mongodb数据到es的同步操作
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.execute();//执行同步操作
+	}
+}
+
+```
+
+完整的application.properties配置文件：
+
+```properties
+#同步作业主程序配置
+mainclass=org.frameworkset.elasticsearch.imp.Mongodb2DB
+
+# Elasticsearch配置
+##x-pack或者searchguard账号和口令
+elasticUser=elastic
+elasticPassword=changeme
+
+
+elasticsearch.rest.hostNames=192.168.137.1:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
+
+#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
+elasticsearch.showTemplate=true
+elasticsearch.discoverHost=false
+
+##http连接池配置
+http.timeoutConnection = 5000
+http.timeoutSocket = 50000
+http.connectionRequestTimeout=10000
+http.retryTime = 1
+http.maxLineLength = -1
+http.maxHeaderCount = 200
+http.maxTotal = 200
+http.defaultMaxPerRoute = 100
+http.soReuseAddress = false
+http.soKeepAlive = false
+http.timeToLive = 3600000
+http.keepAlive = 3600000
+http.keystore =
+http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+http.hostnameVerifier =
+
+# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
+dslfile.refreshInterval = 3000
+
+# IP地理位置信息库配置
+ip.cachesize = 2000
+# 库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
+ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+
+
+```
+
+
+
+## 5.3 调试并观察作业执行情况和日志
+
+本节介绍在idea中调试运行之前编写的同步作业的方法,看看jdk timer调度作业的执行效果。
+
+分两个步骤调试作业
+
+步骤一 准备工作：首先保证mongodb和elasticsearch、以及kibana是运行状态，同时启动好sessionweb应用
+
+步骤二 调试同步作业
+
+### 5.3.1 准备工作
+
+#### 5.3.1.1 启动mongodb
+
+![](https://esdoc.bbossgroups.com/images\mongodb\startmongodb.png)
+
+#### 5.3.1.2 启动elasticsearch
+
+![](https://esdoc.bbossgroups.com/images\mongodb\startelasticsearch.png)
+
+#### 5.3.1.3 启动kibana
+
+![](https://esdoc.bbossgroups.com/images\mongodb\startkibana.png)
+
+#### 5.4.1.4 启动session共享web应用
+
+首先从以下地址下载session共享应用gradle源码工程，参考章节【4.同步作业开发环境搭建】导入session工程到idea：
+
+[https://github.com/bbossgroups/sessiondemo](https://github.com/bbossgroups/sessiondemo)
+
+导入idea后，配置和运行sessionmonitor这个web应用
+
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor1.png)
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor2.png)
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor3.png)
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor4.png)
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor5.png)
+
+查看session数据:
+
+[http://localhost:9090/sessionmonitor/session/sessionManager/sessionManager.page](http://localhost:9090/sessionmonitor/session/sessionManager/sessionManager.page)
+
+![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor6.png)
+
+### 5.3.2 调试同步作业
+
+在作业类中需要调试的代码处添加断点，然后启动调试程序即可：
+
+![](https://esdoc.bbossgroups.com/images\mongodb\debugjob.png)
+调试过滤记录功能
+![](https://esdoc.bbossgroups.com/images\mongodb\debugjobfilter.png)
+### 5.3.3 查看同步作业任务执行日志
+第一次调度执行作业执行日志查看：第一次有10条数据进行同步单是被过滤掉一条日志
+![](https://esdoc.bbossgroups.com/images\mongodb\debugjoblogs.png)
+
+增量调度执行作业日志查看：
+![](https://esdoc.bbossgroups.com/images\mongodb\debugincrtjoblogs.png)
+
+
+## 5.4 同步作业发布和部署
+
+编写中....
+
+关键参数配置：jvm内存
+
+## 5.5 基于xxl-job的数据同步作业 
+
+### 5.5.1编写作业类
+
+编写中....
 
 新建一个基于xxl-job的数据同步作业类：定义main方法和同步方法（参数配置和数据转换处理与jdk timer一样，只是任务调度采用外部分布式调度引擎xxl-job）
 
-调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况和日志
+### 5.5.2 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况和日志
 
-配置和发布作业/提取参数到配置文件中
+编写中....
 
-集成同步功能到自己的项目中（代码和maven坐标）
+## 5.6 配置和发布作业/提取参数到配置文件中
+
+编写中....
+
+## 5.7 集成同步功能到自己的项目中（代码和maven坐标）
+
+编写中....
 
 
 
-# 6.同步作业发布和部署
+# 6.总结
 
-
-
-# 7.总结
+编写中。。。。
 
 增量状态管理
 
 默认采用sqlite管理增量同步状态，如果针对xxl-job分布式调度器需要采用外部数据库管理增量状态
+
+# 7.参考文档
+
+## 7.1 Session共享应用部署和使用文档
+
+[https://my.oschina.net/bboss/blog/758871](https://my.oschina.net/bboss/blog/758871)
+
+## 7.2 Elasticsearch java highlevel rest client bboss 
+
+[https://esdoc.bbossgroups.com/](https://esdoc.bbossgroups.com/)
+
+## 7.3 xxl-job官方文档和源码地址
+
+[https://github.com/xuxueli/xxl-job](https://github.com/xuxueli/xxl-job)
 
