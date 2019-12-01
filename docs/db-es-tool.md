@@ -1,4 +1,4 @@
-# 数据库数据导入Elasticsearch案例分享
+# 数据导入Elasticsearch案例分享
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
@@ -998,7 +998,15 @@ importBuilder.setExportResultHandler(new ExportResultHandler() {
 }
 ```
 
+### 2.3.18 设置并行导入参数
 
+代码里面加上下面参数，可以并行导入，导入速度会更快
+```java
+importBuilder.setParallel(true);//设置为多线程并行批量导入
+importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+```
 
 ## 2.4.DB-ES数据同步工具使用方法
 
