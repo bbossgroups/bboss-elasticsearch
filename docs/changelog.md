@@ -30,6 +30,8 @@ https://esdoc.bbossgroups.com/#/development
 
 2.完善数据同步任务统计信息记录
 
+3.解决mongodb-elasticsearch增量数据同步增量状态记录主键没有正确生成的问题
+
 # v5.9.5 功能改进
 1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.5！
 
