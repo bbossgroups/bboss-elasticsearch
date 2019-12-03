@@ -2,8 +2,8 @@
 
 # 1.数据同步概述
 
-先介绍一下本次实践中需要使用的数据同步工具-基于java语言的mongodb-elasticsearch数据同步工具![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
-与logstash类似，通过mongodb-elasticsearch，可以非常方便地实现：
+先介绍一下数据同步工具-基于java编写的数据同步工具bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
+与logstash类似，通过bboss，可以非常方便地实现：
 
  - 将数据库表数据同步到Elasticsearch
  - 将数据库表数据同步到数据库表
@@ -31,19 +31,17 @@
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
-mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的数据，然后将处理过的数据同步到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过mongodb-elasticsearch提供的gradle脚本来构建和发布可部署到生产环境的同步作业包。因此，对广大的java程序员来说，mongodb-elasticsearch无疑是一个轻易快速上手的数据同步利器。
+bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的数据，然后将处理过的数据同步到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本来构建和发布可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器,本质上来讲bboss为大家提供了一种简单而熟悉的开发编程方式，通过这种方式既可以开发简单的单机版并行数据同步作业程序，也可以开发出强大而复杂的分布式数据并行同步作业程序，从而实现海量数据同步功能。
 
-​	下面我们通过一个session数据同步案例来介绍mongodb-elasticsearch的功能和使用方法，本质上来讲基于mongodb-elasticsearch开发一个分布式的数据同步作业，其实是在用大家熟悉的方式做一个简单的开发编程的事情。
+​	下面我们通过一个session数据同步案例来介绍bboss提供的mongodb-elasticsearch的数据同步功能及其应用。
 
 # 2.同步案例介绍-session数据同步
 
-基于session数据同步案例来介绍mongodb到Elasticsearch数据同步功能。
+​	案例描述：需要将保存在mongodb中的web应用session会话数据，以session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中;在同步数据的时候需要对从mongodb获取的原始session中数据进行转换加工处理，例如使用第三方库将保存在session中的xml报文序列化为java对象。
 
-​	案例功能描述：以web应用session最后访问修改时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。在同步数据的时候需要对从mongodb获取的原始session中数据进行各种转换处理，例如使用第三方库将保存在session中的xml报文序列化为java对象。
+​	我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，基于bboss提供运行指令启动运行和停止作业。分别采用jdk timer和xxl-job两种调度机制来定时调度和运行作业。
 
-​	我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业。
-
-​	同步案例演示：事先运行一个往mongodb中写入session数据的web应用，然后启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据，观察增量同步作业的同步效果，演示两种调度机制同步效果：
+​	案例演示：事先运行一个基于mongodb存储session数据的web应用，并启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据。然后在kibana和session监控界面，观察增量同步session数据的效果，演示两种调度机制同步效果：
 
 - 基于jdk timer
 
@@ -58,12 +56,23 @@ mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编�
 在windows环境开发和调试同步作业程序，需要在电脑上安装以下软件
 
 - jdk 1.8或以上
+
 - idea 2019
-- gradle最新版本  [https://gradle.org/releases/](https://gradle.org/releases/) 
+
+- gradle最新版本  
+
+  [https://gradle.org/releases/](https://gradle.org/releases/)
+
 - mongodb 4.2.1 
+
 - elasticsearch版本6.5.0，亦可以采用最新的版本
-- 一个基于mongodb存储session数据的web应用(如有需要，可线下找我提供)
+
+- 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
+
+  [https://github.com/bbossgroups/sessiondemo](https://github.com/bbossgroups/sessiondemo)
+
 - mongodb-elasticsearch工具工程（基于gradle）
+
 - xxl-job分布式定时任务引擎
 
 自行安装好上述软件，这里着重说明一下gradle配置，需要配置三个个环境变量：
@@ -176,23 +185,15 @@ org.frameworkset.elasticsearch.imp.XXJobMongodb2ESImportTask  --基于xxl-job mo
 
 ## 5.1 案例说明
 
-同步mongodb中的session数据到Elasticsearch场景比较简单，采用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。
-
-我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业，然后启动一个往mongodb中写入session数据的web应用，打开多个浏览器访问web应用，产生和修改session数据，然后观察同步作业的同步效果，演示两种调度机制效果：
-
-- 基于jdk timer
-
-- 基于xxl-job来调度作业
-
-  
-
-jdk timer调度作业对应的mongodb session表结构和elasticsearch索引表结构映射关系如下：（首先以默认的索引结构，然后可以自定义索引结构或者索引模板）
+session数据同步案例前面已经做了具体介绍，本节介绍mongodb session表结构和elasticsearch索引表结构映射关系：
 
 mongodb对应的db：sessiondb
 
 mongodb对应的dbcollection：sessionmonitor_sessions
 
 elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
+
+我们采用与mongodb session数据表一致的默认elasticsearch 索引结构，也可以根据实际情况自定义elasticsearch 索引结构或者elasticsearch 索引模板。
 
 ### 5.1.1 字段映射关系
 
@@ -253,13 +254,10 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
 		}
 ```
 
-代码作用：根据配置的boolean属性dropIndice，控制是否在启动作业时删除Elasticsearch中的索引表
-
-![image-20191126221535070](https://esdoc.bbossgroups.com/images/mongodb/dropindice.png)
-
+代码作用：根据配置的boolean属性dropIndice，控制是否在启动作业时删除Elasticsearch中的索引表。
 ### 5.2.2 创建elasticsearch index mapping(可选)
 
-如果elasticsearch索引不存在，那么可以手动创建索引mongodbdemo：
+可以手动创建索引mongodbdemo：
 
 新建mapping定义文件-src\main\resources\dsl.xml，内容如下：
 
@@ -386,15 +384,6 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
                                 }
                             }
                         },
-                        "testVO": {
-                            "type": "text",
-                            "fields": {
-                                "keyword": {
-                                    "type": "keyword",
-                                    "ignore_above": 256
-                                }
-                            }
-                        },
                         "userAccount": {
                             "type": "text",
                             "fields": {
@@ -414,7 +403,7 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 ```
 
-在scheduleImportData方法的开始添加判断索引表mongodbdemo是否存在并创建mongodbdemo的代码：
+判断索引表mongodbdemo是否存在并创建mongodbdemo的代码：
 
 ```java
 //判断mongodbdemo是否存在，如果不存在则创建mongodbdemo
@@ -427,7 +416,7 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 ### 5.2.3 创建elasticsearch index template（可选）
 
-如果我们采用按照时间动态滚动索引表，如果需要定制索引结构，则需要创建索引模板(IndexTemplate):
+如果我们采用按照时间动态滚动索引表（按时间分表保存数据），并且需要定制索引结构，则需要创建索引模板(IndexTemplate):
 
 同样在src\main\resources\dsl.xml文件中定义一个indexTemplate的createMongoddbdemoTemplate：
 
@@ -548,15 +537,6 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
                                 }
                             }
                         },
-                        "testVO": {
-                            "type": "text",
-                            "fields": {
-                                "keyword": {
-                                    "type": "keyword",
-                                    "ignore_above": 256
-                                }
-                            }
-                        },
                         "userAccount": {
                             "type": "text",
                             "fields": {
@@ -573,7 +553,9 @@ org.frameworkset.elasticsearch.imp.Mongodb2ES
     </property>
 ```
 
-mongodbdemo-开头的索引都会按照模板建立特定索引结构,例如mongodbdemo-2019.11.26，定义好createMongoddbdemoTemplate，就可以在scheduleImportData方法中添加判断名称为mongodbdemoTemplate是否存在并创建模板mongodbdemoTemplate的代码：
+mongodbdemo-开头的索引表都会按照模板建立索引结构,例如索引表mongodbdemo-2019.11.26
+
+获取名称为mongodbdemoTemplate的索引模板，如果为null，则创建模板mongodbdemoTemplate：
 
 ```java
 	String template = clientInterface.getTempate("mongodbdemoTemplate");
@@ -583,7 +565,7 @@ mongodbdemo-开头的索引都会按照模板建立特定索引结构,例如mong
 	}
 ```
 
-5.2.1和5.2.2/5.2.3都是准备工作，其中5.2.2/5.2.3可以选择一个进行操作，接下来进入同步作业代码编写阶段。
+5.2.1和5.2.2/5.2.3都是管理索引表和索引模板的准备工作，可以根据实际情况选择一个自定义索引表结构还是定义索引模板结构，接下来进入同步作业代码编写阶段。
 
 ### 5.2.4 编写同步代码
 
@@ -591,9 +573,9 @@ mongodbdemo-开头的索引都会按照模板建立特定索引结构,例如mong
 
 MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 
-#### 5.2.4.1 设置mongodb参数
+#### 5.2.4.1 Mongodb参数设置
 
-我们会通过同步组件设置mongodb数据源的相关参数，首先介绍一下同步作业可以使用的mongdodb主要参数
+我们会通过同步组件设置mongodb数据源的相关参数，首先介绍一下mongdodb主要参数
 
 | 参数名称                                     | 参数类型      | 参数说明                                                     |
 | -------------------------------------------- | ------------- | ------------------------------------------------------------ |
@@ -684,7 +666,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 
 ```
 
-#### 5.2.4.2 导入elasticsearch参数配置
+#### 5.2.4.2 Elasticsearch参数配置
 
 导入elasticsearch参数配置（索引名称和索引类型、按日期动态索引名称），首先介绍相关参数
 
@@ -819,7 +801,7 @@ http.hostnameVerifier =
 
 #### 5.2.4.5 数据加工处理
 
-如果不设置数据加工处理的相关机制，那么同步作业默认自动将mongodb的中表字段映射为es字段（自动忽略_id字段，因为elasticsearch的\_id字段是自动维护的），然后将数据导入elasticsearch。我们通过importBuilder组件全局设置数据映射关系，也可以通过Datarefactor接口进行记录级的数据转换处理，这样就可以非常方便地对同步数据进行映射、加工和处理，下面列出几种常用的处理类型：
+如果不设置数据加工处理的相关机制，那么同步作业默认自动将mongodb的中表字段映射为es字段（自动忽略_id字段，因为elasticsearch的\_id字段是自动维护的），然后将数据导入elasticsearch。可以通过importBuilder组件全局设置数据映射关系，也可以通过Datarefactor接口进行记录级的数据转换处理，从而实现对同步数据进行映射、加工和处理，下面列出几种常用的处理类型：
 
 | 数据处理类型             | 全局处理 | 记录级别 | 举例(全局通过importBuilder组件实现，记录级别通过context接口实现) |
 | ------------------------ | -------- | -------- | ------------------------------------------------------------ |
@@ -834,10 +816,15 @@ http.hostnameVerifier =
 | 其他转换                 | 不支持   | 支持     | 在DataRefactor接口中对记录中的数据根据特定的要求进行相关转换和处理，然后使用上面列出的对应的处理方式将处理后的数据添加到记录中 |
 | 获取原始记录对象         | 不支持   | 支持     | //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理                                                                      DBObject record = (DBObject) context.getRecord(); |
 
-本案例全局记录配置：打tag，标识数据来源于jdk timer
-		importBuilder.addFieldValue("fromTag","jdk timer");  
+全局数据处理配置：打tag，标识数据来源于jdk timer还是xxl-job
 
-其他的的数据处理转换都是记录级别的。
+```java
+importBuilder.addFieldValue("fromTag","jdk timer");  //jdk timer调度作业设置
+
+importBuilder.addFieldValue("fromTag","xxl-jobr");  //xxl-job调度作业设置
+```
+
+记录级别的转换处理参考下面的代码。
 
 session数据转换处理的代码，通过importBuilder组件的setDataRefactor方法设置DataRefactor接口（可根据上表中的数据处理类型，自行实现自己的转换处理功能）：
 
@@ -857,22 +844,48 @@ session数据转换处理的代码，通过importBuilder组件的setDataRefactor
 				context.addFieldValue("extfiled",1);
 				boolean httpOnly = context.getBooleanValue("httpOnly");
 				boolean secure = context.getBooleanValue("secure");
+				String shardNo = context.getStringValue("shardNo");
+				if(shardNo != null){
+					//利用xml序列化组件将xml报文序列化为一个Integer
+					context.addFieldValue("shardNo", ObjectSerializable.toBean(shardNo,Integer.class));
+				}
+				else{
+					context.addFieldValue("shardNo", 0);
+				}
 				//空值处理
 				String userAccount = context.getStringValue("userAccount");
 				if(userAccount == null)
 					context.addFieldValue("userAccount","");
+				else{
+					//利用xml序列化组件将xml报文序列化为一个String
+					context.addFieldValue("userAccount", ObjectSerializable.toBean(userAccount,String.class));
+				}
 				//空值处理
 				String testVO = context.getStringValue("testVO");
 				if(testVO == null)
 					context.addFieldValue("testVO","");
+				else{
+					//利用xml序列化组件将xml报文序列化为一个TestVO
+					TestVO testVO1 = ObjectSerializable.toBean(testVO, TestVO.class);
+					context.addFieldValue("testVO", testVO1);
+				}
 				//空值处理
 				String privateAttr = context.getStringValue("privateAttr");
-				if(privateAttr == null)
-					context.addFieldValue("privateAttr","");
+				if(privateAttr == null) {
+					context.addFieldValue("privateAttr", "");
+				}
+				else{
+					//利用xml序列化组件将xml报文序列化为一个String
+					context.addFieldValue("privateAttr", ObjectSerializable.toBean(privateAttr, String.class));
+				}
 				//空值处理
 				String local = context.getStringValue("local");
 				if(local == null)
 					context.addFieldValue("local","");
+				else{
+					//利用xml序列化组件将xml报文序列化为一个String
+					context.addFieldValue("local", ObjectSerializable.toBean(local, String.class));
+				}
 				//将long类型的lastAccessedTime字段转换为日期类型
 				long lastAccessedTime = context.getLongValue("lastAccessedTime");
 				context.addFieldValue("lastAccessedTime",new Date(lastAccessedTime));
@@ -896,7 +909,7 @@ session数据转换处理的代码，通过importBuilder组件的setDataRefactor
 
 #### 5.2.4.6 IP地理位置信息库配置
 
-ip地址转换为地址位置信息时，还需要在application.properties文件中配置好geolite2地址库的路径：
+ip转换为地址位置信息还需要在application.properties文件中配置开源ip信息库geolite2：
 
 ```properties
 # IP地理位置信息库配置
@@ -908,20 +921,20 @@ ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
 ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 ```
 
-数据库文件会定期更新，因此需要定期到以下地址下载最新的geolite2数据库文件：
+geolite2数据库文件会定期更新，因此需要定期到以下地址下载最新的geolite2数据库文件：
 
 [https://dev.maxmind.com/geoip/geoip2/geolite2/](https://dev.maxmind.com/geoip/geoip2/geolite2/)
 
-#### 5.2.4.7 设置同步作业结果回调处理函数
+#### 5.2.4.7 同步作业结果回调处理函数设置
 
-同步作业任务执行结果回调处理即可ExportResultHandler提供了4个接口方法
+通过任务执行结果回调接口ExportResultHandler，可以非常方便地跟踪数据同步任务执行的情况和任务执行结果，ExportResultHandler提供了4个接口方法：
 
 - success方法：任务执行成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文）两个参数
 - error方法：任务执行成功但是es有部分记录没有处理成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文,包含错误记录信息）两个参数
 - exception方法：任务执行抛出异常时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和exception两个参数
 - getMaxRetry方法：返回当任务执行出错重试次数，一般返回0或者-1即可
 
-通过importBuilder组件的setExportResultHandler方法设置同步作业任务执行结果回调处理函数，非常简单，只打印任务执行情况：
+通过importBuilder组件的setExportResultHandler方法设置同步作业任务执行结果回调处理接口，这里只打印任务执行情况：
 
 ```java
         //设置任务处理结果回调接口
@@ -957,7 +970,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 #### 5.2.4.8 自定义Elasticsearch索引文档id生成机制
 
-同步作业支持三种方式设置索引文档id
+Elasticsearch索引文档id支持三种设置方式
 
 - 1.Elasticsearch默认机制
 
@@ -965,7 +978,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 - 3.自定义Elasticsearch索引文档id生成机制（本节介绍）
 
-第2种和第3中只能设置一种，2，3都不设置就是第1种情况，下面介绍自定义Elasticsearch索引文档id生成机制，非常简单实现并设置EsIdGenerator接口即可：
+第2种和第3中只能设置一种，2，3都不设置就是第1种情况，下面介绍自定义Elasticsearch索引文档id生成机制，设置EsIdGenerator接口即可：
 
 ```java
         //自定义Elasticsearch索引文档id生成机制
@@ -984,27 +997,25 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 
 
-#### 5.2.4.9 设置增量字段信息
+#### 5.2.4.9 增量字段信息设置
 
-在增量同步时必须指定增量同步字段，如果不指定那么将是全量同步；增量字段必须是可以递增的值，目前支持两种数据类型作为增量字段：数字和日期
+增量同步时必须指定增量同步字段，如果不指定那么将是全量同步；增量字段必须是可以递增的值，目前支持两种数据类型作为增量字段：数字和日期
 
 | 增量类型 | 设置案例                                                     |
 | -------- | ------------------------------------------------------------ |
 | 数字     | importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE); // 指定类型importBuilder.setLastValue(-1); |
 | 日期     | importBuilder.setDateLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE); // 指定类型SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");                                                  try {                                                                                                                                                                                         Date date = format.parse("2000-01-01");   importBuilder.setLastValue(date);                                }catch (Exception e){   e.printStackTrace();} |
 
-其他增量同步参数
+其他增量同步参数说明
 
 | 参数名称                | 参数类型 | 参数说明                                                     |
 | ----------------------- | -------- | ------------------------------------------------------------ |
 | fromFirst               | boolean  | 作业进程重启时是否需要从头开始同步数据，true 从头开始，false从上次成功结束的值开始同步（默认值） |
 | lastValueStorePath      | String   | 指定sqlite数据库文件地址，默认采用sqlite数据库来保存增量同步状态 |
 | lastValueStoreTableName | String   | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
-| config.db.name          | String   | 参数值在application.properties文件中配置                                   保存增量数据同步状态的表对应的数据源名称，当采用分布式任务调度引擎时需要设定和配置本参数，jdk timer和quartz调度机制不需要配置；可以指定一个已经有的数据源名称，比如数据库同步时的源数据源或者目标数据源名称，亦可以在application.properties文件中定义一个新的数据源，然后将新的数据源名称设置为config.db.name即可，例如： |
+| config.db.name          | String   | 在application.properties文件中配置                                               保存增量数据同步状态的表对应的数据源名称，当采用分布式任务调度引擎时必须配置本参数，jdk timer和quartz调度机制不需要配置（默认采用sqlite保存增量同步状态）；可以指定一个已经有的数据源名称，比如数据库同步时的源数据源或者目标数据源名称，亦可以在application.properties文件中定义一个新的数据源，然后将新的数据源名称设置为config.db.name即可，例如： |
 
-保存增量同步状态的外部数据源配置
-
-在application.properties文件中配置完整的保存增量同步状态的config.db数据源：
+在application.properties文件中配置config.db数据源：
 
 ```properties
 config.db.name = testconfig
@@ -1017,7 +1028,7 @@ config.db.validateSQL = select 1
 config.db.showsql = true
 ```
 
-增量数据同步对应的增量字段lastAccessedTime为long类型，是一个数字值，通过importBuilder同步组件设置相关增量参数的代码如下：
+Mongodb session表对应的增量字段lastAccessedTime为long类型，是一个数字值，通过importBuilder设置增量同步参数的代码如下：
 
 ```java
         importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
@@ -1040,7 +1051,7 @@ config.db.showsql = true
 
 #### 5.2.4.10 添加执行作业代码
 
-到此同步作业的配置基本完成，接下来通过importBuilder组件构建一个DataStream对象，调用其execute方法启动同步作业任务：
+最后通过importBuilder组件构建一个DataStream对象，并调用dataStream.execute方法执行同步作业：
 
 ```java
 		/**
@@ -1050,9 +1061,9 @@ config.db.showsql = true
 		dataStream.execute();//执行同步操作
 ```
 
-添加上述两行代码后，整个同步作业方法就编写完成了。
+添加上述两行代码后，整个同步作业方法就编写完成了。接下来完成同步作业的配置工作。
 
-#### 5.2.4.12 同步作业主程序配置
+#### 5.2.4.11 同步作业主程序配置
 
 需要将编写的同步作业类配置到application.properties文件中：
 
@@ -1063,34 +1074,19 @@ mainclass=org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 
 
-#### 5.2.4.11 完整的同步作业类和作业配置文件
+#### 5.2.4.12 完整的同步作业类和作业配置文件
 
-来看看完整的数据同步作业类：
+完整的数据同步作业类：
 
 ```java
 package org.frameworkset.elasticsearch.imp;
-/**
- * Copyright 2008 biaoping.yin
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.imp.session.TestVO;
 import org.frameworkset.runtime.CommonLauncher;
+import org.frameworkset.session.TestVO;
 import org.frameworkset.soa.ObjectSerializable;
 import org.frameworkset.spi.geoip.IpInfo;
 import org.frameworkset.tran.DataRefactor;
@@ -1103,14 +1099,7 @@ import org.frameworkset.tran.task.TaskCommand;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * <p>Description: </p>
- * <p></p>
- * <p>Copyright (c) 2018</p>
- * @Date 2019/11/25 22:36
- * @author biaoping.yin
- * @version 1.0
- */
+
 public class Mongodb2ES {
 	/**
 	 * 启动运行同步作业主方法
@@ -1196,7 +1185,7 @@ public class Mongodb2ES {
 		Pattern hosts = Pattern.compile("^" + host + ".*$",
 				Pattern.CASE_INSENSITIVE);
 		query.append("host", new BasicDBObject("$regex",hosts));*/
-		//importBuilder.setQuery(query);
+		importBuilder.setQuery(query);
 
 		//设定需要返回的session数据字段信息（可选步骤，同步全部字段时可以不需要做下面配置）
 		BasicDBObject fetchFields = new BasicDBObject();
@@ -1283,7 +1272,7 @@ public class Mongodb2ES {
 					context.addFieldValue("testVO","");
 				else{
 					//利用xml序列化组件将xml报文序列化为一个TestVO
-					TestVO testVO1 = ObjectSerializable.toBean(userAccount, TestVO.class);
+					TestVO testVO1 = ObjectSerializable.toBean(testVO, TestVO.class);
 					context.addFieldValue("testVO", testVO1);
 				}
 				//空值处理
@@ -1445,9 +1434,9 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 
 
-## 5.3 调试并观察作业执行情况和日志
+## 5.3 调试并观察作业执行情况
 
-本节介绍在idea中调试运行之前编写的同步作业的方法,看看jdk timer调度作业的执行效果。
+作业开发和配置完成后，就可以在idea中调试和运行这个基于jdk timer调度的同步作业,并观察作业的执行效果。
 
 分两个步骤调试作业
 
@@ -1507,11 +1496,11 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 ## 5.4 同步作业参数提取/发布/部署
 
-数据同步作业开发调试完毕后，接下介绍如何将同步作业发布成一个可以部署运行的作业包。
+数据同步作业开发调试完毕后，就可以将同步作业发布成一个可以部署运行的作业包。可以将程序中硬编码的参数和参数值提取到配置文件application.properties中，参数提取完毕后再构建发布同步作业。
 
 ### 5.4.1 参数提取
 
-在发布版本之前，我们可以对代码做些调整，将需要根据实际情况进行调整的参数从代码中提取到配置文件application.properties文件中，例如：
+在发布版本之前，可以将程序中硬编码的参数和参数值提取到配置文件application.properties中，例如：
 
 1.mongodb相关参数（mongodb服务器地址、mongodb数据库和collection等）
 
@@ -1521,9 +1510,9 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 4.fetchSize和batchSize
 
-参数提取出来后，需要通过工具类CommonLauncher提供的相关方法获取参数值，例如：
 
-在application.propterties添加以下参数：
+
+首先在application.propterties添加以下参数：
 
 ```properties
 batchSize=10
@@ -1545,7 +1534,7 @@ mongodb.connectionsPerHost=100
 mongodb.threadsAllowedToBlockForConnectionMultiplier=6
 ```
 
-同步作业类中获取和设置参数代码:
+参数提取出来后，作业程序需要通过工具类CommonLauncher获取配置文件中的参数，获取和设置参数代码如下:
 
 ```java
 int batchSize = CommonLauncher.getIntProperty("batchSize",10);//必须同时指定了默认值,因为开发调试的时候会用默认值
@@ -1584,15 +1573,15 @@ importBuilder.setName(mongodbName)
 
 ### 5.4.2 发布作业
 
-参数提取梳理完毕后，打包发布版本，同步作业方法发布作业非常简单，直接在工程根目录下点击运行release.bat指令即可：
+参数提取梳理完毕后，打包发布版本，下点击运行工程根目录下的release.bat指令即可：
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\release.png)
 
-在命令行提升**build successful**说明打包发布成功：
+命令行提示build successful，说明打包发布成功：
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\releasesuccess.png)
 
-运行包所在目录：build\distributions
+构建生成的作业包所在目录：build\distributions
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\releasezip.png)
 
@@ -1607,6 +1596,12 @@ importBuilder.setName(mongodbName)
 同步作业启动后可以查看同步日志文件中的日志：es.log
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\restartjob.png)
+
+正式环境可以通过修改application.properties的配置来关闭dsl调试功能：
+
+```properties
+elasticsearch.showTemplate=false
+```
 
 同步数据对比：
 
@@ -1676,18 +1671,12 @@ mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
 
 - 通过importBuilder组件添加的全局tag:fromTag
 
-从kibana discover中检索同步过来的session数据：
+可以在kibana discover界面中检索同步到Elasticsearch中的session数据：
 ![](https://esdoc.bbossgroups.com/images\mongodb\kibanasessiondatas.png)
-
-可以通过修改application.properties的配置来关闭dsl调试功能：
-
-```properties
-elasticsearch.showTemplate=false
-```
 
 ### 5.4.5 作业jvm内存调整
 
-根据服务器资源情况，可以适当调整jvm内存，修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
+根据服务器资源和作业运行情况，可以适当调整jvm内存，修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
 ```properties
 -Xms1g
@@ -1698,6 +1687,8 @@ elasticsearch.showTemplate=false
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
 
+亦可以通过调整作业并行参数、批量读取和写入数据大小参数，来充分利用服务器资源和Elasticsearch能力，以提升数据同步速度。
+
 ## 5.5 基于xxl-job的数据同步作业 
 
 xxl-job调度的作业类实现和jdk timer调度的作业稍微有点不同，只需要构建一个importbuilder组件即可不需要添加作业执行代码，下面举例说明。
@@ -1705,18 +1696,18 @@ xxl-job调度的作业类实现和jdk timer调度的作业稍微有点不同，�
 xxl-job同步作业类需要依赖xxl-job组件，所以需要修改工程build.gradle文件添加xx-job依赖包：
 
 ```groovy
-compile 'com.xuxueli:xxl-job-core:2.0.2'
+compile 'com.xuxueli:xxl-job-core:2.1.1'
 ```
 
 ### 5.5.1编写作业类
 
-基于xxl-job的数据同步作业类，参数配置和数据转换处理与jdk timer一样，只是任务调度采用外部分布式调度引擎xxl-job；只需要构建一个externalScheduler组件即可；不需要添加作业执行代码；同时在代码中把xxl-job的分片号作为数据查询条件；去掉jdk timer定时任务相关配置代码。作业类需要继承抽象类，实现抽象方法init即可
+基于xxl-job的数据同步作业类，参数配置和数据转换处理与jdk timer一样，只是任务调度采用外部分布式调度引擎xxl-job；构建一个externalScheduler组件，并设置DataStreamBuilder接口到externalScheduler中；不需要添加作业执行代码；同时可以在代码中将xxl-job的分片号来以实现分布式分片数据同步功能；去掉jdk timer定时任务相关配置代码。同步作业类需要继承抽象类AbstractXXLJobHandler，实现抽象方法init
 
 ```java
 org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 ```
 
-添加分片号检索条件代码:采用xml序列化组件ObjectSerializable将分片号index序列化为一个xml报文，将该报文作为检索条件进行检索（因为session中的数据都是采用xml报文进行存储）
+将分片号检索条件代码如下:
 
 ```java
             //定义mongodb数据查询条件对象（可选步骤，全量同步可以不需要做条件配置）
@@ -1729,30 +1720,17 @@ org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 				logger.info("index:>>>>>>>>>>>>>>>>>>>" + shardingVO.getIndex());
 				logger.info("total:>>>>>>>>>>>>>>>>>>>" + shardingVO.getTotal());
 			}
-			// 采用xml序列化组件将index序列化为一个xml报文，将改报文作为检索条件进行检索
+			// 采用xml序列化组件将index序列化为一个xml报文，将该报文作为检索条件进行检索
+            // （因为session中的数据都是采用xml报文进行存储）
 			String idxStr = ObjectSerializable.toXML(index);
 			query.append("shardNo",idxStr );
 ```
 
-完整的同步作业类XXJobMongodb2ESImportTask：
+完整的xxl-job同步作业类XXJobMongodb2ESImportTask：
 
 ```java
 package org.frameworkset.elasticsearch.imp;
-/**
- * Copyright 2008 biaoping.yin
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -1817,6 +1795,8 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
 				logger.info("total:>>>>>>>>>>>>>>>>>>>" + shardingVO.getTotal());
 			}
 			try {
+                // 采用xml序列化组件将index序列化为一个xml报文，将该报文作为检索条件进行检索
+                // （因为session中的数据都是采用xml报文进行存储）
 				String idxStr = ObjectSerializable.toXML(index);
 				query.append("shardNo",idxStr );
 			} catch (Exception e) {
@@ -2072,7 +2052,7 @@ config.db.showsql = true
 
 
 
-### 5.5.3 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况和日志
+### 5.5.3 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况
 
 前提：事先运行xxl-job-admin
 
@@ -2105,7 +2085,7 @@ public class XXLJobApplicationTest {
 
 ```
 
-为了查看分片数据同步效果，需要在idea中通过运行XXLJobApplicationTest启动两个作业进程，先在9993端口启动一个XXLJobApplicationTest,启动后修改xxl.job.executor.port为不同的端口9994，然后再启动一个XXLJobApplicationTest进程
+为了查看分片数据同步效果，需要在idea中同时启动运行两个XXLJobApplicationTest作业进程，先在9993端口启动一个XXLJobApplicationTest,启动成功后，修改application.properties文件中的xxl.job.executor.port为端口9994，然后再启动一个XXLJobApplicationTest进程
 
 ```
 # 作业执行服务器ip
@@ -2114,9 +2094,9 @@ xxl.job.executor.ip=192.168.137.1
 xxl.job.executor.port=9994
 ```
 
-两个进程对应的分片号分别为0和1，然后访问打开多个浏览器，访问session应用，将会随机生成shardNo属性值为0和1的session记录数据，就可以观察到两个xxl-job作业执行器中的数据同步作业会分别同步shardNo属性值为0和1的session记录数据。
+两个进程对应的分片号分别为0和1，然后访问打开多个浏览器，访问session应用，将会随机生成shardNo属性值为0和1的session记录数据，就可以观察到两个数据同步作业会分别同步shardNo属性值为0和1的session记录数据。
 
-在调试和运行同步作业时需要在xxl-job-admin中添加executor和调入任务：
+调试和运行同步作业时需要在xxl-job-admin中添加xxl-job executor和调度任务：
 
 - xxl-job-admin中添加executor
 
@@ -2128,11 +2108,13 @@ xxl.job.executor.port=9994
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewtask.png)
 
-任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况、控制和启动作业，也可以像jdk timer作业一样通过stop指令停止作业、restart指令重启作业，这里不做过多介绍。下面是本案例中启动的两个xxl-job作业对应的运行窗口
+任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况、控制和启动作业，也可以像jdk timer作业一样，通过restart指令重启作业、stop指令停止作业。
 
-![](images\mongodb\xxljob1.png)
+下面给出正在运行的两个发布后的xxl-job作业窗口
 
-![](images\mongodb\xxljob2.png)
+![](https://esdoc.bbossgroups.com/images\mongodb\xxljob1.png)
+
+![](https://esdoc.bbossgroups.com/images\mongodb\xxljob2.png)
 
 同步作业参数提取/发布/部署/jvm配置与jdk timer类似，这里也不做过多介绍。更多的内容可以参考文档：
 
@@ -2140,17 +2122,42 @@ xxl.job.executor.port=9994
 
 ## 5.6 集成同步功能到自己的项目中（代码和maven坐标）
 
-前面介绍开发单独调度执行同步作业的方法，我们也可以将作业方法里面的代码整合到自己的项目中运行，只需要将maven坐标导入自己的项目即可：
+前面介绍了独立调度执行同步作业开发调试、构建发布和运行方法，我们也可以将作业方法里面的代码整合到自己的项目中运行，需要做到如下几点即可：
+
+- 将application.properties文件放入项目resources目录（在里面配置es和http连接池相关参数）
+
+- 将mongodb-elasticsearch同步工具包的maven坐标导入的项目：
 
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
-            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
             <version>5.9.6</version>
         </dependency>
 ```
 
-如果是spring boot项目，再多导入一个maven坐标：
+- 如果使用xxl-job调度作业，需导入xxl-job的maven坐标
+
+
+```xml
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+```
+
+- 如果是quartz调入作业，需导入maven坐标
+
+```xml
+        <dependency>
+            <groupId>com.bbossgroups</groupId>
+            <artifactId>bboss-schedule</artifactId>
+            <version>5.6.1</version>
+        </dependency>
+```
+
+- 如果是spring boot项目，导入一个maven坐标：
 
 ```xml
        <dependency>
@@ -2164,7 +2171,25 @@ xxl.job.executor.port=9994
 
 # 6.总结
 
-本案例介绍了mongodb-elasticsearch作业同步功能，重点介绍通过jdk timer调度同步作业，xxl-job分布式调度机制由于篇幅关系没有深入介绍，实现方法与jdk timer类似，更多的内容可以参考文档：
+本文结合session数据增量同步案例，讲解了mongodb到elasticsearch数据同步功能，总结如下：
+
+1.mongodb-elasticsearch数据同步功能（数据转换、数据过滤等）
+
+2.增量并行数据同步功能
+
+2.基于现有的同步作业工程搭建作业开发环境
+
+3.在idea中开发和调试基于jdk timer调度同步作业
+
+4.在idea中开发和调试xxl-job分布式调度同步作业
+
+5.基于xxl-job分布式分片数据同步功能
+
+6.如何配置、构建、发布和运行同步作业，查看作业运行日志和数据同步效果
+
+7.如何调整jvm内存和作业并行机制，提升数据同步速度和数据处理性能
+
+由于篇幅关系部分内容没有深入介绍，更多的内容可以参考文档：
 
 [基于xxjob-同步db-elasticsearch数据](https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-基于xxjob-同步db-elasticsearch数据)
 
