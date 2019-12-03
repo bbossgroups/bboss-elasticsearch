@@ -20,29 +20,34 @@
  - 定时增量（串行/并行）数据导入
 
 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
+
 支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
+
 支持将ip转换为对应的运营商和城市地理位置信息
+
 支持多种定时任务执行引擎：
 
  - jdk timer （内置）
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
-mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的源数据，然后将最终的数据保存到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过mongodb-elasticsearch提供的gradle脚本，即可构建和发布出可部署到生产环境的同步作业包。因此，对广大的java程序员来说，mongodb-elasticsearch无疑是一个轻易快速上手的数据同步利器。
+mongodb-elasticsearch另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的数据，然后将处理过的数据同步到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过mongodb-elasticsearch提供的gradle脚本来构建和发布可部署到生产环境的同步作业包。因此，对广大的java程序员来说，mongodb-elasticsearch无疑是一个轻易快速上手的数据同步利器。
 
-​	下面我们通过一个案例来介绍mongodb-elasticsearch的使用方法，你会发现整个过程下来，开发一个同步作业，其实就是在用大家熟悉的方式做一个简单的开发编程的事情。
+​	下面我们通过一个session数据同步案例来介绍mongodb-elasticsearch的功能和使用方法，本质上来讲基于mongodb-elasticsearch开发一个分布式的数据同步作业，其实是在用大家熟悉的方式做一个简单的开发编程的事情。
 
 # 2.同步案例介绍-session数据同步
 
-本文以一个session数据同步案例来介绍mongodb到Elasticsearch数据同步功能。场景比较简单：
+基于session数据同步案例来介绍mongodb到Elasticsearch数据同步功能。
 
-​	用web应用session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中,在处理session中数据时，使用第三方库将保存在session中的xml报文序列化为java对象。我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业。
+​	案例功能描述：以web应用session最后访问修改时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中。在同步数据的时候需要对从mongodb获取的原始session中数据进行各种转换处理，例如使用第三方库将保存在session中的xml报文序列化为java对象。
 
-​	事先运行一个往mongodb中写入session数据的web应用，然后启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据，观察增量同步作业的同步效果，演示两种调度机制同步效果：
+​	我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，运行作业。
+
+​	同步案例演示：事先运行一个往mongodb中写入session数据的web应用，然后启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据，观察增量同步作业的同步效果，演示两种调度机制同步效果：
 
 - 基于jdk timer
 
-- 基于xxl-job来调度作业演示数据分片同步功能（内容过多，下一个主题进行介绍）
+- 基于xxl-job来调度作业演示数据分片同步功能
 
 下面结合session数据同步案例，正式切入本文主题。
 
@@ -129,13 +134,25 @@ mongodb-elasticsearch-master
 
 |--src/main/resources  存放作业运行配置文件（es配置、参数配置）
 
+|--src/main/resources/application.properties  作业运行关键配置文件（es配置、参数配置、作业运行主程序配置）
+
+|--src/main/resources/application.properties.jdktimer  jdktimer 调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+
+|--src/main/resources/application.properties.quartz   quartz调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+
+|--src/main/resources/application.properties.xxljob   xxl-job调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+
 |--build.gradle   构建和发布作业的gradle构建脚本
 
 |--gradle.properties   gradle属性配置文件，这些属性在build.gradle文件中引用
 
 |--release.bat   构建和发布版本的指令（针对windows环境）
 
+关键配置文件说明：
 
+src/main/resources/application.properties
+
+这个文件是同步作业的主配置文件，包含es配置、参数配置、作业运行主程序配置，如果需要采用相应的调度机制，可以从对应的配置示例文件复制内容到application.properties即可。
 
 在此工程中已经有3个同步案例类：
 
@@ -146,11 +163,12 @@ org.frameworkset.elasticsearch.imp.QuartzImportTask --mongodb到elasticsearch qu
 
 ```
 
-关键配置文件：
+本案例将开发两个新的作业程序：
 
-src/main/resources/application.properties
-
-这个文件是同步作业的主配置文件，es和mongodb的相关参数都在这里配置。
+```
+org.frameworkset.elasticsearch.imp.Mongodb2ES --基于jdk timer mongodb到数据库同步案例
+org.frameworkset.elasticsearch.imp.XXJobMongodb2ESImportTask  --基于xxl-job mongodb到elasticsearch同步案例
+```
 
 数据同步作业工程导入idea后，即可进入同步作业开发、调试环节。
 
@@ -204,11 +222,11 @@ elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
 |                     |          | ipInfo               | json     | 在datafactor中添加的字段,根据referip计算出来的客户端ip地址信息（省市、地区、运营商、地理经纬度坐标等） |
 | shardNo             | int      | shardNo              | int      | session数据分片号，用于xxl-job同步作业分片同步数据功能       |
 
-## 5.2 建立同步作业类-Mongodb2DB
+## 5.2 建立同步作业类-Mongodb2ES
 
-我们先新建一个基于jdk timer的数据同步作业类Mongodb2DB，定义main方法和同步方法scheduleImportData，后面的xxl-job的作业在此基础上进行改进即可。
+我们先新建一个基于jdk timer的数据同步作业类Mongodb2ES，定义main方法和同步方法scheduleImportData，后面的xxl-job的作业在此基础上进行改进即可。
 
-org.frameworkset.elasticsearch.imp.Mongodb2DB
+org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 ![image-20191125223652299](https://esdoc.bbossgroups.com/images/mongodb/mongodb2db.png)
 
@@ -1040,7 +1058,7 @@ config.db.showsql = true
 
 ```properties
 #同步作业主程序配置
-mainclass=org.frameworkset.elasticsearch.imp.Mongodb2DB
+mainclass=org.frameworkset.elasticsearch.imp.Mongodb2ES
 ```
 
 
@@ -1093,14 +1111,14 @@ import java.util.Date;
  * @author biaoping.yin
  * @version 1.0
  */
-public class Mongodb2DB {
+public class Mongodb2ES {
 	/**
 	 * 启动运行同步作业主方法
 	 * @param args
 	 */
 	public static void main(String[] args){
 
-		Mongodb2DB dbdemo = new Mongodb2DB();
+		Mongodb2ES dbdemo = new Mongodb2ES();
 		dbdemo.scheduleImportData();
 	}
 
@@ -1379,7 +1397,7 @@ public class Mongodb2DB {
 
 ```properties
 #同步作业主程序配置
-mainclass=org.frameworkset.elasticsearch.imp.Mongodb2DB
+mainclass=org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 # Elasticsearch配置
 ##x-pack或者searchguard账号和口令
@@ -1590,8 +1608,75 @@ importBuilder.setName(mongodbName)
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\restartjob.png)
 
-可以在kibana中查看同步到elasticsearch中的session数据：
+同步数据对比：
 
+mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
+
+![](https://esdoc.bbossgroups.com/images\mongodb\mongodbsessiondata.png)
+
+可以在kibana中查看同步到elasticsearch中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的session数据：  
+
+```json
+{
+  "_index": "mongodbdemo",
+  "_type": "mongodbdemo",
+  "_id": "5de6165e162d7a290d59c3b8",
+  "_score": 1,
+  "_source": {
+    "extfiled2": 2,
+    "extfiled": 1,
+    "shardNo": 1,
+    "userAccount": "sessionmonitor 张三",
+    "testVO": {
+      "id": "testvoidaaaaa,sessionmonitor modifiy id",
+      "testVO1": {
+        "name": "hello,sessionmoitor test vo1"
+      }
+    },
+    "privateAttr": "this sessionmonitor's private attribute.",
+    "local": "en",
+    "lastAccessedTime": "2019-12-03T08:13:01.659Z",
+    "creationTime": "2019-12-03T08:01:34.061Z",
+    "ipInfo": {
+      "country": "未知",
+      "countryId": "未知",
+      "area": "",
+      "areaId": "",
+      "region": "未知",
+      "regionId": "未知",
+      "city": "未知",
+      "cityId": "未知",
+      "county": "未知",
+      "countyId": "未知",
+      "isp": "未知",
+      "ispId": null,
+      "ip": "127.0.0.1",
+      "geoPoint": null
+    },
+    "fromTag": "jdk timer",
+    "sessionid": "c020296e-4f9b-4509-b482-b44c88a913af",
+    "maxInactiveInterval": 3600000,
+    "_validate": true,
+    "appKey": "sessionmonitor",
+    "referip": "127.0.0.1",
+    "host": "169.254.252.194-DESKTOP-U3V5C85",
+    "requesturi": "http://localhost:9090/sessionmonitor/",
+    "lastAccessedUrl": "http://localhost:9090/sessionmonitor/session/sessionManager/viewSessionInfo.page?sessionid=c020296e-4f9b-4509-b482-b44c88a913af&appkey=sessionmonitor",
+    "httpOnly": true,
+    "secure": false,
+    "lastAccessedHostIP": "169.254.252.194-DESKTOP-U3V5C85"
+  }
+}
+```
+从上面的数据可以看到
+
+- 通过DataRefactor添加的数据字段：extfiled1，extfiled2，ipInfo（根据referip中保存的客户端ip，调用地理位置服务转换生成）
+
+- 通过DataRefactor 将xml报文转换为原始数据的字段：shardNo，userAccount，testVO，privateAttr，local
+
+- 通过importBuilder组件添加的全局tag:fromTag
+
+从kibana discover中检索同步过来的session数据：
 ![](https://esdoc.bbossgroups.com/images\mongodb\kibanasessiondatas.png)
 
 可以通过修改application.properties的配置来关闭dsl调试功能：
@@ -1962,7 +2047,7 @@ xxl.job.executor.logretentiondays=-1
 # }
 #
 
-# 配置mongodb-elasticsearch作业程序
+# 配置mongodb-elasticsearch作业程序，xxl-job作业中需要使用XXJobMongodb2ESImportTask来注册作业任务
 xxl.job.task.XXJobMongodb2ESImportTask = org.frameworkset.elasticsearch.imp.XXJobMongodb2ESImportTask
 ## xxl.job.task.otherTask = org.frameworkset.elasticsearch.imp.jobhandler.OtherTask
 
@@ -2031,7 +2116,23 @@ xxl.job.executor.port=9994
 
 两个进程对应的分片号分别为0和1，然后访问打开多个浏览器，访问session应用，将会随机生成shardNo属性值为0和1的session记录数据，就可以观察到两个xxl-job作业执行器中的数据同步作业会分别同步shardNo属性值为0和1的session记录数据。
 
-任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况，控制和启动作业，也可以想jdk timer作业一样通过stop指令停止作业，restart指令重启作业，这里不做过多介绍。
+在调试和运行同步作业时需要在xxl-job-admin中添加executor和调入任务：
+
+- xxl-job-admin中添加executor
+
+
+![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewexecutor.png)
+
+- xxl-job-admin中添加调度任务
+
+
+![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewtask.png)
+
+任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况、控制和启动作业，也可以像jdk timer作业一样通过stop指令停止作业、restart指令重启作业，这里不做过多介绍。下面是本案例中启动的两个xxl-job作业对应的运行窗口
+
+![](images\mongodb\xxljob1.png)
+
+![](images\mongodb\xxljob2.png)
 
 同步作业参数提取/发布/部署/jvm配置与jdk timer类似，这里也不做过多介绍。更多的内容可以参考文档：
 
@@ -2045,7 +2146,7 @@ xxl.job.executor.port=9994
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.9.5</version>
+            <version>5.9.6</version>
         </dependency>
 ```
 
@@ -2055,7 +2156,7 @@ xxl.job.executor.port=9994
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.9.5</version>
+            <version>5.9.6</version>
         </dependency>
 ```
 
