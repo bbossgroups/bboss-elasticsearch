@@ -2,7 +2,7 @@
 
 # 1.数据同步概述
 
-先介绍一下数据同步工具-基于java编写的数据同步工具bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
+在讲解MongoDB-Elasticshearch数据同步案例之前， 先了解一下基于java编写的数据同步工具-bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
 与logstash类似，通过bboss，可以非常方便地实现：
 
  - 将数据库表数据同步到Elasticsearch
@@ -33,13 +33,13 @@
 
 bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的数据，然后将处理过的数据同步到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本来构建和发布可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器,本质上来讲bboss为大家提供了一种简单而熟悉的开发编程方式，通过这种方式既可以开发简单的单机版并行数据同步作业程序，也可以开发出强大而复杂的分布式数据并行同步作业程序，从而实现海量数据同步功能。
 
-​	下面我们通过一个session数据同步案例来介绍bboss提供的mongodb-elasticsearch的数据同步功能及其应用。
+​	下面我们通过一个session数据同步案例来介绍mongodb-elasticsearch的数据同步功能。
 
 # 2.同步案例介绍-session数据同步
 
-​	案例描述：需要将保存在mongodb中的web应用session会话数据，以session最后访问时间作为增量同步字段，将保存在mongodb中的session数据定时增量同步到Elasitcsearch中;在同步数据的时候需要对从mongodb获取的原始session中数据进行转换加工处理，例如使用第三方库将保存在session中的xml报文序列化为java对象。
+​	案例描述：将保存在mongodb中的web应用session会话数据，根据session最后访问时间，定时增量同步到Elasitcsearch中;同步过程中，需要对session数据进行加工、转换和过滤处理，再存入Elasticsearch，例如使用第三方库将xml报文数据转换为java类型数据。
 
-​	我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，基于bboss提供运行指令启动运行和停止作业。分别采用jdk timer和xxl-job两种调度机制来定时调度和运行作业。
+​	案例开发：我们在idea中开发和调试数据同步作业，利用gradle构建和发布同步作业包，基于bboss提供运行指令启动运行和停止作业。分别采用jdk timer和xxl-job两种调度机制来定时调度和运行作业。
 
 ​	案例演示：事先运行一个基于mongodb存储session数据的web应用，并启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据。然后在kibana和session监控界面，观察增量同步session数据的效果，演示两种调度机制同步效果：
 
@@ -1074,7 +1074,7 @@ mainclass=org.frameworkset.elasticsearch.imp.Mongodb2ES
 
 
 
-#### 5.2.4.12 完整的同步作业类和作业配置文件
+#### 5.2.4.13 完整的同步作业类和作业配置文件
 
 完整的数据同步作业类：
 
@@ -1432,9 +1432,107 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 ```
 
+## 5.3 数据同步模式控制
+
+### 5.3.1 全量/增量导入
+
+根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，以session数据同步案例作业来讲解具体的控制方法
+
+- 增量同步时加上下面的代码
+
+```java
+        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+
+		importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
+- 全量同步时，去掉或者注释掉上面的代码
+
+```java
+        /**
+		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+
+		importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}*/
+```
 
 
-## 5.3 调试并观察作业执行情况
+
+### 5.3.2 一次性执行和周期定时执行
+
+根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，以session数据同步案例作业来讲解具体的控制方法
+
+- 定时执行
+
+  支持jdk timer和quartz以及xxl-job三种定时执行机制，以jdk timer为例，加上以下代码即可
+```java
+        //定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+               //.setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+```
+
+- 一次性执行
+一次性执行只需要将上面的代码注释即可
+```java
+        /**   
+        //定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+               //.setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		*/		
+```
+### 5.3.3 串行执行和并行执行
+
+根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，以session数据同步案例作业来讲解具体的控制方法
+
+- 并行执行
+
+  并行执行，加上以下代码即可
+```java
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
+
+```
+
+- 串行执行
+串行执行只需要将上面的代码注释即可
+```java
+        /**   
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
+		*/		
+```
+
+
+
+
+## 5.4 调试并观察作业执行情况
 
 作业开发和配置完成后，就可以在idea中调试和运行这个基于jdk timer调度的同步作业,并观察作业的执行效果。
 
@@ -1444,17 +1542,17 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 步骤二 调试同步作业
 
-### 5.3.1 准备工作
+### 5.4.1 准备工作
 
-#### 5.3.1.1 启动mongodb
+#### 5.4.1.1 启动mongodb
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\startmongodb.png)
 
-#### 5.3.1.2 启动elasticsearch
+#### 5.4.1.2 启动elasticsearch
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\startelasticsearch.png)
 
-#### 5.3.1.3 启动kibana
+#### 5.4.1.3 启动kibana
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\startkibana.png)
 
@@ -1478,7 +1576,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor6.png)
 
-### 5.3.2 调试同步作业
+### 5.4.2 调试同步作业
 
 在作业类中需要调试的代码处添加断点，然后启动调试程序即可：
 
@@ -1486,7 +1584,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 调试过滤记录功能
 ![](https://esdoc.bbossgroups.com/images\mongodb\debugjobfilter.png)
 
-### 5.3.3 查看同步作业任务执行日志
+### 5.4.3 查看同步作业任务执行日志
 第一次调度执行作业执行日志查看：第一次有10条数据进行同步单是被过滤掉一条日志
 ![](https://esdoc.bbossgroups.com/images\mongodb\debugjoblogs.png)
 
@@ -1494,11 +1592,11 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 ![](https://esdoc.bbossgroups.com/images\mongodb\debugincrtjoblogs.png)
 
 
-## 5.4 同步作业参数提取/发布/部署
+## 5.5 同步作业参数提取/发布/部署
 
 数据同步作业开发调试完毕后，就可以将同步作业发布成一个可以部署运行的作业包。可以将程序中硬编码的参数和参数值提取到配置文件application.properties中，参数提取完毕后再构建发布同步作业。
 
-### 5.4.1 参数提取
+### 5.5.1 参数提取
 
 在发布版本之前，可以将程序中硬编码的参数和参数值提取到配置文件application.properties中，例如：
 
@@ -1571,7 +1669,7 @@ importBuilder.setName(mongodbName)
 				.setAutoConnectRetry(mongodbAutoConnectRetry);
 ```
 
-### 5.4.2 发布作业
+### 5.5.2 发布作业
 
 参数提取梳理完毕后，打包发布版本，下点击运行工程根目录下的release.bat指令即可：
 
@@ -1585,13 +1683,13 @@ importBuilder.setName(mongodbName)
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\releasezip.png)
 
-### 5.4.3 运行和停止作业
+### 5.5.3 运行和停止作业
 
 将zip包分发到服务器解压即可，运行方法见图示：
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\runjob.png)
 
-###  5.4.4 运行效果
+###  5.5.4 运行效果
 
 同步作业启动后可以查看同步日志文件中的日志：es.log
 
@@ -1674,7 +1772,7 @@ mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
 可以在kibana discover界面中检索同步到Elasticsearch中的session数据：
 ![](https://esdoc.bbossgroups.com/images\mongodb\kibanasessiondatas.png)
 
-### 5.4.5 作业jvm内存调整
+### 5.5.5 作业jvm内存调整
 
 根据服务器资源和作业运行情况，可以适当调整jvm内存，修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -1689,25 +1787,28 @@ Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大�
 
 亦可以通过调整作业并行参数、批量读取和写入数据大小参数，来充分利用服务器资源和Elasticsearch能力，以提升数据同步速度。
 
-## 5.5 基于xxl-job的数据同步作业 
+## 5.6 基于xxl-job的数据同步作业 
 
-xxl-job调度的作业类实现和jdk timer调度的作业稍微有点不同，只需要构建一个importbuilder组件即可不需要添加作业执行代码，下面举例说明。
+### 5.6.1 xxl-job介绍
+xxl-job是一个不错的开源分布式作业调度引擎，大致的原理如下：
 
-xxl-job同步作业类需要依赖xxl-job组件，所以需要修改工程build.gradle文件添加xx-job依赖包：
+![image-20191204104127272](https://esdoc.bbossgroups.com/images\mongodb\xxl-job.png)
+
+运行xxl-job同步作业时依赖xxl-job组件，需要在build.gradle文件导入xx-job依赖包：
 
 ```groovy
 compile 'com.xuxueli:xxl-job-core:2.1.1'
 ```
 
-### 5.5.1编写作业类
+### 5.6.2 编写xxl-job作业
 
-基于xxl-job的数据同步作业类，参数配置和数据转换处理与jdk timer一样，只是任务调度采用外部分布式调度引擎xxl-job；构建一个externalScheduler组件，并设置DataStreamBuilder接口到externalScheduler中；不需要添加作业执行代码；同时可以在代码中将xxl-job的分片号来以实现分布式分片数据同步功能；去掉jdk timer定时任务相关配置代码。同步作业类需要继承抽象类AbstractXXLJobHandler，实现抽象方法init
+基于xxl-job的数据同步作业类需要继承抽象类AbstractXXLJobHandler，实现抽象方法init，参数配置和数据转换处理与jdk timer一样，采用分布式调度引擎xxl-job调度作业，因此不要在代码中添加jdk timer的定时配置，；实现AbstractXXLJobHandler的抽象方法init，在其中实例化一个externalScheduler组件，并设置DataStreamBuilder接口到externalScheduler中；基于xxl-job的节点分片号来以实现分布式分片数据同步功能。
 
 ```java
 org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 ```
 
-将分片号检索条件代码如下:
+将分片号作为mongodb数据查询条件:
 
 ```java
             //定义mongodb数据查询条件对象（可选步骤，全量同步可以不需要做条件配置）
@@ -1725,6 +1826,10 @@ org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 			String idxStr = ObjectSerializable.toXML(index);
 			query.append("shardNo",idxStr );
 ```
+
+xxl-job的分片调度处理机制：
+
+![image-20191204102007642](https://esdoc.bbossgroups.com/images\mongodb\xxl_jobshard.png)
 
 完整的xxl-job同步作业类XXJobMongodb2ESImportTask：
 
@@ -2012,7 +2117,7 @@ xxl.job.accessToken=
 ### xxl-job log path
 xxl.job.executor.logpath=d:/xxl-job/
 ### xxl-job log retention days
-xxl.job.executor.logretentiondays=-1
+xxl.job.executor.logretentiondays=10
 ##
 # 作业任务配置
 # xxl.job.task为前置配置多个数据同步任务，后缀XXJobImportTask和OtherTask将xxjob执行任务的名称
@@ -2035,7 +2140,7 @@ xxl.job.task.XXJobMongodb2ESImportTask = org.frameworkset.elasticsearch.imp.XXJo
 mainclass=org.frameworkset.tran.schedule.xxjob.XXJobApplication
 ```
 
-### 5.2.4 保存增量同步状态的外部数据源配置
+### 5.6.3 增量同步状态外部数据源配置
 
 采用xxl-job调度作业任务时，必须在application.properties文件中配置完整的保存增量同步状态的config.db数据源：
 
@@ -2052,7 +2157,7 @@ config.db.showsql = true
 
 
 
-### 5.5.3 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况
+### 5.6.4 调试xxl-job调度作业（分片同步数据机制）、观察作业执行情况
 
 前提：事先运行xxl-job-admin
 
@@ -2094,19 +2199,29 @@ xxl.job.executor.ip=192.168.137.1
 xxl.job.executor.port=9994
 ```
 
-两个进程对应的分片号分别为0和1，然后访问打开多个浏览器，访问session应用，将会随机生成shardNo属性值为0和1的session记录数据，就可以观察到两个数据同步作业会分别同步shardNo属性值为0和1的session记录数据。
+两个进程对应的分片号分别为0和1，然后打开多个浏览器，访问session应用，将会随机生成shardNo属性值为0和1的session记录数据，就可以观察到两个数据同步作业会分别同步shardNo属性值为0和1的session记录数据。
 
-调试和运行同步作业时需要在xxl-job-admin中添加xxl-job executor和调度任务：
+xxl-job作业启动和运行其实只是启动了xxl-job的executor节点，并不会启动同步作业程序，需要在xxl-job-admin中添加xxl-job executor和对应的作业调度任务，然后在控制台启动作业任务，才能正式在executor中调度和执行同步作业程序：
 
 - xxl-job-admin中添加executor
 
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewexecutor.png)
 
-- xxl-job-admin中添加调度任务
+其中的AppName必须与application.properties文件中配置项值保持一致
+
+```properties
+xxl.job.executor.appname=mongodb-elasticsearch-xxjob
+```
+
+- xxl-job-admin中添加作业调度任务
 
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewtask.png)
+
+- xxl-job控制台启动作业调度任务
+
+![](https://esdoc.bbossgroups.com/images\mongodb\xxltaskschedule.png)
 
 任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况、控制和启动作业，也可以像jdk timer作业一样，通过restart指令重启作业、stop指令停止作业。
 
@@ -2116,11 +2231,13 @@ xxl.job.executor.port=9994
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxljob2.png)
 
+
+
 同步作业参数提取/发布/部署/jvm配置与jdk timer类似，这里也不做过多介绍。更多的内容可以参考文档：
 
 [基于xxjob-同步db-elasticsearch数据](https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-基于xxjob-同步db-elasticsearch数据)
 
-## 5.6 集成同步功能到自己的项目中（代码和maven坐标）
+## 5.7 集成同步功能到自己的项目中（代码和maven坐标）
 
 前面介绍了独立调度执行同步作业开发调试、构建发布和运行方法，我们也可以将作业方法里面的代码整合到自己的项目中运行，需要做到如下几点即可：
 
@@ -2134,6 +2251,17 @@ xxl.job.executor.port=9994
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
             <version>5.9.6</version>
         </dependency>
+```
+
+- 增量导入，需要导入sqlite驱动
+
+```xml
+<dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.23.1</version>
+      <scope>compile</scope>
+ </dependency>
 ```
 
 - 如果使用xxl-job调度作业，需导入xxl-job的maven坐标

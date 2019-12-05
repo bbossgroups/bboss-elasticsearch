@@ -23,7 +23,15 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
-   
+
+# v5.9.7 功能改进
+
+1.完善数据同步功能：增加flushInterval参数，单位毫秒，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行入库处理
+
+2.增加BulkProcessor：异步收集增、删、改请求，并进行排队，达到一定的请求数量后，进行bulk批量入库处理，可以根据flushInterval参数(单位毫秒)，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行bulk入库处理
+
+3.增加elasticsearch-elasticsearch数据同步功能
+
 # v5.9.6 功能改进
 
 1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错
