@@ -32,6 +32,12 @@ https://esdoc.bbossgroups.com/#/development
 
 3.增加elasticsearch-elasticsearch数据同步功能
 
+4.Elasticsearch同步功能改进：增加ignoreNullValueField控制参数，true是忽略null值存入elasticsearch，false是存入（默认值）
+
+importBuilder.setIgnoreNullValueField(true); 
+
+5.Client Api改进：http连接池增加 evictExpiredConnections配置，true 控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，默认值为true
+
 # v5.9.6 功能改进
 
 1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错

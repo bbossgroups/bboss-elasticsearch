@@ -53,6 +53,8 @@ private Integer sqlEndElapsed;
 
 当elasticsearch索引表字段名称和java bean的字段名称不一致的情况下，采用@JsonProperty注解用来定义elasticsearch和java bean的field名称转换映射关系，使用实例如下：
 
+com.fasterxml.jackson.annotation.JsonProperty
+
 ```java
 @JsonProperty("max_score")
 private Double maxScore;
@@ -139,6 +141,17 @@ protected boolean returnSource;
 ```
 
 reponse报文这里不做介绍，如果被标准的returnSource属性为true，那么在response中将包含文档的source字段信息。
+
+## 1.5 将属性值为null的字段忽略掉
+com.fasterxml.jackson.annotation.JsonInclude
+在对象上面添加注解@JsonInclude(Include.NON_NULL),例如:
+
+```java
+@JsonInclude(Include.NON_NULL) 
+public class Order {
+  ....
+}
+```
 
 # 2.元数据注解
 
@@ -512,6 +525,7 @@ MetaDemo metaDemo = clientUtil.getDocument("demo",//索引表
 			Object[] sort = demo.getSort();//排序信息
 		}
 ```
+
 
 # 3.参考资料
 

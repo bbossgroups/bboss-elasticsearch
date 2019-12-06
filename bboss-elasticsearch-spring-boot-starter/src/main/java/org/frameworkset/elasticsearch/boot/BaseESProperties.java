@@ -229,6 +229,16 @@ public abstract class BaseESProperties {
 		 * 默认值false
 		 */
 		private String staleConnectionCheckEnabled = "false";
+
+		public String getEvictExpiredConnections() {
+			return evictExpiredConnections;
+		}
+
+		public void setEvictExpiredConnections(String evictExpiredConnections) {
+			this.evictExpiredConnections = evictExpiredConnections;
+		}
+
+		private String evictExpiredConnections = "true";
 		/**
 		 * 自定义重试控制接口，必须实现接口方法
 		 * public interface CustomHttpRequestRetryHandler  {
@@ -730,6 +740,9 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.staleConnectionCheckEnabled",this.getHttp().isStaleConnectionCheckEnabled());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getCustomHttpRequestRetryHandler()))
 				properties.put(_name+"http.customHttpRequestRetryHandler",this.getHttp().getCustomHttpRequestRetryHandler());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getEvictExpiredConnections()))
+				properties.put(_name+"http.evictExpiredConnections",this.getHttp().getEvictExpiredConnections());
+
 		}
 
 		if(dslfile != null){
