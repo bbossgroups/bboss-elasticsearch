@@ -15,8 +15,6 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import java.io.Serializable;
-
 /**
  * <p>Description: 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
  * 可以在ClientOption中指定以下参数：
@@ -34,36 +32,16 @@ import java.io.Serializable;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ClientOptions implements Serializable {
-	private String parentIdField;
-	private String idField;
+public class ClientOptions extends UpdateOptions {
 	private String esRetryOnConflictField;
 	private String versionField;
 	private String versionTypeField;
 	private String rountField;
-	private String refreshOption;
 
 	private Object esRetryOnConflict;
 	private Object version;
 	private Object versionType;
 	private Object rount;
-
-	public String getParentIdField() {
-		return parentIdField;
-	}
-
-	public void setParentIdField(String parentIdField) {
-		this.parentIdField = parentIdField;
-	}
-
-	public String getIdField() {
-		return idField;
-	}
-
-	public void setIdField(String idField) {
-		this.idField = idField;
-	}
-
 	public String getRountField() {
 		return rountField;
 	}
@@ -73,14 +51,6 @@ public class ClientOptions implements Serializable {
 	}
 
 
-
-	public String getRefreshOption() {
-		return refreshOption;
-	}
-
-	public void setRefreshOption(String refreshOption) {
-		this.refreshOption = refreshOption;
-	}
 
 	public String getEsRetryOnConflictField() {
 		return esRetryOnConflictField;

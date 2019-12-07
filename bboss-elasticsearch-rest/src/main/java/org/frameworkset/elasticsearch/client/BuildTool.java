@@ -18,6 +18,7 @@ import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.orm.annotation.NameParserException;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.bulk.BulkData;
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.entity.IndiceHeader;
@@ -985,6 +986,94 @@ public abstract class BuildTool {
 		}
 
 	}
+	public static void evalDeleteBuilk(BBossStringWriter writer, boolean isUpper7, BulkData bulkData,Object id){
+		try {
+			if(!isUpper7 ) {
+
+				writer.write("{ \"delete\" : { \"_index\" : \"");
+				writer.write(bulkData.getIndex());
+				writer.write("\", \"_type\" : \"");
+				writer.write(bulkData.getIndexType());
+				writer.write("\", \"_id\" : \"");
+				writer.write(bulkData.getData().toString());
+				writer.write("\" } }\n");
+			}
+			else{
+
+				writer.write("{ \"delete\" : { \"_index\" : \"");
+				writer.write(bulkData.getIndex());
+				writer.write("\", \"_id\" : \"");
+				writer.write(bulkData.getData().toString());
+				writer.write("\" } }\n");
+			}
+
+		} catch (Exception e) {
+			throw new ElasticSearchException(e);
+		}
+
+	}
+	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions,boolean upper7) throws IOException {
+
+		if (param != null) {
+			buildMeta(  writer ,  indexType,  indexName,   param,action,clientOptions,  upper7);
+			if(!action.equals("update")) {
+				SerialUtil.object2json(param,writer);
+				writer.write("\n");
+			}
+			else
+			{
+				Object detect_noop = null;
+				Object doc_as_upsert = null;
+
+				if(!(param instanceof Map)) {
+					ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(param.getClass());
+
+					if(clientOptions.getDetectNoop() != null){
+						detect_noop = clientOptions.getDetectNoop();
+					}
+					else {
+						detect_noop = clientOptions.getDetectNoopField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDetectNoopField()) : null;
+					}
+					if(clientOptions.getDocasupsert() != null) {
+						doc_as_upsert =clientOptions.getDocasupsert();
+					}
+					else {
+						doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : null;
+					}
+				}
+				else{
+					Map _params = (Map)param;
+
+					if(clientOptions.getDetectNoop() != null){
+						detect_noop = clientOptions.getDetectNoop();
+					}
+					else {
+						detect_noop = clientOptions.getDetectNoopField() != null ? _params.get( clientOptions.getDetectNoopField()) : null;
+					}
+					if(clientOptions.getDocasupsert() != null) {
+						doc_as_upsert = clientOptions.getDocasupsert();
+					}
+					else {
+						doc_as_upsert = clientOptions.getDocasupsertField() != null ? _params.get(clientOptions.getDocasupsertField()) : null;
+					}
+
+				}
+				writer.write("{\"doc\":");
+				SerialUtil.object2json(param,writer);
+				if(detect_noop != null){
+					writer.write(",\"detect_noop\":");
+					writer.write(detect_noop.toString());
+				}
+				if(doc_as_upsert != null){
+//					builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+					writer.write(",\"doc_as_upsert\":");
+					writer.write(doc_as_upsert.toString());
+				}
+				writer.write("}\n");
+			}
+		}
+
+	}
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 
 		if (param != null) {
@@ -1003,23 +1092,7 @@ public abstract class BuildTool {
 
 	}
 
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions,boolean upper7) throws IOException {
 
-		if (param != null) {
-			buildMeta(  writer ,  indexType,  indexName,   param,action,clientOptions,  upper7);
-			if(!action.equals("update")) {
-				SerialUtil.object2json(param,writer);
-				writer.write("\n");
-			}
-			else
-			{
-				writer.write("{\"doc\":");
-				SerialUtil.object2json(param,writer);
-				writer.write("}\n");
-			}
-		}
-
-	}
 
 	public static void handleFields(Map<String,Object> subFileds,String fieldName,List<IndexField> fields){
 		if(subFileds == null || subFileds.size() == 0)
@@ -1103,9 +1176,7 @@ public abstract class BuildTool {
 //		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsIdProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
-		if(beanInfo == null || docIdField == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,docIdField);
+		return getFieldValue(  bean, beanInfo ,docIdField);
 	}
 
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ){
@@ -1120,15 +1191,7 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ,String esRetryOnConflictField){
-		if( beanInfo == null){
-			return null;
-		}
-//		ClassUtil.PropertieDescription esRetryOnConflictProperty = beanInfo.getEsRetryOnConflictProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(esRetryOnConflictField == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,esRetryOnConflictField);
+		return getFieldValue(  bean, beanInfo ,esRetryOnConflictField);
 	}
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo ){
 		if(beanInfo == null){
@@ -1143,15 +1206,7 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo,String routingField ){
-		if(beanInfo == null){
-			return null;
-		}
-//		ClassUtil.PropertieDescription routingProperty = beanInfo.getEsRoutingProperty();
-//		if(pkProperty == null)
-//			pkProperty = beanInfo.getPkProperty();
-		if(routingField == null)
-			return null;
-		return beanInfo.getPropertyValue(bean,routingField);
+		return getFieldValue(  bean, beanInfo ,routingField);
 	}
 
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
@@ -1167,14 +1222,18 @@ public abstract class BuildTool {
 	}
 
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ,String parentIdField){
+		return getFieldValue(  bean, beanInfo ,parentIdField);
+	}
+
+	public static  Object getFieldValue(Object bean,ClassUtil.ClassInfo beanInfo ,String field){
 		if(beanInfo == null){
 			return null;
 		}
 //		ClassUtil.PropertieDescription pkProperty = beanInfo.getEsParentProperty();
 //		if(pkProperty == null)
 //			pkProperty = beanInfo.getPkProperty();
-		if(parentIdField == null)
+		if(field == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,parentIdField);
+		return beanInfo.getPropertyValue(bean,field);
 	}
 }

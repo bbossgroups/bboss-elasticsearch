@@ -10,6 +10,7 @@ import org.frameworkset.elasticsearch.ElasticSearchEventSerializer;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.EventDeliveryException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLResult;
@@ -1606,6 +1607,11 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public String getScript(String scriptName) {
+		return null;
+	}
+
+	@Override
+	public String executeBulk(BulkCommand bulkCommand) {
 		return null;
 	}
 

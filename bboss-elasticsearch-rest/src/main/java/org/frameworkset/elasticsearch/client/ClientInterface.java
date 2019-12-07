@@ -2,6 +2,7 @@ package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLResult;
@@ -2656,4 +2657,11 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 */
 	public String getScript(String scriptName);
+
+	/**
+	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html"
+	 * @param bulkCommand
+	 * @return
+	 */
+	String executeBulk(BulkCommand bulkCommand);
 }

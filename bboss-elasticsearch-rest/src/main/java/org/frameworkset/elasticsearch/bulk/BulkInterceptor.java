@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.scroll.thread;
+package org.frameworkset.elasticsearch.bulk;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,23 +15,16 @@ package org.frameworkset.elasticsearch.scroll.thread;
  * limitations under the License.
  */
 
-import org.frameworkset.util.concurrent.BlockedRejectedExecutionHandler;
-
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2018/8/29 21:39
+ * @Date 2019/12/7 9:36
  * @author biaoping.yin
  * @version 1.0
  */
-public class BlockedTaskRejectedExecutionHandler extends BlockedRejectedExecutionHandler {
-
-	public BlockedTaskRejectedExecutionHandler(String message, long blockedWaitTimeout) {
-		super(message, blockedWaitTimeout);
-	}
-
-	public BlockedTaskRejectedExecutionHandler(String message, long blockedWaitTimeout, int warnMultsRejects) {
-		super(message, blockedWaitTimeout, warnMultsRejects);
-	}
+public interface BulkInterceptor {
+	public void beforeBulk(BulkCommand bulkCommand);
+	public void afterBulk(BulkCommand bulkCommand,String result);
+	public void errorBulk(BulkCommand bulkCommand,Throwable exception);
 }

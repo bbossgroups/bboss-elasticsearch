@@ -35,13 +35,15 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class UpdateOptions implements Serializable {
-	private String refreshOption;
+	protected String refreshOption;
 	private String detectNoopField;
 	private String docasupsertField;
 	private Object detectNoop;
 	private Object docasupsert;
-	private String parentIdField;
-	private String docIdField;
+	protected String parentIdField;
+
+
+	protected String idField;
 	public String getRefreshOption() {
 		return refreshOption;
 	}
@@ -66,14 +68,15 @@ public class UpdateOptions implements Serializable {
 		this.docasupsertField = docasupsertField;
 	}
 
-	public String getDocIdField() {
-		return docIdField;
+
+
+	public String getIdField() {
+		return idField;
 	}
 
-	public void setDocIdField(String docIdField) {
-		this.docIdField = docIdField;
+	public void setIdField(String idField) {
+		this.idField = idField;
 	}
-
 
 	public String getParentIdField() {
 		return parentIdField;
