@@ -97,6 +97,14 @@ public class BulkProcessor {
 		}
 
 	}
+
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param data
+	 * @param clientOptions
+	 */
 	public void insertData(String index,String indexType,Object data,ClientOptions clientOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.INSERT,data);
@@ -108,13 +116,33 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data
+	 * @param clientOptions
+	 */
 	public void insertData(String index,Object data,ClientOptions clientOptions){
 		insertData( index,(String)null, data,clientOptions);
 	}
 
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data
+	 */
 	public void insertData(String index,Object data){
 		insertData( index,(String)null, data,null);
 	}
+
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param data
+	 * @param updateOptions
+	 */
 	public void updateData(String index, String indexType, Object data, ClientOptions updateOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.UPDATE,data);
@@ -126,13 +154,33 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data
+	 */
 	public void updateData(String index,  Object data){
 		updateData(  index,   null, data,null);
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data
+	 * @param updateOptions
+	 */
 	public void updateData(String index,  Object data, ClientOptions updateOptions){
 		updateData(  index, (String)null,  data,  updateOptions);
 	}
 
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param data
+	 * @param updateOptions
+	 */
 	public void deleteData(String index,String indexType,Object data, ClientOptions updateOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.DELETE,data);
@@ -144,12 +192,33 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data 待删除的文档_id
+	 * @param updateOptions
+	 */
 	public void deleteData(String index,Object data, ClientOptions updateOptions){
 		deleteData(  index,(String)null,  data,  updateOptions);
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param data 待删除的文档_id
+	 */
 	public void deleteData(String index, Object data){
 		deleteData(  index,(String)null,  data,  (ClientOptions)null);
 	}
+
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas
+	 * @param clientOptions
+	 */
 	public void insertDatas(String index,String indexType,List<Object> datas,ClientOptions clientOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.INSERT,datas);
@@ -161,15 +230,33 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas
+	 * @param clientOptions
+	 */
 	public void insertDatas(String index,List<Object> datas,ClientOptions clientOptions){
 		insertDatas( index,(String)null, datas,clientOptions);
 	}
 
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas
+	 */
 	public void insertDatas(String index,List<Object> datas){
 		insertDatas( index,(String)null, datas,null);
 	}
 
-
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas
+	 * @param updateOptions
+	 */
 	public void updateDatas(String index, String indexType, List<Object> datas, ClientOptions updateOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.UPDATE,datas);
@@ -181,13 +268,33 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas
+	 */
 	public void updateDatas(String index,  List<Object> datas){
 		updateDatas(  index,   (String)null, datas,null);
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas
+	 * @param updateOptions
+	 */
 	public void updateDatas(String index, List<Object> datas, ClientOptions updateOptions){
 		updateDatas(  index, (String)null,  datas,  updateOptions);
 	}
 
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas 待删除的文档_id集合
+	 * @param updateOptions
+	 */
 	public void deleteDatas(String index,String indexType,List<Object> datas, ClientOptions updateOptions){
 		try {
 			BulkData bulkData = new BulkData(BulkData.DELETE,datas);
@@ -199,9 +306,22 @@ public class BulkProcessor {
 
 		}
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas 待删除的文档_id集合
+	 * @param updateOptions
+	 */
 	public void deleteDatas(String index,List<Object> datas, ClientOptions updateOptions){
 		deleteDatas(  index,(String)null,  datas,  updateOptions);
 	}
+
+	/**
+	 * ES 7.x,+
+	 * @param index
+	 * @param datas 待删除的文档_id集合
+	 */
 	public void deleteDatas(String index, List<Object> datas){
 		deleteDatas(  index,(String)null,  datas,  (ClientOptions)null);
 	}
