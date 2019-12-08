@@ -112,4 +112,17 @@ public class BulkData{
 	public void setClientOptions(ClientOptions clientOptions) {
 		this.clientOptions = clientOptions;
 	}
+
+	/**
+	 * 如果是集合，返回集合中记录数，如果是单对象，返回1
+	 * @return
+	 */
+	public int getDataSize(){
+		if(this.isCollection()){
+			return datas != null ?this.datas.size():0;
+		}
+		else{
+			return 1;
+		}
+	}
 }

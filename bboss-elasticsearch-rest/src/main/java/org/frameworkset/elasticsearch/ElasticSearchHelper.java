@@ -349,7 +349,7 @@ public class ElasticSearchHelper {
 	 */
 	public static ElasticSearch getElasticSearchSink(String elasticSearch){
 		init();
-		if(elasticSearch == null || elasticSearch.equals("")) {
+		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
 
 			return elasticSearchSink;
 		}

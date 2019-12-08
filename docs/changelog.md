@@ -38,6 +38,8 @@ importBuilder.setIgnoreNullValueField(true);
 
 5.Client Api改进：http连接池增加 evictExpiredConnections配置，true 控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，默认值为true
 
+6.bug修复：ElasticSearchHelper.getElasticSearchSink(String elasticSearch)方法传入default数据源名称时，后台报异常信息
+
 # v5.9.6 功能改进
 
 1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错

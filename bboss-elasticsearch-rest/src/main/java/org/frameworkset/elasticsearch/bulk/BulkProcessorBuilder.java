@@ -47,7 +47,10 @@ public class BulkProcessorBuilder {
 		this.bulkConfig.setFlushInterval(flushInterval);
 		return this;
 	}
-
+	public BulkProcessorBuilder setWorkThreadQueue(int workThreadQueue) {
+		this.bulkConfig.setWorkThreadQueue( workThreadQueue);
+		return this;
+	}
 
 	public BulkProcessorBuilder setBulkQueue(int bulkQueue) {
 		this.bulkConfig.setBulkQueue(bulkQueue);
@@ -95,4 +98,21 @@ public class BulkProcessorBuilder {
 		bulkConfig.setRefreshOption(refreshOption);
 		return this;
 	}
+	public BulkProcessorBuilder setPollTimeOut(long pollTimeOut) {
+		this.bulkConfig.setPollTimeOut( pollTimeOut);
+		return this;
+	}
+	public BulkProcessorBuilder setBulkRejectMessage(String bulkRejectMessage) {
+		if(bulkRejectMessage == null)
+			bulkRejectMessage = "Reject bulk processor";
+		this.bulkConfig.setBulkRejectMessage( bulkRejectMessage);
+		return this;
+	}
+	public BulkProcessorBuilder setBulkProcessorName(String bulkProcessorName) {
+		if(bulkProcessorName == null)
+			bulkProcessorName = "BulkProcessor";
+		this.bulkConfig.setBulkProcessorName( bulkProcessorName);
+		return this;
+	}
+
 }

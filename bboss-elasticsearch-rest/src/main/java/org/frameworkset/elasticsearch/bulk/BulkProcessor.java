@@ -76,7 +76,7 @@ public class BulkProcessor {
 													this.bulkConfig.getBlockedWaitTimeout()
 													,this.bulkConfig.getWarnMultsRejects());
 		dataQueue =  new ArrayBlockingQueue<BulkData>(bulkConfig.getBulkQueue());
-		worker = new Thread(new Worker());
+		worker = new Thread(new Worker(),bulkConfig.getBulkProcessorName()+"-bulkdataqueue-handle-work");
 		worker.start();
 		BaseApplicationContext.addShutdownHook(new Runnable() {
 			@Override
@@ -205,7 +205,84 @@ public class BulkProcessor {
 	public void deleteDatas(String index, List<Object> datas){
 		deleteDatas(  index,(String)null,  datas,  (ClientOptions)null);
 	}
+	private void handleCollection(BulkData bulkData,List<BulkData> commandBulkDatas,IntegerWraper j,List<BulkCommand> bulkCommands ){
+		BulkCommand bulkCommand = null;
+		if(bulkData.isCollection()){
+			List<Object> datas = bulkData.getDatas();
+			BulkData innerBulkData = null;
+			for(int k = 0; k < datas.size(); k ++){
+				if(j.get() < bulkConfig.getBulkSizes()) {
+					innerBulkData = new BulkData(bulkData.getType(), datas.get(k));
+					innerBulkData.setClientOptions(bulkData.getClientOptions());
+					innerBulkData.setIndex(bulkData.getIndex());
+					innerBulkData.setIndexType(bulkData.getIndexType());
+					commandBulkDatas.add(innerBulkData);
+					j.increment();
+				}
+				else{
+					bulkCommand = new BulkCommand(commandBulkDatas,this);
+					bulkCommands.add(bulkCommand);
+					j.reset();
+					commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
+					innerBulkData = new BulkData(bulkData.getType(), datas.get(k));
+					innerBulkData.setClientOptions(bulkData.getClientOptions());
+					innerBulkData.setIndex(bulkData.getIndex());
+					innerBulkData.setIndexType(bulkData.getIndexType());
+					commandBulkDatas.add(innerBulkData);
+					j.increment();
+				}
+			}
+		}
+		else{
+			commandBulkDatas.add(bulkData);
+			j.increment();
+		}
 
+	}
+	static class IntegerWraper{
+		int j = 0;
+		public IntegerWraper(){
+
+		}
+		public int increment(){
+			j ++;
+			return j;
+		}
+		public void reset(){
+			j = 0;
+		}
+		public int get(){
+			return j;
+		}
+	}
+	private List<BulkCommand> buildBulkCommands(List<BulkData> batchBulkDatas){
+		List<BulkCommand> bulkCommands = new ArrayList<BulkCommand>();
+		List<BulkData> commandBulkDatas = null;
+		BulkCommand bulkCommand = null;
+		BulkData bulkData = null;
+		IntegerWraper j = new IntegerWraper();
+		for(int i = 0; i < batchBulkDatas.size(); i ++) {
+			if(commandBulkDatas == null)
+				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
+			bulkData = batchBulkDatas.get(i);
+			if(j.get() < bulkConfig.getBulkSizes()){
+				handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
+			}
+			else{
+				bulkCommand = new BulkCommand(commandBulkDatas,this);
+				bulkCommands.add(bulkCommand);
+				j.reset();
+				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
+				handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
+			}
+
+		}
+		if(j.get() > 0){
+			bulkCommand = new BulkCommand(commandBulkDatas,this);
+			bulkCommands.add(bulkCommand);
+		}
+		return bulkCommands;
+	}
 
 	class Worker implements Runnable{
 
@@ -214,6 +291,8 @@ public class BulkProcessor {
 			long pollStartTime = System.currentTimeMillis();
 			List<BulkData> batchBulkDatas = null;
 			BulkCommand bulkCommand = null;
+			long totalSize = 0;
+			int dataSize = 0;
 			do {
 				try {
 
@@ -224,27 +303,44 @@ public class BulkProcessor {
 
 
 					if (bulkData != null) {
+						pollStartTime = System.currentTimeMillis();
 						if(batchBulkDatas == null){
 							batchBulkDatas = new ArrayList<BulkData>();
 						}
+						dataSize = dataSize + bulkData.getDataSize();//实际记录大小，因为bulkData为collection时，数据大小应该以collection大小之和
+						totalSize = totalSize + bulkData.getDataSize();
 						batchBulkDatas.add(bulkData);
-						if(batchBulkDatas.size() >= bulkConfig.getBulkSizes()){
+						if(dataSize == bulkConfig.getBulkSizes()){
 							bulkCommand = new BulkCommand(batchBulkDatas,BulkProcessor.this);
-							executor.submit(bulkCommand);
 							batchBulkDatas = null;
+							dataSize = 0;
+
+							executor.submit(bulkCommand);
+
 						}
+						else if(dataSize > bulkConfig.getBulkSizes()){
+							List<BulkCommand> bulkCommands = buildBulkCommands(batchBulkDatas);
+							batchBulkDatas.clear();
+							batchBulkDatas = null;
+							dataSize = 0;
+							for(BulkCommand bulkCommand1:bulkCommands){
+								executor.submit(bulkCommand1);
+							}
+						}
+
 					}
 					else{
 						if (bulkConfig.getFlushInterval() > 0) {
 							long interval = System.currentTimeMillis() - pollStartTime;
 							if (interval > bulkConfig.getFlushInterval()) {
 								// force flush
-								if(batchBulkDatas.size() > 0){
+								if(dataSize > 0){
 									bulkCommand = new BulkCommand(batchBulkDatas,BulkProcessor.this);
-									executor.submit(bulkCommand);
 									batchBulkDatas = null;
+									dataSize = 0;
+									pollStartTime = System.currentTimeMillis();
+									executor.submit(bulkCommand);
 								}
-								pollStartTime = System.currentTimeMillis();
 							}
 						}
 						continue;
