@@ -1,4 +1,4 @@
-# Spring boot整合ElasticSearch案例分享
+# Spring boot整合Elasticsearch案例分享
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 

@@ -8,7 +8,7 @@
 
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
 
-  - [Spring boot集成和配置bboss ](spring-booter-with-bboss.md) 
+  - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md) 
 
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 
@@ -36,6 +36,7 @@
     - [Sliced-Scroll](Sliced-Scroll.md) 
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
   - [Elasticsearch SQL介绍](Elasticsearch-6-SQL.md)
+  - [BulkProcessor异步批处理](bulkProcessor.md)
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)

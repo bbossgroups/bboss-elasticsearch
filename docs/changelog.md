@@ -28,7 +28,9 @@ https://esdoc.bbossgroups.com/#/development
 
 1.完善数据同步功能：增加flushInterval参数，单位毫秒，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行入库处理
 
-2.增加BulkProcessor：异步收集增、删、改请求，并进行排队，达到一定的请求数量后，进行bulk批量入库处理，可以根据flushInterval参数(单位毫秒)，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行bulk入库处理
+2.增加BulkProcessor：异步收集增、删、改请求，并进行排队，达到一定的请求数量后，进行bulk批量入库处理，可以根据flushInterval参数(单位毫秒)，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行bulk入库处理，参考文档：
+
+https://esdoc.bbossgroups.com/#/bulkProcessor
 
 3.增加elasticsearch-elasticsearch数据同步功能
 
