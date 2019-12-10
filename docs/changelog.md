@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.6 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.7 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -32,7 +32,9 @@ https://esdoc.bbossgroups.com/#/development
 
 https://esdoc.bbossgroups.com/#/bulkProcessor
 
-3.增加elasticsearch-elasticsearch数据同步功能
+3.增加elasticsearch-elasticsearch数据同步功能，Demo地址：
+
+https://github.com/bbossgroups/elasticsearch-elasticsearch
 
 4.Elasticsearch同步功能改进：增加ignoreNullValueField控制参数，true是忽略null值存入elasticsearch，false是存入（默认值）
 

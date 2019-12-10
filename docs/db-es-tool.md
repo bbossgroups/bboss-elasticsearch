@@ -15,9 +15,10 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 1. 将数据库表数据同步到Elasticsearch
 2. 将数据库表数据同步到数据库表
 3. 将Elasticsearch数据同步到数据库表
-4. 将mongodb数据同步到Elasticsearch
-5. 将mongodb数据同步到数据库表
-6. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
+4. 将Elasticsearch数据同步到Elasticsearch
+5. 将mongodb数据同步到Elasticsearch
+6. 将mongodb数据同步到数据库表
+7. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
 
 导入的方式支持
 
@@ -59,7 +60,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>5.9.6</version>
+<version>5.9.7</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
