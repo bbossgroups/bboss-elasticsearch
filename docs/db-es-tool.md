@@ -2829,7 +2829,11 @@ https://github.com/bbossgroups/kafka1x-elasticsearch
 
 https://github.com/bbossgroups/kafka2x-elasticsearch
 
-# 5 开发交流
+# 8 Elasticsearch-Elasticsearch数据同步使用方法
+
+https://github.com/bbossgroups/elasticsearch-elasticsearch
+
+# 9 开发交流
 
 完整的数据导入demo工程
 
@@ -2847,7 +2851,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 6 支持我们
+# 10 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">
