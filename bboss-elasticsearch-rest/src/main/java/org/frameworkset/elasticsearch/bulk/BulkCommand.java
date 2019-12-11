@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.bulk;
  */
 
 import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,13 +63,27 @@ public class BulkCommand implements Runnable{
 		}
 		try {
 			String result = clientInterface.executeBulk(this);
-			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-				try {
-					bulkInterceptor.afterBulk(this,result);
+			boolean hasError = ResultUtil.bulkResponseError(result);
+			if(!hasError) {
+				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+					try {
+
+						bulkInterceptor.afterBulk(this, result);
+					} catch (Exception e) {
+						logger.error("bulkInterceptor.afterBulk", e);
+					}
 				}
-				catch(Exception e){
-					logger.error("bulkInterceptor.afterBulk",e);
+			}
+			else{
+				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+					try {
+
+						bulkInterceptor.errorBulk(this, result);
+					} catch (Exception e) {
+						logger.error("bulkInterceptor.errorBulk", e);
+					}
 				}
 			}
 		}
@@ -77,7 +92,7 @@ public class BulkCommand implements Runnable{
 			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 				try {
-					bulkInterceptor.errorBulk(this,throwable);
+					bulkInterceptor.exceptionBulk(this,throwable);
 				}
 				catch(Exception e){
 					logger.error("bulkInterceptor.errorBulk",e);

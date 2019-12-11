@@ -25,6 +25,25 @@ package org.frameworkset.elasticsearch.bulk;
  */
 public interface BulkInterceptor {
 	public void beforeBulk(BulkCommand bulkCommand);
+
+	/**
+	 * 成功处理bulk任务回调方法
+	 * @param bulkCommand
+	 * @param result Elasticsearch返回的response报文
+	 */
 	public void afterBulk(BulkCommand bulkCommand,String result);
-	public void errorBulk(BulkCommand bulkCommand,Throwable exception);
+
+	/**
+	 * 有数据处理失败回调方法
+	 * @param bulkCommand
+	 * @param result Elasticsearch返回的response报文,包含的失败记录情况
+	 */
+	public void errorBulk(BulkCommand bulkCommand,String result);
+
+	/**
+	 * 处理异常回调方法
+	 * @param bulkCommand
+	 * @param exception
+	 */
+	public void exceptionBulk(BulkCommand bulkCommand,Throwable exception);
 }

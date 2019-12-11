@@ -145,7 +145,7 @@ db.jdbcFetchSize = 10000
 
 另外一种机制可以参考文档章节：
 
-[5.14 Mysql ResultSet Stream机制说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_514-mysql-resultset-stream机制说明)
+[2.3.14 Mysql ResultSet Stream机制说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2314-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)
 
 ### 2.3.1同步批量导入
 
@@ -400,15 +400,26 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 
 ### 2.3.5 定时增量导入
 
+定时机制配置
+
+```java
+//定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		//定时任务配置结束
+```
+
 支持按照数字字段和时间字段进行增量导入，增量导入sql的语法格式：
 
-```
+```sql
 select * from td_sm_log where log_id > #[log_id]
 ```
 
 通过#[xxx],指定变量，变量可以在sql中出现多次：
 
-```
+```sql
 select * from td_sm_log where log_id > #[log_id] and other_id = #[log_id]
 ```
 
@@ -505,6 +516,17 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 
 
 ### 2.3.6 定时全量导入
+
+定时机制配置
+
+```java
+//定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		//定时任务配置结束
+```
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
@@ -627,7 +649,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE );//如果�
 importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
 ```
 
-指定定时timer**
+指定定时timer
 
 ```java
 importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
@@ -647,7 +669,7 @@ importBuilder.setExternalTimer(true);
 
 #### 排序设置
 
-bboss 5.8.9及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显示对查询的数据进行排序，否则需要在sql语句中显示基于增量字段升序排序：
+bboss 5.8.9及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
 
 ```java
 importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
@@ -657,7 +679,7 @@ bboss 5.9.0及后续的版本已经内置了对增量字段值的排序功能，
 
 #### 增量状态存储数据库
 
-采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_246-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
 ### 2.3.10 灵活控制文档数据结构
 
@@ -672,7 +694,7 @@ bboss 5.9.0及后续的版本已经内置了对增量字段值的排序功能，
         importBuilder.addFieldMapping("dbcolumn","esFieldColumn");//全局添加字段名称映射
 ```
 
-如果需要针对单条记录，bboss提供org.frameworkset.elasticsearch.client.DataRefactor接口和Context接口像结合来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，通过context可以对当前记录做以下调整：
+如果需要针对单条记录，bboss提供org.frameworkset.tran.DataRefactor接口和Context接口像结合来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，通过context可以对当前记录做以下调整：
 
 1.添加字段
 
@@ -790,7 +812,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
-org.frameworkset.elasticsearch.client.ExportResultHandler
+org.frameworkset.tran.ExportResultHandler
 
 ```java
 //设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error方法进行相应处理
@@ -882,13 +904,27 @@ db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=tr
 db.jdbcFetchSize = 10000
 ```
 
-**机制二**  配置jdbcFetchSize为最小整数来采用mysql的默认实现机制（适用mysql各版本）
+**机制二**  配置jdbcFetchSize为最小整数来采用mysql的默认实现机制，db url中不要带useCursorFetch参数（适用mysql各版本）
 
 ```properties
 # 注意：url中不要带useCursorFetch参数
 db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
 # Integer.MIN_VALUE
 db.jdbcFetchSize = -2147483648
+```
+
+在代码中使用机制二：
+
+```java
+        //数据源相关配置，可选项，可以在外部启动数据源
+        importBuilder.setDbName("test")
+                .setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+                .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false")//没有带useCursorFetch=true参数，jdbcFetchSize参数配置为-2147483648，否则不会生效  
+                 .setJdbcFetchSize(-2147483648);
+                .setDbUser("root")
+                .setDbPassword("123456")
+                .setValidateSQL("select 1")
+                .setUsePool(true);//是否使用连接池
 ```
 
 机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
@@ -1044,10 +1080,10 @@ package org.frameworkset.elasticsearch.imp;
 
 
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.*;
-import org.frameworkset.elasticsearch.client.schedule.CallInterceptor;
-import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
-import org.frameworkset.elasticsearch.client.schedule.TaskContext;
+import org.frameworkset.tran.*;
+import org.frameworkset.tran.schedule.CallInterceptor;
+import org.frameworkset.tran.schedule.ImportIncreamentConfig;
+import org.frameworkset.tran.schedule.TaskContext;
 import org.frameworkset.runtime.CommonLauncher;
 import org.frameworkset.spi.geoip.IpInfo;
 import org.slf4j.Logger;
@@ -1509,14 +1545,14 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 这样在任务执行的时候会打印如下日志信息：
 
 ```
-15:47:45.704 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[39] finish,import 10 records,Total import 390 records,Take time:432ms
-15:47:45.704 [DB2ESImportThread-1] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[41] starting ......
-15:47:45.704 [DB2ESImportThread-2] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[40] starting ......
-15:47:46.238 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[41] finish,import 10 records,Total import 420 records,Take time:534ms
-15:47:46.238 [DB2ESImportThread-2] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[40] finish,import 10 records,Total import 410 records,Take time:534ms
-15:47:46.238 [DB2ESImportThread-1] INFO  org.frameworkset.elasticsearch.client.TaskCall - Task[42] starting ......
-15:47:46.530 [DB2ESImportThread-1] DEBUG org.frameworkset.elasticsearch.client.TaskCall - Task[42] finish,import 8 records,Total import 428 records,Take time:292ms
-15:47:46.530 [main] INFO  org.frameworkset.elasticsearch.client.JDBCRestClientUtil - Complete tasks:43,Total import 428 records.
+15:47:45.704 [DB2ESImportThread-1] DEBUG org.frameworkset.tran.TaskCall - Task[39] finish,import 10 records,Total import 390 records,Take time:432ms
+15:47:45.704 [DB2ESImportThread-1] INFO  org.frameworkset.tran.TaskCall - Task[41] starting ......
+15:47:45.704 [DB2ESImportThread-2] INFO  org.frameworkset.tran.TaskCall - Task[40] starting ......
+15:47:46.238 [DB2ESImportThread-1] DEBUG org.frameworkset.tran.TaskCall - Task[41] finish,import 10 records,Total import 420 records,Take time:534ms
+15:47:46.238 [DB2ESImportThread-2] DEBUG org.frameworkset.tran.TaskCall - Task[40] finish,import 10 records,Total import 410 records,Take time:534ms
+15:47:46.238 [DB2ESImportThread-1] INFO  org.frameworkset.tran.TaskCall - Task[42] starting ......
+15:47:46.530 [DB2ESImportThread-1] DEBUG org.frameworkset.tran.TaskCall - Task[42] finish,import 8 records,Total import 428 records,Take time:292ms
+15:47:46.530 [main] INFO  org.frameworkset.tran.JDBCRestClientUtil - Complete tasks:43,Total import 428 records.
 ```
 
 
@@ -1701,10 +1737,10 @@ package org.frameworkset.elasticsearch.imp.jobhandler;
 
 import com.xxl.job.core.util.ShardingUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.DB2ESImportBuilder;
-import org.frameworkset.elasticsearch.client.schedule.ExternalScheduler;
-import org.frameworkset.elasticsearch.client.schedule.ImportIncreamentConfig;
-import org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler;
+import org.frameworkset.tran.DB2ESImportBuilder;
+import org.frameworkset.tran.schedule.ExternalScheduler;
+import org.frameworkset.tran.schedule.ImportIncreamentConfig;
+import org.frameworkset.tran.schedule.xxjob.AbstractDB2ESXXJobHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1909,7 +1945,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 ##
 # 作业任务配置
 # xxl.job.task为前置配置多个数据同步任务，后缀XXJobImportTask和OtherTask将xxjob执行任务的名称
-# 作业程序都需要继承抽象类org.frameworkset.elasticsearch.client.schedule.xxjob.AbstractDB2ESXXJobHandler
+# 作业程序都需要继承抽象类org.frameworkset.tran.schedule.xxjob.AbstractDB2ESXXJobHandler
 # public void init(){
 #     externalScheduler = new ExternalScheduler();
 #     externalScheduler.dataStream(()->{

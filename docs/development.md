@@ -1627,8 +1627,13 @@ bboss对里面的常用的服务进行了很好的封装，详见[ClientInterfac
 		System.out.println("HTTP_GET-------------------------");
 		System.out.println(template);
 ```
+### 5.3.4 通过通用服务api做检索操作
 
-
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTemplate.xml");
+Map params = 。。。。
+String datasr = clientUtil.executeHttp("demowithesindex-*/_search","querydsl",params,ClientInterface.HTTP_POST);
+```
 
 ## **5.2 多elasticsearch服务器集群支持**
 

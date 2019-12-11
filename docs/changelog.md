@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.7 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.8 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -23,6 +23,26 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+# v5.9.8 功能改进
+1.改进BulkProcessor shutdown机制:调用shutDown停止方法后，BulkProcessor不会接收新的请求，但是会处理完所有已经进入bulk队列的数据
+
+2.改进BulkProcessor bulk任务处理结果回调机制：增加对error和exception的bulk任务回调方法
+
+```java
+    /**
+	 * 有数据处理失败回调方法
+	 * @param bulkCommand
+	 * @param result Elasticsearch返回的response报文,包含的失败记录情况
+	 */
+	public void errorBulk(BulkCommand bulkCommand,String result);
+	
+    /**
+     * 处理异常回调方法
+     * @param bulkCommand
+     * @param exception
+     */
+    public void exceptionBulk(BulkCommand bulkCommand,Throwable exception);
+```
 
 # v5.9.7 功能改进
 
