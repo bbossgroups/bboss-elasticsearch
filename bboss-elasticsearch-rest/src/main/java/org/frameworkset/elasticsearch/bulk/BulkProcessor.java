@@ -330,7 +330,7 @@ public class BulkProcessor {
 	public void deleteDatas(String index, List<Object> datas){
 		deleteDatas(  index,(String)null,  datas,  (ClientOptions)null);
 	}
-	private void handleCollection(BulkData bulkData,List<BulkData> commandBulkDatas,IntegerWraper j,List<BulkCommand> bulkCommands ){
+	private List<BulkData> handleCollection(BulkData bulkData,List<BulkData> commandBulkDatas,IntegerWraper j,List<BulkCommand> bulkCommands ){
 		BulkCommand bulkCommand = null;
 		if(bulkData.isCollection()){
 			List<Object> datas = bulkData.getDatas();
@@ -362,6 +362,7 @@ public class BulkProcessor {
 			commandBulkDatas.add(bulkData);
 			j.increment();
 		}
+		return commandBulkDatas;
 
 	}
 	static class IntegerWraper{
@@ -391,14 +392,14 @@ public class BulkProcessor {
 				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
 			bulkData = batchBulkDatas.get(i);
 			if(j.get() < bulkConfig.getBulkSizes()){
-				handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
+				commandBulkDatas = handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
 			}
 			else{
 				bulkCommand = new BulkCommand(commandBulkDatas,this);
 				bulkCommands.add(bulkCommand);
 				j.reset();
 				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
-				handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
+				commandBulkDatas = handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
 			}
 
 		}
