@@ -2869,7 +2869,48 @@ https://github.com/bbossgroups/kafka2x-elasticsearch
 
 https://github.com/bbossgroups/elasticsearch-elasticsearch
 
-# 9 开发交流
+# 9 数据同步调优
+
+数据同步是一个非常耗资源（内存、cpu、io）的事情，所以如何充分利用系统资源，确保高效的数据同步作业长时间稳定运行，同时又不让同步服务器、Elasticsearch/数据库负荷过高，是一件很有挑战意义的事情，这里结合bboss的实践给出一些建议：
+
+## 9.1 内存调优
+
+内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
+
+```properties
+-Xms1g
+-Xmx1g
+-XX:NewSize=512m
+-XX:MaxNewSize=512m
+```
+
+Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
+
+影响内存使用情况的其他关键参数:
+
+- 并发线程数（threadCount）：每个线程都会把正在处理的数据放到内存中
+
+- 线程缓冲队列数（queue）：工作线程全忙的情况下，后续的数据处理请求会放入
+
+- batchSize（批量写入记录数）：决定了每批记录的大小，假如并发线程数和线程缓冲队列数全满，那么占用内存的换算方法：
+
+$$
+threadCount * batchSize * 每条记录的size + queue * batchSize   * 每条记录的size
+$$
+
+- jdbcFetchSize/fetchSize：从数据源按批拉取记录数，拉取过来的数据会临时放入本地内存中
+
+这些参数设置得越大，占用的内存越大，处理的速度就越快，典型的空间换时间的场景，所以需要根据同步服务器的主机内存来进行合理配置，避免由于资源不足出现jvm内存溢出的问题，影响同步的稳定性。
+
+##   9.2 采用分布式作业调度引擎
+
+需要同步的数据量很大，单机的处理能力有限，可以基于分布式作业调度引擎来实现数据分布式分片数据同步处理，参考文档：
+
+https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90%8c%e6%ad%a5db-elasticsearch%e6%95%b0%e6%8d%ae
+
+  
+
+# 10 开发交流
 
 完整的数据导入demo工程
 
@@ -2887,7 +2928,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 10 支持我们
+# 11 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">

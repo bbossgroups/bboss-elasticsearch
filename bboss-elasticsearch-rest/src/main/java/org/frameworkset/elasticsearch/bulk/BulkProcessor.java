@@ -484,7 +484,7 @@ public class BulkProcessor {
 							continue;
 						else {
 							if(logger.isInfoEnabled()){
-								logger.info("BulkProcessor processor data requests:{}",totalSize);
+								logger.info("BulkProcessor process total {} data requests.",totalSize);
 							}
 							queueEmpty = true;
 							synchronized (BulkProcessor.this){
