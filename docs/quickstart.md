@@ -20,7 +20,7 @@ First add the maven dependency of BBoss to your pom.xml:
         </dependency>
 ```
 
-If it's a spring boot project, you can replace the Maven coordinate above with the following Maven coordinate:
+Second if it's a spring boot project, and add the following to pom.xml:
 
 ```xml
         <dependency>

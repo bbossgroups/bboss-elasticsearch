@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>Description: 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
@@ -40,9 +41,18 @@ public class UpdateOptions implements Serializable {
 	private String docasupsertField;
 	private Object detectNoop;
 	private Object docasupsert;
+	private Boolean returnSource;
 	protected String parentIdField;
+	protected Object esParentIdValue;
+	private Long ifSeqNo;
+	private Long ifPrimaryTerm;
 
-
+	protected List<String> sourceUpdateExcludes;
+	protected List<String> sourceUpdateIncludes;
+	protected String timeout = "30s";
+	protected String masterTimeout = "30s";
+	protected Integer waitForActiveShards;
+	protected String refresh;
 	protected String idField;
 	public String getRefreshOption() {
 		return refreshOption;
@@ -50,6 +60,22 @@ public class UpdateOptions implements Serializable {
 
 	public void setRefreshOption(String refreshOption) {
 		this.refreshOption = refreshOption;
+	}
+
+	public void setEsParentIdValue(Object esParentIdValue) {
+		this.esParentIdValue = esParentIdValue;
+	}
+
+	public Object getEsParentIdValue() {
+		return esParentIdValue;
+	}
+
+	public void setRefresh(String refresh) {
+		this.refresh = refresh;
+	}
+
+	public String getRefresh() {
+		return refresh;
 	}
 
 	public String getDetectNoopField() {
@@ -69,7 +95,21 @@ public class UpdateOptions implements Serializable {
 	}
 
 
+	public Long getIfSeqNo() {
+		return ifSeqNo;
+	}
 
+	public void setIfSeqNo(Long ifSeqNo) {
+		this.ifSeqNo = ifSeqNo;
+	}
+
+	public Long getIfPrimaryTerm() {
+		return ifPrimaryTerm;
+	}
+
+	public void setIfPrimaryTerm(Long ifPrimaryTerm) {
+		this.ifPrimaryTerm = ifPrimaryTerm;
+	}
 	public String getIdField() {
 		return idField;
 	}
@@ -100,5 +140,54 @@ public class UpdateOptions implements Serializable {
 
 	public void setDetectNoop(Object detectNoop) {
 		this.detectNoop = detectNoop;
+	}
+
+	public Boolean getReturnSource() {
+		return returnSource;
+	}
+
+	public void setReturnSource(Boolean returnSource) {
+		this.returnSource = returnSource;
+	}
+
+
+	public String getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(String timeout) {
+		this.timeout = timeout;
+	}
+
+	public String getMasterTimeout() {
+		return masterTimeout;
+	}
+
+	public void setMasterTimeout(String masterTimeout) {
+		this.masterTimeout = masterTimeout;
+	}
+
+	public Integer getWaitForActiveShards() {
+		return waitForActiveShards;
+	}
+
+	public void setWaitForActiveShards(Integer waitForActiveShards) {
+		this.waitForActiveShards = waitForActiveShards;
+	}
+
+	public List<String> getSourceUpdateExcludes() {
+		return sourceUpdateExcludes;
+	}
+
+	public List<String> getSourceUpdateIncludes() {
+		return sourceUpdateIncludes;
+	}
+
+	public void setSourceUpdateExcludes(List<String> sourceUpdateExcludes) {
+		this.sourceUpdateExcludes = sourceUpdateExcludes;
+	}
+
+	public void setSourceUpdateIncludes(List<String> sourceUpdateIncludes) {
+		this.sourceUpdateIncludes = sourceUpdateIncludes;
 	}
 }

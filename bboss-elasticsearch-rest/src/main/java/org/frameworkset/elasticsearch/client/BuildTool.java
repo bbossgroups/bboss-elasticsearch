@@ -642,11 +642,11 @@ public abstract class BuildTool {
 		if(clientOptions != null) {
 			id = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? params.get(clientOptions.getParentIdField()) : null;
-			if(clientOptions.getRount() == null) {
-				routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			if(clientOptions.getRouting() == null) {
+				routing = clientOptions.getRoutingField() != null ? params.get(clientOptions.getRoutingField()) : null;
 			}
 			else{
-				routing = clientOptions.getRount();
+				routing = clientOptions.getRouting();
 			}
 			if(clientOptions.getEsRetryOnConflict() == null) {
 				esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
@@ -685,11 +685,11 @@ public abstract class BuildTool {
 
 			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOption.getIdField()) : null;
 			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOption.getParentIdField()) : null;
-			if(clientOption.getRount() == null) {
-				routing = clientOption.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRountField()) : null;
+			if(clientOption.getRouting() == null) {
+				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRoutingField()) : null;
 			}
 			else{
-				routing = clientOption.getRount();
+				routing = clientOption.getRouting();
 			}
 
 			if(clientOption.getEsRetryOnConflict() == null) {
@@ -1068,6 +1068,11 @@ public abstract class BuildTool {
 //					builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
 					writer.write(",\"doc_as_upsert\":");
 					writer.write(doc_as_upsert.toString());
+				}
+				Boolean returnSource = clientOptions.getReturnSource();
+				if(returnSource != null){
+					writer.write(",\"_source\":");
+					writer.write(String.valueOf(returnSource));
 				}
 				writer.write("}\n");
 			}

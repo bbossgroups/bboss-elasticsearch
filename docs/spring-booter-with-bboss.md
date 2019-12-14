@@ -38,6 +38,11 @@ maven工程
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <version>5.9.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
             <version>5.9.7</version>
         </dependency>
@@ -46,6 +51,7 @@ maven工程
 gradle工程
 
 ```groovy
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:5.9.7"
 compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.9.7"
 ```
 

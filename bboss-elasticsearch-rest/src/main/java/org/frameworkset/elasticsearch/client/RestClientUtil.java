@@ -562,11 +562,11 @@ public class RestClientUtil extends ClientUtil{
 
 			docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : null;
-			if(clientOptions.getRount() == null) {
-				routing = clientOptions.getRountField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRountField()) : null;
+			if(clientOptions.getRouting() == null) {
+				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRoutingField()) : null;
 			}
 			else{
-				routing = clientOptions.getRount();
+				routing = clientOptions.getRouting();
 			}
 		}
 
@@ -600,11 +600,11 @@ public class RestClientUtil extends ClientUtil{
 			refreshOption = clientOptions.getRefreshOption();
 			docId = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
 			parentId = clientOptions.getParentIdField() != null ? params.get( clientOptions.getParentIdField()) : null;
-			if(clientOptions.getRount() == null) {
-				routing = clientOptions.getRountField() != null ? params.get(clientOptions.getRountField()) : null;
+			if(clientOptions.getRouting() == null) {
+				routing = clientOptions.getRoutingField() != null ? params.get(clientOptions.getRoutingField()) : null;
 			}
 			else{
-				routing = clientOptions.getRount();
+				routing = clientOptions.getRouting();
 			}
 		}
 		return addDocument(  indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);

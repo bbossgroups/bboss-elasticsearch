@@ -36,18 +36,21 @@ public class ClientOptions extends UpdateOptions {
 	private String esRetryOnConflictField;
 	private String versionField;
 	private String versionTypeField;
-	private String rountField;
+	private String routingField;
 
 	private Object esRetryOnConflict;
 	private Object version;
 	private Object versionType;
-	private Object rount;
-	public String getRountField() {
-		return rountField;
+	private Object routing;
+
+	private String pipeline;
+	private String opType;
+	public String getRoutingField() {
+		return routingField;
 	}
 
-	public void setRountField(String rountField) {
-		this.rountField = rountField;
+	public void setRoutingField(String routingField) {
+		this.routingField = routingField;
 	}
 
 
@@ -100,11 +103,28 @@ public class ClientOptions extends UpdateOptions {
 		this.versionType = versionType;
 	}
 
-	public Object getRount() {
-		return rount;
+	public Object getRouting() {
+		return routing;
 	}
 
-	public void setRount(Object rount) {
-		this.rount = rount;
+	public void setRouting(Object routing) {
+		this.routing = routing;
+	}
+
+
+	public String getPipeline() {
+		return pipeline;
+	}
+
+	public void setPipeline(String pipeline) {
+		this.pipeline = pipeline;
+	}
+
+	public String getOpType() {
+		return opType;
+	}
+
+	public void setOpType(String opType) {
+		this.opType = opType;
 	}
 }
