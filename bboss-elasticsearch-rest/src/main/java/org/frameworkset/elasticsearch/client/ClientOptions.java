@@ -61,13 +61,17 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	private Long ifSeqNo;
 	private Long ifPrimaryTerm;
 
-	protected List<String> sourceUpdateExcludes;
-	protected List<String> sourceUpdateIncludes;
-	protected String timeout;
-	protected String masterTimeout ;
-	protected Integer waitForActiveShards;
-	protected String refresh;
-	protected String idField;
+	private List<String> sourceUpdateExcludes;
+	private List<String> sourceUpdateIncludes;
+	private String timeout;
+	private String masterTimeout ;
+	private Integer waitForActiveShards;
+	private String refresh;
+	private String idField;
+	/**单文档操作：文档id*/
+	private Object id;
+	/**单文档操作：文档id*/
+	private Object parentId;
 	public String getRefreshOption() {
 		return refreshOption;
 	}
@@ -312,5 +316,21 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	public ClientOptions setOpType(String opType) {
 		this.opType = opType;
 		return this;
+	}
+
+	public Object getId() {
+		return id;
+	}
+
+	public void setId(Object id) {
+		this.id = id;
+	}
+
+	public Object getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Object parentId) {
+		this.parentId = parentId;
 	}
 }

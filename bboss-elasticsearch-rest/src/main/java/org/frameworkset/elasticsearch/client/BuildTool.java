@@ -774,6 +774,556 @@ public abstract class BuildTool {
 		return url.toString();
 	}
 	/**
+	 * 构建请求地址参数
+	 * @throws IOException
+	 */
+	public static String buildAddPathUrlMeta(String indexName ,String indexType,Object params,ClientOptions clientOptions,ClassUtil.ClassInfo beanInfo)  {
+		Object docId = null;
+		Object parentId = null;
+		Object routing = null;
+		String refreshOption = null;
+//		Object esRetryOnConflict = null;
+		Object version = null;
+		Object versionType = null;
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+		if(clientOptions != null) {
+			if (clientOptions.getId() != null) {
+				docId = clientOptions.getId();
+			} else {
+				docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : getId(params, beanInfo);
+			}
+		}
+		else{
+			docId = getId(params,  beanInfo );
+		}
+		if(clientOptions != null) {
+			if (clientOptions.getParentId() != null) {
+				parentId = clientOptions.getParentId();
+			} else{
+				parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params, beanInfo);
+			}
+		}
+		else{
+			parentId = getParentId(params,beanInfo);
+		}
+
+		if(clientOptions != null) {
+			refreshOption = clientOptions.getRefreshOption();
+
+//			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params,beanInfo);
+//			if(clientOptions.getRouting() == null) {
+//				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRoutingField()) : null;
+//			}
+//			else{
+//				routing = clientOptions.getRouting();
+//			}
+		}
+
+
+		if(clientOptions != null) {
+
+			if(clientOptions.getRouting() == null) {
+				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOptions.getRoutingField()) : getRouting(params,beanInfo);
+			}
+			else{
+				routing = clientOptions.getRouting();
+			}
+
+			/**
+			if(clientOptions.getEsRetryOnConflict() == null) {
+				esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
+						clientOptions.getEsRetryOnConflictField()) : getEsRetryOnConflict(params,beanInfo);
+			}
+			else{
+				esRetryOnConflict = clientOptions.getEsRetryOnConflict();
+			}*/
+			if(clientOptions.getVersion() == null) {
+				version = clientOptions.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOptions.getVersionField()) : getVersion(  beanInfo,   params);
+			}
+			else{
+				version = clientOptions.getVersion();
+			}
+			if(clientOptions.getVersionType() == null) {
+				versionType = clientOptions.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOptions.getVersionTypeField()) : getVersionType(  beanInfo,   params);
+			}else{
+				versionType = clientOptions.getVersionType();
+			}
+		}
+		else{
+
+			routing = getRouting(params,beanInfo);
+//			esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+			version = getVersion(  beanInfo,   params);
+
+			versionType = getVersionType(  beanInfo,   params);
+		}
+//		else{
+//
+//		}
+		StringBuilder builder = new StringBuilder();
+		Object id = docId;
+		if(indexName == null){
+			if(beanClassInfo == null){
+				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
+			}
+			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+			}
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
+			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
+			builder.append("/");
+			if(indexType == null){
+				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
+
+		}
+		else {
+			builder.append(indexName);
+			if(indexType == null || indexType.equals("")) {
+				builder.append("/").append(_doc);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
+
+		}
+
+
+		if(id != null){
+			builder.append("/").append(id);
+		}
+		boolean p = false;
+		if(refreshOption != null ){
+			builder.append("?").append(refreshOption);
+			if(parentId != null){
+				builder.append("&parent=").append(parentId);
+
+			}
+			if(routing != null){
+				builder.append("&routing=").append(routing);
+			}
+			p = true;
+		}
+		else{
+			if(parentId != null){
+				builder.append("?parent=").append(parentId);
+				if(routing != null){
+					builder.append("&routing=").append(routing);
+				}
+				p = true;
+			}
+			else if(routing != null){
+				builder.append("?routing=").append(routing);
+				p = true;
+			}
+
+		}
+		if(version != null){
+			if(p)
+				builder.append("&version=").append(version);
+			else {
+				builder.append("?version=").append(version);
+				p = true;
+			}
+		}
+		if(versionType != null){
+			if(p)
+				builder.append("&version_type=").append(versionType);
+			else {
+				builder.append("?version_type=").append(versionType);
+				p = true;
+			}
+		}
+		Long if_seq_no = clientOptions!= null?clientOptions.getIfSeqNo():null;
+		if(if_seq_no != null){
+			if(p)
+				builder.append("&if_seq_no=").append(if_seq_no);
+			else {
+				builder.append("?if_seq_no=").append(if_seq_no);
+				p = true;
+			}
+		}
+		Long if_primary_term = clientOptions!= null?clientOptions.getIfPrimaryTerm():null;
+		if(if_primary_term != null){
+			if(p)
+				builder.append("&if_primary_term=").append(if_primary_term);
+			else {
+				builder.append("?if_primary_term=").append(if_primary_term);
+				p = true;
+			}
+		}
+		String pipeline = clientOptions!= null?clientOptions.getPipeline():null;
+		if(pipeline != null){
+			if(p)
+				builder.append("&pipeline=").append(pipeline);
+			else {
+				builder.append("?pipeline=").append(pipeline);
+				p = true;
+			}
+		}
+		String op_type = clientOptions!= null?clientOptions.getOpType():null;
+
+		if(op_type != null){
+			if(p)
+				builder.append("&op_type=").append(op_type);
+			else {
+				builder.append("?op_type=").append(op_type);
+				p = true;
+			}
+		}
+		String refresh = clientOptions!= null?clientOptions.getRefresh():null;
+
+		if(refresh != null){
+			if(p)
+				builder.append("&refresh=").append(refresh);
+			else {
+				builder.append("?refresh=").append(refresh);
+				p = true;
+			}
+		}
+		String timeout = clientOptions!= null?clientOptions.getTimeout():null;
+
+		if(timeout != null){
+			if(p)
+				builder.append("&timeout=").append(timeout);
+			else {
+				builder.append("?timeout=").append(timeout);
+				p = true;
+			}
+		}
+
+		String master_timeout = clientOptions!= null?clientOptions.getMasterTimeout():null;
+
+		if(master_timeout != null){
+			if(p)
+				builder.append("&master_timeout=").append(master_timeout);
+			else {
+				builder.append("?master_timeout=").append(master_timeout);
+				p = true;
+			}
+		}
+
+		Integer wait_for_active_shards = clientOptions!= null?clientOptions.getWaitForActiveShards():null;
+
+		if(wait_for_active_shards != null){
+			if(p)
+				builder.append("&wait_for_active_shards=").append(wait_for_active_shards);
+			else {
+				builder.append("?wait_for_active_shards=").append(wait_for_active_shards);
+				p = true;
+			}
+		}
+		String path = builder.toString();
+
+		return path;
+
+
+
+
+
+//		if (esRetryOnConflict != null) {
+//			if(!upper7) {
+//				writer.write(",\"_retry_on_conflict\":");
+//			}
+//			else{
+//				writer.write(",\"retry_on_conflict\":");
+//			}
+//			writer.write(String.valueOf(esRetryOnConflict));
+//		}
+
+
+
+
+
+
+	}
+
+	/**
+	 * 构建请求地址参数
+	 * @throws IOException
+	 */
+	public static String buildUpdatePathUrlMeta(String index ,String indexType,Object params,ClientOptions clientOptions,ClassUtil.ClassInfo beanInfo,boolean uper7)  {
+		Object docId = null;
+//		Object parentId = null;
+		Object routing = null;
+		String refreshOption = null;
+		Object esRetryOnConflict = null;
+		Object version = null;
+		Object versionType = null;
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+		if(clientOptions != null) {
+			if (clientOptions.getId() != null) {
+				docId = clientOptions.getId();
+			} else {
+				docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : getId(params, beanInfo);
+			}
+		}
+		else{
+			docId = getId(params,  beanInfo );
+		}
+
+//		if(clientOptions != null) {
+//			if (clientOptions.getParentId() != null) {
+//				parentId = clientOptions.getParentId();
+//			} else{
+//				parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params, beanInfo);
+//			}
+//		}
+//		else{
+//			parentId = getParentId(params,beanInfo);
+//		}
+
+		if(clientOptions != null) {
+			refreshOption = clientOptions.getRefreshOption();
+
+//			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params,beanInfo);
+//			if(clientOptions.getRouting() == null) {
+//				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRoutingField()) : null;
+//			}
+//			else{
+//				routing = clientOptions.getRouting();
+//			}
+		}
+
+
+		if(clientOptions != null) {
+
+			if(clientOptions.getRouting() == null) {
+				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOptions.getRoutingField()) : getRouting(params,beanInfo);
+			}
+			else{
+				routing = clientOptions.getRouting();
+			}
+
+
+			 if(clientOptions.getEsRetryOnConflict() == null) {
+				 esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
+				 clientOptions.getEsRetryOnConflictField()) : getEsRetryOnConflict(params,beanInfo);
+			 }
+			 else{
+			 	 esRetryOnConflict = clientOptions.getEsRetryOnConflict();
+			 }
+			if(clientOptions.getVersion() == null) {
+				version = clientOptions.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOptions.getVersionField()) : getVersion(  beanInfo,   params);
+			}
+			else{
+				version = clientOptions.getVersion();
+			}
+			if(clientOptions.getVersionType() == null) {
+				versionType = clientOptions.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOptions.getVersionTypeField()) : getVersionType(  beanInfo,   params);
+			}else{
+				versionType = clientOptions.getVersionType();
+			}
+		}
+		else{
+
+			routing = getRouting(params,beanInfo);
+			esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+			version = getVersion(  beanInfo,   params);
+
+			versionType = getVersionType(  beanInfo,   params);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		Object id = docId;
+		if(index == null){
+			if(beanClassInfo == null){
+				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
+			}
+			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+			}
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
+			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
+
+			if(indexType == null){
+				builder.append("/");
+				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
+			if(!uper7) {
+				builder.append("/").append(id).append("/_update");
+			}
+			else{
+				builder.append("/_update").append("/").append(id);
+			}
+		}
+		else {
+			if(!uper7) {
+				if (indexType == null || indexType.equals(""))
+					builder.append(index).append("/").append(id).append("/_update");
+				else
+					builder.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+			}
+			else{
+				builder.append(index).append("/_update").append("/").append(id);
+			}
+
+		}
+
+		boolean p = false;
+		if(refreshOption != null ){
+			builder.append("?").append(refreshOption);
+//			if(parentId != null){
+//				builder.append("&parent=").append(parentId);
+//
+//			}
+//			if(routing != null){
+//				builder.append("&routing=").append(routing);
+//			}
+			p = true;
+		}
+
+
+		if(routing != null){
+			if(p) {
+				builder.append("&routing=").append(routing);
+			}
+			else {
+				builder.append("?routing=").append(routing);
+				p = true;
+			}
+
+		}
+
+		if(version != null){
+			if(p)
+				builder.append("&version=").append(version);
+			else {
+				builder.append("?version=").append(version);
+				p = true;
+			}
+		}
+		if(versionType != null){
+			if(p)
+				builder.append("&version_type=").append(versionType);
+			else {
+				builder.append("?version_type=").append(versionType);
+				p = true;
+			}
+		}
+		Long if_seq_no = clientOptions!= null?clientOptions.getIfSeqNo():null;
+		if(if_seq_no != null){
+			if(p)
+				builder.append("&if_seq_no=").append(if_seq_no);
+			else {
+				builder.append("?if_seq_no=").append(if_seq_no);
+				p = true;
+			}
+		}
+		Long if_primary_term = clientOptions!= null?clientOptions.getIfPrimaryTerm():null;
+		if(if_primary_term != null){
+			if(p)
+				builder.append("&if_primary_term=").append(if_primary_term);
+			else {
+				builder.append("?if_primary_term=").append(if_primary_term);
+				p = true;
+			}
+		}
+		/**
+		String pipeline = clientOptions!= null?clientOptions.getPipeline():null;
+		if(pipeline != null){
+			if(p)
+				builder.append("&pipeline=").append(pipeline);
+			else {
+				builder.append("?pipeline=").append(pipeline);
+				p = true;
+			}
+		}
+
+		String op_type = clientOptions!= null?clientOptions.getOpType():null;
+
+		if(op_type != null){
+			if(p)
+				builder.append("&op_type=").append(op_type);
+			else {
+				builder.append("?op_type=").append(op_type);
+				p = true;
+			}
+		}
+		 */
+		String refresh = clientOptions!= null?clientOptions.getRefresh():null;
+
+		if(refresh != null){
+			if(p)
+				builder.append("&refresh=").append(refresh);
+			else {
+				builder.append("?refresh=").append(refresh);
+				p = true;
+			}
+		}
+		String timeout = clientOptions!= null?clientOptions.getTimeout():null;
+
+		if(timeout != null){
+			if(p)
+				builder.append("&timeout=").append(timeout);
+			else {
+				builder.append("?timeout=").append(timeout);
+				p = true;
+			}
+		}
+
+		String master_timeout = clientOptions!= null?clientOptions.getMasterTimeout():null;
+
+		if(master_timeout != null){
+			if(p)
+				builder.append("&master_timeout=").append(master_timeout);
+			else {
+				builder.append("?master_timeout=").append(master_timeout);
+				p = true;
+			}
+		}
+		if (esRetryOnConflict != null) {
+			if(p)
+				builder.append("&retry_on_conflict=").append(esRetryOnConflict);
+			else {
+				builder.append("?retry_on_conflict=").append(esRetryOnConflict);
+				p = true;
+			}
+
+		}
+		Integer wait_for_active_shards = clientOptions!= null?clientOptions.getWaitForActiveShards():null;
+
+		if(wait_for_active_shards != null){
+			if(p)
+				builder.append("&wait_for_active_shards=").append(wait_for_active_shards);
+			else {
+				builder.append("?wait_for_active_shards=").append(wait_for_active_shards);
+				p = true;
+			}
+		}
+		String path = builder.toString();
+
+		return path;
+
+
+
+
+
+//		if (esRetryOnConflict != null) {
+//			if(!upper7) {
+//				writer.write(",\"_retry_on_conflict\":");
+//			}
+//			else{
+//				writer.write(",\"retry_on_conflict\":");
+//			}
+//			writer.write(String.valueOf(esRetryOnConflict));
+//		}
+
+
+
+
+
+
+	}
+	/**
 	 * bulk
 	 * @param writer
 	 * @throws IOException
@@ -1552,17 +2102,17 @@ public abstract class BuildTool {
 				Object doc_as_upsert = null;
 				ClientOptions clientOptions = bulkData.getClientOptions();
 
-				if(clientOptions.getDetectNoop() != null){
-					detect_noop = clientOptions.getDetectNoop();
-				}
-				else {
-					detect_noop = clientOptions.getDetectNoopField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDetectNoopField()) : null;
-				}
-				if(clientOptions.getDocasupsert() != null) {
-					doc_as_upsert =clientOptions.getDocasupsert();
-				}
-				else {
-					doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : null;
+				if(clientOptions != null) {
+					if (clientOptions.getDetectNoop() != null) {
+						detect_noop = clientOptions.getDetectNoop();
+					} else {
+						detect_noop = clientOptions.getDetectNoopField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDetectNoopField()) : null;
+					}
+					if (clientOptions.getDocasupsert() != null) {
+						doc_as_upsert = clientOptions.getDocasupsert();
+					} else {
+						doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : null;
+					}
 				}
 
 
@@ -1577,7 +2127,7 @@ public abstract class BuildTool {
 					writer.write(",\"doc_as_upsert\":");
 					writer.write(doc_as_upsert.toString());
 				}
-				Boolean returnSource = clientOptions.getReturnSource();
+				Boolean returnSource = clientOptions != null?clientOptions.getReturnSource():null;
 				if(returnSource != null){
 					writer.write(",\"_source\":");
 					writer.write(String.valueOf(returnSource));
@@ -1716,7 +2266,7 @@ public abstract class BuildTool {
 //			pkProperty = beanInfo.getPkProperty();
 		if(pkProperty == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+		return getFieldValue(  bean,  beanInfo ,pkProperty.getName());
 	}
 
 	public static  Object getId(Object bean,ClassUtil.ClassInfo beanInfo,String docIdField ){
@@ -1735,7 +2285,7 @@ public abstract class BuildTool {
 //			pkProperty = beanInfo.getPkProperty();
 		if(esRetryOnConflictProperty == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,esRetryOnConflictProperty.getName());
+		return getFieldValue(  bean,  beanInfo ,esRetryOnConflictProperty.getName());
 	}
 
 	public static  Object getEsRetryOnConflict(Object bean,ClassUtil.ClassInfo beanInfo ,String esRetryOnConflictField){
@@ -1750,13 +2300,24 @@ public abstract class BuildTool {
 //			pkProperty = beanInfo.getPkProperty();
 		if(routingProperty == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,routingProperty.getName());
+		return getFieldValue(  bean,  beanInfo ,routingProperty.getName());
 	}
 
 	public static  Object getRouting(Object bean,ClassUtil.ClassInfo beanInfo,String routingField ){
 		return getFieldValue(  bean, beanInfo ,routingField);
 	}
 
+	public static  Object getEsDocAsUpsert(Object bean,ClassUtil.ClassInfo beanClassInfo ){
+		if(beanClassInfo == null){
+			return null;
+		}
+		ClassUtil.PropertieDescription propertieDescription = beanClassInfo.getEsDocAsUpsertProperty();
+//		if(pkProperty == null)
+//			pkProperty = beanInfo.getPkProperty();
+		if(propertieDescription == null)
+			return null;
+		return getFieldValue(  bean,  beanClassInfo ,propertieDescription.getName());
+	}
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ){
 		if(beanInfo == null){
 			return null;
@@ -1766,7 +2327,7 @@ public abstract class BuildTool {
 //			pkProperty = beanInfo.getPkProperty();
 		if(pkProperty == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,pkProperty.getName());
+		return getFieldValue(  bean,  beanInfo ,pkProperty.getName());
 	}
 
 	public static  Object getParentId(Object bean,ClassUtil.ClassInfo beanInfo ,String parentIdField){

@@ -1,6 +1,5 @@
 package org.frameworkset.elasticsearch.client;
 
-import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -488,12 +487,17 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,String refreshOption) throws ElasticSearchException{
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-
-		Object id = BuildTool.getId(bean,beanInfo);
-		Object parentId = BuildTool.getParentId(bean,beanInfo);
-		Object routing = BuildTool.getRouting(bean,beanInfo);
-		return _addDocument(beanInfo,indexName, indexType, bean,id,parentId,routing,refreshOption);
+//		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+//
+//		Object id = BuildTool.getId(bean,beanInfo);
+//		Object parentId = BuildTool.getParentId(bean,beanInfo);
+//		Object routing = BuildTool.getRouting(bean,beanInfo);
+		ClientOptions clientOptions = null;
+		if(refreshOption != null) {
+			clientOptions = new ClientOptions();
+			clientOptions.setRefreshOption(refreshOption);
+		}
+		return addDocument(indexName, indexType, bean,clientOptions);
 
 	}
 
@@ -556,9 +560,13 @@ public class RestClientUtil extends ClientUtil{
 		return addDocument(  indexName,   indexType,   bean,docId,(Object)null,refreshOption);
 	}
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,String refreshOption) throws ElasticSearchException{
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
-		Object routing = BuildTool.getRouting(bean,beanInfo);
-		return addDocument( indexName,  indexType,  bean, docId, parentId, (Object)routing, refreshOption);
+//		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(bean.getClass());
+//		Object routing = BuildTool.getRouting(bean,beanInfo);
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setId(docId);
+		clientOptions.setParentId(parentId);
+		clientOptions.setRefreshOption(refreshOption);
+		return addDocument( indexName,  indexType,  bean, clientOptions);
 	}
 	/**
 	 * 创建或者更新索引文档
@@ -569,7 +577,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object params,ClientOptions clientOptions) throws ElasticSearchException{
-		if(params instanceof Map){
+		/**if(params instanceof Map){
 			return addMapDocument(indexName,indexType,(Map)params,clientOptions);
 		}
 		Object docId = null;
@@ -589,8 +597,70 @@ public class RestClientUtil extends ClientUtil{
 				routing = clientOptions.getRouting();
 			}
 		}
+		StringBuilder builder = new StringBuilder();
+		Object id = docId;
+		if(indexName == null){
+			if(beanClassInfo == null){
+				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
+			}
+			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			if(esIndexWrapper == null){
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+			}
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
+			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
+			builder.append("/");
+			if(indexType == null){
+				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
 
-		return _addDocument( beanClassInfo, indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
+		}
+		else {
+			builder.append(indexName);
+			if(indexType == null || indexType.equals("")) {
+				builder.append("/").append(_doc);
+			}
+			else{
+				builder.append("/").append(indexType);
+			}
+
+		}
+
+
+		if(id != null){
+			builder.append("/").append(id);
+		}
+		if(refreshOption != null ){
+			builder.append("?").append(refreshOption);
+			if(parentId != null){
+				builder.append("&parent=").append(parentId);
+			}
+			if(routing != null){
+				builder.append("&routing=").append(routing);
+			}
+		}
+		else{
+			if(parentId != null){
+				builder.append("?parent=").append(parentId);
+				if(routing != null){
+					builder.append("&routing=").append(routing);
+				}
+			}
+			else if(routing != null){
+				builder.append("?routing=").append(routing);
+			}
+
+		}
+		String path = builder.toString();
+		builder = null;
+		 */
+		String path = BuildTool.buildAddPathUrlMeta( indexName , indexType, params, clientOptions,ClassUtil.getClassInfo(params.getClass()));
+		path = this.client.executeHttp(path, SerialUtil.object2json(params),ClientUtil.HTTP_POST);
+		return path;
+//		return _addDocument( beanClassInfo, indexName,   indexType,   params,  docId,  parentId,  routing,  refreshOption);
 	}
 	/**
 	 * 创建或者更新索引文档
@@ -684,7 +754,13 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object bean,Object docId,Object parentId,Object routing,String refreshOption) throws ElasticSearchException{
-		return _addDocument((ClassUtil.ClassInfo) null,  indexName,   indexType,   bean,   docId,   parentId,   routing,   refreshOption);
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setRefreshOption(refreshOption);
+		clientOptions.setId(docId);
+		clientOptions.setParentId(parentId);
+		clientOptions.setRouting(routing);
+
+		return addDocument( indexName,   indexType,   bean,  clientOptions);
 	}
 
 	/**
@@ -706,69 +782,70 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	private String _addDocument(ClassUtil.ClassInfo beanInfo,String indexName, String indexType, Object bean, Object docId, Object parentId, Object routing, String refreshOption) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
-		Object id = docId;
-		if(indexName == null){
-			if(beanInfo == null){
-				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
-			}
-			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
-			if(esIndexWrapper == null){
-				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
-			}
-			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,bean);
-			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
-			builder.append("/");
-			if(indexType == null){
-				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
-			}
-			else{
-				builder.append("/").append(indexType);
-			}
 
-		}
-		else {
-			builder.append(indexName);
-			if(indexType == null || indexType.equals("")) {
-				builder.append("/").append(_doc);
-			}
-			else{
-				builder.append("/").append(indexType);
-			}
-
-		}
-
-
-		if(id != null){
-			builder.append("/").append(id);
-		}
-		if(refreshOption != null ){
-			builder.append("?").append(refreshOption);
-			if(parentId != null){
-				builder.append("&parent=").append(parentId);
-			}
-			if(routing != null){
-				builder.append("&routing=").append(routing);
-			}
-		}
-		else{
-			if(parentId != null){
-				builder.append("?parent=").append(parentId);
-				if(routing != null){
-					builder.append("&routing=").append(routing);
-				}
-			}
-			else if(routing != null){
-				builder.append("?routing=").append(routing);
-			}
-
-		}
-		String path = builder.toString();
-		builder = null;
-		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
-		return path;
-	}
+//	private String _addDocument(ClassUtil.ClassInfo beanInfo,String indexName, String indexType, Object bean, Object docId, Object parentId, Object routing, String refreshOption) throws ElasticSearchException{
+//		StringBuilder builder = new StringBuilder();
+//		Object id = docId;
+//		if(indexName == null){
+//			if(beanInfo == null){
+//				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
+//			}
+//			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
+//			if(esIndexWrapper == null){
+//				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
+//			}
+//			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,bean);
+//			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
+//			builder.append("/");
+//			if(indexType == null){
+//				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
+//			}
+//			else{
+//				builder.append("/").append(indexType);
+//			}
+//
+//		}
+//		else {
+//			builder.append(indexName);
+//			if(indexType == null || indexType.equals("")) {
+//				builder.append("/").append(_doc);
+//			}
+//			else{
+//				builder.append("/").append(indexType);
+//			}
+//
+//		}
+//
+//
+//		if(id != null){
+//			builder.append("/").append(id);
+//		}
+//		if(refreshOption != null ){
+//			builder.append("?").append(refreshOption);
+//			if(parentId != null){
+//				builder.append("&parent=").append(parentId);
+//			}
+//			if(routing != null){
+//				builder.append("&routing=").append(routing);
+//			}
+//		}
+//		else{
+//			if(parentId != null){
+//				builder.append("?parent=").append(parentId);
+//				if(routing != null){
+//					builder.append("&routing=").append(routing);
+//				}
+//			}
+//			else if(routing != null){
+//				builder.append("?routing=").append(routing);
+//			}
+//
+//		}
+//		String path = builder.toString();
+//		builder = null;
+//		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
+//		return path;
+//	}
 
 
 
@@ -911,52 +988,118 @@ public class RestClientUtil extends ClientUtil{
 	}
 
 	public String updateDocument(String index,String indexType,Object params,ClientOptions updateOptions) throws ElasticSearchException{
-		Object id = null;
-		String refreshOption = null;
+//		Object id = null;
+//		String refreshOption = null;
 		Object detect_noop = null;
 		Object doc_as_upsert = null;
+		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+		Boolean returnSource = null;
+		List<String> sourceUpdateExcludes = null;
+
+		List<String> sourceUpdateIncludes = null;
 
 		if(updateOptions != null) {
-			refreshOption = updateOptions.getRefreshOption();
-			if(!(params instanceof Map)) {
-				ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+//			refreshOption = updateOptions.getRefreshOption();
 
-				id = updateOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, updateOptions.getIdField()) : null;
-				if(updateOptions.getDetectNoop() != null){
-					detect_noop = updateOptions.getDetectNoop();
-				}
-				else {
-					detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
-				}
-				if(updateOptions.getDocasupsert() != null) {
-					doc_as_upsert =updateOptions.getDocasupsert();
-				}
-				else {
-					doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
-				}
+			if(updateOptions.getDetectNoop() != null){
+				detect_noop = updateOptions.getDetectNoop();
 			}
-			else{
-				Map _params = (Map)params;
-				id = updateOptions.getIdField() != null ? _params.get(updateOptions.getIdField()) : null;
+			else {
+				detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
+			}
+			if(updateOptions.getDocasupsert() != null) {
+				doc_as_upsert =updateOptions.getDocasupsert();
+			}
+			else {
+				doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
+			}
+			returnSource = updateOptions.getReturnSource();
 
-				if(updateOptions.getDetectNoop() != null){
-					detect_noop = updateOptions.getDetectNoop();
-				}
-				else {
-					detect_noop = updateOptions.getDetectNoopField() != null ? _params.get( updateOptions.getDetectNoopField()) : null;
-				}
-				if(updateOptions.getDocasupsert() != null) {
-					doc_as_upsert = updateOptions.getDocasupsert();
-				}
-				else {
-					doc_as_upsert = updateOptions.getDocasupsertField() != null ? _params.get(updateOptions.getDocasupsertField()) : null;
-				}
+			sourceUpdateExcludes  = updateOptions.getSourceUpdateExcludes();
 
+			sourceUpdateIncludes  = updateOptions.getSourceUpdateIncludes();
+
+
+		}
+		else{
+			doc_as_upsert = BuildTool.getEsDocAsUpsert(params,beanClassInfo);
+		}
+
+
+		/**
+		StringBuilder path = new StringBuilder();
+
+		if(!this.client.isUpper7()) {
+			if (indexType == null || indexType.equals(""))
+				path.append(index).append("/").append(id).append("/_update");
+			else
+				path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
+		}
+		else{
+			path.append(index).append("/_update").append("/").append(id);
+		}
+		if(refreshOption != null){
+			path.append("?").append(refreshOption);
+		}
+		 */
+		String path = BuildTool.buildUpdatePathUrlMeta(index,indexType,params,updateOptions,beanClassInfo,client.isUpper7());
+		StringBuilder builder = new StringBuilder();
+		builder.append(" {\"doc\":");
+		Writer writer = new BBossStringWriter(builder);
+		SerialUtil.object2json(params,writer);
+		if(detect_noop != null){
+			builder.append(",\"detect_noop\":").append(detect_noop);
+		}
+		if(doc_as_upsert != null){
+			builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+		}
+		if(returnSource != null){
+			builder.append(",\"_source\":").append(String.valueOf(returnSource));
+
+		}
+		if (sourceUpdateExcludes != null) {
+			/**
+			 if(!upper7) {
+			 writer.write(",\"_source_excludes\":");
+			 }
+			 else{
+			 writer.write(",\"source_excludes\":");
+			 }
+			 */
+			if(!this.client.isUpper7()) {
+				builder.append(",\"_source_excludes\":");
+				SerialUtil.object2json(sourceUpdateExcludes,writer);
 			}
 
 		}
-		return this._update(  index,  indexType,
-				id,  params,  refreshOption,  detect_noop,  doc_as_upsert);
+		if (sourceUpdateIncludes != null) {
+			/**
+			 if(!upper7) {
+			 writer.write(",\"_source_includes\":");
+			 }
+			 else{
+			 writer.write(",\"source_includes\":");
+			 }
+			 */
+			if(!this.client.isUpper7()) {
+				builder.append(",\"_source_includes\":");
+				SerialUtil.object2json(sourceUpdateIncludes,writer);
+
+			}
+
+
+		}
+		builder.append("}");
+		try {
+			String searchResult = this.client.executeHttp(path, builder.toString(), ClientUtil.HTTP_POST);
+
+			return searchResult;
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
+		}
+//		return this._update(  index,  indexType,
+//				id,  params,  refreshOption,  detect_noop,  doc_as_upsert);
 	}
 	/**
 	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html"
@@ -3705,7 +3848,14 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+	public String updateDocument(String index,String indexType,Object id,Map params,String refreshOption,
+								 Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setId(id);
+		clientOptions.setRefreshOption(refreshOption);
+		clientOptions.setDetectNoop(detect_noop);
+		clientOptions.setDocasupsert(doc_as_upsert);
+		return updateDocument(index,indexType,params,clientOptions);
 //		StringBuilder path = new StringBuilder();
 //		if(indexType == null || indexType.equals(""))
 //			path.append(index).append("/").append(id).append("/_update");
@@ -3733,8 +3883,8 @@ public class RestClientUtil extends ClientUtil{
 //		catch(ElasticSearchException e){
 //			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateDocument);
 //		}
-		return _update(index,indexType,
-				id, params, refreshOption, detect_noop, doc_as_upsert);
+//		return _update(index,indexType,
+//				id, params, refreshOption, detect_noop, doc_as_upsert);
 	}
 
 	/**
@@ -3764,10 +3914,16 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	public String updateDocument(String index,String indexType,
 								 Object id,Object params,String refreshOption,Boolean detect_noop,Boolean doc_as_upsert) throws ElasticSearchException{
-		return _update(index,indexType,
-				 id, params, refreshOption, detect_noop, doc_as_upsert);
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setId(id);
+		clientOptions.setRefreshOption(refreshOption);
+		clientOptions.setDetectNoop(detect_noop);
+		clientOptions.setDocasupsert(doc_as_upsert);
+		return updateDocument(index,indexType,params,clientOptions);
+//		return _update(index,indexType,
+//				 id, params, refreshOption, detect_noop, doc_as_upsert);
 	}
-
+/**
 	private String _update(String index,String indexType,
 						   Object id,Object params,String refreshOption,Object detect_noop,Object doc_as_upsert){
 		StringBuilder path = new StringBuilder();
@@ -3804,7 +3960,7 @@ public class RestClientUtil extends ClientUtil{
 		}
 	}
 
-
+*/
 
 
 
@@ -5655,7 +5811,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateDocument(Object documentId,Object params) throws ElasticSearchException{
-		return updateDocument((String)null,(String)null,params);
+		return updateDocument((String)null,documentId,params);
 
 	}
 
