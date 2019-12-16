@@ -15,6 +15,11 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.bulk.BulkActionConfig;
+
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * <p>Description: 传递es操作的相关控制参数，采用ClientOptions后，定义在对象中的相关注解字段将不会起作用（失效）
  * 可以在ClientOption中指定以下参数：
@@ -32,7 +37,7 @@ package org.frameworkset.elasticsearch.client;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ClientOptions extends UpdateOptions {
+public class ClientOptions    implements BulkActionConfig,Serializable {
 	private String esRetryOnConflictField;
 	private String versionField;
 	private String versionTypeField;
@@ -45,12 +50,184 @@ public class ClientOptions extends UpdateOptions {
 
 	private String pipeline;
 	private String opType;
+	protected String refreshOption;
+	private String detectNoopField;
+	private String docasupsertField;
+	private Object detectNoop;
+	private Object docasupsert;
+	private Boolean returnSource;
+	protected String parentIdField;
+	protected Object esParentIdValue;
+	private Long ifSeqNo;
+	private Long ifPrimaryTerm;
+
+	protected List<String> sourceUpdateExcludes;
+	protected List<String> sourceUpdateIncludes;
+	protected String timeout;
+	protected String masterTimeout ;
+	protected Integer waitForActiveShards;
+	protected String refresh;
+	protected String idField;
+	public String getRefreshOption() {
+		return refreshOption;
+	}
+
+	public ClientOptions setRefreshOption(String refreshOption) {
+		this.refreshOption = refreshOption;
+		return this;
+	}
+
+	public ClientOptions setEsParentIdValue(Object esParentIdValue) {
+		this.esParentIdValue = esParentIdValue;
+		return this;
+	}
+
+	public Object getEsParentIdValue() {
+		return esParentIdValue;
+	}
+
+	public ClientOptions setRefresh(String refresh) {
+		this.refresh = refresh;
+		return this;
+	}
+
+	public String getRefresh() {
+		return refresh;
+	}
+
+	public String getDetectNoopField() {
+		return detectNoopField;
+	}
+
+	public ClientOptions setDetectNoopField(String detectNoopField) {
+		this.detectNoopField = detectNoopField;
+		return this;
+	}
+
+	public String getDocasupsertField() {
+		return docasupsertField;
+	}
+
+	public ClientOptions setDocasupsertField(String docasupsertField) {
+		this.docasupsertField = docasupsertField;
+		return this;
+	}
+
+
+	public Long getIfSeqNo() {
+		return ifSeqNo;
+	}
+
+	public ClientOptions setIfSeqNo(Long ifSeqNo) {
+		this.ifSeqNo = ifSeqNo;
+		return this;
+	}
+
+	public Long getIfPrimaryTerm() {
+		return ifPrimaryTerm;
+	}
+
+	public ClientOptions setIfPrimaryTerm(Long ifPrimaryTerm) {
+		this.ifPrimaryTerm = ifPrimaryTerm;
+		return this;
+	}
+	public String getIdField() {
+		return idField;
+	}
+
+	public ClientOptions setIdField(String idField) {
+		this.idField = idField;
+		return this;
+	}
+
+	public String getParentIdField() {
+		return parentIdField;
+	}
+
+	public ClientOptions setParentIdField(String parentIdField) {
+		this.parentIdField = parentIdField;
+		return this;
+	}
+
+	public Object getDocasupsert() {
+		return docasupsert;
+	}
+
+	public ClientOptions setDocasupsert(Object docasupsert) {
+		this.docasupsert = docasupsert;
+		return this;
+	}
+
+	public Object getDetectNoop() {
+		return detectNoop;
+	}
+
+	public ClientOptions setDetectNoop(Object detectNoop) {
+		this.detectNoop = detectNoop;
+		return this;
+	}
+
+	public Boolean getReturnSource() {
+		return returnSource;
+	}
+
+	public ClientOptions setReturnSource(Boolean returnSource) {
+		this.returnSource = returnSource;
+		return this;
+	}
+
+
+	public String getTimeout() {
+		return timeout;
+	}
+
+	public ClientOptions setTimeout(String timeout) {
+		this.timeout = timeout;
+		return this;
+	}
+
+	public String getMasterTimeout() {
+		return masterTimeout;
+	}
+
+	public ClientOptions setMasterTimeout(String masterTimeout) {
+		this.masterTimeout = masterTimeout;
+		return this;
+	}
+
+	public Integer getWaitForActiveShards() {
+		return waitForActiveShards;
+	}
+
+	public ClientOptions setWaitForActiveShards(Integer waitForActiveShards) {
+		this.waitForActiveShards = waitForActiveShards;
+		return this;
+	}
+
+	public List<String> getSourceUpdateExcludes() {
+		return sourceUpdateExcludes;
+	}
+
+	public List<String> getSourceUpdateIncludes() {
+		return sourceUpdateIncludes;
+	}
+
+	public ClientOptions setSourceUpdateExcludes(List<String> sourceUpdateExcludes) {
+		this.sourceUpdateExcludes = sourceUpdateExcludes;
+		return this;
+	}
+
+	public ClientOptions setSourceUpdateIncludes(List<String> sourceUpdateIncludes) {
+		this.sourceUpdateIncludes = sourceUpdateIncludes;
+		return this;
+	}
 	public String getRoutingField() {
 		return routingField;
 	}
 
-	public void setRoutingField(String routingField) {
+	public ClientOptions setRoutingField(String routingField) {
 		this.routingField = routingField;
+		return this;
 	}
 
 
@@ -59,56 +236,63 @@ public class ClientOptions extends UpdateOptions {
 		return esRetryOnConflictField;
 	}
 
-	public void setEsRetryOnConflictField(String esRetryOnConflictField) {
+	public ClientOptions setEsRetryOnConflictField(String esRetryOnConflictField) {
 		this.esRetryOnConflictField = esRetryOnConflictField;
+		return this;
 	}
 
 	public String getVersionField() {
 		return versionField;
 	}
 
-	public void setVersionField(String versionField) {
+	public ClientOptions setVersionField(String versionField) {
 		this.versionField = versionField;
+		return this;
 	}
 
 	public String getVersionTypeField() {
 		return versionTypeField;
 	}
 
-	public void setVersionTypeField(String versionTypeField) {
+	public ClientOptions setVersionTypeField(String versionTypeField) {
 		this.versionTypeField = versionTypeField;
+		return this;
 	}
 
 	public Object getEsRetryOnConflict() {
 		return esRetryOnConflict;
 	}
 
-	public void setEsRetryOnConflict(Object esRetryOnConflict) {
+	public ClientOptions setEsRetryOnConflict(Object esRetryOnConflict) {
 		this.esRetryOnConflict = esRetryOnConflict;
+		return this;
 	}
 
 	public Object getVersion() {
 		return version;
 	}
 
-	public void setVersion(Object version) {
+	public ClientOptions setVersion(Object version) {
 		this.version = version;
+		return this;
 	}
 
 	public Object getVersionType() {
 		return versionType;
 	}
 
-	public void setVersionType(Object versionType) {
+	public ClientOptions setVersionType(Object versionType) {
 		this.versionType = versionType;
+		return this;
 	}
 
 	public Object getRouting() {
 		return routing;
 	}
 
-	public void setRouting(Object routing) {
+	public ClientOptions setRouting(Object routing) {
 		this.routing = routing;
+		return this;
 	}
 
 
@@ -116,15 +300,17 @@ public class ClientOptions extends UpdateOptions {
 		return pipeline;
 	}
 
-	public void setPipeline(String pipeline) {
+	public ClientOptions setPipeline(String pipeline) {
 		this.pipeline = pipeline;
+		return this;
 	}
 
 	public String getOpType() {
 		return opType;
 	}
 
-	public void setOpType(String opType) {
+	public ClientOptions setOpType(String opType) {
 		this.opType = opType;
+		return this;
 	}
 }

@@ -115,4 +115,35 @@ public class BulkProcessorBuilder {
 		return this;
 	}
 
+
+
+	public BulkProcessorBuilder setTimeout(String timeout) {
+		this.bulkConfig.setTimeout( timeout);
+		return this;
+	}
+
+	public BulkProcessorBuilder setMasterTimeout(String masterTimeout) {
+		this.bulkConfig.setMasterTimeout( masterTimeout);
+		return this;
+	}
+
+	public BulkProcessorBuilder setWaitForActiveShards(Integer waitForActiveShards) {
+		this.bulkConfig.setWaitForActiveShards( waitForActiveShards);
+		return this;
+	}
+
+	public BulkProcessorBuilder setRefresh(String refresh) {
+		this.bulkConfig.setRefresh( refresh);
+		return this;
+	}
+
+	public BulkProcessorBuilder setPipeline(String pipeline) {
+		this.bulkConfig.setPipeline( pipeline);
+		return this;
+	}
+
+	public BulkProcessorBuilder setRouting(Object routing) {
+		this.bulkConfig.setRouting( routing);
+		return this;
+	}
 }

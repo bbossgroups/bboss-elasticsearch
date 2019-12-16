@@ -18,6 +18,7 @@ import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.orm.annotation.NameParserException;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.bulk.BulkActionConfig;
 import org.frameworkset.elasticsearch.bulk.BulkData;
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
@@ -657,8 +658,332 @@ public abstract class BuildTool {
 		}
 		buildMeta(null,  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
+	public static String buildActionUrl(BulkActionConfig bulkConfig){
+		if(bulkConfig == null)
+			return "_bulk";
+		StringBuilder url = new StringBuilder();
+		url.append("_bulk");
+		String refreshOption = bulkConfig.getRefreshOption();
+		if(refreshOption != null)
+			url.append("?").append(refreshOption);
+		else{
+			String refresh  = bulkConfig.getRefresh();
+			boolean p = false;
+			if(refresh != null) {
+				url.append("?refresh=").append(refresh);
+				p = true;
+			}
+			/**
+			 Long if_seq_no = clientOptions.getIfSeqNo();
+			 if(if_seq_no != null){
+			 if(p){
+			 url.append("&if_seq_no=").append(if_seq_no);
+			 }
+			 else{
+			 url.append("?if_seq_no=").append(if_seq_no);
+			 p = true;
+			 }
+			 }
+			 Long if_primary_term = clientOptions.getIfPrimaryTerm();
+			 if(if_primary_term != null){
+			 if(p){
+			 url.append("&if_primary_term=").append(if_primary_term);
+			 }
+			 else{
+			 url.append("?if_primary_term=").append(if_primary_term);
+			 p = true;
+			 }
+			 }*/
+
+			/**
+			 Object retry_on_conflict = clientOptions.getEsRetryOnConflict();
+			 if(retry_on_conflict != null){
+			 if(p){
+			 url.append("&retry_on_conflict=").append(retry_on_conflict);
+			 }
+			 else{
+			 url.append("?retry_on_conflict=").append(retry_on_conflict);
+			 p = true;
+			 }
+			 }*/
+			Object routing = bulkConfig.getRouting();
+			if(routing != null){
+				if(p){
+					url.append("&routing=").append(routing);
+				}
+				else{
+					url.append("?routing=").append(routing);
+					p = true;
+				}
+			}
+			String timeout = bulkConfig.getTimeout();
+			if(timeout != null){
+				if(p){
+					url.append("&timeout=").append(timeout);
+				}
+				else{
+					url.append("?timeout=").append(timeout);
+					p = true;
+				}
+			}
+			/**
+			 String master_timeout = clientOptions.getMasterTimeout();
+			 if(master_timeout != null){
+			 if(p){
+			 url.append("&master_timeout=").append(master_timeout);
+			 }
+			 else{
+			 url.append("?master_timeout=").append(master_timeout);
+			 p = true;
+			 }
+			 }*/
+			Integer wait_for_active_shards = bulkConfig.getWaitForActiveShards();
+			if(wait_for_active_shards != null){
+				if(p){
+					url.append("&wait_for_active_shards=").append(wait_for_active_shards);
+				}
+				else{
+					url.append("?wait_for_active_shards=").append(wait_for_active_shards);
+					p = true;
+				}
+			}
+			/**
+			 String op_type = clientOptions.getOpType();
+			 if(op_type != null){
+			 if(p){
+			 url.append("&op_type=").append(op_type);
+			 }
+			 else{
+			 url.append("?op_type=").append(op_type);
+			 p = true;
+			 }
+			 }*/
+			String pipeline = bulkConfig.getPipeline();
+			if(pipeline != null){
+				if(p){
+					url.append("&pipeline=").append(pipeline);
+				}
+				else{
+					url.append("?pipeline=").append(pipeline);
+					p = true;
+				}
+			}
 
 
+		}
+		return url.toString();
+	}
+	/**
+	 * bulk
+	 * @param writer
+	 * @throws IOException
+	 */
+	public static void buildMeta(Writer writer ,BulkData bulkData,boolean upper7,ClassUtil.ClassInfo beanInfo) throws IOException {
+		String indexType= bulkData.getIndexType();
+		ClientOptions clientOption = bulkData.getClientOptions();
+		String indexName = bulkData.getIndex();
+		Object params = bulkData.getData();
+		String action = bulkData.getElasticsearchBulkType();
+
+		Object id = null;
+		Object parentId = null;
+		Object routing = null;
+		Object esRetryOnConflict = null;
+		Object version = null;
+		Object versionType = null;
+		if(!bulkData.isDelete()){
+			if(clientOption != null && clientOption.getIdField() != null) {
+				id = BuildTool.getId(params, beanInfo, clientOption.getIdField());
+			}
+			else{
+				id = getId(params,  beanInfo );
+			}
+
+		}
+		else{
+			id = bulkData.getData();
+		}
+
+
+		if(clientOption != null) {
+
+			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanInfo, clientOption.getParentIdField()) : getParentId(params,  beanInfo );
+			if(clientOption.getRouting() == null) {
+				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOption.getRoutingField()) : getRouting(params,beanInfo);
+			}
+			else{
+				routing = clientOption.getRouting();
+			}
+
+			if(clientOption.getEsRetryOnConflict() == null) {
+				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
+						clientOption.getEsRetryOnConflictField()) : getEsRetryOnConflict(params,beanInfo);
+			}
+			else{
+				esRetryOnConflict = clientOption.getEsRetryOnConflict();
+			}
+			if(clientOption.getVersion() == null) {
+				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionField()) : getVersion(  beanInfo,   params);
+			}
+			else{
+				version = clientOption.getVersion();
+			}
+			if(clientOption.getVersionType() == null) {
+				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionTypeField()) : getVersionType(  beanInfo,   params);
+			}else{
+				versionType = clientOption.getVersionType();
+			}
+		}
+		else{
+
+			parentId = getParentId(params,  beanInfo );
+			routing = getRouting(params,beanInfo);
+			esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+			version = getVersion(  beanInfo,   params);
+
+			versionType = getVersionType(  beanInfo,   params);
+		}
+		writer.write("{ \"");
+		writer.write(action);
+		writer.write("\" : { \"_index\" : \"");
+		ESIndexWrapper esIndexWrapper = null;
+		RestGetVariableValue restGetVariableValue = null;
+		if(indexName != null) {
+			writer.write(indexName);
+		}
+		else{
+			esIndexWrapper = beanInfo != null ?beanInfo.getEsIndexWrapper():null;
+			restGetVariableValue = esIndexWrapper != null ?new RestGetVariableValue(beanInfo,params):null;
+			if (esIndexWrapper == null ) {
+				throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+						.append(beanInfo != null ?beanInfo.toString():"").toString());
+			}
+			buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
+		}
+		writer.write("\"");
+
+		if(!upper7) {
+			writer.write(", \"_type\" : \"");
+			if(indexType != null) {
+				writer.write(indexType);
+			}
+			else{
+				if (esIndexWrapper == null ) {
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
+				}
+				buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
+			}
+			writer.write("\"");
+		}
+
+		if(id != null) {
+			writer.write(", \"_id\" : ");
+			buildId(id, writer, true);
+		}
+		if(parentId != null){
+			writer.write(", \"parent\" : ");
+			buildId(parentId,writer,true);
+		}
+		if(routing != null){
+			if(!upper7) {
+				writer.write(", \"_routing\" : ");
+			}
+			else{
+				writer.write(", \"routing\" : ");
+			}
+			buildId(routing,writer,true);
+		}
+
+		if (esRetryOnConflict != null) {
+			if(!upper7) {
+				writer.write(",\"_retry_on_conflict\":");
+			}
+			else{
+				writer.write(",\"retry_on_conflict\":");
+			}
+			writer.write(String.valueOf(esRetryOnConflict));
+		}
+
+		if(version != null) {
+
+			if(!upper7) {
+				writer.write(",\"_version\":");
+			}
+			else{
+				writer.write(",\"version\":");
+			}
+			writer.write(String.valueOf(version));
+		}
+
+
+		if(versionType != null) {
+			if(!upper7) {
+				writer.write(",\"_version_type\":\"");
+			}
+			else{
+				writer.write(",\"version_type\":\"");
+			}
+
+			writer.write(String.valueOf(versionType));
+			writer.write("\"");
+		}
+//		if(!bulkData.isUpdate()){
+			if(upper7) {
+				Long if_seq_no = clientOption!= null?clientOption.getIfSeqNo():null;
+
+				if (if_seq_no != null) {
+
+//					if(!upper7) {
+//						writer.write(",\"_if_seq_no\":");
+//					}
+//					else{
+//						writer.write(",\"if_seq_no\":");
+//					}
+
+					writer.write(",\"if_seq_no\":");
+
+					writer.write(String.valueOf(if_seq_no));
+				}
+
+				Long if_primary_term = clientOption != null ? clientOption.getIfPrimaryTerm() : null;
+
+				if (if_primary_term != null) {
+//					if (!upper7) {
+//						writer.write(",\"_if_primary_term\":");
+//					} else {
+//						writer.write(",\"if_primary_term\":");
+//					}
+					writer.write(",\"if_primary_term\":");
+					writer.write(String.valueOf(if_primary_term));
+				}
+			}
+			String pipeline = clientOption!= null?clientOption.getPipeline():null;
+
+			if (pipeline != null) {
+
+				writer.write(",\"pipeline\":\"");
+
+				writer.write(pipeline);
+				writer.write("\"");
+			}
+//		}
+		if(bulkData.isInsert()){
+
+			String op_type = clientOption!= null?clientOption.getOpType():null;
+
+			if (op_type != null) {
+
+				writer.write(",\"op_type\":\"");
+
+				writer.write(op_type);
+				writer.write("\"");
+			}
+		}
+
+		writer.write(" } }\n");
+
+	}
 
 	/**
 	 * String docIdKey,String parentIdKey,String routingKey
@@ -680,38 +1005,168 @@ public abstract class BuildTool {
 		Object esRetryOnConflict = null;
 		Object version = null;
 		Object versionType = null;
-		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
+		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
 		if(clientOption != null) {
 
-			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOption.getIdField()) : null;
-			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOption.getParentIdField()) : null;
+			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanInfo, clientOption.getIdField()) : null;
+			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanInfo, clientOption.getParentIdField()) : null;
 			if(clientOption.getRouting() == null) {
-				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOption.getRoutingField()) : null;
+				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOption.getRoutingField()) : null;
 			}
 			else{
 				routing = clientOption.getRouting();
 			}
 
 			if(clientOption.getEsRetryOnConflict() == null) {
-				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo,
+				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
 						clientOption.getEsRetryOnConflictField()) : null;
 			}
 			else{
 				esRetryOnConflict = clientOption.getEsRetryOnConflict();
 			}
 			if(clientOption.getVersion() == null) {
-				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo, clientOption.getVersionField()) : null;
+				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionField()) : null;
 			}
 			else{
 				version = clientOption.getVersion();
 			}
 			if(clientOption.getVersionType() == null) {
-				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanClassInfo, clientOption.getVersionTypeField()) : null;
+				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionTypeField()) : null;
 			}else{
 				versionType = clientOption.getVersionType();
 			}
 		}
-		buildMeta( beanClassInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,version,versionType,  upper7);
+		ESIndexWrapper esIndexWrapper = beanInfo != null ?beanInfo.getEsIndexWrapper():null;
+		RestGetVariableValue restGetVariableValue = esIndexWrapper != null ?new RestGetVariableValue(beanInfo,params):null;
+
+
+		if(id != null) {
+			writer.write("{ \"");
+			writer.write(action);
+			writer.write("\" : { \"_index\" : \"");
+			if(indexName != null) {
+				writer.write(indexName);
+			}
+			else{
+				if (esIndexWrapper == null ) {
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
+				}
+				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
+			}
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				if(indexType != null) {
+					writer.write(indexType);
+				}
+				else{
+					if (esIndexWrapper == null ) {
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+								.append(beanInfo != null ?beanInfo.toString():"").toString());
+					}
+					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
+				}
+			}
+			writer.write("\", \"_id\" : ");
+			buildId(id,writer,true);
+			if(parentId != null){
+				writer.write(", \"parent\" : ");
+				buildId(parentId,writer,true);
+			}
+			if(routing != null){
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
+				buildId(routing,writer,true);
+			}
+
+			if (esRetryOnConflict != null) {
+				writer.write(",\"_retry_on_conflict\":");
+				writer.write(String.valueOf(esRetryOnConflict));
+			}
+
+			if(version != null) {
+				writer.write(",\"_version\":");
+
+				writer.write(String.valueOf(version));
+			}
+
+
+			if(versionType != null) {
+				writer.write(",\"_version_type\":\"");
+				writer.write(String.valueOf(versionType));
+				writer.write("\"");
+			}
+
+
+			writer.write(" } }\n");
+		}
+		else {
+
+			writer.write("{ \"");
+			writer.write(action);
+			writer.write("\" : { \"_index\" : \"");
+			if(indexName != null) {
+				writer.write(indexName);
+			}
+			else{
+				if (esIndexWrapper == null ) {
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
+				}
+				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
+			}
+			if(!upper7) {
+				writer.write("\", \"_type\" : \"");
+				if(indexType != null) {
+					writer.write(indexType);
+				}
+				else{
+					if (esIndexWrapper == null ) {
+						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
+								.append(beanInfo != null ?beanInfo.toString():"").toString());
+					}
+					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
+				}
+
+			}
+			writer.write("\"");
+			if(parentId != null){
+				writer.write(", \"parent\" : ");
+				buildId(parentId,writer,true);
+			}
+			if(routing != null){
+				if(!upper7) {
+					writer.write(", \"_routing\" : ");
+				}
+				else{
+					writer.write(", \"routing\" : ");
+				}
+				buildId(routing,writer,true);
+			}
+
+			if (esRetryOnConflict != null) {
+				writer.write(",\"_retry_on_conflict\":");
+				writer.write(String.valueOf(esRetryOnConflict));
+			}
+
+			if(version != null) {
+				writer.write(",\"_version\":");
+
+				writer.write(String.valueOf(version));
+			}
+
+			if(versionType != null) {
+				writer.write(",\"_version_type\":\"");
+				writer.write(String.valueOf(versionType));
+				writer.write("\"");
+			}
+
+			writer.write(" } }\n");
+		}
 	}
 	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
 		buildMeta(  classInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
@@ -986,26 +1441,28 @@ public abstract class BuildTool {
 		}
 
 	}
-	public static void evalDeleteBuilk(BBossStringWriter writer, boolean isUpper7, BulkData bulkData,Object id){
+	public static void evalDeleteBuilk(BBossStringWriter writer, boolean isUpper7, BulkData bulkData){
+
 		try {
-			if(!isUpper7 ) {
-
-				writer.write("{ \"delete\" : { \"_index\" : \"");
-				writer.write(bulkData.getIndex());
-				writer.write("\", \"_type\" : \"");
-				writer.write(bulkData.getIndexType());
-				writer.write("\", \"_id\" : \"");
-				writer.write(bulkData.getData().toString());
-				writer.write("\" } }\n");
-			}
-			else{
-
-				writer.write("{ \"delete\" : { \"_index\" : \"");
-				writer.write(bulkData.getIndex());
-				writer.write("\", \"_id\" : \"");
-				writer.write(bulkData.getData().toString());
-				writer.write("\" } }\n");
-			}
+			BuildTool.evalBuilk(writer,bulkData,isUpper7);
+//			if(!isUpper7 ) {
+//
+//				writer.write("{ \"delete\" : { \"_index\" : \"");
+//				writer.write(bulkData.getIndex());
+//				writer.write("\", \"_type\" : \"");
+//				writer.write(bulkData.getIndexType());
+//				writer.write("\", \"_id\" : \"");
+//				writer.write(bulkData.getData().toString());
+//				writer.write("\" } }\n");
+//			}
+//			else{
+//
+//				writer.write("{ \"delete\" : { \"_index\" : \"");
+//				writer.write(bulkData.getIndex());
+//				writer.write("\", \"_id\" : \"");
+//				writer.write(bulkData.getData().toString());
+//				writer.write("\" } }\n");
+//			}
 
 		} catch (Exception e) {
 			throw new ElasticSearchException(e);
@@ -1077,6 +1534,92 @@ public abstract class BuildTool {
 				writer.write("}\n");
 			}
 		}
+
+	}
+
+	public static void evalBuilk( Writer writer,BulkData bulkData,boolean upper7) throws IOException {
+			Object param = bulkData.getData();
+			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(param.getClass());
+			buildMeta(  writer ,  bulkData,  upper7,beanClassInfo);
+			if(bulkData.isInsert()) {
+				SerialUtil.object2json(bulkData.getData(),writer);
+				writer.write("\n");
+			}
+			else if(bulkData.isUpdate())
+			{
+
+				Object detect_noop = null;
+				Object doc_as_upsert = null;
+				ClientOptions clientOptions = bulkData.getClientOptions();
+
+				if(clientOptions.getDetectNoop() != null){
+					detect_noop = clientOptions.getDetectNoop();
+				}
+				else {
+					detect_noop = clientOptions.getDetectNoopField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDetectNoopField()) : null;
+				}
+				if(clientOptions.getDocasupsert() != null) {
+					doc_as_upsert =clientOptions.getDocasupsert();
+				}
+				else {
+					doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : null;
+				}
+
+
+				writer.write("{\"doc\":");
+				SerialUtil.object2json(param,writer);
+				if(detect_noop != null){
+					writer.write(",\"detect_noop\":");
+					writer.write(detect_noop.toString());
+				}
+				if(doc_as_upsert != null){
+//					builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
+					writer.write(",\"doc_as_upsert\":");
+					writer.write(doc_as_upsert.toString());
+				}
+				Boolean returnSource = clientOptions.getReturnSource();
+				if(returnSource != null){
+					writer.write(",\"_source\":");
+					writer.write(String.valueOf(returnSource));
+				}
+				List<String> sourceUpdateExcludes  = clientOptions!= null?clientOptions.getSourceUpdateExcludes():null;
+
+				if (sourceUpdateExcludes != null) {
+					/**
+					 if(!upper7) {
+					 writer.write(",\"_source_excludes\":");
+					 }
+					 else{
+					 writer.write(",\"source_excludes\":");
+					 }
+					 */
+					if(!upper7) {
+						writer.write(",\"_source_excludes\":");
+						SerialUtil.object2json(sourceUpdateExcludes,writer);
+					}
+
+				}
+				List<String> sourceUpdateIncludes  = clientOptions!= null?clientOptions.getSourceUpdateIncludes():null;
+
+				if (sourceUpdateIncludes != null) {
+					/**
+					 if(!upper7) {
+					 writer.write(",\"_source_includes\":");
+					 }
+					 else{
+					 writer.write(",\"source_includes\":");
+					 }
+					 */
+					if(!upper7) {
+						writer.write(",\"_source_includes\":");
+						SerialUtil.object2json(sourceUpdateIncludes,writer);
+					}
+
+
+				}
+				writer.write("}\n");
+			}
+
 
 	}
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
@@ -1239,6 +1782,10 @@ public abstract class BuildTool {
 //			pkProperty = beanInfo.getPkProperty();
 		if(field == null)
 			return null;
-		return beanInfo.getPropertyValue(bean,field);
+		if(!beanInfo.isMap())
+			return beanInfo.getPropertyValue(bean,field);
+		else{
+			return ((Map)bean).get(field);
+		}
 	}
 }

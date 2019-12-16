@@ -147,7 +147,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String updateDocument(String index, String indexType, Object params, UpdateOptions updateOptions) throws ElasticSearchException {
+	public String updateDocument(String index, String indexType, Object params, ClientOptions updateOptions) throws ElasticSearchException {
 		return null;
 	}
 
@@ -1299,7 +1299,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String updateDocument(Object params, UpdateOptions updateOptions) throws ElasticSearchException {
+	public String updateDocument(Object params, ClientOptions updateOptions) throws ElasticSearchException {
 		return null;
 	}
 
@@ -1612,6 +1612,11 @@ public class TransportClientUtil  implements EventClientUtil{
 
 	@Override
 	public String executeBulk(BulkCommand bulkCommand) {
+		return null;
+	}
+
+	@Override
+	public String deleteDocuments(String indexName, String indexType, String[] ids, ClientOptions clientOptions) throws ElasticSearchException {
 		return null;
 	}
 
@@ -2027,7 +2032,7 @@ public class TransportClientUtil  implements EventClientUtil{
 	}
 
 	@Override
-	public String updateDocument(String index, Object params, UpdateOptions updateOptions) throws ElasticSearchException {
+	public String updateDocument(String index, Object params, ClientOptions updateOptions) throws ElasticSearchException {
 		return null;
 	}
 	public boolean isVersionUpper7(){

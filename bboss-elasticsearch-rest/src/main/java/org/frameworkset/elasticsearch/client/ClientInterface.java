@@ -580,7 +580,7 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+	public String updateDocument(Object params,ClientOptions updateOptions) throws ElasticSearchException;
 
 	/**
 	 * indexName，	 indexType索引类型和type必须通过bean对象的ESIndex来指定，否则抛出异常
@@ -2287,7 +2287,7 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException;
+	public String updateDocument(String index,String indexType,Object params,ClientOptions updateOptions) throws ElasticSearchException;
 
 	/**
 	 *
@@ -2664,4 +2664,5 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 */
 	String executeBulk(BulkCommand bulkCommand);
+	public String deleteDocuments(String indexName, String indexType, String[] ids,ClientOptions clientOptions) throws ElasticSearchException;
 }

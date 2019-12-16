@@ -12,7 +12,6 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.SliceRunTask;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.bulk.BulkData;
-import org.frameworkset.elasticsearch.bulk.BulkProcessorException;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
 import org.frameworkset.elasticsearch.entity.sql.SQLRestResponse;
@@ -305,25 +304,34 @@ public class RestClientUtil extends ClientUtil{
 	public String addDocuments(String indexName, String indexType,  List<?> beans,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		ClassUtil.ClassInfo beanInfo = null;
-
-		for(Object bean:beans) {
-			try {
-				if(beanInfo == null) {
-					beanInfo = ClassUtil.getClassInfo(bean.getClass());
-				}
-				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"index",this.client.isUpper7());
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+		ClientOptions clientOptions = null;
+		if(refreshOption != null){
+			clientOptions = new ClientOptions();
+			clientOptions.setRefreshOption(refreshOption);
 		}
-		writer.flush();
-		if(refreshOption == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		return addDocuments(indexName, indexType, beans,clientOptions);
+//		for(Object bean:beans) {
+//			try {
+////				if(beanInfo == null) {
+////					beanInfo = ClassUtil.getClassInfo(bean.getClass());
+////				}
+//				BulkData bulkData = new BulkData(BulkData.INSERT,bean);
+//				bulkData.setIndex(indexName);
+//				bulkData.setIndexType(indexType);
+//				bulkData.setClientOptions(clientOptions);
+//				BuildTool.evalBuilk(writer,bulkData,client.isUpper7());
+////				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"index",this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+////		if(refreshOption == null)
+//			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
+////		else
+////			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -405,38 +413,50 @@ public class RestClientUtil extends ClientUtil{
 	public String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions clientOptions) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
+
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions,this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+			BulkData bulkData = new BulkData(BulkData.INSERT,bean);
+			bulkData.setIndexType(indexType);
+			bulkData.setIndex(indexName);
+			bulkData.setClientOptions(clientOptions);
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions,this.client.isUpper7());
+				BuildTool.evalBuilk(writer,bulkData,client.isUpper7());
 			} catch (IOException e) {
-				throw new ElasticSearchException(e);
+				throw new ElasticSearchException("evalBuilk addMapDocuments failed",e);
 			}
 		}
 		writer.flush();
-		if(clientOptions == null || clientOptions.getRefreshOption() == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+clientOptions.getRefreshOption(),ClientUtil.HTTP_POST);
+		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		for(Map bean:beans) {
-			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,parentIdKey,this.client.isUpper7());
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
-		}
-		writer.flush();
-		if(refreshOption == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setIdField(docIdKey);
+		clientOptions.setParentIdField(parentIdKey);
+		clientOptions.setRefreshOption(refreshOption);
+		return addDocuments(  indexName,   indexType, beans,clientOptions);
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+//		for(Map bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,parentIdKey,this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+//		if(refreshOption == null)
+//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+//		else
+//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException{
 		return addDocuments(indexName, indexType, beans,docIdKey, parentIdKey,(String)null);
@@ -782,27 +802,32 @@ public class RestClientUtil extends ClientUtil{
 		return updateDocuments(indexName, indexType, beans,(String)null);
 	}
 	public String updateDocuments(String indexName, String indexType, List<?> beans,String refreshOption) throws ElasticSearchException{
-
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		ClassUtil.ClassInfo beanInfo = null;
-		for(Object bean:beans) {
-			try {
-				if(beanInfo == null){
-					beanInfo = ClassUtil.getClassInfo(bean.getClass());
-				}
-				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"update",this.client.isUpper7());
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
-		}
-		writer.flush();
+		ClientOptions clientOptions = null;
 		if(refreshOption != null) {
-			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
+			clientOptions = new ClientOptions();
+			clientOptions.setRefreshOption(refreshOption);
 		}
-		else {
-			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-		}
+		return updateDocuments(  indexName,   indexType,beans,clientOptions);
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+//		ClassUtil.ClassInfo beanInfo = null;
+//		for(Object bean:beans) {
+//			try {
+//				if(beanInfo == null){
+//					beanInfo = ClassUtil.getClassInfo(bean.getClass());
+//				}
+//				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"update",this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+//		if(refreshOption != null) {
+//			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
+//		}
+//		else {
+//			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+//		}
 	}
 	public  String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException
 	{
@@ -822,16 +847,21 @@ public class RestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
 			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions,this.client.isUpper7());
+				BulkData bulkData = new BulkData(BulkData.INSERT,bean);
+				bulkData.setIndex(indexName);
+				bulkData.setIndexType(indexType);
+				bulkData.setClientOptions(clientOptions);
+				BuildTool.evalBuilk(writer,bulkData,this.client.isUpper7());
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions,this.client.isUpper7());
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
 		}
 		writer.flush();
-		if(clientOptions == null || clientOptions.getRefreshOption() == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+clientOptions.getRefreshOption(),builder.toString(),ClientUtil.HTTP_POST);
+//		if(clientOptions == null)
+//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+//		else
+			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
 	}
 
 	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException{
@@ -855,24 +885,32 @@ public class RestClientUtil extends ClientUtil{
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",clientOptions,this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
 			try {
-//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update");
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",clientOptions,this.client.isUpper7());
+				BulkData bulkData = new BulkData(BulkData.UPDATE,bean);
+				bulkData.setIndex(indexName);
+				bulkData.setIndexType(indexType);
+				bulkData.setClientOptions(clientOptions);
+				BuildTool.evalBuilk(writer,bulkData,this.client.isUpper7());
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",clientOptions,this.client.isUpper7());
 			} catch (IOException e) {
 				throw new ElasticSearchException(e);
 			}
 		}
 		writer.flush();
-		if(clientOptions != null && clientOptions.getRefreshOption() != null) {
-			return this.client.executeHttp(new StringBuilder().append("_bulk?")
-														.append( clientOptions.getRefreshOption()).toString(), builder.toString(), ClientUtil.HTTP_POST);
-		}
-		else {
-			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-		}
+//		if(clientOptions != null) {
+			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions), builder.toString(), ClientUtil.HTTP_POST);
+//		}
+//		else {
+//			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+//		}
 	}
 
-	public String updateDocument(String index,String indexType,Object params,UpdateOptions updateOptions) throws ElasticSearchException{
+	public String updateDocument(String index,String indexType,Object params,ClientOptions updateOptions) throws ElasticSearchException{
 		Object id = null;
 		String refreshOption = null;
 		Object detect_noop = null;
@@ -933,65 +971,68 @@ public class RestClientUtil extends ClientUtil{
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(BulkData bulkData:bulkDatas){
-			if(bulkData.isInsert() || bulkData.isUpdate()){
-				if(!bulkData.isCollection()){
+//			if(bulkData.isInsert() || bulkData.isUpdate()){
+//				if(!bulkData.isCollection()){
 					try {
-						BuildTool.evalBuilk(writer,bulkData.getIndex(),
-									bulkData.getIndexType(),
-							bulkData.getData(),bulkData.getElasticsearchBulkType(),bulkData.getClientOptions(),this.client.isUpper7());
+						BuildTool.evalBuilk(writer,bulkData,this.client.isUpper7());
 					} catch (IOException e) {
 						throw new ElasticSearchException(e);
 					}
-				}
-				else{
-					List<Object> innerDatas = bulkData.getDatas();
-					if(innerDatas != null && innerDatas.size() > 0) {
-						for(Object idata:innerDatas) {
-							try {
-								BuildTool.evalBuilk(writer,bulkData.getIndex(),
-										bulkData.getIndexType(),
-										idata,bulkData.getElasticsearchBulkType(),bulkData.getClientOptions(),this.client.isUpper7());
-							} catch (IOException e) {
-								throw new ElasticSearchException(e);
-							}
-						}
-					}
-
-				}
-			}
-
-			else if(bulkData.isDelete()){
-				if(!bulkData.isCollection()){
-					BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData,bulkData.getData());
-				}
-				else{
-					List<Object> innerDatas = bulkData.getDatas();
-					if(innerDatas != null && innerDatas.size() > 0) {
-						for(Object idata:innerDatas) {
-							BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData,idata);
-						}
-					}
-
-				}
-			}
-			else{
-				throw new BulkProcessorException(new StringBuilder().append("unknown bulk operation type:")
-						.append(bulkData.getType()).append(", bulk operation type support: 0(insert),1(update),2(delete)").toString());
-			}
+//				}
+//				else{
+//					List<Object> innerDatas = bulkData.getDatas();
+//					if(innerDatas != null && innerDatas.size() > 0) {
+//						for(Object idata:innerDatas) {
+//							try {
+//								BuildTool.evalBuilk(writer,idata,this.client.isUpper7());
+//							} catch (IOException e) {
+//								throw new ElasticSearchException(e);
+//							}
+//						}
+//					}
+//
+//				}
+//			}
+//
+//			else if(bulkData.isDelete()){
+//				if(!bulkData.isCollection()){
+//					BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData);
+//				}
+//				else{
+//					List<Object> innerDatas = bulkData.getDatas();
+//					if(innerDatas != null && innerDatas.size() > 0) {
+//						for(Object idata:innerDatas) {
+//							BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData);
+//						}
+//					}
+//
+//				}
+//			}
+//			else{
+//				throw new BulkProcessorException(new StringBuilder().append("unknown bulk operation type:")
+//						.append(bulkData.getType()).append(", bulk operation type support: 0(insert),1(update),2(delete)").toString());
+//			}
 		}
 		writer.flush();
 
-		if(bulkCommand.getRefreshOption() != null) {
-			return this.client.executeHttp(new StringBuilder().append("_bulk?")
-							                                  .append( bulkCommand.getRefreshOption()).toString(),
-					                                           builder.toString(), ClientUtil.HTTP_POST);
-		}
-		else {
-			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-		}
+		return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig()), builder.toString(), ClientUtil.HTTP_POST);
+//		if(bulkCommand.getRefreshOption() != null) {
+//			return this.client.executeHttp(new StringBuilder().append("_bulk?")
+//							                                  .append( bulkCommand.getRefreshOption()).toString(),
+//					                                           builder.toString(), ClientUtil.HTTP_POST);
+//		}
+//		else {
+//			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
+//		}
 
 	}
 	public String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setIdField(docIdKey);
+		clientOptions.setParentIdField(parentIdKey);
+		clientOptions.setRefreshOption(refreshOption);
+		return updateDocuments(  indexName,   indexType,   beans,clientOptions);
+/**
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
@@ -1009,6 +1050,7 @@ public class RestClientUtil extends ClientUtil{
 		else {
 			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
 		}
+ */
 	}
 
 
@@ -1074,20 +1116,38 @@ public class RestClientUtil extends ClientUtil{
 
 	@Override
 	public String deleteDocuments(String indexName, String indexType, String[] ids) throws ElasticSearchException {
-		StringBuilder builder = new StringBuilder();
-		if(!this.client.isUpper7() ) {
-			for (String id : ids) {
-
-				builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-			}
-		}
-		else{
-			for (String id : ids) {
-				builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-			}
-		}
-		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		return deleteDocuments(indexName,  indexType, ids,(ClientOptions)null);
 		
+	}
+
+	@Override
+	public String deleteDocuments(String indexName, String indexType, String[] ids,ClientOptions clientOptions) throws ElasticSearchException {
+		StringBuilder builder = new StringBuilder();
+		BBossStringWriter writer = new BBossStringWriter(builder);
+		for (String id : ids) {
+			BulkData bulkData = new BulkData(BulkData.DELETE,id);
+			bulkData.setIndexType(indexType);
+			bulkData.setIndex(indexName);
+			bulkData.setClientOptions(clientOptions);
+			try {
+				BuildTool.evalBuilk(writer,bulkData,client.isUpper7());
+			} catch (IOException e) {
+				throw new ElasticSearchException("evalBuilk deleteDocuments failed:docid["+id+"]",e);
+			}
+//			builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+		}
+		writer.flush();
+//		if(!this.client.isUpper7() ) {
+//
+//		}
+//		else{
+//			for (String id : ids) {
+//				builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_id\" : \"").append(id).append("\" } }\n");
+//			}
+//		}
+
+		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions), builder.toString(), ClientUtil.HTTP_POST);
+
 	}
 
 
@@ -4122,20 +4182,25 @@ public class RestClientUtil extends ClientUtil{
 	public  String addDocumentsWithIdField(String indexName, String indexType, List<Object> beans,String docIdField,String parentIdField,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		for(Object bean:beans) {
-			try {
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdField,parentIdField,this.client.isUpper7());
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
-		}
-		writer.flush();
-		if(refreshOption == null)
-			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setIdField(docIdField);
+		clientOptions.setParentIdField(parentIdField);
+		clientOptions.setRefreshOption(refreshOption);
+		return addDocuments(  indexName,   indexType,   beans,clientOptions);
+//		StringBuilder builder = new StringBuilder();
+//		BBossStringWriter writer = new BBossStringWriter(builder);
+//		for(Object bean:beans) {
+//			try {
+//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdField,parentIdField,this.client.isUpper7());
+//			} catch (IOException e) {
+//				throw new ElasticSearchException(e);
+//			}
+//		}
+//		writer.flush();
+//		if(refreshOption == null)
+//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+//		else
+//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public   String addDocumentsWithIdParentField(String indexName, String indexType,  List<Object> beans,String docIdField,String parentIdField) throws ElasticSearchException{
 		return addDocumentsWithIdField(indexName, indexType, beans,docIdField, parentIdField,(String)null);
@@ -5541,7 +5606,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(String index,  Object params, UpdateOptions updateOptions) throws ElasticSearchException{
+	public String updateDocument(String index,  Object params, ClientOptions updateOptions) throws ElasticSearchException{
 		 return updateDocument( index, (String) null,params, updateOptions);
 
 	}
@@ -5578,7 +5643,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(Object params,UpdateOptions updateOptions) throws ElasticSearchException{
+	public String updateDocument(Object params,ClientOptions updateOptions) throws ElasticSearchException{
 		return updateDocument((String)null,(String)null,params,  updateOptions);
 	}
 

@@ -26,7 +26,7 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class BulkConfig {
+public class BulkConfig implements BulkActionConfig{
 	private List<BulkInterceptor> bulkInterceptors;
 	private long blockedWaitTimeout;
 	private int warnMultsRejects;
@@ -51,6 +51,13 @@ public class BulkConfig {
 	private int bulkQueue = 10000;
 	private int workThreads = 20;
 	private int workThreadQueue = 100;
+
+	private String timeout;
+	private String masterTimeout ;
+	private Integer waitForActiveShards;
+	private String refresh;
+	private String pipeline;
+	private Object routing;
 	public int getBulkSizes() {
 		return bulkSizes;
 	}
@@ -177,5 +184,58 @@ public class BulkConfig {
 	public BulkConfig setRefreshOption(String refreshOption) {
 		this.refreshOption = refreshOption;
 		return this;
+	}
+
+	public String getPipeline() {
+		return pipeline;
+	}
+
+	public BulkConfig setPipeline(String pipeline) {
+		this.pipeline = pipeline;
+		return this;
+	}
+
+	public String getRefresh() {
+		return refresh;
+	}
+
+	public BulkConfig setRefresh(String refresh) {
+		this.refresh = refresh;
+		return this;
+	}
+
+	public Integer getWaitForActiveShards() {
+		return waitForActiveShards;
+	}
+
+	public BulkConfig setWaitForActiveShards(Integer waitForActiveShards) {
+		this.waitForActiveShards = waitForActiveShards;
+		return this;
+	}
+
+	public String getMasterTimeout() {
+		return masterTimeout;
+	}
+
+	public BulkConfig setMasterTimeout(String masterTimeout) {
+		this.masterTimeout = masterTimeout;
+		return this;
+	}
+
+	public String getTimeout() {
+		return timeout;
+	}
+
+	public BulkConfig setTimeout(String timeout) {
+		this.timeout = timeout;
+		return this;
+	}
+
+	public Object getRouting() {
+		return routing;
+	}
+
+	public void setRouting(Object routing) {
+		this.routing = routing;
 	}
 }

@@ -964,7 +964,7 @@ public interface ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String updateDocument(String index,  Object params, UpdateOptions updateOptions) throws ElasticSearchException;
+	public String updateDocument(String index,  Object params, ClientOptions updateOptions) throws ElasticSearchException;
 
 	public boolean isVersionUpper7();
 }
