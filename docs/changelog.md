@@ -44,7 +44,7 @@ https://esdoc.bbossgroups.com/#/development
     public void exceptionBulk(BulkCommand bulkCommand,Throwable exception);
 ```
 
-# v5.9.7 功能改进
+# v5.9.8 功能改进
 
 1.完善数据同步功能：增加flushInterval参数，单位毫秒，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行入库处理
 
@@ -64,7 +64,7 @@ importBuilder.setIgnoreNullValueField(true);
 
 6.bug修复：ElasticSearchHelper.getElasticSearchSink(String elasticSearch)方法传入default数据源名称时，后台报异常信息
 
-# v5.9.6 功能改进
+# v5.9.8 功能改进
 
 1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错
 
