@@ -1005,13 +1005,13 @@ public class RestClientUtil extends ClientUtil{
 				detect_noop = updateOptions.getDetectNoop();
 			}
 			else {
-				detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getParentId(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
+				detect_noop = updateOptions.getDetectNoopField() != null ? BuildTool.getFieldValue(params, beanClassInfo, updateOptions.getDetectNoopField()) : null;
 			}
 			if(updateOptions.getDocasupsert() != null) {
 				doc_as_upsert =updateOptions.getDocasupsert();
 			}
 			else {
-				doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : null;
+				doc_as_upsert = updateOptions.getDocasupsertField() != null ? BuildTool.getRouting(params, beanClassInfo, updateOptions.getDocasupsertField()) : BuildTool.getEsDocAsUpsert(params,beanClassInfo);
 			}
 			returnSource = updateOptions.getReturnSource();
 

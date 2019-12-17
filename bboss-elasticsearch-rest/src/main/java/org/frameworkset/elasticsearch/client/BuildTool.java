@@ -599,6 +599,7 @@ public abstract class BuildTool {
 		}
 	}
 
+	/**
 	public static void buildMeta(ClassUtil.ClassInfo beanInfo,Writer writer ,String indexType,String indexName, Object params,String action,boolean upper7) throws IOException {
 //		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
 		Object id = getId(params,beanInfo);
@@ -608,15 +609,17 @@ public abstract class BuildTool {
 
 		buildMeta( beanInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
+*/
 
-
+	/**
 	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,boolean upper7) throws IOException {
 //		Object id = docIdKey != null ?params.get(docIdKey):null;
 //		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 //		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
 		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null,  upper7);
-	}
+	}*/
 
+	/**
 	public static void buildMetaWithDocIdField(Writer writer ,String indexType,String indexName, Object params,String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 //		Object id = docIdKey != null ?params.get(docIdKey):null;
 //		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
@@ -627,14 +630,16 @@ public abstract class BuildTool {
 		clientOption.setParentIdField(parentIdField);
 		buildMeta(  writer ,  indexType,  indexName,   params,  action,  clientOption,  upper7);
 	}
+	 */
+	/**
 	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey,boolean upper7) throws IOException {
 		Object id = docIdKey != null ?params.get(docIdKey):null;
 		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
 		Object routing = routingKey != null ?params.get(routingKey):null;
 
 		buildMeta( null, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,  upper7);
-	}
-
+	}*/
+/**
 	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions,boolean upper7) throws IOException {
 		Object id = null;
 		Object parentId = null;
@@ -658,6 +663,7 @@ public abstract class BuildTool {
 		}
 		buildMeta(null,  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
 	}
+ */
 	public static String buildActionUrl(BulkActionConfig bulkConfig){
 		if(bulkConfig == null)
 			return "_bulk";
@@ -782,7 +788,7 @@ public abstract class BuildTool {
 		Object parentId = null;
 		Object routing = null;
 		String refreshOption = null;
-//		Object esRetryOnConflict = null;
+		Object esRetryOnConflict = null;
 		Object version = null;
 		Object versionType = null;
 		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
@@ -829,14 +835,14 @@ public abstract class BuildTool {
 				routing = clientOptions.getRouting();
 			}
 
-			/**
+
 			if(clientOptions.getEsRetryOnConflict() == null) {
 				esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
 						clientOptions.getEsRetryOnConflictField()) : getEsRetryOnConflict(params,beanInfo);
 			}
 			else{
 				esRetryOnConflict = clientOptions.getEsRetryOnConflict();
-			}*/
+			}
 			if(clientOptions.getVersion() == null) {
 				version = clientOptions.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOptions.getVersionField()) : getVersion(  beanInfo,   params);
 			}
@@ -852,14 +858,12 @@ public abstract class BuildTool {
 		else{
 
 			routing = getRouting(params,beanInfo);
-//			esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+			esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
 			version = getVersion(  beanInfo,   params);
 
 			versionType = getVersionType(  beanInfo,   params);
 		}
-//		else{
-//
-//		}
+
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
 		if(indexName == null){
@@ -921,6 +925,14 @@ public abstract class BuildTool {
 				p = true;
 			}
 
+		}
+		if(esRetryOnConflict != null){
+			if(p)
+				builder.append("&retry_on_conflict=").append(esRetryOnConflict);
+			else {
+				builder.append("?retry_on_conflict=").append(esRetryOnConflict);
+				p = true;
+			}
 		}
 		if(version != null){
 			if(p)
@@ -1017,9 +1029,8 @@ public abstract class BuildTool {
 				p = true;
 			}
 		}
-		String path = builder.toString();
+		return builder.toString();
 
-		return path;
 
 
 
@@ -1299,9 +1310,8 @@ public abstract class BuildTool {
 				p = true;
 			}
 		}
-		String path = builder.toString();
+		return builder.toString();
 
-		return path;
 
 
 
@@ -1544,6 +1554,7 @@ public abstract class BuildTool {
 	 * @param action
 	 * @throws IOException
 	 */
+	/**
 	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptions clientOption,boolean upper7) throws IOException {
 		if(params instanceof Map){
 			buildMapMeta(  writer ,  indexType,  indexName, (Map) params,  action,  clientOption,  upper7);
@@ -1717,10 +1728,11 @@ public abstract class BuildTool {
 
 			writer.write(" } }\n");
 		}
-	}
+	}*/
+	/**
 	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
 		buildMeta(  classInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
-	}
+	}*/
 	public static Object getVersion(ClassUtil.ClassInfo classInfo, Object params){
 		if(classInfo == null){
 			return null;
@@ -1743,6 +1755,7 @@ public abstract class BuildTool {
 			versionType = classInfo.getPropertyValue(params,esVersionTypeProperty.getName());
 		return versionType;
 	}
+	/**
 	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,
 								 Object id,Object parentId,Object routing,Object esRetryOnConflict,boolean upper7) throws IOException{
 
@@ -1752,7 +1765,8 @@ public abstract class BuildTool {
 
 		buildMeta(  classInfo,writer ,  indexType,  indexName,   params,  action,
 				  id,  parentId,  routing,  esRetryOnConflict,  version,versionType,  upper7);
-	}
+	}*/
+	/**
 	public static void buildMeta(ClassUtil.ClassInfo beanInfo, Writer writer , String indexType, String indexName, Object params, String action,
 								 Object id, Object parentId, Object routing, Object esRetryOnConflict, Object version, Object versionType, boolean upper7) throws IOException {
 
@@ -1887,7 +1901,8 @@ public abstract class BuildTool {
 
 			writer.write(" } }\n");
 		}
-	}
+	}*/
+	/**
 	public static void evalBuilk( ClassUtil.ClassInfo classInfo,Writer writer,String indexName, String indexType, Object param, String action,boolean upper7) throws IOException {
 
 
@@ -1928,7 +1943,8 @@ public abstract class BuildTool {
 		}
 
 	}
-
+*/
+	/**
 	public static void buildMeta(StringBuilder builder ,String indexType,String indexName, Object params,String action){
 		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
 		Object id = getId(params,  beanInfo );
@@ -1953,9 +1969,9 @@ public abstract class BuildTool {
 				builder.append(" } }\n");
 			}
 		}
-	}
+	}*/
 
-
+/**
 
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,String docIdKey,String parentIdKey,boolean upper7) throws IOException {
 
@@ -1974,6 +1990,8 @@ public abstract class BuildTool {
 		}
 
 	}
+ */
+/**
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Map param, String action,ClientOptions ClientOptions,boolean upper7) throws IOException {
 
 		if (param != null) {
@@ -1990,7 +2008,8 @@ public abstract class BuildTool {
 			}
 		}
 
-	}
+	}*/
+	/**
 	public static void evalDeleteBuilk(BBossStringWriter writer, boolean isUpper7, BulkData bulkData){
 
 		try {
@@ -2019,6 +2038,8 @@ public abstract class BuildTool {
 		}
 
 	}
+	 */
+	/**
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,ClientOptions clientOptions,boolean upper7) throws IOException {
 
 		if (param != null) {
@@ -2086,6 +2107,7 @@ public abstract class BuildTool {
 		}
 
 	}
+	 */
 
 	public static void evalBuilk( Writer writer,BulkData bulkData,boolean upper7) throws IOException {
 			Object param = bulkData.getData();
@@ -2111,8 +2133,11 @@ public abstract class BuildTool {
 					if (clientOptions.getDocasupsert() != null) {
 						doc_as_upsert = clientOptions.getDocasupsert();
 					} else {
-						doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : null;
+						doc_as_upsert = clientOptions.getDocasupsertField() != null ? BuildTool.getFieldValue(param, beanClassInfo, clientOptions.getDocasupsertField()) : getEsDocAsUpsert(param, beanClassInfo );
 					}
+				}
+				else{
+					doc_as_upsert = getEsDocAsUpsert(param, beanClassInfo );
 				}
 
 
@@ -2172,6 +2197,7 @@ public abstract class BuildTool {
 
 
 	}
+	/**
 	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 
 		if (param != null) {
@@ -2190,7 +2216,7 @@ public abstract class BuildTool {
 
 	}
 
-
+*/
 
 	public static void handleFields(Map<String,Object> subFileds,String fieldName,List<IndexField> fields){
 		if(subFileds == null || subFileds.size() == 0)
