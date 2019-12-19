@@ -667,7 +667,7 @@ importBuilder.setExternalTimer(true);
 
 ### 2.3.9 增量导入注意事项
 
-#### 排序设置
+#### 2.3.9.1 排序设置
 
 bboss 5.8.9及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
 
@@ -677,9 +677,38 @@ importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] orde
 
 bboss 5.9.0及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能。
 
-#### 增量状态存储数据库
+#### 2.3.9.2 增量状态存储数据库
 
 采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库：[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_246-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+
+#### 2.3.9.3 设置增量同步增量字段起始值
+
+可以指定增量字段的起始值，不指定的情况下数字默认起始值0,日期默认起始值:1970-01-01
+
+指定日期字段增量同步起始值：
+
+```java
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);//增量起始值配置
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
+指定数字字段增量同步起始值：
+```java
+		 
+		try {
+			 
+			importBuilder.setLastValue(100);//增量起始值配置
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
 
 ### 2.3.10 灵活控制文档数据结构
 

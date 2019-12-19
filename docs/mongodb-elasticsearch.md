@@ -2,34 +2,38 @@
 
 # 1.数据同步概述
 
-在讲解MongoDB-Elasticshearch数据同步案例之前， 先了解一下基于java编写的数据同步工具-bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
-与logstash类似，通过bboss，可以非常方便地实现：
+在介绍MongoDB-Elasticshearch数据同步案例之前， 先了解一下基于java编写的数据同步工具-bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
+
+与logstash类似，bboss主要功能特点：
+
+1. 支持多种类型数据源数据同步功能
 
  - 将数据库表数据同步到Elasticsearch
  - 将数据库表数据同步到数据库表
  - 将Elasticsearch数据同步到数据库表
+ - 将Elasticsearch数据同步到Elasticsearch
  - 将mongodb数据同步到Elasticsearch
  - 将mongodb数据同步到数据库表
  - 从kafka接收数据导入elasticsearch（支持kafka_2.12-0.10.2.0和kafka_2.12-2.3.0 系列版本）
 
-支持的导入方式
- - 逐条数据导入
- - 批量数据导入
- - 批量数据多线程并行导入
- - 定时全量（串行/并行）数据导入
- - 定时增量（串行/并行）数据导入
+2. 支持的导入方式
+	 - 逐条数据导入
+	 - 批量数据导入
+	 - 批量数据多线程并行导入
+	 - 定时全量（串行/并行）数据导入
+	 - 定时增量（串行/并行）数据导入
 
-支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
+3. 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
 
-支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
+4. 支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
 
-支持将ip转换为对应的运营商和城市地理位置信息
+5. 支持将ip转换为对应的运营商和城市地理位置信息
 
-支持多种定时任务执行引擎：
+6. 支持多种定时任务执行引擎：
 
- - jdk timer （内置）
-- quartz
-- xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
+	 - jdk timer （内置）
+	 - quartz
+	 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
 bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包(本文就涉及到使用第三方库将保存在session中的xml报文序列化为java对象案例)，能够非常方便地加工和处理需要同步的数据，然后将处理过的数据同步到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本来构建和发布可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器,本质上来讲bboss为大家提供了一种简单而熟悉的开发编程方式，通过这种方式既可以开发简单的单机版并行数据同步作业程序，也可以开发出强大而复杂的分布式数据并行同步作业程序，从而实现海量数据同步功能。
 
@@ -43,37 +47,37 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 
 ​	案例演示：事先运行一个基于mongodb存储session数据的web应用，并启动增量同步作业，打开多个浏览器访问web应用，不断产生和更新session数据。然后在kibana和session监控界面，观察增量同步session数据的效果，演示两种调度机制同步效果：
 
-- 基于jdk timer
+1. 基于jdk timer
 
-- 基于xxl-job来调度作业演示数据分片同步功能
+2. 基于xxl-job来调度作业演示数据分片同步功能
 
 下面结合session数据同步案例，正式切入本文主题。
 
 # 3.环境准备
 
-**开发环境**
+## 3.1 开发环境
 
 在windows环境开发和调试同步作业程序，需要在电脑上安装以下软件
 
-- jdk 1.8或以上
+1. jdk 1.8或以上
 
-- idea 2019
+2. idea 2019
 
-- gradle最新版本  
+3. gradle最新版本  
 
   [https://gradle.org/releases/](https://gradle.org/releases/)
 
-- mongodb 4.2.1 
+4. mongodb 4.2.1 
 
-- elasticsearch版本6.5.0，亦可以采用最新的版本
+5. elasticsearch版本6.5.0，亦可以采用最新的版本
 
-- 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
+6. 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
 
   [https://github.com/bbossgroups/sessiondemo](https://github.com/bbossgroups/sessiondemo)
 
-- mongodb-elasticsearch工具工程（基于gradle）
+7. mongodb-elasticsearch工具工程（基于gradle）
 
-- xxl-job分布式定时任务引擎
+8. xxl-job分布式定时任务引擎
 
 自行安装好上述软件，这里着重说明一下gradle配置，需要配置三个个环境变量：
 
@@ -89,14 +93,15 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 详细gradle安装和配置参考文档： [https://esdoc.bbossgroups.com/#/bboss-build](https://esdoc.bbossgroups.com/#/bboss-build) 
 
-​		**运行环境**
+## 3.2 运行环境
 
-​      jdk1.8即可
+​    同步作业本身只依赖有jdk1.8即可部署运行，与线上mongodb和elasticsearch对接即可
 
 # 4.同步作业开发环境搭建
 
-我们无需从0开始搭建开发环境，可以到以下地址下载已经配置好的Mongodb-Elasticsearch开发环境：
+## 4.1 下载开发环境工程
 
+我们无需从0开始搭建开发环境，可以到以下地址下载已经配置好的Mongodb-Elasticsearch开发环境：
  [https://github.com/bbossgroups/mongodb-elasticsearch](https://github.com/bbossgroups/mongodb-elasticsearch) 
 
 ![down](https://esdoc.bbossgroups.com/images/downmongodb2es.png)
@@ -104,7 +109,7 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 下载后解压到目录：
 
 ![image-20191124223658972](https://esdoc.bbossgroups.com/images/mongodbdir.png)
-
+## 4.2 导入工程到Idea及gradle配置
 参考下面的向导将工程导入idea、调整gradle配置、熟悉idea中使用gradle
 
 第一步 导入工程
@@ -119,10 +124,10 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 ![image-20191124233712833](https://esdoc.bbossgroups.com/images/mongodb/importcomplete.png)
 
-进入setting，设置工程的gradle配置：
+第二步 进入setting，设置工程的gradle配置：
 
 ![](https://esdoc.bbossgroups.com/images/mongodb/settingprojectgradle.png)
-
+第三步 验证工程
 设置完毕后，进入gradle面板
 
 ![](https://esdoc.bbossgroups.com/images/mongodb/importsuccess.png)
@@ -130,38 +135,59 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 可以选择gradle相关的任务进行clean和install构建操作：
 
 ![image-20191124234308907](https://esdoc.bbossgroups.com/images/mongodb/install.png)
+工程导入完毕，下面介绍一下工程目录结构和关键文件
 
-工程采用典型的类似maven项目的目录结构管理源码：
+## 4.3 工程目录结构和配置文件
+
+工程采用典型的类似maven项目的目录结构管理源码，工程目录文件说明如下：
 
 mongodb-elasticsearch-master
 
-|--lib  同步作业需要依赖的第三方jar存放到lib目录（在maven中央库或者本地maven库中没有的jar文件）
+1.lib 
 
-|--runfiles 同步作业运行和停止的windows、linux、unix指令模板，根据指令模板生成最终的运行指令
+同步作业需要依赖的第三方jar可以存放到lib目录（在maven中央库或者本地maven库中没有的jar文件）
 
-|--src/main/java  存放作业源码类文件
+2.runfiles 
 
-|--src/main/resources  存放作业运行配置文件（es配置、参数配置）
+存放同步作业运行和停止的windows、linux、unix指令模板，根据指令模板生成最终的运行指令
 
-|--src/main/resources/application.properties  作业运行关键配置文件（es配置、参数配置、作业运行主程序配置）
+3.src/main/java 
 
-|--src/main/resources/application.properties.jdktimer  jdktimer 调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+存放作业源码类文件
 
-|--src/main/resources/application.properties.quartz   quartz调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+4.src/main/resources 
 
-|--src/main/resources/application.properties.xxljob   xxl-job调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+存放作业运行配置文件（es配置、参数配置）
 
-|--build.gradle   构建和发布作业的gradle构建脚本
+5.src/main/resources/application.properties 
 
-|--gradle.properties   gradle属性配置文件，这些属性在build.gradle文件中引用
+application.properties是同步作业的主配置文件，包含es配置、参数配置、作业运行主程序配置，如果需要采用相应的调度机制，可以从对应的调度机制配置示例文件复制内容到application.properties即可
 
-|--release.bat   构建和发布版本的指令（针对windows环境）
+6.src/main/resources/application.properties.jdktimer 
 
-关键配置文件说明：
+jdktimer 调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
 
-src/main/resources/application.properties
+7.src/main/resources/application.properties.quartz 
 
-这个文件是同步作业的主配置文件，包含es配置、参数配置、作业运行主程序配置，如果需要采用相应的调度机制，可以从对应的配置示例文件复制内容到application.properties即可。
+quartz调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+
+8.src/main/resources/application.properties.xxljob 
+
+ xxl-job调度作业运行关键配置文件示例（es配置、参数配置、作业运行主程序配置）
+
+9.build.gradle  
+
+构建和发布作业的gradle构建脚本
+
+10.gradle.properties  
+
+gradle属性配置文件，这些属性在build.gradle文件中引用
+
+11.release.bat  
+
+构建和发布版本的指令（针对windows环境）
+
+## 4.4 工程附带同步案例
 
 在此工程中已经有3个同步案例类：
 
@@ -775,9 +801,9 @@ http.hostnameVerifier =
 
 如果不指定并行任务执行参数，默认串行执行同步导入数据，可以通过以下两种方式提升导入速度：
 
-- 并行（本节介绍）
+1. 并行（本节介绍）
 
-- 并行和分布式分片机制相结合（基于分布式任务调度引擎实现，后续章节介绍）
+2. 并行和分布式分片机制相结合（基于分布式任务调度引擎实现，后续章节介绍）
 
 本节介绍并行任务执行功能，相关参数如下：
 
@@ -929,10 +955,10 @@ geolite2数据库文件会定期更新，因此需要定期到以下地址下载
 
 通过任务执行结果回调接口ExportResultHandler，可以非常方便地跟踪数据同步任务执行的情况和任务执行结果，ExportResultHandler提供了4个接口方法：
 
-- success方法：任务执行成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文）两个参数
-- error方法：任务执行成功但是es有部分记录没有处理成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文,包含错误记录信息）两个参数
-- exception方法：任务执行抛出异常时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和exception两个参数
-- getMaxRetry方法：返回当任务执行出错重试次数，一般返回0或者-1即可
+1. success方法：任务执行成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文）两个参数
+2. error方法：任务执行成功但是es有部分记录没有处理成功时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和result（elasticsearch批量导入返回的response报文,包含错误记录信息）两个参数
+3. exception方法：任务执行抛出异常时调用，包含任务command对象（任务对应数据和任务信息，任务执行详细情况统计信息）和exception两个参数
+4. getMaxRetry方法：返回当任务执行出错重试次数，一般返回0或者-1即可
 
 通过importBuilder组件的setExportResultHandler方法设置同步作业任务执行结果回调处理接口，这里只打印任务执行情况：
 
@@ -972,11 +998,11 @@ geolite2数据库文件会定期更新，因此需要定期到以下地址下载
 
 Elasticsearch索引文档id支持三种设置方式
 
-- 1.Elasticsearch默认机制
+1. Elasticsearch默认机制
 
-- 2.指定esIdField字段（5.2.4.3 导入elasticsearch参数配置中有介绍）
+2. 指定esIdField字段（5.2.4.3 导入elasticsearch参数配置中有介绍）
 
-- 3.自定义Elasticsearch索引文档id生成机制（本节介绍）
+3. 自定义Elasticsearch索引文档id生成机制（本节介绍）
 
 第2种和第3中只能设置一种，2，3都不设置就是第1种情况，下面介绍自定义Elasticsearch索引文档id生成机制，设置EsIdGenerator接口即可：
 
@@ -1690,7 +1716,7 @@ importBuilder.setName(mongodbName)
 ![](https://esdoc.bbossgroups.com/images\mongodb\runjob.png)
 
 ###  5.5.4 运行效果
-
+#### 5.5.4.1同步作业启动后可以查看同步日志文件es.log中的日志
 同步作业启动后可以查看同步日志文件中的日志：es.log
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\restartjob.png)
@@ -1701,13 +1727,38 @@ importBuilder.setName(mongodbName)
 elasticsearch.showTemplate=false
 ```
 
-同步数据对比：
+#### 5.5.4.2 同步前后数据对比
 
-mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
+在sessionmonitor提供的监控界面查看mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af对应的session数据
+![在这里插入图片描述](https://images.gitbook.cn/796c1bc0-171d-11ea-988c-fdda706d8b74)
 
-![](https://esdoc.bbossgroups.com/images\mongodb\mongodbsessiondata.png)
+在mongodb中查看sessionid为c020296e-4f9b-4509-b482-b44c88a913af对应的session数据
 
-可以在kibana中查看同步到elasticsearch中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的session数据：  
+```json
+{
+    "_id": "5de6165e162d7a290d59c3b8",
+    "sessionid": "c020296e-4f9b-4509-b482-b44c88a913af",
+    "creationTime": 1575360094061,
+    "maxInactiveInterval": 3600000,
+    "lastAccessedTime": 1575360781659,
+    "_validate": true,
+    "appKey": "sessionmonitor",
+    "referip": "127.0.0.1",
+    "host": "169.254.252.194-DESKTOP-U3V5C85",
+    "requesturi": "http://localhost:9090/sessionmonitor/",
+    "lastAccessedUrl": "http://localhost:9090/sessionmonitor/session/sessionManager/viewSessionInfo.page?sessionid=c020296e-4f9b-4509-b482-b44c88a913af&appkey=sessionmonitor",
+    "httpOnly": true,
+    "secure": false,
+    "lastAccessedHostIP": "169.254.252.194-DESKTOP-U3V5C85",
+    "local": "<ps><p n=\"_dflt_\" mg=\"1\"><![CDATA[en]]></p></ps>",
+    "testVO": "<ps><p n=\"_dflt_\" cs=\"org.frameworkset.session.TestVO\"><p n=\"id\" s:t=\"String\"><![CDATA[testvoidaaaaa,sessionmonitor modifiy id]]></p><p n=\"testVO1\" cs=\"org.frameworkset.session.TestVO1\"><p n=\"name\" s:t=\"String\"><![CDATA[hello,sessionmoitor test vo1]]></p></p></p></ps>",
+    "privateAttr": "<ps><p n=\"_dflt_\" s:t=\"String\"><![CDATA[this sessionmonitor's private attribute.]]></p></ps>",
+    "userAccount": "<ps><p n=\"_dflt_\" s:t=\"String\"><![CDATA[sessionmonitor 张三]]></p></ps>",
+    "shardNo": "<ps><p n=\"_dflt_\" s:t=\"Integer\" v=\"1\"/></ps>"
+}
+```
+
+在kibana中查看同步到elasticsearch中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的session数据：  
 
 ```json
 {
@@ -1761,18 +1812,19 @@ mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
   }
 }
 ```
-从上面的数据可以看到
+从Elasticsearch里面保存的数据可以发现，我们对导入的数据做了如下加工处理:
 
-- 通过DataRefactor添加的数据字段：extfiled1，extfiled2，ipInfo（根据referip中保存的客户端ip，调用地理位置服务转换生成）
+1. 通过DataRefactor添加的数据字段：extfiled1，extfiled2，ipInfo（根据referip中保存的客户端ip，调用地理位置服务转换生成，示例是本机127.0.0.1，不是公网ip，所以没有获取到对应的信息）
+2. 通过DataRefactor 将xml报文转换为原始数据的字段：shardNo，userAccount，testVO，privateAttr，local
+3. 通过importBuilder组件添加的全局tag字段:fromTag
+4. mongodb中long类型的两个字段lastAccessedTime和creationTime已经被转换为Elasticsearch的日期Date类型
 
-- 通过DataRefactor 将xml报文转换为原始数据的字段：shardNo，userAccount，testVO，privateAttr，local
+#### 5.5.4.3 通过kibana检索session数据
 
-- 通过importBuilder组件添加的全局tag:fromTag
-
-可以在kibana discover界面中检索同步到Elasticsearch中的session数据：
+可以在kibana discover界面中按照条件检索同步到Elasticsearch中的session数据
 ![](https://esdoc.bbossgroups.com/images\mongodb\kibanasessiondatas.png)
 
-### 5.5.5 作业jvm内存调整
+### 5.5.5 调优：作业jvm内存和并行线程队列调整
 
 根据服务器资源和作业运行情况，可以适当调整jvm内存，修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -1785,7 +1837,16 @@ mongodb中sessionid为c020296e-4f9b-4509-b482-b44c88a913af的原始session数据
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
 
-亦可以通过调整作业并行参数、批量读取和写入数据大小参数，来充分利用服务器资源和Elasticsearch能力，以提升数据同步速度。
+亦可以通过调整作业并行参数、批量读取和写入数据大小参数，来充分利用同步服务器资源和Elasticsearch能力，以提升数据同步速度。
+
+```java
+importBuilder.setFetchSize(1000); //设置从数据源分批读取数据记录数大小
+importBuilder.setBatchSize(1000); // 设置批量写入数据记录数大小
+importBuilder.setQueue(100);//设置批量导入线程池等待队列长度
+importBuilder.setThreadCount(20);//设置批量导入线程池工作线程数量
+```
+
+
 
 ## 5.6 基于xxl-job的数据同步作业 
 
@@ -1827,7 +1888,7 @@ org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 			query.append("shardNo",idxStr );
 ```
 
-xxl-job的分片调度处理机制：
+xxl-job的分片调度处理机制（下图来源于xxl-job官方文档）：
 
 ![image-20191204102007642](https://esdoc.bbossgroups.com/images\mongodb\xxl_jobshard.png)
 
@@ -2203,7 +2264,7 @@ xxl.job.executor.port=9994
 
 xxl-job作业启动和运行其实只是启动了xxl-job的executor节点，并不会启动同步作业程序，需要在xxl-job-admin中添加xxl-job executor和对应的作业调度任务，然后在控制台启动作业任务，才能正式在executor中调度和执行同步作业程序：
 
-- xxl-job-admin中添加executor
+1. xxl-job-admin中添加executor
 
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewexecutor.png)
@@ -2214,12 +2275,11 @@ xxl-job作业启动和运行其实只是启动了xxl-job的executor节点，并�
 xxl.job.executor.appname=mongodb-elasticsearch-xxjob
 ```
 
-- xxl-job-admin中添加作业调度任务
-
+2. xxl-job-admin中添加作业调度任务
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewtask.png)
 
-- xxl-job控制台启动作业调度任务
+3. xxl-job控制台启动作业调度任务
 
 ![](https://esdoc.bbossgroups.com/images\mongodb\xxltaskschedule.png)
 
@@ -2241,9 +2301,9 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
 
 前面介绍了独立调度执行同步作业开发调试、构建发布和运行方法，我们也可以将作业方法里面的代码整合到自己的项目中运行，需要做到如下几点即可：
 
-- 将application.properties文件放入项目resources目录（在里面配置es和http连接池相关参数）
+1.将application.properties文件放入项目resources目录（在里面配置es和http连接池相关参数）
 
-- 将mongodb-elasticsearch同步工具包的maven坐标导入的项目：
+2.将mongodb-elasticsearch同步工具包的maven坐标导入的项目：
 
 ```xml
         <dependency>
@@ -2253,7 +2313,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         </dependency>
 ```
 
-- 增量导入，需要导入sqlite驱动
+3.增量导入，需要导入sqlite驱动
 
 ```xml
 <dependency>
@@ -2264,7 +2324,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
  </dependency>
 ```
 
-- 如果使用xxl-job调度作业，需导入xxl-job的maven坐标
+4.如果使用xxl-job调度作业，需导入xxl-job的maven坐标
 
 
 ```xml
@@ -2275,7 +2335,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         </dependency>
 ```
 
-- 如果是quartz调入作业，需导入maven坐标
+5.如果是quartz调入作业，需导入maven坐标
 
 ```xml
         <dependency>
@@ -2285,7 +2345,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         </dependency>
 ```
 
-- 如果是spring boot项目，导入一个maven坐标：
+6.如果是spring boot项目，导入一个maven坐标：
 
 ```xml
        <dependency>

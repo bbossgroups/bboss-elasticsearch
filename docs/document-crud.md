@@ -6,7 +6,7 @@
 
 本文介绍如何采用bboss es添加/修改/查询/删除/批量删除elasticsearch索引文档，直接看代码。
 
-# 1. 添加/修改文档
+# 1. 添加文档
 
 ```java
 
@@ -60,7 +60,9 @@ clientUtil.deleteDocuments("agentinfo",//索引表
       new String[]{"192.168.137.1","192.168.137.2","192.168.137.3"});//文档ids
 ```
 
-# 2. 批量添加/修改文档
+
+
+# 2. 批量添加文档
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -871,7 +873,88 @@ ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 long count  = clientInterface.countAll("trace");
 ```
 
-# 12. 开发交流
+# 12.修改文档
+
+```java
+
+Demo demo = new Demo();//定义第二个对象
+		demo.setDemoId(3l);
+		demo.setAgentStarttime(new Date());
+		demo.setApplicationName("blackcatdemo3");
+		demo.setContentbody("四大\"天王，这种文化很好，中华人民共和国");
+		demo.setName("张学友\t\n\r");
+		demo.setOrderId("NFZF15045871807281445364228");
+		demo.setContrastStatus(2);
+ClientOptions updateOptions = new ClientOptions();
+	 
+		updateOptions.setDetectNoop(false)
+				.setDocasupsert(false)
+				.setReturnSource(false)
+//				.setEsRetryOnConflict(1) // elasticsearch不能同时指定EsRetryOnConflict和version
+				.setIdField("demoId")
+//				.setVersion(2).setVersionType("internal")  //使用IfPrimaryTerm和IfSeqNo代替version
+//				.setIfPrimaryTerm(2l)
+//				.setIfSeqNo(3l)
+//				.setPipeline("1")
+				.setEsRetryOnConflict(2)
+				.setTimeout("100s")
+		.setWaitForActiveShards(1)
+		.setRefresh("true");
+				//.setMasterTimeout("10s")
+				;
+		//更新不存在的文档
+		String response = clientUtil.updateDocument("demo",//索引表
+				"demo",//索引类型
+
+				demo
+		,updateOptions);
+		System.out.println(response);
+```
+
+# 13.批量修改文档
+
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+List<Demo> demos = new ArrayList<>();
+Demo demo = new Demo();
+demo.setDemoId(2l);
+demo.setAgentStarttime(new Date());
+demo.setApplicationName("blackcatdemo2");
+demo.setContentbody("this is content body2");
+demo.setName("刘德华");
+demos.add(demo);
+demo = new Demo();
+demo.setDemoId(3l);
+demo.setAgentStarttime(new Date());
+demo.setApplicationName("blackcatdemo3");
+demo.setContentbody("四大天王，这种文化很好，中华人民共和国");
+demo.setName("张学友");
+demos.add(demo);
+ClientOptions updateOptions = new ClientOptions();
+	 
+		updateOptions
+            //.setDetectNoop(false)
+				//.setDocasupsert(false)
+				//.setReturnSource(false)
+//				.setEsRetryOnConflict(1) // elasticsearch不能同时指定EsRetryOnConflict和version
+				.setIdField("demoId")
+//				.setVersion(2).setVersionType("internal")  //使用IfPrimaryTerm和IfSeqNo代替version
+//				.setIfPrimaryTerm(2l)
+//				.setIfSeqNo(3l)
+//				.setPipeline("1")
+				//.setEsRetryOnConflict(2)
+				//.setTimeout("100s")
+		//.setWaitForActiveShards(1)
+		.setRefresh("true");
+//批量修改文档
+String response = clientUtil.updateDocuments("demo",//索引表
+"demo",//索引类型
+demos,updateOptions);
+```
+
+
+
+# 14. 开发交流
 
 
 
@@ -883,7 +966,7 @@ bboss elasticsearch交流：166471282
 
 
 
-# 13. 支持我们
+# 15. 支持我们
 
 <div align="left"></div>
 <img src="images/alipay.png"  height="200" width="200">

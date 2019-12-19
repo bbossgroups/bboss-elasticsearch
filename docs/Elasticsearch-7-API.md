@@ -1059,6 +1059,12 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/o
 
 https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/demo7.xml
 
+spring boot
+
+https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/main/java/org/bboss/elasticsearchtest/springboot/crud/DocumentCRUD7.java
+
+https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/main/resources/esmapper/demo7.xml
+
 ## ES 7父子关系jointype使用案例
 
 java

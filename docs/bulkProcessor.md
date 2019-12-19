@@ -4,9 +4,12 @@
 
 BulkProcessor异步批处理组件支持Elasticsearch各个版本的Bulk操作，可以同时将不同索引的文档增加、删除、修改操作添加到BulkProcessor中，BulkProcessor对这些数据进行统一异步批量处理并保存到Elasticsearch，BulkProcessor提供三类api来支撑异步批处理功能：
 
-1. insertData/insertDatas(可以直接添加需要插入的记录集合)
-2. updateData/updateDatas(可以直接添加需要修改的记录集合)
-3. deleteData/deleteDatas(可以直接添加需要删除的记录id集合)
+1. insertData（每次加入一条记录到bulk队列中)
+2. insertDatas(每次可以加入待新增的多条记录到bulk队列中)
+3. updateData（每次加入一条记录到bulk队列中)
+4. updateDatas(每次可以加入待修改的多条记录到bulk队列中)
+5. deleteData（每次加入一条记录到bulk队列中）
+6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
 
 使用BulkProcessor api处理索引文档时，如果是Elasticsearch 7以上的版本就无需传递indexType参数，Elasticsearch7以前的版本带上indexType参数，bulk中的每个操作都可以通过ClientOptions来指定文档添加、修改删除的控制参数，ClientOptions控制参数设置方法可以参考文档：
 
@@ -14,6 +17,8 @@ BulkProcessor异步批处理组件支持Elasticsearch各个版本的Bulk操作�
 
 # 2.BulkProcessor案例
 用一个简单的demo来介绍上述功能：
+
+https://github.com/bbossgroups/elasticsearch-example/tree/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor
 
 ```java
 package org.bboss.elasticsearchtest.bulkprocessor;
@@ -39,6 +44,9 @@ public class TestBulkProcessor {
 		TestBulkProcessor testBulkProcessor = new TestBulkProcessor();
 		testBulkProcessor.buildBulkProcessor();//构建BulkProcessor批处理组件
 		testBulkProcessor.testBulkDatas();//采用上面构建的BulkProcessor进行不同索引的索引文档增删改查异步批处理操作
+        
+		testBulkProcessor.shutdown(false);//调用shutDown停止方法后，BulkProcessor不会接收新的请求，但是会处理完所有已经进入bulk队列的数据
+
 
 	}
 	public void buildBulkProcessor(){
@@ -47,9 +55,9 @@ public class TestBulkProcessor {
 		bulkProcessorBuilder.setBlockedWaitTimeout(10000)//指定bulk数据缓冲队列已满时后续添加的bulk数据排队等待时间，如果超过指定的时候数据将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
 				.setBulkFailRetry(1)//如果处理失败，重试次数，暂时不起作用
 				.setBulkQueue(1000)//bulk数据缓冲队列大小，越大处理速度越快，根据实际服务器内存资源配置，用户提交的数据首先进入这个队列，然后通过多个工作线程从这个队列中拉取数据进行处理
-				.setBulkSizes(10)//按批处理数据记录数
+				.setBulkSizes(1000)//按批处理数据记录数
 				.setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
-				.setRefreshOption("refresh")//数据bulk操作结果强制refresh入elasticsearch，便于实时查看数据，测试环境可以打开，生产不要设置
+				
 				.setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
 				.setWorkThreads(100)//bulk处理工作线程数
 				.setWorkThreadQueue(100)//bulk处理工作线程池缓冲队列大小
@@ -65,11 +73,25 @@ public class TestBulkProcessor {
 						System.out.println("afterBulk："+result);
 					}
 
-					public void errorBulk(BulkCommand bulkCommand, Throwable exception) {
-						System.out.println("errorBulk：");
+					public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
+						System.out.println("exceptionBulk：");
 						exception.printStackTrace();
 					}
-				});//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
+					public void errorBulk(BulkCommand bulkCommand, String result) {
+						System.out.println("errorBulk："+result);
+					}
+				})//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
+				// https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+				//下面的参数都是bulk url请求的参数：RefreshOption和其他参数只能二选一，配置了RefreshOption,就不能配置其他参数,refreshOption值格式：类似于refresh=true&&aaaa=bb&cc=dd&zz=ee这种形式，将相关参数拼接成合法的url参数格式
+				// 其中的refresh参数控制bulk操作结果强制refresh入elasticsearch，便于实时查看数据，测试环境可以打开，生产不要设置
+//				.setRefreshOption("refresh")
+//				.setTimeout("100s")
+				//.setMasterTimeout("50s")
+				//.setRefresh("true")
+//				.setWaitForActiveShards(2)
+//				.setRouting("1") //(Optional, string) Target the specified primary shard.
+//				.setPipeline("1") // (Optional, string) ID of the pipeline to use to preprocess incoming documents.
+				.setPollTimeOut(10000);
 		/**
 		 * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
 		 */
@@ -124,6 +146,22 @@ public class TestBulkProcessor {
         //es 7 api,添加修改bulkdemo索引表中id为5的数据到BulkProcessor中，BulkProcessor将异步执行bulk更新update操作
 		bulkProcessor.updateData("bulkdemo",data,clientOptions);
 
+	}
+    
+    public void shutdown(boolean asyn) {
+		if(asyn) {
+			Thread t = new Thread() {
+				public void run() {
+						bulkProcessor.shutDown();
+				}
+			};
+			t.start();
+		}
+		else {
+			bulkProcessor.shutDown();
+		}
+
+		System.out.println("bulkProcessor.getTotalSize():"+bulkProcessor.getTotalSize());
 	}
 
 }

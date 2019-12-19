@@ -23,10 +23,19 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+   
+# v5.9.9 功能改进
+1.数据同步工具改进：可以指定导入的target Elasticsearch和source Elasticsearch数据源名称
+
 # v5.9.8 功能改进
+
 1.改进BulkProcessor shutdown机制:调用shutDown停止方法后，BulkProcessor不会接收新的请求，但是会处理完所有已经进入bulk队列的数据
 
+参考文档：https://esdoc.bbossgroups.com/#/bulkProcessor
+
 2.改进BulkProcessor bulk任务处理结果回调机制：增加对error和exception的bulk任务回调方法
+
+参考文档：https://esdoc.bbossgroups.com/#/bulkProcessor
 
 ```java
     /**
@@ -44,7 +53,266 @@ https://esdoc.bbossgroups.com/#/development
     public void exceptionBulk(BulkCommand bulkCommand,Throwable exception);
 ```
 
-# v5.9.8 功能改进
+3.BulkProcessor增加timeout/masterTimeout/refresh/waitForActiveShards/routing/pipeline控制参数,
+
+参数含义参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+
+参数使用参考文档：
+https://esdoc.bbossgroups.com/#/bulkProcessor				
+
+//下面的参数都是bulk url请求的参数：RefreshOption和其他参数只能二选一，配置了RefreshOption（类似于refresh=true&&aaaa=bb&cc=dd&zz=ee这种形式，将相关参数拼接成合法的url参数格式）就不能配置其他参数， 其中的refresh参数控制bulk操作结果强制refresh入elasticsearch，便于实时查看数据，测试环境可以打开，生产不要设置
+```java
+BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+
+				bulkProcessorBuilder .setTimeout("100s")
+			.setMasterTimeout("50s")
+				.setRefresh("true")
+				.setWaitForActiveShards(2)
+			.setRouting("1") //(Optional, string) Target the specified primary shard.
+				.setPipeline("1") // (Optional, string) ID of the pipeline to use to preprocess incoming documents.
+```
+4.客户端API改进：
+
+addDocuments/updateDocuments ：与bulkprocessor处理逻辑整合
+
+addDocument/updateDocument ：改进ClientOptions对象，增加一系列控制参数
+
+```java
+	private String pipeline;
+	private String opType;
+	private Boolean returnSource;
+	private Long ifSeqNo;
+	private Long ifPrimaryTerm;
+
+	private List<String> sourceUpdateExcludes;
+	private List<String> sourceUpdateIncludes;
+	private String timeout;
+	private String masterTimeout ;
+	private Integer waitForActiveShards;
+	private String refresh;
+	/**单文档操作：文档id*/
+	private Object id;
+	/**单文档操作：文档id*/
+	private Object parentId;
+```
+
+参数对应的作用和使用场景，参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+
+使用示例：更新文档
+
+```java
+ClientOptions updateOptions = new ClientOptions();
+		List<String> sourceUpdateIncludes = new ArrayList<String>();
+		sourceUpdateIncludes.add("name");
+		updateOptions.setSourceUpdateIncludes(sourceUpdateIncludes);//es 7不起作用
+		updateOptions.setDetectNoop(false)
+				.setDocasupsert(false)
+				.setReturnSource(true)
+//				.setEsRetryOnConflict(1) // elasticsearch不能同时指定EsRetryOnConflict和version
+				.setIdField("demoId")
+//				.setVersion(2).setVersionType("internal")  //使用IfPrimaryTerm和IfSeqNo代替version
+//				.setIfPrimaryTerm(2l)
+//				.setIfSeqNo(3l)
+//				.setPipeline("1")
+				.setEsRetryOnConflict(2)
+				.setTimeout("100s")
+		.setWaitForActiveShards(1)
+		.setRefresh("true");
+				//.setMasterTimeout("10s")
+				;
+		//更新文档
+		response = clientUtil.updateDocument("demo",//索引表
+				"demo",//索引类型
+				demo
+		,updateOptions);
+```
+
+批量添加文档
+
+```java
+ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setRefreshOption("refresh=true");
+		clientOptions.setIdField("demoId");
+		String response = clientUtil.addDocuments(
+				demos,clientOptions);//为了测试效果,启用强制刷新机制，实际线上环境去掉最后一个参数"refresh=true"
+```
+
+添加文档
+
+```java
+ClientOptions addOptions = new ClientOptions();
+
+		addOptions
+				.setEsRetryOnConflict(1) // elasticsearch不能同时指定EsRetryOnConflict和version
+				.setIdField("demoId")
+//				.setVersion(2).setVersionType("internal")  //使用IfPrimaryTerm和IfSeqNo代替version
+//				.setIfPrimaryTerm(1l)
+//				.setIfSeqNo(13l)
+//				.setPipeline("1")
+				.setTimeout("100s")
+				.setWaitForActiveShards(1)
+				.setRefresh("true")
+				.setRouting(1);
+		//.setMasterTimeout("10s")
+		;
+		String response = clientUtil.addDocument("demo",//索引表
+				demo,addOptions);
+```
+
+在bulk记录中使用控制参数
+
+```java
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setIdField("id")//通过clientOptions指定map中的key为id的字段值作为文档_id，
+		          .setEsRetryOnConflict(1)
+//							.setPipeline("1")
+
+				.setOpType("index")
+				.setIfPrimaryTerm(2l)
+				.setIfSeqNo(3l)
+		;
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("name","duoduo1");
+		data.put("id",1);
+		bulkProcessor.insertData("bulkdemo","bulkdemo",data,clientOptions);
+		ClientOptions deleteclientOptions = new ClientOptions();
+		 
+
+		deleteclientOptions.setEsRetryOnConflict(1);
+		//.setPipeline("1")
+		bulkProcessor.deleteData("bulkdemo","bulkdemo","1",deleteclientOptions);、
+		
+				ClientOptions updateOptions = new ClientOptions();
+//		List<String> sourceUpdateExcludes = new ArrayList<String>();
+//		sourceUpdateExcludes.add("name");
+		//					updateOptions.setSourceUpdateExcludes(sourceUpdateExcludes); //es 7不起作用
+		List<String> sourceUpdateIncludes = new ArrayList<String>();
+		sourceUpdateIncludes.add("name");
+
+		/**
+		 * ersion typesedit
+		 * In addition to the external version type, Elasticsearch also supports other types for specific use cases:
+		 *
+		 * internal
+		 * Only index the document if the given version is identical to the version of the stored document.
+		 * external or external_gt
+		 * Only index the document if the given version is strictly higher than the version of the stored document or if there is no existing document. The given version will be used as the new version and will be stored with the new document. The supplied version must be a non-negative long number.
+		 * external_gte
+		 * Only index the document if the given version is equal or higher than the version of the stored document. If there is no existing document the operation will succeed as well. The given version will be used as the new version and will be stored with the new document. The supplied version must be a non-negative long number.
+		 * The external_gte version type is meant for special use cases and should be used with care. If used incorrectly, it can result in loss of data. There is another option, force, which is deprecated because it can cause primary and replica shards to diverge.
+		 */
+		updateOptions.setSourceUpdateIncludes(sourceUpdateIncludes);//es 7不起作用
+		updateOptions.setDetectNoop(false)
+				.setDocasupsert(false)
+				.setReturnSource(true)
+//				.setEsRetryOnConflict(1) // elasticsearch不能同时指定EsRetryOnConflict和version
+				.setIdField("id")
+				//.setVersion(10).setVersionType("internal")  //使用IfPrimaryTerm和IfSeqNo代替version
+				.setIfPrimaryTerm(2l)
+				.setIfSeqNo(3l)
+				.setPipeline("1")
+		;
+		bulkProcessor.updateData("bulkdemo","bulkdemo",data,updateOptions);
+```
+
+在数据同步中使用全局控制参数
+
+```java
+ClientOptions clientOptions = new ClientOptions();
+//		clientOptions.setPipeline("1");
+		clientOptions.setRefresh("true");
+//		routing
+//				(Optional, string) Target the specified primary shard.
+		clientOptions.setRouting("2");
+		clientOptions.setTimeout("50s");
+		clientOptions.setWaitForActiveShards(2);
+		importBuilder.setClientOptions(clientOptions);
+```
+
+在数据同步datarefactor中使用记录级控制参数
+
+```java
+ClientOptions clientOptions = new ClientOptions();
+					clientOptions
+							.setEsRetryOnConflict(1)
+//							.setPipeline("1")
+
+							.setOpType("index")
+							.setIfPrimaryTerm(2l)
+							.setIfSeqNo(3l)
+					;//create or index
+					context.setClientOptions(clientOptions);
+```
+
+5.数据同步改进：
+
+5.1 数据同步到Elasticsearch，增加增、删、改数据的同步，Context接口添加以下三个方法来控制增、删、改数据的同步
+
+context.markRecoredInsert();//添加，默认值
+
+context.markRecoredUpdate();//修改
+
+context.markRecoredDelete();//delete
+
+5.2 可以在记录级指定每条记录对应的index和indexType
+
+使用示例：这里根据随机值指定记录操作，可以根据实际的值进行控制
+
+```java
+final Random random = new Random();
+		importBuilder.setDataRefactor(new DataRefactor() {
+			@Override
+			public void refactor(Context context) throws Exception {
+				int r = random.nextInt(3);
+				if(r == 1) {
+					ClientOptions clientOptions = new ClientOptions();
+					clientOptions
+							.setEsRetryOnConflict(1)
+//							.setPipeline("1")
+
+							.setOpType("index")
+							.setIfPrimaryTerm(2l)
+							.setIfSeqNo(3l)
+					;//create or index
+					context.setClientOptions(clientOptions);
+					context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+				}
+				else if(r == 0) {
+					ClientOptions clientOptions = new ClientOptions();
+
+					clientOptions.setDetectNoop(false)
+							.setDocasupsert(false)
+							.setReturnSource(true)
+							.setEsRetryOnConflict(3)
+					;//设置文档主键，不设置，则自动产生文档id;
+					context.setClientOptions(clientOptions);
+					context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+					context.markRecoredUpdate();
+				}
+				else if(r == 2){
+					ClientOptions clientOptions = new ClientOptions();
+					clientOptions.setEsRetryOnConflict(2);
+//							.setPipeline("1");
+					context.setClientOptions(clientOptions);
+					context.markRecoredDelete();
+					context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+				}
+
+			}
+		});
+```
+
+
+
+# v5.9.7 功能改进
 
 1.完善数据同步功能：增加flushInterval参数，单位毫秒，值大于0时，对于异步消息处理组件数据长时间没有达到指定的batchSize记录条数时，强制将已经接收到的数据进行入库处理
 
@@ -64,7 +332,7 @@ importBuilder.setIgnoreNullValueField(true);
 
 6.bug修复：ElasticSearchHelper.getElasticSearchSink(String elasticSearch)方法传入default数据源名称时，后台报异常信息
 
-# v5.9.8 功能改进
+# v5.9.6 功能改进
 
 1.修复数据同步bug：application.properties文件中不配置db相关的选项时，同步作业报错
 

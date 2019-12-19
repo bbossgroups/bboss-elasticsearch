@@ -539,6 +539,14 @@ public abstract class BuildTool {
 	}
 
 	public static String buildGetDocumentRequest(String indexName, String indexType,String documentId,Map<String,Object> options){
+		if(documentId == null)
+			throw new ElasticSearchException(new StringBuilder().append("GetDocumentRequest failed:indexName[")
+											.append(indexName)
+											.append("] indexType[").append(indexType).append("] documentId is null.").toString());
+		if(documentId.equals(""))
+			throw new ElasticSearchException(new StringBuilder().append("GetDocumentRequest failed:indexName[")
+					.append(indexName)
+					.append("] indexType[").append(indexType).append("] documentId is \"\".").toString());
 		StringBuilder builder = new StringBuilder();
 //		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
 		builder.append("/").append(indexName).append("/").append(indexType).append("/");
