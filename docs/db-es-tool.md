@@ -725,17 +725,29 @@ bboss 5.9.0及后续的版本已经内置了对增量字段值的排序功能，
 
 如果需要针对单条记录，bboss提供org.frameworkset.tran.DataRefactor接口和Context接口像结合来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，通过context可以对当前记录做以下调整：
 
-1.添加字段
+| 数据处理类型             | 全局处理 | 记录级别 | 举例(全局通过importBuilder组件实现，记录级别通过context接口实现) |
+| ------------------------ | -------- | -------- | ------------------------------------------------------------ |
+| 添加字段                 | 支持     | 支持     | 全局处理：importBuilder.addFieldValue("testF1","f1value");                                             记录级别：context.addFieldValue("testF1","f1value"); |
+| 删除字段                 | 支持     | 支持     | 全局处理：importBuilder.addIgnoreFieldMapping("testInt");                                           记录级别：context.addIgnoreFieldMapping("testInt"); |
+| 映射字段名称             | 支持     | 不支持   | 全局处理：importBuilder.addFieldMapping("document_id","docId"); |
+| 映射字段名称并修改字段值 | 不支持   | 支持     | String oldValue = context.getStringValue("axx");                                                           String newvalue = oldValue+" new value";                context.newName2ndData("axx","newname",newvalue); |
+| 修改字段值               | 不支持   | 支持     | //空值处理                                                                                                                            String local = context.getStringValue("local");if(local == null)   context.addFieldValue("local",""); |
+| 值类型转换               | 不支持   | 支持     | //将long类型的creationTime字段转换为日期类型                                                             long creationTime = context.getLongValue("creationTime");          context.addFieldValue("creationTime",new Date(creationTime)); |
+| 过滤记录                 | 不支持   | 支持     | String id = context.getStringValue("_id");//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中                                           if(id.equals("5dcaa59e9832797f100c6806"))   context.setDrop(true); |
+| ip地理位置信息转换       | 不支持   | 支持     | //根据session访问客户端ip，获取对应的客户地理位置经纬度信息、运营商信息、省地市信息IpInfo对象,并将IpInfo添加到Elasticsearch文档中                                                   String referip = context.getStringValue("referip");                                                                 if(referip != null){   IpInfo ipInfo = context.getIpInfoByIp(referip);                           if(ipInfo != null)      context.addFieldValue("ipInfo",ipInfo);} |
+| 其他转换                 | 不支持   | 支持     | 在DataRefactor接口中对记录中的数据根据特定的要求进行相关转换和处理，然后使用上面列出的对应的处理方式将处理后的数据添加到记录中 |
+| 获取原始记录对象         | 不支持   | 支持     | //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理                                                                      DBObject record = (DBObject) context.getRecord(); |
+| 忽略null值               | 支持     | -        | true是忽略null值存入elasticsearch，false是存入（默认值）importBuilder.setIgnoreNullValueField(true); |
 
-2.修改字段名称映射关系
+全局数据处理配置：打tag，标识数据来源于jdk timer还是xxl-job
 
-3.修改字段值
+```java
+importBuilder.addFieldValue("fromTag","jdk timer");  //jdk timer调度作业设置
 
-4.移除记录
+importBuilder.addFieldValue("fromTag","xxl-jobr");  //xxl-job调度作业设置
+```
 
-5.获取ip地理位置信息等
-
-举例说明如下：
+记录级别的转换处理参考下面的代码,举例说明如下：
 
 ```java
 final AtomicInteger s = new AtomicInteger(0);
@@ -883,13 +895,47 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 
 ### 2.3.13 灵活指定索引名称和索引类型
 
+可以全局通过importBuilder组件设置索引类型和索引名称，也可以通过Context接口为相关的数据记录指定索引类型和索引名称：
+
+- 如果没有在记录级别指定索引名称则采用全局指定索引名称，如果在记录级别指定了索引名称则采用记录级别指定的索引名称
+
+- 如果没有在记录级别指定索引类型则采用全局指定索引类型，如果在记录级别指定了索引类型则采用记录级别指定的索引类型
+
+#### 2.3.13.1 importBuilder组件全局设置索引类型和索引名称
+
 ```java
 importBuilder
 				.setIndex("dbclobdemo") //必填项
 				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
-index和type可以有以下几种动态生成方法：
+#### 2.3.13.2 通过Context接口设置记录索引类型和索引名称
+
+```java
+final Random random = new Random();
+		importBuilder.setDataRefactor(new DataRefactor() {
+			@Override
+			public void refactor(Context context) throws Exception {
+				int r = random.nextInt(3);
+				if(r == 1) {
+					
+					context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+				}
+				else if(r == 0) {
+					
+					context.setIndex("contextxxx-{dateformat=yyyy.MM.dd}");
+					
+				}
+				else if(r == 2){
+					
+					context.setIndex("contextbbbbb-{dateformat=yyyy.MM.dd}");
+				}
+
+			}
+		});
+```
+
+#### 2.3.13.3 index和type可以有以下几种动态生成方法
 
 ```properties
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
@@ -991,7 +1037,11 @@ importBuilder.setSqlFilepath("sql.xml")
 
 ### 2.3.16 设置ES数据导入控制参数
 
-可以通过以下方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
+数据同步工具可以全局设置Elasticsearch请求控制参数（基于importBuilder组件设置），也可以在记录级别设置Elasticsearch请求控制参数（基于Context接口设置），这里举例进行说明：
+
+#### 2.3.16.1 全局设置Elasticsearch请求控制参数
+
+可以通过importBuilder直接提供的方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
 
 ```java
 importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
@@ -1003,6 +1053,69 @@ importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
 				.setEsVersionField(“versionNo”)//可选项
 				.setEsVersionType("internal")//可选项
                 .setRefreshOption("refresh=true&version=1");//可选项，通过RefreshOption可以通过url参数的方式任意组合各种控制参数
+```
+
+还可以通过ClientOptions对象来指定控制参数，使用示例：
+
+```java
+		importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+		ClientOptions clientOptions = new ClientOptions();
+//		clientOptions.setPipeline("1");
+		clientOptions.setRefresh("true");
+//		routing
+//				(Optional, string) Target the specified primary shard.
+		clientOptions.setRouting("2");
+		clientOptions.setTimeout("50s");
+		clientOptions.setWaitForActiveShards(2);
+		importBuilder.setClientOptions(clientOptions);
+```
+
+#### 2.3.16.2 记录级别设置Elasticsearch请求控制参数
+
+基于Context接口，可以在记录级别设置Elasticsearch请求控制参数，记录级别会继承importBuilder设置的控制参数设置的控制参数,但是会覆盖通过importBuilder设置的同名控制参数，记录级别控制参数使用示例：
+
+```java
+final Random random = new Random();
+		importBuilder.setDataRefactor(new DataRefactor() {
+			@Override
+			public void refactor(Context context) throws Exception {
+				int r = random.nextInt(3);
+				if(r == 1) {
+					ClientOptions clientOptions = new ClientOptions();
+					clientOptions
+							.setEsRetryOnConflict(1)
+//							.setPipeline("1")
+
+							.setOpType("index")
+							.setIfPrimaryTerm(2l)
+							.setIfSeqNo(3l)
+					;//create or index
+					context.setClientOptions(clientOptions);
+					//context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+				}
+				else if(r == 0) {
+					ClientOptions clientOptions = new ClientOptions();
+
+					clientOptions.setDetectNoop(false)
+							.setDocasupsert(false)
+							.setReturnSource(true)
+							.setEsRetryOnConflict(3)
+					;//设置文档主键，不设置，则自动产生文档id;
+					context.setClientOptions(clientOptions);
+					//context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+					context.markRecoredUpdate();
+				}
+				else if(r == 2){
+					ClientOptions clientOptions = new ClientOptions();
+					clientOptions.setEsRetryOnConflict(2);
+//							.setPipeline("1");
+					context.setClientOptions(clientOptions);
+					context.markRecoredDelete();
+					//context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+				}
+
+			}
+		});
 ```
 
 参考文档：
@@ -1073,6 +1186,51 @@ importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 ```
+
+### 2.3.19 将增删改数据同步到Elasticsearch
+
+数据同步工具可以非常方便地将各种数据源（Elasticsearch、DB、Mongodb等）的增删改操作同步到Elasticsearch中。在DataRefactor接口中，通过Context接口提供的三个方法来标注记录的增、删、改数据状态，同步工具根据记录状态的来实现对Elasticsearch的新增、修改、删除同步操作：
+
+```java
+context.markRecoredInsert();//添加，默认值,如果不显示标注记录状态则默认为添加操作，对应Elasticsearch的index操作
+
+context.markRecoredUpdate();//修改，对应Elasticsearch的update操作
+
+context.markRecoredDelete();//删除，对应Elasticsearch的delete操作
+```
+
+使用示例：
+
+```java
+final Random random = new Random();
+        importBuilder.setDataRefactor(new DataRefactor() {
+            @Override
+            public void refactor(Context context) throws Exception {
+                int r = random.nextInt(3);
+                if(r == 1) {
+                    context.markRecoredInsert();
+                    //context.setIndex("contextdbdemo-{dateformat=yyyy.MM.dd}");
+                }
+                else if(r == 0) {
+                   
+                    //context.setIndex("contextdbdemo1-{dateformat=yyyy.MM.dd}");
+                    context.markRecoredUpdate();
+                }
+                else if(r == 2){
+                 
+                    context.markRecoredDelete();
+                    //context.setIndex("contextdbdemo2-{dateformat=yyyy.MM.dd}");
+                }
+
+            }
+        });
+```
+可以从数据源直接获取增删改的数据：
+
+![](images\direct-elasticsearch-crud.png)
+
+也可以先将需要增删改的数据推送到kafka，同步工具从kafka接收增删改数据，再进行相应的处理：
+![](images\kafka-elasticsearch-crud.png)
 
 ## 2.4.DB-ES数据同步工具使用方法
 

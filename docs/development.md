@@ -256,7 +256,7 @@ String response = clientUtil.addDateDocument("demo",//索引表
 
 ## **2.6 http协议配置**
 
-### 连接池数量配置
+### 2.6.1 连接池数量配置
 
  \## 总共允许的最大连接数:节点数n x defaultMaxPerRoute
 
@@ -266,7 +266,7 @@ http.maxTotal = 600
 
 http.defaultMaxPerRoute = 200
 
-### 重试机制配置
+### 2.6.2 重试机制配置
 
 \##连接失败重试次数，默认-1，小于等于0时不重试
 
@@ -285,7 +285,11 @@ http.retryTime = 3
 
 http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
 
-### 保活机制配置
+### 2.6.3 保活机制配置
+
+控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，默认值为true，false 禁用
+
+http.evictExpiredConnections=true
 
 空闲连接保活校验频率，单位毫秒，>0起作用
 
@@ -295,7 +299,9 @@ http.validateAfterInactivity=3000
 
 http.staleConnectionCheckEnabled=false 
 
-### 超时时间配置
+
+
+### 2.6.4 超时时间配置
 
 ```properties
 #建立连接超时时间，单位：毫秒

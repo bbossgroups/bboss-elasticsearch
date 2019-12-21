@@ -2,7 +2,7 @@
 
 # 1.BulkProcessor介绍
 
-BulkProcessor异步批处理组件支持Elasticsearch各个版本的Bulk操作，可以同时将不同索引的文档增加、删除、修改操作添加到BulkProcessor中，BulkProcessor对这些数据进行统一异步批量处理并保存到Elasticsearch，BulkProcessor提供三类api来支撑异步批处理功能：
+BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。通过BulkProcessor，可以将不同索引的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，BulkProcessor提供三类api来支撑异步批处理功能：
 
 1. insertData（每次加入一条记录到bulk队列中)
 2. insertDatas(每次可以加入待新增的多条记录到bulk队列中)
