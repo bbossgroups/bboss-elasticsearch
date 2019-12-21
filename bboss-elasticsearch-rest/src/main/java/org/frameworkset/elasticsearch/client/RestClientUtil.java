@@ -1262,7 +1262,13 @@ public class RestClientUtil extends ClientUtil{
 		return deleteDocuments(indexName,  indexType, ids,(ClientOptions)null);
 		
 	}
+	public Map getClusterInfo(){
+	 	return this.client.getClusterInfo();
+	}
 
+	public String getElasticsearchVersion(){
+		return this.client.getEsVersion();
+	}
 	@Override
 	public String deleteDocuments(String indexName, String indexType, String[] ids,ClientOptions clientOptions) throws ElasticSearchException {
 		StringBuilder builder = new StringBuilder();

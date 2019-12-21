@@ -1620,6 +1620,16 @@ public class TransportClientUtil  implements EventClientUtil{
 		return null;
 	}
 
+	@Override
+	public Map getClusterInfo() {
+		return null;
+	}
+
+	@Override
+	public String getElasticsearchVersion() {
+		return null;
+	}
+
 
 	@Override
 	public String addDocumentWithParentId(String indexName, Object bean, Object parentId) throws ElasticSearchException {

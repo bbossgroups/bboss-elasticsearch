@@ -2665,4 +2665,34 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 */
 	String executeBulk(BulkCommand bulkCommand);
 	public String deleteDocuments(String indexName, String indexType, String[] ids,ClientOptions clientOptions) throws ElasticSearchException;
+
+	/**
+	 * 获取Elasticsearch集群信息,例如：
+	 * {
+	 *   "name" : "DESKTOP-U3V5C85",
+	 *   "cluster_name" : "my-application1",
+	 *   "cluster_uuid" : "GZYnO9JCSJqqYUaU9mmRwA",
+	 *   "version" : {
+	 *     "number" : "7.5.0",
+	 *     "build_flavor" : "default",
+	 *     "build_type" : "zip",
+	 *     "build_hash" : "e9ccaed468e2fac2275a3761849cbee64b39519f",
+	 *     "build_date" : "2019-11-26T01:06:52.518245Z",
+	 *     "build_snapshot" : false,
+	 *     "lucene_version" : "8.3.0",
+	 *     "minimum_wire_compatibility_version" : "6.8.0",
+	 *     "minimum_index_compatibility_version" : "6.0.0-beta1"
+	 *   },
+	 *   "tagline" : "You Know, for Search"
+	 * }
+	 * @return
+	 */
+	public Map getClusterInfo();
+
+	/**
+	 * 获取Elasticsearch 版本号
+	 * @return
+	 */
+	public String getElasticsearchVersion();
+
 }
