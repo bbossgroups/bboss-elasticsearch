@@ -3143,13 +3143,73 @@ protected Date agentStarttime;
 
 可以在配置文件中直接指定dsl语法解析缓存参数（一般采用默认配置即可）
 
-perKeyDSLStructionCacheSize:配置文件中对应的dsl可以缓存的解析后的最大dsl语法结构个数
+perKeyDSLStructionCacheSize:dsl配置文件中对应的dsl可以缓存的解析后的最大dsl语法结构个数
 
 alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize指定的dsl个数后，是否继续缓存dsl语句，true 缓存，并且清除不经常使用的dsl，false 不缓存（默认值），每次都硬解析。
 
 ```xml
 <property name="perKeyDSLStructionCacheSize" value="2000"/>
 <property name="alwaysCacheDslStruction" value="false"/>
+```
+
+配置样例：
+
+https://github.com/bbossgroups/elasticsearch-example/blob/5.9.9/src/main/resources/esmapper/dslcacheexample.xml
+
+如果在程序运行过程中出现以下日志：
+
+```properties
+the number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache
+```
+
+那么可能存在两个原因：
+
+1. perKeyDSLStructionCacheSize配置过小
+    如果是这种情况，可以在dsl xml配置文件中，添加或者修改perKeyDSLStructionCacheSize参数，将值设置更大一些：
+    <property name="perKeyDSLStructionCacheSize" value="4000"/>
+2. dsl中使用的$var模式变量，而且值变化频繁，导致缓存命中率下降并使得缓存的dsl 结构超过perKeyDSLStructionCacheSize对应的数字，所以告警
+   如果是这种情况，一个是调大perKeyDSLStructionCacheSize参数值，另外一个必须将dsl中的$var变量写法调整为#[var]方式，例如：
+
+```xml
+ <property name="updateByQuery">
+        <![CDATA[
+         {
+          "query": {
+            "has_child": {
+              "type":       "employee",
+              "score_mode": "max",
+              "query": {
+                "match": {
+                  "name": $name  ##查询包含员工名称的公司信息，并修改之
+                }
+              }
+            }
+          }
+        }
+        ]]>
+    </property>
+```
+
+将dsl中变量$name修改为 #[name]即可：
+
+```xml
+ <property name="updateByQuery">
+        <![CDATA[
+         {
+          "query": {
+            "has_child": {
+              "type":       "employee",
+              "score_mode": "max",
+              "query": {
+                "match": {
+                  "name": #[name]  ##查询包含员工名称的公司信息，并修改之
+                }
+              }
+            }
+          }
+        }
+        ]]>
+    </property>
 ```
 
 

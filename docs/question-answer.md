@@ -1,3 +1,5 @@
+# 常见问题分析和处理
+
 # 问题1 连接默认的127.0.0.1:9200地址
 
 ```java
@@ -102,3 +104,67 @@ http.timeoutConnection = 5000
 从连接池中获取连接超时时间，单位：毫秒
 
 http.connectionRequestTimeout=10000
+
+
+
+# 问题5 the number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache
+
+如果在程序运行过程中出现以下日志：
+
+```properties
+the number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache
+```
+
+那么可能存在两个原因：
+
+1. perKeyDSLStructionCacheSize配置过小
+   如果是这种情况，可以在dsl xml配置文件中，添加或者修改perKeyDSLStructionCacheSize参数，将值设置更大一些：
+     <property name="perKeyDSLStructionCacheSize" value="4000"/>
+2. dsl中使用的$var模式变量，而且值变化频繁，导致缓存命中率下降并使得缓存的dsl 结构超过perKeyDSLStructionCacheSize对应的数字，所以告警
+   如果是这种情况，一个是调大perKeyDSLStructionCacheSize参数值，另外一个必须将dsl中的$var变量写法调整为#[var]方式，例如：
+
+```xml
+ <property name="updateByQuery">
+        <![CDATA[
+         {
+          "query": {
+            "has_child": {
+              "type":       "employee",
+              "score_mode": "max",
+              "query": {
+                "match": {
+                  "name": $name  ##查询包含员工名称的公司信息，并修改之
+                }
+              }
+            }
+          }
+        }
+        ]]>
+    </property>
+```
+
+将dsl中变量$name修改为 #[name]即可：
+
+```xml
+ <property name="updateByQuery">
+        <![CDATA[
+         {
+          "query": {
+            "has_child": {
+              "type":       "employee",
+              "score_mode": "max",
+              "query": {
+                "match": {
+                  "name": #[name]  ##查询包含员工名称的公司信息，并修改之
+                }
+              }
+            }
+          }
+        }
+        ]]>
+    </property>
+```
+
+perKeyDSLStructionCacheSize参数含义，参考文档：
+
+[dsl配置文件中关于dsl解析语法树缓存相关配置](https://esdoc.bbossgroups.com/#/development?id=_5314-dsl配置文件中关于dsl解析语法树缓存相关配置)

@@ -1187,7 +1187,7 @@ importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 ```
 
-### 2.3.19 将增删改数据同步到Elasticsearch
+### 2.3.19 同步增删改数据到ES
 
 数据同步工具可以非常方便地将各种数据源（Elasticsearch、DB、Mongodb等）的增删改操作同步到Elasticsearch中。在DataRefactor接口中，通过Context接口提供的三个方法来标注记录的增、删、改数据状态，同步工具根据记录状态的来实现对Elasticsearch的新增、修改、删除同步操作：
 

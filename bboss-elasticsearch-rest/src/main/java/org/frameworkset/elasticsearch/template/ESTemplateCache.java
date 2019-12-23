@@ -406,7 +406,7 @@ public class ESTemplateCache {
 				.append("\r\nCause analysis of WARNING:")
 				.append("\r\n1.Frequently varying value parameters may exist in this DSL;")
 				.append("\r\n2.Variables of the $var pattern that may exist in this DSL and the value of $var changes frequently;")
-				.append("\r\nOptimization suggestion：\r\nIn order to improve the system performance, we can convert the value parameters that may change frequently in this DSL into #[variable] variables or the variables that may exist in the $var mode in DSL into #[varibale] mode variables.")
+				.append("\r\nOptimization suggestion：Change $var to #[var]\r\nIn order to improve the system performance, we can convert the value parameters that may change frequently in this DSL into #[variable] variables or the variables that may exist in the $var mode in DSL into #[varibale] mode variables.")
 				.append("\r\nIf you need to convert an array or a list, use the variable #[variable] first and set the serialJson attribute: #[variable, serialJson = true] to improve system performance!")
 				.append("\r\nHow to use of #[varibale] pattern variables in foreach loops refers to the section [5.3.3 Logical Judgment and Foreach Loop Example] in the document: https://esdoc.bbossgroups.com/#/development?id=_533-application%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8")
 				.append("\n\r**********************************************************************")
