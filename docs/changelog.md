@@ -27,6 +27,10 @@ https://esdoc.bbossgroups.com/#/development
 # v5.9.9 功能改进
 1.数据同步工具改进：可以指定导入的target Elasticsearch和source Elasticsearch数据源名称
 
+2.BulkCommand增加处理开始时间和结束时间字段
+
+3.BulkProcessor改进:由被动bulk模式调整为主动bulk模式，减少内存占用，处理速度更快
+
 # v5.9.8 功能改进
 
 1.改进BulkProcessor shutdown机制:调用shutDown停止方法后，BulkProcessor不会接收新的请求，但是会处理完所有已经进入bulk队列的数据

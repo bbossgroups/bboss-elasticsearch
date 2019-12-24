@@ -33,7 +33,7 @@ public class BulkConfig implements BulkActionConfig{
 	private String elasticsearch;
 	private String bulkProcessorName = "BulkProcessor";
 	private String bulkRejectMessage = "Reject bulk processor";
-	private long pollTimeOut = 1000;
+//	private long pollTimeOut = 1000;
 	private String refreshOption;
 	/**
 	 * 记录数达到bulkRecords指定的条数时执行一次bulk操作
@@ -48,7 +48,7 @@ public class BulkConfig implements BulkActionConfig{
 	 * 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足
 	 */
 	private long flushInterval;
-	private int bulkQueue = 10000;
+//	private int bulkQueue = 10000;
 	private int workThreads = 20;
 	private int workThreadQueue = 100;
 
@@ -88,15 +88,15 @@ public class BulkConfig implements BulkActionConfig{
 		this.flushInterval = flushInterval;
 		return this;
 	}
-
-	public int getBulkQueue() {
-		return bulkQueue;
-	}
-
-	public BulkConfig setBulkQueue(int bulkQueue) {
-		this.bulkQueue = bulkQueue;
-		return this;
-	}
+//
+//	public int getBulkQueue() {
+//		return bulkQueue;
+//	}
+//
+//	public BulkConfig setBulkQueue(int bulkQueue) {
+//		this.bulkQueue = bulkQueue;
+//		return this;
+//	}
 
 	public int getWorkThreads() {
 		return workThreads;
@@ -158,15 +158,15 @@ public class BulkConfig implements BulkActionConfig{
 		this.bulkRejectMessage = bulkRejectMessage;
 		return this;
 	}
-
-	public long getPollTimeOut() {
-		return pollTimeOut;
-	}
-
-	public BulkConfig setPollTimeOut(long pollTimeOut) {
-		this.pollTimeOut = pollTimeOut;
-		return this;
-	}
+//
+//	public long getPollTimeOut() {
+//		return pollTimeOut;
+//	}
+//
+//	public BulkConfig setPollTimeOut(long pollTimeOut) {
+//		this.pollTimeOut = pollTimeOut;
+//		return this;
+//	}
 
 	public String getElasticsearch() {
 		return elasticsearch;

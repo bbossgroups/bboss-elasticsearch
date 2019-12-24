@@ -60,9 +60,9 @@ public class BulkCommand implements Runnable{
 		this.bulkProcessor = bulkProcessor;
 		this.clientInterface = bulkProcessor.getClientInterface();
 	}
-	public BulkCommand(List<BulkData> batchBulkDatas) {
-		this.batchBulkDatas = batchBulkDatas;
-	}
+//	public BulkCommand(List<BulkData> batchBulkDatas) {
+//		this.batchBulkDatas = batchBulkDatas;
+//	}
 	public String getRefreshOption() {
 		return bulkProcessor.getRefreshOption();
 	}
@@ -83,7 +83,7 @@ public class BulkCommand implements Runnable{
 		try {
 			this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
 			String result = clientInterface.executeBulk(this);
-
+			bulkProcessor.increamentTotalsize(this.getBulkDataSize());
 
 			boolean hasError = ResultUtil.bulkResponseError(result);
 			if(!hasError) {
@@ -111,6 +111,7 @@ public class BulkCommand implements Runnable{
 		}
 
 		catch (Throwable throwable){
+			this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
 			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 				try {
@@ -132,11 +133,30 @@ public class BulkCommand implements Runnable{
 
 	}
 
+	public long getTotalSize(){
+		return bulkProcessor.getTotalSize();
+	}
+	public long getTotalFailedSize(){
+		return bulkProcessor.getFailedSize();
+	}
+
 	public BulkProcessor getBulkProcessor() {
 		return bulkProcessor;
 	}
 
 	public List<BulkData> getBatchBulkDatas() {
 		return batchBulkDatas;
+	}
+
+	public void addBulkData(BulkData bulkData){
+		this.batchBulkDatas.add(bulkData);
+
+	}
+
+	public int getBulkDataSize(){
+		if(batchBulkDatas != null)
+			return this.batchBulkDatas.size();
+		else
+			return 0;
 	}
 }
