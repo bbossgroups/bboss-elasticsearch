@@ -20,6 +20,7 @@ import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +36,25 @@ public class BulkCommand implements Runnable{
 	private List<BulkData> batchBulkDatas;
 	private BulkProcessor bulkProcessor;
 	private ClientInterface clientInterface;
+	private Date bulkCommandStartTime;
+	private Date bulkCommandCompleteTime;
 
+
+	public Date getBulkCommandStartTime() {
+		return bulkCommandStartTime;
+	}
+
+	public void setBulkCommandStartTime(Date bulkCommandStartTime) {
+		this.bulkCommandStartTime = bulkCommandStartTime;
+	}
+
+	public Date getBulkCommandCompleteTime() {
+		return bulkCommandCompleteTime;
+	}
+
+	public void setBulkCommandCompleteTime(Date bulkCommandCompleteTime) {
+		this.bulkCommandCompleteTime = bulkCommandCompleteTime;
+	}
 	public BulkCommand(List<BulkData> batchBulkDatas,BulkProcessor bulkProcessor) {
 		this.batchBulkDatas = batchBulkDatas;
 		this.bulkProcessor = bulkProcessor;
@@ -62,7 +81,10 @@ public class BulkCommand implements Runnable{
 			}
 		}
 		try {
+			this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
 			String result = clientInterface.executeBulk(this);
+
+
 			boolean hasError = ResultUtil.bulkResponseError(result);
 			if(!hasError) {
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
@@ -97,6 +119,13 @@ public class BulkCommand implements Runnable{
 				catch(Exception e){
 					logger.error("bulkInterceptor.errorBulk",e);
 				}
+			}
+		}
+		finally {
+			this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
+			if(batchBulkDatas != null) {
+				this.batchBulkDatas.clear();
+				batchBulkDatas = null;
 			}
 		}
 

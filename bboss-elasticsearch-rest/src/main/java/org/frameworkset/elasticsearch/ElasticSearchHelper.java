@@ -391,6 +391,8 @@ public class ElasticSearchHelper {
 	 */
 	public static ClientInterface getRestClientUtil(String elasticSearch){
 		ElasticSearch elasticSearchSink = getElasticSearchSink( elasticSearch);
+		if(elasticSearchSink == null)
+			throw new ElasticSearchException("Elasticsearh Datasource[ "+elasticSearch + "] is not configured. please check your configs.");
 		return elasticSearchSink.getRestClientUtil();
 	}
 
@@ -403,6 +405,8 @@ public class ElasticSearchHelper {
 	public static ClientInterface getConfigRestClientUtil(String configFile){
 //		ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
 		init();
+		if(elasticSearchSink == null)
+			throw new ElasticSearchException("Elasticsearh Datasource[default] is not configured. please check your configs.");
 		return elasticSearchSink.getConfigRestClientUtil(configFile);
 	}
 
@@ -414,6 +418,8 @@ public class ElasticSearchHelper {
 	 */
 	public static ClientInterface getConfigRestClientUtil(String elasticSearch,String configFile){
 		ElasticSearch elasticSearchSink = getElasticSearchSink( elasticSearch);
+		if(elasticSearchSink == null)
+			throw new ElasticSearchException("Elasticsear Datasource[ "+elasticSearch + "] is not configured. please check your configs.");
 		return elasticSearchSink.getConfigRestClientUtil(configFile);
 	}
 

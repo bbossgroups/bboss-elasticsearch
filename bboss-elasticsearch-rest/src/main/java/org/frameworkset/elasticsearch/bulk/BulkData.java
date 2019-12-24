@@ -17,8 +17,6 @@ package org.frameworkset.elasticsearch.bulk;
 
 import org.frameworkset.elasticsearch.client.ClientOptions;
 
-import java.util.List;
-
 /**
  * <p>Description: </p>
  * <p></p>
@@ -38,13 +36,10 @@ public class BulkData{
 	 */
 	private int type;
 	private Object data;
-	private boolean collection;
 	private String indexType;
 	private String index;
 	private ClientOptions clientOptions;
-	public List<Object> getDatas() {
-		return datas;
-	}
+
 	public boolean isInsert(){
 		return type == INSERT;
 	}
@@ -64,16 +59,11 @@ public class BulkData{
 			return "delete";
 		}
 	}
-	private List<Object> datas;
 	public BulkData(int type,Object data){
 		this.type = type;
 		this.data = data;
 	}
-	public BulkData(int type,List<Object> datas){
-		this.type = type;
-		this.datas = datas;
-		collection = true;
-	}
+
 	public int getType() {
 		return type;
 	}
@@ -85,9 +75,6 @@ public class BulkData{
 	}
 
 
-	public boolean isCollection() {
-		return collection;
-	}
 
 	public String getIndexType() {
 		return indexType;
@@ -113,16 +100,5 @@ public class BulkData{
 		this.clientOptions = clientOptions;
 	}
 
-	/**
-	 * 如果是集合，返回集合中记录数，如果是单对象，返回1
-	 * @return
-	 */
-	public int getDataSize(){
-		if(this.isCollection()){
-			return datas != null ?this.datas.size():0;
-		}
-		else{
-			return 1;
-		}
-	}
+
 }

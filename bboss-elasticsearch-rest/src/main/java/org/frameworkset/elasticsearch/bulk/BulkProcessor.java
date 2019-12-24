@@ -214,13 +214,17 @@ public class BulkProcessor {
 	 * @param clientOptions
 	 */
 	public void insertDatas(String index,String indexType,List<Object> datas,ClientOptions clientOptions){
+		if(datas == null || datas.size() == 0)
+			return;
 		try {
 			assertShutdown();
-			BulkData bulkData = new BulkData(BulkData.INSERT,datas);
-			bulkData.setIndex(index);
-			bulkData.setIndexType(indexType);
-			bulkData.setClientOptions(clientOptions);
-			this.dataQueue.put(bulkData);
+			for(Object data:datas) {
+				BulkData bulkData = new BulkData(BulkData.INSERT, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+				bulkData.setClientOptions(clientOptions);
+				this.dataQueue.put(bulkData);
+			}
 		} catch (InterruptedException e) {
 			logger.info("InterruptedException");
 		}
@@ -253,13 +257,17 @@ public class BulkProcessor {
 	 * @param updateOptions
 	 */
 	public void updateDatas(String index, String indexType, List<Object> datas, ClientOptions updateOptions){
+		if(datas == null || datas.size() == 0)
+			return;
 		try {
 			assertShutdown();
-			BulkData bulkData = new BulkData(BulkData.UPDATE,datas);
-			bulkData.setIndex(index);
-			bulkData.setIndexType(indexType);
-			bulkData.setClientOptions(updateOptions);
-			this.dataQueue.put(bulkData);
+			for(Object data:datas) {
+				BulkData bulkData = new BulkData(BulkData.UPDATE, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+				bulkData.setClientOptions(updateOptions);
+				this.dataQueue.put(bulkData);
+			}
 		} catch (InterruptedException e) {
 			logger.info("InterruptedException");
 		}
@@ -300,13 +308,18 @@ public class BulkProcessor {
 	 * @param updateOptions
 	 */
 	public void deleteDatas(String index,String indexType,List<Object> datas, ClientOptions updateOptions){
+		if(datas == null || datas.size() == 0){
+			return ;
+		}
 		try {
 			assertShutdown();
-			BulkData bulkData = new BulkData(BulkData.DELETE,datas);
-			bulkData.setIndex(index);
-			bulkData.setIndexType(indexType);
-			bulkData.setClientOptions(updateOptions);
-			this.dataQueue.put(bulkData);
+			for(Object data :datas) {
+				BulkData bulkData = new BulkData(BulkData.DELETE, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+				bulkData.setClientOptions(updateOptions);
+				this.dataQueue.put(bulkData);
+			}
 		} catch (InterruptedException e) {
 			logger.info("InterruptedException");
 		}
@@ -330,41 +343,7 @@ public class BulkProcessor {
 	public void deleteDatas(String index, List<Object> datas){
 		deleteDatas(  index,(String)null,  datas,  (ClientOptions)null);
 	}
-	private List<BulkData> handleCollection(BulkData bulkData,List<BulkData> commandBulkDatas,IntegerWraper j,List<BulkCommand> bulkCommands ){
-		BulkCommand bulkCommand = null;
-		if(bulkData.isCollection()){
-			List<Object> datas = bulkData.getDatas();
-			BulkData innerBulkData = null;
-			for(int k = 0; k < datas.size(); k ++){
-				if(j.get() < bulkConfig.getBulkSizes()) {
-					innerBulkData = new BulkData(bulkData.getType(), datas.get(k));
-					innerBulkData.setClientOptions(bulkData.getClientOptions());
-					innerBulkData.setIndex(bulkData.getIndex());
-					innerBulkData.setIndexType(bulkData.getIndexType());
-					commandBulkDatas.add(innerBulkData);
-					j.increment();
-				}
-				else{
-					bulkCommand = new BulkCommand(commandBulkDatas,this);
-					bulkCommands.add(bulkCommand);
-					j.reset();
-					commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
-					innerBulkData = new BulkData(bulkData.getType(), datas.get(k));
-					innerBulkData.setClientOptions(bulkData.getClientOptions());
-					innerBulkData.setIndex(bulkData.getIndex());
-					innerBulkData.setIndexType(bulkData.getIndexType());
-					commandBulkDatas.add(innerBulkData);
-					j.increment();
-				}
-			}
-		}
-		else{
-			commandBulkDatas.add(bulkData);
-			j.increment();
-		}
-		return commandBulkDatas;
 
-	}
 	static class IntegerWraper{
 		int j = 0;
 		public IntegerWraper(){
@@ -380,34 +359,6 @@ public class BulkProcessor {
 		public int get(){
 			return j;
 		}
-	}
-	private List<BulkCommand> buildBulkCommands(List<BulkData> batchBulkDatas){
-		List<BulkCommand> bulkCommands = new ArrayList<BulkCommand>();
-		List<BulkData> commandBulkDatas = null;
-		BulkCommand bulkCommand = null;
-		BulkData bulkData = null;
-		IntegerWraper j = new IntegerWraper();
-		for(int i = 0; i < batchBulkDatas.size(); i ++) {
-			if(commandBulkDatas == null)
-				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
-			bulkData = batchBulkDatas.get(i);
-			if(j.get() < bulkConfig.getBulkSizes()){
-				commandBulkDatas = handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
-			}
-			else{
-				bulkCommand = new BulkCommand(commandBulkDatas,this);
-				bulkCommands.add(bulkCommand);
-				j.reset();
-				commandBulkDatas = new ArrayList<BulkData>(bulkConfig.getBulkSizes());
-				commandBulkDatas = handleCollection(  bulkData, commandBulkDatas,  j, bulkCommands );
-			}
-
-		}
-		if(j.get() > 0){
-			bulkCommand = new BulkCommand(commandBulkDatas,this);
-			bulkCommands.add(bulkCommand);
-		}
-		return bulkCommands;
 	}
 
 	public boolean isQueueEmpty() {
@@ -439,27 +390,15 @@ public class BulkProcessor {
 						if(batchBulkDatas == null){
 							batchBulkDatas = new ArrayList<BulkData>();
 						}
-						dataSize = dataSize + bulkData.getDataSize();//实际记录大小，因为bulkData为collection时，数据大小应该以collection大小之和
-						totalSize = totalSize + bulkData.getDataSize();
+						dataSize ++;//实际记录大小，因为bulkData为collection时，数据大小应该以collection大小之和
+						totalSize ++;
 						batchBulkDatas.add(bulkData);
-						if(dataSize == bulkConfig.getBulkSizes()){
+						if(dataSize >= bulkConfig.getBulkSizes()){
 							bulkCommand = new BulkCommand(batchBulkDatas,BulkProcessor.this);
 							batchBulkDatas = null;
 							dataSize = 0;
-
 							executor.submit(bulkCommand);
-
 						}
-						else if(dataSize > bulkConfig.getBulkSizes()){
-							List<BulkCommand> bulkCommands = buildBulkCommands(batchBulkDatas);
-							batchBulkDatas.clear();
-							batchBulkDatas = null;
-							dataSize = 0;
-							for(BulkCommand bulkCommand1:bulkCommands){
-								executor.submit(bulkCommand1);
-							}
-						}
-
 					}
 					else{
 						boolean forceFlush = false;
