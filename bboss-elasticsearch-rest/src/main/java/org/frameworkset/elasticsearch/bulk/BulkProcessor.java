@@ -129,17 +129,26 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
-//			this.dataQueue.put(bulkData);
-			lastAppendDataTime = System.currentTimeMillis();
-			this.bulkCommand.addBulkData(bulkData);
-			if(this.touchBatchSize()){
-				this.execute(true);
-			}
+//			lastAppendDataTime = System.currentTimeMillis();
+//			this.bulkCommand.addBulkData(bulkData);
+//			if(this.touchBatchSize()){
+//				this.execute(true);
+//			}
+
+			_appendBulkData( bulkData);
 
 
 		}
 		finally {
 			w.unlock();
+		}
+	}
+
+	private void _appendBulkData(BulkData bulkData){
+		lastAppendDataTime = System.currentTimeMillis();
+		this.bulkCommand.addBulkData(bulkData);
+		if(this.touchBatchSize()){
+			this.execute(true);
 		}
 	}
 
@@ -309,19 +318,25 @@ public class BulkProcessor {
 	public void insertDatas(String index,String indexType,List<Object> datas,ClientOptions clientOptions){
 		if(datas == null || datas.size() == 0)
 			return;
-//		try {
-			assertShutdown();
+		assertShutdown();
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.INSERT, data);
 				bulkData.setIndex(index);
 				bulkData.setIndexType(indexType);
 				bulkData.setClientOptions(clientOptions);
-//				this.dataQueue.put(bulkData);
-				appendBulkData( bulkData);
+				_appendBulkData( bulkData);
 			}
-//		} catch (InterruptedException e) {
-//			logger.info("InterruptedException");
-//		}
+
+		}
+		finally {
+			w.unlock();
+		}
+
 	}
 
 	/**
@@ -353,19 +368,25 @@ public class BulkProcessor {
 	public void updateDatas(String index, String indexType, List<Object> datas, ClientOptions updateOptions){
 		if(datas == null || datas.size() == 0)
 			return;
-//		try {
-			assertShutdown();
+		assertShutdown();
+
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.UPDATE, data);
 				bulkData.setIndex(index);
 				bulkData.setIndexType(indexType);
 				bulkData.setClientOptions(updateOptions);
-//				this.dataQueue.put(bulkData);
-				appendBulkData( bulkData);
+				_appendBulkData( bulkData);
 			}
-//		} catch (InterruptedException e) {
-//			logger.info("InterruptedException");
-//		}
+
+		}
+		finally {
+			w.unlock();
+		}
 	}
 
 	/**
@@ -406,19 +427,24 @@ public class BulkProcessor {
 		if(datas == null || datas.size() == 0){
 			return ;
 		}
-//		try {
-			assertShutdown();
+		assertShutdown();
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
 			for(Object data :datas) {
 				BulkData bulkData = new BulkData(BulkData.DELETE, data);
 				bulkData.setIndex(index);
 				bulkData.setIndexType(indexType);
 				bulkData.setClientOptions(updateOptions);
-//				this.dataQueue.put(bulkData);
-				appendBulkData( bulkData);
+				_appendBulkData( bulkData);
 			}
-//		} catch (InterruptedException e) {
-//			logger.info("InterruptedException");
-//		}
+		}
+		finally {
+			w.unlock();
+		}
+
 	}
 
 	/**
@@ -587,9 +613,9 @@ public class BulkProcessor {
 				if(logger.isInfoEnabled())
 					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool  begin......");
 				executor.shutdown();
-				if(logger.isInfoEnabled()){
-					logger.info("BulkProcessor process total success records {} failed records {}.",totalSize,failedSize);
-				}
+//				if(logger.isInfoEnabled()){
+//					logger.info("BulkProcessor process total success records {} failed records {}.",totalSize,failedSize);
+//				}
 				if(logger.isInfoEnabled())
 					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool complete.");
 			}

@@ -1750,7 +1750,7 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 
 **1.并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析**
 
-参考章节【[5.12 设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_512-设置任务执行结果回调处理函数)】
+参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2312-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
 
 ```java
  public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
@@ -1783,7 +1783,7 @@ http.timeoutSocket = 50000
 
 **2.任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析**
 
-参考章节【[5.12 设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_512-设置任务执行结果回调处理函数)】
+参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2312-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
 
 bulk拒绝记录解决办法：
 
