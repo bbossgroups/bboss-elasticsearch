@@ -1113,14 +1113,15 @@ public class RestClientUtil extends ClientUtil{
 		}
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
-		for(BulkData bulkData:bulkDatas){
+		try {
+			for (BulkData bulkData : bulkDatas) {
 //			if(bulkData.isInsert() || bulkData.isUpdate()){
 //				if(!bulkData.isCollection()){
-					try {
-						BuildTool.evalBuilk(writer,bulkData,this.client.isUpper7());
-					} catch (IOException e) {
-						throw new ElasticSearchException(e);
-					}
+				try {
+					BuildTool.evalBuilk(writer, bulkData, this.client.isUpper7());
+				} catch (IOException e) {
+					throw new ElasticSearchException(e);
+				}
 //				}
 //				else{
 //					List<Object> innerDatas = bulkData.getDatas();
@@ -1155,10 +1156,16 @@ public class RestClientUtil extends ClientUtil{
 //				throw new BulkProcessorException(new StringBuilder().append("unknown bulk operation type:")
 //						.append(bulkData.getType()).append(", bulk operation type support: 0(insert),1(update),2(delete)").toString());
 //			}
-		}
-		writer.flush();
+			}
+			writer.flush();
 
-		return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig()), builder.toString(), ClientUtil.HTTP_POST);
+			return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig()), builder.toString(), ClientUtil.HTTP_POST);
+
+		}
+		finally {
+			builder = null;
+			writer = null;
+		}
 //		if(bulkCommand.getRefreshOption() != null) {
 //			return this.client.executeHttp(new StringBuilder().append("_bulk?")
 //							                                  .append( bulkCommand.getRefreshOption()).toString(),

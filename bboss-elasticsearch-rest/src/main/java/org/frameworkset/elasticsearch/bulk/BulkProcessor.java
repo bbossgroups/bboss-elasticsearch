@@ -567,7 +567,9 @@ public class BulkProcessor {
 			while(true) {
 
 				try {
-					Thread.currentThread().sleep(flushInterval);
+					synchronized (this) {
+						wait(flushInterval);
+					}
 					forceFlush(flushInterval);
 					if(!isShutdown()) {
 						continue;
