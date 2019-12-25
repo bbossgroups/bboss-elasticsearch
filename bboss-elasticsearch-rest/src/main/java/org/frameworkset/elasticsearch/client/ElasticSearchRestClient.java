@@ -363,17 +363,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 
 		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");
-		if(discoverHost_ == null){
-
-		}
-		else{
+		if(discoverHost_ != null && !discoverHost_.equals("")){
 			try {
 				this.discoverHost = Boolean.parseBoolean(discoverHost_);
 			}
 			catch (Exception e){
-				logger.error("Parse Long discoverHost parameter failed:"+discoverHost_,e);
+				logger.error("Parse Boolean discoverHost parameter failed:"+discoverHost_,e);
 			}
 		}
+
 
 
 
