@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.8 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v5.9.9 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -30,6 +30,8 @@ https://esdoc.bbossgroups.com/#/development
 2.BulkCommand增加处理开始时间和结束时间字段
 
 3.BulkProcessor改进:由被动bulk模式调整为主动bulk模式，减少内存占用，处理速度更快
+
+4.ClientInterface接口增加获取Elasticsearch集群版本号和集群信息的api
 
 # v5.9.8 功能改进
 
