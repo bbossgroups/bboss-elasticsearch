@@ -168,3 +168,23 @@ the number of real dsl cache records exceeded the maximum cache size n allowed b
 perKeyDSLStructionCacheSize参数含义，参考文档：
 
 [dsl配置文件中关于dsl解析语法树缓存相关配置](https://esdoc.bbossgroups.com/#/development?id=_5314-dsl配置文件中关于dsl解析语法树缓存相关配置)
+
+
+
+# 问题6 Conflicting property name definitions: '_source'
+
+![image-20200102105212923](images\jackson_source.png)
+
+## 问题分析
+
+jackson版本过低，例如2.3.2及以下的版本会报以上问题
+
+## 问题处理
+
+两个解决办法，二选一
+
+- 升级jackson 为2.9.9及以上版本
+
+![img](images\jacson.png)
+
+- 升级bboss到6.0.0

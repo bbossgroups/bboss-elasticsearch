@@ -8,6 +8,7 @@ import java.util.Map;
 public class SearchHit  extends BaseSearchHit{
 
 	@JsonProperty("_source")
+	@JsonDeserialize(using = ESHitDeserializer.class)
 	private Object source;
 
 
@@ -30,7 +31,7 @@ public class SearchHit  extends BaseSearchHit{
 	public Object getSource() {
 		return source;
 	}
-	@JsonDeserialize(using = ESHitDeserializer.class)
+
 	public void setSource(Object source) {
 		this.source = source;
 	}

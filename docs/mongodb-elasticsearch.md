@@ -614,7 +614,7 @@ MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
 | maxWaitTime                                  | int           | 从连接池中获取mongodb连接的最大等待时间，单位：毫秒          |
 | socketTimeout                                | int           | 从mongodb拉取数据socket超时时间，单位:毫秒                   |
 | socketKeepAlive                              | boolean       | socketKeepAlive:true false                                   |
-| connectionsPerHost                           | int           | 每个节点连接池保持少个连接数                                 |
+| connectionsPerHost                           | int           | Mongodb客户端连接池为每个Mongodb集群节点保持的最大连接数     |
 | threadsAllowedToBlockForConnectionMultiplier | int           | threads Allowed To Block For Connection Multiplier           |
 | serverAddresses                              | String        | 服务器地址列表，换行符分隔：127.0.0.1:27017\n127.0.0.1:27018 |
 | clientMongoCredential                        | String...     | 认证参数配置：数组方式设置mongodb数据库的、账号、口令、认证机制，例如："sessiondb","bboss","bboss","MONGODB-CR" |

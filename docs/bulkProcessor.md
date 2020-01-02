@@ -18,7 +18,19 @@ BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。�
 # 2.BulkProcessor案例
 用一个简单的demo来介绍上述功能：
 
+普遍项目案例源码
+
 https://github.com/bbossgroups/elasticsearch-example/tree/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor
+
+spring boot案例源码
+
+https://github.com/bbossgroups/elasticsearch-springboot-example/tree/master/src/main/java/org/bboss/elasticsearchtest/springboot/bulk
+
+https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/BulkProcessor7Test.java
+
+https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/BulkProcessorTest.java
+
+
 
 ```java
 package org.bboss.elasticsearchtest.bulkprocessor;

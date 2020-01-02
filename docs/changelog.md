@@ -24,6 +24,9 @@ https://esdoc.bbossgroups.com/#/development
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
    
+# v6.0.0 功能改进
+1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
+
 # v5.9.9 功能改进
 1.数据同步工具改进：可以指定导入的target Elasticsearch和source Elasticsearch数据源名称
 

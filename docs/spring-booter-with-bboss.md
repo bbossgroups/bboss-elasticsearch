@@ -513,9 +513,9 @@ spring:
 
 ## 4.2 定义加载多es集群配置的spring boot Configuration类
 
-新建类MultiESSTartConfigurer，声明分别对应两个不同集群的bboss工厂组件
+### 4.2.1 新建类MultiESSTartConfigurer，声明分别对应两个不同集群的bboss工厂组件
 
-```
+```java
 package org.bboss.elasticsearchtest.springboot;
 /*
  *  Copyright 2008 biaoping.yin
@@ -572,7 +572,7 @@ MultiESSTartConfigurer通过以下两个方法分别加载default和logs两个es
 
 default集群配置加载
 
-```
+```java
 @Primary
 @Bean(initMethod = "start")
 @ConfigurationProperties("spring.elasticsearch.bboss.default")
@@ -581,7 +581,7 @@ public BBossESStarter bbossESStarterDefault()
 
 logs集群配置加载
 
-```
+```java
 @Bean(initMethod = "start")
 @ConfigurationProperties("spring.elasticsearch.bboss.logs")
 public BBossESStarter bbossESStarterLogs()
@@ -593,7 +593,29 @@ BBossESStarter bbossESStarterLogs  对应spring.elasticsearch.bboss.logs配置�
 
 两个组件的声明都是必须的，在程序中只要用其中任意一个都可以获取到两个对应集群的ClientInterface组件，具体看后面的示例。
 
+### 4.2.2 通过BBossEsstarter或者指定的es数据客户端组件的方法
 
+默认default数据源
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarterDefault;
+//Create a client tool to load configuration files, single instance multithreaded security，指定default数据源的名称
+    ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("default",mappath);
+        //Build a create/modify/get/delete document client object, single instance multi-thread security，指定default数据源的名称
+        ClientInterface clientUtil = bbossESStarterDefault.getRestClient("default");    
+```
+
+logs数据源
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarterDefault;
+//Create a client tool to load configuration files, single instance multithreaded security，指定logs数据源的名称
+    ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("logs",mappath);
+        //Build a create/modify/get/delete document client object, single instance multi-thread security，指定logs数据源的名称
+        ClientInterface clientUtil = bbossESStarterDefault.getRestClient("logs");    
+```
 
 ## 4.3 多es集群测试用例
 

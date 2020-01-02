@@ -30,6 +30,7 @@ public class CompleteOption {
 	@JsonProperty("_score")
 	private double score;
 	@JsonProperty("_source")
+	@JsonDeserialize(using = ESHitDeserializer.class)
 	private Object source;
 	public String getText() {
 		return text;
@@ -75,7 +76,7 @@ public class CompleteOption {
 	public Object getSource() {
 		return source;
 	}
-	@JsonDeserialize(using = ESHitDeserializer.class)
+
 	public void setSource(Object source) {
 		this.source = source;
 	}

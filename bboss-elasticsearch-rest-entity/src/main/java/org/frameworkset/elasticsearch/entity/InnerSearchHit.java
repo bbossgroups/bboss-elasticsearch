@@ -23,6 +23,7 @@ import java.util.Map;
 public class InnerSearchHit  extends BaseSearchHit{
 
 	@JsonProperty("_source")
+	@JsonDeserialize(using = ESInnerHitDeserializer.class)
 	private Object source;
 
 	public InnerSearchHit() {
@@ -42,7 +43,7 @@ public class InnerSearchHit  extends BaseSearchHit{
 	public Object getSource() {
 		return source;
 	}
-	@JsonDeserialize(using = ESInnerHitDeserializer.class)
+
 	public void setSource(Object source) {
 		this.source = source;
 	}

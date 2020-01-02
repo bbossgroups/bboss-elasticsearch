@@ -287,15 +287,20 @@ http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionRe
 
 ### 2.6.3 保活机制配置
 
-控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，默认值为true，false 禁用
+- **推荐配置：**控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，过期时间由timeToLive指定，单位毫秒，默认值为true，false 禁用
+
 
 http.evictExpiredConnections=true
 
-空闲连接保活校验频率，单位毫秒，>0起作用
+http.timeToLive=3600000 单位毫秒，
 
-http.validateAfterInactivity=3000
+- 不推荐配置：空闲连接保活校验频率，单位毫秒，>0起作用，默认值 -1
 
-每次获取connection时校验连接，true，校验，默认false
+
+http.validateAfterInactivity=-1
+
+- 不推荐配置：每次获取connection时校验连接，true，校验，默认false
+
 
 http.staleConnectionCheckEnabled=false 
 
@@ -1643,6 +1648,8 @@ String datasr = clientUtil.executeHttp("demowithesindex-*/_search","querydsl",pa
 
 ## **5.2 多elasticsearch服务器集群支持**
 
+### 5.2.1 普通maven项目多ES集群数据源客户端组件定义方法
+
 初始化bboss elasticsearch组件ClientInterface 时，可以指定elasticsearch服务器，支持在指定的elasticsearch服务器集群进行操作,例如：
 
 ```java
@@ -1662,7 +1669,37 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 [maven项目多集群配置](https://esdoc.bbossgroups.com/#/common-project-with-bboss?id=_22%e5%a4%9a%e9%9b%86%e7%be%a4%e9%85%8d%e7%bd%ae)
 
+
+
+### 5.2.2 spring boot项目多ES集群数据源客户端组件初始化方法
+
+默认default数据源
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarter;
+//Create a client tool to load configuration files, single instance multithreaded security
+    ClientInterface clientUtil = bbossESStarter.getConfigRestClient("default",mappath);
+        //Build a create/modify/get/delete document client object, single instance multi-thread security
+        ClientInterface clientUtil = bbossESStarter.getRestClient("default");    
+```
+
+logs数据源
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarter;
+//Create a client tool to load configuration files, single instance multithreaded security
+    ClientInterface clientUtil = bbossESStarter.getConfigRestClient("logs",mappath);
+        //Build a create/modify/get/delete document client object, single instance multi-thread security
+        ClientInterface clientUtil = bbossESStarter.getRestClient("logs");    
+```
+
+
+logs对应的es集群服务器相关参数配置，请参考文档：
+
 [spring boot多集群配置](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=_4%e5%a4%9aes%e9%9b%86%e7%be%a4%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b)
+
 
 ## **5.3 dsl配置规范**
 
