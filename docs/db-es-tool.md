@@ -2196,6 +2196,12 @@ linux: restart.sh
 
 ![运行报表](images/jobstatic.png)
 
+## 2.7 spring boot中使用数据同步功能
+
+可以在spring boot中使用数据同步功能，这里以db-elasticsearch定时增量数据同步为例进行说明，其他数据源方法类似。
+
+参考文档：https://esdoc.bbossgroups.com/#/usedatatran-in-spring-boot
+
 # 3 Elasticsearch-db数据同步使用方法
 
 完整的示例工程：
@@ -2213,14 +2219,14 @@ Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法
 ```java
                 importBuilder.setBatchSize(2) //批量写入数据库的数据量
                              .setFetchSize(10); //按批从elasticsearch拉取数据的大小
- 
+
                 importBuilder.setDsl2ndSqlFile("dsl2ndSqlFile.xml")//配置从Elasticsearch检索数据的DSl语句和往数据库插入数据的insert sql语句
-				.setDslName("scrollSliceQuery")//指定配置文件中dsl的名称
-				.setScrollLiveTime("10m")//指定scroll上下文的有效时间
-				.setSliceQuery(true) //指定是否是slicescroll查询
-				.setSliceSize(5) //指定slice scroll查询的slice数量
-				.setSqlName("insertSQLnew") //指定数据库插入数据的insert sql语句
-				.setQueryUrl("dbdemo/_search") //设置需要检索的索引表和对应的操作
+    			.setDslName("scrollSliceQuery")//指定配置文件中dsl的名称
+    			.setScrollLiveTime("10m")//指定scroll上下文的有效时间
+    			.setSliceQuery(true) //指定是否是slicescroll查询
+    			.setSliceSize(5) //指定slice scroll查询的slice数量
+    			.setSqlName("insertSQLnew") //指定数据库插入数据的insert sql语句
+    			.setQueryUrl("dbdemo/_search") //设置需要检索的索引表和对应的操作
 //				//配置dsl中需要用到的参数及参数值
 				.addParam("var1","v1")
 				.addParam("var2","v2")
@@ -2339,7 +2345,7 @@ dsl2ndSqlFile.xml放置到工程resources目录下即可，示例内容如下：
 
 从es中查询数据导入数据库案例,基于时间戳增量同步，采用slicescroll检索
 
-```java
+​```java
 public class ES2DBScrollTimestampDemo {
 	public static void main(String[] args){
 		ES2DBScrollTimestampDemo esDemo = new ES2DBScrollTimestampDemo();
@@ -3114,9 +3120,4 @@ bboss elasticsearch交流：166471282
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
 
-
-# 11 支持我们
-
-<div align="left"></div>
-<img src="images/alipay.png"  height="200" width="200">
 

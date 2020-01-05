@@ -484,8 +484,25 @@ public void updateClusterSettings(){
    System.out.println(clientInterface.getClusterSettings(false));
 }
 ```
+# 17 修改索引max_result_window参数
 
-# 17 案例源码工程下载
+```java
+ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+		int max_result_window = 15000;
+		Map<String,Object> settings = new HashMap<String,Object>();
+		settings.put("index.max_result_window",max_result_window);
+		String result = clientInterface.updateAllIndicesSettings(settings);//修改所有索引的max_result_window设置
+
+		System.out.println(result);
+
+		result = clientInterface.updateIndiceSettings("dbdemo",settings) ;//修改索引dbdemo的max_result_window设置
+		System.out.println(result);
+```
+
+修改max_result_window后，如果没有生效，则需要重启Elasticsearch。
+
+
+# 18 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
@@ -493,7 +510,7 @@ public void updateClusterSettings(){
 
 
 
-# 18 开发交流
+# 19 开发交流
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 
@@ -506,9 +523,4 @@ bboss elasticsearch交流：166471282
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
 
-
-# 支持我们
-
-<div align="left"></div>
-<img src="images/alipay.png"  height="200" width="200">
 

@@ -27,6 +27,19 @@ https://esdoc.bbossgroups.com/#/development
 # v6.0.0 功能改进
 1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
 
+2.数据同步工具：importbuilder组件增加Elasticsearch数据源代码配置功能，对应API
+```java
+    /**
+	 * 添加es客户端配置属性，具体的配置项参考文档：
+	 * https://esdoc.bbossgroups.com/#/development?id=_2-elasticsearch%e9%85%8d%e7%bd%ae
+	 *
+	 * 如果在代码中指定配置项，就不会去加载application.properties中指定的数据源配置，如果没有配置则去加载applciation.properties中的对应数据源配置
+	 */
+    public BaseImportBuilder addElasticsearchProperty(String name,String value) 
+```
+
+3.数据同步工具:增加HBase数据同步功能
+
 # v5.9.9 功能改进
 1.数据同步工具改进：可以指定导入的target Elasticsearch和source Elasticsearch数据源名称
 
@@ -782,13 +795,6 @@ bboss elasticsearch交流：166471282
 **bboss elasticsearch微信公众号：**
 
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
-
-
-
-# 支持我们
-
-<div align="left"></div>
-<img src="images/alipay.png"  height="200" width="200">
 
 
 

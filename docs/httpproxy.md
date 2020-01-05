@@ -597,8 +597,3 @@ bboss http交流：166471282
 
 
 
-# 8.支持我们
-
-<div align="left"></div>
-<img src="images/alipay.png"  height="200" width="200">
-

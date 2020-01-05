@@ -40,6 +40,7 @@
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)
+  - [Spring boot与数据同步工具应用](usedatatran-in-spring-boot.md)
   - [Mongodb-Elasticsearch同步工具](mongodb-elasticsearch.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)

@@ -870,8 +870,3 @@ bboss elasticsearch交流：166471282
 
 
 
-# 5.支持我们
-
-<div align="left"></div>
-<img src="images/alipay.png"  height="200" width="200">
-
