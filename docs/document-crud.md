@@ -603,6 +603,8 @@ public class Demo extends ESId {
 
 检索返回对象类型为Map时，如果需要同时返回元数据，则可以将返回类型指定为继承HashMap的子类 org.frameworkset.elasticsearch.entity.MetaMap，使用示例如下：
 
+### 6.2.1 单文档检索
+
 ```java
     //创建批量创建文档的客户端对象，单实例多线程安全
         ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -611,38 +613,74 @@ public class Demo extends ESId {
                 "demo",//索引类型
                 "1",//文档id
                 MetaMap.class
-        );
+        );//指定返回对象类型为MetaMap
         //打印metamap数据和返回的文档元数据信息
-        System.out.println(newDemo);
-        System.out.println("getId:"+newDemo.getId());
-        System.out.println("getIndex:"+newDemo.getIndex());
-        System.out.println("getNode:"+newDemo.getNode());
-        System.out.println("getShard:"+newDemo.getShard());
-        System.out.println("getType:"+newDemo.getType());
-        System.out.println("getExplanation:"+newDemo.getExplanation());
-        System.out.println("getFields:"+newDemo.getFields());
-        System.out.println("getHighlight:"+newDemo.getHighlight());
-        System.out.println("getInnerHits:"+newDemo.getInnerHits());
-        System.out.println("getNested:"+newDemo.getNested());
-        System.out.println("getPrimaryTerm:"+newDemo.getPrimaryTerm());
-        System.out.println("getScore:"+newDemo.getScore());
-        System.out.println("getSeqNo:"+newDemo.getSeqNo());
-        System.out.println("getVersion:"+newDemo.getVersion());
-        System.out.println("getParent:"+newDemo.getParent());
-        System.out.println("getRouting:"+newDemo.getRouting());
-        System.out.println("getSort:"+newDemo.getSort());
-        System.out.println("isFound:"+newDemo.isFound());
-        //列表检索
-        ESDatas<MetaMap> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
+            System.out.println(newDemo);
+            System.out.println("getId:"+newDemo.getId());//文档_id
+            System.out.println("getIndex:"+newDemo.getIndex());//索引名称
+            System.out.println("getNode:"+newDemo.getNode());
+            System.out.println("getShard:"+newDemo.getShard());
+            System.out.println("getType:"+newDemo.getType());//索引类型
+            System.out.println("getExplanation:"+newDemo.getExplanation());
+            System.out.println("getFields:"+newDemo.getFields());
+            System.out.println("getHighlight:"+newDemo.getHighlight());//高亮信息
+            System.out.println("getInnerHits:"+newDemo.getInnerHits());
+            System.out.println("getNested:"+newDemo.getNested());
+            System.out.println("getPrimaryTerm:"+newDemo.getPrimaryTerm());
+            System.out.println("getScore:"+newDemo.getScore());//索引评分
+            System.out.println("getSeqNo:"+newDemo.getSeqNo());
+            System.out.println("getVersion:"+newDemo.getVersion());//索引文档版本号
+            System.out.println("getParent:"+newDemo.getParent());//父文档_id
+            System.out.println("getRouting:"+newDemo.getRouting());
+            System.out.println("getSort:"+newDemo.getSort());
+            System.out.println("isFound:"+newDemo.isFound());
+       
+```
+
+### 6.2.2 列表检索
+
+```java
+		Map params = new HashMap();
+        params.put("size",100);
+        params.put("name","jack");
+//列表检索
+        ESDatas<MetaMap> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<MetaMap>结果集和符合条件的总记录数totalSize
             = clientUtil.searchList("trace-*/_search",//查询操作，查询indices trace-*中符合条件的数据
                                 "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
                                 parmas,//查询条件,Map<key,value>
-                                MetaMap.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+                                MetaMap.class);//指定返回对象类型为MetaMap
 //获取结果对象列表
         List<MetaMap> demos = data.getDatas();
         //获取总记录数
         long totalSize = data.getTotalSize();
+        //遍历列表，并从MetaMap中获取检索元数据
+        for(int i = 0; demos != null && i < demos.size(); i ++){
+              //单文档检索
+            MetaMap newDemo = demos.get(i);
+            //打印metamap数据和返回的文档元数据信息
+            System.out.println(newDemo);
+            System.out.println("getId:"+newDemo.getId());//文档_id
+            System.out.println("getIndex:"+newDemo.getIndex());//索引名称
+            System.out.println("getNode:"+newDemo.getNode());
+            System.out.println("getShard:"+newDemo.getShard());
+            System.out.println("getType:"+newDemo.getType());//索引类型
+            System.out.println("getExplanation:"+newDemo.getExplanation());
+            System.out.println("getFields:"+newDemo.getFields());
+            System.out.println("getHighlight:"+newDemo.getHighlight());//高亮信息
+            System.out.println("getInnerHits:"+newDemo.getInnerHits());
+            System.out.println("getNested:"+newDemo.getNested());
+            System.out.println("getPrimaryTerm:"+newDemo.getPrimaryTerm());
+            System.out.println("getScore:"+newDemo.getScore());//索引评分
+            System.out.println("getSeqNo:"+newDemo.getSeqNo());
+            System.out.println("getVersion:"+newDemo.getVersion());//索引文档版本号
+            System.out.println("getParent:"+newDemo.getParent());//父文档_id
+            System.out.println("getRouting:"+newDemo.getRouting());
+            System.out.println("getSort:"+newDemo.getSort());
+            System.out.println("isFound:"+newDemo.isFound());
+        }
 ```
+
+
 
 ## 6.3 索引文档元数据注解使用
 
