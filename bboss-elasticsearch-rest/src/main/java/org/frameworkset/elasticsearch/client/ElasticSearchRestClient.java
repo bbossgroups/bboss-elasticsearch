@@ -86,6 +86,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
 	protected  boolean discoverHost = false;
 	protected SlowDslCallback slowDslCallback;
+	private boolean useHttps;
+
+	public boolean isUseHttps() {
+		return useHttps;
+	}
+
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
 	}
@@ -372,7 +378,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 		}
 
-
+		String useHttps_ = elasticsearchPropes.getProperty("elasticsearch.useHttps");
+		if(useHttps_ != null && !useHttps_.equals("")){
+			try {
+				this.useHttps = Boolean.parseBoolean(useHttps_);
+			}
+			catch (Exception e){
+				logger.error("Parse Boolean useHttps parameter failed:"+useHttps_,e);
+			}
+		}
 
 
 	}

@@ -36,6 +36,7 @@ public class HostDiscover extends Thread{
 		this.elasticSearchRestClient = elasticSearchRestClient;
 		this.elasticSearch = elasticSearchRestClient.getElasticSearch();
 		this.clientInterface = elasticSearch.getRestClientUtil();
+		this.scheme =  !elasticSearchRestClient.isUseHttps()? Scheme.HTTP:Scheme.HTTPS;
 		BaseApplicationContext.addShutdownHook(new Runnable() {
 			@Override
 			public void run() {
@@ -132,7 +133,7 @@ public class HostDiscover extends Thread{
 								assert token == JsonToken.START_OBJECT;
 
 								String nodeId = parser.getCurrentName();
-								HttpHost sniffedHost = readHost(nodeId, parser, this.scheme);
+								HttpHost sniffedHost = readHost(nodeId, parser,this.scheme);
 								if (sniffedHost != null) {
 									if(logger.isTraceEnabled())
 										logger.trace(new StringBuilder().append("Adding node [" ).append( nodeId ).append( "] for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("]").toString());

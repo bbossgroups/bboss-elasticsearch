@@ -223,6 +223,11 @@ public abstract class BaseESProperties {
 		private String soKeepAlive;
 		private String timeToLive;
 		private String validateAfterInactivity;
+		private String keystoreAlias;
+		private String trustAlias;
+		private String supportedProtocols;
+		private String truststore;
+		private String trustPassword;
 		/**
 		 * 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
 		 * validateAfterInactivity来控制连接是否有效
@@ -404,6 +409,46 @@ public abstract class BaseESProperties {
 		public void setRetryInterval(String retryInterval) {
 			this.retryInterval = retryInterval;
 		}
+
+		public String getKeystoreAlias() {
+			return keystoreAlias;
+		}
+
+		public void setKeystoreAlias(String keystoreAlias) {
+			this.keystoreAlias = keystoreAlias;
+		}
+
+		public String getTrustAlias() {
+			return trustAlias;
+		}
+
+		public void setTrustAlias(String trustAlias) {
+			this.trustAlias = trustAlias;
+		}
+
+		public String getSupportedProtocols() {
+			return supportedProtocols;
+		}
+
+		public void setSupportedProtocols(String supportedProtocols) {
+			this.supportedProtocols = supportedProtocols;
+		}
+
+		public String getTruststore() {
+			return truststore;
+		}
+
+		public void setTruststore(String truststore) {
+			this.truststore = truststore;
+		}
+
+		public String getTrustPassword() {
+			return trustPassword;
+		}
+
+		public void setTrustPassword(String trustPassword) {
+			this.trustPassword = trustPassword;
+		}
 	}
 
 	public static class Elasticsearch{
@@ -417,6 +462,15 @@ public abstract class BaseESProperties {
 		private String sliceScrollBlockedWaitTimeout;
 		private String healthCheckInterval;
 		private String slowDslThreshold;
+		private String useHttps;
+
+		public void setUseHttps(String useHttps) {
+			this.useHttps = useHttps;
+		}
+
+		public String getUseHttps() {
+			return useHttps;
+		}
 
 		public String getSlowDslCallback() {
 			return slowDslCallback;
@@ -694,7 +748,8 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslCallback()))
 				properties.put(_name+"elasticsearch.slowDslCallback",this.getElasticsearch().getSlowDslCallback());
-
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getUseHttps()))
+				properties.put(_name+"elasticsearch.useHttps",this.getElasticsearch().getUseHttps());
 
 		}
 
@@ -742,7 +797,23 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.customHttpRequestRetryHandler",this.getHttp().getCustomHttpRequestRetryHandler());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getEvictExpiredConnections()))
 				properties.put(_name+"http.evictExpiredConnections",this.getHttp().getEvictExpiredConnections());
-
+/**
+ * keystoreAlias
+ * trustAlias
+ * supportedProtocols
+ * truststore
+ * trustPassword
+ */
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getKeystoreAlias()))
+				properties.put(_name+"http.keystoreAlias",this.getHttp().getKeystoreAlias());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTrustAlias() ))
+				properties.put(_name+"http.trustAlias",this.getHttp().getTrustAlias());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getSupportedProtocols()))
+				properties.put(_name+"http.supportedProtocols",this.getHttp().getSupportedProtocols());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTruststore()))
+				properties.put(_name+"http.truststore",this.getHttp().getTruststore());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTrustPassword()))
+				properties.put(_name+"http.trustPassword",this.getHttp().getTrustPassword());
 		}
 
 		if(dslfile != null){

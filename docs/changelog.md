@@ -40,6 +40,23 @@ https://esdoc.bbossgroups.com/#/development
 
 3.数据同步工具:增加HBase数据同步功能
 
+4.https协议新增配置参数：
+
+http.keystoreAlias 可选，String
+
+http.trustAlias 可选，String
+
+http.supportedProtocols ssl 协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1
+
+http.truststore truststore证书文件路径，可选
+
+http.trustPassword 可选，String
+
+5.rest client 增加elasticsearch.useHttps配置参数
+
+elasticsearch.useHttps true 自动发现节点，采用https协议进行通讯,false 采用http协议通讯，默认false
+
+
 # v5.9.9 功能改进
 1.数据同步工具改进：可以指定导入的target Elasticsearch和source Elasticsearch数据源名称
 

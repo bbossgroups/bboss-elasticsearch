@@ -2182,24 +2182,28 @@ $myarray.size()
 
  **${xxx}都是硬解析的，除了if-else和foreach条件、foreach循环下标变量velocityCount中使用，其他地方都尽量避免使用  ${xxx}模式变量**
 
-### 5.3.6 foreach循环中变量使用优化
+### 5.3.6 foreach循环中使用#[xxx]模式变量及优化
 
-某些情况（比如list集合、数组或者对象转json的转换处理场景）的的foreach循环可以进行优化编写，例如：
+可以下foreach循环中结合循环计数器$velocityCount使用#[xxx]模式变量，例如：
 
 ```json
 
 
-"terms":{"sourceFields":[#foreach($source in $sourceValue) #if($velocityCount > 0),#end 
-
-#[sourceValue[$velocityCount]] #end ]}
+"terms":{"sourceFields":[
+    					 #foreach($sourceField in $sourceFields) 
+                             #if($velocityCount > 0),#end 
+                             #[sourceFields[$velocityCount]] 
+                         #end 
+                        ]
+        }
 
 
 ```
 
-调整为：
+某些情况（比如list集合、数组或者对象转json的转换处理场景）的的foreach循环可以进行优化编写，可以将上面的foreach循环优化为以下形式：
 
 ```json
-"terms":{"sourceFields":#[sourceValue,serialJson=true]}
+"terms":{"sourceFields":#[sourceFields,serialJson=true]}
 ```
 
 
