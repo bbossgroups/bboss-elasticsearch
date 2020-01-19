@@ -10,6 +10,8 @@
 
   - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md) 
 
+  - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md) 
+
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 
   - [Elasticsearch bboss Performance](performance.md) 
@@ -55,11 +57,12 @@
   - [ElasticSearch DSL Script使用案例](ElasticSearch-DSL-Script.md)
   - [ElasticSearch客户端注解介绍](client-annotation.md)
   - [Elasticsearch控制搜索相关度评分案例](function-script-score.md)
-  - [通过Function Score优化Elasticsearch搜索结果](function_score.md)
+  - [Function Score优化Elasticsearch搜索结果](function_score.md)
   - [Elasticsearch历史数据清理](elasticsearch-indexclean-task.md)
   - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
+  - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
 - [Http负载均衡器使用介绍](httpproxy.md) 
   
 

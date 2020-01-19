@@ -1,17 +1,16 @@
 package org.frameworkset.elasticsearch.template;
 
 import com.frameworkset.util.VariableHandler;
-import org.frameworkset.spi.assemble.Pro;
 
 public class ESInfo {
-	private Pro templatePro;
+	private TemplateMeta templatePro;
 	private boolean tpl ;
 	private ESTemplate estpl;
 	private String templateName;
 	private String template;
 	private boolean multiparser;
 	private ESUtil esUtil;
-	public ESInfo(String templateName, String template,boolean istpl,boolean multiparser,Pro templatePro) {
+	public ESInfo(String templateName, String template,boolean istpl,boolean multiparser,TemplateMeta templatePro) {
 		this.template = template;
 		this.templateName = templateName;
 		this.tpl = istpl;
@@ -39,10 +38,10 @@ public class ESInfo {
 	public void setEstpl(ESTemplate estpl) {
 		this.estpl = estpl;
 	}
-	public Pro getTemplatePro() {
+	public TemplateMeta getTemplatePro() {
 		return templatePro;
 	}
-	public void setTemplatePro(Pro templatePro) {
+	public void setTemplatePro(TemplateMeta templatePro) {
 		this.templatePro = templatePro;
 	}
 	public String getTemplateName() {

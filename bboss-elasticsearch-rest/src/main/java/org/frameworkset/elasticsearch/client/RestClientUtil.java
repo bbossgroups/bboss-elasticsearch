@@ -52,9 +52,9 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	protected String[] monitorIndices = new String[]{
 			".monitoring*",".triggered_watches",
-			".watcher-history*",".ml*"
+			".watcher-history*",".ml*",".kibana_*"
 	};
-	protected String monitorIndicesString = ".monitoring*,.triggered_watches,.watcher-history*,.ml*";
+	protected String monitorIndicesString = ".monitoring*,.triggered_watches,.watcher-history*,.ml*,.kibana_*";
 
 	public RestClientUtil(ElasticSearchClient client,IndexNameBuilder indexNameBuilder) {
 		this.client = (ElasticSearchRestClient)client;

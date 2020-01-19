@@ -370,17 +370,18 @@ A spring boot Web demo github url:
 
 <https://github.com/bbossgroups/es_bboss_web>
 
-# Note
+# 获取Elasticsearch客户端组件实例方法
 
-Common project use ElasticSearchHelper to get a elasticsearch rest client api instance： 
+Use ElasticSearchHelper to get a elasticsearch rest client api instance in Common project ： 
 
 ```java
-//创建加载配置文件的客户端工具，单实例多线程安全
+//创建加载配置文件的客户端实例，单实例多线程安全
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
+//创建直接操作dsl的客户端实例，单实例多线程安全
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
 ```
 
-Spring boot use BBossESStarter to get a elasticsearch rest client api instance:
+Use BBossESStarter to get a elasticsearch rest client api instance in Spring boot:
 
 ```java
     @Autowired

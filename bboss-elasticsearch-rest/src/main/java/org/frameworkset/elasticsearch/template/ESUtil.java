@@ -27,7 +27,6 @@ import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Param;
-import org.frameworkset.spi.assemble.Pro;
 import org.frameworkset.util.ClassUtil;
 import org.frameworkset.util.annotations.DateFormateMeta;
 import org.frameworkset.util.annotations.wraper.ColumnWraper;
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -59,7 +57,7 @@ import java.util.*;
  * @version 1.0
  */
 public class ESUtil {
-	protected BaseApplicationContext templatecontext;
+	protected TemplateContainer templatecontext;
 	private static Logger log = LoggerFactory.getLogger(ESUtil.class);
 	protected static Map<String,ESUtil> esutils = new HashMap<String,ESUtil>(); 
 	protected static long refresh_interval = 5000;
@@ -380,10 +378,10 @@ public class ESUtil {
 						value = property.getValue(bean);
 					} catch (InvocationTargetException e1) {
 						log.error(new StringBuilder().append("Failed to get attribute[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "] value:Check the template definition").append("[")
-								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1.getTargetException());
+								.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(), e1.getTargetException());
 					} catch (Exception e1) {
 						log.error(new StringBuilder().append("Failed to get attribute[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "] value:Check the template definition").append("[")
-								.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(), e1);
+								.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(), e1);
 					}
 
 					name = property.getName();
@@ -409,7 +407,7 @@ public class ESUtil {
 										.append( "] value failed: When the value is null, the converter must return an object of ColumnType type to indicate the Java type corresponding to the table field. Check the template definition")
 										.append("[")
       										.append(template).append("]@")
-										.append(this.templatecontext.getConfigfile()).toString());
+										.append(this.templatecontext.getNamespace()).toString());
 
 							if (!(cv instanceof ColumnType)) {
 								value = cv;
@@ -466,10 +464,10 @@ public class ESUtil {
 
 			} catch (SecurityException e) {
 				throw new ElasticSearchException(new StringBuilder().append("Failed to convert attribute values: Check template definitions").append("[")
-						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
+						.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(),e);
 			} catch (IllegalArgumentException e) {
 				throw new ElasticSearchException(new StringBuilder().append("Failed to convert attribute values: Check template definitions").append("[")
-						.append(template).append("]@").append(this.templatecontext.getConfigfile()).toString(),e);
+						.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(),e);
 			}
 //			catch (InvocationTargetException e) {
 //				throw new ElasticSearchException(e.getTargetException());
@@ -483,7 +481,7 @@ public class ESUtil {
 
 		}
 		throw new ElasticsearchParseException(new StringBuilder().append(beanInfo.getClazz().getName()).append("No value are specified for variable").append("[").append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
-				.append(template).append("]@").append(this.templatecontext.getConfigfile())
+				.append(template).append("]@").append(this.templatecontext.getNamespace())
 				.toString());
 
 
@@ -524,7 +522,7 @@ public class ESUtil {
 								.append("No value are specified for variable")
 								.append("[")
 								.append(variable.getVariableName()).append("] of the elasticsearch dsl template[")
-								.append(template).append("]@").append(this.templatecontext.getConfigfile())
+								.append(template).append("]@").append(this.templatecontext.getNamespace())
 								.append(" Error dsl:\r\n")
 								.append(builder.toString())
 								.append("\r\n Dsl from config file:\r\n")
@@ -668,7 +666,7 @@ public class ESUtil {
 //	private Map<String,SQLTemplate> sqlVelocityTemplates;
 //	
 	
-	private static DaemonThread damon = null;
+	static DaemonThread damon = null;
 
 	/**
 	 * Returns a string whose value is this string, with any leading and trailing
@@ -769,14 +767,14 @@ public class ESUtil {
 		this.esrefs = null;
 		esInfos = new HashMap<String,ESInfo>();
 		esrefs = new HashMap<String,ESRef> ();
-		Set keys = this.templatecontext.getPropertyKeys();
+		Set keys = this.templatecontext.getTempalteNames();
 		if(keys != null && keys.size() > 0)
 		{
 			Iterator<String> keys_it = keys.iterator();
 			while(keys_it.hasNext())
 			{
 				String key = keys_it.next();
-				Pro pro = this.templatecontext.getProBean(key);
+				TemplateMeta pro = this.templatecontext.getProBean(key);
 				String templateFile = (String)pro.getExtendAttribute("templateFile");
 				if(templateFile == null)
 				{
@@ -818,7 +816,7 @@ public class ESUtil {
 					{
 						log.warn(new StringBuilder().append("The DSL template ")
 													 .append(key).append(" in the DSl file ")
-											.append(templatecontext.getConfigfile())
+											.append(templatecontext.getNamespace())
 											.append(" is defined as a reference to the DSL template in another configuration file ")
 											.append(templateFile)
 											.append(", but the name of the DSL template statement to be referenced is not specified by the templateName attribute, for example:\r\n")
@@ -861,9 +859,28 @@ public class ESUtil {
 	 
 		
 	}
-	           
+
+	void clearTemplateDatas(){
+		if (esInfos != null) {
+			this.esInfos.clear();
+			esInfos = null;
+		}
+		if (esrefs != null) {
+			this.esrefs.clear();
+			esrefs = null;
+		}
+		this.templateCache.clear();
+	}
+	void buildTemplateDatas(TemplateContainer newTemplateContainer){
+		this.templatecontext = newTemplateContainer;
+		trimValues();
+		destroyed = false;
+	}
 	void reinit()
 	{
+		templatecontext.reinit();
+
+		/**
 		String file = templatecontext.getConfigfile();
 		templatecontext.removeCacheContext();
 		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(file);
@@ -886,6 +903,7 @@ public class ESUtil {
 		else{
 			templatecontext.restoreCacheContext();
 		}
+		 */
 		
 	}
 	 
@@ -919,7 +937,7 @@ public class ESUtil {
 	
 	public String getTemplateFile()
 	{
-		return this.templatecontext.getConfigfile();
+		return this.templatecontext.getNamespace();
 		
 	}
 	static
@@ -933,7 +951,7 @@ public class ESUtil {
 			}});
 	}
 	private static Object lock = new Object();
-	private static void checkESUtil(URL fileUrl, String sqlfile, ESUtil sqlutil){
+	private void checkESUtil(){
 		
 		refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
 		if(refresh_interval > 0)
@@ -944,29 +962,29 @@ public class ESUtil {
 				{
 					if(damon == null)
 					{
-						damon = new DaemonThread(refresh_interval,"ElasticSearch files Refresh Worker"); 
+						damon = new DaemonThread(refresh_interval,"ElasticSearch DSL Template Refresh Worker");
 						damon.start();
 						
 					}
 				}
 			}
-			damon.addFile(fileUrl,sqlfile, new ResourceTempateRefresh(sqlutil));
+			templatecontext.monitor(new ResourceTempateRefresh(this));
+//			damon.addFile(fileUrl,templateNamespace, new ResourceTempateRefresh(sqlutil));
 		}
 		else{
-			log.debug("ElasticSearch files Refresh Interval:"+refresh_interval+",ignore hotload dsl file["+sqlfile+"]");
+			log.debug("ElasticSearch DSL Template Refresh Interval:"+refresh_interval+",ignore hotload DSL Template["+templatecontext.getNamespace()+"]");
 		}
 		
 	}
 	private ESUtil(String templatefile) {
 		this.templateFile = templatefile;
-		this.templatecontext = new ESSOAFileApplicationContext(templatefile);
-		this.perKeyDSLStructionCacheSize = templatecontext.getIntProperty("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
-		this.alwaysCacheDslStruction  = templatecontext.getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
+		this.templatecontext = new AOPTemplateContainerImpl(this,new ESSOAFileApplicationContext(templatefile));
+		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
+		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
-		this.realTemplateFile = this.templatecontext.getConfigfile();
+		this.realTemplateFile = this.templatecontext.getNamespace();//.getConfigfile();
 		this.trimValues();
-		
-		 checkESUtil(templatecontext.getConfigFileURL(),templatefile,this);
+		checkESUtil();
 		
  
 	}
@@ -1178,7 +1196,7 @@ public class ESUtil {
 		
 		if(sql != null &&  variablevalues != null && variablevalues.size() > 0)
 		{
-			sql = BBossVelocityUtil.evaluate(variablevalues, this.templatecontext.getConfigfile()+"|"+name, sql);
+			sql = BBossVelocityUtil.evaluate(variablevalues, this.templatecontext.getNamespace()+"|"+name, sql);
 		}
 		return sql;
 
@@ -1190,7 +1208,7 @@ public class ESUtil {
 	
 	public String[] getPropertyKeys()
 	{
-		Set<String> keys = this.templatecontext.getPropertyKeys();
+		Set<String> keys = this.templatecontext.getTempalteNames();
 		if(keys == null )
 			return new String[]{};
 		String[] rets = new String[keys.size()];
@@ -1213,7 +1231,7 @@ public class ESUtil {
 	/**
 	 * @return the sqlcontext
 	 */
-	public BaseApplicationContext getTemplateContext() {
+	public TemplateContainer getTemplateContext() {
 		return this.templatecontext;
 	}
 	

@@ -40,17 +40,39 @@ https://esdoc.bbossgroups.com/#/development
 
 3.数据同步工具:增加HBase数据同步功能
 
-4.https协议新增配置参数：
+4.https协议改进：支持pem ssl证书和 keystore and truststore证书
 
-http.keystoreAlias 可选，String
+可以支持以下三种方式配置ssl证书
 
-http.trustAlias 可选，String
+4.1 Using PEM certificates：
 
-http.supportedProtocols ssl 协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1
+| 参数名称                | 说明                                               |
+| ----------------------- | -------------------------------------------------- |
+| http.pemCert            | pem证书路径，String                                |
+| http.pemtrustedCA       | trustedHTTPCertificates证书路径，String            |
+| http.supportedProtocols | ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.pemkeyPassword     | 私钥pem证书口令，String                            |
+| http.pemKey             | 私钥pem证书路径，String                            |
 
-http.truststore truststore证书文件路径，可选
+4.2 Using the keystore and truststore file：
 
-http.trustPassword 可选，String
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.keystoreAlias      | 可选，String                                             |
+| http.trustAlias         | 可选，String                                             |
+| http.supportedProtocols | 可选，ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.truststore         | truststore证书文件路径，证书类型为JKS                    |
+| http.trustPassword      | truststore证书口令，String                               |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
+
+4.3 Using the keystore :
+
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.supportedProtocols | ssl协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
 
 5.rest client 增加elasticsearch.useHttps配置参数
 
