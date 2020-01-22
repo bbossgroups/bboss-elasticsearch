@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
+import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
 
 import java.util.Set;
@@ -36,9 +37,19 @@ public interface TemplateContainer {
 
 	void destroy(boolean b);
 
-	void reinit();
+	void reinit(ESUtil esUtil);
+
+	/**
+	 * 命名空间对应的全局每一个template对应的dsl语法缓冲区大小
+	 * @return
+	 */
 	int getPerKeyDSLStructionCacheSize();
+
+	/**
+	 * 命名空间对应的全局是否开启每一个template对应的dsl语法缓冲机制
+	 * @return
+	 */
 	boolean isAlwaysCacheDslStruction();
 
-	void monitor(ResourceInitial resourceTempateRefresh);
+	void monitor(DaemonThread daemonThread, ResourceInitial resourceTempateRefresh);
 }

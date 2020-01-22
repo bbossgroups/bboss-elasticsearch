@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
+import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
 import org.frameworkset.spi.BaseApplicationContext;
 
@@ -29,11 +30,9 @@ import java.util.Set;
  * @version 1.0
  */
 public class AOPTemplateContainerImpl implements TemplateContainer{
-	private ESUtil esUtil;
 	private BaseApplicationContext templatecontext;
 
-	public AOPTemplateContainerImpl(ESUtil esUtil, BaseApplicationContext templatecontext) {
-		this.esUtil = esUtil;
+	public AOPTemplateContainerImpl( BaseApplicationContext templatecontext) {
 		this.templatecontext = templatecontext;
 	}
 
@@ -59,7 +58,7 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 	public boolean isAlwaysCacheDslStruction(){
 		return templatecontext.getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 	}
-	public void reinit(){
+	public synchronized void reinit(ESUtil esUtil){
 		String file = templatecontext.getConfigfile();
 		templatecontext.removeCacheContext();
 		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(file);
@@ -68,7 +67,7 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 			templatecontext.destroy(false);
 			templatecontext = essoaFileApplicationContext;
 //			templatecontext = new ESSOAFileApplicationContext(file);
-			esUtil.buildTemplateDatas(new AOPTemplateContainerImpl(esUtil,essoaFileApplicationContext));
+			esUtil.buildTemplateDatas(this);
 //			trimValues();
 //			destroyed = false;
 		}
@@ -76,7 +75,7 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 			templatecontext.restoreCacheContext();
 		}
 	}
-	public void monitor(ResourceInitial resourceTempateRefresh){
-		esUtil.damon.addFile(templatecontext.getConfigFileURL(),this.getNamespace(), new ESUtil.ResourceTempateRefresh(esUtil));
+	public void monitor(DaemonThread daemonThread,ResourceInitial resourceTempateRefresh){
+		daemonThread.addFile(templatecontext.getConfigFileURL(),this.getNamespace(), resourceTempateRefresh);
 	}
 }

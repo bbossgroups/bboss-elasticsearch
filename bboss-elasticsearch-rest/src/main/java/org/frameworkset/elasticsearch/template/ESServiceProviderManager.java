@@ -39,7 +39,10 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 		super(applicationContext, charset);
 		// TODO Auto-generated constructor stub
 	}
-
+	public ESServiceProviderManager() {
+		super(null);
+		// TODO Auto-generated constructor stub
+	}
 
 	public ESServiceProviderManager(BaseApplicationContext applicationContext) {
 		super(applicationContext);

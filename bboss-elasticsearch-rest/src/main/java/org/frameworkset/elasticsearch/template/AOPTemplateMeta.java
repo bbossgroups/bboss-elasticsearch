@@ -29,21 +29,43 @@ public class AOPTemplateMeta implements TemplateMeta{
 	private Pro pro;
 	public AOPTemplateMeta(Pro pro){
 		this.pro = pro;
+	}
 
+
+	/**
+	 * 返回模板名称
+	 * @return
+	 */
+	public String getName(){
+		return pro.getName();
+	}
+
+
+
+	@Override
+	public String getReferenceNamespace() {
+		return (String)pro.getExtendAttribute("templateFile");
 	}
 
 	@Override
-	public Object getExtendAttribute(String extendAttribute) {
-		return pro.getExtendAttribute(extendAttribute);
+	public String getReferenceTemplateName() {
+		return (String)pro.getExtendAttribute("templateName");
 	}
 
 	@Override
-	public Object getObject() {
+	public Boolean getVtpl() {
+		return pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板;
+	}
+
+	@Override
+	public Boolean getMultiparser() {
+		return pro.getBooleanExtendAttribute("multiparser",getVtpl());//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句;
+	}
+
+	@Override
+	public Object getDslTemplate() {
 		return pro.getObject();
 	}
 
-	@Override
-	public boolean getBooleanExtendAttribute(String extendAttribute, boolean defaultValue) {
-		return pro.getBooleanExtendAttribute(extendAttribute,defaultValue);
-	}
+
 }

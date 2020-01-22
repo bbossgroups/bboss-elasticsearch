@@ -16,9 +16,7 @@ import org.frameworkset.elasticsearch.handler.ElasticSearchResponseHandler;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.scroll.SliceScrollResult;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
-import org.frameworkset.elasticsearch.template.ESInfo;
-import org.frameworkset.elasticsearch.template.ESTemplateHelper;
-import org.frameworkset.elasticsearch.template.ESUtil;
+import org.frameworkset.elasticsearch.template.*;
 import org.frameworkset.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +47,28 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	private String configFile;
 	private ESUtil esUtil = null;
 
+	/**
+	 * xml 管理dsl
+	 * @param client
+	 * @param indexNameBuilder
+	 * @param configFile
+	 */
 	public ConfigRestClientUtil(ElasticSearchClient client, IndexNameBuilder indexNameBuilder, String configFile) {
 		super(client, indexNameBuilder);
 		this.configFile = configFile;
 		this.esUtil = ESUtil.getInstance(configFile);
+	}
+
+	/**
+	 * 自定义dsl管理机制：可以基于redis、db、配置管理中心管理dsl，只需要实现BaseTemplateContainerImpl抽象类中的抽象方法：
+	 *
+	 * @param templateContainer
+	 * @param client
+	 * @param indexNameBuilder
+	 */
+	public ConfigRestClientUtil(BaseTemplateContainerImpl templateContainer, ElasticSearchClient client, IndexNameBuilder indexNameBuilder) {
+		super(client, indexNameBuilder);
+		this.esUtil = ESUtil.getInstance(templateContainer);
 	}
 
 

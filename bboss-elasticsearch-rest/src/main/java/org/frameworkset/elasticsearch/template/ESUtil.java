@@ -775,10 +775,10 @@ public class ESUtil {
 			{
 				String key = keys_it.next();
 				TemplateMeta pro = this.templatecontext.getProBean(key);
-				String templateFile = (String)pro.getExtendAttribute("templateFile");
+				String templateFile = pro.getReferenceNamespace();//pro.getExtendAttribute("templateFile");
 				if(templateFile == null)
 				{
-					Object o = pro.getObject();
+					Object o = pro.getDslTemplate();
 					if(o instanceof String)
 					{
 						
@@ -786,8 +786,8 @@ public class ESUtil {
 						
 						if(value != null)
 						{
-							boolean istpl = pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
-							boolean multiparser = pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
+							boolean istpl = pro.getVtpl() != null? pro.getVtpl():true;//pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
+							boolean multiparser = pro.getMultiparser() != null? pro.getMultiparser():istpl;//pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
 							ESTemplate sqltpl = null;
 							value = ESUtil.ltrim(value);
 							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro);
@@ -811,7 +811,7 @@ public class ESUtil {
 				}
 				else
 				{
-					String templateName = (String)pro.getExtendAttribute("templateName");
+					String templateName = pro.getReferenceTemplateName();//(String)pro.getExtendAttribute("templateName");
 					if(templateName == null)
 					{
 						log.warn(new StringBuilder().append("The DSL template ")
@@ -878,7 +878,7 @@ public class ESUtil {
 	}
 	void reinit()
 	{
-		templatecontext.reinit();
+		templatecontext.reinit(this);
 
 		/**
 		String file = templatecontext.getConfigfile();
@@ -968,7 +968,7 @@ public class ESUtil {
 					}
 				}
 			}
-			templatecontext.monitor(new ResourceTempateRefresh(this));
+			templatecontext.monitor(damon,new ResourceTempateRefresh(this));
 //			damon.addFile(fileUrl,templateNamespace, new ResourceTempateRefresh(sqlutil));
 		}
 		else{
@@ -978,7 +978,7 @@ public class ESUtil {
 	}
 	private ESUtil(String templatefile) {
 		this.templateFile = templatefile;
-		this.templatecontext = new AOPTemplateContainerImpl(this,new ESSOAFileApplicationContext(templatefile));
+		this.templatecontext = new AOPTemplateContainerImpl(new ESSOAFileApplicationContext(templatefile));
 		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
 		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
@@ -988,10 +988,42 @@ public class ESUtil {
 		
  
 	}
-	
+
+	private ESUtil(TemplateContainer templateContainer) {
+//		this.templateFile = templatefile;
+		this.templatecontext = templateContainer;//new AOPTemplateContainerImpl(this,new ESSOAFileApplicationContext(templatefile));
+		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
+		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
+		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
+		this.realTemplateFile = this.templatecontext.getNamespace();//.getConfigfile();
+		this.trimValues();
+		checkESUtil();
 
 
-	
+	}
+
+
+
+	public static ESUtil getInstance(TemplateContainer templateContainer) {
+		String namespace = templateContainer.getNamespace();
+		ESUtil sqlUtil = esutils.get(namespace);
+		if(sqlUtil != null)
+			return sqlUtil;
+		synchronized(esutils)
+		{
+			sqlUtil = esutils.get(namespace);
+			if(sqlUtil != null)
+				return sqlUtil;
+			sqlUtil = new ESUtil(templateContainer);
+
+			esutils.put(namespace, sqlUtil);
+
+		}
+
+		return sqlUtil;
+	}
+
+
 
 	public static ESUtil getInstance(String templateFile) {
 		

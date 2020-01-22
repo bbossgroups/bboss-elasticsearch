@@ -22,11 +22,43 @@ package org.frameworkset.elasticsearch.template;
  * @Date 2020/1/17 14:42
  * @author biaoping.yin
  * @version 1.0
+ * @see org.frameworkset.elasticsearch.template.AOPTemplateMeta
  */
 public interface TemplateMeta {
-	Object getExtendAttribute(String extendAttribute);
+	/**
+	 * 如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
+	 * @return
+	 */
+	String getReferenceNamespace();
+	/**
+	 * 如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
+	 * @return
+	 */
+	String getReferenceTemplateName();
 
-	Object getObject();
+	/**
+	 * 标识DSl模板是否包含velocity语法，如果包含则需要进行velocity解析，否则不需要则设置为false
+	 * @return
+	 */
+	Boolean getVtpl();
 
-	boolean getBooleanExtendAttribute(String extendAttribute, boolean defaultValue);
+	/**
+	 * 生成的dsl模板是否都要解析一次包含的#[XXX]变量信息，默认值为isTPL()方法返回值
+	 * 只有包含velocity动态语法的dsl template才需要设置该标识
+	 * @return
+	 */
+	Boolean getMultiparser();
+
+	/**
+	 * 返回dsl 模板值
+	 * @return
+	 */
+	Object getDslTemplate();
+
+	/**
+	 * 返回模板名称
+	 * @return
+	 */
+	String getName();
+
 }

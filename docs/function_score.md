@@ -4,7 +4,7 @@
 
 本文涉及到的程序和配置文件对应的完整可运行的java工程源码地址：
 
-https://github.com/rookie-ygl/bboss-wiki
+https://github.com/rookieygl/bboss-wiki
 
 # 1.function\_score介绍
 
@@ -66,11 +66,13 @@ function_score的作用就是综合各个函数的得分，因此注意两点：
 
 本文以一个商品检索作为案例来介绍function_score的具体用法。
 
-在开始之前先建立bboss的dsl xml配置文件：
+在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：resources/esmapper/function_score.xml
 
-resources/esmapper/functionscore.xml
+https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml
 
-本文中涉及的dsl配置都会加到这个配置文件里面。
+Java测试类：com/bboss/hellword/FunctionScore/FunctionScoreTest
+
+https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FunctionScore/FunctionScoreTest.java
 
 ### 2.1.1 定义索引-商品索引mapping定义和配置
 

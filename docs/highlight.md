@@ -108,7 +108,7 @@ dsl中变量语法参考文档：[开发指南](https://esdoc.bbossgroups.com/#/
 
 在其中定义以下方法
 
-```
+```java
 	public void highlightSearch() throws ParseException {
 		//创建加载配置文件的客户端工具，用来检索文档，单实例多线程安全
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(mappath);
@@ -160,13 +160,86 @@ dsl中变量语法参考文档：[开发指南](https://esdoc.bbossgroups.com/#/
 	}
 ```
 
-**注意：高亮检索时返回的对象必须继承ESBaseData的对象类型，例如：本案例中的[Demo](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/Demo.java)对象**
+## 3.3 检索结果中存放高亮关键字数据
+
+高亮检索返回的索引字段高亮关键字信息被封装以Map<String,List<Object>>类型包含在每条索引文档中返回，bboss支持三种方式存放索引字段高亮关键字信息
+
+**方式一 结果对象继承ESBaseData**
+
+结果对象可以继承ESBaseData抽象类，字段高亮关键字信息将被自动设置到父类ESBaseData的属性：
+
+```java
+Map<String,List<Object>> highlight;
+```
+
+例如：本案例中的[Demo](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/Demo.java)对象
 
 ```java
 public class Demo extends ESBaseData {
     。。。。。。。
 }
 ```
+
+**方式二 使用@ESMetaHighlight注解**
+
+在对象中定义带@ESMetaHighlight注解类型为Map<String,List<Object>>的字段，例如：
+
+```java
+public class Demo  {
+    @ESMetaHighlight //文档对应的高亮检索信息
+	Map<String,List<Object>> highlights;
+    。。。。。。。
+}
+```
+
+方式 二优于方式一，不需为了高亮信息在对象中引入其他的元数据字段，同时也可以按照自己的要求命名高亮字段的名称，避免命名冲突
+
+跟多元数据信息，可以参考文档：
+
+[元数据注解](https://esdoc.bbossgroups.com/#/client-annotation?id=_2元数据注解)
+
+**方式三 使用MetaMap**
+
+如果我们既要使用Map对象来封装文档数据，又想返回高亮检索信息，那么可以使用MetaMap类型来替代Map类型，例如：
+
+
+```java
+		//设定查询条件,通过map传递变量参数值,key对于dsl中的变量名称
+		//dsl中有三个变量
+		//        condition
+		//        startTime
+		//        endTime
+		Map<String,Object> params = new HashMap<String,Object>();
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//设置时间范围,时间参数接受long值
+		params.put("startTime",dateFormat.parse("2017-09-02 00:00:00"));
+		params.put("endTime",new Date());
+		params.put("condition","喜欢唱歌");//全文检索条件，匹配上的记录的字段值对应的匹配内容都会被高亮显示
+//列表检索
+        ESDatas<MetaMap> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<MetaMap>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("demo/_search",//demo为索引表，_search为检索操作action
+                                "testHighlightSearch",//通过名称引用配置文件中的query dsl语句
+                                parmas,//查询条件,Map<key,value>
+                                MetaMap.class);//指定返回对象类型为MetaMap
+//获取结果对象列表
+        List<MetaMap> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
+        //遍历列表，并从MetaMap中获取检索元数据
+        for(int i = 0; demos != null && i < demos.size(); i ++){
+              //单文档检索
+            MetaMap newDemo = demos.get(i);
+            //打印metamap文档高亮信息
+           
+            System.out.println("getHighlight:"+newDemo.getHighlight());//高亮信息
+            。。。。
+        }
+```
+
+metamap的使用可以参考文档：
+
+[带元数据的map对象metamap使用](https://esdoc.bbossgroups.com/#/document-crud?id=_62-带元数据的map对象metamap使用)
 
 # 4.运行检索功能
 
