@@ -26,12 +26,12 @@ package org.frameworkset.elasticsearch.template;
  */
 public interface TemplateMeta {
 	/**
-	 * 如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
+	 * 非xml配置情况下不支持，如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
 	 * @return
 	 */
 	String getReferenceNamespace();
 	/**
-	 * 如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
+	 * 非xml配置情况下不支持，如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
 	 * @return
 	 */
 	String getReferenceTemplateName();

@@ -19,6 +19,7 @@
 package org.frameworkset.elasticsearch.client;
 
 import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,8 @@ public interface ElasticSearchClient {
 	void close();
 	ClientUtil getClientUtil(IndexNameBuilder indexNameBuilder);
 	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder,String configFile);
+	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder, BaseTemplateContainerImpl templateContainer);
+
 	public void init();
 
 	public Map getClusterInfo() ;

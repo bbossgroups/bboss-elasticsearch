@@ -21,11 +21,10 @@ import com.frameworkset.util.ResourceInitial;
 import org.frameworkset.spi.assemble.AOPValueHandler;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.assemble.ValueContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>Description: </p>
@@ -36,17 +35,13 @@ import java.util.Set;
  * @version 1.0
  */
 public abstract class BaseTemplateContainerImpl implements TemplateContainer{
-//	protected ESUtil esUtil;
+	private static Logger logger = LoggerFactory.getLogger(BaseTemplateContainerImpl.class);
 	protected String namespace;
 	protected Map<String,TemplateMeta> templateMetas;
 	public BaseTemplateContainerImpl(String namespace) {
-//		this.esUtil = esUtil;
 		this.namespace = namespace;
 	}
 
-//	public void setEsUtil(ESUtil esUtil) {
-//		this.esUtil = esUtil;
-//	}
 
 	public String getNamespace(){
 		return namespace;
@@ -59,6 +54,32 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 	 * @return
 	 */
 	protected  abstract Map<String,TemplateMeta> loadTemplateMetas(String namespace);
+	/**
+	public Object getRealPropertyValue(TemplateMeta pro){
+		String templateFile = (String)pro.getReferenceNamespace();
+		if(templateFile == null)
+			return pro.getDslTemplate();
+		else{
+			String templateName = (String)pro.getReferenceTemplateName();
+			if(templateName == null)
+			{
+				logger.warn(new StringBuilder().append("The DSL template ")
+						.append(pro.getName()).append(" in the DSl namespace ")
+						.append(templateFile)
+						.append(" is defined as a reference to the DSL template in another configuration namespace ")
+						.append(templateFile)
+						.append(", but the name of the DSL template statement to be referenced is not specified by the templateName attribute[")
+						.append(templateName).append("]").toString());
+				return null;
+			}
+			else
+			{
+				ESUtil.ESRef ref = new ESUtil.ESRef(templateName,templateFile,pro.getName());
+				return ref.getTemplate();
+
+			}
+		}
+	}*/
 	private Map<String,TemplateMeta> _loadTemplateMetas(String namespace){
 		final Map<String,TemplateMeta> templateMetaMap = loadTemplateMetas(namespace);
 		if(templateMetaMap != null && templateMetaMap.size() > 0){
@@ -66,35 +87,42 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 			Iterator<Map.Entry<String, TemplateMeta>> iterator = templateMetaMap.entrySet().iterator();
 			final PropertiesContainer configProperties = new PropertiesContainer();
 			final ESServiceProviderManager esServiceProviderManager = new ESServiceProviderManager();
-			final ValueContainer valueContainer = new ValueContainer (){
+			final ValueContainer valueContainer = new ValueContainer(){
 				@Override
-				public String getMacroVariableValue(String text) {
+				public String getMacroVariableValue(List<String> parentLinks,String text) {
 					BaseTemplateMeta inTemplateMeta = (BaseTemplateMeta)templateMetaMap.get(text);
 					if(inTemplateMeta != null){
 						if(inTemplateMeta.isParsered())
 							return (String)inTemplateMeta.getDslTemplate();
 						else{ //递归分析引用片段
-							//todo:防止递归引用
-							evalValue(inTemplateMeta, configProperties,esServiceProviderManager,this );
+
+							evalValue(parentLinks,inTemplateMeta, configProperties,esServiceProviderManager,this );
 
 							return (String)inTemplateMeta.getDslTemplate();
 						}
 					}
-					else {//引用片段值为null
+					else {//引用片段值未定义，返回null
 						return null;
 					}
 				}
 			};
+			List<String> parentLinks = null;
 			while(iterator.hasNext()){
 				Map.Entry<String, TemplateMeta> templateMetaEntry = iterator.next();
 				BaseTemplateMeta templateMeta = (BaseTemplateMeta)templateMetaEntry.getValue();
-				evalValue(templateMeta, configProperties,esServiceProviderManager,valueContainer );
-				templateMeta.setParsered(true);
+				if(templateMeta.isParsered()){
+					continue;
+				}
+				parentLinks = new ArrayList<String>();
+				parentLinks.add(templateMeta.getName());
+				evalValue(parentLinks,templateMeta, configProperties,esServiceProviderManager,valueContainer );
 			}
 		}
 		return templateMetaMap;
 	}
-	public void evalValue(BaseTemplateMeta templateMeta, PropertiesContainer configProperties, AOPValueHandler valueHandler, ValueContainer valueContainer)
+
+
+	public void evalValue(List<String> parentLinks,BaseTemplateMeta templateMeta, PropertiesContainer configProperties, AOPValueHandler valueHandler, ValueContainer valueContainer)
 	{
 		String value = (String)templateMeta.getDslTemplate();
 		//先进行特殊字符转换
@@ -102,9 +130,10 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 			value = configProperties.escapeValue(value, valueHandler);
 		}
 		//再进行片段解析
-		String resultValue = configProperties.evalValue(value, valueHandler,valueContainer);
+		String resultValue = configProperties.evalValue(parentLinks,value, valueHandler,valueContainer);
 
 		templateMeta.setDslTemplate(resultValue);
+		templateMeta.setParsered(true);
 	}
 	protected abstract long getLastModifyTime(String namespace);
 	private synchronized void init(){
@@ -162,11 +191,13 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 
 	}
 	public void monitor(DaemonThread daemonThread, ResourceInitial resourceTempateRefresh){
-		daemonThread.addResource(new ResourceNameSpace() {
+		ResourceNameSpace resourceNameSpace = new ResourceNameSpace() {
 			@Override
 			public long getLastModifyTimestamp() {
 				return getLastModifyTime( namespace);
 			}
-		},resourceTempateRefresh);
+		};
+		resourceNameSpace.setNameSpace(namespace);
+		daemonThread.addResource(resourceNameSpace,resourceTempateRefresh);
 	}
 }

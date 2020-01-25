@@ -36,6 +36,8 @@ import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
 import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
+import org.frameworkset.elasticsearch.template.TemplateContainer;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -582,6 +584,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder,String configFile) {
 		// TODO Auto-generated method stub
 		return new ConfigRestClientUtil(this, indexNameBuilder,configFile);
+	}
+	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder, BaseTemplateContainerImpl templateContainer){
+		// TODO Auto-generated method stub
+		return new ConfigRestClientUtil( templateContainer,this, indexNameBuilder);
 	}
 	public String executeHttp(String path,String action) throws ElasticSearchException{
 		return executeHttp(path, null,  action) ;

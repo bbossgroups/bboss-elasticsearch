@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -30,6 +33,13 @@ public class BaseTemplateMeta implements TemplateMeta{
 	private String referenceNamespace;
 	private String referenceTemplateName;
 	private Boolean vtpl = true;
+
+	public BaseTemplateMeta(){
+
+	}
+
+
+
 
 	public boolean isParsered() {
 		return parsered;

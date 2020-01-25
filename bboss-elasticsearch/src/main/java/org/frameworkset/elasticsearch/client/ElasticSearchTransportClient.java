@@ -31,6 +31,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.event.Event;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -392,6 +393,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 	@Override
 	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder, String configFile) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ClientUtil getConfigClientUtil(IndexNameBuilder indexNameBuilder, BaseTemplateContainerImpl templateContainer) {
 		return null;
 	}
 }

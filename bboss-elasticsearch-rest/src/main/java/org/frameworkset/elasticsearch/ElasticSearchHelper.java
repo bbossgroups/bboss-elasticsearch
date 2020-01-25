@@ -2,6 +2,7 @@ package org.frameworkset.elasticsearch;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
@@ -417,6 +418,19 @@ public class ElasticSearchHelper {
 	}
 
 	/**
+	 * 加载templateContainer管理的query dsl配置，在默认的es服务器上执行所有操作
+	 * @param templateContainer
+	 * @return
+	 */
+	public static ClientInterface getConfigRestClientUtil(BaseTemplateContainerImpl templateContainer){
+//		ElasticSearch elasticSearchSink = context.getTBeanObject(DEFAULT_SEARCH, ElasticSearch.class);
+		init();
+		if(elasticSearchSink == null)
+			throw new ElasticSearchException("Elasticsearh Datasource[default] is not configured. please check your configs.");
+		return elasticSearchSink.getConfigRestClientUtil(templateContainer);
+	}
+
+	/**
 	 * 加载query dsl配置文件，在elasticSearch参数对应的es服务器上执行所有操作
 	 * @param elasticSearch
 	 * @param configFile
@@ -427,6 +441,18 @@ public class ElasticSearchHelper {
 		if(elasticSearchSink == null)
 			throw new ElasticSearchException("Elasticsear Datasource[ "+elasticSearch + "] is not configured. please check your configs.");
 		return elasticSearchSink.getConfigRestClientUtil(configFile);
+	}
+	/**
+	 * 加载templateContainer管理的query dsl配置，在elasticSearch参数对应的es服务器上执行所有操作
+	 * @param elasticSearch
+	 * @param templateContainer
+	 * @return
+	 */
+	public static ClientInterface getConfigRestClientUtil(String elasticSearch,BaseTemplateContainerImpl templateContainer){
+		ElasticSearch elasticSearchSink = getElasticSearchSink( elasticSearch);
+		if(elasticSearchSink == null)
+			throw new ElasticSearchException("Elasticsear Datasource[ "+elasticSearch + "] is not configured. please check your configs.");
+		return elasticSearchSink.getConfigRestClientUtil(templateContainer);
 	}
 
 	/**

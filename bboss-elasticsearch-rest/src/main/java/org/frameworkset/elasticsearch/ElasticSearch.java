@@ -23,6 +23,7 @@ import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ElasticSearchClient;
 import org.frameworkset.elasticsearch.client.ElasticSearchClientFactory;
 import org.frameworkset.elasticsearch.scroll.thread.ThreadPoolFactory;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
@@ -205,7 +206,27 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				return null;
 			}
 		}
-	} 
+	}
+	public ClientInterface getConfigRestClientUtil(BaseTemplateContainerImpl templateContainer) {
+		ClientInterface clientInterface = configClientUtis.get(templateContainer.getNamespace());
+		if(clientInterface != null)
+			return clientInterface;
+		else {
+			if (restClient != null) {
+				synchronized (configClientUtis) {
+					clientInterface = configClientUtis.get(templateContainer.getNamespace());
+					if(clientInterface != null)
+						return clientInterface;
+					clientInterface = this.restClient.getConfigClientUtil(this.indexNameBuilder, templateContainer);
+					configClientUtis.put(templateContainer.getNamespace(),clientInterface);
+					return clientInterface;
+				}
+			}
+			else {
+				return null;
+			}
+		}
+	}
  
 
 	public Object executeRequest(String path, String entity) throws Exception {
@@ -513,4 +534,6 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public void setFromspringboot(boolean fromspringboot) {
 		this.fromspringboot = fromspringboot;
 	}
+
+
 }
