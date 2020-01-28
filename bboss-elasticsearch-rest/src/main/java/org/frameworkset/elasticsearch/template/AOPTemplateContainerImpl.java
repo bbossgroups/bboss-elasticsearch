@@ -18,7 +18,12 @@ package org.frameworkset.elasticsearch.template;
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.DefaultApplicationContext;
+import org.frameworkset.spi.assemble.Pro;
+import org.frameworkset.spi.runtime.BaseStarter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,9 +36,11 @@ import java.util.Set;
  */
 public class AOPTemplateContainerImpl implements TemplateContainer{
 	private BaseApplicationContext templatecontext;
-
 	public AOPTemplateContainerImpl( BaseApplicationContext templatecontext) {
 		this.templatecontext = templatecontext;
+	}
+	public AOPTemplateContainerImpl(String dslpath){
+		templatecontext = DefaultApplicationContext.getApplicationContext(dslpath);
 	}
 
 	public String getNamespace(){
@@ -77,5 +84,56 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 	}
 	public void monitor(DaemonThread daemonThread,ResourceInitial resourceTempateRefresh){
 		daemonThread.addFile(templatecontext.getConfigFileURL(),this.getNamespace(), resourceTempateRefresh);
+	}
+
+	public List<TemplateMeta> getTemplateMetas(final String namespace){
+
+		final List<TemplateMeta> templateMetaList = new ArrayList<TemplateMeta>();
+		this.templatecontext.start(new BaseStarter() {
+			public void start(Pro pro, BaseApplicationContext ioc) {
+				Object _service = ioc.getBeanObject(pro.getName());
+				if (_service == null || pro.getName().equals(TemplateContainer.NAME_perKeyDSLStructionCacheSize) || pro.getName().equals(TemplateContainer.NAME_alwaysCacheDslStruction))
+					return;
+				BaseTemplateMeta baseTemplateMeta = new BaseTemplateMeta();
+				baseTemplateMeta.setName(pro.getName());
+				baseTemplateMeta.setNamespace(namespace);
+				String templateFile = (String) pro.getExtendAttribute(TemplateContainer.NAME_templateFile);
+				if (templateFile == null) {
+					Object o = pro.getObject();
+					if (o != null && o instanceof String) {
+
+						String value = (String) o;
+						baseTemplateMeta.setDslTemplate(value);
+						baseTemplateMeta.setVtpl(pro.getBooleanExtendAttribute(TemplateContainer.NAME_istpl, true));//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句;
+						//标识sql语句是否为velocity模板;
+						baseTemplateMeta.setMultiparser(pro.getBooleanExtendAttribute(TemplateContainer.NAME_multiparser, baseTemplateMeta.getVtpl()));
+						templateMetaList.add(baseTemplateMeta);
+					}
+				} else {
+					String templateName = (String) pro.getExtendAttribute(TemplateContainer.NAME_templateName);
+					;
+					if (templateName == null) {
+						logger.warn(new StringBuilder().append("Ignore this DSL template ")
+								.append(pro.getName()).append(" in the DSl file ")
+								.append(getNamespace())
+								.append(" is defined as a reference to the DSL template in another configuration file ")
+								.append(templateFile)
+								.append(", but the name of the DSL template statement to be referenced is not specified by the templateName attribute, for example:\r\n")
+								.append("<property name= \"querySqlTraces\"\r\n")
+								.append("templateFile= \"esmapper/estrace/ESTracesMapper.xml\"\r\n")
+								.append("templateName= \"queryTracesByCriteria\"/>").toString());
+					} else {
+						baseTemplateMeta.setReferenceNamespace(templateFile);
+						baseTemplateMeta.setReferenceTemplateName(templateName);
+						baseTemplateMeta.setVtpl(false);
+						baseTemplateMeta.setMultiparser(false);
+						templateMetaList.add(baseTemplateMeta);
+					}
+				}
+			}
+		});
+		return templateMetaList;
+
+
 	}
 }
