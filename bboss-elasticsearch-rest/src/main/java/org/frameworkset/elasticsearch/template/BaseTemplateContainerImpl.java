@@ -181,11 +181,11 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 			else {
 				templateMetas.clear();
 			}
-			esUtil.clearTemplateDatas();
+//			esUtil.clearTemplateDatas();
 			esUtil.buildTemplateDatas(this);
 		}
 		catch (Exception e){
-
+			logger.warn("reinit namespace"+namespace+" failed:",e);
 		}
 
 

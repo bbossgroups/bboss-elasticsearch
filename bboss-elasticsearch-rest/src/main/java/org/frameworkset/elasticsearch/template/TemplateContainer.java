@@ -29,6 +29,12 @@ import java.util.Set;
  * @version 1.0
  */
 public interface TemplateContainer {
+	public final String NAME_perKeyDSLStructionCacheSize = "perKeyDSLStructionCacheSize";
+	public final String NAME_alwaysCacheDslStruction = "alwaysCacheDslStruction";
+	public final String NAME_templateFile = "templateFile";
+	public final String NAME_templateName = "templateName";
+	public final String NAME_istpl = "istpl";
+	public final String NAME_multiparser = "multiparser";
 	String getNamespace();
 
 	Set getTempalteNames();

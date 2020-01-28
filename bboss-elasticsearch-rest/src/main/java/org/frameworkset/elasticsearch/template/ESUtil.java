@@ -65,7 +65,7 @@ public class ESUtil {
 	public static final boolean defaultAlwaysCacheDslStruction = false;
 	protected int perKeyDSLStructionCacheSize;
 	protected boolean alwaysCacheDslStruction;
-	protected  final ESTemplateCache templateCache ;
+	protected  ESTemplateCache templateCache ;
 	protected Map<String,ESInfo> esInfos;
 	protected Map<String,ESRef> esrefs;
 	protected boolean hasrefs;
@@ -763,10 +763,10 @@ public class ESUtil {
 	{
 		if(this.templatecontext == null)
 			return;
-		this.esInfos= null;
-		this.esrefs = null;
-		esInfos = new HashMap<String,ESInfo>();
-		esrefs = new HashMap<String,ESRef> ();
+//		this.esInfos= null;
+//		this.esrefs = null;
+		Map<String,ESInfo> esInfos = new HashMap<String,ESInfo>();
+		Map<String,ESRef> esrefs = new HashMap<String,ESRef> ();
 		Set keys = this.templatecontext.getTempalteNames();
 		if(keys != null && keys.size() > 0)
 		{
@@ -832,6 +832,8 @@ public class ESUtil {
 				}
 			}
 		}
+		this.esInfos = esInfos;
+		this.esrefs = esrefs;
 	}
 	
 	public boolean hasrefs()
@@ -860,6 +862,7 @@ public class ESUtil {
 		
 	}
 
+	/**
 	void clearTemplateDatas(){
 		if (esInfos != null) {
 			this.esInfos.clear();
@@ -870,10 +873,11 @@ public class ESUtil {
 			esrefs = null;
 		}
 		this.templateCache.clear();
-	}
+	}*/
 	void buildTemplateDatas(TemplateContainer newTemplateContainer){
 		this.templatecontext = newTemplateContainer;
 		trimValues();
+		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
 		destroyed = false;
 	}
 	void reinit()

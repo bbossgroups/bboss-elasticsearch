@@ -44,22 +44,22 @@ public class AOPTemplateMeta implements TemplateMeta{
 
 	@Override
 	public String getReferenceNamespace() {
-		return (String)pro.getExtendAttribute("templateFile");
+		return (String)pro.getExtendAttribute(TemplateContainer.NAME_templateFile);
 	}
 
 	@Override
 	public String getReferenceTemplateName() {
-		return (String)pro.getExtendAttribute("templateName");
+		return (String)pro.getExtendAttribute(TemplateContainer.NAME_templateName);
 	}
 
 	@Override
 	public Boolean getVtpl() {
-		return pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板;
+		return pro.getBooleanExtendAttribute(TemplateContainer.NAME_istpl,true);//标识sql语句是否为velocity模板;
 	}
 
 	@Override
 	public Boolean getMultiparser() {
-		return pro.getBooleanExtendAttribute("multiparser",getVtpl());//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句;
+		return pro.getBooleanExtendAttribute(TemplateContainer.NAME_multiparser,getVtpl());//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句;
 	}
 
 	@Override

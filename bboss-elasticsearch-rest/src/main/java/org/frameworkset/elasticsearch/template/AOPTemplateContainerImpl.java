@@ -53,17 +53,17 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 	}
 
 	public int getPerKeyDSLStructionCacheSize(){
-		return templatecontext.getIntProperty("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
+		return templatecontext.getIntProperty(TemplateContainer.NAME_perKeyDSLStructionCacheSize,ESUtil.defaultPerKeyDSLStructionCacheSize);
 	}
 	public boolean isAlwaysCacheDslStruction(){
-		return templatecontext.getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
+		return templatecontext.getBooleanProperty(TemplateContainer.NAME_alwaysCacheDslStruction,ESUtil.defaultAlwaysCacheDslStruction);
 	}
 	public synchronized void reinit(ESUtil esUtil){
 		String file = templatecontext.getConfigfile();
 		templatecontext.removeCacheContext();
 		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(file);
 		if(essoaFileApplicationContext.getParserError() == null) {
-			esUtil.clearTemplateDatas();
+//			esUtil.clearTemplateDatas();
 			templatecontext.destroy(false);
 			templatecontext = essoaFileApplicationContext;
 //			templatecontext = new ESSOAFileApplicationContext(file);

@@ -15,8 +15,8 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import com.frameworkset.orm.annotation.Column;
+import com.frameworkset.orm.annotation.PrimaryKey;
 
 /**
  * <p>Description: </p>
@@ -27,8 +27,11 @@ import java.util.List;
  * @version 1.0
  */
 public class BaseTemplateMeta implements TemplateMeta{
+	@PrimaryKey
+	private String id;
 	private String name;
 	private String namespace;
+	@Column(type="clob")//指示属性的值按clob类型写入或者读取
 	private String dslTemplate;
 	private String referenceNamespace;
 	private String referenceTemplateName;
