@@ -877,6 +877,8 @@ public class ESUtil {
 	void buildTemplateDatas(TemplateContainer newTemplateContainer){
 		this.templatecontext = newTemplateContainer;
 		trimValues();
+		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
+		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
 		destroyed = false;
 	}

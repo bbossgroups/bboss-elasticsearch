@@ -12,6 +12,23 @@ Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,+
 
 Spring booter 1.x,2.x,+
 
+# bboss兼容性
+
+| bboss | Elasticsearch | spring boot |
+| ----- | ------------- | ----------- |
+| all   | 1.x           | 1.x,2.x     |
+| all   | 2.x           | 1.x,2.x     |
+| all   | 3.x           | 1.x,2.x     |
+| all   | 5.x           | 1.x,2.x     |
+| all   | 6.x           | 1.x,2.x     |
+| all   | 7.x           | 1.x,2.x     |
+
+
+# 快速开始bboss
+
+https://esdoc.bbossgroups.com/#/quickstart
+
+
 # Build from source code
 First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 
