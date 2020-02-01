@@ -22,7 +22,7 @@ First add the maven dependency of BBoss to your pom.xml:
         </dependency>
 ```
 
-Second if it's a spring boot project, and add the following to pom.xml:
+Second if it's a spring boot project, add following maven dependency to pom.xml:
 
 ```xml
         <dependency>
