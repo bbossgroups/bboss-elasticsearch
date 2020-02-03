@@ -239,7 +239,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>5.9.9</version>
+            <version>6.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -268,7 +268,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>5.9.9</version>
+            <version>6.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -3261,7 +3261,7 @@ alwaysCacheDslStruction：布尔值，单个dsl超过perKeyDSLStructionCacheSize
 
 配置样例：
 
-https://github.com/bbossgroups/elasticsearch-example/blob/5.9.9/src/main/resources/esmapper/dslcacheexample.xml
+https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/dslcacheexample.xml
 
 如果在程序运行过程中出现以下日志：
 
