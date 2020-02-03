@@ -28,6 +28,7 @@ https://esdoc.bbossgroups.com/#/development
 1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
 
 2.数据同步工具：importbuilder组件增加Elasticsearch数据源代码配置功能，对应API
+
 ```java
     /**
 	 * 添加es客户端配置属性，具体的配置项参考文档：
@@ -38,7 +39,11 @@ https://esdoc.bbossgroups.com/#/development
     public BaseImportBuilder addElasticsearchProperty(String name,String value) 
 ```
 
-3.数据同步工具:增加HBase数据同步功能
+3.数据同步工具:增加HBase数据同步功能，支持增量同步和全量同步，增量同步可以根据记录时间戳范围、数字列、日期列增量同步
+
+同步工具案例
+
+https://github.com/bbossgroups/hbase-elasticsearch
 
 4.https协议改进：支持pem ssl证书和 keystore and truststore证书
 
@@ -77,6 +82,14 @@ https://esdoc.bbossgroups.com/#/development
 5.rest client 增加elasticsearch.useHttps配置参数
 
 elasticsearch.useHttps true 自动发现节点，采用https协议进行通讯,false 采用http协议通讯，默认false
+
+6.扩展dsl配置管理机制：支持数据库、redis等第三方机制管理和配置dsl语句，支持热加载机制
+
+基于数据库配置和管理dsl的示例
+
+Elasticsearch 6及以下版本：[TestThirdDslContainer.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer.java)
+
+Elasticsearch 7及以上版本：[TestThirdDslContainer7.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer7.java)
 
 
 # v5.9.9 功能改进
