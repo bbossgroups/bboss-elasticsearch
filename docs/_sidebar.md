@@ -29,6 +29,7 @@
 - Guide
 
   - [Elasticsearch开发指南](development.md)
+  - [基于数据库管理dsl介绍](db-dsl.md)
   - [Elasticsearch索引文档增删改查](document-crud.md)
   - Elasticsearch分页查询
     - [from-size](from-size.md)
@@ -44,6 +45,7 @@
   - [数据库和Elasticsearch同步工具](db-es-tool.md)
   - [Spring boot与数据同步工具应用](usedatatran-in-spring-boot.md)
   - [Mongodb-Elasticsearch同步工具](mongodb-elasticsearch.md)
+  - [HBase-Elasticsearch数据同步](hbase-elasticsearch.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)

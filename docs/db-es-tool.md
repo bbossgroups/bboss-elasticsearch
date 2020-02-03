@@ -18,7 +18,8 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 4. 将Elasticsearch数据同步到Elasticsearch
 5. 将mongodb数据同步到Elasticsearch
 6. 将mongodb数据同步到数据库表
-7. kafka数据导入elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
+7. kafka数据导入Elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
+8. HBase数据导入Elasticsearch
 
 导入的方式支持
 
@@ -28,7 +29,7 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 - 定时全量（串行/并行）数据导入
 - 定时增量（串行/并行）数据导入
 
-支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
+支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
 
 支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
 
@@ -69,7 +70,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
-      <version>3.23.1</version>
+      <version>3.30.1</version>
       <scope>compile</scope>
  </dependency>
 ```
@@ -2345,7 +2346,7 @@ dsl2ndSqlFile.xml放置到工程resources目录下即可，示例内容如下：
 
 从es中查询数据导入数据库案例,基于时间戳增量同步，采用slicescroll检索
 
-​```java
+```java
 public class ES2DBScrollTimestampDemo {
 	public static void main(String[] args){
 		ES2DBScrollTimestampDemo esDemo = new ES2DBScrollTimestampDemo();
@@ -2365,7 +2366,7 @@ public class ES2DBScrollTimestampDemo {
 		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
 		// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
 		// 但是需要设置setLastValueType告诉工具增量字段的类型
-
+	
 		/**
 		 * es相关配置
 		 */
@@ -2396,12 +2397,12 @@ public class ES2DBScrollTimestampDemo {
 			public void preCall(TaskContext taskContext) {
 				System.out.println("preCall");
 			}
-
+	
 			@Override
 			public void afterCall(TaskContext taskContext) {
 				System.out.println("afterCall");
 			}
-
+	
 			@Override
 			public void throwException(TaskContext taskContext, Exception e) {
 				System.out.println("throwException");
@@ -2411,12 +2412,12 @@ public class ES2DBScrollTimestampDemo {
 			public void preCall(TaskContext taskContext) {
 				System.out.println("preCall 1");
 			}
-
+	
 			@Override
 			public void afterCall(TaskContext taskContext) {
 				System.out.println("afterCall 1");
 			}
-
+	
 			@Override
 			public void throwException(TaskContext taskContext, Exception e) {
 				System.out.println("throwException 1");
@@ -2514,7 +2515,7 @@ public class ES2DBScrollTimestampDemo {
 			}
 		});
 		//映射和转换配置结束
-
+	
 		/**
 		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
 		 */
@@ -2542,7 +2543,7 @@ public class ES2DBScrollTimestampDemo {
 
 从es中查询数据导入数据库案例,基于数字类型增量同步，采用slicescroll检索
 
-```java
+​```java
 public class ES2DBSliceScrollResultCallbackDemo {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	public static void main(String[] args){
@@ -3062,11 +3063,15 @@ https://github.com/bbossgroups/kafka2x-elasticsearch
 
 https://github.com/bbossgroups/elasticsearch-elasticsearch
 
-# 9 数据同步调优
+# 9 HBase-Elasticsearch数据同步使用方法
+
+https://github.com/bbossgroups/hbase-elasticsearch
+
+# 10 数据同步调优
 
 数据同步是一个非常耗资源（内存、cpu、io）的事情，所以如何充分利用系统资源，确保高效的数据同步作业长时间稳定运行，同时又不让同步服务器、Elasticsearch/数据库负荷过高，是一件很有挑战意义的事情，这里结合bboss的实践给出一些建议：
 
-## 9.1 内存调优
+## 10.1 内存调优
 
 内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -3095,7 +3100,7 @@ $$
 
 这些参数设置得越大，占用的内存越大，处理的速度就越快，典型的空间换时间的场景，所以需要根据同步服务器的主机内存来进行合理配置，避免由于资源不足出现jvm内存溢出的问题，影响同步的稳定性。
 
-##   9.2 采用分布式作业调度引擎
+##   10.2 采用分布式作业调度引擎
 
 需要同步的数据量很大，单机的处理能力有限，可以基于分布式作业调度引擎来实现数据分布式分片数据同步处理，参考文档：
 
@@ -3103,7 +3108,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
   
 
-# 10 开发交流
+# 11 开发交流
 
 完整的数据导入demo工程
 

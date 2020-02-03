@@ -6,7 +6,18 @@
 
 ​    **The best elasticsearch highlevel java rest api-----bboss**       
 
-​    bboss是一款高性能elasticsearch ORM开发库， 以类似于mybatis管理和配置sql的方式,采用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、dsl片段、foreach循环、逻辑判断、注释；支持在线修改、自动热加载dsl配置文件，开发和调试非常方便。bboss对原生elasticsearch restful api、elasticsearch java orm api、elasticsearch sql都提供了很好的支持。**如果喜欢直接使用query dsl（es的官方语言），但是又不想在代码里面编写冗长的dsl拼接串的话，可以考虑采用 bboss。**
+​    bboss是一款高性能elasticsearch ORM开发库， 以类似于mybatis管理和配置sql的方式,采用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、dsl片段、foreach循环、逻辑判断、注释；支持在线修改、自动热加载dsl配置文件，开发和调试非常方便。bboss对原生elasticsearch restful api、elasticsearch java orm api、elasticsearch sql都提供了很好的支持。
+
+bboss elasticsearch管理dsl的方式：
+
+- 类似于mybatis，以xml管理dsl
+- 可扩展机制：基于数据库、redis等方式管理dsl
+
+​    **bboss elasticsearch默认以类似于mybatis的方式,使用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、脚本片段、foreach循环、逻辑判断、注释**；也可基于扩展机制，实现数据库、redis等方式管理dsl语句；配置管理的dsl语句支持在线修改、自动热加载，开发和调试非常方便。
+
+
+
+**如果喜欢直接使用query dsl（es的官方语言），但是又不想在代码里面编写冗长的dsl拼接串的话，可以考虑采用 bboss。**
 
 ​    **bboss elasticsearch jdk兼容性： jdk 1.7+**
 
@@ -3601,7 +3612,11 @@ the number of real dsl cache records exceeded the maximum cache size n allowed b
 
  
 
+## 5.5 基于数据库管理dsl介绍
 
+参考文档：
+
+https://esdoc.bbossgroups.com/#/db-dsl
 
 # **6 代码演示和文档资料**
 

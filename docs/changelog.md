@@ -85,6 +85,8 @@ elasticsearch.useHttps true 自动发现节点，采用https协议进行通讯,f
 
 6.扩展dsl配置管理机制：支持数据库、redis等第三方机制管理和配置dsl语句，支持热加载机制
 
+参考文档：https://esdoc.bbossgroups.com/#/db-dsl
+
 基于数据库配置和管理dsl的示例
 
 Elasticsearch 6及以下版本：[TestThirdDslContainer.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer.java)
