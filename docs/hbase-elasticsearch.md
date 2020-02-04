@@ -24,10 +24,12 @@ hbase 1.x,hbase 2.x
 ## 2.2 jdk timer定时增量同步
 [org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo.java)
 
-## 2.3 jdk timer定时带条件同步
+## 2.3 jdk timer定时增量同步（简化demo，hbase1.x,hbase2.x都可以跑）
+[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo223.java)
+## 2.4 jdk timer定时带条件同步
 [org.frameworkset.elasticsearch.imp.HBase2ESFullDemoWithFilter](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemoWithFilter.java)
 
-## 2.4 quartz定时全量同步
+## 2.5 quartz定时全量同步
 [org.frameworkset.elasticsearch.imp.QuartzHBase2ESImportTask](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
 
 # 3.支持的数据库：
@@ -285,18 +287,30 @@ importBuilder.setEndTimestamp(endTimestamp);
 
 - 获取原始的hbase记录Result对象：
 
+```java
  HBaseRecord hBaseRecord = (HBaseRecord) context.getRecord();
  Result result = (Result) hBaseRecord.getData();
+```
+
+
 
 - 获取列族中列byte[]
 
+```java
  byte[] serializedAgentInfo = (byte[]) context.getValue("Info:i");
+```
+
+
 
 - 获取具体类型列族数据，并将数据添加到Elasticsearch文档中
 
+```java
  // 通过context提供的一系列getXXXValue方法，从hbase列族中获取相应类型的数据：int,string,long,double,float,date
           String agentName = context.getStringValue("Info:agentName");
          context.addFieldValue("agentName",agentName);
+```
+
+
 
 - 获取ip对应的运营商和区域信息
 
@@ -311,7 +325,15 @@ importBuilder.setEndTimestamp(endTimestamp);
   					context.addFieldValue("ipinfo", "");
   				}
   ```
-
+- rowkey和timstamp信息获取
+  
+  ```java
+  String agentId = Bytes.toString((byte[])context.getMetaValue("rowkey"));
+  context.addFieldValue("agentId",agentId);
+  Date startTime = (Date)context.getMetaValue("timestamp");
+  context.addFieldValue("startTime",startTime);
+  ```
+  
   
 
 ## 7.5 定时任务配置
