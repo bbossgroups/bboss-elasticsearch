@@ -58,7 +58,12 @@ new BaseTemplateContainerImpl("testnamespace"){....});
 
 # 3.spring boot创建基于数据库管理的dsl接口方法
 
-待补充
+```java
+ClientInterface clientInterface = bbossESStarter.getConfigRestClient(new BaseTemplateContainerImpl("testnamespace") {...});
+ClientInterface clientInterface = bbossESStarter.getConfigRestClient("testelasticsearch",//es数据源名称
+                                   new BaseTemplateContainerImpl("testnamespace") {...});
+
+```
 
 # 4.使用clientinterface
 

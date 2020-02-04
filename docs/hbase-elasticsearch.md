@@ -46,7 +46,7 @@ Elasticsearch 1.x,2.x,5.x,6.x,7.x,+
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-hbase</artifactId>
-  <version>6.0.0</version>
+  <version>6.0.1</version>
   <scope>compile</scope>
 </dependency>
 <!--
