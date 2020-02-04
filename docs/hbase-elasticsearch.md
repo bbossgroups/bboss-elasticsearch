@@ -1,11 +1,10 @@
 # HBase-Elasticsearch数据同步
 
-同步案例源码地址：
+本文介绍HBase-Elasticsearch数据同步功能，HBase-Elasticsearch数据同步案例源码地址：
 
 https://github.com/bbossgroups/hbase-elasticsearch
 
-
-Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
+*Bboss is a good elasticsearch Java highlevel rest client api. It operates and accesses elasticsearch like mybatis to db.*
 
 # 1.Environmental requirements
 
@@ -32,7 +31,7 @@ hbase 1.x,hbase 2.x
 [org.frameworkset.elasticsearch.imp.QuartzHBase2ESImportTask](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
 
 # 3.支持的数据库：
-HBase 到elasticsearch数据同步
+HBase 1.x,2.x到elasticsearch数据同步
 ## 4.支持的Elasticsearch版本
 Elasticsearch 1.x,2.x,5.x,6.x,7.x,+
 
@@ -65,9 +64,9 @@ https://search.maven.org/artifact/org.apache.hbase/hbase-shaded-client
 ```
 compile([group: 'org.apache.hbase', name: 'hbase-shaded-client', version: "1.2.4", transitive: true])
 ```
-# 7.hbase-elasticsearch同步关键代码和配置
+# 7.hbase-elasticsearch同步作业代码和配置
 
-## 7.1hbase参数配置
+## 7.1 hbase参数配置
 
 ```java
 HBaseExportBuilder importBuilder = new HBaseExportBuilder();
@@ -117,7 +116,7 @@ importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索�
       .setIndexType("hbase2esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
 ```
 
-更多配置参数文档：[Elasticsearch参数配置](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5242-elasticsearch%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae)
+更多Elasticsearch配置参数文档：[Elasticsearch参数配置](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5242-elasticsearch%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae)
 
 
 
@@ -135,7 +134,7 @@ importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索�
       // 设置自定义id生成机制
       //如果指定EsIdGenerator，则根据下面的方法生成文档id，
       // 否则根据setEsIdField方法设置的字段值作为文档id，
-      // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+      // 如果默认没有配置EsIdField和指定EsIdGenerator，则由es自动生成文档id
       importBuilder.setEsIdGenerator(new EsIdGenerator(){
 
          @Override
@@ -148,6 +147,8 @@ importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索�
 ```
 
 ## 7.3 hbase检索条件设置
+
+可以通过FilterList和filter设置hbase scan检索条件，二选一，只需要设置一种
 
 ```java
 //FilterList和filter二选一，只需要设置一种
@@ -449,8 +450,6 @@ public class HBase2ESFullDemo {
 
 修改es配置-hbase-elasticsearch\src\main\resources\application.properties
 
-
-
 修改完毕配置后，就可以进行功能调试了。
 
 
@@ -480,9 +479,9 @@ windows: restart.bat
 
  
 
-# 9.作业参数配置
+# 9.作业参数提取
 
-在使用[hbase-elasticsearch](https://github.com/bbossgroups/hbase-elasticsearch)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数配置到启动配置文件resources/application.properties中,然后在代码中通过以下方法获取配置的参数：
+在使用[hbase-elasticsearch](https://github.com/bbossgroups/hbase-elasticsearch)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数提取配置到启动配置文件resources/application.properties中,然后在代码中通过以下方法获取配置的参数：
 
 ```ini
 #工具主程序
@@ -520,7 +519,66 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
  
 
-# 10.开发交流
+# 10.spring boot web应用中启动和停止调度hbase同步作业
+
+## 10.1 准备工作
+
+下载包含hbase-elasticsearch同步作业的spring boot web应用
+
+https://github.com/bbossgroups/springboot-elasticsearch-webservice
+
+下载后参数上面的文档，修改同步作业程序：
+
+https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/service/DataTran.java
+
+然后参考以下步骤构建和运行、停止作业。
+
+## 10.2 run spring boot web项目
+
+First run elasticsearch 5 or elasticsearch 6 or Elasticsearch 7.Then build and run the demo:
+
+```shell
+mvn install
+cd target
+java -jar springboot-elasticsearch-webservice-0.0.1-SNAPSHOT.jar
+```
+
+
+
+## 10.3 run the hbase-elasticsearch data tran job
+
+Enter the following address in the browser to run the hbase-elasticsearch data tran job:
+
+http://localhost:808/scheduleHBase2ESJob
+
+Return the following results in the browser to show successful execution:
+
+作业启动成功
+```json
+HBase2ES job started.
+```
+
+作业已经启动
+```json
+HBase2ES job has started.
+```
+## 10.4 stop the db-elasticsearch data tran job
+Enter the following address in the browser to stop the hbase-elasticsearch data tran job:
+
+http://localhost:808/stopHBase2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+HBase2ES job started.
+```
+作业已经停止
+```json
+HBase2ES job has started.
+```
+
+
+# 11.开发交流
 
 ## elasticsearch技术交流群:166471282 
 

@@ -49,7 +49,18 @@ ConfigRestClientUtil和dsl结构及关系说明如下：
 
 ![](images\db-dsl.png)
 
-使用clientinterface:
+- 指定Elasticsearch数据源名称
+
+```
+ElasticSearchHelper.getConfigRestClientUtil("testelasticsearch",//es数据源名称
+new BaseTemplateContainerImpl("testnamespace"){....}); 
+```
+
+# 3.spring boot创建基于数据库管理的dsl接口方法
+
+待补充
+
+# 4.使用clientinterface
 
 ```java
 		//高亮检索
@@ -103,7 +114,7 @@ private void testCRUD(ClientInterface clientInterface) throws ParseException {
 }
 ```
 
-# 3.DSL表脚本及将xml文件中管理的dsl转换
+# 5.DSL表脚本及将xml文件中管理的dsl转换
 
 DSL表脚本及将xml文件中管理的dsl转换: 其中的dslTemplate字段为clob类型，sqlite中为text类型
 
@@ -156,7 +167,7 @@ DSL表脚本及将xml文件中管理的dsl转换: 其中的dslTemplate字段为c
 				templateMetaList);
 ```
 
-# 4.实例源码
+# 6.实例源码下载和运行
 
 可以下载源码工程直接运行其中的数据库管理dsl的案例
 

@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.boot;/*
 
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,17 +69,7 @@ public class BBossESStarter  extends BaseESProperties{
 		return restClient;
 	}
 
-	/**
-	 * Get Special elasticsearch server ConfigFile ClientInterface
-	 * @param elasticsearchName elasticsearch server name which defined in bboss spring boot application configfile
-	 * @param configFile
-	 * @return
-	 */
-	public ClientInterface getConfigRestClient(String elasticsearchName,String configFile){
 
-		return ElasticSearchHelper.getConfigRestClientUtil(elasticsearchName,configFile);
-
-	}
 
 	/**
 	 *  Get Special elasticsearch server ClientInterface
@@ -99,6 +90,41 @@ public class BBossESStarter  extends BaseESProperties{
 	public ClientInterface getConfigRestClient(String configFile){
 
 		return ElasticSearchHelper.getConfigRestClientUtil(configFile);
+
+	}
+
+	/**
+	 * Get Special elasticsearch server ConfigFile ClientInterface
+	 * @param elasticsearchName elasticsearch server name which defined in bboss spring boot application configfile
+	 * @param configFile
+	 * @return
+	 */
+	public ClientInterface getConfigRestClient(String elasticsearchName,String configFile){
+
+		return ElasticSearchHelper.getConfigRestClientUtil(elasticsearchName,configFile);
+
+	}
+
+	/**
+	 * Get default elasticsearch server ConfigFile ClientInterface
+	 * @param templateContainer
+	 * @return
+	 */
+	public ClientInterface getConfigRestClient(BaseTemplateContainerImpl templateContainer){
+
+		return ElasticSearchHelper.getConfigRestClientUtil(templateContainer);
+
+	}
+
+	/**
+	 * Get Special elasticsearch server ConfigFile ClientInterface
+	 * @param elasticsearchName elasticsearch server name which defined in bboss spring boot application configfile
+	 * @param templateContainer
+	 * @return
+	 */
+	public ClientInterface getConfigRestClient(String elasticsearchName, BaseTemplateContainerImpl templateContainer){
+
+		return ElasticSearchHelper.getConfigRestClientUtil(elasticsearchName,templateContainer);
 
 	}
 }
