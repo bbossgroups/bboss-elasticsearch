@@ -49,9 +49,63 @@ ConfigRestClientUtil和dsl结构及关系说明如下：
 
 ![](images\db-dsl.png)
 
+使用clientinterface:
+
+```java
+		//高亮检索
+		testHighlightSearch(clientInterface);
+		
+		//增删改查
+		testCRUD(clientInterface);
+		
+		//脚本片段
+		testScriptImpl( clientInterface);
+	
+
+private void testScriptImpl(ClientInterface clientInterface)  {
+   ScriptImpl7 scriptImpl7 = new ScriptImpl7(clientInterface);
+   scriptImpl7.updateDocumentByScriptPath();
+   scriptImpl7.updateDocumentByScriptQueryPath();
+}
+private void testHighlightSearch(ClientInterface clientInterface) throws ParseException {
+   HighlightSearch7 highlightSearch = new HighlightSearch7(clientInterface);
+   highlightSearch.initIndiceAndData();
+   highlightSearch.highlightSearch();
+   highlightSearch.highlightSearchOther();
+}
+private void testCRUD(ClientInterface clientInterface) throws ParseException {
+   DocumentCRUD7 documentCRUD = new DocumentCRUD7(clientInterface);
+   //删除/创建文档索引表
+   documentCRUD.testCreateIndice();
+   //添加/修改单个文档
+   documentCRUD.testAddAndUpdateDocument();
+   //批量添加文档
+   documentCRUD.testBulkAddDocument();
+   //检索文档
+   documentCRUD.testSearch();
+   //批量修改文档
+   documentCRUD.testBulkUpdateDocument();
+
+   //检索批量修改后的文档
+   documentCRUD.testSearch();
+   //带list复杂参数的文档检索操作
+   documentCRUD.testSearchArray();
+   //带from/size分页操作的文档检索操作
+   documentCRUD.testPagineSearch();
+   //带sourcefilter的文档检索操作
+   documentCRUD.testSearchSourceFilter();
+
+   documentCRUD.updateDemoIndice();
+   documentCRUD.testBulkAddDocuments();
+   for(int i = 0; i < 10; i ++){
+      documentCRUD.testBulkAddUUIDDocuments(i,10);
+   }
+}
+```
+
 # 3.DSL表脚本及将xml文件中管理的dsl转换
 
-DSL表脚本及将xml文件中管理的dsl转换:
+DSL表脚本及将xml文件中管理的dsl转换: 其中的dslTemplate字段为clob类型，sqlite中为text类型
 
 ```java
 //在sqlite数据源testdslconfig中创建保存dsl语句的数据库表dslconfig
@@ -102,3 +156,13 @@ DSL表脚本及将xml文件中管理的dsl转换:
 				templateMetaList);
 ```
 
+# 4.实例源码
+
+可以下载源码工程直接运行其中的数据库管理dsl的案例
+
+基于数据库配置和管理dsl的示例
+源码工程：https://github.com/bbossgroups/elasticsearch-example
+
+Elasticsearch 6及以下版本：[TestThirdDslContainer.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer.java)
+
+Elasticsearch 7及以上版本：[TestThirdDslContainer7.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer7.java)
