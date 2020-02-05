@@ -6,6 +6,18 @@ ConfigRestClientUtil和dsl结构及关系说明如下：
 
 ![](images\db-dsl1.png)
 
+字段定义：
+
+| 字段名称              | 字段类型  | 描述                                                         |
+| --------------------- | --------- | ------------------------------------------------------------ |
+| name                  | String    | dsl名称                                                      |
+| namespace             | String    | dsl所属命名空间                                              |
+| dslTemplate           | Clob/TEXT | dsl语句                                                      |
+| vtpl                  | boolean   | 一般设置为true， dsl语句中是否包含velocity语法内容，包含为true，否则为false（避免进行velocity语法解析，提升性能），默认为true |
+| multiparser           | boolean   | 一般设置为true，dsl如果包含velocity动态语法，是否需要对每次动态生成的dsl进行模板变量#[xxxx]语法解析，true 需要，false不需要，默认true |
+| referenceNamespace    | String    | 如果对应的dsl配置是一个引用，则需要通过referenceNamespace指定引用的dsl所属的命名空间 |
+| referenceTemplateName | String    | 如果对应的dsl配置是一个引用，则需要通过referenceTemplateName指定引用的dsl对应的名称name |
+
 
 
 # 2.基于数据库管理的dsl创建ClientInterface

@@ -4,9 +4,49 @@
 
 https://github.com/bbossgroups/hbase-elasticsearch
 
+# 1.前言
+
 *Bboss is a good elasticsearch Java highlevel rest client api. It operates and accesses elasticsearch like mybatis to db.*
 
-# 1.Environmental requirements
+bboss提供了不错的数据同步功能，通过bboss可以非常方便地实现各种大数据同步功能：
+
+![](https://esdoc.bbossgroups.com/images/datasyn.png)
+
+与logstash类似，bboss数据同步主要功能特点：
+
+1. 支持多种类型数据源数据同步功能
+
+ - 将数据库表数据同步到Elasticsearch
+ - 将数据库表数据同步到数据库表
+ - 将Elasticsearch数据同步到数据库表
+ - 将Elasticsearch数据同步到Elasticsearch
+ - 将mongodb数据同步到Elasticsearch
+ - 将mongodb数据同步到数据库表
+ - 将hbase数据同步到Elasticsearch
+ - 从kafka接收数据导入elasticsearch（支持kafka_2.12-0.10.2.0和kafka_2.12-2.3.0 系列版本）
+
+2. 支持的导入方式
+   - 逐条数据导入
+    - 批量数据导入
+    - 批量数据多线程并行导入
+    - 定时全量（串行/并行）数据导入
+    - 定时增量（串行/并行）数据导入
+
+3. 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb等
+
+4. 支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
+
+5. 支持将ip转换为对应的运营商和城市地理位置信息
+
+6. 支持多种定时任务执行引擎：
+
+   - jdk timer （内置）
+    - quartz
+    - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
+
+
+# 2.环境要求
+## 2.1 基本要求
 
 JDK requirement: JDK 1.7+
 
@@ -16,33 +56,8 @@ Spring booter 1.x,2.x,+
 
 hbase 1.x,hbase 2.x
 
-# 2.HBase-Elasticsearch 数据同步工具demo
-使用本demo所带的应用程序运行容器环境，可以快速编写，打包发布可运行的数据导入工具，包含现成的示例如下：
-## 2.1 jdk timer定时全量同步
-[org.frameworkset.elasticsearch.imp.HBase2ESFullDemo](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemo.java)
-
-## 2.2 jdk timer定时增量同步
-[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo.java)
-
-## 2.3 jdk timer定时增量同步（简化demo，hbase1.x,hbase2.x都可以跑）
-[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo223.java)
-## 2.4 jdk timer定时带条件同步
-[org.frameworkset.elasticsearch.imp.HBase2ESFullDemoWithFilter](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemoWithFilter.java)
-
-## 2.5 quartz定时全量同步
-[org.frameworkset.elasticsearch.imp.QuartzHBase2ESImportTask](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
-
-# 3.支持的数据库：
-HBase 1.x,2.x到elasticsearch数据同步
-## 4.支持的Elasticsearch版本
-Elasticsearch 1.x,2.x,5.x,6.x,7.x,+
-
-## 5.支持海量PB级数据同步导入功能
-
-[使用参考文档](https://esdoc.bbossgroups.com/#/db-es-tool)
-
-# 6.导入maven坐标
-
+bboss 6.0.1
+## 2.2.maven坐标
 
 ```xml
 <dependency>
@@ -60,15 +75,41 @@ hbase shaded client的版本号与hbase的版本相关，请根据hbase的版本
   <version>2.2.3</version>
 </dependency>
 ```
-本案例基于hbase 1.3.0版本开发，所以选择的是1.2.4的客户端，具体的client版本号可以根据hbase版本自行选择：
+除了[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo223.java)基于hbase 2.2.3开发，其他案例都基于hbase 1.3.0版本开发，所以选择的是1.2.4的客户端，具体的client版本号可以根据hbase版本自行选择：
 
 https://search.maven.org/artifact/org.apache.hbase/hbase-shaded-client
 ```
 compile([group: 'org.apache.hbase', name: 'hbase-shaded-client', version: "1.2.4", transitive: true])
 ```
-# 7.hbase-elasticsearch同步作业代码和配置
+# 3.HBase-Elasticsearch 数据同步工具demo
 
-## 7.1 hbase参数配置
+使用本demo所带的应用程序运行容器环境，可以快速编写，打包发布可运行的数据导入工具，包含现成的示例如下：
+## 3.1 jdk timer定时全量同步
+[org.frameworkset.elasticsearch.imp.HBase2ESFullDemo](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemo.java)
+
+## 3.2 jdk timer定时增量同步
+[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo.java)
+
+## 3.3 jdk timer定时增量同步（简化demo，hbase1.x,hbase2.x都可以跑）
+[org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo223.java)
+
+## 3.4 jdk timer定时带条件同步
+[org.frameworkset.elasticsearch.imp.HBase2ESFullDemoWithFilter](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemoWithFilter.java)
+
+## 3.5 quartz定时全量同步
+[org.frameworkset.elasticsearch.imp.QuartzHBase2ESImportTask](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
+
+## 3.6 支持的hbase版本：
+HBase 1.x,2.x到elasticsearch数据同步
+## 3.7 支持的Elasticsearch版本
+Elasticsearch 1.x,2.x,5.x,6.x,7.x,+
+
+
+# 4.hbase-elasticsearch同步作业代码和配置
+
+以示例HBase2ESScrollTimestampDemo223作业进行讲解。
+
+## 4.1 hbase参数配置
 
 ```java
 HBaseExportBuilder importBuilder = new HBaseExportBuilder();
@@ -83,9 +124,12 @@ HBaseExportBuilder importBuilder = new HBaseExportBuilder();
       /**
        * hbase参数配置
        */
-      importBuilder.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
-            .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
-            .addHbaseClientProperty("zookeeper.znode.parent","/hbase")
+      String hbaseZookeeperQuorum = CommonLauncher.getProperty("hbase.zookeeper.quorum","192.168.137.133");//同时指定了默认值
+		String hbaseZookeeperPort = CommonLauncher.getProperty("hbase.zookeeper.property.clientPort","2183");//同时指定了默认值
+		String zookeeperZnodeParent = CommonLauncher.getProperty("zookeeper.znode.parent","/hbase");//同时指定了默认值
+		importBuilder.addHbaseClientProperty("hbase.zookeeper.quorum",hbaseZookeeperQuorum)  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+				.addHbaseClientProperty("hbase.zookeeper.property.clientPort",hbaseZookeeperPort)
+				.addHbaseClientProperty("zookeeper.znode.parent",zookeeperZnodeParent)
             .addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
             .addHbaseClientProperty("hbase.rpc.timeout","10000")
             .addHbaseClientProperty("hbase.client.operation.timeout","10000")
@@ -103,16 +147,16 @@ HBaseExportBuilder importBuilder = new HBaseExportBuilder();
             .setHbaseTable("AgentInfo") //指定需要同步数据的hbase表名称
             ;
 ```
-## 7.2 Elasticsearch参数配置
+## 4.2 Elasticsearch参数配置
 ```java
 
 /**
  * es相关配置
  可以通过addElasticsearchProperty方法添加Elasticsearch客户端配置，
- 也可以直接读取application.properties文件中设置的es配置
+ 也可以直接读取application.properties文件中设置的es配置,两种方式都可以，案例中采用application.properties的方式
  */
-importBuilder.addElasticsearchProperty("elasticsearch.rest.hostNames","192.168.137.1:9200");//设置es服务器地址
-importBuilder.setTargetElasticsearch("default");//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
+//importBuilder.addElasticsearchProperty("elasticsearch.rest.hostNames","192.168.137.1:9200");//设置es服务器地址
+importBuilder.setTargetElasticsearch("targetElasticsearch");//设置目标Elasticsearch集群数据源名称，在application.properties文件中配置
 
 importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索引名称
       .setIndexType("hbase2esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
@@ -122,7 +166,7 @@ importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索�
 
 
 
-## 7.3 Elasticsearch文档_id生成机制配置
+## 4.3 Elasticsearch文档_id生成机制配置
 
 ```java
 // 设置Elasticsearch索引文档_id
@@ -132,25 +176,25 @@ importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索�
        * meta:rowkey 行key byte[]
        * meta:timestamp  记录时间戳
        */
-//    importBuilder.setEsIdField("meta:rowkey");
+    importBuilder.setEsIdField("meta:rowkey");
       // 设置自定义id生成机制
       //如果指定EsIdGenerator，则根据下面的方法生成文档id，
       // 否则根据setEsIdField方法设置的字段值作为文档id，
       // 如果默认没有配置EsIdField和指定EsIdGenerator，则由es自动生成文档id
-      importBuilder.setEsIdGenerator(new EsIdGenerator(){
-
-         @Override
-         public Object genId(Context context) throws Exception {
-               Object id = context.getMetaValue("rowkey");
-               String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
-               return agentId;
-         }
-      });
+//		importBuilder.setEsIdGenerator(new EsIdGenerator(){
+//
+//			@Override
+//			public Object genId(Context context) throws Exception {
+//					Object id = context.getMetaValue("rowkey");
+//					String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
+//					return agentId;
+//			}
+//		});
 ```
 
-## 7.3 hbase检索条件设置
+## 4.4 hbase检索条件设置
 
-可以通过FilterList和filter设置hbase scan检索条件，二选一，只需要设置一种
+可以通过FilterList和filter设置hbase scan检索条件，二选一，只需要设置一种（本案例中不涉及检索条件的处理）
 
 ```java
 //FilterList和filter二选一，只需要设置一种
@@ -193,7 +237,7 @@ importBuilder.setStartTimestamp(startTimestam);
 importBuilder.setEndTimestamp(endTimestamp);
 ```
 
-## 7.4 HBase数据处理
+## 4.5 HBase数据处理
 
 必须通过DataRefactor接口处理Hbase数据并将数据添加到Elasticsearch文档中，代码示例如下：
 
@@ -213,71 +257,37 @@ importBuilder.setEndTimestamp(endTimestamp);
             HBaseRecord hBaseRecord = (HBaseRecord) context.getRecord();
             Result result = (Result) hBaseRecord.getData();
             
-            // 直接获取行key，对应byte[]类型，自行提取和分析保存在其中的数据
-            byte[] rowKey = (byte[])context.getMetaValue("rowkey");
-            String agentId = BytesUtils.safeTrim(BytesUtils.toString(rowKey, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
-            context.addFieldValue("agentId",agentId);
-            long reverseStartTime = BytesUtils.bytesToLong(rowKey, HBaseTables.AGENT_NAME_MAX_LEN);
-            long startTime = TimeUtils.recoveryTimeMillis(reverseStartTime);
-            context.addFieldValue("startTime",new Date(startTime));
-            // 通过context.getValue方法获取hbase 列的原始值byte[],方法参数对应hbase表中列名，由"列族:列名"组成
-            byte[] serializedAgentInfo = (byte[]) context.getValue("Info:i");
-            byte[] serializedServerMetaData = (byte[]) context.getValue("Info:m");
-            byte[] serializedJvmInfo = (byte[]) context.getValue("Info:j");
-            // 通过context提供的一系列getXXXValue方法，从hbase列族中获取相应类型的数据：int,string,long,double,float,date
-          String agentName = context.getStringValue("Info:agentName");
-             context.addFieldValue("agentName",agentName);
-            final AgentInfoBo.Builder agentInfoBoBuilder = createBuilderFromValue(serializedAgentInfo);
-            agentInfoBoBuilder.setAgentId(agentId);
-            agentInfoBoBuilder.setStartTime(startTime);
+				// 直接获取行key，对应byte[]类型，自行提取和分析保存在其中的数据
+				String agentId = Bytes.toString((byte[])context.getMetaValue("rowkey"));
+				context.addFieldValue("agentId",agentId);
+				Date startTime = (Date)context.getMetaValue("timestamp");
+				context.addFieldValue("startTime",startTime);
+				// 通过context.getValue方法获取hbase 列的原始值byte[],方法参数对应hbase表中列名，由"列族:列名"组成
+				String serializedAgentInfo =  context.getStringValue("Info:i");
+				String serializedServerMetaData =  context.getStringValue("Info:m");
+				String serializedJvmInfo =  context.getStringValue("Info:j");
 
-            if (serializedServerMetaData != null) {
-               agentInfoBoBuilder.setServerMetaData(new ServerMetaDataBo.Builder(serializedServerMetaData).build());
-            }
-            if (serializedJvmInfo != null) {
-               agentInfoBoBuilder.setJvmInfo(new JvmInfoBo(serializedJvmInfo));
-            }
-            AgentInfo agentInfo = new AgentInfo(agentInfoBoBuilder.build());
-            context.addFieldValue("agentInfo",agentInfo);
-            context.addFieldValue("author","duoduo");
-            context.addFieldValue("title","解放");
-            context.addFieldValue("subtitle","小康");
-
-//          context.addIgnoreFieldMapping("title");
-            //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//          context.addIgnoreFieldMapping("author");
-
-//          //修改字段名称title为新名称newTitle，并且修改字段的值
-//          context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
-            context.addIgnoreFieldMapping("subtitle");
-          /**
-           * 获取ip对应的运营商和区域信息
-           */
-				IpInfo ipInfo = context.getIpInfo("Info:agentIp");
-				if(ipInfo != null)
-					context.addFieldValue("ipinfo", 		SimpleStringUtil.object2json(ipInfo));
-				else{
-					context.addFieldValue("ipinfo", "");
-				}
+				context.addFieldValue("serializedAgentInfo",serializedAgentInfo);
+				context.addFieldValue("serializedServerMetaData",serializedServerMetaData);
+				context.addFieldValue("serializedJvmInfo",serializedJvmInfo);
+				context.addFieldValue("subtitle","小康");
+				context.addFieldValue("collectTime",new Date());
+     
+//				/**
+//				 * 获取ip对应的运营商和区域信息
+//				 */
+//				IpInfo ipInfo = context.getIpInfo("Info:agentIp");
+//				if(ipInfo != null)
+//					context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
+//				else{
+//					context.addFieldValue("ipinfo", "");
+//				}
 //          DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
 //          Date optime = context.getDateValue("logOpertime",dateFormat);
 //          context.addFieldValue("logOpertime",optime);
 //          context.addFieldValue("collecttime",new Date());
 
-            /**
-             //关联查询数据,单值查询
-             Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-             "select * from head where billid = ? and othercondition= ?",
-             context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
-             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-             context.addFieldValue("headdata",headdata);
-             //关联查询数据,多值查询
-             List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-             "select * from facedata where billid = ?",
-             context.getIntegerValue("billid"));
-             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-             context.addFieldValue("facedatas",facedatas);
-             */
+           
          }
       });
       //映射和转换配置结束
@@ -292,15 +302,11 @@ importBuilder.setEndTimestamp(endTimestamp);
  Result result = (Result) hBaseRecord.getData();
 ```
 
-
-
 - 获取列族中列byte[]
 
 ```java
  byte[] serializedAgentInfo = (byte[]) context.getValue("Info:i");
 ```
-
-
 
 - 获取具体类型列族数据，并将数据添加到Elasticsearch文档中
 
@@ -309,8 +315,6 @@ importBuilder.setEndTimestamp(endTimestamp);
           String agentName = context.getStringValue("Info:agentName");
          context.addFieldValue("agentName",agentName);
 ```
-
-
 
 - 获取ip对应的运营商和区域信息
 
@@ -336,7 +340,7 @@ importBuilder.setEndTimestamp(endTimestamp);
   
   
 
-## 7.5 定时任务配置
+## 4.6 定时任务配置
 
 ```java
        //定时任务配置，
@@ -347,7 +351,7 @@ importBuilder.setEndTimestamp(endTimestamp);
       //定时任务配置结束
 ```
 
-## 7.6 时间范围增量配置
+## 4.7 时间范围增量配置
 
 ```java
        //hbase表中列名，由"列族:列名"组成
@@ -374,7 +378,7 @@ importBuilder.setEndTimestamp(endTimestamp);
       //增量配置结束
 ```
 
-## 7.7  并行任务设置
+## 4.8  并行任务设置
 
 ```java
 /**
@@ -389,7 +393,7 @@ importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入�
 
 通过Parallel参数关闭和开启并行作业机制
 
-## 7.8 任务执行明细统计设置
+## 4.9 任务执行明细统计设置
 
 ```java
 /**
@@ -421,7 +425,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 });
 ```
 
-## 7.9 其他配置
+## 4.10 其他配置
 
 ```java
 importBuilder.setPrintTaskLog(true); //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
@@ -429,7 +433,7 @@ importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打
 importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
 ```
 
-## 7.10 启动和执行作业
+## 4.11 启动和执行作业
 
 ```java
 /**
@@ -439,47 +443,126 @@ DataStream dataStream = importBuilder.builder();
 dataStream.execute();//执行导入操作
 ```
 
-# 8.构建部署
+# 5.构建部署
 
-## 8.1 准备工作
+## 5.1 准备工作
 需要通过gradle构建发布版本,gradle安装配置参考文档：
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-## 8.2 下载源码工程-基于gradle
+下载最新版本的hbase和elasticsearch部署启动完毕。
+
+在hbase中创建以下表：
+
+```shell
+create 'AgentInfo', { NAME => 'Info', TTL => 31536000, DATA_BLOCK_ENCODING => 'PREFIX' }
+```
+
+
+
+## 5.2 下载源码工程-基于gradle
 <https://github.com/bbossgroups/hbase-elasticsearch>
 
-从上面的地址下载源码工程，然后导入idea或者eclipse，根据自己的需求，修改导入程序逻辑
+从上面的地址下载源码工程，然后导入idea或者eclipse，根据自己的需求，修改导入程序
 
-org.frameworkset.elasticsearch.imp.HBase2ESFullDemo
+org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223
 
-如果需要测试和调试导入功能，运行HBase2ESFullDemo的main方法即可即可：
+## 5.3 配置修改和测试及发布版本
+
+### 5.3.1 修改hbase地址
+
+修改hbase地址-hbase-elasticsearch\src\main\resources\application.properties
+
+```properties
+hbase.zookeeper.quorum = 192.168.137.133
+hbase.zookeeper.property.clientPort = 2183
+zookeeper.znode.parent = /hbase
+```
+
+### 5.3.2 修改es配置
+
+修改es配置-hbase-elasticsearch\src\main\resources\application.properties
+
+```properties
+##targetElasticsearch数据源配置，Hbase-Elasticsearch数据同步测试
+# x-pack或者searchguard安全认证和口令配置
+targetElasticsearch.elasticUser=elastic
+targetElasticsearch.elasticPassword=changeme
+targetElasticsearch.elasticsearch.rest.hostNames=192.168.137.1:9200
+```
+
+### 5.3.3 导入测试数据
+
+运行junit类test/java/org/frameworkset/elasticsearch/imp/HBaseHelperTest.java中的testPutDatas方法
+
+```java
+@Test
+	public void testPutDatas(){
+		Map<String,String> properties = new HashMap<String, String>();
+		properties.put("hbase.zookeeper.quorum","192.168.137.133"); //根据实际情况修改
+		properties.put("hbase.zookeeper.property.clientPort","2183");//根据实际情况修改
+		properties.put("zookeeper.znode.parent","/hbase"); //根据实际情况修改
+		properties.put("hbase.ipc.client.tcpnodelay","true");
+		properties.put("hbase.rpc.timeout","10000");
+		properties.put("hbase.client.operation.timeout","10000");
+		properties.put("hbase.ipc.client.socket.timeout.read","20000");
+		properties.put("hbase.ipc.client.socket.timeout.write","30000");
+		//异步写入hbase
+		/**
+		 *     public static final String TABLE_MULTIPLEXER_FLUSH_PERIOD_MS = "hbase.tablemultiplexer.flush.period.ms";
+		 *     public static final String TABLE_MULTIPLEXER_INIT_THREADS = "hbase.tablemultiplexer.init.threads";
+		 *     public static final String TABLE_MULTIPLEXER_MAX_RETRIES_IN_QUEUE = "hbase.client.max.retries.in.queue";
+		 */
+		properties.put("hbase.client.async.enable","true");
+		properties.put("hbase.client.async.in.queuesize","10000");
+		HBaseHelper.buildHBaseClient(properties,100,100,0L,1000l,1000,true,true,false);
+		HbaseTemplate2 hbaseTemplate2 = HBaseHelper.getHbaseTemplate2();
+		byte[] CF = Bytes.toBytes("Info");
+		byte[] C_I = Bytes.toBytes("i");
+		byte[] C_j = Bytes.toBytes("j");
+		byte[] C_m = Bytes.toBytes("m");
+		final List<Put> datas = new ArrayList<>();
+		 for(int i= 0; i < 100; i ++){
+		 	 long timestamp = System.currentTimeMillis() ;
+			 final byte[] rowKey = Bytes.toBytes(i+"-"+timestamp);
+			 final Put put = new Put(rowKey, timestamp);
+			 put.addColumn(CF, C_I,timestamp, Bytes.toBytes( "wap_"+i));
+			 put.addColumn(CF, C_j,timestamp, Bytes.toBytes( "jdk 1.8_"+i));
+			 put.addColumn(CF, C_m,timestamp, Bytes.toBytes( "asdfasfd_"+i));
+			 datas.add(put);
+		 }
+		TableName traceTableName = TableName.valueOf("AgentInfo");
+		hbaseTemplate2.asyncPut(traceTableName,datas);
+	}
+```
+
+### 5.3.4 作业调试
+
+修改完毕配置并导入测试数据后，就可以进行功能调试了。
+
+如果需要测试和调试导入功能，运行HBase2ESScrollTimestampDemo223的main方法即可即可：
 
 
 ```java
-public class HBase2ESFullDemo {
+public class HBase2ESScrollTimestampDemo223 {
 	public static void main(String args[]){
 
-		HBase2ESFullDemo dbdemo = new HBase2ESFullDemo();
-        		boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
-        
-        		dbdemo.scheduleTimestampImportData(dropIndice);
+	HBase2ESScrollTimestampDemo223 esDemo = new HBase2ESScrollTimestampDemo223();
+		esDemo.scheduleScrollRefactorImportData();
 
 	}
     .....
 }
 ```
 
-修改es配置-hbase-elasticsearch\src\main\resources\application.properties
-
-修改完毕配置后，就可以进行功能调试了。
+### 5.3.5 发布版本
 
 
 测试调试通过后，就可以构建发布可运行的版本了：进入命令行模式，在源码工程根目录hbase-elasticsearch下运行以下gradle指令打包发布版本
 
 release.bat
 
-## 8.3 运行作业
+## 5.4 运行作业
 gradle构建成功后，在build/distributions目录下会生成可以运行的zip包，解压运行导入程序
 
 linux：
@@ -490,28 +573,35 @@ chmod +x restart.sh
 
 windows: restart.bat
 
-## 8.4 作业jvm配置
+控制台任务执行日志：
+
+![image-20200205115249150](https://esdoc.bbossgroups.com/images/hbase-es-run-cmd.png)
+
+kibana检索从hbase同步到Elasticsearch的数据（kibana 7.5.0）
+![image-20200205115015705](https://esdoc.bbossgroups.com/images/hbase-es-kibana.png)
+
+## 5.5 作业jvm配置
 修改jvm.options，设置内存大小和其他jvm参数
 
 -Xms1g
 
 -Xmx1g
 
-
-
  
 
-# 9.作业参数提取
+# 6.作业代码中参数提取
 
-在使用[hbase-elasticsearch](https://github.com/bbossgroups/hbase-elasticsearch)时，为了避免调试过程中不断打包发布数据同步工具，可以将部分控制参数提取配置到启动配置文件resources/application.properties中,然后在代码中通过以下方法获取配置的参数：
+在使用[hbase-elasticsearch](https://github.com/bbossgroups/hbase-elasticsearch)时，会根据实际情况调整作业运行参数，为了避免调试和运行过程中修改作业代码中的参数不断打包构建发布数据同步工具，可以将写死在代码中的控制参数提取到启动配置文件resources/application.properties中,然后在代码中通过以下方法获取配置的参数：
 
 ```ini
 #工具主程序
-mainclass=org.frameworkset.elasticsearch.imp.HBase2ESFullDemo
+mainclass=org.frameworkset.elasticsearch.imp.HBase2ESScrollTimestampDemo223
 
 # 参数配置
-# 在代码中获取方法：CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值false
+
 dropIndice=false
+
+# 在代码中获取方法：CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值false
 ```
 
 在代码中获取参数dropIndice方法：
@@ -541,21 +631,36 @@ importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线
 
  
 
-# 10.spring boot web应用中启动和停止调度hbase同步作业
+# 7.spring boot web应用中启动和停止调度hbase同步作业
 
-## 10.1 准备工作
+## 7.1 准备工作
 
-下载包含hbase-elasticsearch同步作业的spring boot web应用
+下载包含hbase-elasticsearch同步作业的spring boot elasticsearch web应用
 
 https://github.com/bbossgroups/springboot-elasticsearch-webservice
 
-下载后参数上面的文档，修改同步作业程序：
+下载后参数上面的文档，修改同步作业程序中hbase地址：
 
 https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/service/DataTran.java
 
+```java
+/**
+ * hbase参数配置
+ */
+importBuilder.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+      .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
+      .addHbaseClientProperty("zookeeper.znode.parent","/hbase")
+```
+
+修改src/main/resources/application.properties中的elasticsearch地址：
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=192.168.137.1:9200
+```
+
 然后参考以下步骤构建和运行、停止作业。
 
-## 10.2 run spring boot web项目
+## 7.2 run spring boot web项目
 
 First run elasticsearch 5 or elasticsearch 6 or Elasticsearch 7.Then build and run the demo:
 
@@ -567,7 +672,7 @@ java -jar springboot-elasticsearch-webservice-0.0.1-SNAPSHOT.jar
 
 
 
-## 10.3 run the hbase-elasticsearch data tran job
+## 7.3 run the hbase-elasticsearch data tran job
 
 Enter the following address in the browser to run the hbase-elasticsearch data tran job:
 
@@ -584,7 +689,7 @@ HBase2ES job started.
 ```json
 HBase2ES job has started.
 ```
-## 10.4 stop the db-elasticsearch data tran job
+## 7.4 stop the db-elasticsearch data tran job
 Enter the following address in the browser to stop the hbase-elasticsearch data tran job:
 
 http://localhost:808/stopHBase2ESJob
@@ -600,11 +705,28 @@ HBase2ES job has started.
 ```
 
 
-# 11.开发交流
+# 8.开发交流
 
-## elasticsearch技术交流群:166471282 
+## 8.1 相关文档
 
-## elasticsearch微信公众号:bbossgroup   
+- [数据库和Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/db-es-tool)
+
+- [Spring boot与数据同步工具应用](https://esdoc.bbossgroups.com/#/usedatatran-in-spring-boot)
+
+- [Mongodb-Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch)
+
+- [Database-Database数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_5-database-database%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
+- [Kafka1x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_6-kafka1x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
+- [Kafka2x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
+- [Elasticsearch-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_8-elasticsearch-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
+
+
+## 8.2 讨论交流
+
+elasticsearch技术交流群:166471282 
+
+elasticsearch微信公众号:bbossgroup   
+
 ![GitHub Logo](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
 
 

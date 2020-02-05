@@ -23,7 +23,9 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
-# v6.0.1 功能改进   
+
+# v6.0.1 功能改进 
+
 1.spring boot starter组件bbossEsstarter增加非配置文件管理dsl加载方法
 
 # v6.0.0 功能改进
