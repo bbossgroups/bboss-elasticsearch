@@ -4,7 +4,7 @@
 
 我们以spring boot web demo工程来介绍spring boot中使用数据同步功能,工程源码地址:
 
-https://github.com/bbossgroups/es_bboss_web
+https://github.com/bbossgroups/springboot-elasticsearch-webservice
 
 # 1 关键点说明
 
@@ -24,11 +24,11 @@ private DataStream dataStream;
 
 通过db2ESImportBuilder和DataStream来启动和停止作业。
 
-# 2 数据同步实现和运行
+# 2 数据同步实现
 
 ## 2.1 增加DataTran作业组件
 
-[DataTran](https://github.com/bbossgroups/es_bboss_web/blob/master/src/main/java/com/example/esbboss/service/DataTran.java)
+[DataTran](https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/service/DataTran.java)
 
 ```java
 package com.example.esbboss.service;
@@ -309,7 +309,7 @@ public class DataTran {
 
 ## 2.2 增加作业执行和停止控制器
 
-[DataTranController](https://github.com/bbossgroups/es_bboss_web/blob/master/src/main/java/com/example/esbboss/controller/DataTranController.java)
+[DataTranController](https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/controller/DataTranController.java)
 
 ```java
 package com.example.esbboss.controller;
@@ -344,21 +344,46 @@ public class DataTranController {
 		return dataTran.stopDB2ESJob();
 	}
 }
-
+```
+# 3 作业服务构建和运行
+## 3.1 修改配置
+修改配置文件中数据库信息
+src/main/java/com/example/esbboss/service/DataTran.java
+```java
+ //数据源相关配置，可选项，可以在外部启动数据源
+ 					importBuilder.setDbName("test")
+ 							.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+ 							//mysql stream机制一 通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+ //					.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false")
+ //					.setJdbcFetchSize(3000)//启用mysql stream机制1，设置jdbcfetchsize大小为3000
+ 							//mysql stream机制二  jdbcFetchSize为Integer.MIN_VALUE即可，url中不需要设置useCursorFetch=true参数，这里我们使用机制二
+ 							.setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false")
+ 							.setJdbcFetchSize(Integer.MIN_VALUE)//启用mysql stream机制二,设置jdbcfetchsize大小为Integer.MIN_VALUE
+ 							.setDbUser("root")
+ 							.setDbPassword("123456")
+ 							.setValidateSQL("select 1")
+ 							.setUsePool(false);//是否使用连接池
 ```
 
-## 2.3 启动spring boot web服务
+修改src/main/resources/application.properties中的elasticsearch地址：
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=192.168.137.1:9200
+```
+
+然后参考以下步骤构建和运行、停止作业。
+## 3.2 构建和启动spring boot web服务
 
 Firstbuild spring boot web，then run elasticsearch and run the demo:
 
 ```java
+mvn clean install
 cd target
-
-java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
+java -jar springboot-elasticsearch-webservice-0.0.1-SNAPSHOT.jar
 
 ```
 
-## 2.4 run the db-elasticsearch data tran job
+## 3.4 run the db-elasticsearch data tran job
 
 Enter the following address in the browser to run the db-elasticsearch data tran job:
 
@@ -375,7 +400,7 @@ db2ESImport job started.
 ```json
 db2ESImport job has started.
 ```
-## 2.5 stop the db-elasticsearch data tran job
+## 3.5 stop the db-elasticsearch data tran job
 Enter the following address in the browser to stop the db-elasticsearch data tran job:
 
 http://localhost:808/stopDB2ESJob
@@ -390,6 +415,6 @@ db2ESImport job stopped.
 db2ESImport job has stopped.
 ```
 
-# 3.参考文档
+# 4.参考文档
 
 [数据库和Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/db-es-tool)
