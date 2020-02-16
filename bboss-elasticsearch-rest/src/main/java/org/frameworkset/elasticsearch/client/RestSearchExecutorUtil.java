@@ -61,7 +61,7 @@ public abstract class RestSearchExecutorUtil {
 			else if (action == ClientUtil.HTTP_HEAD)
 				response = HttpRequestUtil.httpHead(httpPool, url, null, headers, responseHandler);
 			else
-				throw new IllegalArgumentException("not support http action:" + action);
+				throw new IllegalArgumentException("not support http action:" + action+",url:"+url);
 		} else {
 			if (action == ClientUtil.HTTP_POST)
 				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
@@ -70,7 +70,7 @@ public abstract class RestSearchExecutorUtil {
 			} else if (action == ClientUtil.HTTP_DELETE)
 				response = HttpRequestUtil.httpDelete(httpPool, url, entity, null, headers, responseHandler);
 			else
-				throw new IllegalArgumentException("not support http action:" + action);
+				throw new IllegalArgumentException("not support http action:" + action+",url:"+url);
 		}
 		return response;
 	}
@@ -95,7 +95,7 @@ public abstract class RestSearchExecutorUtil {
 			else if(action == ClientUtil.HTTP_HEAD)
 				response = HttpRequestUtil.httpHead(httpPool,url, null, headers,  responseHandler);
 			else
-				throw new IllegalArgumentException("not support http action:"+action);
+				throw new IllegalArgumentException("not support http action:"+action+",url:"+url);
 		}
 		else
 		{
@@ -108,7 +108,7 @@ public abstract class RestSearchExecutorUtil {
 			else if(action == ClientUtil.HTTP_DELETE)
 				response = HttpRequestUtil.httpDelete(httpPool,url, entity,null, headers,  responseHandler);
 			else
-				throw new IllegalArgumentException("not support http action:"+action);
+				throw new IllegalArgumentException("not support http action:"+action+",url:"+url);
 
 		}
 		return response;

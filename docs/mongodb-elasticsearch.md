@@ -2401,3 +2401,13 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
 
 [https://github.com/xuxueli/xxl-job](https://github.com/xuxueli/xxl-job)
 
+## 7.4 相关文档
+
+- [数据库和Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/db-es-tool)
+- [Spring boot与数据同步工具应用](https://esdoc.bbossgroups.com/#/usedatatran-in-spring-boot)
+- [HBase-Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/hbase-elasticsearch)
+- [Database-Database数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_5-database-database数据同步使用方法)
+- [Kafka1x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_6-kafka1x-elasticsearch数据同步使用方法)
+- [Kafka2x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch数据同步使用方法)
+- [Elasticsearch-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_8-elasticsearch-elasticsearch数据同步使用方法)
+
