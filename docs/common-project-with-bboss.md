@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.0.1"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.0.2"
 ```
 
 

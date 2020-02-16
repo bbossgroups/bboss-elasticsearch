@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.2 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -23,6 +23,8 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+# v6.0.2 功能改进 
+kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
 # v6.0.1 功能改进 
 
