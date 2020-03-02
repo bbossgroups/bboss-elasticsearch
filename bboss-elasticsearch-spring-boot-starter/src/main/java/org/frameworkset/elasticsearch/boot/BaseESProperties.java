@@ -213,6 +213,7 @@ public abstract class BaseESProperties {
 		private String timeoutConnection;
 		private String timeoutSocket;
 		private String connectionRequestTimeout;
+		private String automaticRetriesDisabled;
 		private String retryTime;
 		private String retryInterval;
 		private String maxLineLength;
@@ -448,6 +449,14 @@ public abstract class BaseESProperties {
 
 		public void setTrustPassword(String trustPassword) {
 			this.trustPassword = trustPassword;
+		}
+
+		public String getAutomaticRetriesDisabled() {
+			return automaticRetriesDisabled;
+		}
+
+		public void setAutomaticRetriesDisabled(String automaticRetriesDisabled) {
+			this.automaticRetriesDisabled = automaticRetriesDisabled;
 		}
 	}
 
@@ -763,6 +772,9 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.timeoutSocket",this.getHttp().getTimeoutSocket());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getConnectionRequestTimeout()))
 				properties.put(_name+"http.connectionRequestTimeout",this.getHttp().getConnectionRequestTimeout());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getAutomaticRetriesDisabled()))
+				properties.put(_name+"http.automaticRetriesDisabled",this.getHttp().getAutomaticRetriesDisabled());
+
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryTime()))
 				properties.put(_name+"http.retryTime",this.getHttp().getRetryTime());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryInterval()))

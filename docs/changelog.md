@@ -23,6 +23,11 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
+   
+# v6.0.3 功能改进 
+1.http组件改进: 在异常信息中包含服务请求完整url地址信息
+2.http proxy组件改进：如果http服务池没有配置health状态检查地址，启用被动的服务健康检查机制，在没有正常节点的情况下，返回异常节点，如果操作成功则将异常节点标注为正常节点
+3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 # v6.0.2 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
