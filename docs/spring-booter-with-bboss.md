@@ -23,7 +23,7 @@ First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 
 Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
 
-```
+```properties
 gradle install
 ```
 
@@ -171,7 +171,7 @@ spring.elasticsearch.bboss.http.hostnameVerifier =
 
 **如果采用application.yml配置，内容如下**
 
-```yml
+```yaml
 spring:
   elasticsearch:
     bboss:
@@ -337,7 +337,7 @@ bboss es starter配置多集群可以采用properties文件也可以采用yml进
 
 修改spring boot配置文件application-multi-datasource.properties，内容如下：
 
-```
+```properties
 ##多集群配置样例，如果需要做多集群配置，请将参照本文内容修改application.properties文件内容
 spring.elasticsearch.bboss.default.name = default
 ##default集群配配置
@@ -414,13 +414,13 @@ spring.elasticsearch.bboss.dslfile.refreshInterval = -1
 
 default集群的配置项前缀为：
 
-```
+```properties
 spring.elasticsearch.bboss.default
 ```
 
 logs集群的配置项前缀为：
 
-```
+```properties
 spring.elasticsearch.bboss.logs
 ```
 
@@ -428,13 +428,13 @@ spring.elasticsearch.bboss.logs
 
 default集群name配置：
 
-```
+```properties
 spring.elasticsearch.bboss.default.name = default
 ```
 
 logs集群name配置：
 
-```
+```properties
 ##logs集群配置
 spring.elasticsearch.bboss.logs.name = logs
 ```
@@ -623,7 +623,7 @@ logs数据源
 
 多es集群测试用例MultiBBossESStartersTestCase
 
-```
+```java
 /*
  * Copyright 1999-2018 Alibaba Group Holding Ltd.
  *
@@ -734,7 +734,7 @@ public class MultiBBossESStartersTestCase {
 
 其中
 
-```
+```java
 BBossESStarter bbossESStarterDefault：实现由bboss提供，在直接在代码中MultiESSTartConfigurer 定义
 MultiESDocumentCRUD:各种增删改查操作实例，在demo工程中提供
 ```

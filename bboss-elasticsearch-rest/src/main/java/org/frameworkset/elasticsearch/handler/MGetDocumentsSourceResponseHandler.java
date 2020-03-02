@@ -17,14 +17,14 @@ package org.frameworkset.elasticsearch.handler;/*
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MGetDocs;
 import org.frameworkset.elasticsearch.serial.ESSerialThreadLocal;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 
-public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler implements ResponseHandler<MGetDocs> {
+public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler implements URLResponseHandler<MGetDocs> {
 
 
 	public MGetDocumentsSourceResponseHandler(Class type){
@@ -55,7 +55,7 @@ public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler impl
 //			}
 //			else
 //				throw new ElasticSearchException("Unexpected response status: " + status,status);
-			return (MGetDocs)super.handleException(entity,status);
+			return (MGetDocs)super.handleException(url,entity,status);
 		}
 	}
 }

@@ -1715,14 +1715,16 @@ public abstract class ResultUtil {
 				String errorInfo = e.getMessage();
 				if(operType == ResultUtil.OPERTYPE_getDocument) {
 					if(errorInfo != null && !errorInfo.equals("")) {
-						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-						Map error = (Map) data.get("error");
-						if(error != null) {
-							String errorType = (String) error.get("type");
-							if (errorType != null && errorType.equals("index_not_found_exception")) {
-								throw e;
-							}
-						}
+//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+						if(errorInfo.indexOf("index_not_found_exception") > 0)
+							throw e;
+//						Map error = (Map) data.get("error");
+//						if(error != null) {
+//							String errorType = (String) error.get("type");
+//							if (errorType != null && errorType.equals("index_not_found_exception")) {
+//								throw e;
+//							}
+//						}
 					}
 //					Boolean found = (Boolean) data.get("found");
 //						if (found != null && found == false)
@@ -1771,14 +1773,16 @@ public abstract class ResultUtil {
 
 				if(operType == ResultUtil.OPERTYPE_getDocument) {
 					if(errorInfo != null && !errorInfo.equals("")) {
-						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
-						Map error = (Map) data.get("error");
-						if(error != null) {
-							String errorType = (String) error.get("type");
-							if (errorType != null && errorType.equals("index_not_found_exception")) {
-								throw e;
-							}
-						}
+//						Map data = SimpleStringUtil.json2Object(errorInfo, HashMap.class);
+//						Map error = (Map) data.get("error");
+//						if(error != null) {
+//							String errorType = (String) error.get("type");
+//							if (errorType != null && errorType.equals("index_not_found_exception")) {
+//								throw e;
+//							}
+//						}
+						if(errorInfo.indexOf("index_not_found_exception") > 0)
+							throw e;
 					}
 					return (T) null;
 //						}

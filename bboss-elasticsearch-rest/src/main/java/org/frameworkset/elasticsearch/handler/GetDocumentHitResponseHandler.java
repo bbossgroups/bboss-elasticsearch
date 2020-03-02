@@ -3,15 +3,15 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MapSearchHit;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler<MapSearchHit> {
+public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<MapSearchHit> {
 	private static Logger logger = LoggerFactory.getLogger(GetDocumentHitResponseHandler.class);
 
 
@@ -33,7 +33,7 @@ public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler 
              }
              catch (Exception e){
 //                 logger.error("",e);
-                 throw new ElasticSearchException(e,status);
+                 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e,status);
              }
 
 //             ClassUtil.ClassInfo classInfo = ClassUtil.getClassInfo(TransportClient.class);
@@ -48,7 +48,7 @@ public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler 
 //             }
 //             else
 //                 throw new ElasticSearchException("Unexpected response status: " + status,status);
-             return (MapSearchHit)super.handleException(entity,status);
+             return (MapSearchHit)super.handleException(url,entity,status);
          }
      }
 

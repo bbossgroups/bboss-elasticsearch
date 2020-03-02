@@ -17,12 +17,12 @@ package org.frameworkset.elasticsearch.handler;/*
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 
-public class GetDocumentSourceResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler {
+public class GetDocumentSourceResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler {
 	private Class type;
 	public GetDocumentSourceResponseHandler(Class type){
 		this.type = type;
@@ -38,7 +38,7 @@ public class GetDocumentSourceResponseHandler extends BaseExceptionResponseHandl
 					return super.converJson(entity,type);
 			}
 			catch (Exception e){
-				throw new ElasticSearchException(e,status);
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e,status);
 			}
 			return null;
 		} else {
@@ -48,7 +48,7 @@ public class GetDocumentSourceResponseHandler extends BaseExceptionResponseHandl
 //			}
 //			else
 //				throw new ElasticSearchException("Unexpected response status: " + status,status);
-			return super.handleException(entity,status);
+			return super.handleException(url,entity,status);
 		}
 	}
 }

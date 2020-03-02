@@ -47,7 +47,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 //	                 searchResponse = SimpleStringUtil.json2Object(entity.getContent(), RestResponse.class) ;
 	             }
 	             catch (Exception e){
-					 throw new ElasticSearchException(e,status);
+					 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e,status);
 	             }
 	             finally{
 	            	 ESSerialThreadLocal.clean();
@@ -58,7 +58,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
 
          } else {
              HttpEntity entity = response.getEntity();
-			 return (RestResponse)super.handleException(entity,status);
+			 return (RestResponse)super.handleException(url,entity,status);
 
          }
      }

@@ -2543,7 +2543,7 @@ public class ES2DBScrollTimestampDemo {
 
 从es中查询数据导入数据库案例,基于数字类型增量同步，采用slicescroll检索
 
-​```java
+```java
 public class ES2DBSliceScrollResultCallbackDemo {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	public static void main(String[] args){
@@ -2569,7 +2569,7 @@ public class ES2DBSliceScrollResultCallbackDemo {
 		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
 		// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
 		// 但是需要设置setLastValueType告诉工具增量字段的类型
-
+	
 		/**
 		 * es相关配置
 		 */
@@ -2601,21 +2601,21 @@ public class ES2DBSliceScrollResultCallbackDemo {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(SimpleStringUtil.object2json(taskMetrics));
 			}
-
+	
 			@Override
 			public void error(TaskCommand taskCommand, Object result) {
 				System.out.println("error");
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(SimpleStringUtil.object2json(taskMetrics));
 			}
-
+	
 			@Override
 			public void exception(TaskCommand taskCommand, Exception exception) {
 				System.out.println("exception");
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(SimpleStringUtil.object2json(taskMetrics));
 			}
-
+	
 			@Override
 			public int getMaxRetry() {
 				return -1;
@@ -2766,7 +2766,7 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下mongodb-elasticseach同步特有的参数：
 
-```java
+​```java
         //mongodb的相关配置参数
 		importBuilder.setName("session")
 				.setDb("sessiondb")
@@ -3051,13 +3051,17 @@ public class Mongodb2ESdemo {
 
  https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java 
 
-# 6 Kafka1x-Elasticsearch数据同步使用方法
+# 6 Kafka1x-Elasticsearch数据同步使用方法（不推荐）
 
 https://github.com/bbossgroups/kafka1x-elasticsearch
 
-# 7 Kafka2x-Elasticsearch数据同步使用方法
+适用于old kafka client包，不推荐使用
+
+# 7 Kafka2x-Elasticsearch数据同步使用方法（推荐）
 
 https://github.com/bbossgroups/kafka2x-elasticsearch
+
+适用于新版本kafka client，推荐使用
 
 # 8 Elasticsearch-Elasticsearch数据同步使用方法
 

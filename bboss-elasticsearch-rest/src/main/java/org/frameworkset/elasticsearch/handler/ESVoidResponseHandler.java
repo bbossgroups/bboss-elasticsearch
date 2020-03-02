@@ -18,7 +18,7 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import java.io.IOException;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESVoidResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler<Void>,ESExceptionWrapper {
+public class ESVoidResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<Void>,ESExceptionWrapper {
 
 	public ESVoidResponseHandler() {
 		// TODO Auto-generated constructor stub
@@ -57,7 +57,7 @@ public class ESVoidResponseHandler extends BaseExceptionResponseHandler implemen
 //				else
 //					throw new ElasticSearchException("Unexpected response status: " + status, status);
 //			}
-			handleException(entity ,status);
+			handleException(url,entity ,status);
 			return null;
 		}
 	}

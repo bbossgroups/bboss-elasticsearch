@@ -18,7 +18,7 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESMapResponseHandler  extends BaseExceptionResponseHandler implements ResponseHandler<Map>  {
+public class ESMapResponseHandler  extends BaseExceptionResponseHandler implements URLResponseHandler<Map> {
 	public ESMapResponseHandler() {
 		// TODO Auto-generated constructor stub
 	}
@@ -58,7 +58,7 @@ public class ESMapResponseHandler  extends BaseExceptionResponseHandler implemen
 //				else
 //					throw new ElasticSearchException("Unexpected response status: " + status, status);
 //			}
-			return (Map)handleException(entity ,status);
+			return (Map)handleException(url,entity ,status);
 
 		}
 	}

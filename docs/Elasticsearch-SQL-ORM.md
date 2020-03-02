@@ -18,9 +18,16 @@ orm查询
 分页查询
 <https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLPagineTest.java>
 
-目前官方es sql提供的功能有限，也可以在bboss中使用[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件提供的功能，下面有专门的章节介绍。
+Elasticsearch 目前有两个sql插件
 
-本文详细说明上面的案例：
+- 官方:[xpack-sql插件](https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-sql.html)
+
+- 第三方：[Elasticsearch-sql插件](https://github.com/NLPchina/elasticsearch-sql)
+
+
+官方的ES-SQL功能必须Elasticsearch 6.3以上的版本才提供；Elasticsearch-SQL插件可以在不同的Elasticsearch版本上运行，可以根据实际情况进行选择。
+
+下面结合案例介绍两个插件的使用方法：
 
 - 集合orm查询
 - 单文orm档查询
@@ -29,7 +36,7 @@ orm查询
 
 
 
-# 1 orm查询
+# 1 官方xpack-sql orm查询
 
 
 
@@ -692,7 +699,7 @@ sql转换为dsl的结果：
 }
 ```
 
-# 2 Elasticsearch-sql查询
+# 2 第三方插件Elasticsearch-sql查询
 
 基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可。
 
@@ -700,7 +707,7 @@ sql转换为dsl的结果：
 
 https://github.com/NLPchina/elasticsearch-sql
 
-## 简单案例
+## 2.1 简单案例
 
 ```java
     /**
@@ -721,7 +728,7 @@ https://github.com/NLPchina/elasticsearch-sql
 	}
 ```
 
-## 通过配置文件管理sql语句案例
+## 2.2 通过配置文件管理sql语句案例
 
 ```java
 /**
@@ -755,7 +762,7 @@ public void testESSQLFromConf(){
 </property>
 ```
 
-## 带参数的配置文件案例
+## 2.3 带参数的配置文件案例
 
 ```
 /**
@@ -791,7 +798,7 @@ public void testESSQLFromConfParams(){
 </property>
 ```
 
-## Elasticsearch-SQL插件sql转dsl功能
+## 2.4 Elasticsearch-SQL插件sql转dsl功能
 
 ```java
 /**
@@ -811,7 +818,7 @@ public void testESSQLTranslate(){
 
 
 
-官方的ES-SQL功能目前还不成熟，必须Elasticsearch 6.3以上的版本，而且收费；Elasticsearch-SQL插件功能全，免费，可以在不同的Elasticsearch版本上运行。
+
 
 # 3 开发交流
 

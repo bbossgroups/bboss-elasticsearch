@@ -37,20 +37,20 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 	public ElasticSearchException getElasticSearchException() {
 		return elasticSearchException;
 	}
-	protected Object handleException(HttpEntity entity ,int status) throws IOException {
+	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException {
 
 		if(status == 404){//在有些场景下面，404不能作为异常抛出，这里作一次桥接，避免不必要的exception被apm性能监控工具探测到
 			if (entity != null)
-				this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity),status);
+				this.elasticSearchException = new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",").append(EntityUtils.toString(entity)).toString(),status);
 			else
-				this.elasticSearchException = new ElasticSearchException("Unexpected response status: " + status, status);
+				this.elasticSearchException = new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
 			return null;
 		}
 		else {
 			if (entity != null)
-				throw new ElasticSearchException(EntityUtils.toString(entity), status);
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",").append(EntityUtils.toString(entity)).toString(), status);
 			else
-				throw new ElasticSearchException("Unexpected response status: " + status, status);
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
 		}
 	}
 }

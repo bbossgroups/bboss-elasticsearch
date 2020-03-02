@@ -3,15 +3,15 @@ package org.frameworkset.elasticsearch.handler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.MapRestResponse;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandler implements ResponseHandler<MapRestResponse> {
+public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<MapRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchMapResponseHandler.class);
 
 	public ElasticSearchMapResponseHandler() {
@@ -36,7 +36,7 @@ public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandle
 					 return super.converJson(entity,MapRestResponse.class);
 	             }
 	             catch (Exception e){
-					 throw new ElasticSearchException(e,status);
+					 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e,status);
 	             }
 
              }
@@ -45,7 +45,7 @@ public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandle
 
          } else {
              HttpEntity entity = response.getEntity();
-             return (MapRestResponse)super.handleException(entity,status);
+             return (MapRestResponse)super.handleException(url,entity,status);
 
 //             if (entity != null ) {
 //            	 throw new ElasticSearchException(EntityUtils.toString(entity),status);

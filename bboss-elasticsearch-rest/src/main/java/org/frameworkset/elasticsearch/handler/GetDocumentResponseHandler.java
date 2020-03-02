@@ -49,7 +49,7 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 //                 searchResponse = entity != null ? SimpleStringUtil.json2Object(content, RestResponse.class) : null;
 				 } catch (Exception e) {
 //                 logger.error("",e);
-					 throw new ElasticSearchException(e,status);
+					 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e,status);
 				 } finally {
 					 ESSerialThreadLocal.clean();
 				 }
@@ -66,7 +66,7 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 //             }
 //             else
 //                 throw new ElasticSearchException("Unexpected response status: " + status,status);
-			 return (SearchHit)super.handleException(entity,status);
+			 return (SearchHit)super.handleException(url,entity,status);
          }
      }
 

@@ -1,11 +1,12 @@
 package org.frameworkset.elasticsearch.handler;
 
-import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.entity.RestResponse;
 import org.frameworkset.elasticsearch.serial.ESClassType;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
-public abstract class BaseESResponsehandler extends BaseResponsehandler implements ResponseHandler<RestResponse> {
+public abstract class BaseESResponsehandler extends BaseResponsehandler implements URLResponseHandler<RestResponse> {
+
 
 	public BaseESResponsehandler() {
 		super();

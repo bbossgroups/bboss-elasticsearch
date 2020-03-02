@@ -19,9 +19,9 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,14 @@ import java.io.InputStream;
  * @author biaoping.yin
  * @version 1.0
  */
-public class SQLRestResponseHandler implements ResponseHandler<SQLRestResponse> {
+public class SQLRestResponseHandler implements URLResponseHandler<SQLRestResponse> {
+	private String url;
+
+	@Override
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	@Override
 	public SQLRestResponse handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 		int status = response.getStatusLine().getStatusCode();
@@ -50,7 +57,7 @@ public class SQLRestResponseHandler implements ResponseHandler<SQLRestResponse> 
 					return searchResponse;
 				}
 				catch (Exception e){
-					throw new ElasticSearchException(e,status);
+					throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e);
 				}
 				finally {
 					inputStream.close();
@@ -59,10 +66,14 @@ public class SQLRestResponseHandler implements ResponseHandler<SQLRestResponse> 
 			return null;
 		} else {
 			HttpEntity entity = response.getEntity();
-			if (entity != null)
-				throw new ElasticSearchException(EntityUtils.toString(entity), status);
+//			if (entity != null)
+//				throw new ElasticSearchException(EntityUtils.toString(entity), status);
+//			else
+//				throw new ElasticSearchException("Unexpected response status: " + status, status);
+			if (entity != null )
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",").append(EntityUtils.toString(entity)).toString());
 			else
-				throw new ElasticSearchException("Unexpected response status: " + status, status);
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString());
 		}
 	}
 }

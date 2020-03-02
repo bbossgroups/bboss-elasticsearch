@@ -49,7 +49,8 @@ public class CompleteElasticSearchResponseHandler extends ElasticSearchResponseH
 //	                 searchResponse = SimpleStringUtil.json2Object(entity.getContent(), RestResponse.class) ;
 	             }
 	             catch (Exception e){
-					 throw new ElasticSearchException(e);
+//					 throw new ElasticSearchException(e);
+					 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).toString(),e);
 	             }
 	             finally{
 	            	 ESSerialThreadLocal.clean();
@@ -60,20 +61,24 @@ public class CompleteElasticSearchResponseHandler extends ElasticSearchResponseH
 
          } else {
              HttpEntity entity = response.getEntity();
-             if (entity != null ) {
-            	 throw new ElasticSearchException(EntityUtils.toString(entity));
-//				 String content = EntityUtils.toString(entity);
-//                 ErrorResponse searchResponse = null;
-//                 try {
-//                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
-//                 }
-//                 catch (Exception e){
-//					 throw new ElasticSearchException(content,e);
-//                 }
-//                 return searchResponse;
-             }
-             else
-                 throw new ElasticSearchException("Unexpected response status: " + status);
+//             if (entity != null ) {
+//            	 throw new ElasticSearchException(EntityUtils.toString(entity));
+////				 String content = EntityUtils.toString(entity);
+////                 ErrorResponse searchResponse = null;
+////                 try {
+////                     searchResponse = entity != null ? SimpleStringUtil.json2Object(content, ErrorResponse.class) : null;
+////                 }
+////                 catch (Exception e){
+////					 throw new ElasticSearchException(content,e);
+////                 }
+////                 return searchResponse;
+//             }
+//             else
+//                 throw new ElasticSearchException("Unexpected response status: " + status);
+			 if (entity != null )
+				 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",").append(EntityUtils.toString(entity)).toString());
+			 else
+				 throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString());
          }
      }
 
