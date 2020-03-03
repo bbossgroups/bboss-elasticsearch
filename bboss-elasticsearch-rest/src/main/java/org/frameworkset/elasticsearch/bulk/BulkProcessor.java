@@ -188,7 +188,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param indexType
 	 * @param data
-	 * @param clientOptions
+	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertData(String index,String indexType,Object data,ClientOptions clientOptions){
 
@@ -201,10 +201,26 @@ public class BulkProcessor {
 	}
 
 	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param data Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
+	 */
+	public void insertData(String index,String indexType,Object data){
+
+		assertShutdown();
+		BulkData bulkData = new BulkData(BulkData.INSERT,data);
+		bulkData.setIndex(index);
+		bulkData.setIndexType(indexType);
+//		bulkData.setClientOptions(clientOptions);
+		appendBulkData( bulkData);
+	}
+
+	/**
 	 * ES 7.x,+
 	 * @param index
 	 * @param data
-	 * @param clientOptions
+	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertData(String index,Object data,ClientOptions clientOptions){
 		insertData( index,(String)null, data,clientOptions);
@@ -213,7 +229,7 @@ public class BulkProcessor {
 	/**
 	 * ES 7.x,+
 	 * @param index
-	 * @param data
+	 * @param data Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertData(String index,Object data){
 		insertData( index,(String)null, data,null);
@@ -224,7 +240,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param indexType
 	 * @param data
-	 * @param updateOptions
+	 * @param updateOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield
 	 */
 	public void updateData(String index, String indexType, Object data, ClientOptions updateOptions){
 //		try {
@@ -240,10 +256,31 @@ public class BulkProcessor {
 //		}
 	}
 
+	 /**
+	  *  ES 1.x,2.x,5.x,6.x,7.x,+
+			* @param index
+	 * @param indexType
+	 * @param data Object中有@ESId指定的文档id字段
+	 */
+	public void updateData(String index, String indexType, Object data){
+//		try {
+		assertShutdown();
+		BulkData bulkData = new BulkData(BulkData.UPDATE,data);
+		bulkData.setIndex(index);
+		bulkData.setIndexType(indexType);
+//		bulkData.setClientOptions(updateOptions);
+//			this.dataQueue.put(bulkData);
+		appendBulkData( bulkData);
+//		} catch (InterruptedException e) {
+//			logger.info("InterruptedException");
+//		}
+	}
+
 	/**
 	 * ES 7.x,+
 	 * @param index
-	 * @param data
+	 * @param data Object中必须要要有@ESId指定的文档id字段
+	 *
 	 */
 	public void updateData(String index,  Object data){
 		updateData(  index,   null, data,null);
@@ -253,17 +290,19 @@ public class BulkProcessor {
 	 * ES 7.x,+
 	 * @param index
 	 * @param data
-	 * @param updateOptions
+	 * @param updateOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield
 	 */
 	public void updateData(String index,  Object data, ClientOptions updateOptions){
 		updateData(  index, (String)null,  data,  updateOptions);
 	}
 
+
+
 	/**
 	 * ES 1.x,2.x,5.x,6.x,7.x,+
 	 * @param index
 	 * @param indexType
-	 * @param data
+	 * @param data 待删除的文档_id
 	 * @param updateOptions
 	 */
 	public void deleteData(String index,String indexType,Object data, ClientOptions updateOptions){
@@ -274,6 +313,27 @@ public class BulkProcessor {
 			bulkData.setIndexType(indexType);
 			bulkData.setClientOptions(updateOptions);
 			appendBulkData( bulkData);
+//			bulkCommand.addBulkData(bulkData);
+//			this.dataQueue.put(bulkData);
+//		} catch (InterruptedException e) {
+//			logger.info("InterruptedException");
+//		}
+	}
+
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param data 待删除的文档_id
+	 */
+	public void deleteData(String index,String indexType,Object data){
+//		try {
+		assertShutdown();
+		BulkData bulkData = new BulkData(BulkData.DELETE,data);
+		bulkData.setIndex(index);
+		bulkData.setIndexType(indexType);
+//		bulkData.setClientOptions(updateOptions);
+		appendBulkData( bulkData);
 //			bulkCommand.addBulkData(bulkData);
 //			this.dataQueue.put(bulkData);
 //		} catch (InterruptedException e) {
@@ -295,7 +355,7 @@ public class BulkProcessor {
 	 * @param data 待删除的文档_id
 	 * @param updateOptions
 	 */
-	public void deleteData(String index,Object data, ClientOptions updateOptions){
+	public void deleteDataWithClientOptions(String index,Object data, ClientOptions updateOptions){
 		deleteData(  index,(String)null,  data,  updateOptions);
 	}
 
@@ -313,7 +373,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param indexType
 	 * @param datas
-	 * @param clientOptions
+	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertDatas(String index,String indexType,List<Object> datas,ClientOptions clientOptions){
 		if(datas == null || datas.size() == 0)
@@ -340,10 +400,41 @@ public class BulkProcessor {
 	}
 
 	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
+	 */
+	public void insertDatas(String index,String indexType,List<Object> datas){
+		if(datas == null || datas.size() == 0)
+			return;
+		assertShutdown();
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
+			for(Object data:datas) {
+				BulkData bulkData = new BulkData(BulkData.INSERT, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+//				bulkData.setClientOptions(clientOptions);
+				_appendBulkData( bulkData);
+			}
+
+		}
+		finally {
+			w.unlock();
+		}
+
+	}
+
+
+	/**
 	 * ES 7.x,+
 	 * @param index
 	 * @param datas
-	 * @param clientOptions
+	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertDatas(String index,List<Object> datas,ClientOptions clientOptions){
 		insertDatas( index,(String)null, datas,clientOptions);
@@ -352,7 +443,7 @@ public class BulkProcessor {
 	/**
 	 * ES 7.x,+
 	 * @param index
-	 * @param datas
+	 * @param datas Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertDatas(String index,List<Object> datas){
 		insertDatas( index,(String)null, datas,null);
@@ -363,7 +454,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param indexType
 	 * @param datas
-	 * @param updateOptions
+	 * @param updateOptions Object中有@ESId指定的文档id字段或者updateOptions设置了esidfield
 	 */
 	public void updateDatas(String index, String indexType, List<Object> datas, ClientOptions updateOptions){
 		if(datas == null || datas.size() == 0)
@@ -390,9 +481,39 @@ public class BulkProcessor {
 	}
 
 	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas  Object中必须要有@ESId注解设置的文档id信息
+	 */
+	public void updateDatas(String index, String indexType, List<Object> datas){
+		if(datas == null || datas.size() == 0)
+			return;
+		assertShutdown();
+
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
+			for(Object data:datas) {
+				BulkData bulkData = new BulkData(BulkData.UPDATE, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+//				bulkData.setClientOptions(updateOptions);
+				_appendBulkData( bulkData);
+			}
+
+		}
+		finally {
+			w.unlock();
+		}
+	}
+
+	/**
 	 * ES 7.x,+
 	 * @param index
-	 * @param datas
+	 * @param datas Object中必须要要有@ESId指定的文档id字段
 	 */
 	public void updateDatas(String index,  List<Object> datas){
 		updateDatas(  index,   (String)null, datas,null);
@@ -402,7 +523,7 @@ public class BulkProcessor {
 	 * ES 7.x,+
 	 * @param index
 	 * @param datas
-	 * @param updateOptions
+	 * @param updateOptions Object中有@ESId指定的文档id字段或者updateOptions设置了esidfield
 	 */
 	public void updateDatas(String index, List<Object> datas, ClientOptions updateOptions){
 		updateDatas(  index, (String)null,  datas,  updateOptions);
@@ -438,6 +559,36 @@ public class BulkProcessor {
 				bulkData.setIndex(index);
 				bulkData.setIndexType(indexType);
 				bulkData.setClientOptions(updateOptions);
+				_appendBulkData( bulkData);
+			}
+		}
+		finally {
+			w.unlock();
+		}
+
+	}
+
+	/**
+	 * ES 1.x,2.x,5.x,6.x,7.x,+
+	 * @param index
+	 * @param indexType
+	 * @param datas 待删除的文档_id集合
+	 */
+	public void deleteDatas(String index,String indexType,List<Object> datas){
+		if(datas == null || datas.size() == 0){
+			return ;
+		}
+		assertShutdown();
+		try {
+			w.lock();
+			if(bulkCommand == null){
+				return;
+			}
+			for(Object data :datas) {
+				BulkData bulkData = new BulkData(BulkData.DELETE, data);
+				bulkData.setIndex(index);
+				bulkData.setIndexType(indexType);
+//				bulkData.setClientOptions(updateOptions);
 				_appendBulkData( bulkData);
 			}
 		}
