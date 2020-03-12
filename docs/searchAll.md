@@ -13,13 +13,29 @@
 - 并行获取所有文档api
 
 直接看案例：
-
+[SearchAllTest](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/searchall/SearchAllTest.java)
 ```java
 package org.bboss.elasticsearchtest.searchall;
+/**
+ * Copyright 2008 biaoping.yin
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.scroll.HandlerInfo;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.junit.Test;
 
@@ -143,7 +159,7 @@ public class SearchAllTest {
 	@Test
 	public void testSearchAllParrrel(){
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
-		ESDatas<Map> esDatas = clientInterface.searchAll("demo",Map.class,6);
+		ESDatas<Map> esDatas = clientInterface.searchAllParallel("demo",Map.class,6);
 		List<Map> dataList = esDatas.getDatas();
 		System.out.println("TotalSize:"+esDatas.getTotalSize());
 		if(dataList != null) {
@@ -160,7 +176,7 @@ public class SearchAllTest {
 	@Test
 	public void testSearchAllFethchSizeParrrel(){
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
-		ESDatas<Map> esDatas = clientInterface.searchAll("demo",10000,Map.class,6);
+		ESDatas<Map> esDatas = clientInterface.searchAllParallel("demo",10000,Map.class,6);
 		List<Map> dataList = esDatas.getDatas();
 		System.out.println("TotalSize:"+esDatas.getTotalSize());
 		if(dataList != null) {
@@ -177,7 +193,7 @@ public class SearchAllTest {
 	@Test
 	public void testSearchAllHandlerParrrel(){
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
-		ESDatas<Map> esDatas = clientInterface.searchAll("demo", new ScrollHandler<Map>() {
+		ESDatas<Map> esDatas = clientInterface.searchAllParallel("demo", new ScrollHandler<Map>() {
 			public void handle(ESDatas<Map> esDatas, HandlerInfo handlerInfo) throws Exception {
 				List<Map> dataList = esDatas.getDatas();
 				System.out.println("TotalSize:"+esDatas.getTotalSize());
@@ -206,7 +222,7 @@ public class SearchAllTest {
 	@Test
 	public void testSearchAllFethchSizeHandlerParrrel(){
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
-		ESDatas<Map> esDatas = clientInterface.searchAll("demo",10000,new ScrollHandler<Map>() {
+		ESDatas<Map> esDatas = clientInterface.searchAllParallel("demo",10000,new ScrollHandler<Map>() {
 			public void handle(ESDatas<Map> esDatas, HandlerInfo handlerInfo) throws Exception {
 				List<Map> dataList = esDatas.getDatas();
 				System.out.println("TotalSize:"+esDatas.getTotalSize());
@@ -230,6 +246,7 @@ public class SearchAllTest {
 		}
 	}
 }
+
 ```
 
 
@@ -238,7 +255,7 @@ public class SearchAllTest {
 
 完整的demo工程
 
-<https://gitee.com/bboss/eshelloword-booter>
+<https://github.com/bbossgroups/elasticsearch-example>
 
 bboss elasticsearch交流：166471282
 

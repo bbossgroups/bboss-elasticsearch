@@ -23,7 +23,33 @@ https://esdoc.bbossgroups.com/#/development
 7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
 
    https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
-   
+
+
+
+# 导入bboss
+
+一般项目导入下面的maven坐标即可：
+
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <version>6.0.3</version>
+        </dependency>
+```
+
+如果是spring boot项目还需要导入下面的maven坐标：
+
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
+            <version>6.0.3</version>
+        </dependency>
+```
+
+
+
 # v6.0.3 功能改进 
 1.http组件改进: 在异常信息中包含服务请求完整url地址信息
 

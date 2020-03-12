@@ -1786,7 +1786,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 ​      bboss elasticsearch采用xml文件管理elasticsearch的dsl脚本，在dsl脚本中可以使用变量、foreach循环、逻辑判断、注释；配置文件支持在线修改、自动热加载，开发和调试非常方便。
 
-- **变量**
+#### 5.3.1.1 **变量**
 
 脚本中变量定义语法有两种:#[xxx],$xxx,**尽可能地在脚本中使用#[xxx]方式的变量，在#[]类型变量中还可以指定属性，后面举例说明。对于**#[xxx]类型**变量值中包含的可能破坏dsl json语法结构的特殊字符（例如回车换行符等），框架会自动进行转义处理；**$xxx类型变量直接输出原始值（特殊字符不做转移处理），$xxx类型变量可以用于if/else和foreach循环控制变量，而#[xxx]不可以**。**   
 
@@ -1814,13 +1814,13 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 
 
-- **片段引用**
+#### **5.3.1.2 片段引用**
 
 @{pianduan}
 
 支持引用同文件内片段和跨文件片段引用，后面专门介绍。
 
-- **script脚本封装语法**
+#### **5.3.1.3 script脚本封装语法**
 
 ```javascript
 @"""
@@ -1829,7 +1829,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 """
 ```
 
-- **SQL语句回车换行符替换语法**
+#### **5.3.1.4 SQL语句回车换行符替换语法**
 
 \#""" """,包含在这个中间的dsl片段中包含的回车换行符会被替换成空格，使用示例及注意事项:
 
@@ -1850,17 +1850,41 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 </property>
 ```
 
-- **foreach循环语法**
+#### **5.3.1.5 foreach循环语法**
 
 \#foreach-#end
 
-  foreach循环内置循环变量：$velocityCount，不需要从外部传入
+  foreach循环内置循环变量：$velocityCount，不需要从外部传入,使用示例：
 
-- **逻辑判断语法**
+```velocity
+#foreach($xxx in $xxxs)
+     {"term": {
+     	"applicationName": #[xxxs[$velocityCount]]
+     }}
+#end
+```
+
+嵌套foreach循环中使用循环变量
+
+```velocity
+#foreach($subxxxs in $xxxs)
+     ## 定义保存外部循环变量velocityCount的临时变量
+     #set($outIndex = $velocityCount)
+     #foreach($item in $subxxxs.innerList)
+         {"term": {
+            "applicationName": #[xxxs[$outIndex]->innerList[$velocityCount]]
+         }}
+	#end
+#end
+```
+
+
+
+#### **5.3.1.6 逻辑判断语法**
 
 \#if-#else-#end,#if-#elseif-#else-#end
 
-- **变量值逻辑判断**
+#### **5.3.1.7 变量值逻辑判断**
 
 \#if($xxxx) ##变量值不为null判断（类似java语法 if(xxxx != null)） 
 
@@ -1886,7 +1910,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 逻辑判断还可以包含各种组合 && ||操作。
 
-- **在dsl中定义和修改$模式变量**
+#### **5.3.1.8 在dsl中定义和修改$模式变量**
 
 定义变量
 

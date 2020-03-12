@@ -169,7 +169,7 @@ perKeyDSLStructionCacheSize参数含义，参考文档：
 
 [dsl配置文件中关于dsl解析语法树缓存相关配置](https://esdoc.bbossgroups.com/#/development?id=_5314-dsl配置文件中关于dsl解析语法树缓存相关配置)
 
-
+[dsl动态语法](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)
 
 # 问题6 Conflicting property name definitions: '_source'
 
