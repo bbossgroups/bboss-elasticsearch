@@ -192,6 +192,7 @@ public abstract class BuildTool {
 
 	 * @return
 	 */
+	/**
 	public static String buildIndiceName(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
 		String name = esIndexWrapper.getName();
 		boolean useBatchContextIndexName = esIndexWrapper.isUseBatchContextIndexName();
@@ -212,7 +213,7 @@ public abstract class BuildTool {
 		StringBuilder builder = new StringBuilder();
 		buildIndiceName(esIndexWrapper,builder,  getVariableValue);
 		return builder.toString();
-	}
+	}*/
 
 	/**
 	 * ClassUtil.ClassInfo classInfo, Object bean
