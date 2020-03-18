@@ -52,15 +52,17 @@ public abstract class BuildTool {
 			return;
 		}
 		BatchContext batchContext = getVariableValue.getBatchContext();
+		String indexName = null;
 		if(batchContext != null && useBatchContext){
-			if(batchContext.getIndexName() != null){
-				builder.append(batchContext.getIndexName());
+			indexName = batchContext.getIndexName(esIndexWrapper.getIndex());
+			if(indexName != null){
+				builder.append(indexName);
 				return;
 			}
 		}
 		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
 		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
-		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null && useBatchContext?new StringBuilder():null;
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && indexName == null && useBatchContext?new StringBuilder():null;
 		for(int i = 0; i < tokens.size(); i ++){
 			nameGrammarToken = tokens.get(i);
 			if(!nameGrammarToken.varibletoken()) {
@@ -106,7 +108,7 @@ public abstract class BuildTool {
 			}
 		}
 		if(temp != null && useBatchContext){
-			batchContext.setIndexName(temp.toString());
+			batchContext.setIndexName(esIndexWrapper.getIndex(),temp.toString());
 		}
 	}
 
@@ -123,17 +125,19 @@ public abstract class BuildTool {
 
 		BatchContext batchContext = getVariableValue.getBatchContext();
 		boolean useBatchContextIndexName = esIndexWrapper.isUseBatchContextIndexName();
+		String indexName = null;
 		if(useBatchContextIndexName) {
 			if (batchContext != null) {
-				if (batchContext.getIndexName() != null) {
-					writer.write(batchContext.getIndexName());
+				indexName = batchContext.getIndexName(esIndexWrapper.getIndex());
+				if (indexName != null) {
+					writer.write(indexName);
 					return;
 				}
 			}
 		}
 		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
 		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
-		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null && useBatchContextIndexName?new StringBuilder():null;
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && indexName == null && useBatchContextIndexName?new StringBuilder():null;
 		for(int i = 0; i < tokens.size(); i ++){
 			nameGrammarToken = tokens.get(i);
 			if(!nameGrammarToken.varibletoken()) {
@@ -180,40 +184,14 @@ public abstract class BuildTool {
 		}
 		if(useBatchContextIndexName) {
 			if (temp != null) {
-				batchContext.setIndexName(temp.toString());
+				batchContext.setIndexName(esIndexWrapper.getIndex(),temp.toString());
 			}
 		}
 	}
 
 
 
-	/**
-	 * ClassUtil.ClassInfo classInfo, Object bean
 
-	 * @return
-	 */
-	/**
-	public static String buildIndiceName(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
-		String name = esIndexWrapper.getName();
-		boolean useBatchContextIndexName = esIndexWrapper.isUseBatchContextIndexName();
-		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
-		if(name == null || name.equals("")){
-			if(tokens == null  || tokens.size() == 0 )
-				return null;
-		}
-		else{
-			return name;
-		}
-		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null && useBatchContextIndexName ){
-			if(batchContext.getIndexName() != null){
-				return batchContext.getIndexName();
-			}
-		}
-		StringBuilder builder = new StringBuilder();
-		buildIndiceName(esIndexWrapper,builder,  getVariableValue);
-		return builder.toString();
-	}*/
 
 	/**
 	 * ClassUtil.ClassInfo classInfo, Object bean
@@ -316,36 +294,7 @@ public abstract class BuildTool {
 
 	}
 
-	/**
-	 * ClassUtil.ClassInfo classInfo, Object bean
-	 * @param getVariableValue
-	 * @return
-	 */
-	public static String buildIndiceType(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
-		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
-		if(typeInfo == null){
-			return _doc;
-		}
-		String type = typeInfo.getType();
-		if(type == null || type.equals("")){
-			List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
-			if(tokens == null  || tokens.size() == 0 )
-				return _doc;
-		}
-		else{
-			return type;
-		}
-		BatchContext batchContext = getVariableValue.getBatchContext();
-		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
-		if(batchContext != null && useBatchContext){
-			if(batchContext.getIndexType() != null){
-				return  (batchContext.getIndexType());
-			}
-		}
-		StringBuilder builder = new StringBuilder();
-		buildIndiceType(esIndexWrapper,builder,getVariableValue);
-		return builder.toString();
-	}
+
 	public static BatchContext initBatchContextThreadLocal(){
 		BatchContext batchContext = new BatchContext();
 		batchContextThreadLocal.set(batchContext);
