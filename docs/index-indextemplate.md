@@ -12,7 +12,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 # 1 准备工作
 
-参考文档在项目中导入Elasticsearch客户端：[集成Elasticsearch Restful API案例分享](https://my.oschina.net/bboss/blog/1801273)
+参考文档在项目中导入Elasticsearch客户端：[集成Elasticsearch Restful API案例分享](https://esdoc.bbossgroups.com/#/quickstart)
 
 本文除了介绍索引Indice和Index Template的创建修改方法，还可以看到如何在dsl中添加注释的用法：
 
@@ -34,7 +34,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 *#
 ```
 
-更多bboss dsl配置和定义的内容，参考文档：[高性能elasticsearch ORM开发库使用介绍](https://my.oschina.net/bboss/blog/1556866) 章节【**5.3 配置es查询dsl脚本语法**】
+更多bboss dsl配置和定义的内容，参考文档：[高性能elasticsearch ORM开发库使用介绍](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范) 章节【**5.3 配置es查询dsl脚本语法**】
 
 
 

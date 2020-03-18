@@ -46,12 +46,13 @@ public abstract class BuildTool {
 			builder.append(name);
 			return;
 		}
+		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexName();
 		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
 		if(tokens == null || tokens.size() == 0){
 			return;
 		}
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
+		if(batchContext != null && useBatchContext){
 			if(batchContext.getIndexName() != null){
 				builder.append(batchContext.getIndexName());
 				return;
@@ -59,7 +60,7 @@ public abstract class BuildTool {
 		}
 		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
 		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
-		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null?new StringBuilder():null;
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null && useBatchContext?new StringBuilder():null;
 		for(int i = 0; i < tokens.size(); i ++){
 			nameGrammarToken = tokens.get(i);
 			if(!nameGrammarToken.varibletoken()) {
@@ -104,7 +105,7 @@ public abstract class BuildTool {
 				}
 			}
 		}
-		if(temp != null){
+		if(temp != null && useBatchContext){
 			batchContext.setIndexName(temp.toString());
 		}
 	}
@@ -119,16 +120,20 @@ public abstract class BuildTool {
 		if(tokens == null || tokens.size() == 0){
 			return;
 		}
+
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
-			if(batchContext.getIndexName() != null){
-				writer.write(batchContext.getIndexName());
-				return;
+		boolean useBatchContextIndexName = esIndexWrapper.isUseBatchContextIndexName();
+		if(useBatchContextIndexName) {
+			if (batchContext != null) {
+				if (batchContext.getIndexName() != null) {
+					writer.write(batchContext.getIndexName());
+					return;
+				}
 			}
 		}
 		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
 		boolean onlyCurrentDateTimestamp = esIndexWrapper.isOnlyCurrentDateTimestamp();
-		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null?new StringBuilder():null;
+		StringBuilder temp = onlyCurrentDateTimestamp && batchContext != null && batchContext.getIndexName() == null && useBatchContextIndexName?new StringBuilder():null;
 		for(int i = 0; i < tokens.size(); i ++){
 			nameGrammarToken = tokens.get(i);
 			if(!nameGrammarToken.varibletoken()) {
@@ -173,8 +178,10 @@ public abstract class BuildTool {
 				}
 			}
 		}
-		if(temp != null){
-			batchContext.setIndexName(temp.toString());
+		if(useBatchContextIndexName) {
+			if (temp != null) {
+				batchContext.setIndexName(temp.toString());
+			}
 		}
 	}
 
@@ -187,6 +194,7 @@ public abstract class BuildTool {
 	 */
 	public static String buildIndiceName(ESIndexWrapper esIndexWrapper,ESIndexWrapper.GetVariableValue getVariableValue){
 		String name = esIndexWrapper.getName();
+		boolean useBatchContextIndexName = esIndexWrapper.isUseBatchContextIndexName();
 		List<ESIndexWrapper.NameGrammarToken> tokens = esIndexWrapper.getNameTokens();
 		if(name == null || name.equals("")){
 			if(tokens == null  || tokens.size() == 0 )
@@ -196,7 +204,7 @@ public abstract class BuildTool {
 			return name;
 		}
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
+		if(batchContext != null && useBatchContextIndexName ){
 			if(batchContext.getIndexName() != null){
 				return batchContext.getIndexName();
 			}
@@ -228,8 +236,9 @@ public abstract class BuildTool {
 			writer.write(_doc);
 			return;
 		}
+		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
+		if(batchContext != null && useBatchContext){
 			if(batchContext.getIndexType() != null){
 				writer.write(batchContext.getIndexType());
 				return  ;
@@ -277,8 +286,9 @@ public abstract class BuildTool {
 			builder.append(_doc);
 			return;
 		}
+		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
+		if(batchContext != null && useBatchContext){
 			if(batchContext.getIndexType() != null){
 				builder.append(batchContext.getIndexType());
 				return  ;
@@ -325,7 +335,8 @@ public abstract class BuildTool {
 			return type;
 		}
 		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null ){
+		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
+		if(batchContext != null && useBatchContext){
 			if(batchContext.getIndexType() != null){
 				return  (batchContext.getIndexType());
 			}

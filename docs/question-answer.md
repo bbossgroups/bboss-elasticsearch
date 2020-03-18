@@ -19,14 +19,25 @@ org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasti
 
 ## 问题分析
 
-没有加载到application.properties配置文件
+出现上面的问题原因分析：
+
+1.没有正确加载application.properties或者application.yaml配置文件
+
+2.spring boot环境中获取elasticsearch bboss客户端组件实例方式不对
 
 ## 问题处理
 
-1.如果配置文件是在test源码目录，那么运行代码的时候就需要在test目录下面编写测试用例运行
+1..没有正确加载application.properties或者application.yaml配置文件处理：
 
-2.如果是在spring boot环境下面运行代码，那么就需要按照spring boot的方式使用和运行代码
-spring booter操作代码样例：
+如果配置文件是在test源码目录，那么运行代码的时候就需要在test目录下面编写测试用例运行
+
+如果不存在application.properties或者application.yaml文件，那么参考文档建立合适的文件：
+
+https://esdoc.bbossgroups.com/#/quickstart
+
+2.spring boot环境中获取elasticsearch bboss客户端组件实例方式不对
+
+需要按照spring boot的方式使用和运行代码，spring boot获取客户端组件实例以及操作代码样例：
 
 ```java
 @Service

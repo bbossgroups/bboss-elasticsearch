@@ -150,6 +150,8 @@ db.jdbcFetchSize = 10000
 
 ### 2.3.1同步批量导入
 
+根据设置的SQL语句，同步批量一次性导入数据到Elasticsearch中，非定时执行。
+
 ```java
 	public void testSimpleImportBuilder(){
 		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
@@ -189,6 +191,7 @@ db.jdbcFetchSize = 10000
 		 */
 		DataStream dataStream = importBuilder.builder();
 		dataStream.execute();
+        dataStream.destroy();//执行完毕后释放资源
 	}
 ```
 
@@ -198,7 +201,7 @@ db.jdbcFetchSize = 10000
 
 ### **2.3.2 异步批量导入**
 
-异步批量导入关键配置：
+根据设置的SQL语句，异步批量一次性导入数据到Elasticsearch中，非定时执行。异步批量导入关键配置：
 
 ```java
         importBuilder.setParallel(true);//设置为多线程异步并行批量导入
@@ -256,6 +259,7 @@ db.jdbcFetchSize = 10000
 		 */
 		DataStream dataStream = importBuilder.builder();
 		dataStream.execute();
+        dataStream.destroy();//执行完毕后释放资源
 		//获取索引表dbdemo中的数据总量，如果没有设置refreshOption,es插入数据会有几秒的延迟（具体的延迟多久取决于index refresh interval配置），所以countAll统计出来的结果不一定准确
 		long count = ElasticSearchHelper.getRestClientUtil().countAll("dbdemo");
 		System.out.println("数据导入完毕后索引表dbdemo中的文档数量:"+count);
@@ -440,6 +444,13 @@ importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询�
 importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
 ```
 
+setFromFirst的使用
+
+```java
+setFromfirst(false)，如果作业停了，作业重启后从上次停止的位置开始采集数据，
+setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开始采集数据
+```
+
 详细的增量导入案例：
 
 源码文件 <https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
@@ -483,7 +494,8 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 					 .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
 //		importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 //		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 		importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
@@ -1413,7 +1425,8 @@ public class Dbdemo {
       //增量配置开始
 //    importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 //    importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-      importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+      importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
       importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //    importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
       importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
@@ -2034,7 +2047,8 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 //		//设置任务执行拦截器结束，可以添加多个
 			//增量配置开始
 //		importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-			importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+			importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 			importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 			importBuilder.setLastValueStoreTableName("logs"+index);//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab，增量状态表会自动创建。如果xxl-job是shard分片模式运行，
 																   // 需要独立的表来记录每个分片增量同步状态，
@@ -2427,7 +2441,8 @@ public class ES2DBScrollTimestampDemo {
 		//增量配置开始
 //		importBuilder.setNumberLastValueColumn("logId");//指定数字增量查询字段变量名称
 		importBuilder.setDateLastValueColumn("logOpertime");//手动指定日期增量查询字段变量名称
-		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
@@ -2625,7 +2640,8 @@ public class ES2DBSliceScrollResultCallbackDemo {
 		//增量配置开始
 		importBuilder.setNumberLastValueColumn("logId");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 //		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 		importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
@@ -2750,6 +2766,50 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
  https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
 
+调试测试以及运行quatz作业同步功能方法，按如下配置进行操作：
+
+ 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](resources/org/frameworkset/task/quarts-task.xml)相关内容
+
+```xml
+<list>
+	<property name="QuartzImportTask" jobid="QuartzImportTask"
+					  bean-name="QuartzImportTask"
+					  method="execute"
+					  cronb_time="${quartzImportTask.crontime:*/20 * * * * ?}" used="true"
+					  shouldRecover="false"
+			/>
+</list>
+<!-- 作业组件配置-->
+<property name="QuartzImportTask" class="org.frameworkset.elasticsearch.imp.QuartzImportTask"
+		  destroy-method="destroy"
+		  init-method="init"
+/>
+```
+
+ 2.添加一个带main方法的作业运行
+
+```java
+ public class QuartzTest {
+ 	public static void main(String[] args){
+ 		TaskService.getTaskService().startService();
+        }
+ }
+```
+
+ 然后运行main方法即可
+
+ 然后运行main方法即可
+
+ 3.实际运行和发布作业方法， 使用quartz定时器运行导入数据作业时，先参考第一步做quartz作业任务配置，然后将application.properties文件中的mainclass设置为如下值即可：
+
+ 
+
+```properties
+mainclass=org.frameworkset.task.Main
+```
+
+ 4.发布和运行quartz定时任务：参考章节【2.4.10 发布版本】
+
 ## 3.4 xxl-job同步器demo
 
  https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
@@ -2766,7 +2826,7 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下mongodb-elasticseach同步特有的参数：
 
-​```java
+```java
         //mongodb的相关配置参数
 		importBuilder.setName("session")
 				.setDb("sessiondb")
@@ -2786,13 +2846,13 @@ mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-
 //				.setOption("")
 				.setAutoConnectRetry(true);
         importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
-```
+​```java
 
 一个完整的jdk timer同步器demo：根据session最后访问时间将保存在mongodb中的session数据，根据一定的时间间隔增量同步到Elasitcsearch中，如需调试同步功能，直接运行和调试main方法即可，elasticsearch的配置在resources/application.properties中进行配置：
 
  https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/resources/application.properties 
 
-```java
+​```java
 public class Mongodb2ESdemo {
 	private static Logger logger = LoggerFactory.getLogger(Mongodb2ESdemo.class);
 	public static void main(String args[]){
@@ -2894,7 +2954,8 @@ public class Mongodb2ESdemo {
 		//增量配置开始
 		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 //		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段
-		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 //		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型,ImportIncreamentConfig.TIMESTAMP_TYPE为时间类型
@@ -3112,7 +3173,128 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
   
 
-# 11 开发交流
+# 11 数据同步模式控制
+
+## 11.1 全量/增量导入
+
+根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，以session数据同步案例作业来讲解具体的控制方法
+
+- 增量同步时加上下面的代码
+
+```java
+        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+//setFromfirst(false)，如果作业停了，作业重启后从上次停止的位置开始采集数据，
+//setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开始采集数据
+		importBuilder.setFromFirst(false);
+
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
+- 全量同步时，去掉或者注释掉上面的代码
+
+```java
+        /**
+		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+//setFromfirst(false)，如果作业停了，作业重启后从上次停止的位置开始采集数据，
+//setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开始采集数据
+		importBuilder.setFromFirst(false);
+		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//设置增量查询的起始值lastvalue
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}*/
+```
+
+
+
+## 11.2 一次性执行和周期定时执行
+
+根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，以session数据同步案例作业来讲解具体的控制方法
+
+- 定时执行
+
+  支持jdk timer和quartz以及xxl-job三种定时执行机制，以jdk timer为例，加上以下代码即可
+
+```java
+        //定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+               //.setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+```
+
+- 一次性执行
+  一次性执行只需要将上面的代码注释即可
+
+```java
+        /**   
+        //定时任务配置，
+		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+               //.setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		*/
+        
+```
+
+然后执行完毕后调用destroy方法，例如：
+
+```java
+/**
+         * 执行数据库表数据导入es操作
+         */
+        DataStream dataStream = importBuilder.builder();
+        dataStream.execute();
+        dataStream.destroy();//执行完毕后释放资源
+```
+
+
+
+## 11.3 串行执行和并行执行
+
+根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，以session数据同步案例作业来讲解具体的控制方法
+
+- 并行执行
+
+  并行执行，加上以下代码即可
+
+```java
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
+
+```
+
+- 串行执行
+  串行执行只需要将上面的代码注释即可
+
+```java
+        /**   
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
+		*/		
+```
+
+
+
+# 12 开发交流
 
 完整的数据导入demo工程
 
