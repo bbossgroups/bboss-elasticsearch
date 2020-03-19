@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.1</version>
+            <version>6.0.5</version>
         </dependency>
 ```
 

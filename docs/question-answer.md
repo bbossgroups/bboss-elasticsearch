@@ -198,4 +198,4 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 ![img](images\jacson.png)
 
-- 升级bboss到6.0.3
+- 升级bboss到6.0.5

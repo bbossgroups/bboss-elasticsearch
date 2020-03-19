@@ -193,56 +193,7 @@ public abstract class BuildTool {
 
 
 
-	/**
-	 * ClassUtil.ClassInfo classInfo, Object bean
-	 * @param writer
-	 * @param getVariableValue
-	 */
-	public static void buildIndiceType(ESIndexWrapper esIndexWrapper,Writer writer, ESIndexWrapper.GetVariableValue getVariableValue) throws IOException {
-		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
-		if(typeInfo == null){
-			writer.write(_doc);
-			return;
-		}
 
-		String type = typeInfo.getType();
-		if(type != null){
-			writer.write(type);
-			return;
-		}
-		List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
-		if(tokens == null || tokens.size() == 0){
-			writer.write(_doc);
-			return;
-		}
-		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
-		BatchContext batchContext = getVariableValue.getBatchContext();
-		if(batchContext != null && useBatchContext){
-			if(batchContext.getIndexType() != null){
-				writer.write(batchContext.getIndexType());
-				return  ;
-			}
-		}
-		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
-		for(int i = 0; i < tokens.size(); i ++){
-			nameGrammarToken = tokens.get(i);
-			if(!nameGrammarToken.varibletoken()) {
-				writer.write(nameGrammarToken.getText());
-			}
-			else{
-//					Object va = classInfo.getPropertyValue(bean,nameGrammarToken.getFieldName());
-				Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
-				if(va == null)
-					throw new NameParserException(new StringBuilder()
-							.append(typeInfo.toString())
-							.append(",property[")
-							.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
-				writer.write(String.valueOf(va));
-			}
-		}
-
-
-	}
 
 	/**
 	 * ClassUtil.ClassInfo classInfo, Object bean
@@ -290,6 +241,52 @@ public abstract class BuildTool {
 				builder.append(va);
 			}
 		}
+
+
+	}
+	/**
+	 * ClassUtil.ClassInfo classInfo, Object bean
+	 * @param getVariableValue
+	 */
+	public static String buildIndiceType(ESIndexWrapper esIndexWrapper, ESIndexWrapper.GetVariableValue getVariableValue){
+		ESIndexWrapper.TypeInfo typeInfo = esIndexWrapper.getTypeInfo();
+		if(typeInfo == null){
+			return null;
+		}
+		String type = typeInfo.getType();
+		if(type != null){
+			return type;
+		}
+		List<ESIndexWrapper.NameGrammarToken> tokens = typeInfo.getTokens();
+		if(tokens == null || tokens.size() == 0){
+			return null;
+		}
+		boolean useBatchContext = esIndexWrapper.isUseBatchContextIndexType();
+		BatchContext batchContext = getVariableValue.getBatchContext();
+		if(batchContext != null && useBatchContext){
+			if(batchContext.getIndexType() != null){
+				return (batchContext.getIndexType());
+			}
+		}
+		ESIndexWrapper.NameGrammarToken nameGrammarToken = null;
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < tokens.size(); i ++){
+			nameGrammarToken = tokens.get(i);
+			if(!nameGrammarToken.varibletoken()) {
+				builder.append(nameGrammarToken.getText());
+			}
+			else{
+//					Object va = classInfo.getPropertyValue(bean,nameGrammarToken.getFieldName());
+				Object va = getVariableValue.getValue(nameGrammarToken.getFieldName());
+				if(va == null)
+					throw new NameParserException(new StringBuilder()
+							.append(typeInfo.toString())
+							.append(",property[")
+							.append(nameGrammarToken.getFieldName()).append("] is null.").toString());
+				builder.append(va);
+			}
+		}
+		return builder.toString();
 
 
 	}
@@ -1121,15 +1118,25 @@ public abstract class BuildTool {
 			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
 			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
 
-			if(indexType == null){
-				builder.append("/");
-				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
-			}
-			else{
-				builder.append("/").append(indexType);
-			}
+
 			if(!uper7) {
-				builder.append("/").append(id).append("/_update");
+//				if(indexType == null){
+//					builder.append("/");
+//					BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
+//				}
+//				else{
+//					builder.append("/").append(indexType);
+//				}
+//				builder.append("/").append(id).append("/_update");
+				if (indexType == null || indexType.equals("")) {
+					indexType = buildIndiceType(esIndexWrapper, restGetVariableValue);
+				}
+				if (indexType == null || indexType.equals("")) {
+
+					builder.append("/").append(id).append("/_update");
+				}
+				else
+					builder.append("/").append(indexType).append("/").append(id).append("/_update");
 			}
 			else{
 				builder.append("/_update").append("/").append(id);
@@ -1401,7 +1408,15 @@ public abstract class BuildTool {
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
 							.append(beanInfo != null ?beanInfo.toString():"").toString());
 				}
-				buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
+				indexType = buildIndiceType(esIndexWrapper,restGetVariableValue);
+				if(indexType != null && !indexType.equals("")) {
+					writer.write(indexType);
+				}
+				else{
+					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set index type in class ")
+							.append(beanInfo != null ?beanInfo.toString():"").toString());
+				}
+//				buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
 			}
 			writer.write("\"");
 		}

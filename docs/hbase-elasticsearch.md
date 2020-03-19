@@ -716,8 +716,8 @@ HBase2ES job has started.
 - [Mongodb-Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch)
 
 - [Database-Database数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_5-database-database%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
-- [Kafka1x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_6-kafka1x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
-- [Kafka2x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
+- [Kafka1x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_6-kafka1x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95%ef%bc%88%e4%b8%8d%e6%8e%a8%e8%8d%90%ef%bc%89)
+- [Kafka2x-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95%ef%bc%88%e6%8e%a8%e8%8d%90%ef%bc%89)
 - [Elasticsearch-Elasticsearch数据同步使用方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_8-elasticsearch-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)
 
 
