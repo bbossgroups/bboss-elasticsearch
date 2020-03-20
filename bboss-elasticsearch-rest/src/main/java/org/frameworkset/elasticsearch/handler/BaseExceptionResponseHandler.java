@@ -62,9 +62,17 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 	}
 	protected String putURL(String url,String response){
 		if(response != null && !response.equals("")) {
-			Map data = SimpleStringUtil.json2Object(response, Map.class);
-			data.put("request_url", url);
-			return SimpleStringUtil.object2json(data);
+			try {
+				Map data = SimpleStringUtil.json2Object(response, Map.class);
+				data.put("request_url", url);
+				return SimpleStringUtil.object2json(data);
+			}
+			catch(Exception e){
+				Map data = new HashMap(2);
+				data.put("request_url", url);
+				data.put("response",response);
+				return SimpleStringUtil.object2json(data);
+			}
 		}
 		else{
 			Map data = new HashMap(2);
