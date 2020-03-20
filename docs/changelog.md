@@ -79,7 +79,7 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 
 3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-# v6.0.6 功能改进 
+# v6.0.2 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
 # v6.0.1 功能改进 
