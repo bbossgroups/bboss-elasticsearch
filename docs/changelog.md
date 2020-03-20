@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.5 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.6 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.5</version>
+            <version>6.0.6</version>
         </dependency>
 ```
 
@@ -44,9 +44,18 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.5</version>
+            <version>6.0.6</version>
         </dependency>
 ```
+
+# v6.0.6 功能改进 
+
+1.修复bug：调用接口修改文档
+public String updateDocument(Object documentId,Object params) throws ElasticSearchException; 
+
+报了{"error":"no handler found for uri [/classroom/_doc/_update/3] and method [POST]"} 
+
+2.调整异常信息：去掉异常信息中的url地址拼接操作，并以debug级别输出异常对应的url地址到日志文件中
 
 # v6.0.5 功能改进 
 
@@ -70,7 +79,7 @@ https://esdoc.bbossgroups.com/#/development
 
 3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-# v6.0.2 功能改进 
+# v6.0.6 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
 # v6.0.1 功能改进 
