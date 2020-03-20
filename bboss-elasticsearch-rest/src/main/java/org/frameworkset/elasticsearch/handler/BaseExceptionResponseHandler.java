@@ -15,15 +15,14 @@ package org.frameworkset.elasticsearch.handler;
  * limitations under the License.
  */
 
-import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.spi.remote.http.BaseResponseHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -35,6 +34,7 @@ import java.util.Map;
  */
 public abstract class BaseExceptionResponseHandler extends BaseResponseHandler implements ESExceptionWrapper {
 	protected ElasticSearchException elasticSearchException;
+	protected static Logger _logger =  LoggerFactory.getLogger(BaseExceptionResponseHandler.class);
 
 	@Override
 	public ElasticSearchException getElasticSearchException() {
@@ -43,10 +43,12 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException {
 
 		if(status == 404){//在有些场景下面，404不能作为异常抛出，这里作一次桥接，避免不必要的exception被apm性能监控工具探测到
+
 			if (entity != null) {
-				String info = putURL( url,EntityUtils.toString(entity));
-				this.elasticSearchException = new ElasticSearchException(info, status);
-//				this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity), status);
+				if(_logger.isDebugEnabled()) {
+					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
+				}
+				this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity), status);
 			}
 			else
 				this.elasticSearchException = new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
@@ -54,30 +56,16 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 			return null;
 		}
 		else {
-			if (entity != null)
-				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",").append(EntityUtils.toString(entity)).toString(), status);
+			if (entity != null) {
+				if (_logger.isDebugEnabled()) {
+					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
+				}
+				throw new ElasticSearchException(EntityUtils.toString(entity), status);
+			}
 			else
 				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
 		}
 	}
-	protected String putURL(String url,String response){
-		if(response != null && !response.equals("")) {
-			try {
-				Map data = SimpleStringUtil.json2Object(response, Map.class);
-				data.put("request_url", url);
-				return SimpleStringUtil.object2json(data);
-			}
-			catch(Exception e){
-				Map data = new HashMap(2);
-				data.put("request_url", url);
-				data.put("response",response);
-				return SimpleStringUtil.object2json(data);
-			}
-		}
-		else{
-			Map data = new HashMap(2);
-			data.put("request_url", url);
-			return SimpleStringUtil.object2json(data);
-		}
-	}
+
+
 }
