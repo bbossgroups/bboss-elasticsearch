@@ -28,7 +28,7 @@ sourceSets {
 dependencies {
 	compile project(':bboss-elasticsearch-rest-entity')
    compile([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
-       
+	compile([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
     compile([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])  
    	 compile([group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonversion}",transitive: false],
 			 [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksondatabaindversion}",transitive: false],

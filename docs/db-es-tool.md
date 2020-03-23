@@ -2768,7 +2768,7 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
 调试测试以及运行quatz作业同步功能方法，按如下配置进行操作：
 
- 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](resources/org/frameworkset/task/quarts-task.xml)相关内容
+ 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](https://gitee.com/bboss/db2es-booter/blob/master/src/main/resources/org/frameworkset/task/quarts-task.xml)相关内容
 
 ```xml
 <list>

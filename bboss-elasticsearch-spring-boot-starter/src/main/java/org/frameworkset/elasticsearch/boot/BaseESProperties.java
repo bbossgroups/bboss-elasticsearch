@@ -147,7 +147,13 @@ public abstract class BaseESProperties {
 		private String url;
 		private String usePool;
 		private String validateSQL;
-
+		private String maxSize;
+		private String minIdleSize;
+		private String initSize;
+		private String showSql;
+		private String dbtype;
+		private String dbAdaptor;
+		private String jdbcFetchSize;
 		public String getName() {
 			return name;
 		}
@@ -205,6 +211,64 @@ public abstract class BaseESProperties {
 		}
 
 
+		public String getMaxSize() {
+			return maxSize;
+		}
+
+		public void setMaxSize(String maxSize) {
+			this.maxSize = maxSize;
+		}
+
+
+
+
+		public String getInitSize() {
+			return initSize;
+		}
+
+		public void setInitSize(String initSize) {
+			this.initSize = initSize;
+		}
+
+		public String getShowSql() {
+			return showSql;
+		}
+
+		public void setShowSql(String showSql) {
+			this.showSql = showSql;
+		}
+
+		public String getDbtype() {
+			return dbtype;
+		}
+
+		public void setDbtype(String dbtype) {
+			this.dbtype = dbtype;
+		}
+
+		public String getDbAdaptor() {
+			return dbAdaptor;
+		}
+
+		public void setDbAdaptor(String dbAdaptor) {
+			this.dbAdaptor = dbAdaptor;
+		}
+
+		public String getJdbcFetchSize() {
+			return jdbcFetchSize;
+		}
+
+		public void setJdbcFetchSize(String jdbcFetchSize) {
+			this.jdbcFetchSize = jdbcFetchSize;
+		}
+
+		public String getMinIdleSize() {
+			return minIdleSize;
+		}
+
+		public void setMinIdleSize(String minIdleSize) {
+			this.minIdleSize = minIdleSize;
+		}
 	}
 	public static class Http{
 		private String keystore;
@@ -708,12 +772,12 @@ public abstract class BaseESProperties {
 		if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
 			properties.put(_name+"elasticPassword",this.elasticPassword);
 		}
-		if(this.getElasticsearch().getRest() != null){
-			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getRest().getHostNames()))
-				properties.put(_name+"elasticsearch.rest.hostNames",this.getElasticsearch().getRest().getHostNames());
-		}
 
 		if(this.getElasticsearch() != null){
+			if(this.getElasticsearch().getRest() != null){
+				if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getRest().getHostNames()))
+					properties.put(_name+"elasticsearch.rest.hostNames",this.getElasticsearch().getRest().getHostNames());
+			}
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDateFormat()))
 				properties.put(_name+"elasticsearch.dateFormat",this.getElasticsearch().getDateFormat());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getTimeZone()))

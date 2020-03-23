@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
@@ -49,7 +50,51 @@ public class BBossESStarter  extends BaseESProperties{
 				log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 			}
 		}
+		/**
+		 * 启动数据源
+		 * //数据源相关配置，可选项，可以在外部启动数据源
+		 * 					importBuilder.setDbName("test")
+		 * 							.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+		 * 							//mysql stream机制一 通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+		 * //					.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false")
+		 * //					.setJdbcFetchSize(3000)//启用mysql stream机制1，设置jdbcfetchsize大小为3000
+		 * 							//mysql stream机制二  jdbcFetchSize为Integer.MIN_VALUE即可，url中不需要设置useCursorFetch=true参数，这里我们使用机制二
+		 * 							.setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false")
+		 * 							.setJdbcFetchSize(Integer.MIN_VALUE)//启用mysql stream机制二,设置jdbcfetchsize大小为Integer.MIN_VALUE
+		 * 							.setDbUser("root")
+		 * 							.setDbPassword("123456")
+		 * 							.setValidateSQL("select 1")
+		 * 							.setUsePool(false);//是否使用连接池
+		 */
 
+		if(this.getDb() == null){
+			if(properties.getDb() != null){
+				initDS(properties.getDb());
+			}
+		}
+		else{
+			initDS(getDb());
+		}
+
+	}
+	private void initDS(Db db){
+		SQLUtil.startPool(db.getName(),//数据源名称
+				db.getDriver(),//jdbc驱动
+				db.getUrl(),//mysql链接串
+				db.getUser(), db.getPassword(),//数据库账号和口令
+				null,//"false",
+				null,// "READ_UNCOMMITTED",
+				db.getValidateSQL(),//数据库连接校验sql
+				db.getName()+"_jndi",
+				db.getInitSize() != null?Integer.parseInt(db.getInitSize()):10,
+				db.getMinIdleSize() != null?Integer.parseInt(db.getMinIdleSize()):10,
+				db.getMaxSize() != null?Integer.parseInt(db.getMaxSize()):50,
+				db.getUsePool() != null?Boolean.parseBoolean(db.getUsePool()):true,
+				false,
+				null, db.getShowSql()!= null?Boolean.parseBoolean(db.getShowSql()):true, false,
+				db.getJdbcFetchSize() != null?Integer.parseInt(db.getInitSize()):0,
+				db.getDbtype(),db.getDbAdaptor()
+		);
 	}
 
 	private ClientInterface restClient;
