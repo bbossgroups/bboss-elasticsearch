@@ -31,7 +31,7 @@ Elasticsearch聚合查询案例分享
 
 
 
-## **3.1 案例1** 
+## 案例1** 多重聚合统计
 
 
 
@@ -337,7 +337,7 @@ java代码
 
 
 
-## 3.2 案例2 简单的term统计
+## 案例2 简单的term统计
 
 
 
@@ -423,7 +423,7 @@ java代码
 
 
 
-## 3.3 案例3 简单的cardinality统计
+## 案例3 简单的cardinality统计
 
 
 
@@ -492,6 +492,159 @@ java代码
 		long totalSize = response.getTotalSize();//总访问量
 
 	}
+```
+
+## 案例4 聚合统计、返回文档数据综合案例
+
+### 3.4.1 定义dsl
+
+下面的dsl中包含了文档检索、聚合统计、文档字段高亮检索、search after分页检索四种混合操作：
+
+
+
+```xml
+ <!--
+    全文检索链路query dsl
+    -->
+    <property name="queryServiceByCondition">
+        <![CDATA[{
+           ## search after分页查询
+            #if($traceScore)
+	            #if($lastStartTime && $lastStartTime > 0)
+	                #if($orderBy && $orderBy.equals("elapsed"))
+	                "search_after": [#[lastScore],#[lastElapsed],#[lastStartTime],"trace#[lastId,quoted=false,lpad=#]"],
+	                #else
+	                "search_after": [#[lastScore],#[lastStartTime],"trace#[lastId,quoted=false,lpad=#]"],
+	                #end
+	            #end
+	            "size": #[pageSize],
+	            "sort": [
+	
+	                 {"_score": "desc"},
+	                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+	                {"startTime": "desc"},
+	                {"_uid": "desc"}
+	            ],
+            #else
+	            #if($lastStartTime && $lastStartTime > 0)
+	                #if($orderBy && $orderBy.equals("elapsed"))
+	                "search_after": [#[lastElapsed],#[lastStartTime],"trace#[lastId,quoted=false,lpad=#]"],
+	                #else
+	                "search_after": [#[lastStartTime],"trace#[lastId,quoted=false,lpad=#]"],
+	                #end
+	            #end
+	            "size": #[pageSize],
+	            "sort": [                 
+	                 #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
+	                {"startTime": "desc"},
+	                {"_uid": "desc"}
+	            ],
+            #end
+            ## 根据日期进行聚合统计
+            "aggs": {
+                "traces_date_histogram": {
+                    "date_histogram": {
+                        "field": "starttimeDate",
+                        "interval": "1m",
+                        "time_zone": "Asia/Shanghai",
+                        "min_doc_count": 0
+                    }
+                }
+            },
+            ## 文档检索条件
+            "query": {
+                "bool": {
+            "filter": [
+                 {"range": {
+                        "startTime": {
+                            "gte": #[startTime],
+                            "lt": #[endTime],
+                            "format": "epoch_millis"
+                        }
+                 }}
+                #if($application && !$application.equals("_all"))
+                ,
+                {"term": {
+                    "applicationName.keyword": #[application]
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  ,
+                  {"term": {
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  ,
+                  {"term": {
+                       "err": 1
+                  }}
+                #end
+            ]
+            #if($queryCondition && !$queryCondition.equals(""))
+                 ,
+                "must": [
+                    {
+                        "query_string": {
+                            "query": #[queryCondition],
+                            "analyze_wildcard": true,
+                            #if(!$searchFields)
+                                "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
+                            #else
+                                "fields":#[searchFields,serialJson=true]
+                            #end
+                        }
+                    }
+                ]
+            #end
+            },
+			## 文档高亮检索
+            "highlight": {
+                "pre_tags": [
+                    "<mark>"
+                ],
+                "post_tags": [
+                    "</mark>"
+                ],
+                "fields": {
+                    "*": {}
+                },
+                "fragment_size": 2147483647
+            }
+        }]]></property>
+```
+
+
+
+### 3.4.2 执行聚合查询
+
+执行查询代码如下：
+
+```java
+ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/testagg.xml"); 
+ESDatas<Traces> response = null;
+        if(!traceExtraCriteria.isExactSearch())
+        	response = clientUtil.searchList("trace-*/_search","queryServiceByCondition",traceExtraCriteria,Traces.class);
+        else
+			response = clientUtil.searchList("trace-*/_search","exactQueryServiceByCondition",traceExtraCriteria,Traces.class);
+        JsonDataResult ret = new JsonDataResult();
+        if(response != null) {
+        	if(response.getDatas() != null)
+				ret.setData(response.getDatas());//获取文档数据结合，包含了高亮检索信息
+        	else{
+				ret.setData(new ArrayList<Traces>());
+			}
+			ret.setTotalSize(response.getTotalSize());
+			if (response.getAggregations() != null) {
+				/**
+				 *  "key_as_string": "2017-09-22T14:30:00.000+08:00",
+				 "key": 1506061800000,
+				 "doc_count": 1
+				 */
+				List<Map<String, Object>> traces_date_histogram = response.getAggregationBuckets("traces_date_histogram");//获取日期聚合统计结果
+				ret.setDateHistogram(traces_date_histogram);
+
+			}
+		}
 ```
 
 
