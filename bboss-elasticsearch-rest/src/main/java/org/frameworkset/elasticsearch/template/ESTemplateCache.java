@@ -23,6 +23,7 @@ public class ESTemplateCache {
 	private static TempateStructionBuiler tempateStructionBuiler = new TempateStructionBuiler();
 	private int perKeyDSLStructionCacheSize;
 	private boolean alwaysCacheDslStruction = false;
+	private long warnInterval = 500;
 	public ESTemplateCache(int perKeyDSLStructionCacheSize,boolean alwaysCacheDslStruction) {
 		this.perKeyDSLStructionCacheSize = perKeyDSLStructionCacheSize;
 		this.alwaysCacheDslStruction = alwaysCacheDslStruction;
@@ -279,60 +280,56 @@ public class ESTemplateCache {
 	private VariableHandler.URLStruction _getVTPLTemplateStructionStopCache(ESInfo dslinfo, String dsl)
 	{
 
-		String ikey = dsl;
-		String okey = dslinfo.getTemplateName();
-		MissingStaticCache<String,VariableHandler.URLStruction> sqlstructionMap =  this.parserVTPLTempateStructionsMissingCache.get(okey);
-		if(sqlstructionMap == null)
-		{
-			try
-			{
-				this.vtplLock.lock();
-				sqlstructionMap =  this.parserVTPLTempateStructionsMissingCache.get(okey);
-				if(sqlstructionMap == null)
-				{
-					sqlstructionMap = new MissingStaticCache<String,VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
-					parserVTPLTempateStructionsMissingCache.put(okey,sqlstructionMap);
+		VariableHandler.URLStruction urlStruction = null;
+		if(dslinfo.isCache()) {
+			String ikey = dsl;
+			String okey = dslinfo.getTemplateName();
+			MissingStaticCache<String, VariableHandler.URLStruction> sqlstructionMap = this.parserVTPLTempateStructionsMissingCache.get(okey);
+			if (sqlstructionMap == null) {
+				try {
+					this.vtplLock.lock();
+					sqlstructionMap = this.parserVTPLTempateStructionsMissingCache.get(okey);
+					if (sqlstructionMap == null) {
+						sqlstructionMap = new MissingStaticCache<String, VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
+						parserVTPLTempateStructionsMissingCache.put(okey, sqlstructionMap);
+					}
+				} finally {
+					vtplLock.unlock();
 				}
 			}
-			finally {
-				vtplLock.unlock();
+			if (sqlstructionMap.stopCache()) {
+				long missing = sqlstructionMap.increamentMissing();
+				if (logger.isWarnEnabled() && sqlstructionMap.needLogWarn(missing,warnInterval)) {
+					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax());
+				}
+				return VariableHandler.parserStruction(dsl, tempateStructionBuiler);
 			}
-		}
-		if(sqlstructionMap.stopCache()){
-			if(logger.isWarnEnabled()){
-				logDslStructionWarn(dslinfo,dsl,okey,sqlstructionMap.getMissesMax());
-			}
-			return VariableHandler.parserStruction(dsl,tempateStructionBuiler);
-		}
-		VariableHandler.URLStruction urlStruction = sqlstructionMap.get(ikey);
-		if(urlStruction == null){
-			try
-			{
-				this.vtplLock.lock();
-				urlStruction = sqlstructionMap.get(ikey);
-				if(urlStruction == null){
-					sqlstructionMap.increamentMissing();
-					urlStruction = VariableHandler.parserStruction(dsl,tempateStructionBuiler);
-					if(!sqlstructionMap.stopCache()){
-						sqlstructionMap.put(ikey,urlStruction);
-					}
-					else{
-						if(logger.isWarnEnabled()){
-							logDslStructionWarn(dslinfo,dsl,okey,sqlstructionMap.getMissesMax());
+			urlStruction = sqlstructionMap.get(ikey);
+			if (urlStruction == null) {
+				try {
+					this.vtplLock.lock();
+					urlStruction = sqlstructionMap.get(ikey);
+					if (urlStruction == null) {
+						long missing = sqlstructionMap.increamentMissing();
+						urlStruction = VariableHandler.parserStruction(dsl, tempateStructionBuiler);
+						if (!sqlstructionMap.stopCache()) {
+							sqlstructionMap.put(ikey, urlStruction);
+						} else {
+							if (logger.isWarnEnabled()&& sqlstructionMap.needLogWarn(missing,warnInterval)) {
+								logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax());
+							}
 						}
-					}
 
+					}
+				} finally {
+					this.vtplLock.unlock();
 				}
 			}
-			finally {
-				this.vtplLock.unlock();
-			}
 		}
-//		System.out.println("before gc longtermSize:"+sqlstructionMap.longtermSize());
-//		System.out.println("before gc edensize:"+sqlstructionMap.edenSize());
-//		System.gc();
-//		System.out.println("after gc edensize:"+sqlstructionMap.edenSize());
-//		System.out.println("after gc longtermSize:"+sqlstructionMap.longtermSize());
+		else{
+			urlStruction = VariableHandler.parserStruction(dsl, tempateStructionBuiler);
+		}
+
 		return urlStruction;
 	}
 
@@ -344,48 +341,49 @@ public class ESTemplateCache {
 	 */
 	private VariableHandler.URLStruction _getVTPLTemplateStructionAlwaysCache(ESInfo dslinfo, String dsl)
 	{
-
-		String ikey = dsl;
-		String okey = dslinfo.getTemplateName();
-		EdenConcurrentCache<String,VariableHandler.URLStruction> sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
-		if(sqlstructionMap == null)
-		{
-			try
-			{
-				this.vtplLock.lock();
-				sqlstructionMap =  this.parserVTPLTempateStructions.get(okey);
-				if(sqlstructionMap == null)
-				{
-					sqlstructionMap = new EdenConcurrentCache<String,VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
-					parserVTPLTempateStructions.put(okey,sqlstructionMap);
+		VariableHandler.URLStruction urlStruction = null;
+		if(dslinfo.isCache()) {
+			String ikey = dsl;
+			String okey = dslinfo.getTemplateName();
+			EdenConcurrentCache<String, VariableHandler.URLStruction> sqlstructionMap = this.parserVTPLTempateStructions.get(okey);
+			if (sqlstructionMap == null) {
+				try {
+					this.vtplLock.lock();
+					sqlstructionMap = this.parserVTPLTempateStructions.get(okey);
+					if (sqlstructionMap == null) {
+						sqlstructionMap = new EdenConcurrentCache<String, VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
+						parserVTPLTempateStructions.put(okey, sqlstructionMap);
+					}
+				} finally {
+					vtplLock.unlock();
 				}
 			}
-			finally {
-				vtplLock.unlock();
+
+			urlStruction = sqlstructionMap.get(ikey);
+			boolean outOfSize = false;
+			long missing = 0l;
+			if (urlStruction == null) {
+				try {
+					this.vtplLock.lock();
+					urlStruction = sqlstructionMap.get(ikey);
+					if (urlStruction == null) {
+						missing = sqlstructionMap.increamentMissing();
+						urlStruction = VariableHandler.parserStruction(dsl, tempateStructionBuiler);
+
+						outOfSize = sqlstructionMap.put(ikey, urlStruction);
+
+
+					}
+				} finally {
+					this.vtplLock.unlock();
+				}
+				if (outOfSize && logger.isWarnEnabled() && sqlstructionMap.needLogWarn(missing,warnInterval)) {
+					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMaxSize());
+				}
 			}
 		}
-
-		VariableHandler.URLStruction urlStruction = sqlstructionMap.get(ikey);
-		boolean outOfSize = false;
-		if(urlStruction == null){
-			try
-			{
-				this.vtplLock.lock();
-				urlStruction = sqlstructionMap.get(ikey);
-				if(urlStruction == null){
-					urlStruction = VariableHandler.parserStruction(dsl,tempateStructionBuiler);
-
-					outOfSize =	sqlstructionMap.put(ikey,urlStruction);
-
-
-				}
-			}
-			finally {
-				this.vtplLock.unlock();
-			}
-			if(outOfSize && logger.isWarnEnabled()){
-				logDslStructionWarn(dslinfo,dsl ,okey,sqlstructionMap.getMaxSize());
-			}
+		else{
+			urlStruction = VariableHandler.parserStruction(dsl, tempateStructionBuiler);
 		}
 
 		return urlStruction;
@@ -409,6 +407,8 @@ public class ESTemplateCache {
 				.append("\r\nOptimization suggestion：Change $var to #[var]\r\nIn order to improve the system performance, we can convert the value parameters that may change frequently in this DSL into #[variable] variables or the variables that may exist in the $var mode in DSL into #[varibale] mode variables.")
 				.append("\r\nIf you need to convert an array or a list, use the variable #[variable] first and set the serialJson attribute: #[variable, serialJson = true] to improve system performance!")
 				.append("\r\nHow to use of #[varibale] pattern variables in foreach loops refers to the section [5.3.3 Logical Judgment and Foreach Loop Example] in the document: https://esdoc.bbossgroups.com/#/development?id=_533-application%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8")
+				.append("\r\nYou can also close the cache function by set cacheDsl=\"false\" of DSL [").append(okey).append("@").append(dslinfo.getDslFile()).append("]")
+
 				.append("\n\r**********************************************************************")
 				.append("\n\r**********************************************************************");
 

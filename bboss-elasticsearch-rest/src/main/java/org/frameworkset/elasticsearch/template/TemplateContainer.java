@@ -34,6 +34,7 @@ public interface TemplateContainer {
 	public final String NAME_templateFile = "templateFile";
 	public final String NAME_templateName = "templateName";
 	public final String NAME_istpl = "istpl";
+	public final String NAME_cache = "cacheDsl";
 	public final String NAME_multiparser = "multiparser";
 	String getNamespace();
 

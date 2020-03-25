@@ -10,12 +10,14 @@ public class ESInfo {
 	private String template;
 	private boolean multiparser;
 	private ESUtil esUtil;
-	public ESInfo(String templateName, String template,boolean istpl,boolean multiparser,TemplateMeta templatePro) {
+	private boolean cache;
+	public ESInfo(String templateName, String template, boolean istpl, boolean multiparser, TemplateMeta templatePro, boolean cache) {
 		this.template = template;
 		this.templateName = templateName;
 		this.tpl = istpl;
 		this.multiparser = multiparser;
 		this.templatePro = templatePro;
+		this.cache = cache;
 	}
 	public String getDslFile(){
 		return this.esUtil.templateFile;
@@ -105,7 +107,7 @@ public class ESInfo {
 	}
 
 
-
-	 
-
+	public boolean isCache() {
+		return cache;
+	}
 }

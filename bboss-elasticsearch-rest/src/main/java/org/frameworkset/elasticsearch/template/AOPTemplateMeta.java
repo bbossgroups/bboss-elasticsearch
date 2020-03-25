@@ -40,6 +40,10 @@ public class AOPTemplateMeta implements TemplateMeta{
 		return pro.getName();
 	}
 
+	@Override
+	public Boolean getCache() {
+		return pro.getBooleanExtendAttribute(TemplateContainer.NAME_cache,true);//标识缓存dsl解析语法树;
+	}
 
 
 	@Override

@@ -60,5 +60,6 @@ public interface TemplateMeta {
 	 * @return
 	 */
 	String getName();
+	public Boolean getCache() ;
 
 }

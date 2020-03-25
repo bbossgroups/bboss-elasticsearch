@@ -786,11 +786,12 @@ public class ESUtil {
 						
 						if(value != null)
 						{
+							boolean cache = pro.getCache() != null? pro.getCache():true;
 							boolean istpl = pro.getVtpl() != null? pro.getVtpl():true;//pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
 							boolean multiparser = pro.getMultiparser() != null? pro.getMultiparser():istpl;//pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
 							ESTemplate sqltpl = null;
 							value = ESUtil.ltrim(value);
-							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro);
+							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro, cache);
 							sqlinfo.setEsUtil(this);
 							if(istpl)
 							{

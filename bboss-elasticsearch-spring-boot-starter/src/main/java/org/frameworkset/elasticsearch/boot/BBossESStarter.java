@@ -67,8 +67,8 @@ public class BBossESStarter  extends BaseESProperties{
 		 * 							.setUsePool(false);//是否使用连接池
 		 */
 
-		if(this.getDb() == null){
-			if(properties.getDb() != null){
+		if(this.getDb() == null ||  properties.getDb().getUrl() == null){
+			if(properties.getDb() != null && properties.getDb().getUrl() != null){
 				initDS(properties.getDb());
 			}
 		}

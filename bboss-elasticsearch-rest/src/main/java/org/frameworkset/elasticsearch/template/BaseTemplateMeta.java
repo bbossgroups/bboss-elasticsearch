@@ -37,6 +37,16 @@ public class BaseTemplateMeta implements TemplateMeta{
 	private String referenceTemplateName;
 	private Boolean vtpl = true;
 
+	private Boolean cache = true;
+	public Boolean getCache() {
+		return cache;
+	}
+
+	public void setCache(Boolean cache) {
+		this.cache = cache;
+	}
+
+
 	public BaseTemplateMeta(){
 
 	}

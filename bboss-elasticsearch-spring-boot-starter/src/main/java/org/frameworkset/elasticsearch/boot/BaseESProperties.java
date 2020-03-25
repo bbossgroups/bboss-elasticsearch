@@ -154,6 +154,7 @@ public abstract class BaseESProperties {
 		private String dbtype;
 		private String dbAdaptor;
 		private String jdbcFetchSize;
+		private String datasources;
 		public String getName() {
 			return name;
 		}
@@ -268,6 +269,14 @@ public abstract class BaseESProperties {
 
 		public void setMinIdleSize(String minIdleSize) {
 			this.minIdleSize = minIdleSize;
+		}
+
+		public String getDatasources() {
+			return datasources;
+		}
+
+		public void setDatasources(String datasources) {
+			this.datasources = datasources;
 		}
 	}
 	public static class Http{
@@ -896,6 +905,7 @@ public abstract class BaseESProperties {
 			properties.put("dslfile.refreshInterval",dslfile.getRefreshInterval());
 		}
 
+		/**
 		//# 演示数据库数据导入elasticsearch源配置
 		if(this.getDb() != null){
 			if(SimpleStringUtil.isNotEmpty(this.db.getName()))
@@ -913,6 +923,7 @@ public abstract class BaseESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.db.getValidateSQL()))
 				properties.put("db.validateSQL",this.db.getValidateSQL());
 		}
+		 */
 		if(this.ip != null){
 			if(SimpleStringUtil.isNotEmpty(this.ip.getDatabase()))
 				properties.put("ip.database",this.ip.getDatabase());
