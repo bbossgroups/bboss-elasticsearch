@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
         </dependency>
 ```
 
@@ -44,9 +44,37 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
         </dependency>
 ```
+
+# v6.0.7 功能改进 
+
+1.修复按时间字段增量数据同步时，设置默认起始时间1970-01-01 00:00:00，在没有开始同步数据之前停止作业，再重启报错的问题
+
+2.spring boot中执行数据同步作业时，可以在application.properties中配置db数据源参数
+
+```properties
+spring.elasticsearch.bboss.db.name = test
+spring.elasticsearch.bboss.db.user = root
+spring.elasticsearch.bboss.db.password = 123456
+spring.elasticsearch.bboss.db.driver = com.mysql.jdbc.Driver
+#db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+spring.elasticsearch.bboss.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
+spring.elasticsearch.bboss.db.usePool = true
+
+spring.elasticsearch.bboss.db.initSize=100
+spring.elasticsearch.bboss.db.minIdleSize=100
+spring.elasticsearch.bboss.db.maxSize=100
+
+
+spring.elasticsearch.bboss.db.validateSQL = select 1
+
+spring.elasticsearch.bboss.db.jdbcFetchSize = -2147483648
+spring.elasticsearch.bboss.db.showsql = true
+```
+3.增量数据同步时，对增量状态值进行合法性校验
+
 
 # v6.0.6 功能改进 
 
