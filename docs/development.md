@@ -250,7 +250,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -279,7 +279,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -3336,6 +3336,34 @@ the number of real dsl cache records exceeded the maximum cache size n allowed b
 
 ```xml
  <property name="updateByQuery">
+        <![CDATA[
+         {
+          "query": {
+            "has_child": {
+              "type":       "employee",
+              "score_mode": "max",
+              "query": {
+                "match": {
+                  "name": #[name]  ##查询包含员工名称的公司信息，并修改之
+                }
+              }
+            }
+          }
+        }
+        ]]>
+    </property>
+```
+
+如果不想缓存dsl语法结构，可以设置cacheDsl为false：
+
+```properties
+ds配置文件中xml节点property元素增加cacheDsl属性:指示框架是否启用dsl语法结构缓存机制，如果启用则只在第一次对dsl进行硬解析dsl语法结构，后续从缓冲中读取解析好的语法结构；如果禁用，则每次都硬解析dsl语法结构，默认true
+```
+
+使用cacheDsl禁用dsl语法结构缓存示例：
+
+```xml
+<property name="updateByQuery" cacheDsl="false">
         <![CDATA[
          {
           "query": {

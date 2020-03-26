@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.6 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.7 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -75,6 +75,7 @@ spring.elasticsearch.bboss.db.showsql = true
 ```
 3.增量数据同步时，对增量状态值进行合法性校验
 
+4.ds配置文件中xml节点property元素增加cacheDsl属性:指示框架是否启用dsl语法结构缓存机制，如果启用则只在第一次对dsl进行硬解析dsl语法结构，后续从缓冲中读取解析好的语法结构；如果禁用，则每次都硬解析dsl语法结构，默认true
 
 # v6.0.6 功能改进 
 

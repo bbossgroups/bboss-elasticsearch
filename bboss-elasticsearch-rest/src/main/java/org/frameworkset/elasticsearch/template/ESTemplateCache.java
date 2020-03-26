@@ -300,7 +300,7 @@ public class ESTemplateCache {
 			if (sqlstructionMap.stopCache()) {
 				long missing = sqlstructionMap.increamentMissing();
 				if (logger.isWarnEnabled() && sqlstructionMap.needLogWarn(missing,warnInterval)) {
-					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax());
+					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax(),missing);
 				}
 				return VariableHandler.parserStruction(dsl, tempateStructionBuiler);
 			}
@@ -316,7 +316,7 @@ public class ESTemplateCache {
 							sqlstructionMap.put(ikey, urlStruction);
 						} else {
 							if (logger.isWarnEnabled()&& sqlstructionMap.needLogWarn(missing,warnInterval)) {
-								logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax());
+								logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMissesMax(),missing);
 							}
 						}
 
@@ -378,7 +378,7 @@ public class ESTemplateCache {
 					this.vtplLock.unlock();
 				}
 				if (outOfSize && logger.isWarnEnabled() && sqlstructionMap.needLogWarn(missing,warnInterval)) {
-					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMaxSize());
+					logDslStructionWarn(dslinfo, dsl, okey, sqlstructionMap.getMaxSize(),missing);
 				}
 			}
 		}
@@ -389,11 +389,11 @@ public class ESTemplateCache {
 		return urlStruction;
 	}
 
-	private void logDslStructionWarn(ESInfo dslinfo,String dsl,String okey,int maxSize){
+	private void logDslStructionWarn(ESInfo dslinfo,String dsl,String okey,int maxSize,long missing){
 		StringBuilder info = new StringBuilder();
 
 		info.append("\n\r**********************************************************************\r\n")
-				.append("*********************************WARNING:DSL [").append(okey).append("@").append(dslinfo.getDslFile()).append("]*********************************\r\n")
+				.append("*********************************WARNING:Missing cache ").append(missing).append(" times of DSL [").append(okey).append("@").append(dslinfo.getDslFile()).append("]*********************************\r\n")
 				.append(dslinfo.getTemplate())
 				.append("\r\n**********************************************************************\r\n")
 				.append("When calling method _getVTPLTemplateStruction to obtain [")

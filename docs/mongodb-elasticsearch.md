@@ -2313,7 +2313,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
         </dependency>
 ```
 
@@ -2345,7 +2345,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups</groupId>
             <artifactId>bboss-schedule</artifactId>
-            <version>5.6.6</version>
+            <version>5.6.7</version>
         </dependency>
 ```
 
@@ -2355,7 +2355,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.6</version>
+            <version>6.0.7</version>
         </dependency>
 ```
 
