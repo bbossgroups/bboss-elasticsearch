@@ -194,7 +194,7 @@ public class ElasticSearchHelper {
 		geoipConfig.put("ip.asnDatabase",
 				ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
 		geoipConfig.put("ip.cachesize",
-				ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"2000"));
+				ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"10000"));
 		geoipConfig.put("ip.serviceUrl",
 				ElasticSearchHelper._getStringValue("","ip.serviceUrl",configContext,""));
 
