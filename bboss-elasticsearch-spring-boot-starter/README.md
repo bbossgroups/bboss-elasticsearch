@@ -10,25 +10,23 @@ elasticsearch版本要求：2.x,5.x,6.x,+
 
 ## 快速集成和应用 
 非spring boot项目：
-https://my.oschina.net/bboss/blog/1801273 
+<https://esdoc.bbossgroups.com/#/common-project-with-bboss>
 
 spring boot项目：
-https://my.oschina.net/bboss/blog/1835601
+<https://esdoc.bbossgroups.com/#/spring-booter-with-bboss>
 
-详细配置说明参考文档：
-https://my.oschina.net/bboss/blog/1556866
+
 # elastic search配置和使用
 
 elastic search配置和使用参考文档
 
-https://my.oschina.net/bboss/blog/1556866 
+https://esdoc.bbossgroups.com/#/development
 # 完整的spring boot demo
-https://gitee.com/bbossgroups/eshelloword-spring-boot-starter
 
 <https://github.com/bbossgroups/eshelloword-spring-boot-starter>
 
 # bboss elastic特点
-https://www.oschina.net/p/bboss-elastic
+https://esdoc.bbossgroups.com/#/README
 
 # 版本升级注意事项
 v5.0.5.7及后续版本废弃@PrimaryKey注解，改用@ESId注解来标注索引_id的值
