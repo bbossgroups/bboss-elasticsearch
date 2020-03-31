@@ -48,6 +48,29 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 
+# v6.0.8 功能改进 
+1.数据同步模块：可以通过ImportBuilder组件设置geoip数据库地址，使用案例：
+```java
+	importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
+	importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
+```
+2.增加bboss 持久层和httpproxy的spring boot start模块：
+maven坐标：
+```xml
+    <dependency>
+      <groupId>com.bbossgroups</groupId>
+      <artifactId>bboss-spring-boot-starter</artifactId>
+      <version>5.6.7</version>
+     
+    </dependency>
+```
+gradle坐标：
+```xml
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.7", transitive: true]
+```
+使用案例：
+<https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
+
 # v6.0.7 功能改进 
 
 1.修复按时间字段增量数据同步时，设置默认起始时间1970-01-01 00:00:00，在没有开始同步数据之前停止作业，再重启报错的问题
