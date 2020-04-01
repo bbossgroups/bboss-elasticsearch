@@ -402,6 +402,399 @@ http.routing=#[area]
 
 这样我们在os(linux,unix,windows)中配置名称为area的环境变量即可。
 
+### 3.2.5 spring boot配置和使用http proxy
+
+示例工程源码获取地址：https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter
+
+首先需要在工程中导入bboss spring boot starter的maven坐标：
+
+```xml
+<dependency>
+  <groupId>com.bbossgroups</groupId>
+  <artifactId>bboss-spring-boot-starter</artifactId>
+  <version>5.6.7</version>
+</dependency>
+```
+
+#### 3.2.5.1 单http服务池
+
+在spring boot配置文件[application.properties](https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter/resources/application.properties)中添加http proxy的配置参数
+
+```properties
+##es client http服务配置
+spring.bboss.http.name=default
+spring.bboss.http.timeoutConnection = 5000
+spring.bboss.http.timeoutSocket = 5000
+spring.bboss.http.connectionRequestTimeout=5000
+spring.bboss.http.retryTime = 1
+spring.bboss.http.maxLineLength = -1
+spring.bboss.http.maxHeaderCount = 200
+spring.bboss.http.maxTotal = 400
+spring.bboss.http.defaultMaxPerRoute = 200
+spring.bboss.http.soReuseAddress = false
+spring.bboss.http.soKeepAlive = false
+spring.bboss.http.timeToLive = 3600000
+spring.bboss.http.keepAlive = 3600000
+spring.bboss.http.keystore =
+spring.bboss.http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.bboss.http.hostnameVerifier =
+#每隔多少毫秒校验空闲connection，自动释放无效链接
+# -1 或者0不检查
+spring.bboss.http.validateAfterInactivity=2000
+# 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+# validateAfterInactivity来控制连接是否有效
+# 默认值false
+spring.bboss.http.staleConnectionCheckEnabled=false
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#* 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+spring.bboss.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+
+# 服务代理配置
+# 服务全认证账号配置
+
+spring.bboss.http.authAccount=elastic
+spring.bboss.http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置
+#spring.bboss.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+spring.bboss.http.hosts=192.168.137.1:9200
+# 健康检查服务
+spring.bboss.http.health=/
+spring.bboss.http.healthCheckInterval=1000
+# 服务地址自动发现功能
+#spring.bboss.http.discoverService.serviceClass=com.test.DiscoverService
+# 定时运行服务发现方法时间间隔，单位：毫秒，默认10秒
+spring.bboss.http.discoverService.interval=10000
+
+# handleNullOrEmptyHostsByDiscovery
+#false，忽略对返回的null或者空的hosts进行处理
+#true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
+http.discoverService.handleNullOrEmptyHostsByDiscovery=false
+```
+
+服务调用示例
+
+```java
+/*
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.frameworkset.sqlexecutor;
+
+
+import com.frameworkset.common.poolman.SQLExecutor;
+import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.spi.boot.BBossStarter;
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * testCase必须和spring boot application启动类在同一个包路径下面，否则会报错：
+ * java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration, you need to use @Context
+
+ * @author yinbp [122054810@qq.com]
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest
+
+public class BBossStarterTestCase {
+	@Autowired
+	private BBossStarter bbossStarterDefault;
+	private static Logger logger = LoggerFactory.getLogger(BBossStarterTestCase.class);
+    @Test
+    public void testMultiBBossESStarterDefault() throws Exception {
+		Map params = new HashMap();
+		params.put("testp","aaaaa");
+		params.put("dff","zzzz");
+		List<Map> datas = HttpRequestProxy.httpPostForList("default","/demoproject/file/getUserInfo.page",params,Map.class);
+		logger.info(SimpleStringUtil.object2json(datas));
+    }
+
+
+	@Test
+	public void testFirstQuery() throws Exception {
+
+		List<Map> datas = SQLExecutor.queryListWithDBName(Map.class,"default","select * from user");
+		logger.info(SimpleStringUtil.object2json(datas));
+	}
+
+}
+
+```
+
+关键代码，需要在组件中导入starter组件：
+
+```java
+	@Autowired
+	private BBossStarter bbossStarterDefault;
+```
+
+
+#### 3.2.5.2 多http服务池配置
+
+在spring boot配置文件[application-multi.properties](https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter/resources/application-multi.properties)中添加http proxy的配置参数
+
+```properties
+##es client http服务配置
+spring.bboss.default.http.name=default
+spring.bboss.default.http.timeoutConnection = 5000
+spring.bboss.default.http.timeoutSocket = 5000
+spring.bboss.default.http.connectionRequestTimeout=5000
+spring.bboss.default.http.retryTime = 1
+spring.bboss.default.http.maxLineLength = -1
+spring.bboss.default.http.maxHeaderCount = 200
+spring.bboss.default.http.maxTotal = 400
+spring.bboss.default.http.defaultMaxPerRoute = 200
+spring.bboss.default.http.soReuseAddress = false
+spring.bboss.default.http.soKeepAlive = false
+spring.bboss.default.http.timeToLive = 3600000
+spring.bboss.default.http.keepAlive = 3600000
+spring.bboss.default.http.keystore =
+spring.bboss.default.http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.bboss.default.http.hostnameVerifier =
+#每隔多少毫秒校验空闲connection，自动释放无效链接
+# -1 或者0不检查
+spring.bboss.default.http.validateAfterInactivity=2000
+# 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+# validateAfterInactivity来控制连接是否有效
+# 默认值false
+spring.bboss.default.http.staleConnectionCheckEnabled=false
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#* 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+spring.bboss.default.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+
+# 服务代理配置
+# 服务全认证账号配置
+
+spring.bboss.default.http.authAccount=elastic
+spring.bboss.default.http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置
+#spring.bboss.default.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+spring.bboss.default.http.hosts=10.13.11.117:8082
+# 健康检查服务
+spring.bboss.default.http.health=/
+spring.bboss.default.http.healthCheckInterval=1000
+# 服务地址自动发现功能
+#spring.bboss.default.http.discoverService.serviceClass=com.test.DiscoverService
+# 定时运行服务发现方法时间间隔，单位：毫秒，默认10秒
+spring.bboss.default.http.discoverService.interval=10000
+
+# handleNullOrEmptyHostsByDiscovery
+#false，忽略对返回的null或者空的hosts进行处理
+#true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
+spring.bboss.default.http.discoverService.handleNullOrEmptyHostsByDiscovery=false
+
+# 数据库数据源配置
+spring.bboss.default.db.name = firstds
+spring.bboss.default.db.user = root
+spring.bboss.default.db.password = 123456
+spring.bboss.default.db.driver = com.mysql.jdbc.Driver
+spring.bboss.default.db.url = jdbc:mysql://10.13.11.117:3306/mysql
+spring.bboss.default.db.usePool = true
+spring.bboss.default.db.validateSQL = select 1
+
+
+
+
+##second es client http服务配置
+spring.bboss.second.http.name=second
+spring.bboss.second.http.timeoutConnection = 5000
+spring.bboss.second.http.timeoutSocket = 5000
+spring.bboss.second.http.connectionRequestTimeout=5000
+spring.bboss.second.http.retryTime = 1
+spring.bboss.second.http.maxLineLength = -1
+spring.bboss.second.http.maxHeaderCount = 200
+spring.bboss.second.http.maxTotal = 400
+spring.bboss.second.http.secondMaxPerRoute = 200
+spring.bboss.second.http.soReuseAddress = false
+spring.bboss.second.http.soKeepAlive = false
+spring.bboss.second.http.timeToLive = 3600000
+spring.bboss.second.http.keepAlive = 3600000
+spring.bboss.second.http.keystore =
+spring.bboss.second.http.keyPassword =
+# ssl 主机名称校验，是否采用second配置，
+# 如果指定为second，就采用secondHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.bboss.second.http.hostnameVerifier =
+#每隔多少毫秒校验空闲connection，自动释放无效链接
+# -1 或者0不检查
+spring.bboss.second.http.validateAfterInactivity=2000
+# 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+# validateAfterInactivity来控制连接是否有效
+# 默认值false
+spring.bboss.second.http.staleConnectionCheckEnabled=false
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#* 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+spring.bboss.second.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+
+# 服务代理配置
+# 服务全认证账号配置
+
+spring.bboss.second.http.authAccount=elastic
+spring.bboss.second.http.authPassword=changeme
+# ha proxy 集群负载均衡地址配置
+#spring.bboss.second.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
+spring.bboss.second.http.hosts=10.13.11.117:8082
+# 健康检查服务
+spring.bboss.second.http.health=/
+spring.bboss.second.http.healthCheckInterval=1000
+# 服务地址自动发现功能
+#spring.bboss.second.http.discoverService.serviceClass=com.test.DiscoverService
+# 定时运行服务发现方法时间间隔，单位：毫秒，默认10秒
+spring.bboss.second.http.discoverService.interval=10000
+
+# handleNullOrEmptyHostsByDiscovery
+#false，忽略对返回的null或者空的hosts进行处理
+#true，要对null或者空的hosts进行处理，这样会导致所有的地址不可用
+spring.bboss.second.http.discoverService.handleNullOrEmptyHostsByDiscovery=false
+
+# 数据库数据源配置
+spring.bboss.second.db.name = secondds
+spring.bboss.second.db.user = root
+spring.bboss.second.db.password = 123456
+spring.bboss.second.db.driver = com.mysql.jdbc.Driver
+spring.bboss.second.db.url = jdbc:mysql://10.13.11.117:3306/mysql
+spring.bboss.second.db.usePool = true
+spring.bboss.second.db.validateSQL = select 1
+
+
+```
+
+服务调用实例：
+
+```java
+/*
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.frameworkset.sqlexecutor;
+
+
+import com.frameworkset.common.poolman.SQLExecutor;
+import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.spi.boot.BBossStarter;
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * testCase必须和spring boot application启动类在同一个包路径下面，否则会报错：
+ * java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration, you need to use @Context
+ * 多集群演示功能测试用例，spring boot配置项以spring.bboss.集群名称开头，例如：
+ * spring.bboss.db.firstds
+ * spring.bboss.db.secondds
+ *  spring.bboss.http.default
+ *  spring.bboss.http.second
+ * 两个集群通过  com.frameworkset.sqlexecutor.MultiSTartConfigurer
+ * 对应的配置文件为application-multi.properties文件
+ * @author yinbp [122054810@qq.com]
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest
+
+@ActiveProfiles("multi")
+public class MultiBBossStartersTestCase {
+	@Autowired
+	private BBossStarter bbossStarterDefault;
+	private static Logger logger = LoggerFactory.getLogger(MultiBBossStartersTestCase.class);
+    @Test
+    public void testMultiBBossESStarterDefault() throws Exception {
+		Map params = new HashMap();
+		params.put("testp","aaaaa");
+		params.put("dff","zzzz");
+		List<Map> datas = HttpRequestProxy.httpPostForList("default","/demoproject/file/getUserInfo.page",params,Map.class);
+		logger.info(SimpleStringUtil.object2json(datas));
+    }
+
+	@Test
+	public void testMultiBBossESStarterSecond() throws Exception {
+		Map params = new HashMap();
+		params.put("testp","aaaaa");
+		params.put("dff","zzzz");
+		List<Map> datas = HttpRequestProxy.sendJsonBodyForList("second",params,"/demoproject/file/getUserInfo.page",Map.class);
+		logger.info(SimpleStringUtil.object2json(datas));
+	}
+
+	@Test
+	public void testFirstQuery() throws Exception {
+
+		List<Map> datas = SQLExecutor.queryListWithDBName(Map.class,"firstds","select * from user");
+		logger.info(SimpleStringUtil.object2json(datas));
+	}
+
+	@Test
+	public void testSecondQuery() throws Exception {
+
+		List<Map> datas = SQLExecutor.queryListWithDBName(Map.class,"secondds","select * from user");
+		logger.info(SimpleStringUtil.object2json(datas));
+	}
+}
+
+```
+
+关键代码，需要在组件中导入starter组件：
+
+```java
+	@Autowired
+	private BBossStarter bbossStarterDefault;
+```
+
+
+
+
 ## 3.3 使用负载均衡器调用服务
 
 使用负载均衡器调用服务，在指定服务集群组report调用rest服务/testBBossIndexCrud,返回json字符串报文，通过循环调用，测试负载均衡机制

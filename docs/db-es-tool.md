@@ -847,20 +847,31 @@ final AtomicInteger s = new AtomicInteger(0);
       });
 ```
 
-需要在appliction.properties文件中配置geoip的ip地址信息库：
-
 首先从以下地址下载ip信息库：
 
  https://dev.maxmind.com/geoip/geoip2/geolite2/#Downloads 
 
-然后在application.properties文件中配置对应的ip信息库文件地址
+Geoip地址库设置方式有两种：
+
+- 在appliction.properties文件中配置geoip的ip地址信息库
+
+在application.properties文件中配置对应的ip信息库文件地址
 
 ```properties
-ip.cachesize = 2000
+ip.cachesize = 10000
 # geoip的ip地址信息库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
-ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
-ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+ip.database = E:/workspace/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = E:/workspace/geolite2/GeoLite2-ASN.mmdb
 ```
+
+这种配置方式适用于存在Elasticsearch数据源（源库和目标库），对应db-db的情况需要使用代码配置方式
+
+- 代码中直接设置geoip的ip地址信息库
+
+  ```java
+  importBuilder.setGeoipDatabase("E:/workspace/geolite2/GeoLite2-City.mmdb");
+  importBuilder.setGeoipAsnDatabase("E:/workspace/geolite2/GeoLite2-ASN.mmdb");
+  ```
 
 ### 2.3.12 设置任务执行结果回调处理函数
 
