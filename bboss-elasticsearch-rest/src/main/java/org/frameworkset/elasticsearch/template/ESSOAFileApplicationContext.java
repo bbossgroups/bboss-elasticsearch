@@ -15,25 +15,25 @@
  */
 package org.frameworkset.elasticsearch.template;
 
-import java.net.URL;
-
 import org.frameworkset.spi.SOAFileApplicationContext;
 import org.frameworkset.spi.assemble.ServiceProviderManager;
 
+import java.net.URL;
+
 public class ESSOAFileApplicationContext extends SOAFileApplicationContext {
 
-	public ESSOAFileApplicationContext(String file) {
-		super(file);
+	public ESSOAFileApplicationContext(String baseDir,String file) {
+		super(baseDir,file);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ESSOAFileApplicationContext(URL file, String path) {
-		super(file, path);
+	public ESSOAFileApplicationContext(String baseDir,URL file, String path) {
+		super(baseDir,file, path);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ESSOAFileApplicationContext(String file, String charset) {
-		super(file, charset);
+	public ESSOAFileApplicationContext(String baseDir,String file, String charset) {
+		super(baseDir,file, charset);
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -2,7 +2,9 @@ package org.frameworkset.elasticsearch;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.template.AOPTemplateContainerImpl;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
+import org.frameworkset.elasticsearch.template.ESSOAFileApplicationContext;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
@@ -23,7 +25,7 @@ public class ElasticSearchHelper {
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
-
+	private static String dslfileMappingDir;
 	private static Method bootMethod;
 	static {
 		try {
@@ -44,6 +46,9 @@ public class ElasticSearchHelper {
 	}
 	public static long getDslfileRefreshInterval(){
 		return dslfileRefreshInterval;
+	}
+	public static String getDslfileMappingDir(){
+		return dslfileMappingDir;
 	}
 	public static void setDslfileRefreshInterval(long dslfileRefreshInterval){
 		ElasticSearchHelper.dslfileRefreshInterval = dslfileRefreshInterval;
@@ -305,6 +310,9 @@ public class ElasticSearchHelper {
 		} catch (Exception e) {
 
 		}
+		String _dslfileMappingDir = ElasticSearchHelper._getStringValue("default","dslfile.dslMappingDir",context,null);
+		if(_dslfileMappingDir != null && !_dslfileMappingDir.trim().equals(""))
+			dslfileMappingDir = _dslfileMappingDir;
 	}
 
 	protected static void init(){
@@ -417,6 +425,11 @@ public class ElasticSearchHelper {
 		return elasticSearchSink.getConfigRestClientUtil(configFile);
 	}
 
+	public static AOPTemplateContainerImpl getAOPTemplateContainerImpl(String dslpath){
+		init();
+		AOPTemplateContainerImpl aopTemplateContainer = new AOPTemplateContainerImpl(dslfileMappingDir,new ESSOAFileApplicationContext(dslfileMappingDir,dslpath));
+		return aopTemplateContainer;
+	}
 	/**
 	 * 加载templateContainer管理的query dsl配置，在默认的es服务器上执行所有操作
 	 * @param templateContainer

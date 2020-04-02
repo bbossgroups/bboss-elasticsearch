@@ -66,7 +66,7 @@ public class ESSOAProviderParser  extends ProviderParser {
 			}
 			else
 			{
-				ESUtil.ESRef ref = new ESUtil.ESRef(templateName,templateFile,pro.getName());
+				ESUtil.ESRef ref = new ESUtil.ESRef(templateName,templateFile,pro.getName(),applicationContext.getBaseDir());
 				return ref.getTemplate();
 
 			}

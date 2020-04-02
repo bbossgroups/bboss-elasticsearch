@@ -18,6 +18,7 @@
  */
 package org.frameworkset.elasticsearch.client;
 
+import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 
@@ -47,6 +48,7 @@ public interface ElasticSearchClient {
 	public boolean isV1();
 	public Integer slowDslThreshold();
 	public SlowDslCallback getSlowDslCallback();
+	public ElasticSearch getElasticSearch();
 //	BulkRequestBuilder prepareBulk();
 //
 //	IndexRequestBuilder createIndexRequest(IndexNameBuilder indexNameBuilder, Event event) throws IOException;

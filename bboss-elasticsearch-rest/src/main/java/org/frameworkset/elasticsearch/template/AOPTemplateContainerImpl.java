@@ -18,9 +18,9 @@ package org.frameworkset.elasticsearch.template;
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
 import org.frameworkset.spi.BaseApplicationContext;
-import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.Pro;
 import org.frameworkset.spi.runtime.BaseStarter;
+import org.frameworkset.util.ResourceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +36,14 @@ import java.util.Set;
  */
 public class AOPTemplateContainerImpl implements TemplateContainer{
 	private BaseApplicationContext templatecontext;
-	public AOPTemplateContainerImpl( BaseApplicationContext templatecontext) {
+	private String baseDir;
+	public AOPTemplateContainerImpl( String baseDir,BaseApplicationContext templatecontext) {
 		this.templatecontext = templatecontext;
+		this.baseDir = baseDir;
 	}
-	public AOPTemplateContainerImpl(String dslpath){
-		templatecontext = DefaultApplicationContext.getApplicationContext(dslpath);
+
+	public AOPTemplateContainerImpl(BaseApplicationContext templatecontext) {
+		this.templatecontext = templatecontext;
 	}
 
 	public String getNamespace(){
@@ -68,7 +71,7 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 	public synchronized void reinit(ESUtil esUtil){
 		String file = templatecontext.getConfigfile();
 		templatecontext.removeCacheContext();
-		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(file);
+		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(baseDir,file);
 		if(essoaFileApplicationContext.getParserError() == null) {
 //			esUtil.clearTemplateDatas();
 			templatecontext.destroy(false);
@@ -83,7 +86,13 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 		}
 	}
 	public void monitor(DaemonThread daemonThread,ResourceInitial resourceTempateRefresh){
-		daemonThread.addFile(templatecontext.getConfigFileURL(),this.getNamespace(), resourceTempateRefresh);
+		if(this.baseDir == null) {
+			daemonThread.addFile(templatecontext.getConfigFileURL(), this.getNamespace(), resourceTempateRefresh);
+		}
+		else{
+
+			daemonThread.addFile(templatecontext.getConfigFileURL(), ResourceUtils.getRealPath(baseDir,this.getNamespace()), resourceTempateRefresh);
+		}
 	}
 
 	public List<TemplateMeta> getTemplateMetas(final String namespace){

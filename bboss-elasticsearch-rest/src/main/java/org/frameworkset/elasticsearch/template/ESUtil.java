@@ -70,6 +70,7 @@ public class ESUtil {
 	protected Map<String,ESRef> esrefs;
 	protected boolean hasrefs;
 	protected String templateFile;
+	protected String dslMappingDir;
 	protected String realTemplateFile;
 	protected boolean destroyed = false;
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
@@ -603,11 +604,13 @@ public class ESUtil {
 
 	public static class ESRef
 	{
-		public ESRef(String esname, String templatefile, String name) {
+		private String dslMappingDir;
+		public ESRef(String esname, String templatefile, String name,String dslMappingDir) {
 			super();
 			this.esname = esname;
 			this.templatefile = templatefile;
 			this.name = name;
+			this. dslMappingDir = dslMappingDir;
 		}
 		private ESUtil esutil;
 		private String esname;
@@ -634,7 +637,7 @@ public class ESUtil {
 		{
 			if(esutil == null)
 			{
-				this.esutil = ESUtil.getInstance(templatefile);
+				this.esutil = ESUtil.getInstance(dslMappingDir,templatefile);
 			}
 		}
 		public String getTemplate() {
@@ -827,7 +830,7 @@ public class ESUtil {
 					}
 					else
 					{
-						esrefs.put(key, new ESRef(templateName,templateFile,key));
+						esrefs.put(key, new ESRef(templateName,templateFile,key,dslMappingDir));
 						hasrefs = true;
 					}
 				}
@@ -983,9 +986,12 @@ public class ESUtil {
 		}
 		
 	}
-	private ESUtil(String templatefile) {
+
+	private ESUtil(String dslMappingDir,String templatefile) {
 		this.templateFile = templatefile;
-		this.templatecontext = new AOPTemplateContainerImpl(new ESSOAFileApplicationContext(templatefile));
+		this.dslMappingDir = dslMappingDir;
+
+		this.templatecontext = new AOPTemplateContainerImpl(dslMappingDir,new ESSOAFileApplicationContext(dslMappingDir,templatefile));
 		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
 		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
@@ -1031,8 +1037,10 @@ public class ESUtil {
 	}
 
 
-
-	public static ESUtil getInstance(String templateFile) {
+	public static ESUtil getInstance( String templateFile){
+		return getInstance(ElasticSearchHelper.getDslfileMappingDir(), templateFile);
+	}
+	public static ESUtil getInstance(String dslMappingDir, String templateFile) {
 		
 		ESUtil sqlUtil = esutils.get(templateFile);
 		if(sqlUtil != null)
@@ -1042,7 +1050,7 @@ public class ESUtil {
 			sqlUtil = esutils.get(templateFile);
 			if(sqlUtil != null)
 				return sqlUtil;
-			sqlUtil = new ESUtil(templateFile);
+			sqlUtil = new ESUtil(  dslMappingDir,templateFile);
 			
 			esutils.put(templateFile, sqlUtil);
 			

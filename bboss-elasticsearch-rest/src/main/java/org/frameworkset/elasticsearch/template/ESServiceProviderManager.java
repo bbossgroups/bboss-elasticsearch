@@ -35,6 +35,7 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 	 */
 	public static String escapeRNPre = "#\"\"\"";
 	public static String escapeRNEnd = "\"\"\"";
+
 	public ESServiceProviderManager(BaseApplicationContext applicationContext, String charset) {
 		super(applicationContext, charset);
 		// TODO Auto-generated constructor stub

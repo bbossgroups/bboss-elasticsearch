@@ -56,7 +56,7 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public ConfigRestClientUtil(ElasticSearchClient client, IndexNameBuilder indexNameBuilder, String configFile) {
 		super(client, indexNameBuilder);
 		this.configFile = configFile;
-		this.esUtil = ESUtil.getInstance(configFile);
+		this.esUtil = ESUtil.getInstance(  client.getElasticSearch().getDslMappingDir(),configFile);
 	}
 
 	/**

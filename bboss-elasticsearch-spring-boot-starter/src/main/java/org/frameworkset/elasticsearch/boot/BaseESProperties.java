@@ -690,6 +690,7 @@ public abstract class BaseESProperties {
 	}
 	public static class Dslfile{
 		private String refreshInterval;
+		private String dslMappingDir;
 
 		public String getRefreshInterval() {
 			return refreshInterval;
@@ -697,6 +698,14 @@ public abstract class BaseESProperties {
 
 		public void setRefreshInterval(String refreshInterval) {
 			this.refreshInterval = refreshInterval;
+		}
+
+		public void setDslMappingDir(String dslMappingDir) {
+			this.dslMappingDir = dslMappingDir;
+		}
+
+		public String getDslMappingDir() {
+			return dslMappingDir;
 		}
 	}
 	public static class Rest{
@@ -903,6 +912,10 @@ public abstract class BaseESProperties {
 
 		if(dslfile != null){
 			properties.put("dslfile.refreshInterval",dslfile.getRefreshInterval());
+			if(dslfile.getDslMappingDir() != null && !dslfile.getDslMappingDir().trim().equals("")) {
+				properties.put("dslfile.dslMappingDir", dslfile.getDslMappingDir());
+			}
+
 		}
 
 		/**

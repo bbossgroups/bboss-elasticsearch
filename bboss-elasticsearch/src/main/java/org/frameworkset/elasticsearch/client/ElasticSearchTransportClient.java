@@ -133,6 +133,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		return null;
 	}
 
+	@Override
+	public ElasticSearch getElasticSearch() {
+		return null;
+	}
+
 	// /**
 	// * Local transport client only for testing
 	// *

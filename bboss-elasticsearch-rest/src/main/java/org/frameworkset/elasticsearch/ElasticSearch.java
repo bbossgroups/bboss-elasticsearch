@@ -86,12 +86,20 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected long ttlMs = DEFAULT_TTL;
 	protected String indexName = DEFAULT_INDEX_NAME;
 	protected String indexType = DEFAULT_INDEX_TYPE;
-	
+	protected String dslMappingDir;
 	protected String elasticUser = "";
 	protected String elasticPassword = "";
 	protected Matcher matcher = pattern.matcher("");
 
 	protected String[] restServerAddresses = null;
+
+	public void setDslMappingDir(String dslMappingDir) {
+		this.dslMappingDir = dslMappingDir;
+	}
+
+	public String getDslMappingDir() {
+		return dslMappingDir;
+	}
 
 	public String getOrigineRestServerAddresses() {
 		return origineRestServerAddresses;
@@ -360,7 +368,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 //					+ " must be greater than 0 or not set.");
 		}
 
-		
+		dslMappingDir = ElasticSearchHelper.getDslfileMappingDir();
 
 		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty("elasticUser"))) {
 			elasticUser = elasticsearchPropes.getProperty("elasticUser");
