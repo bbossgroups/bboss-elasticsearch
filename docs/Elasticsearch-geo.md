@@ -20,7 +20,7 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
 
 在resources目录下创建文件esmapper/address.xml,内容如下：
 
-```
+```xml
 <properties>
 <property name="createCityIndice"><![CDATA[{
   "settings": {
@@ -59,7 +59,7 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
                             }
                         },
                         "location":{
-                            "type": "geo_point"
+                            "type": "geo_point" ##地理位置类型
                         }
 
                     }
@@ -74,8 +74,8 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
                     "unit": "km",
                     "order": "asc",
                     "location": { ##指定参考地理坐标位置
-                        "lon": #[lon],
-                        "lat": #[lat]
+                        "lon": #[lon], ##经度
+                        "lat": #[lat] ##纬度
                     }
                 }
             },
@@ -100,8 +100,8 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
                         "geo_distance": {
                             "distance": #[distance],
                             "location": {
-                                "lon": #[lon],
-                                "lat": #[lat]
+                                "lon": #[lon],  ##经度
+                                "lat": #[lat] ##纬度
                             }
                         }
                     }
@@ -114,7 +114,7 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
 
 创建索引表
 
-```
+```java
 //创建加载配置文件的客户端工具，单实例多线程安全，第一次运行要预加载，有点慢
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/address.xml");
 		try {
@@ -135,11 +135,19 @@ Elasticsearch地理位置信息维护及检索/排序案例分享
 
 # 3.添加索引文档
 
-```
+```java
 Map<String,String> params = new HashMap<String,String>();
 		params.put("cityName","潭市");
 		params.put("standardAddrId","38130122");
 		params.put("detailName","XX市花园办事处YY路四冶生活区4-11栋33单元1层1010");
+		/**
+		*
+可能所有人都至少一次踩过这个坑：地理坐标点用字符串形式表示时是纬度在前，经度在后（ "latitude,longitude" ），而数组形式表示时是经度在前，纬度在后（ [longitude,latitude] ）—顺序刚好相反。
+
+其实，在 Elasticesearch 内部，不管字符串形式还是数组形式，都是经度在前，纬度在后。不过早期为了适配 GeoJSON 的格式规范，调整了数组形式的表示方式。
+
+因此，在使用地理位置的路上就出现了这么一个“捕熊器”，专坑那些不了解这个陷阱的使用者。
+*/
 		params.put("location","28.292781,117.238963");
 		params.put("countyName","中国");
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();				
@@ -153,13 +161,13 @@ clientUtil.addDocument("city",//索引名称
 
 # 4.地理位置检索 
 
-```
+```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/address.xml");
 		Map<String,String> params = new HashMap<String,String>();
 		params.put("detailName","海域香廷EE栋1单元3层302室");
 		params.put("distance","0.5km");
-		params.put("lon","115.824994");
-		params.put("lat","28.666162");
+		params.put("lon","115.824994");//经度
+		params.put("lat","28.666162");//纬度
 //返回map对象列表，也可以返回其他实体对象列表
 		ESDatas<Map> datas = clientUtil.searchList("city/_search","locationSearch",params,Map.class);
 //返回json报文

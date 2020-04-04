@@ -3123,6 +3123,10 @@ public class Mongodb2ESdemo {
 
  https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java 
 
+spring boot db-db同步案例：
+
+https://github.com/bbossgroups/db-db-job
+
 # 6 Kafka1x-Elasticsearch数据同步使用方法（不推荐）
 
 https://github.com/bbossgroups/kafka1x-elasticsearch
