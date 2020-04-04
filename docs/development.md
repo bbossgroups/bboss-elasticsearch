@@ -250,7 +250,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.7</version>
+            <version>6.0.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -279,7 +279,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.7</version>
+            <version>6.0.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -395,13 +395,31 @@ http.connectionRequestTimeout=10000
 ```
 
 
-## 2.7 DSL配置文件热加载扫描时间间隔配置
+## 2.7 DSL加载机制配置
+
+### 2.7.1 热加载扫描时间间隔
 
 \# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 
+```properties
 dslfile.refreshInterval = -1
+```
 
 
+
+### 2.7.2 指定dsl配置文件根目录
+
+dsl配置文件默认在classpath路径下查找，可以通过参数dslfile.dslMappingDir指定dsl配置文件的存放目录：
+
+```properties
+dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources
+```
+
+spring boot对应配置：
+
+```properties
+spring.elasticsearch.bboss.dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources
+```
 
 ## 2.8 设置scroll查询线程池线程数和等待队列长度
 

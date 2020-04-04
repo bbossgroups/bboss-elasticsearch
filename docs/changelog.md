@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.7 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.8 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.7</version>
+            <version>6.0.8</version>
         </dependency>
 ```
 
@@ -44,7 +44,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.7</version>
+            <version>6.0.8</version>
         </dependency>
 ```
 
@@ -56,20 +56,41 @@ https://esdoc.bbossgroups.com/#/development
 ```
 2.增加bboss 持久层和httpproxy的spring boot start模块：
 maven坐标：
+
 ```xml
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.6.7</version>
+      <version>5.6.8</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.7", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.8", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
+
+3.数据同步增加db-db数据同步spring boot案例工程：
+
+https://github.com/bbossgroups/db-db-job
+
+4.可以指定dsl配置文件存放到外部目录，配置方法：
+
+dsl配置文件默认在classpath路径下查找，可以通过参数dslfile.dslMappingDir指定dsl配置文件的存放目录：
+
+```properties
+dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources
+```
+
+spring boot对应配置：
+
+```properties
+spring.elasticsearch.bboss.dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources
+```
+
+
 
 # v6.0.7 功能改进 
 
