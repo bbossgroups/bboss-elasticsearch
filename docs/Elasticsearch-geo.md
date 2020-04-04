@@ -174,6 +174,10 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapp
 		System.out.print(clientUtil.executeRequest("city/_search","locationSearch",params));
 ```
 
+地理坐标参考文档：
+
+https://www.elastic.co/guide/cn/elasticsearch/guide/current/lat-lon-formats.html
+
 # 开发交流
 
 
