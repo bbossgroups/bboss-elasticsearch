@@ -16,18 +16,18 @@ https://github.com/bbossgroups/springboot-elasticsearch-webservice
  <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.6.8</version>
+      <version>5.6.9</version>
 
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.0.8</version>
+    <version>6.0.9</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>6.0.8</version>
+    <version>6.0.9</version>
 </dependency>
 ```
 

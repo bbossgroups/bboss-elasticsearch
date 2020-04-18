@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.8</version>
+            <version>6.0.9</version>
         </dependency>
 ```
 
@@ -44,10 +44,14 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.8</version>
+            <version>6.0.9</version>
         </dependency>
 ```
 
+# v6.0.9 功能改进
+1.调整jackson版本号为2.9.10
+2.支持将持久层sql配置文件存放目录设置为外部目录
+3.调整jdbcfetchsize默认值为jdbc驱动自带默认值
 # v6.0.8 功能改进 
 1.数据同步模块：可以通过ImportBuilder组件设置geoip数据库地址，使用案例：
 ```java
@@ -61,13 +65,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.6.8</version>
+      <version>5.6.9</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.8", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.9", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

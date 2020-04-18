@@ -61,7 +61,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.0.8</version>
+<version>6.0.9</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
