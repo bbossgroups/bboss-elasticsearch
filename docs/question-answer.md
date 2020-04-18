@@ -82,12 +82,12 @@ public class Order {
 
 在返回的对象或者map中包含文档id等元数据信息，有以下三种途径:
 
-1.如果返回的对象是Map类型，那么直接使用MetaMap作为返回类型即可
+1.如果返回的对象是Map类型，那么直接使用MetaMap作为返回类型即可（MetaMap为java.util.HashMap的子类，包含了文档id等元数据信息属性 ）
 
 2.如果是po对象，那么可以通过元数据注解来标注对象里面作为元数据属性的字段
 参考文档： [元数据注解](https://esdoc.bbossgroups.com/#/client-annotation?id=_2元数据注解) 
 
-3.接触ESId和ESBaseData对象（不推荐使用，继承的父类中定义的属性可能会和对象本身的属性冲突）
+3.po对象继承包含文档id等元数据信息的抽象类ESId和ESBaseData（不推荐使用，继承的父类中定义的属性可能会和对象本身的属性冲突）
 
 # 问题4 Socket Timeout问题处理
 ![](images\sockettimeout.png)

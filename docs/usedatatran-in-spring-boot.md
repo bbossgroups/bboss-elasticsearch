@@ -6,7 +6,34 @@
 
 https://github.com/bbossgroups/springboot-elasticsearch-webservice
 
-# 1 关键点说明
+# 1.导入maven坐标
+
+基于spring boot的数据同步功能需要导入如下maven坐标：
+
+
+
+```xml
+ <dependency>
+      <groupId>com.bbossgroups</groupId>
+      <artifactId>bboss-spring-boot-starter</artifactId>
+      <version>5.6.8</version>
+
+</dependency>
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+    <version>6.0.8</version>
+</dependency>
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
+    <version>6.0.8</version>
+</dependency>
+```
+
+
+
+# 2 关键点说明
 
 必须在同步组件中引用BBossESStarter组件，主要用于加载spring boot配置文件中的elasticsearch配置参数：
 
@@ -24,9 +51,9 @@ private DataStream dataStream;
 
 通过db2ESImportBuilder和DataStream来启动和停止作业。
 
-# 2 数据同步实现
+# 3 数据同步实现
 
-## 2.1 增加DataTran作业组件
+## 3.1 增加DataTran作业组件
 
 [DataTran](https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/service/DataTran.java)
 
@@ -307,7 +334,7 @@ public class DataTran {
 
 ```
 
-## 2.2 增加作业执行和停止控制器
+## 3.2 增加作业执行和停止控制器
 
 [DataTranController](https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/java/com/example/esbboss/controller/DataTranController.java)
 
@@ -345,8 +372,8 @@ public class DataTranController {
 	}
 }
 ```
-# 3 作业服务构建和运行
-## 3.1 修改配置
+# 4 作业服务构建和运行
+## 4.1 修改配置
 修改配置文件中数据库信息
 src/main/java/com/example/esbboss/service/DataTran.java
 ```java
@@ -372,7 +399,7 @@ spring.elasticsearch.bboss.elasticsearch.rest.hostNames=192.168.137.1:9200
 ```
 
 然后参考以下步骤构建和运行、停止作业。
-## 3.2 构建和启动spring boot web服务
+## 4.2 构建和启动spring boot web服务
 
 Firstbuild spring boot web，then run elasticsearch and run the demo:
 
@@ -383,7 +410,7 @@ java -jar springboot-elasticsearch-webservice-0.0.1-SNAPSHOT.jar
 
 ```
 
-## 3.4 run the db-elasticsearch data tran job
+## 4.4 run the db-elasticsearch data tran job
 
 Enter the following address in the browser to run the db-elasticsearch data tran job:
 
@@ -400,7 +427,7 @@ db2ESImport job started.
 ```json
 db2ESImport job has started.
 ```
-## 3.5 stop the db-elasticsearch data tran job
+## 4.5 stop the db-elasticsearch data tran job
 Enter the following address in the browser to stop the db-elasticsearch data tran job:
 
 http://localhost:808/stopDB2ESJob
@@ -415,6 +442,8 @@ db2ESImport job stopped.
 db2ESImport job has stopped.
 ```
 
-# 4.参考文档
+# 5.参考文档
 
 [数据库和Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/db-es-tool)
+
+[spring boot db-db数据同步案例工程](https://github.com/bbossgroups/db-db-job)

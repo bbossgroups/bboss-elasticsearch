@@ -18,7 +18,7 @@ ElasticSearch DSL Script使用案例分享，涉及到的功能点：
 
 先看看elasticsearch官方的script dsl块文本的写法：通过一对"""   """来包含块文本
 
-```
+```json
 {
   "query": {
     "function_score": {
@@ -41,7 +41,7 @@ ElasticSearch DSL Script使用案例分享，涉及到的功能点：
 
 对应的bboss script dsl块文本的写法：通过一对@"""   """来包含块文本
 
-```
+```json
 {
   "query": {
     "function_score": {
@@ -70,7 +70,7 @@ bboss中管理的dsl块文本和elasticsearch官方的dsl中的块文本唯一�
 
 在demo.xml文件中增加以下配置
 
-```
+```xml
     <property name="scriptPianduan">
         <![CDATA[
             "params": {
@@ -99,7 +99,7 @@ bboss中管理的dsl块文本和elasticsearch官方的dsl中的块文本唯一�
 
 定义类ScriptImpl,增加方法updateDocumentByScriptPath来执行脚本
 
-```
+```java
 package org.bboss.elasticsearchtest.script;/*
  *  Copyright 2008 biaoping.yin
  *
@@ -151,7 +151,7 @@ public class ScriptImpl {
 
 # 3.一个比较复杂Script的案例
 
-```
+```xml
 <property name="updateStoreProductDynamicTemplate">
         <![CDATA[
         {

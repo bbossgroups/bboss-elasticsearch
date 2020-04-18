@@ -990,9 +990,52 @@ String response = clientUtil.updateDocuments("demo",//索引表
 demos,updateOptions);
 ```
 
+# 14.删除文档
 
+## 14.1 删除单条文档
 
-# 14. 开发交流
+ES 7以下版本根据文档id删除文档
+
+```java
+	ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+//     //删除文档
+    clientUtil.deleteDocument("demo",//索引表
+          "demo",//索引类型
+          "2");//文档id
+```
+
+ES 7+版本根据文档id删除文档，不需要索引类型
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+//删除文档
+    clientUtil.deleteDocumentNew("demo",//索引表         
+          "2");//文档id
+```
+
+## 14.2 批量删除文档
+ES 7+版本根据文档id数组批量删除文档，不需要索引类型
+
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+//批量删除文档
+		clientUtil.deleteDocuments("demo",//索引表
+				new String[]{"2","3"});//批量删除文档ids
+```
+ES 7以下版本根据文档id数组批量删除文档
+
+```java
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();	
+//批量删除文档
+		clientUtil.deleteDocuments("demo",//索引表
+				"demo",//索引类型
+				new String[]{"2","3"});//批量删除文档ids
+```
+
+## 14.3 通过deleteByQuery删除文档
+
+[DeleteByQuery/UpdateByQuery对应的Dsl脚本](https://esdoc.bbossgroups.com/#/update-delete-byquery?id=_3定义deletebyqueryupdatebyquery对应的dsl脚本)
+
+# 15. 开发交流
 
 
 
