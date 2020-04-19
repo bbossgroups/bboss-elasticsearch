@@ -49,9 +49,12 @@ https://esdoc.bbossgroups.com/#/development
 ```
 
 # v6.0.9 功能改进
-1.调整jackson版本号为2.9.10
-2.支持将持久层sql配置文件存放目录设置为外部目录
-3.调整jdbcfetchsize默认值为jdbc驱动自带默认值
+1.升级jackson版本号为2.9.10
+
+2.持久层支持将sql配置文件存放位置设置为外部目录
+
+3.调整jdbcfetchsize默认值为数据库jdbc驱动自带默认值
+
 # v6.0.8 功能改进 
 1.数据同步模块：可以通过ImportBuilder组件设置geoip数据库地址，使用案例：
 ```java

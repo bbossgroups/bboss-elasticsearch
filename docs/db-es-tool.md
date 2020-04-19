@@ -6,7 +6,9 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
 
-bboss数据同步可以方便地实现多种数据源之间的数据同步功能，也可以从kafka1x和kafka2x系列版本消费数据写入elasticsearch，后续还会支持更多的数据源之间的数据同步，本文介绍各种数据同步案例（支持各种数据库和各种es版本）
+# 工具特性
+
+bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，也可以从kafka1x和kafka2x系列版本消费数据写入elasticsearch，本文介绍各种数据同步案例（支持各种数据库和各种es版本）
 
 ![](images\datasyn.png)
 
@@ -21,7 +23,7 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 7. kafka数据导入Elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
 8. HBase数据导入Elasticsearch
 
-导入的方式支持
+数据导入的方式
 
 - 支持逐条数据导入
 - 批量数据导入
