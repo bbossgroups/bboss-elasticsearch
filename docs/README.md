@@ -73,9 +73,9 @@ bboss es环境搭建及开发视频教程（依赖的版本以最新的[maven中
 
 # 联系我们
 
-**bboss elasticsearch技术交流群：166471282**
+**Elasticsearch技术交流群：166471282**
 
-**bboss elasticsearch微信公众号：**
+**Elasticsearch微信公众号：**
 
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
