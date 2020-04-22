@@ -31,7 +31,7 @@ Elasticsearch聚合查询案例分享
 
 
 
-## 案例1** 多重聚合统计
+## 案例1 多重聚合统计
 
 
 
@@ -40,7 +40,7 @@ Elasticsearch聚合查询案例分享
 
 在源码目录下新建文件esmapper/estrace/ESTracesMapper.xml，内容如下 
 
-```
+```xml
 <properties>
     <!--
     应用汇总统计：总访问量，成功数，失败数
@@ -54,12 +54,8 @@ Elasticsearch聚合查询案例分享
                     "filter": [
                         #if($channelApplications && $channelApplications.size() > 0)
                         {
-                            "terms": {
-                                "applicationName.keyword": [ ##指定并统计多个应用的数据
-                                #foreach($application in $channelApplications)
-                                   #if($velocityCount > 0),#end $application.applicationName
-                                #end
-                                ]
+                            "terms": { ##指定并统计多个应用的数据
+                                "applicationName.keyword": #[channelApplications,serialJson=true]
                             }
                         },
                         #end
@@ -111,9 +107,49 @@ Elasticsearch聚合查询案例分享
 
 ###  **3.1.2 编写统计dao及统计方法** 
 
-Java代码 
+封装查询条件的对象TraceExtraCriteria：
 
+```java
+package org.frameworkset.elasticsearch.byquery;
+
+import java.util.Date;
+import java.util.List;
+
+
+public class TraceExtraCriteria {
+  private List<String> channelApplications;
+  private Date startTime;
+  private Date endTime;
+
+  public List<String> getChannelApplications() {
+    return channelApplications;
+  }
+
+  public void setChannelApplications(List<String> channelApplications) {
+    this.channelApplications = channelApplications;
+  }
+
+  public Date getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(Date startTime) {
+    this.startTime = startTime;
+  }
+
+  public Date getEndTime() {
+    return endTime;
+  }
+
+  public void setEndTime(Date endTime) {
+    this.endTime = endTime;
+  }
+}
 ```
+
+执行聚合查询的Java代码 
+
+```java
 public class TraceESDao {    
     public List<ApplicationStatic> getApplicationSumStatic(TraceExtraCriteria traceExtraCriteria){
     	ClientInterface clientUtil= ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
@@ -219,12 +255,16 @@ public class TraceESDao {
 
 Java代码 
 
-```
+```java
 @Test
 	public void testAppStatic(){
 		TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
-		traceExtraCriteria.setStartTime(1516304868072l);
-		traceExtraCriteria.setEndTime(1516349516377l);
+        List<String> channelApplications = new ArrayList<>();
+        channelApplications.add("aaa");
+         channelApplications.add("bbb");
+        traceExtraCriteria.setChannelApplications(channelApplications);
+		traceExtraCriteria.setStartTime(new Date(1516304868072l);
+		traceExtraCriteria.setEndTime(new Date(1516349516377l);
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
 		//通过下面的方法先得到查询的json报文，然后再通过MapRestResponse查询遍历结果，调试的时候打开String response的注释
 		//String response = clientUtil.executeRequest("trace-*/_search","applicationSumStatic",traceExtraCriteria);
@@ -280,12 +320,16 @@ Java代码
 
 java代码 
 
-```
+```java
 @Test
 	public void testAppStatic(){
 		TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
-		traceExtraCriteria.setStartTime(1516304868072l);
-		traceExtraCriteria.setEndTime(1516349516377l);
+               List<String> channelApplications = new ArrayList<>();
+        channelApplications.add("aaa");
+         channelApplications.add("bbb");
+        traceExtraCriteria.setChannelApplications(channelApplications);
+		traceExtraCriteria.setStartTime(new Date(1516304868072l);
+		traceExtraCriteria.setEndTime(new Date(1516349516377l);
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
 		//通过下面的方法先得到查询的json报文，然后再通过MapRestResponse查询遍历结果，调试的时候打开String response的注释
 		//String response = clientUtil.executeRequest("trace-*/_search","applicationSumStatic",traceExtraCriteria);
@@ -345,7 +389,7 @@ java代码
 
 建立dsl配置文件esmapper/testagg.xml，定义termAgg：
 
-```
+```xml
     <property name="termAgg">
         <![CDATA[
         {
@@ -394,7 +438,7 @@ java代码
 
 ### 3.2.2 执行dsl
 
-```
+```java
 	@Test
 	public void termAgg(){
 		ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/testagg.xml");
@@ -431,7 +475,7 @@ java代码
 
 建立dsl配置文件esmapper/testagg.xml，定义candicateAgg：
 
-```
+```xml
     <property name="candicateAgg">
         <![CDATA[
         {
@@ -480,7 +524,7 @@ java代码
 
 ### 3.3.2 执行dsl
 
-```
+```java
 	@Test
 	public void candicateAgg(){
 		ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/testagg.xml");

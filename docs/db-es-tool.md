@@ -2769,19 +2769,19 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
 ## 3.2 jdk timer同步器demo
 
- https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
+ https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
 
- https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java 
+ https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java 
 
- https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
+ https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
 
 ## 3.3 quartz同步器demo
 
- https://gitee.com/bboss/db2es-booter/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
+ https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
 
 调试测试以及运行quatz作业同步功能方法，按如下配置进行操作：
 
- 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](https://gitee.com/bboss/db2es-booter/blob/master/src/main/resources/org/frameworkset/task/quarts-task.xml)相关内容
+ 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/resources/org/frameworkset/task/quarts-task.xml)相关内容
 
 ```xml
 <list>
@@ -2811,7 +2811,7 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
  然后运行main方法即可
 
- 然后运行main方法即可
+
 
  3.实际运行和发布作业方法， 使用quartz定时器运行导入数据作业时，先参考第一步做quartz作业任务配置，然后将application.properties文件中的mainclass设置为如下值即可：
 
@@ -2825,7 +2825,7 @@ mainclass=org.frameworkset.task.Main
 
 ## 3.4 xxl-job同步器demo
 
- https://gitee.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
+ https://github.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
 
 # 4 Mongodb-Elasticsearch数据同步使用方法
 
@@ -3317,13 +3317,10 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)
 
-码云：<https://gitee.com/bboss/db2es-booter>
 
+**elasticsearch交流：166471282**
 
-
-bboss elasticsearch交流：166471282
-
-**bboss elasticsearch微信公众号：**
+**elasticsearch微信公众号：**
 
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
 
