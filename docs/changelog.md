@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.0.9</version>
+            <version>6.1.0</version>
         </dependency>
 ```
 
@@ -44,9 +44,20 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.9</version>
+            <version>6.1.0</version>
         </dependency>
 ```
+
+# v6.1.0 功能改进
+1. 数据同步工具改进
+
+  如果在程序里面配置的增量字段类型发生改变，要把增量状态表对应的类型调整为最新的字段类型
+  
+  设置了类型后，就按照类型来，不再按照设置的日期和数字字段名称来区分：
+    
+  增加setLastValueColumn方法，废弃setDateLastValueColumn和setNumberLastValueColumn两个方法
+2. DB-DB数据同步工具：增加在作业中直接指定sql语句的功能
+3. 修复数据同步bug：数据库到数据库跨库同步无效
 
 # v6.0.9 功能改进
 1.升级jackson版本号为2.9.10
@@ -68,13 +79,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.6.9</version>
+      <version>5.7.0</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.6.9", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.7.0", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

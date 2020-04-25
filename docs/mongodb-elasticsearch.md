@@ -1033,8 +1033,8 @@ Elasticsearch索引文档id支持三种设置方式
 
 | 增量类型 | 设置案例                                                     |
 | -------- | ------------------------------------------------------------ |
-| 数字     | importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE); // 指定类型importBuilder.setLastValue(-1); |
-| 日期     | importBuilder.setDateLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE); // 指定类型SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");                                                  try {                                                                                                                                                                                         Date date = format.parse("2000-01-01");   importBuilder.setLastValue(date);                                }catch (Exception e){   e.printStackTrace();} |
+| 数字     | importBuilder.setLastValueColumn("lastAccessedTime");importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE); // 指定类型importBuilder.setLastValue(-1); |
+| 日期     | importBuilder.setLastValueColumn("lastAccessedTime");importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE); // 指定类型SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");                                                  try {                                                                                                                                                                                         Date date = format.parse("2000-01-01");   importBuilder.setLastValue(date);                                }catch (Exception e){   e.printStackTrace();} |
 
 其他增量同步参数说明
 
@@ -1061,8 +1061,7 @@ config.db.showsql = true
 Mongodb session表对应的增量字段lastAccessedTime为long类型，是一个数字值，通过importBuilder设置增量同步参数的代码如下：
 
 ```java
-        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
-//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段
+        importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
@@ -1388,7 +1387,7 @@ public class Mongodb2ES {
 
 		// 5.2.4.9 设置增量字段信息（可选步骤，全量同步不需要做以下配置）
 		//增量配置开始
-		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+		importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 		importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 		//设置增量查询的起始值lastvalue
@@ -1471,7 +1470,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 - 增量同步时加上下面的代码
 
 ```java
-        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+        importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 
 		importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -1489,7 +1488,7 @@ ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 ```java
         /**
-		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+		importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 
 		importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -2139,7 +2138,7 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
 
 			// 5.2.4.9 设置增量字段信息（可选步骤，全量同步不需要做以下配置）
 			//增量配置开始
-			importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+			importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 			importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
 			//设置增量查询的起始值lastvalue
 			try {
@@ -2313,7 +2312,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
-            <version>6.0.9</version>
+            <version>6.1.0</version>
         </dependency>
 ```
 
@@ -2345,7 +2344,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups</groupId>
             <artifactId>bboss-schedule</artifactId>
-            <version>5.6.9</version>
+            <version>5.7.0</version>
         </dependency>
 ```
 
@@ -2355,7 +2354,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.0.9</version>
+            <version>6.1.0</version>
         </dependency>
 ```
 

@@ -18,13 +18,13 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 单行注释
 
-```
+```properties
 ## 注释内容
 ```
 
 多行注释
 
-```
+```properties
 #*
 
 。。。。注释内容
@@ -42,7 +42,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 在配置文件-[esmapper/demo.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中定义一个名称为createDemoIndice的dsl脚本：
 
-```
+```xml
     <!--
         创建demo需要的索引表结构
     -->
@@ -91,7 +91,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 根据上面定义的dsl脚本文件初始化ClientInterface对象，并创建索引表demo：
 
-```
+```java
 	public void testCreateIndice(){
 	//创建加载配置文件的客户端工具，单实例多线程安全
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
@@ -122,7 +122,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 通过定义索引模板，定义表结构相同，但是索引表名称不同的索引表的建表模板，通过index_patterns中对应的模式名称来匹配索引模板适用的索引表：
 
-```
+```xml
    <property name="demoTemplate">
         <![CDATA[{
             "index_patterns": "demo-*", ## 5.x版本中请使用语法："template": "demo-*"
@@ -167,7 +167,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 # 5 创建/获取/删除索引表模板
 
-```
+```java
 	public void testCreateTempate() throws ParseException{
 
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
@@ -200,7 +200,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 定义dsl结构-esmapper/demo.xml
 
-```
+```xml
     <!--
     修改demo 索引表的结构，增加email字段
     https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
@@ -218,7 +218,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 修改和获取mapping结构的方法：
 
-```
+```java
 	public void updateDemoIndice(){
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil(mappath);
 		//修改索引表demo中type为demo的mapping结构，增加email字段，对应的dsl片段updateDemoIndice定义在esmapper/demo.xml文件中
@@ -505,8 +505,6 @@ ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 # 18 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
-
-<https://gitee.com/bboss/eshelloword-booter>
 
 
 

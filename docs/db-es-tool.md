@@ -63,7 +63,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.0.9</version>
+<version>6.1.0</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -435,13 +435,13 @@ select * from td_sm_log where log_id > #[log_id] and other_id = #[log_id]
 ```java
 importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
 
-importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 ```
 
 日期类型增量导入配置
 
 ```java
-importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+importBuilder.setLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 
 importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
 ```
@@ -494,8 +494,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 //					 .setScheduleDate(date) //指定任务开始执行时间：日期
 				     .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
 					 .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
-//		importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+//		importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
@@ -1377,7 +1376,7 @@ public class Dbdemo {
       //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
       // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
       // select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-      // log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setDateLastValueColumn信息，
+      // log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
       // 但是需要设置setLastValueType告诉工具增量字段的类型
 
       importBuilder.setSql("select * from td_sm_log ");
@@ -1436,8 +1435,7 @@ public class Dbdemo {
 //    });
 //    //设置任务执行拦截器结束，可以添加多个
       //增量配置开始
-//    importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-//    importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+//    importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
       importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
       importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -1997,7 +1995,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 			//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
 			// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
 			// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-			// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
+			// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
 			// 但是需要设置setLastValueType告诉工具增量字段的类型
 
 			importBuilder.setSql("select * from td_sm_log where log_id > #[log_id]");
@@ -2059,7 +2057,7 @@ public class XXJobImportTask extends AbstractDB2ESXXJobHandler {
 //		});
 //		//设置任务执行拦截器结束，可以添加多个
 			//增量配置开始
-//		importBuilder.setNumberLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+//		importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 			importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 			importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -2391,7 +2389,7 @@ public class ES2DBScrollTimestampDemo {
 		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
 		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
 		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-		// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
+		// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
 		// 但是需要设置setLastValueType告诉工具增量字段的类型
 	
 		/**
@@ -2452,8 +2450,7 @@ public class ES2DBScrollTimestampDemo {
 		});
 //		//设置任务执行拦截器结束，可以添加多个
 		//增量配置开始
-//		importBuilder.setNumberLastValueColumn("logId");//指定数字增量查询字段变量名称
-		importBuilder.setDateLastValueColumn("logOpertime");//手动指定日期增量查询字段变量名称
+		importBuilder.setLastValueColumn("logOpertime");//手动指定日期增量查询字段变量名称
 		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -2595,7 +2592,7 @@ public class ES2DBSliceScrollResultCallbackDemo {
 		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
 		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
 		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-		// log_id和数据库对应的字段一致,就不需要设置setNumberLastValueColumn和setNumberLastValueColumn信息，
+		// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
 		// 但是需要设置setLastValueType告诉工具增量字段的类型
 	
 		/**
@@ -2651,8 +2648,7 @@ public class ES2DBSliceScrollResultCallbackDemo {
 		});
 //		//设置任务执行拦截器结束，可以添加多个
 		//增量配置开始
-		importBuilder.setNumberLastValueColumn("logId");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+		importBuilder.setLastValueColumn("logId");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -2965,8 +2961,7 @@ public class Mongodb2ESdemo {
 //		});
 //		//设置任务执行拦截器结束，可以添加多个
 		//增量配置开始
-		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
-//		importBuilder.setDateLastValueColumn("log_id");//手动指定日期增量查询字段
+		importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
 		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -3199,7 +3194,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 - 增量同步时加上下面的代码
 
 ```java
-        importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+        importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 //setFromfirst(false)，如果作业停了，作业重启后从上次停止的位置开始采集数据，
 //setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开始采集数据
 		importBuilder.setFromFirst(false);
@@ -3219,7 +3214,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 ```java
         /**
-		importBuilder.setNumberLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+		importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
 //setFromfirst(false)，如果作业停了，作业重启后从上次停止的位置开始采集数据，
 //setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开始采集数据
 		importBuilder.setFromFirst(false);

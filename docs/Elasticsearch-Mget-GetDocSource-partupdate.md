@@ -32,7 +32,7 @@
 
 通过执行dsl获取多个文档的内容案例
 
-```
+```java
         ClientInterface clientUtil = 
                 ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/mget.xml");
 		//通过执行dsl获取多个文档的内容，具体可以参考文档：
@@ -56,7 +56,7 @@
 
 dsl定义-esmapper/estrace/mget.xml
 
-```
+```xml
 <!--
 GET /_mget
 {
@@ -99,7 +99,7 @@ GET /_mget
 
 简单api案例
 
-```
+```java
         Map params = new HashMap();
 		Date date = new Date();
 		params.put("eventTimestamp",date.getTime());
@@ -119,7 +119,7 @@ GET /_mget
 
 采用dsl案例
 
-```
+```java
 ClientInterface configRestClientUtil = 
 ElasticSearchHelper.getConfigRestClientUtil("esmapper/agentstat.xml");
 		Map params = new HashMap();
@@ -143,7 +143,7 @@ params.put("location","28.292781,117.238963");
 
 dsl文件定义-esmapper/agentstat.xml
 
-```
+```xml
 <properties>
     <!--
     POST test/_doc/1/_update
@@ -173,7 +173,7 @@ dsl文件定义-esmapper/agentstat.xml
 
 # 4.GetDocSource案例
 
-```
+```java
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		//获取json报文索引source，不返回索引元数据
 		String response = clientUtil.getDocumentSource("agentinfo/agentinfo/10.21.20.168/_source");
@@ -193,7 +193,7 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 
 根据文档id获取
 
-```
+```java
         //根据文档id获取文档对象，返回json报文字符串
 		String response = clientUtil.getDocument("demo",//索引表
 				"demo",//索引类型
@@ -210,7 +210,7 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 
 根据rest url获取
 
-```
+```java
         ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		String response = clientUtil.getDocumentByPath("agentinfo/agentinfo/10.21.20.168");
 		System.out.println(response);

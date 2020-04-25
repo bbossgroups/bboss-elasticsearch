@@ -2,7 +2,7 @@
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
- 
+
 
 Elasticsearch Scroll和Slice Scroll查询API使用案例
 
@@ -17,15 +17,18 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 本文对应的maven源码工程：
 
-<https://gitee.com/bboss/eshelloword-booter>
+<https://github.com/bbossgroups/elasticsearch-example>
 
-
+# scroll和slice scroll
+先了解一下scroll和slice scroll特点
+1. scroll串行从elasticserch查询拉取数据，bboss可以并行处理也可以串行处理scroll拉取回来数据
+2. slice scroll查询可以串行和并行从elasticserch查询拉取拉取数据，bboss亦可以并行或者串行处理slice scroll拉取回来的数据 
 
 # **1.dsl配置文件定义**
 
 首先定义本文需要的dsl配置文件
 
-[esmapper/scroll.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/scroll.xml)
+[esmapper/scroll.xml](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/esmapper/scroll.xml)
 
 ```xml
 <properties>
@@ -64,7 +67,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 </properties>
 ```
 
-下面介绍scroll各种用法，对应的测试类文件为：[**TestScrollAPIQuery**](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/scroll/TestScrollAPIQuery.java)
+下面介绍scroll各种用法，对应的测试类文件为：[**TestScrollAPIQuery**](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/scroll/TestScrollAPIQuery.java)
 
 
 
@@ -412,7 +415,7 @@ elasticsearch.sliceScrollThreadQueue 默认值500
 
 ## ES之间数据导入导出
 
-可以使用并行方式执行slice scroll操作来实现ES之间数据导入导出，将一个elasticsearch的数据导入另外一个elasticsearch，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），default对应目标集群，es233对应源集群，目标集群和源集群的elasticsearch版本可以为elasticsearch 1.x,2.x,5.x,6.x,7.x，+；[参考配置](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/applicationtwo.properties)
+可以使用并行方式执行slice scroll操作来实现ES之间数据导入导出，将一个elasticsearch的数据导入另外一个elasticsearch，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），default对应目标集群，es233对应源集群，目标集群和源集群的elasticsearch版本可以为elasticsearch 1.x,2.x,5.x,6.x,7.x，+；[参考配置](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/applicationtwo.properties)
 
 ### 源库索引全量数据导入
 
