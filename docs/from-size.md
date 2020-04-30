@@ -10,7 +10,7 @@
 
 定义from-size检索的dsl，里面包含外部需要传入的检索条件参数变量和分页参数变量： 
 
-```
+```xml
 <!--
        一个简单的检索dsl,中有四个变量
        applicationName1
@@ -52,7 +52,7 @@
 
 # 2.加载dsl所在配置文件，并执行from-size分页检索
 
-```
+```java
     /**
 	 * 分页检索文档
 	 * @throws ParseException

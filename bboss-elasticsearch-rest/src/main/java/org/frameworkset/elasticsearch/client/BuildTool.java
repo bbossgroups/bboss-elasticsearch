@@ -316,9 +316,12 @@ public abstract class BuildTool {
 		int k = 0;
 		IndiceHeader indiceHeader = null;
 		StringBuilder token = new StringBuilder();
+		int offset = 0;
 		for(int j = 0; j < lineHeader.length(); j ++){
 			char c = lineHeader.charAt(j);
 			if(c != ' '){
+				if(token.length() == 0)
+					offset = j;
 				token.append(c);
 			}
 			else {
@@ -326,6 +329,7 @@ public abstract class BuildTool {
 					continue;
 				indiceHeader = new IndiceHeader();
 				indiceHeader.setHeaderName(token.toString());
+				indiceHeader.setOffset(offset);
 				indiceHeader.setPosition(k);
 				indiceHeaders.put(k,indiceHeader);
 				token.setLength(0);
@@ -345,54 +349,118 @@ public abstract class BuildTool {
 
 	/**
 	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * @param lineHeader
+	 * @return
+	 */
+	public static List<IndiceHeader> buildListIndiceHeaders(String lineHeader){
+		if(lineHeader == null)
+			return null;
+		lineHeader = lineHeader.trim();
+		List<IndiceHeader> indiceHeaders = new ArrayList<IndiceHeader>();
+		int k = 0;
+		IndiceHeader indiceHeader = null;
+		StringBuilder token = new StringBuilder();
+		int offset = 0;
+		for(int j = 0; j < lineHeader.length(); j ++){
+			char c = lineHeader.charAt(j);
+			if(c != ' '){
+				if(token.length() == 0)
+					offset = j;
+				token.append(c);
+			}
+			else {
+				if(token.length() == 0)
+					continue;
+				indiceHeader = new IndiceHeader();
+				indiceHeader.setHeaderName(token.toString());
+				indiceHeader.setOffset(offset);
+				indiceHeader.setPosition(k);
+				indiceHeaders.add(indiceHeader);
+				token.setLength(0);
+				k ++;
+			}
+		}
+		if(token.length() > 0){
+			indiceHeader = new IndiceHeader();
+			indiceHeader.setHeaderName(token.toString());
+			indiceHeader.setPosition(k);
+			indiceHeader.setOffset(offset);
+			indiceHeaders.add(indiceHeader);
+			token.setLength(0);
+		}
+		return indiceHeaders;
+
+	}
+
+	/**
+	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 	 * @param esIndice
-	 * @param indiceHeaders
-	 * @param position
+	 * @param indiceHeader
 	 * @param token
 	 * @param format
 	 */
-	private static void putField(ESIndice esIndice,Map<Integer,IndiceHeader> indiceHeaders,int position,StringBuilder token,SimpleDateFormat format){
-		IndiceHeader indiceHeader = indiceHeaders.get(position);
+	private static void putField(ESIndice esIndice,IndiceHeader indiceHeader,StringBuilder token,SimpleDateFormat format){
+//		IndiceHeader indiceHeader = indiceHeaders.get(position);
 		if(indiceHeader.getHeaderName().equals("health")) {
-			esIndice.setHealth(token.toString());
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setHealth(token.toString());
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("status")) {
-			esIndice.setStatus(token.toString());
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setStatus(token.toString());
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("index")) {
-			esIndice.setIndex(token.toString());
-			putGendate(  esIndice,  format);
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setIndex(token.toString());
+				putGendate(esIndice, format);
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("uuid")) {
-			esIndice.setUuid(token.toString());
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setUuid(token.toString());
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("pri")) {
-			esIndice.setPri(Integer.parseInt(token.toString()));
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setPri(Integer.parseInt(token.toString()));
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("rep")) {
-			esIndice.setRep(Integer.parseInt(token.toString()));
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setRep(Integer.parseInt(token.toString()));
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("docs.count")) {
-			esIndice.setDocsCcount(Long.parseLong(token.toString()));
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setDocsCcount(Long.parseLong(token.toString()));
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("docs.deleted")) {
-			esIndice.setDocsDeleted(Long.parseLong(token.toString()));
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setDocsDeleted(Long.parseLong(token.toString()));
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("store.size")) {
-			esIndice.setStoreSize(token.toString());
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setStoreSize(token.toString());
+				token.setLength(0);
+			}
 		}
 		else if(indiceHeader.getHeaderName().equals("pri.store.size")) {
-			esIndice.setPriStoreSize(token.toString());
-			token.setLength(0);
+			if(token.length() > 0) {
+				esIndice.setPriStoreSize(token.toString());
+				token.setLength(0);
+			}
 		}
 		else{
 			esIndice.addOtherData(indiceHeader.getHeaderName(),token.toString());
@@ -401,85 +469,52 @@ public abstract class BuildTool {
 
 
 	}
+	private static IndiceHeader fieldValueStart(int offset,List<IndiceHeader> indiceHeaderList) {
+		for(IndiceHeader indiceHeader: indiceHeaderList){
+			if(offset == indiceHeader.getOffset()){
+				return indiceHeader;
+			}
+		}
+		return null;
+	}
 	public static ESIndice buildESIndice(String line, SimpleDateFormat format,
-										 Map<Integer,IndiceHeader> indiceHeaders)
+										 List<IndiceHeader> indiceHeaderList)
 	{
 		StringBuilder token = new StringBuilder();
 		ESIndice esIndice = new ESIndice();
 
-		int k = 0;
+		IndiceHeader indiceHeader = null;
 		for(int j = 0; j < line.length(); j ++){
+			IndiceHeader _indiceHeader = fieldValueStart(j,indiceHeaderList);
+			if(_indiceHeader != null){
+				if(indiceHeader == null) {
+
+				}
+				else{
+					putField(esIndice,indiceHeader,token,format);
+				}
+				indiceHeader = _indiceHeader;
+			}
 			char c = line.charAt(j);
 			if(c != ' '){
 				token.append(c);
 			}
 			else {
-				if(token.length() == 0)
+				if(token.length() == 0) {
 					continue;
-				putField(esIndice,indiceHeaders,k,token,format);
-				k ++;
-//				switch (k ){
-//					case 0:
-//						esIndice.setHealth(token.toString());
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 1:
-//						esIndice.setStatus(token.toString());
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 2:
-//						esIndice.setIndex(token.toString());
-//						putGendate(  esIndice,  format);
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 3:
-//						esIndice.setUuid(token.toString());
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 4:
-//						esIndice.setPri(Integer.parseInt(token.toString()));
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 5:
-//						esIndice.setRep(Integer.parseInt(token.toString()));
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 6:
-//						esIndice.setDocsCcount(Long.parseLong(token.toString()));
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 7:
-//						esIndice.setDocsDeleted(Long.parseLong(token.toString()));
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 8:
-//						esIndice.setStoreSize(token.toString());
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					case 9:
-//						esIndice.setPriStoreSize(token.toString());
-//						token.setLength(0);
-//						k ++;
-//						break;
-//					default:
-//						break;
+				}
+				if(indiceHeader != null) {
 
-//				}
+					putField(esIndice, indiceHeader, token, format);
+					indiceHeader = null;
+				}
+
+
 			}
 		}
 		if(token.length() > 0){
-			putField(esIndice,indiceHeaders,k,token,format);
+			putField(esIndice,indiceHeader,token,format);
 		}
-//		esIndice.setPriStoreSize(token.toString());
 		return esIndice;
 	}
 	public static void putGendate(ESIndice esIndice,SimpleDateFormat format){

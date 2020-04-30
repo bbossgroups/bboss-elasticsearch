@@ -27,6 +27,7 @@ import java.io.Serializable;
  */
 public class IndiceHeader implements Serializable {
 	private String headerName;
+	private int offset;
 
 	public String getHeaderName() {
 		return headerName;
@@ -45,4 +46,12 @@ public class IndiceHeader implements Serializable {
 	}
 
 	private int position;
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
 }

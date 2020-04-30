@@ -18,7 +18,7 @@ Elasticsearch search after分页查询案例分享
 
 创建索引表和初始化数据的组件[DocumentCRUD ](https://gitee.com/bboss/eshelloword/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)实现本文不做重点介绍，请访问[视频教程](https://pan.baidu.com/s/1kXjAOKn)了解：
 
-```
+```java
 /**
  * 创建索引表并导入测试数据
  */
@@ -37,7 +37,7 @@ public void initIndiceAndData(){
 
 定义searchAfterDSL
 
-```
+```xml
 <properties>
     <property name="searchAfterDSL">
         <![CDATA[{
@@ -80,7 +80,7 @@ public void initIndiceAndData(){
 
 # 4.定义实现searchAfter的代码
 
-```
+```java
     public void doSeachAfter() throws ParseException {
 		//创建加载配置文件的客户端工具，用来检索文档，单实例多线程安全
 		ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/searchafter.xml");
@@ -130,7 +130,7 @@ public void initIndiceAndData(){
 
 # 5.通过junit单元测试用例运行案例
 
-```
+```java
 	@Test
 	public void testSeachAfter() throws ParseException {
 		DocumentSearchAfter documentSearchAfter = new DocumentSearchAfter();

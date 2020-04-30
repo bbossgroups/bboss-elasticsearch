@@ -306,8 +306,159 @@ public void testBulkAddDocumentsWithESIndex() {
 
 # 5. 检索文档
 
+
+
+封装查询条件的对象TraceExtraCriteria定义：
+
+```java
+package org.frameworkset.elasticsearch.byquery;
+
+import java.util.Date;
+import java.util.List;
+
+
+public class TraceExtraCriteria {
+  private List<String> searchFields;
+  private Date startTime;
+  private Date endTime;
+  private String application;
+  private String queryCondition;
+  public List<String> getChannelApplications() {
+    return channelApplications;
+  }
+  public String getApplication(){
+      return application;
+  }
+  public void setApplication(String application){
+      this.application = application;
+  }
+   public String getQueryCondition(){
+      return queryCondition;
+  }
+  public void setQueryCondition(String queryCondition){
+      this.queryCondition = queryCondition;
+  }  
+  public void setSearchFields(List<String> searchFields) {
+    this.searchFields = searchFields;
+  }
+  public List<String>  getSearchFields() {
+    return this.searchFields ;
+  }
+  public Date getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(Date startTime) {
+    this.startTime = startTime;
+  }
+
+  public Date getEndTime() {
+    return endTime;
+  }
+
+  public void setEndTime(Date endTime) {
+    this.endTime = endTime;
+  }
+}
+```
+
+检索文档对应的dsl语句queryServiceByCondition定义：esmapper/estrace/ESTracesMapper.xml
+
+```xml
+ 
+    <!--
+    全文检索查询条件
+    -->
+    <property name="qcondition">
+        <![CDATA[
+        "bool": {
+            "filter": [
+                 {"range": {
+                        "startTime": {
+                            "gte": #[startTime],
+                            "lt": #[endTime],
+                            "format": "epoch_millis"
+                        }
+                 }}
+                #if($application && !$application.equals("_all"))
+                ,
+                {"term": {
+                    "applicationName.keyword": #[application]
+                }}
+                #end
+                #if($queryStatus.equals("success"))
+                  ,
+                  {"term": {
+                       "err": 0
+                  }}
+                #elseif($queryStatus.equals("error"))
+                  ,
+                  {"term": {
+                       "err": 1
+                  }}
+                #end
+            ]
+            #if($queryCondition && !$queryCondition.equals(""))
+                 ,
+                "must": [
+                    {
+                        "query_string": {
+                            "query": #[queryCondition],
+                            "analyze_wildcard": true,
+                            #if(!$searchFields)
+                                "fields": ["rpc","params","agentId","applicationName","endPoint","remoteAddr"]
+                            #else
+                                "fields":[
+                                #foreach($field in $searchFields)
+                                      #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+                                #end
+                                ]
+                            #end
+                        }
+                    }
+                ]
+            #end
+        }]]>
+    </property>
+
+    <!--
+    query dsl
+    -->
+    <property name="queryServiceByCondition">
+        <![CDATA[{
+             
+            "query": {
+                @{qcondition}
+            },
+
+            "highlight": {
+                "pre_tags": [
+                    "<mark>"
+                ],
+                "post_tags": [
+                    "</mark>"
+                ],
+                "fields": {
+                    "*": {}
+                },
+                "fragment_size": 2147483647
+            }
+        }]]></property>
+```
+
+执行检索的java代码
+
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/ESTracesMapper.xml");
+TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
+        List<String> searchFields = new ArrayList<>();
+        searchFields.add("aaa");
+         searchFields.add("bbb");
+        traceExtraCriteria.setSearchFields(searchFields);
+        traceExtraCriteria.setApplication("test");
+		traceExtraCriteria.setStartTime(new Date(1516304868072l);
+		traceExtraCriteria.setEndTime(new Date(1516349516377l);
+        traceExtraCriteria.setQueryCondition("asdfasfd");
 //执行查询操作
 ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
             = clientUtil.searchList("trace-*/_search",//查询操作，查询indices trace-*中符合条件的数据
@@ -319,6 +470,8 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
         //获取总记录数
         long totalSize = data.getTotalSize();
 ```
+
+
 
 # 6. 返回索引元数据的检索操作
 
@@ -507,7 +660,7 @@ public class Demo extends ESBaseData {
 
 ESId使用
 
-```
+```java
 /**
  * 测试实体，可以从ESId对象继承id属性，检索时会将文档的一下文档id设置到对象实例中
  */
