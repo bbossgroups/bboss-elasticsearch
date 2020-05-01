@@ -1467,6 +1467,160 @@ public class RestClientUtil extends ClientUtil{
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getDocument);
 		}
 	}
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
+		return searchObject(actionUrl,dsl,  type);
+	}
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  String getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
+		return client.executeRequest(actionUrl,dsl);
+
+	}
+
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
+		return searchObject(actionUrl,dsl,  type);
+	}
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  String getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
+		return client.executeRequest(actionUrl,dsl);
+	}
+
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
+		return searchObject(actionUrl,dsl,  type);
+	}
+
+
+
+	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object fieldValue,Class<T> type,int from,int size) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue,from, size);
+		return searchList(actionUrl,dsl,type);
+	}
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,value,from, size);
+		return searchList(actionUrl,dsl,type);
+	}
+
+	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
+		return searchList(actionUrl,dsl,type);
+	}
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
+		return searchList(actionUrl,dsl,type);
+	}
+
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  String getDocumentByField(String indexName, String fieldName,Object fieldValue) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
+		return client.executeRequest(actionUrl,dsl);
+
+	}
+
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
+		return searchObject(actionUrl,dsl,  type);
+	}
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param fieldValue
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public  String getDocumentByField(String indexName, String fieldName,Object fieldValue,Map<String,Object> options) throws ElasticSearchException{
+		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
+		return client.executeRequest(actionUrl,dsl);
+	}
 
 	/**
 	 * 获取json格式文档

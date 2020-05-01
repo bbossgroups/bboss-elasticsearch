@@ -814,6 +814,75 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String getDocument(String indexName, String indexType,String documentId) throws ElasticSearchException;
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String getDocumentByField(String indexName, String fieldName,Object value) throws ElasticSearchException;
+	public abstract String getDocumentByField(String indexName, String fieldName,Object value,Map<String,Object> options) throws ElasticSearchException;
+
+	public <T> T getDocumentByField(String indexName, String fieldName,Object value,Class<T> type) throws ElasticSearchException;
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T getDocumentByField(String indexName, String fieldName,Object value,Class<T> type,Map<String,Object> options) throws ElasticSearchException;
+
+	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object value,Class<T> type) throws ElasticSearchException;
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> T getDocumentByFieldLike(String indexName, String fieldName,Object value,Class<T> type,Map<String,Object> options) throws ElasticSearchException;
+
+
+
+	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object value,Class<T> type,int from,int size) throws ElasticSearchException;
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException;
+
+	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size) throws ElasticSearchException;
+	/**
+	 * 根据属性获取type类型文档对象
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException;
+
+
+	/**
+	 * 根据属性获取文档json报文
+	 * @param indexName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public abstract String getDocumentByFieldLike(String indexName, String fieldName,Object value) throws ElasticSearchException;
+	public abstract String getDocumentByFieldLike(String indexName, String fieldName,Object value,Map<String,Object> options) throws ElasticSearchException;
 	/**
 	 * 获取json格式文档，通过options设置获取文档的参数
 	 * @param indexName

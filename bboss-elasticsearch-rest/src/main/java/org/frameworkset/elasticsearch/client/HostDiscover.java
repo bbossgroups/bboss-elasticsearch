@@ -64,7 +64,7 @@ public class HostDiscover extends Thread{
 		//处理新增节点
 		if(newAddress.size() > 0) {
 			if (logger.isInfoEnabled()) {
-				logger.info(new StringBuilder().append("Discovery new elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] server[").append(newAddress).append("].").toString());
+				logger.info(new StringBuilder().append("Discovery new elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] node [").append(newAddress).append("].").toString());
 			}
 			elasticSearchRestClient.addAddresses(newAddress);
 		}
@@ -95,7 +95,7 @@ public class HostDiscover extends Thread{
 
 			} catch (Exception e) {
 				if (logger.isInfoEnabled())
-					logger.info(new StringBuilder().append("Discovery elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] server failed:").toString(),e);
+					logger.info(new StringBuilder().append("Discovery elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] node failed:").toString(),e);
 			}
 			try {
 				sleep(discoverInterval);

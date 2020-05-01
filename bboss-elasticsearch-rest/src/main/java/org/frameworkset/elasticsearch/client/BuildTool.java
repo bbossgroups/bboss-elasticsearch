@@ -28,6 +28,7 @@ import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.util.ClassUtil;
 import org.frameworkset.util.DataFormatUtil;
+import org.frameworkset.util.annotations.DateFormateMeta;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -477,6 +478,93 @@ public abstract class BuildTool {
 		}
 		return null;
 	}
+	public static String findByFieldValueDsl(String fieldName,Object fieldValue){
+		StringBuilder builder = new StringBuilder();
+		 builder.append("{ \"size\":").append(1).append(",\"query\": {\"bool\": {\"filter\":[{\"term\":{\"")
+				.append(fieldName).append("\":");
+
+
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+		if(fieldValue instanceof String) {
+			builder.append("\"");
+			charEscapeUtil.writeString((String) fieldValue, true);
+			builder.append("\"");
+		}
+		else if(fieldValue instanceof Date){
+			DateFormateMeta dateFormateMeta = SerialUtil.getDateFormateMeta();
+			DateFormat format = dateFormateMeta.toDateFormat();
+			builder.append("\"");
+			builder.append(format.format((Date)fieldValue));
+			builder.append("\"");
+		}
+		else{
+			builder.append(String.valueOf(fieldValue));
+		}
+		builder.append("}}]}}}");
+		return builder.toString();
+	}
+
+
+
+	public static String matchByFieldValueDsl(String fieldName,Object fieldValue){
+		StringBuilder builder = new StringBuilder();
+		builder.append("{ \"size\":").append(1).append(",\"query\": {\"match\": {\"")
+				.append(fieldName).append("\":");
+
+
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+
+			builder.append("\"");
+			charEscapeUtil.writeString(String.valueOf( fieldValue), true);
+			builder.append("\"");
+		 builder.append("}}}");
+
+		return builder.toString();
+	}
+
+	public static String findByFieldValueDsl(String fieldName,Object fieldValue,int from,int size){
+		StringBuilder builder = new StringBuilder();
+		builder.append("{ \"from\":").append(from).append(",\"size\":").append(size).append(",\"query\": {\"bool\": {\"filter\":[{\"term\":{\"")
+				.append(fieldName).append("\":");
+
+
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+		if(fieldValue instanceof String) {
+			builder.append("\"");
+			charEscapeUtil.writeString((String) fieldValue, true);
+			builder.append("\"");
+		}
+		else if(fieldValue instanceof Date){
+			DateFormateMeta dateFormateMeta = SerialUtil.getDateFormateMeta();
+			DateFormat format = dateFormateMeta.toDateFormat();
+			builder.append("\"");
+			builder.append(format.format((Date)fieldValue));
+			builder.append("\"");
+		}
+		else{
+			builder.append(String.valueOf(fieldValue));
+		}
+		builder.append("}}]}}}");
+		return builder.toString();
+	}
+
+
+
+	public static String matchByFieldValueDsl(String fieldName,Object fieldValue,int from,int size){
+		StringBuilder builder = new StringBuilder();
+		builder.append("{ \"from\":").append(from).append(",\"size\":").append(size).append(",\"query\": {\"match\": {\"")
+				.append(fieldName).append("\":");
+
+
+		CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+
+		builder.append("\"");
+		charEscapeUtil.writeString(String.valueOf( fieldValue), true);
+		builder.append("\"");
+		builder.append("}}}");
+
+		return builder.toString();
+	}
 	public static ESIndice buildESIndice(String line, SimpleDateFormat format,
 										 List<IndiceHeader> indiceHeaderList)
 	{
@@ -564,6 +652,32 @@ public abstract class BuildTool {
 		return builder.toString();
 	}
 
+	public static String buildSearchDocumentRequest(String indexName, String indexType,Map<String,Object> options){
+
+		StringBuilder builder = new StringBuilder();
+//		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
+		builder.append("/").append(indexName);
+		if(indexType != null)
+			builder.append("/").append(indexType);
+		builder.append("/_search");
+		if(options != null && options.size() > 0){
+			builder.append("?");
+			Iterator<Map.Entry<String, Object>> iterable = options.entrySet().iterator();
+			boolean first = true;
+			while(iterable.hasNext()){
+				Map.Entry<String, Object> entry = iterable.next();
+				if(first) {
+					builder.append(entry.getKey()).append("=").append(entry.getValue());
+					first = false;
+				}
+				else
+				{
+					builder.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+				}
+			}
+		}
+		return builder.toString();
+	}
 	public static void buildId(Object id,StringBuilder builder,boolean escape){
 		if (id instanceof String) {
 			if(!escape) {
