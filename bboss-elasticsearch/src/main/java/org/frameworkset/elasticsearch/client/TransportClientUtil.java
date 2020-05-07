@@ -539,6 +539,67 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getDocumentByField(String indexName, String fieldName, Object value) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocumentByField(String indexName, String fieldName, Object value, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentByField(String indexName, String fieldName, Object value, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentByField(String indexName, String fieldName, Object value, Class<T> type, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentByFieldLike(String indexName, String fieldName, Object value, Class<T> type) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> T getDocumentByFieldLike(String indexName, String fieldName, Object value, Class<T> type, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchListByField(String indexName, String fieldName, Object value, Class<T> type, int from, int size) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchListByField(String indexName, String fieldName, Object value, Class<T> type, int from, int size, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName, Object value, Class<T> type, int from, int size) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName, Object value, Class<T> type, int from, int size, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocumentByFieldLike(String indexName, String fieldName, Object value) throws ElasticSearchException {
+		return null;
+	}
+
+	@Override
+	public String getDocumentByFieldLike(String indexName, String fieldName, Object value, Map<String, Object> options) throws ElasticSearchException {
+		return null;
+	}
+
 	@Override
 	public String getDocument(String indexName, String indexType, String documentId, Map<String, Object> options)
 			throws ElasticSearchException {
