@@ -94,7 +94,7 @@ public class BBossESStarter  extends BaseESProperties{
 				db.getUsePool() != null?Boolean.parseBoolean(db.getUsePool()):true,
 				false,
 				null, db.getShowSql()!= null?Boolean.parseBoolean(db.getShowSql()):true, false,
-				db.getJdbcFetchSize() != null?Integer.parseInt(db.getInitSize()):0,
+				db.getJdbcFetchSize() != null?Integer.parseInt(db.getJdbcFetchSize()):0,
 				db.getDbtype(),db.getDbAdaptor()
 		);
 	}
