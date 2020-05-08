@@ -14,7 +14,7 @@ public class IndexField implements Serializable {
 
 	private String analyzer;
 	private String 		normalizer;
-	private Integer 		boost;
+	private Object 		boost;
 	private Boolean 		coerce;
 	private String 		copyTo;
 	private Boolean 		docValues;
@@ -59,11 +59,11 @@ public class IndexField implements Serializable {
 		this.normalizer = normalizer;
 	}
 
-	public Integer getBoost() {
+	public Object getBoost() {
 		return boost;
 	}
 
-	public void setBoost(Integer boost) {
+	public void setBoost(Object boost) {
 		this.boost = boost;
 	}
 

@@ -2390,7 +2390,7 @@ public abstract class BuildTool {
 		indexField.setIgnoreAbove(ResultUtil.intValue(fieldInfo.get("ignore_above"),null));
 		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
 		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
-		indexField.setBoost((Integer)fieldInfo.get("boost"));
+		indexField.setBoost(fieldInfo.get("boost"));
 		indexField.setCoerce(parseBoolean( fieldInfo.get("coerce")));
 		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
 		indexField.setDocValues(parseBoolean(fieldInfo.get("doc_values")));//setCoerce();
