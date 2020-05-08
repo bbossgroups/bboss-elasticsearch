@@ -9,7 +9,7 @@ import java.util.Map;
 public class IndexField implements Serializable {
 	private String type;
 	private String fieldName;
-	private Integer ignoreAbove;
+	private Object ignoreAbove;
 	private String format;
 
 	private String analyzer;
@@ -28,7 +28,7 @@ public class IndexField implements Serializable {
 	private Map<String,Object> fields;
 	private Boolean 		norms;
 	private Object 		nullValue;
-	private Integer 		positionIncrementGap;
+	private Object 		positionIncrementGap;
 	private String 		searchAnalyzer;
 	private String 		similarity;
 	private Boolean 		store;
@@ -171,11 +171,11 @@ public class IndexField implements Serializable {
 		this.nullValue = nullValue;
 	}
 
-	public Integer getPositionIncrementGap() {
+	public Object getPositionIncrementGap() {
 		return positionIncrementGap;
 	}
 
-	public void setPositionIncrementGap(Integer positionIncrementGap) {
+	public void setPositionIncrementGap(Object positionIncrementGap) {
 		this.positionIncrementGap = positionIncrementGap;
 	}
 
@@ -228,11 +228,11 @@ public class IndexField implements Serializable {
 		this.properties = properties;
 	}
 
-	public Integer getIgnoreAbove() {
+	public Object getIgnoreAbove() {
 		return ignoreAbove;
 	}
 
-	public void setIgnoreAbove(Integer ignoreAbove) {
+	public void setIgnoreAbove(Object ignoreAbove) {
 		this.ignoreAbove = ignoreAbove;
 	}
 

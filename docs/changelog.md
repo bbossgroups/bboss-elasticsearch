@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.1</version>
         </dependency>
 ```
 
@@ -44,10 +44,144 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.1</version>
         </dependency>
 ```
+# v6.1.1 功能改进
+1. 修复bug：关闭indice后，获取索引状态方法不能正常工作：
+```java
+        List<ESIndice> indices = clientInterface.getIndexes();
+```
+   
+2. 修复bug：获取indexField字段信息时boost属性类型转换异常
+3. 修复bug: 修复非DB-ES数据同步时设置增量字段名称不起作用bug
+4. 修复bug：修复spring boot数据源初始化bug
+5. 功能扩展：支持将数据同步到多个目标elasticsearch集群,使用方法：    
+```java
+        importBuilder.setTargetElasticsearch("default,test");
+```
+6. 功能扩展：增加一组便捷查询工具方法，使用示例：
+```java
+        @Test
+        
+        	/**
+        	 * 根据属性获取文档json报文
+        	 * @param indexName
+        	 * @param fieldName
+        	 * @param blackcatdemo2
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	public void getDocumentByField() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		String document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2");
+        	}
+        	@Test
+        	public void getDocumentByField1() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		String document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",options);
+        	}
+        
+        	/**
+        	 * 根据属性获取文档json报文
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	@Test
+        	public void getDocumentByFieldLike3() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		String document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2");
+        	}
+        
+        	@Test
+        	public void getDocumentByFieldLike1(){
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		String document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",options);
+        	}
+        	@Test
+        	public void getDocumentByField2() throws ElasticSearchException{
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",Map.class);
+        	}
+        	/**
+        	 * 根据属性获取type类型文档对象
+        
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	@Test
+        	public void getDocumentByField3() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		Map document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",Map.class,options);
+        	}
+        
+        	@Test
+        	public void getDocumentByFieldLike() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,null);
+        	}
+        
+        	/**
+        	 * 根据属性获取type类型文档对象
+        
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	@Test
+        	public void getDocumentByFieldLike2() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		Map document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,null);
+        	}
+        
+        
+        
+        
+        	@Test
+        	public void searchListByField() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		ESDatas<Map> documents = clientInterface.searchListByField("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10);
+        	}
+        
+        	/**
+        	 * 根据属性获取type类型文档对象
+        
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	@Test
+        	public void searchListByField1() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		ESDatas<Map> documents = clientInterface.searchListByField("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10,options);
+        	}
+        
+        
+        	@Test
+        	public void searchListByFieldLike1() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		ESDatas<Map> documents = clientInterface.searchListByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10);
+        	}
+        
+        	/**
+        	 * 根据属性获取type类型文档对象
+        
+        	 * @return
+        	 * @throws ElasticSearchException
+        	 */
+        	@Test
+        	public void searchListByFieldLike() {
+        		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+        		Map<String,Object> options = new HashMap<String, Object>();
+        		ESDatas<Map> documents = clientInterface.searchListByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10,options);
+        	}
+        
 
+```
+        
 # v6.1.0 功能改进
 1. 数据同步工具改进
 
@@ -79,7 +213,7 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.7.0</version>
+      <version>5.7.1</version>
      
     </dependency>
 ```
