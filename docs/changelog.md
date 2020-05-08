@@ -52,7 +52,7 @@ https://esdoc.bbossgroups.com/#/development
 ```java
         List<ESIndice> indices = clientInterface.getIndexes();
 ```
-   
+
 2. 修复bug：获取indexField字段信息时boost属性类型转换异常
 3. 修复bug: 修复非DB-ES数据同步时设置增量字段名称不起作用bug
 4. 修复bug：修复spring boot数据源初始化bug
@@ -61,7 +61,9 @@ https://esdoc.bbossgroups.com/#/development
         importBuilder.setTargetElasticsearch("default,test");
 ```
 6. 功能扩展：增加一组便捷查询工具方法，使用示例：
+
 ```java
+
         @Test
         
         	/**
@@ -181,12 +183,12 @@ https://esdoc.bbossgroups.com/#/development
         
 
 ```
-        
+
 # v6.1.0 功能改进
 1. 数据同步工具改进
 
   如果在程序里面配置的增量字段类型发生改变，要把增量状态表对应的类型调整为最新的字段类型
-  
+
   设置了类型后，就按照类型来，不再按照设置的日期和数字字段名称来区分：
     
   增加setLastValueColumn方法，废弃setDateLastValueColumn和setNumberLastValueColumn两个方法
