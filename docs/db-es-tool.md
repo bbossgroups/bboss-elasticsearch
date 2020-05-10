@@ -1257,6 +1257,20 @@ final Random random = new Random();
 也可以先将需要增删改的数据推送到kafka，同步工具从kafka接收增删改数据，再进行相应的处理：
 ![](images\kafka-elasticsearch-crud.png)
 
+### 2.3.20 同步数据到多个ES集群
+
+bboss可以非常方便地将数据同步到多个ES集群，本小节介绍使用方法。
+
+importBuilder组件指定多ES集群的方法如下：
+
+```java
+importBuilder.setTargetElasticsearch("default,test");
+```
+
+多个集群数据源名称用逗号分隔，多ES集群数据源配置参考文档：
+
+[5.2 多elasticsearch服务器集群支持](https://esdoc.bbossgroups.com/#/development?id=_52-多elasticsearch服务器集群支持)
+
 ## 2.4.DB-ES数据同步工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。

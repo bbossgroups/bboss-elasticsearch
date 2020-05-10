@@ -60,7 +60,19 @@ https://esdoc.bbossgroups.com/#/development
 ```java
         importBuilder.setTargetElasticsearch("default,test");
 ```
-6. 功能扩展：增加一组便捷查询工具方法，使用示例：
+6. 功能扩展：数据同步工具[增加指定外部定义状态数据库配置功能](https://github.com/bbossgroups/bboss-elastic-tran/commit/a9266c2e3581278fd21dfee07678de96569b1398)，使用方法：
+
+   ```java
+   importBuilder.setStatusDbname("secondds");
+   ```
+
+   案例地址：
+
+   [Db2DBdemoWithStatusConfigDB.java](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoWithStatusConfigDB.java)
+
+   https://github.com/bbossgroups/db-db-job/blob/master/src/main/resources/application.properties
+
+7. 功能扩展：增加一组便捷查询工具方法，使用示例：
 
 ```java
 
