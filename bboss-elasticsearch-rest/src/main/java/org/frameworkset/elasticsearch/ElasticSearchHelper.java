@@ -357,6 +357,29 @@ public class ElasticSearchHelper {
 		}
 	}
 
+	public static void stopElasticsearch(String esname){
+		ElasticSearch elasticSearch = getElasticSearchSinkOnly(esname);
+		if(elasticSearch != null) {
+			elasticSearch.stop();
+			if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
+
+				 elasticSearchSink = null;
+				elasticSearchMap.remove("default");
+			}
+			else {
+				elasticSearchMap.remove(esname);
+			}
+		}
+	}
+	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch){
+		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
+
+			return elasticSearchSink;
+		}
+		ElasticSearch elasticSearchSink = elasticSearchMap.get(elasticSearch);
+
+		return elasticSearchSink;
+	}
 	/**
 	 * 获取elasticSearch对应的elasticSearch服务器对象
 	 * @param elasticSearch
