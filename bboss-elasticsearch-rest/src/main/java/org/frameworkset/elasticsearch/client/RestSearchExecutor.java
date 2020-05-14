@@ -36,24 +36,24 @@ import java.util.Map;
  */
 public class RestSearchExecutor {
 	private static final Logger logger = LoggerFactory.getLogger(RestSearchExecutor.class);
-	private Map<String, String> headers;
+//	private Map<String, String> headers;
 	private String httpPool;
 	private ElasticSearchClient elasticSearchClient;
-	public RestSearchExecutor(Map<String, String> headers,String httpPool,ElasticSearchClient elasticSearchClient){
-		this.headers = headers;
+	public RestSearchExecutor(String httpPool,ElasticSearchClient elasticSearchClient){
+//		this.headers = headers;
 		this.httpPool = httpPool;
 		this.elasticSearchClient = elasticSearchClient;
 	}
 	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 		if(slowDslThreshold == null) {
-			String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+			String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 			return response;
 		}
 		else{
 			long start = System.currentTimeMillis();
 			try {
-				String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+				String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 				return response;
 			}
 			finally {
@@ -92,13 +92,13 @@ public class RestSearchExecutor {
 //		return _executeHttp(  url,   entity,  action, responseHandler);
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 		if(slowDslThreshold == null) {
-			return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+			return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 		}
 
 		else{
 			long start = System.currentTimeMillis();
 			try {
-				return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 			}
 			finally {
 				long end = System.currentTimeMillis();
@@ -137,13 +137,13 @@ public class RestSearchExecutor {
 	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 		if(slowDslThreshold == null) {
-			return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+			return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 		}
 
 		else{
 			long start = System.currentTimeMillis();
 			try {
-				return RestSearchExecutorUtil.__executeHttp(    httpPool,  headers,  url,   entity,  action,  responseHandler);
+				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 			}
 			finally {
 				long end = System.currentTimeMillis();
@@ -185,9 +185,9 @@ public class RestSearchExecutor {
 		if(slowDslThreshold == null) {
 			String response = null;
 			if (entity == null) {
-				response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
 			} else {
-				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 			}
 
 			return response;
@@ -197,9 +197,9 @@ public class RestSearchExecutor {
 			try {
 				String response = null;
 				if (entity == null) {
-					response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+					response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
 				} else {
-					response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+					response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 				}
 
 				return response;
@@ -237,13 +237,13 @@ public class RestSearchExecutor {
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 		if(slowDslThreshold == null) {
 
-			return RestSearchExecutorUtil._executeRequest(httpPool,headers,url, entity,action, responseHandler);
+			return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
 		}
 
 		else{
 			long start = System.currentTimeMillis();
 			try {
-				return RestSearchExecutorUtil._executeRequest(httpPool,headers,url, entity,action, responseHandler);
+				return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
 			}
 			finally {
 				long end = System.currentTimeMillis();

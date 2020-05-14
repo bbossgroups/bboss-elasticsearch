@@ -32,7 +32,7 @@ public class ElasticSearchSinkConstants {
    */
   public static final String REST_HOSTNAMES = "elasticsearch.rest.hostNames";
   public static final String TRANSPORT_HOSTNAMES = "elasticsearch.transport.hostNames";
-  public static final String healthCheckHttpPool = "HealthCheck_esHttpPool";
+//  public static final String healthCheckHttpPool = "HealthCheck_esHttpPool";
   public static final ElasticSearchMapResponseHandler elasticSearchMapResponseHandler = new ElasticSearchMapResponseHandler();
   /**
    * The name to index the document to, defaults to 'flume'</p>

@@ -283,7 +283,7 @@ public class ElasticSearchHelper {
 			throw e;
 		}
 	}
-	private static String _getStringValue(String poolName,String propertyName,GetProperties context,String defaultValue){
+	public static String _getStringValue(String poolName,String propertyName,GetProperties context,String defaultValue){
 		String _value = null;
 		if(poolName.equals("default")){
 			_value = (String)context.getExternalProperty(propertyName);
@@ -364,7 +364,7 @@ public class ElasticSearchHelper {
 			if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
 
 				 elasticSearchSink = null;
-				elasticSearchMap.remove("default");
+				 elasticSearchMap.remove(DEFAULT_SEARCH);
 			}
 			else {
 				elasticSearchMap.remove(esname);

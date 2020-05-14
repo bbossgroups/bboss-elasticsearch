@@ -434,6 +434,12 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				restClient.configure(elasticsearchPropes);
 				restClient.init();
 				logger.info("ElasticSearch rest client started.");
+				BaseApplicationContext.addShutdownHook(new Runnable() {
+					@Override
+					public void run() {
+						stop();
+					}
+				});
 			}
 		} catch (Exception ex) {
 			logger.error("ElasticSearch Rest Client started failed", ex);

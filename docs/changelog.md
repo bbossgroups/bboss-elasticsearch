@@ -79,7 +79,7 @@ https://esdoc.bbossgroups.com/#/development
         @Test
         
         	/**
-        	 * 根据属性获取文档json报文
+        	 * 根据属性精确查找获取文档json报文
         	 * @param indexName
         	 * @param fieldName
         	 * @param blackcatdemo2
@@ -90,6 +90,9 @@ https://esdoc.bbossgroups.com/#/development
         		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
         		String document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2");
         	}
+			/**
+        	 * 根据属性精确查找获取文档json报文,通过options参数传递Elasticsearch查询控制参数
+        	 */
         	@Test
         	public void getDocumentByField1() {
         		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
@@ -98,7 +101,7 @@ https://esdoc.bbossgroups.com/#/development
         	}
         
         	/**
-        	 * 根据属性获取文档json报文
+        	 * 根据属性全文检索获取文档json报文
         	 * @return
         	 * @throws ElasticSearchException
         	 */
@@ -107,7 +110,9 @@ https://esdoc.bbossgroups.com/#/development
         		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
         		String document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2");
         	}
-        
+			/**
+        	 * 根据属性全文检索获取文档json报文,通过options参数传递Elasticsearch查询控制参数
+        	 */        
         	@Test
         	public void getDocumentByFieldLike1(){
         		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();

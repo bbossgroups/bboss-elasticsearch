@@ -302,6 +302,16 @@ public abstract class BaseESProperties {
 		private String supportedProtocols;
 		private String truststore;
 		private String trustPassword;
+
+		public String getHttpClientBuilderCallback() {
+			return httpClientBuilderCallback;
+		}
+
+		public void setHttpClientBuilderCallback(String httpClientBuilderCallback) {
+			this.httpClientBuilderCallback = httpClientBuilderCallback;
+		}
+
+		private String httpClientBuilderCallback;
 		/**
 		 * 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
 		 * validateAfterInactivity来控制连接是否有效
@@ -849,6 +859,16 @@ public abstract class BaseESProperties {
 		if(this.getHttp() != null){
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTimeoutConnection()))
 				properties.put(_name+"http.timeoutConnection",this.getHttp().getTimeoutConnection());
+			if(SimpleStringUtil.isNotEmpty(this.elasticUser)){
+				properties.put(_name+"http.authAccount",this.elasticUser);
+
+			}
+
+//		##default集群配配置
+			if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
+
+				properties.put(_name+"http.authPassword",this.elasticPassword);
+			}
 
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTimeoutSocket()))
 				properties.put(_name+"http.timeoutSocket",this.getHttp().getTimeoutSocket());
@@ -908,6 +928,8 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.truststore",this.getHttp().getTruststore());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTrustPassword()))
 				properties.put(_name+"http.trustPassword",this.getHttp().getTrustPassword());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpClientBuilderCallback()))
+				properties.put(name + "http.httpClientBuilderCallback",this.getHttp().getHttpClientBuilderCallback());
 		}
 
 		if(dslfile != null){
@@ -918,25 +940,7 @@ public abstract class BaseESProperties {
 
 		}
 
-		/**
-		//# 演示数据库数据导入elasticsearch源配置
-		if(this.getDb() != null){
-			if(SimpleStringUtil.isNotEmpty(this.db.getName()))
-				properties.put("db.name",this.db.getName());
-			if(SimpleStringUtil.isNotEmpty(this.db.getUser()))
-				properties.put("db.user",this.db.getUser());
-			if(SimpleStringUtil.isNotEmpty(this.db.getPassword()))
-				properties.put("db.password",this.db.getPassword());
-			if(SimpleStringUtil.isNotEmpty(this.db.getDriver()))
-				properties.put("db.driver",this.db.getDriver());
-			if(SimpleStringUtil.isNotEmpty(this.db.getUrl()))
-				properties.put("db.url",this.db.getUrl());
-			if(SimpleStringUtil.isNotEmpty(this.db.getUsePool()))
-				properties.put("db.usePool",this.db.getUsePool());
-			if(SimpleStringUtil.isNotEmpty(this.db.getValidateSQL()))
-				properties.put("db.validateSQL",this.db.getValidateSQL());
-		}
-		 */
+
 		if(this.ip != null){
 			if(SimpleStringUtil.isNotEmpty(this.ip.getDatabase()))
 				properties.put("ip.database",this.ip.getDatabase());
