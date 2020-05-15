@@ -47,6 +47,7 @@ Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md)
+- aws elasticsearch集成： [aws-elasticsearch-config](aws-elasticsearch-config.md) 
 
 
 

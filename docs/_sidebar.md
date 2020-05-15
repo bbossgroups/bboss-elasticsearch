@@ -12,6 +12,8 @@
 
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md) 
 
+  - [集成aws-elasticsearch](aws-elasticsearch-config.md)
+
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 
   - [Elasticsearch bboss Performance](performance.md) 

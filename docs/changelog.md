@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.2 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.1</version>
+            <version>6.1.2</version>
         </dependency>
 ```
 
@@ -44,10 +44,29 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.1</version>
+            <version>6.1.2</version>
         </dependency>
 ```
+# v6.1.2 功能改进
+
+1. 功能扩展：增加停止elasticsearch数据源方法，使用示例：
+
+```java
+ElasticSearchHelper.stopElasticsearch("default");
+```
+
+2. 功能扩展：增加自定义httpclient机制，方便自定义httpclient，实现[Kerberos认证](https://github.com/bbossgroups/bboss-elasticsearch/issues/23)和与aws认证机制等功能，使用参考文档：[集成aws-elasticsearch](aws-elasticsearch-config.md)
+
+3. 功能改进：调整认证机制，不再支持conf/elasticsearch.xml配置方式的认证机制，因此在需要认证的场景，可以调整为以下方式配置bboss客户端：
+
+   直接在applciation.properties中配置elasticsearch相关参数
+
+   在spring boot配置文件中配置elasticsearch相关参数
+
+   [自定义初始化bboss es](Elasticsearch-bboss-custom-init.md)
+
 # v6.1.1 功能改进
+
 1. 修复bug：关闭indice后，获取索引状态方法不能正常工作：
 ```java
         List<ESIndice> indices = clientInterface.getIndexes();
