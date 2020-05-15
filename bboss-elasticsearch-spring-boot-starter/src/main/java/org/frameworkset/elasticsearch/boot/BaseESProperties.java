@@ -929,7 +929,7 @@ public abstract class BaseESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTrustPassword()))
 				properties.put(_name+"http.trustPassword",this.getHttp().getTrustPassword());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpClientBuilderCallback()))
-				properties.put(name + "http.httpClientBuilderCallback",this.getHttp().getHttpClientBuilderCallback());
+				properties.put(_name + "http.httpClientBuilderCallback",this.getHttp().getHttpClientBuilderCallback());
 		}
 
 		if(dslfile != null){
