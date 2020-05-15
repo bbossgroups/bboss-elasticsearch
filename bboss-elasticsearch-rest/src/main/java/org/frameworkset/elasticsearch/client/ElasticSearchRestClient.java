@@ -403,6 +403,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			hostDiscover.stopCheck();
 			hostDiscover = null;
 		}
+
 		if(healthCheck != null){
 			healthCheck.stopCheck();
 			healthCheck = null;
