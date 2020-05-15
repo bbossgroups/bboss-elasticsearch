@@ -357,7 +357,7 @@ public class ElasticSearchHelper {
 		}
 	}
 
-	public static void stopElasticsearch(String esname){
+	public static synchronized void stopElasticsearch(String esname){
 		ElasticSearch elasticSearch = getElasticSearchSinkOnly(esname);
 		if(elasticSearch != null) {
 			elasticSearch.stop();

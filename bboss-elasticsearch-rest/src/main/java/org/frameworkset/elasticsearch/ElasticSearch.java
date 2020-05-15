@@ -454,7 +454,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	}
 
 
-	public void stop() {
+	private boolean stoped = false;
+	public synchronized void stop() {
+		if(stoped )
+			return;
+		stoped = true;
 		logger.info("ElasticSearch client stopping");
 		if (restClient != null) {
 			restClient.close();
