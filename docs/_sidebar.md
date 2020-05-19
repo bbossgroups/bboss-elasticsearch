@@ -12,7 +12,7 @@
 
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md) 
 
-  - [集成aws-elasticsearch](aws-elasticsearch-config.md)
+  - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
 
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 

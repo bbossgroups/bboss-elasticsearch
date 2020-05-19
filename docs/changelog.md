@@ -59,11 +59,13 @@ ElasticSearchHelper.stopElasticsearch("default");
 
 3. 功能改进：调整认证机制，不再支持conf/elasticsearch.xml配置方式的认证机制，因此在需要认证的场景，可以调整为以下方式配置bboss客户端：
 
-   直接在applciation.properties中配置elasticsearch相关参数
+   [直接在applciation.properties中配置elasticsearch相关参数](common-project-with-bboss.md)
 
-   在spring boot配置文件中配置elasticsearch相关参数
+   [在spring boot配置文件中配置elasticsearch相关参数](spring-booter-with-bboss.md)
 
    [自定义初始化bboss es](Elasticsearch-bboss-custom-init.md)
+   
+4. 优化客户端Elasticsearch集群节点健康检查机制，优化httpclient连接池管理机制
 
 # v6.1.1 功能改进
 

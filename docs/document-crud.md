@@ -4,7 +4,32 @@
 
  
 
-本文介绍如何采用bboss es添加/修改/查询/删除/批量删除elasticsearch索引文档，直接看代码。
+本文介绍通过bboss实现Elasticsearch索引文档添加/修改/查询/删除/批量删除功能。
+# 准备工作
+
+bboss操作Elasticsearch都是通过ClientInterface接口，spring boot项目环境和非spring boot项目环境获取ClientInterface接口实例的方法不一样，分别介绍一下：
+spring boot环境：
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarter;//代码中注入加载spring boot配置的BBossESStarter
+    //通过bbossESStarter获取ClientInterface接口实例：Create a client tool to load configuration files, single instance multithreaded security
+    ClientInterface configClientUtil = bbossESStarter.getConfigRestClient(mappath);
+    //通过bbossESStarter获取ClientInterface接口实例：Build a create/modify/get/delete document client object, single instance multi-thread security
+    ClientInterface clientUtil = bbossESStarter.getRestClient();    
+```
+
+非spring boot环境：
+
+```java
+//创建加载配置文件的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
+//创建直接操作dsl的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
+```
+
+下面以非spring boot环境进行介绍。
+
 
 # 1. 添加文档
 
