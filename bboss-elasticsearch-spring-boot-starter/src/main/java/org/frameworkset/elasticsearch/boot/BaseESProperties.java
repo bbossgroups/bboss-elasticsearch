@@ -287,6 +287,7 @@ public abstract class BaseESProperties {
 		private String timeoutSocket;
 		private String connectionRequestTimeout;
 		private String automaticRetriesDisabled;
+		private String backoffAuth;
 		private String retryTime;
 		private String retryInterval;
 		private String maxLineLength;
@@ -305,6 +306,14 @@ public abstract class BaseESProperties {
 
 		public String getHttpClientBuilderCallback() {
 			return httpClientBuilderCallback;
+		}
+
+		public void setBackoffAuth(String backoffAuth) {
+			this.backoffAuth = backoffAuth;
+		}
+
+		public String getBackoffAuth() {
+			return backoffAuth;
 		}
 
 		public void setHttpClientBuilderCallback(String httpClientBuilderCallback) {
@@ -876,6 +885,8 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.connectionRequestTimeout",this.getHttp().getConnectionRequestTimeout());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getAutomaticRetriesDisabled()))
 				properties.put(_name+"http.automaticRetriesDisabled",this.getHttp().getAutomaticRetriesDisabled());
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getBackoffAuth()))
+				properties.put(_name+"http.backoffAuth",this.getHttp().getBackoffAuth());
 
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryTime()))
 				properties.put(_name+"http.retryTime",this.getHttp().getRetryTime());
