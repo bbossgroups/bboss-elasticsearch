@@ -222,54 +222,56 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 	private void initVersionInfo(){
-		this.getElasticSearch().getRestClientUtil().discover("/",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
+		try {
+			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
-			@Override
-			public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-				int status = response.getStatusLine().getStatusCode();
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
-					if(logger.isInfoEnabled())
-					{
-						logger.info("Elasticsearch Server Info:\n"+clusterVarcharInfo);
-					}
-					clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
-					Object version = clusterInfo.get("version");
-					if(version instanceof Map) {
-						esVersion = String.valueOf(((Map) version).get("number"));
-						if(esVersion != null){
-							if(esVersion.startsWith("1.")){
-								v1 = true;
-							}
-							int idx = esVersion.indexOf(".");
-							if(idx > 0){
-								String max = esVersion.substring(0,idx);
-								try {
-									int v = Integer.parseInt(max);
-									if (v >= 7){
-										upper7 = true;
-									}
-									if(v < 5){
-										lower5 = true;
-									}
-								}
-								catch (Exception e){
-
-								}
-							}
+				@Override
+				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
+						if (logger.isInfoEnabled()) {
+							logger.info("Elasticsearch Server Info:\n" + clusterVarcharInfo);
 						}
-						clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
-					}
-					else{
-						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + version;
-					}
-				} else {
+						clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
+						Object version = clusterInfo.get("version");
+						if (version instanceof Map) {
+							esVersion = String.valueOf(((Map) version).get("number"));
+							if (esVersion != null) {
+								if (esVersion.startsWith("1.")) {
+									v1 = true;
+								}
+								int idx = esVersion.indexOf(".");
+								if (idx > 0) {
+									String max = esVersion.substring(0, idx);
+									try {
+										int v = Integer.parseInt(max);
+										if (v >= 7) {
+											upper7 = true;
+										}
+										if (v < 5) {
+											lower5 = true;
+										}
+									} catch (Exception e) {
 
+									}
+								}
+							}
+							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
+						} else {
+							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + version;
+						}
+					} else {
+
+					}
+					return null;
 				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (Exception e){
+			logger.warn("Init Elasticsearch Cluster Version Information failed:",e);
+		}
 	}
 	public void init() {
 		//Authorization

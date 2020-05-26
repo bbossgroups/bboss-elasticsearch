@@ -288,6 +288,7 @@ public abstract class BaseESProperties {
 		private String connectionRequestTimeout;
 		private String automaticRetriesDisabled;
 		private String backoffAuth;
+		private String encodedAuthCharset;
 		private String retryTime;
 		private String retryInterval;
 		private String maxLineLength;
@@ -303,6 +304,14 @@ public abstract class BaseESProperties {
 		private String supportedProtocols;
 		private String truststore;
 		private String trustPassword;
+
+		public void setEncodedAuthCharset(String encodedAuthCharset) {
+			this.encodedAuthCharset = encodedAuthCharset;
+		}
+
+		public String getEncodedAuthCharset() {
+			return encodedAuthCharset;
+		}
 
 		public String getHttpClientBuilderCallback() {
 			return httpClientBuilderCallback;
@@ -888,6 +897,8 @@ public abstract class BaseESProperties {
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getBackoffAuth()))
 				properties.put(_name+"http.backoffAuth",this.getHttp().getBackoffAuth());
 
+			if(SimpleStringUtil.isNotEmpty(this.getHttp().getEncodedAuthCharset()))
+				properties.put(_name+"http.encodedAuthCharset",this.getHttp().getEncodedAuthCharset());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryTime()))
 				properties.put(_name+"http.retryTime",this.getHttp().getRetryTime());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryInterval()))

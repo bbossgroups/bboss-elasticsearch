@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.2 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.3 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.2</version>
+            <version>6.1.3</version>
         </dependency>
 ```
 
@@ -44,9 +44,21 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.2</version>
+            <version>6.1.3</version>
         </dependency>
 ```
+
+# v6.1.3 功能改进
+1. 添加http.backoffAuth属性：
+    向后兼容的basic安全签名机制，v6.1.2以及之后的版本默认采用http组件内置的basic签名认证机制，但是有些http服务端对安全认证
+   的实现不是很规范，会导致http basic security机制不能正常工作，因此通过设置http.backoffAuth兼容老版本安全认证方式
+   true:向老版本兼容，false（默认值）：不向老版本兼容
+   http.backoffAuth=true
+
+2. 添加http.encodedAuthCharset属性，用于指定basic认证编码账号和口令的字符集，默认为：US-ASCII
+
+3. 修复bug: v6.1.2版本引入的问题，在Elasticsearch没有启动的情况下，运行es客户端应用，因获取版本信息失败，es数据源健康检查进程不能正常初始化启动，导致es启动后，无法将正常连接elasticsearch    
+
 # v6.1.2 功能改进
 
 1. 功能扩展：增加停止elasticsearch数据源方法，使用示例：
