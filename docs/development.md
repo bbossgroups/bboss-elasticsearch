@@ -2615,7 +2615,19 @@ public void testObjectSQLQueryFromDSL(){
 
 ### **5.3.11** 文本块脚本配置语法用法
 
-在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，bboss提供了以下语法了对这些值进行处理：
+在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，elasticsearch官方dsl语法""" """来包含多行脚本，例如
+
+```json
+	       {
+              "last": """
+              asdfasdfasdf
+                asdfasdfasdfasdfasdf
+              """,
+              "nick": "test"
+            }
+```
+
+bboss提供了dsl 语法了对多行值进行处理，最终会转换为elasticsearch官方dsl语法：
 
 ```json
 @"""

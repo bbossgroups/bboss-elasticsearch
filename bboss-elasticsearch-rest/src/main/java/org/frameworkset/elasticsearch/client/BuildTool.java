@@ -1555,7 +1555,7 @@ public abstract class BuildTool {
 			else{
 				if (esIndexWrapper == null ) {
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
+							.append(beanInfo != null ?beanInfo.toString():"").append(" which must be set below  elasticsearch 7x  when type or indice name not setted.").toString());
 				}
 				indexType = buildIndiceType(esIndexWrapper,restGetVariableValue);
 				if(indexType != null && !indexType.equals("")) {
@@ -1563,7 +1563,7 @@ public abstract class BuildTool {
 				}
 				else{
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set index type in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
+							.append(beanInfo != null ?beanInfo.toString():"").append(" which must be set below  elasticsearch 7x when type or indice name not setted.").toString());
 				}
 //				buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
 			}

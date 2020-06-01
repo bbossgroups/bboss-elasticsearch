@@ -3482,7 +3482,7 @@ public class RestClientUtil extends ClientUtil{
 	  */
 	 public String updateIndiceMapping(String action,String indexMapping)  throws ElasticSearchException {
 	 	try {
-			return this.client.executeHttp(action, indexMapping, ClientUtil.HTTP_POST);
+			return this.client.executeHttp(action, indexMapping, ClientUtil.HTTP_PUT);
 		}
 		catch(ElasticSearchException e){
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateIndiceMapping);
