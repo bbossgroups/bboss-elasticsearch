@@ -47,6 +47,8 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.1.3</version>
         </dependency>
 ```
+# v6.1.3 功能改进
+1. 改进节点发现机制和健康检查机制：为节点发现机制和健康检查机制分配独立的http连接池，与正式的连接池隔离，避免相互影响
 
 # v6.1.3 功能改进
 1. 添加http.backoffAuth属性：

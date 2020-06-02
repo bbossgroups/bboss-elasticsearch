@@ -273,14 +273,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			logger.warn("Init Elasticsearch Cluster Version Information failed:",e);
 		}
 	}
+	private String healthPool;
+	private String discoverPool;
+
+	public String getHealthPool() {
+		return healthPool;
+	}
+
 	public void init() {
 		//Authorization
 //		if (elasticUser != null && !elasticUser.equals(""))
 //			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
-		restSeachExecutor = new RestSearchExecutor(this.httpPool,this);
+		discoverPool = ClientConfiguration.getHealthPoolName(this.httpPool);
+		healthPool = discoverPool;
+		restSeachExecutor = new RestSearchExecutor(this.httpPool,discoverPool,this);
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
-			String healthPool = ClientConfiguration.getHealthPoolName(this.httpPool);
+
 			healthCheck = new HealthCheck(this.getElasticSearch().getElasticSearchName(),healthPool,addressList, healthCheckInterval);
 			healthCheck.run();
 		}
@@ -290,9 +299,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		initVersionInfo();
 		if(discoverHost) {
+
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
-			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),this);
+			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),discoverPool,this);
 
 			hostDiscover.start();
 			this.hostDiscover = hostDiscover;
@@ -1159,5 +1169,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	public void setEsVersion(String esVersion) {
 		this.esVersion = esVersion;
+	}
+
+	public String getDiscoverPool() {
+		return discoverPool;
 	}
 }

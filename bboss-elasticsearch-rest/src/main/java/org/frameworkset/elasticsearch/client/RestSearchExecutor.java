@@ -39,9 +39,11 @@ public class RestSearchExecutor {
 //	private Map<String, String> headers;
 	private String httpPool;
 	private ElasticSearchClient elasticSearchClient;
-	public RestSearchExecutor(String httpPool,ElasticSearchClient elasticSearchClient){
+	private String discoverHttpPool;
+	public RestSearchExecutor(String httpPool,String discoverHttpPool, ElasticSearchClient elasticSearchClient){
 //		this.headers = headers;
 		this.httpPool = httpPool;
+		this.discoverHttpPool = discoverHttpPool;
 		this.elasticSearchClient = elasticSearchClient;
 	}
 	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
@@ -137,13 +139,13 @@ public class RestSearchExecutor {
 	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 		if(slowDslThreshold == null) {
-			return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+			return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 		}
 
 		else{
 			long start = System.currentTimeMillis();
 			try {
-				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+				return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 			}
 			finally {
 				long end = System.currentTimeMillis();
