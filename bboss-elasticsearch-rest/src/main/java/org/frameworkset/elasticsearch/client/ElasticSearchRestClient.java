@@ -302,7 +302,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
-			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),discoverPool,this);
+			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),this);
 
 			hostDiscover.start();
 			this.hostDiscover = hostDiscover;
