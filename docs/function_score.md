@@ -66,13 +66,9 @@ function_score的作用就是综合各个函数的得分，因此注意两点：
 
 本文以一个商品检索作为案例来介绍function_score的具体用法。
 
-在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：resources/esmapper/function_score.xml
+在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：[resources/esmapper/function_score.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml)
 
-https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml
-
-Java测试类：com/bboss/hellword/FunctionScore/FunctionScoreTest
-
-https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FunctionScore/FunctionScoreTest.java
+Java测试类：[com/bboss/hellword/FunctionScore/FunctionScoreTest](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FunctionScore/FunctionScoreTest.java)
 
 ### 2.1.1 定义索引-商品索引mapping定义和配置
 

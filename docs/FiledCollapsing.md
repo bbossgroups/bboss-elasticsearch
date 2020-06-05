@@ -23,9 +23,9 @@ https://github.com/rookieygl/bboss-wiki
 
 本文以一个菜谱检索作为案例来介绍field_collapsing的具体用法。
 
-在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：resources/esmapper/field_collapsing.xml（Git地址：https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml）。
+在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：[resources/esmapper/field_collapsing.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml)
 
-而字段折叠的Java测试类则在com/bboss/hellword/FieldCollapsing/FieldCollapsingTest（Git地址:https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FieldCollapsing/FieldCollapsingTest.java）
+而字段折叠的Java测试类则在[com/bboss/hellword/FieldCollapsing/FieldCollapsingTest](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FieldCollapsing/FieldCollapsingTest.java)
 
 ### 2.1.1创建菜谱索引
 
