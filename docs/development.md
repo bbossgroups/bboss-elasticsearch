@@ -350,7 +350,13 @@ http.defaultMaxPerRoute = 200
 
 http.retryTime = 3
 
-自定义重试机制 
+##automaticRetriesDisabled开关
+
+http.automaticRetriesDisabled=false
+
+没有指定重试机制http.retryTime为0或-1的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
+
+##自定义重试机制 ，判断哪些场景下需要进行重试：
 
 ```properties
 #* 自定义重试控制接口，必须实现接口方法

@@ -1156,7 +1156,7 @@ Elasticsearch控制参数参考文档：
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
 ```java
-importBuilder.setExportResultHandler(new ExportResultHandler() {
+importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 			@Override
 			public void success(TaskCommand<String,String> taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
