@@ -12,6 +12,8 @@
 
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md) 
 
+  - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
+
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
 
   - [Elasticsearch bboss Performance](performance.md) 
@@ -65,6 +67,7 @@
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
   - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
+  - [同段同语句搜索](SpanQuery.md)
 - [Http负载均衡器使用介绍](httpproxy.md) 
   
 

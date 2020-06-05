@@ -260,7 +260,14 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			this.setApplicationContext((BaseApplicationContext)configContext);
 		if(logger.isInfoEnabled()) {
 			try {
+
 				logger.info("Start Elasticsearch Datasource[{}] from springboot[{}]:{}", this.getElasticSearchName(), this.isFromspringboot(), SimpleStringUtil.object2json(elasticsearchPropes));
+				if(!this.isFromspringboot()){
+					if(logger.isDebugEnabled()){
+						Exception exception = new Exception("Debug Elasticsearch Datasource["+this.getElasticSearchName()+"] start trace:if use spring boot and unload spring boot config right,please get the reason from question-answer document:https://esdoc.bbossgroups.com/#/question-answer ,if not ignore this message.");
+						logger.debug("",exception);
+					}
+				}
 			}
 			catch (Exception e){
 
@@ -427,6 +434,12 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				restClient.configure(elasticsearchPropes);
 				restClient.init();
 				logger.info("ElasticSearch rest client started.");
+				BaseApplicationContext.addShutdownHook(new Runnable() {
+					@Override
+					public void run() {
+						stop();
+					}
+				});
 			}
 		} catch (Exception ex) {
 			logger.error("ElasticSearch Rest Client started failed", ex);
@@ -441,7 +454,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	}
 
 
-	public void stop() {
+	private boolean stoped = false;
+	public synchronized void stop() {
+		if(stoped )
+			return;
+		stoped = true;
 		logger.info("ElasticSearch client stopping");
 		if (restClient != null) {
 			restClient.close();

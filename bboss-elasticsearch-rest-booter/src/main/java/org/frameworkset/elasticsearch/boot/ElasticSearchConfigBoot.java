@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.boot;/*
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
+import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 
@@ -44,12 +45,14 @@ public abstract class ElasticSearchConfigBoot {
 					return;
 			}
 			try {
-				BaseApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch-boot-config.xml",forceBoot);
+				final BaseApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch-boot-config.xml",forceBoot);
 				String _elasticsearchServerNames = context.getExternalProperty("elasticsearch.serverNames", "default");
 				String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
-				//初始化Http连接池
-				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, context);
 
+				//初始化Http连接池
+				GetProperties getProperties = new WrapperGetProperties(context);
+				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, getProperties );
+				ClientConfiguration.bootHealthCheckClientConfiguations(elasticsearchServerNames,getProperties);
 				//初始化ElasticSearchServer
 				ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot,false);
 			}
@@ -66,17 +69,17 @@ public abstract class ElasticSearchConfigBoot {
 		boot(  properties,false);
 	}
 	public static void boot(Map properties,boolean fromspringboot){
-
-
 		synchronized (ElasticSearchConfigBoot.class) {
-				PropertiesContainer propertiesContainer = new PropertiesContainer();
-				propertiesContainer.addAll(properties);
-				String _elasticsearchServerNames = propertiesContainer.getExternalProperty("elasticsearch.serverNames", "default");
-				String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
-				//初始化Http连接池
-				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, propertiesContainer);
-				//初始化ElasticSearchServer
-				ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
+			final PropertiesContainer propertiesContainer = new PropertiesContainer();
+			propertiesContainer.addAll(properties);
+			String _elasticsearchServerNames = propertiesContainer.getExternalProperty("elasticsearch.serverNames", "default");
+			String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
+			//初始化Http连接池
+			GetProperties getProperties = new WrapperGetProperties(propertiesContainer);
+			ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, getProperties);
+			ClientConfiguration.bootHealthCheckClientConfiguations(elasticsearchServerNames, getProperties);
+			//初始化ElasticSearchServer
+			ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
 		}
 
 

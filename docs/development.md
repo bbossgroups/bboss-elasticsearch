@@ -47,6 +47,7 @@ Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md)
+- aws elasticsearch集成： [aws-elasticsearch-config](aws-elasticsearch-config.md) 
 
 
 
@@ -250,7 +251,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -279,7 +280,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -349,7 +350,13 @@ http.defaultMaxPerRoute = 200
 
 http.retryTime = 3
 
-自定义重试机制 
+##automaticRetriesDisabled开关
+
+http.automaticRetriesDisabled=false
+
+没有指定重试机制http.retryTime为0或-1的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
+
+##自定义重试机制 ，判断哪些场景下需要进行重试：
 
 ```properties
 #* 自定义重试控制接口，必须实现接口方法
@@ -2614,7 +2621,19 @@ public void testObjectSQLQueryFromDSL(){
 
 ### **5.3.11** 文本块脚本配置语法用法
 
-在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，bboss提供了以下语法了对这些值进行处理：
+在一些脚本或者字段值中可能存在一个值占多行的场景，那么在dsl配置中，elasticsearch官方dsl语法""" """来包含多行脚本，例如
+
+```json
+	       {
+              "last": """
+              asdfasdfasdf
+                asdfasdfasdfasdfasdf
+              """,
+              "nick": "test"
+            }
+```
+
+bboss提供了dsl 语法了对多行值进行处理，最终会转换为elasticsearch官方dsl语法：
 
 ```json
 @"""

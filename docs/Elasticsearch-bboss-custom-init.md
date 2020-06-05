@@ -115,6 +115,12 @@ properties.put("es233.http.connectionRequestTimeout","70000");
 ElasticSearchBoot.boot(properties);
 ```
 
+# 3.停止elasticsearch数据源
+
+```java
+ElasticSearchHelper.stopElasticsearch("default");//指定要停止的数据源名称
+```
+
 # 开发交流
 
 

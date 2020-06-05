@@ -1555,7 +1555,7 @@ public abstract class BuildTool {
 			else{
 				if (esIndexWrapper == null ) {
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
+							.append(beanInfo != null ?beanInfo.toString():"").append(" which must be set below  elasticsearch 7x  when type or indice name not setted.").toString());
 				}
 				indexType = buildIndiceType(esIndexWrapper,restGetVariableValue);
 				if(indexType != null && !indexType.equals("")) {
@@ -1563,7 +1563,7 @@ public abstract class BuildTool {
 				}
 				else{
 					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set index type in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
+							.append(beanInfo != null ?beanInfo.toString():"").append(" which must be set below  elasticsearch 7x when type or indice name not setted.").toString());
 				}
 //				buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
 			}
@@ -2390,7 +2390,7 @@ public abstract class BuildTool {
 		indexField.setIgnoreAbove(ResultUtil.intValue(fieldInfo.get("ignore_above"),null));
 		indexField.setAnalyzer((String)fieldInfo.get("analyzer"));
 		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
-		indexField.setBoost((Integer)fieldInfo.get("boost"));
+		indexField.setBoost(fieldInfo.get("boost"));
 		indexField.setCoerce(parseBoolean( fieldInfo.get("coerce")));
 		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
 		indexField.setDocValues(parseBoolean(fieldInfo.get("doc_values")));//setCoerce();

@@ -4,7 +4,32 @@
 
  
 
-本文介绍如何采用bboss es添加/修改/查询/删除/批量删除elasticsearch索引文档，直接看代码。
+本文介绍通过bboss实现Elasticsearch索引文档添加/修改/查询/删除/批量删除功能。
+# 准备工作
+
+bboss操作Elasticsearch都是通过ClientInterface接口，spring boot项目环境和非spring boot项目环境获取ClientInterface接口实例的方法不一样，分别介绍一下：
+spring boot环境：
+
+```java
+    @Autowired
+    private BBossESStarter bbossESStarter;//代码中注入加载spring boot配置的BBossESStarter
+    //通过bbossESStarter获取ClientInterface接口实例：Create a client tool to load configuration files, single instance multithreaded security
+    ClientInterface configClientUtil = bbossESStarter.getConfigRestClient(mappath);
+    //通过bbossESStarter获取ClientInterface接口实例：Build a create/modify/get/delete document client object, single instance multi-thread security
+    ClientInterface clientUtil = bbossESStarter.getRestClient();    
+```
+
+非spring boot环境：
+
+```java
+//创建加载配置文件的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
+//创建直接操作dsl的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
+```
+
+下面以非spring boot环境进行介绍。
+
 
 # 1. 添加文档
 
@@ -1188,7 +1213,129 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 
 [DeleteByQuery/UpdateByQuery对应的Dsl脚本](https://esdoc.bbossgroups.com/#/update-delete-byquery?id=_3定义deletebyqueryupdatebyquery对应的dsl脚本)
 
-# 15. 开发交流
+# 15 一组便捷查询工具方法使用示例
+```java
+    @Test
+                
+                	/**
+                	 * 根据属性获取文档json报文
+                	 * @param indexName
+                	 * @param fieldName
+                	 * @param blackcatdemo2
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	public void getDocumentByField() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		String document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2");
+                	}
+                	@Test
+                	public void getDocumentByField1() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		String document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",options);
+                	}
+                
+                	/**
+                	 * 根据属性获取文档json报文
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	@Test
+                	public void getDocumentByFieldLike3() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		String document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2");
+                	}
+                
+                	@Test
+                	public void getDocumentByFieldLike1(){
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		String document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",options);
+                	}
+                	@Test
+                	public void getDocumentByField2() throws ElasticSearchException{
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",Map.class);
+                	}
+                	/**
+                	 * 根据属性获取type类型文档对象
+                
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	@Test
+                	public void getDocumentByField3() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		Map document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",Map.class,options);
+                	}
+                
+                	@Test
+                	public void getDocumentByFieldLike() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,null);
+                	}
+                
+                	/**
+                	 * 根据属性获取type类型文档对象
+                
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	@Test
+                	public void getDocumentByFieldLike2() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		Map document = clientInterface.getDocumentByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,null);
+                	}
+  
+  
+  ​              
+  ​              
+  ​              
+  ​              	@Test
+  ​              	public void searchListByField() {
+  ​              		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+  ​              		ESDatas<Map> documents = clientInterface.searchListByField("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10);
+  ​              	}
+  ​              
+                	/**
+                	 * 根据属性获取type类型文档对象
+                
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	@Test
+                	public void searchListByField1() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		ESDatas<Map> documents = clientInterface.searchListByField("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10,options);
+                	}
+  
+  
+  ​              
+  ​              	@Test
+  ​              	public void searchListByFieldLike1() {
+  ​              		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+  ​              		ESDatas<Map> documents = clientInterface.searchListByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10);
+  ​              	}
+  ​              
+                	/**
+                	 * 根据属性获取type类型文档对象
+                
+                	 * @return
+                	 * @throws ElasticSearchException
+                	 */
+                	@Test
+                	public void searchListByFieldLike() {
+                		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+                		Map<String,Object> options = new HashMap<String, Object>();
+                		ESDatas<Map> documents = clientInterface.searchListByFieldLike("demo","applicationName.keyword","blackcatdemo2",Map.class,0,10,options);
+                	}          
+    
+```
+# 16. 开发交流
 
 
 

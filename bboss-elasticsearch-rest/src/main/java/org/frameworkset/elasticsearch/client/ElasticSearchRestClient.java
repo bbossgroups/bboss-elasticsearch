@@ -19,7 +19,6 @@
 package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -37,7 +36,6 @@ import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
 import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
-import org.frameworkset.elasticsearch.template.TemplateContainer;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -47,7 +45,6 @@ import java.io.IOException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -75,7 +72,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected long healthCheckInterval = -1l;
 	protected RestSearchExecutor restSeachExecutor;
 //	private HttpClient httpClient;
-	protected Map<String, String> headers = new HashMap<String, String>();
+//	protected Map<String, String> headers = new HashMap<String, String>();
 	protected boolean showTemplate = false;
 
 	protected List<ESAddress> addressList;
@@ -105,6 +102,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
+	protected HostDiscover hostDiscover;
 	private Map clusterInfo ;
 	private String esVersion;
 	private boolean v1 ;
@@ -224,63 +222,75 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 	private void initVersionInfo(){
-		this.getElasticSearch().getRestClientUtil().discover("/",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
+		try {
+			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
-			@Override
-			public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-				int status = response.getStatusLine().getStatusCode();
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
-					if(logger.isInfoEnabled())
-					{
-						logger.info("Elasticsearch Server Info:\n"+clusterVarcharInfo);
-					}
-					clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
-					Object version = clusterInfo.get("version");
-					if(version instanceof Map) {
-						esVersion = String.valueOf(((Map) version).get("number"));
-						if(esVersion != null){
-							if(esVersion.startsWith("1.")){
-								v1 = true;
-							}
-							int idx = esVersion.indexOf(".");
-							if(idx > 0){
-								String max = esVersion.substring(0,idx);
-								try {
-									int v = Integer.parseInt(max);
-									if (v >= 7){
-										upper7 = true;
-									}
-									if(v < 5){
-										lower5 = true;
-									}
-								}
-								catch (Exception e){
-
-								}
-							}
+				@Override
+				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
+						if (logger.isInfoEnabled()) {
+							logger.info("Elasticsearch Server Info:\n" + clusterVarcharInfo);
 						}
-						clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
-					}
-					else{
-						clusterVersionInfo = "clusterName:"+clusterInfo.get("cluster_name") + ",version:" + version;
-					}
-				} else {
+						clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
+						Object version = clusterInfo.get("version");
+						if (version instanceof Map) {
+							esVersion = String.valueOf(((Map) version).get("number"));
+							if (esVersion != null) {
+								if (esVersion.startsWith("1.")) {
+									v1 = true;
+								}
+								int idx = esVersion.indexOf(".");
+								if (idx > 0) {
+									String max = esVersion.substring(0, idx);
+									try {
+										int v = Integer.parseInt(max);
+										if (v >= 7) {
+											upper7 = true;
+										}
+										if (v < 5) {
+											lower5 = true;
+										}
+									} catch (Exception e) {
 
+									}
+								}
+							}
+							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
+						} else {
+							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + version;
+						}
+					} else {
+
+					}
+					return null;
 				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (Exception e){
+			logger.warn("Init Elasticsearch Cluster Version Information failed:",e);
+		}
 	}
+	private String healthPool;
+	private String discoverPool;
+
+	public String getHealthPool() {
+		return healthPool;
+	}
+
 	public void init() {
 		//Authorization
-		if (elasticUser != null && !elasticUser.equals(""))
-			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
-		restSeachExecutor = new RestSearchExecutor(headers,this.httpPool,this);
+//		if (elasticUser != null && !elasticUser.equals(""))
+//			headers.put("Authorization", getHeader(elasticUser, elasticPassword));
+		discoverPool = ClientConfiguration.getHealthPoolName(this.httpPool);
+		healthPool = discoverPool;
+		restSeachExecutor = new RestSearchExecutor(this.httpPool,discoverPool,this);
 		if(healthCheckInterval > 0) {
 			logger.info("Start Elasticsearch healthCheck thread,you can set elasticsearch.healthCheckInterval=-1 in "+this.elasticSearch.getConfigContainerInfo()+" to disable healthCheck thread.");
-			healthCheck = new HealthCheck(this.getElasticSearch().getElasticSearchName(),addressList, healthCheckInterval,headers);
+
+			healthCheck = new HealthCheck(this.getElasticSearch().getElasticSearchName(),healthPool,addressList, healthCheckInterval);
 			healthCheck.run();
 		}
 		else {
@@ -289,10 +299,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		initVersionInfo();
 		if(discoverHost) {
+
 			logger.info("Start elastic discoverHost thread,to distabled set elasticsearch.discoverHost=false in "+this.elasticSearch.getConfigContainerInfo()+".");
 
 			HostDiscover hostDiscover = new HostDiscover(this.getElasticSearch().getElasticSearchName(),this);
+
 			hostDiscover.start();
+			this.hostDiscover = hostDiscover;
 		}
 		else {
 			logger.info("Discover Elasticsearch Host is disabled,to enabled set elasticsearch.discoverHost=true  in "+this.elasticSearch.getConfigContainerInfo()+".");
@@ -301,12 +314,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 
-
+	/**
 	public static String getHeader(String user, String password) {
 		String auth = user + ":" + password;
 		byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
 		return "Basic " + new String(encodedAuth);
-	}
+	}*/
 
 	@Override
 	public void configure(Properties elasticsearchPropes) {
@@ -392,9 +405,24 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 
 	}
-
+	private boolean closed = false;
 	@Override
-	public void close() {
+	public synchronized void close() {
+		if(closed )
+			return;
+		closed = true;
+		if(hostDiscover != null){
+			hostDiscover.stopCheck();
+			hostDiscover = null;
+		}
+
+		if(healthCheck != null){
+			healthCheck.stopCheck();
+			healthCheck = null;
+		}
+
+		ClientConfiguration.stopHttpClient( httpPool);
+
 	}
 
 	
@@ -1141,5 +1169,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	public void setEsVersion(String esVersion) {
 		this.esVersion = esVersion;
+	}
+
+	public String getDiscoverPool() {
+		return discoverPool;
 	}
 }

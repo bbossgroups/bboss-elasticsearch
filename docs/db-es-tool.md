@@ -63,7 +63,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.1.0</version>
+<version>6.1.3</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1156,7 +1156,7 @@ Elasticsearch控制参数参考文档：
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
 ```java
-importBuilder.setExportResultHandler(new ExportResultHandler() {
+importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 			@Override
 			public void success(TaskCommand<String,String> taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
@@ -1256,6 +1256,20 @@ final Random random = new Random();
 
 也可以先将需要增删改的数据推送到kafka，同步工具从kafka接收增删改数据，再进行相应的处理：
 ![](images\kafka-elasticsearch-crud.png)
+
+### 2.3.20 同步数据到多个ES集群
+
+bboss可以非常方便地将数据同步到多个ES集群，本小节介绍使用方法。
+
+importBuilder组件指定多ES集群的方法如下：
+
+```java
+importBuilder.setTargetElasticsearch("default,test");
+```
+
+多个集群数据源名称用逗号分隔，多ES集群数据源配置参考文档：
+
+[5.2 多elasticsearch服务器集群支持](https://esdoc.bbossgroups.com/#/development?id=_52-多elasticsearch服务器集群支持)
 
 ## 2.4.DB-ES数据同步工具使用方法
 

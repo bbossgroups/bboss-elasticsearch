@@ -45,7 +45,10 @@ public class HostDiscover extends Thread{
 		});
 	}
 	boolean stop = false;
-	public void stopCheck(){
+	public synchronized void stopCheck(){
+
+		if(stop )
+			return;
 		this.stop = true;
 		this.interrupt();
 	}

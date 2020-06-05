@@ -23,6 +23,10 @@ M2_HOME: 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构�
 
 ![img](http://dl2.iteye.com/upload/attachment/0128/6041/40647d96-5017-3a8d-a7db-b7ba7b099463.jpg)
 
+M2_HOME变量中的maven安装路径要与idea中maven配置保持一致：
+
+![image-20200510093315247](images/maven-idea.png)
+
 # 构建Elasticsearch bboss源码
 
 安装后gradle后，我们就可以利用gradle来构建Elasticsearch Bboss的源码了。
