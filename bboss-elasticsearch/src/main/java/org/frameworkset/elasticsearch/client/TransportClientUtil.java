@@ -888,6 +888,9 @@ public class TransportClientUtil  implements EventClientUtil{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public List<ESIndice> getIndexes(String indicePattern) throws ElasticSearchException{
+		return null;
+	}
 	@Override
 	public String refreshIndexInterval(String indexName, int interval) throws ElasticSearchException {
 		// TODO Auto-generated method stub

@@ -3577,7 +3577,9 @@ public class RestClientUtil extends ClientUtil{
 	 */
 	 public List<ESIndice> getIndexes() throws ElasticSearchException{
 		 String data = this.client.executeHttp("_cat/indices?v",HTTP_GET);
-         logger.debug(data);
+		 if(logger.isDebugEnabled()) {
+			 logger.debug(data);
+		 }
 
          if(SimpleStringUtil.isNotEmpty(data)){
 			try {
@@ -3590,6 +3592,30 @@ public class RestClientUtil extends ClientUtil{
          }
          return null;
 	 }
+
+	/**
+	 * health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+	 * 获取elasticsearch索引监控数据
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	public List<ESIndice> getIndexes(String indicePattern) throws ElasticSearchException{
+		String data = this.client.executeHttp(new StringBuilder().append("_cat/indices/").append(indicePattern).append("?v").toString(),HTTP_GET);
+		if(logger.isDebugEnabled()) {
+			logger.debug(data);
+		}
+
+		if(SimpleStringUtil.isNotEmpty(data)){
+			try {
+				List<ESIndice> indices = extractIndice(data);
+				return indices;
+			} catch (IOException e) {
+				throw new ElasticSearchException(e);
+			}
+
+		}
+		return null;
+	}
 	 
 	 public List<ESIndice> extractIndice(String data) throws IOException {
 	        Reader reader = null;
