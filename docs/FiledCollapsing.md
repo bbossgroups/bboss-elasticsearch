@@ -2,9 +2,15 @@
 
 字段折叠就是按特定字段进行合并去重,比如我们有一个菜谱搜索，我希望按菜谱的“菜系”字段进行折叠，即返回结果每个菜系都返回一个结果，也就是按菜系去重，我搜索关键字“鱼”，要去返回的结果里面各种菜系都有，有湘菜，有粤菜等，别全是湘菜，通过按特定字段折叠之后，来丰富搜索结果的多样性。
 
-本文涉及到的程序和配置文件对应的完整可运行的Java工程源码地址：
+# 前言
+
+案例源码工程:
 
 https://github.com/rookieygl/bboss-wiki
+
+本案例以Elasticsearch开源java rest client客户端bboss开发：
+
+https://esdoc.bbossgroups.com/#/README
 
 # 1.field_collapsing介绍
 
@@ -19,15 +25,13 @@ https://github.com/rookieygl/bboss-wiki
 
 # 2. field_collapsing使用案例
 
-## 2.1案例准备工作
+## 2.1.案例准备工作
 
 本文以一个菜谱检索作为案例来介绍field_collapsing的具体用法。
 
 在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：[resources/esmapper/field_collapsing.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml)
 
-而字段折叠的Java测试类则在[com/bboss/hellword/FieldCollapsing/FieldCollapsingTest](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FieldCollapsing/FieldCollapsingTest.java)
-
-### 2.1.1创建菜谱索引
+### 2.1.1.创建菜谱索引
 
 在配置文件中添加菜谱索引的mapping定义createRecipesIndice
 
@@ -93,7 +97,7 @@ https://github.com/rookieygl/bboss-wiki
 }
 ```
 
-### 2.1.2添加菜品数据
+### 2.1.2.添加菜品数据
 
 添加数据使用es的_bulk接口，将准备的数据写入到配置文件，执行即可。数据DSL如下：
 
@@ -156,7 +160,7 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/bulkProcessor
 
-##  2.2普通查询
+##  2.2.普通查询
 
 想吃鱼,直接搜索鱼的关键字即可得到关于鱼的菜品。那么这条查询 DSL 可以是这样的：在esmapper/field_collapsing.xml定义一个名称为testQueryByField；指定菜品名为“鱼”即可；DSL如下：
 
@@ -276,7 +280,7 @@ RecipesPo{name='红烧鲫鱼', rating=3.0, type='湘菜'}]
  RecipesPo{name='鲫鱼汤（微辣）', rating=4.0, type='湘菜'}]
 ```
 
-### 2.2.2Agg聚合桶查询
+### 2.2.2.Agg聚合桶查询
 
 加入打分排序，我们能得到一些其他菜系的菜品，但是如果想看看该餐厅所有菜系，就需要Agg聚合查询后，使用top_hits得到所有菜系的评分高的菜品。DSL如下：
 
@@ -399,7 +403,7 @@ RecipesPo{name='奶油鲍鱼汤', rating=2, type='西菜'}
 
 现在我们就得到了所有菜系，还能从每种菜系得到几个评分高的菜品，但是DSL明显过长，不易实现；而字段折叠（field_collapsing）就是为了解决这类问题
 
-### 2.2.3字段折叠查询
+### 2.2.3.字段折叠查询
 
 字段折叠的使用也很简单，属于一个独立的API，配合query等查询API使用即可，DSL如下：
 
@@ -465,7 +469,7 @@ public void testFieldCollapsing() {
 
 从返回结果可以看出这已经和上面聚合搜索的结果很接近了，但是field_collapsing默认一个组只返回一条数据，也就是form和size只能控制返回后的结果，那这样的搜索结果无疑是不够完整的，所以field_collapsing还可以对组内数据的控制，比如inner_hits可以解决每组返回数据的条数。
 
-#### 2.2.3.1控制组内数据（inner_hits）
+#### 2.2.3.1.控制组内数据（inner_hits）
 
 inner_hits可以对组内的数据再次聚合，指定排序、返回数据条数等，组数据再有collapse合并返回。 DSL如下
 

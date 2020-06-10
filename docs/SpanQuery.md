@@ -2,7 +2,7 @@
 
 不同于 term、match等条件查询；同句搜索要求搜索多个关键词时，返回的文章不只要包含关键词，而且这些关键词必须在同一句中。同段搜素类似，只是范围为同一段落。而实现同段/同句搜索，就需要使用Span Query。
 
-# 1.Span Query
+# 前言
 
 案例源码工程:
 
@@ -11,6 +11,8 @@ https://github.com/rookieygl/bboss-wiki
 本案例以Elasticsearch开源java rest client客户端bboss开发：
 
 https://esdoc.bbossgroups.com/#/README
+
+# 1.Span Query
 
 ## 1.1.Span Query介绍
 
@@ -27,7 +29,7 @@ https://esdoc.bbossgroups.com/#/README
 
 本文以一个article索引检索作为案例来介绍Span Query的一些具体用法。
 
-开始之前要先创建DSL的配置文件，位置在resources/esmapper/span_query.xml（Git地址：[https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/span_query.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml）。)）。本文涉及到的DSL都会放到该配置文件。
+开始之前要先创建DSL的配置文件，位置在[resources/esmapper/span_query.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml)，本文涉及到的DSL都会放到该配置文件。
 
 #### 1.2.1.1.创建索引
 
@@ -418,15 +420,15 @@ GET article/_search
 
 使用ESelasticsearch-plugin命令
 
-/ES_HOMEW/bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.7.0/elasticsearch-analysis-ik-7.7.0.zip。
+```java
+/ES_HOMEW/bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.7.0/elasticsearch-analysis-ik-7.7.0.zip
+```
 
 执行完成重启ES即可
 
 ### 2.2.2.离线安装
 
-打开IK的github地址：https://github.com/medcl/elasticsearch-analysis-ik/releases
-
-选择相应的分词器版本，上传到ES的plugins目录下，解压分词器安装包。
+打开IK的github地址：https://github.com/medcl/elasticsearch-analysis-ik/releases，选择相应的分词器版本，上传到ES的plugins目录下，解压分词器安装包。
 
 一定要删除IK分词器的安装包，只保留解压文件；然后启动ES即可
 
@@ -434,7 +436,7 @@ GET article/_search
 
 ### 2.3.1.案例准备工作
 
-开始之前要现在工作中创建Bboss的DSL配置文件，位置在resources/esmapper/paragraph_words.xml（Git地址：[https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/paragraph_words.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml）。)）。本文涉及到的DSL都会放到该配置文件。
+开始之前要现在工作中创建Bboss的DSL配置文件，位置在[resources/esmapper/paragraph_words.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/paragraph_words.xml)。本文涉及到的DSL都会放到该配置文件。
 
 #### 2.3.1.1.创建索引
 
@@ -703,7 +705,7 @@ Bboss执行上面的DSL:
 
 #### 2.4.1.案例准备工作
 
-开始之前要现在工作中创建Bboss的DSL配置文件，位置在resources/esmapper/paragraph_words.xml（Git地址：[https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/paragraph_words.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml）。)）。本文涉及到的DSL都会放到该配置文件。
+开始之前要现在工作中创建Bboss的DSL配置文件，位置在[resources/esmapper/paragraph_words.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/paragraph_words.xml)。本文涉及到的DSL都会放到该配置文件。
 
 #### 2.4.2创建索引
 
