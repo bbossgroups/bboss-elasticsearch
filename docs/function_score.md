@@ -2,21 +2,44 @@
 
 在使用Elasticsearch进行全文搜索时，搜索结果默认会以文档的相关度进行排序，如果想要改变默认的排序规则，也可以通过**sort**指定一个或多个排序字段。但是使用sort排序过于绝对，它会直接忽略掉文档本身的相关度（根本不会去计算）。在很多业务场景下这样做的效果并不好，这时候就需要对多个字段进行综合评估，得出一个最终的排序。
 
-本文涉及到的程序和配置文件对应的完整可运行的java工程源码地址：
+# 前言
+
+案例源码工程:
 
 https://github.com/rookieygl/bboss-wiki
 
-# 1.function\_score介绍
+本案例以Elasticsearch开源java rest client客户端bboss开发：
 
-在Elasticsearch中function_score是用于处理文档分值的 DSL，它会在查询结束后对每一个匹配的文档进行一系列的重打分操作，最后以生成的最终分数进行排序。它提供了几种默认的计算分值的函数：
+https://esdoc.bbossgroups.com/#/README
+
+# 1.function_score介绍
+
+在Elasticsearch中function_score是用于处理文档分值的 DSL，它会在查询结束后对每一个匹配的文档进行一系列的重打分操作，最后以生成的最终分数进行排序。
+
+## 1.1.评分函数
 
 - weight：设置权重
 - field_value_factor：将某个字段的值进行计算得出分数。
 - random_score：随机得到 0 到 1 分数
-- 衰减函数（decay functions）：同样以某个字段的值为标准，距离某个值越近得分越高
+- decay functions（衰减函数）：同样以某个字段的值为标准，距离某个值越近得分越高
 - script_score：通过自定义脚本计算分值，可引入脚本，传入参数等
 
-function_score通过属性`boost_mode`可以指定计算后的分数与原始的`_score`如何合并，有以下选项：
+## 1.2.score_mode
+
+score_mode：函数得分组合方式
+
+我们需要把多个函数得到的分数合并成一个总分数，作为function_score的总分。有以下选项：
+
+- multiply: 函数结果会相乘(默认行为)
+- sum：函数结果会累加
+- avg：得到所有函数结果的平均值
+- max：得到最大的函数结果
+- min：得到最小的函数结果
+- first：只使用第一个函数的结果，该函数可以有过滤器，也可以没有
+
+## 1.3.boost_mode
+
+boost_mode：函数打分和函数外部评分结果的组合方式，有以下选项：
 
 - multiply：将结果乘以_score
 
@@ -28,35 +51,24 @@ function_score通过属性`boost_mode`可以指定计算后的分数与原始的
 
 - replace：使结果替换掉_score
 
-function_score通过属性score_mode每一个函数都会给文档一个评分，因此我们需要把这些函数返回的分数归约成一个总分数，然后和_score组合成一个新的最终分数。该参数score_mode指定函数得分的组合方式：
+## 1.4.分数限制
 
-- multiply: 函数结果会相乘(默认行为)
-- sum：函数结果会累加
+当function_score中某个函数可能会超过我们的预期时，可以通过下面两个参数对文档进行限制。
 
-- avg：得到所有函数结果的平均值
+- max_boost：functions内部单个函数查询的最大分，不影响文档评分，但是超过这个最大分文档将被丢弃。默认值为FLT_MAX，可认为无限制
 
-- max：得到最大的函数结果
-
-- min：得到最小的函数结果
-
-- first：只使用第一个函数的结果，该函数可以有过滤器，也可以没有
-
-function_score通过设置max_boost参数，可以将分数限制为不超过某个值，限制该函数的最大影响 力，当然max_boost只是对函数的结果有所限制，并不是最终的_score。默认max_boost值为FLT_MAX（结果的最大浮点数，即为无限制）。
-
-min_score：默认情况下，修改分数不影响文档的匹配。要排除不符合指定分数的文档，function_score通过min_score可以将参数设置为所需最低分数；当然要对查询返回的所有文档进行评分，然后逐个判断过滤。
+- min_score：同上，小于这个分值的文档将被丢弃。默认无效
 
 **注**
 
-​	**max_boost是对每个函数都进行限制。**
+​	**这两个参数都是是对单个函数都进行限制。而不是对function_score总分限制**
 
+## 1.5.注意事项
 
+1. function_score如果没有给函数设置过滤器或者query条件，这相当于指定 `"match_all": {}`。
 
-function_score的作用就是综合各个函数的得分，因此注意两点：
-
-1. **function_score如果没有给函数设置过滤器或者query条件，这相当于指定 `"match_all": {}`。**
-
-2. **每个函数产生的分数不决定排名，因为我们只要最终得分，总分数越高，排名越靠前。**
-3.  **sort排序不参与评分，导致function_score无效，谨慎结合使用。**
+2. 每个函数产生的分数不直接决定排名，因为我们只要最终得分，总分数越高，排名越靠前。
+3.  sort、filter等无评分搜索，可能导致导致function_score无效，谨慎结合使用。
 
 接下来本文将举例详细介绍这些函数的用法，以及它们的使用场景。
 
@@ -68,11 +80,9 @@ function_score的作用就是综合各个函数的得分，因此注意两点：
 
 在开始之前先在工程中创建Bboss的DSL配置文件，本文中涉及的配置都会加到里面：[resources/esmapper/function_score.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml)
 
-Java测试类：[com/bboss/hellword/FunctionScore/FunctionScoreTest](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/bboss/hellword/FunctionScore/FunctionScoreTest.java)
+### 2.1.1 创建索引
 
-### 2.1.1 定义索引-商品索引mapping定义和配置
-
-在配置文件中添加商品索引mapping定义-createItemsIndice
+在配置文件中添加商品索引的mapping定义createItemsIndice
 
 ```xml
      <!--
@@ -80,77 +90,86 @@ Java测试类：[com/bboss/hellword/FunctionScore/FunctionScoreTest](https://git
      参考官方文档
      https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
     -->
-    <!--
-    创建商品索引items mappings dsl
-    -->
-<property name="createItemsIndice">
+   <!--创建索引-->
+    <property name="createStudentIndice">
         <![CDATA[{
             "settings": {
                 "number_of_shards": 1,
                 "number_of_replicas": 0,
                 "index.refresh_interval": "5s"
             },
-            "mappings" : {
-                "item" : {
-                    "properties" : {
-                        "docId" : {
-                            "type" : "long"
-                        },
-                        "name" : {
-                            "type" : "text",
-                            "fields" : {
-                              "keyword" : {
-                                "type" : "keyword",
-                                "ignore_above" : 256
-                              }
-                            }
-                        },
-                        "sales" : {
-                            "type" : "long"
-                        },
-                        "title" : {
-                            "type" : "text",
-                            "fields" : {
-                              "keyword" : {
-                                "type" : "keyword",
-                                "ignore_above" : 256
-                              }
-                            }
-                        }
+            "mappings": {
+                "properties" : {
+                  ## 参与field_value_factor或者gauss运算等，字符类型只能是number
+                  "age" : {
+                    "type" : "long"
+                  },
+                  "city" : {
+                    "type" : "text",
+                    "fields" : {
+                      "keyword" : {
+                        "type" : "keyword",
+                        "ignore_above" : 256
+                      }
                     }
+                  },
+                  "creat_date" : {
+                    "type" : "date"
+                  },
+                  "docId" : {
+                    "type" : "long"
+                  },
+                  "name" : {
+                    "type" : "text",
+                    "fields" : {
+                      "keyword" : {
+                        "type" : "keyword",
+                        "ignore_above" : 256
+                      }
+                    }
+                  },
+                  "phone" : {
+                    "type" : "long"
+                  }
                 }
             }
         }]]>
-</property>
+    </property>
 ```
 
-### 2.1.2 创建索引-加载配置文件并创建索引
+bboss执行上述模板：
 
 ```java
-/**
-* 创建商品索引
-*/
-@Test
-public void dropAndCreateItemsIndice() {
-        ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/functionscore.xml");
-        if (clientInterface.existIndice("items")) {
-            clientInterface.dropIndice("items");
+   /**
+     * 创建items索引
+     */
+    @Test
+    public void dropAndCreateItemsIndice() {
+        try {
+            clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/function_score.xml");
+            if (clientInterface.existIndice("items")) {
+                clientInterface.dropIndice("items");
+            }
+            //创建索引
+            clientInterface.createIndiceMapping("items", "createItemsIndice");
+            logger.info("创建索引 items 成功");
+        } catch (ElasticSearchException e) {
+            logger.error("创建索引 items 执行失败", e);
         }
-        clientInterface.createIndiceMapping("items", "createItemsIndice");
-}
+    }
 ```
 
-### 2.1.3 准备测试数据-批量添加商品数据
+### 2.1.2 添加索引数据
 
 通过以下代码向item索引中添加不同的测试数据：
 
 ```java
-/**
-* 导入商品数据
-*/
-@Test
-public void insertItemsData() {
-        ClientInterface clientInterface =bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
+  /**
+     * 导入items数据
+     */
+    @Test
+    public void insertItemsData() {
+        clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
         List<Item> items = new ArrayList<>();
         Item item1 = new Item();
         Item item2 = new Item();
@@ -182,11 +201,18 @@ public void insertItemsData() {
         items.add(item2);
         items.add(item3);
         items.add(item4);
-        //强制refresh，以便能够实时执行后面的检索操作，生产环境去掉"refresh=true"
-        String response = clientInterface.addDocuments("items", "item", items, "refresh=true");
-        logger.debug(response);
+        try {
+            //强制refresh，以便能够实时执行后面的检索操作，生产环境去掉"refresh=true"
+            clientInterface.addDocuments("items", "item", items, "refresh=true");
 
-}
+            //统计当前索引数据
+            long recipeCount = clientInterface.countAll("article");
+            logger.info("items 当前条数：{}", recipeCount);
+        } catch (ElasticSearchException e) {
+            logger.error("items 插入数据失败", e);
+        }
+    }
+
 ```
 
 以上创建索引和添加数据的代码的类似代码不再重复贴出，也可以用kibana添加数据。
@@ -194,7 +220,7 @@ public void insertItemsData() {
 ## 2.2 weight
 
 weight 的用法最为简单，只需要设置一个数字作为权重，文档的分数就会乘以该权重。
-他最大的用途应该就是和过滤器一起使用了，因为过滤器只会筛选出符合标准的文档，而不会去详细的计算每个文档的具体得分，所以只要满足条件的文档的分数都是 1，而 weight 可以将其更换为你想要的数值。
+他最大的用途应该就是和过滤器一起使用了，因为过滤器只会筛选出符合标准的文档，而不会去详细的计算每个文档的具体得分，所以只要满足条件的文档的分数都是 1，而weight可以提升关键字段的权重。
 
 ## 2.3 field\_value\_factor
 
@@ -271,38 +297,43 @@ Score = Score + log (1 + 0.1 * sales)
 $$
 factor为打分系数，和sales相乘，modifier为评分函数，boost_mode决定了评分函数和查询分数的组合方式
 
-执行上面的dsl：
+bboss执行上述模板：
 
 ```java
-/**
-*指定sales字段排序
-*/
-@Test
-public void testFieldValueFactor(){
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        // 指定商品类目作为过滤器
-        queryMap.put("titleName","雨伞");
-        // 指定需要field_value_factor运算的参数
-        queryMap.put("valueFactorName","sales");
-    	// 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
-        // testFieldValueFactor 就是上文定义的dsl模板名，queryMap 为查询条件，Item为实体类
-    	//search_type=dfs_query_then_fetch 设置搜索类型 可参考相关资料的链接
-        ESDatas<Item> esDatast = clientUtil.searchList("items/_search? search_type=dfs_query_then_fetch", "testFieldValueFactor", queryMap, Item.class);
-        List<Item> esCrmOrderStudentList = esDatast.getDatas();
-        logger.debug(esCrmOrderStudentList.toString());
-        System.out.println(esCrmOrderStudentList.toString());
+   /**
+     * 指定sales字段排序
+     */
+    @Test
+    public void testFieldValueFactor() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            // 指定商品类目作为过滤器
+            queryMap.put("titleName", "雨伞");
+            // 指定需要field_value_factor运算的参数
+            queryMap.put("valueFactorName", "sales");
+
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
+            //bboss执行查询DSL
+            ESDatas<Item> esDatast = clientInterface.searchList("items/_search?search_type=dfs_query_then_fetch",
+                    "testFieldValueFactor", //DSL id
+                    queryMap,//查询条件
+                    Item.class);
+            List<Item> esCrmOrderStudentList = esDatast.getDatas();
+            logger.info(esCrmOrderStudentList.toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testFieldValueFactor 执行失败", e);
+        }
     }
 ```
 
-实际执行返回的结果顺序如下：
+实际执行返回的结果如下：
 
 ```java
-Items：
-{title='雨伞', name='宜家', sales=1000}, //销量高的排行更高，评分为2.9443285
-{title='雨伞', name='天堂伞', sales=500}
+[Item{title='雨伞', name='宜家', sales=1000}, //销量高的排行更高，评分为2.9443285
+Item{title='雨伞', name='天堂伞', sales=500}]
 ```
 
 **注**
@@ -343,29 +374,39 @@ Items：
 </property>
 ```
 
-执行上面的dsl：
+bboss执行上述模板：
 
 ```java
-/**
-* 测试RandomScore
-*/
-@Test
-public void testRandomScoreDSL() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        // 指定进行random_score运算的字段,这里以id为随机给文档评分
-        // 如果指定seed种子.seed相等返回值顺序相同，默认为null
-        queryMap.put("fieldName","docId");
-		// 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
-        // testRanodmScore就是上文定义的dsl模板名，queryMap 为查询条件，Student为实体类
-        ESDatas<Student> esDatast =
-                clientUtil.searchList("student/_search?search_type=dfs_query_then_fetch", "testRanodmScore", queryMap, 				Student.class);
-        List<Student> esCrmOrderStudentList = esDatast.getDatas();
-        logger.debug(esCrmOrderStudentList.toString());
-        System.out.println(esCrmOrderStudentList.toString());
-}
+   /**
+     * 测试RandomScore
+     */
+    @Test
+    public void testRandomScoreDSL() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            // 指定进行random_score运算的字段,这里以id为随机给文档评分
+
+            // 如果指定seed种子.seed相等返回值顺序相同，默认为null
+            queryMap.put("fieldName", "docId");
+
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
+
+            //bboss执行查询DSL
+            ESDatas<Student> esDatast =
+                    clientInterface.searchList("items/_search?search_type=dfs_query_then_fetch",
+                            "testRanodmScore",
+                            queryMap,
+                            Student.class);
+            List<Student> esCrmOrderStudentList = esDatast.getDatas();
+            logger.info(esCrmOrderStudentList.toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testRanodmScore 执行失败", e);
+        }
+
+    }
 ```
 
 目前个人理解是给每一个文档一个随机的小于1的浮点数，并自动排序（排序规则也是随机的）。而seed相等的用户排序规则一致。
@@ -471,35 +512,41 @@ public void testRandomScoreDSL() {
 </property>
 ```
 
-执行上面的dsl：
+bboss执行上述模板：
 
 ```java
-/**
-* 测试decayfunctions 地理类型
-*/
-@Test
-public void testDecayFunctionsByGeoPonit() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        // 设置理想的商品名字
-        queryMap.put("titleName","公寓");
-        // origin 原点 设置北京的坐标
-        queryMap.put("originLocation","40,116");
-        // offset 理想范围
-        queryMap.put("offset","3km");
-        // scale 衰减临界点 注意该临界点为 origin±(offsetr+scale)
-        queryMap.put("scale","10km");
-        // 衰减系数 decay 乘以临界处文档的分数
-        queryMap.put("decay",0.33);
-     	// 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
-    
-        ESDatas<Map> esDatast = clientUtil.searchList("hoses/_search?search_type=dfs_query_then_fetch","testDecayFunctionsByGeoPonit", queryMap, Map.class);
-        List<Map> datas = esDatast.getDatas();
-        logger.debug(datas.toString());
-        System.out.println(datas.toString());
-}
+   /**
+     * 测试decayfunctions 地理类型
+     */
+    @Test
+    public void testDecayFunctionsByGeoPonit() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            // 设置理想的商品名字
+            queryMap.put("titleName", "公寓");
+            // origin 原点 设置北京的坐标
+            queryMap.put("originLocation", "40,116");
+            // offset 理想范围
+            queryMap.put("offset", "3km");
+            // scale 衰减临界点 注意该临界点为 origin±(offsetr+scale)
+            queryMap.put("scale", "10km");
+            // 衰减系数 decay 乘以临界处文档的分数
+            queryMap.put("decay", 0.33);
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
+
+            //bboss执行查询DSL
+            ESDatas esDatast = clientInterface.searchList("hoses/_search?search_type=dfs_query_then_fetch",
+                    "testDecayFunctionsByGeoPonit",
+                    queryMap,
+                    Object.class);
+            logger.info(esDatast.getDatas().toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testDecayFunctionsByGeoPonit 执行失败", e);
+        }
+    }
 ```
 
 ## 2.6 script_score
@@ -548,27 +595,33 @@ return doc ['school.keyword'].value =='人大附中' ? 10 : 1.0
 </property>
 ```
 
-执行上面的dsl：
+bboss执行上述模板：
 
 ```java
-/**
-* 测试script_score
-*/
-@Test
-public void testScriptScore() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("cityName","北京");
-        queryMap.put("schoolName","人大附中");
-        // 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
-    
-        ESDatas<Student> esDatast = clientUtil.searchList("student/_search?search_type=dfs_query_then_fetch", "testScriptScore",queryMap,Student.class);
-        List<Student> esCrmOrderStudentList = esDatast.getDatas();
-        logger.debug(esCrmOrderStudentList.toString());
-        System.out.println(esCrmOrderStudentList.toString());
-}
+   /**
+     * 测试script_score
+     */
+    @Test
+    public void testScriptScore() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("cityName", "北京");
+            queryMap.put("schoolName", "人大附中");
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
+
+            ESDatas<Student> esDatast = clientInterface.searchList("student/_search?search_type=dfs_query_then_fetch",
+                    "testScriptScore",
+                    queryMap,
+                    Student.class);
+            List<Student> esCrmOrderStudentList = esDatast.getDatas();
+            logger.info(esCrmOrderStudentList.toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testScriptScore 执行失败", e);
+        }
+    }
 ```
 
 当然我们可以创建一个脚本函数，然后在查询语句中引用它
@@ -592,17 +645,26 @@ public void testScriptScore() {
 通过bboss提供的api在elasticsearch中建立名称为schoolScoreScript的脚本函数，通过id调用该脚本。
 
 ```java
-@Test
-public void testCreateSchoolScoreScript() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        //创建评分脚本函数testScriptScore
-        clientUtil.executeHttp("_scripts/schoolScoreScript", "schoolScoreScript",
-                ClientInterface.HTTP_POST);
-        //获取刚才创建评分脚本函数testScriptScore
-        String schoolScoreScript = clientUtil.executeHttp("_scripts/schoolScoreScript",
-                ClientInterface.HTTP_GET);
-        System.out.println(schoolScoreScript);
-}
+ /**
+     * 创建 schoolScore 脚本
+     * 根据dsl生成对应的脚本文件
+     */
+    @Test
+    public void testCreateSchoolScoreScript() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            //创建评分脚本函数testScriptScore
+            clientInterface.executeHttp("_scripts/schoolScoreScript",
+                    "schoolScoreScript",
+                    ClientInterface.HTTP_POST);
+            //获取刚才创建评分脚本函数testScriptScore
+            String schoolScoreScript = clientInterface.executeHttp("_scripts/schoolScoreScript",
+                    ClientInterface.HTTP_GET);
+            logger.info(schoolScoreScript);
+        } catch (ElasticSearchException e) {
+            logger.error("schoolScoreScript 执行失败", e);
+        }
+    }
 ```
 
 接下来在dsl配置文件中定义一条采用id为schoolScoreScript的脚本函数来实现根据学校挑选学生dsl语句：
@@ -637,23 +699,33 @@ public void testCreateSchoolScoreScript() {
 </property>
 ```
 
-执行检索操作：
+bboss执行上述模板：
 
 ```java
-@Test
-public void testScriptScoreByIncloudScript() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("cityName","北京");
-        queryMap.put("schoolName","人大附中");
-        // 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
-    
-        ESDatas<Student> esDatas = clientUtil.searchList("student/_search?search_type=dfs_query_then_fetch","testScriptScoreByIncloudScript",queryMap,Student.class);
-        List<Student> students = esDatas.getDatas();
-        System.out.println(students);
-}
+  /**
+     * 测试schoolScore
+     */   
+	@Test
+    public void testScriptScoreByIncloudScript() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("cityName", "北京");
+            queryMap.put("schoolName", "人大附中");
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
+
+            ESDatas<Student> esDatas = clientInterface.searchList("student/_search?search_type=dfs_query_then_fetch",
+                    "testScriptScoreByIncloudScript",
+                    queryMap,
+                    Student.class);
+            List<Student> students = esDatas.getDatas();
+            logger.info(students.toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testScriptScoreByIncloudScript 执行失败", e);
+        }
+    }
 ```
 
 ## 2.7 同时使用多个函数
@@ -724,31 +796,35 @@ public void testScriptScoreByIncloudScript() {
 </property>
 ```
 
-餐厅检索的java实现：
+bboss执行上述模板：
 
 ```java
-/**
-* 测试 餐厅评分 FunctionScore
-*/
-@Test
-public void testFunctionScore() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("features","停车位");
-        queryMap.put("valueFactorFieldName","score");
-        queryMap.put("originLocation","40,116");
-        queryMap.put("scale","10km");
-        queryMap.put("docId",15);
-        // 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
+  /**
+     * 测试 餐厅评分 FunctionScore
+     */
+    @Test
+    public void testHellFunctionScore() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("features", "停车位");
+            queryMap.put("valueFactorFieldName", "score");
+            queryMap.put("originLocation", "40,116");
+            queryMap.put("scale", "10km");
+            queryMap.put("docId", 15);
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
 
-        ESDatas<Map> esDatast = clientUtil.searchList("hell/_search", "testFunctionScore",queryMap,Map.class);
-        List<Map> datas = esDatast.getDatas();
-        logger.debug(datas.toString());
-        System.out.println(datas.toString());
+            ESDatas esDatast = clientInterface.searchList("hell/_search?search_type=dfs_query_then_fetch",
+                    "testHellFunctionScore",
+                    queryMap,
+                    Object.class);
+            logger.info(esDatast.getDatas().toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testHellFunctionScore 执行失败", e);
+        }
     }
-
 ```
 
 这样一个餐厅的最高得分应该是 2 分（有停车位）+ 1 分（有 wifi）+ 6 分（评分 5 分 \* 1.2）+ 1 分（随机评分）。
@@ -810,33 +886,38 @@ public void testFunctionScore() {
 _score * gauss (create_date, $now, "1d", "6d") * log (1 + 0.1 * like_count) * is_recommend ? 1.5 : 1.0
 ```
 
-执行上面的dsl：
+bboss执行上述模板：
 
-```
-/**
-* 测试 新浪微博评分 FunctionScore
-*/
-@Test
-public void testSinaFunctionScore() {
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/functionscore.xml");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("content","刘亦菲");
+```java
+ /**
+     * 测试 新浪微博评分 FunctionScore
+     */
+    @Test
+    public void testSinaFunctionScore() {
+        try {
+            clientInterface = bbossESStarter.getConfigRestClient("esmapper/function_score.xml");
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("content", "刘亦菲");
 
-        Date date = new Date(); //获取当前的系统时间。
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ; //使用了默认的格式创建了一个日期格式化对象。
-        String time = dateFormat.format(date); //可以把日期转换转指定格式的字符串
+            Date date = new Date(); //获取当前的系统时间。
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //使用了默认的格式创建了一个日期格式化对象。
+            String time = dateFormat.format(date); //可以把日期转换转指定格式的字符串
 
-        queryMap.put("createDate",time);
-        queryMap.put("valueFactorFieldName","like_count");
-        queryMap.put("time",new Date().getTime());
-        // 设置分页
-        queryMap.put("from",0);
-        queryMap.put("size",10);
+            queryMap.put("createDate", time);
+            queryMap.put("valueFactorFieldName", "like_count");
+            queryMap.put("time", new Date().getTime());
+            // 设置分页
+            queryMap.put("from", 0);
+            queryMap.put("size", 10);
 
-        ESDatas<Map> esDatast = clientUtil.searchList("xinlang/_search?search_type=dfs_query_then_fetch", "testSinaFunctionScore",queryMap,Map.class);
-        List<Map> datas = esDatast.getDatas();
-        logger.debug(datas.toString());
-        System.out.println(datas.toString());
+            ESDatas esDatast = clientInterface.searchList("xinlang/_search?search_type=dfs_query_then_fetch",
+                    "testSinaFunctionScore",
+                    queryMap,
+                    Object.class);
+            logger.info(esDatast.getDatas().toString());
+        } catch (ElasticSearchException e) {
+            logger.error("testSinaFunctionScore 执行失败", e);
+        }
 }
 ```
 
@@ -844,17 +925,17 @@ public void testSinaFunctionScore() {
 
 # 3.相关资料
 
+Function Score官方文档
+
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+
+bboss dsl配置规范
 
 https://esdoc.bbossgroups.com/#/development?id=_53-dsl%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83
 
-评分相似文档
+Function Score评分相似文档
 
 https://blog.csdn.net/wwd0501/article/details/78652850?tdsourcetag=s_pcqq_aiomsg
-
-设置search_type
-
-https://esdoc.bbossgroups.com/#/development?id=_49-%E6%8C%87%E5%AE%9A%E6%A3%80%E7%B4%A2search_type%E5%8F%82%E6%95%B0
 
 # 4.开发交流
 
@@ -865,6 +946,3 @@ bboss elasticsearch交流：166471282
 **bboss elasticsearch微信公众号：**
 
 <img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
-
-
-
