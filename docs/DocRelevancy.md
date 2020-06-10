@@ -66,7 +66,7 @@ tf(t in d) = √frequency
 
 如果不在意词在某个字段中出现的频次，而只在意是否出现过，则可以在字段映射中禁用词频统计。DSL如下：
 
-```java
+```xml
 <property name="closeTF" desc = "关闭词频TF">
         <![CDATA[{
             "mappings": {
@@ -78,7 +78,7 @@ tf(t in d) = √frequency
                 }
             }
         }]]>
-    </property>}
+    </property>
 ```
 
 bboss执行上述模板：
@@ -239,7 +239,7 @@ BM25官方成为是可拔插的相似度，可以修改`k1`和`b`的值进行相
 
 关于BM25公式，倒不如将关注点放在BM25所能带来的实际好处上。BM25同样使用词频，逆向文档频率以及长度长归一化，但是每个因素的定义都有细微区别。
 
-![](D:\Code\Bboss\bboss-wiki\src\main\resources\docs\images\bm25_function.png)
+![](images/bm25_function.png)
 
 <center>BM25公式图</center>
 **该公式`.`的前部分就是 IDF 的算法，后部分就是 DF和字段长度归一值Norm的综合公式**。该公式可以简化为:
@@ -254,7 +254,7 @@ TF-IDF算法评分：TF（t）部分的值，随着文档里的某个词出现�
 
 BM25就针对这点进行来优化，转换TF（t）的逐步增大，该算法的返回值会趋于一个数值。整体而言BM25就是对TF-IDF算法的平滑改进。
 
-![](D:\Code\Bboss\bboss-wiki\src\main\resources\docs\images\tif-bm25.png)
+![](images/tif-bm25.png)
 
 <center>TF / IDF与BM25的词频饱和度曲线图</center>
 值得一提的是，不像TF / IDF，BM25有一个比较好的特性就是它提供了两个可调参数：
