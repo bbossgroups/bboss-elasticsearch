@@ -64,7 +64,7 @@ tf(t in d) = √frequency
 
 **概念理解**：比如说我们检索关键字`es`，`es`在文档A中出现了10次，在文档B中只出现了1次。我们认为文档A与`es`的相关性更高。
 
-## 2.2.1.关闭词频
+### 2.2.1.关闭词频
 
 如果不在意词在某个字段中出现的频次，而只在意是否出现过，则可以在字段映射中禁用词频统计。DSL如下：
 
@@ -113,7 +113,7 @@ bboss执行上述模板：
 
 将字段 `index_options` 设置为 `docs` 可以禁用词频统计及词频位置，这个映射的字段不会计算词的出现次数，对于短语或近似查询也不可用。字段`index`设置为 `not_analyzed` 字符串字段会默认使用该设置。
 
-## 2.2.2.注意事项
+### 2.2.2.注意事项
 
 目前，Elasticsearch 不支持更改已有字段的相似度算法mapping（映射），只能通过为数据重新建立索引来达到目的。请谨慎设置您的mapping。
 
@@ -610,9 +610,10 @@ boost得分是权重得分，基数2.2；指定boost数值，那boost得分就�
 ```
 
 根据idf公式，结合details信息得出：n（docFreq 包含该单词的文档数）= 3，N（numDocs文档总数） = 4，底数为e。计算出 
-$$
-_score(idf)= log(1+(4-3+0.5)/3+0.5)=ln(1.42)=0.35667494
-$$
+```java
+_score(idf) = log(1+(4-3+0.5)/3+0.5)= ln(1.42) = 0.35667494
+```
+
 这就是**es**词元的idf得分
 
 3. tf得分
@@ -652,24 +653,26 @@ $$
 ```
 
 根据tf公式，结合details的信息，计算出
-$$
-_score(tf)=1/(1+1.2*(1-0.75+0.75*4/3 )=0.4
-$$
+```java
+_score(tf)=1/(1+1.2*(1-0.75+0.75*4/3 ) = 0.4
+```
+
 这就是**es**词元的tf得分。这里的tf是**df**和**字段归一值norm**的综合得分
 
 4. BM25得分
 
 根据BM25公式，结合details的信息，计算出
-$$
-_score(BM25)=idf*tf=0.35667494*0.4=0.142669976‬
-$$
+```java
+_score(BM25) = idf * tf = 0.35667494*0.4 = 0.142669976‬
+```
 
 5. 词元总分
 
 **es**词元的总分为details里所有项的乘积，除了tf/idf得分，还有一个boost因子，因此**es**词元的得分是：
-$$
-_score=boost*idf*tf=2.2*0.35667494*0.4=0.38881284
-$$
+
+```java
+_score = boost * idf * tf = 2.2*0.35667494*0.4 = 0.38881284
+```
 
 6. 文档总分
 
@@ -1018,7 +1021,7 @@ _explanation:
 
 根据explain信息和查询DSL，简要解释下FunctionScore。
 
-#### 4.2.2.1.function_score参数
+#### function_score参数
 
 1. functions部分
 
@@ -1150,9 +1153,10 @@ _explanation:
 ```
 
 dis_max 计算公式：
-$$
-_score(dis_max)=max(BM25) + ∑other(BM25)*tie_breaker
-$$
+```java
+_score(dis_max) = max(BM25) + ∑other(BM25) * tie_breaker
+```
+
 结合dis_max公式和_explanation详情，我们就可以计算出文档总分。
 
 ### 4.2.4.boosting
@@ -1269,9 +1273,10 @@ _explanation:
 ```
 
 boosting 计算公式：
-$$
-_score=positive*negative_boost
-$$
+```java
+_score = positive * negative_boost
+```
+
 结合boosting公式和_explanation详情，可以看出文档boosting查询的positive得分是0.49042806,由于命中了negative指定词元，总分变成0.49042806(positive)*0.2(negative_boost)。
 
 ### 4.2.5.rescore
@@ -1415,9 +1420,10 @@ _explanation:
 ```
 
 rescore 计算公式：
-$$
-_score=score(BM25)*query_weight+score(rescore)*rescore_query_weight
-$$
+```java
+_score = score(BM25) * query_weight + score(rescore) * rescore_query_weight
+```
+
 结合rescore 公式和_explanation详情，我们就可以计算出文档总分。
 
 ### 4.2.6.boolean query
