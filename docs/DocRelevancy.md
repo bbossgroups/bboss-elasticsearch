@@ -18,7 +18,9 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
-开始之前要先创建DSL的配置文件，位置在案例工程[resources/esmapper/doc_relevancy.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/doc_relevancy.xml)。本文涉及到的DSL都会放到该配置文件。
+本案例以Elasticsearch6.8.9版本，bboss6.1.5单元测试时，建议版本选择不要太低
+
+DSL的配置文件[resources/esmapper/doc_relevancy.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/doc_relevancy.xml)，本文涉及到的DSL都会放到该配置文件，本案例测试代码[DocRelevancy](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/DocRelevancy.java)。
 
 # 1.文档相关性
 
@@ -66,7 +68,7 @@ tf(t in d) = √frequency
 
 如果不在意词在某个字段中出现的频次，而只在意是否出现过，则可以在字段映射中禁用词频统计。DSL如下：
 
-```java
+```xml
 <property name="closeTF" desc = "关闭词频TF">
         <![CDATA[{
             "mappings": {
@@ -78,7 +80,7 @@ tf(t in d) = √frequency
                 }
             }
         }]]>
-    </property>}
+    </property>
 ```
 
 bboss执行上述模板：
@@ -145,7 +147,7 @@ norm(d) = 1 / √numTerms
 
 字段长度的归一值对全文搜索非常重要，许多其他字段不需要有归一值。无论文档是否包括这个字段，索引中每个文档的每个 `string` 字段都大约占用 1 个 byte 的空间。对于 `not_analyzed` 字符串字段的归一值默认是禁用的，而对于 `analyzed` 字段也可以通过修改字段映射禁用归一值。DSL如下：
 
-```java
+```xml
  <property name="closeNorms" desc = "关闭字段长度归一值">
         <![CDATA[{
             "mappings": {
@@ -239,13 +241,13 @@ BM25官方成为是可拔插的相似度，可以修改`k1`和`b`的值进行相
 
 关于BM25公式，倒不如将关注点放在BM25所能带来的实际好处上。BM25同样使用词频，逆向文档频率以及长度长归一化，但是每个因素的定义都有细微区别。
 
-![](D:\Code\Bboss\bboss-wiki\src\main\resources\docs\images\bm25_function.png)
+![](images\bm25_function.png)
 
 <center>BM25公式图</center>
 **该公式`.`的前部分就是 IDF 的算法，后部分就是 DF和字段长度归一值Norm的综合公式**。该公式可以简化为:
-$$
+```java
 _score=idf*f(df,norm)
-$$
+```
 
 
 ### 2.7.2.TF/IDF与BM25的词频饱和度
@@ -254,7 +256,7 @@ TF-IDF算法评分：TF（t）部分的值，随着文档里的某个词出现�
 
 BM25就针对这点进行来优化，转换TF（t）的逐步增大，该算法的返回值会趋于一个数值。整体而言BM25就是对TF-IDF算法的平滑改进。
 
-![](D:\Code\Bboss\bboss-wiki\src\main\resources\docs\images\tif-bm25.png)
+![](images\tif-bm25.png)
 
 <center>TF / IDF与BM25的词频饱和度曲线图</center>
 值得一提的是，不像TF / IDF，BM25有一个比较好的特性就是它提供了两个可调参数：
@@ -279,7 +281,7 @@ es7x版本之前版本similarity默认值为`classic`，在7x移除该值并默�
 
 当然我们可以自定义相关度，指定similarity为我们自定义相关度算法，下面会有详细介绍。
 
-```java
+```xml
 <property name="bm25Index" desc = "创建索引，指定字段为BM25评分算法">
         <![CDATA[{
             "mappings": {
@@ -328,7 +330,7 @@ bboss执行上述模板：
 
 创建索引DSL如下：
 
-```java
+```xml
 <property name="createExplainIndex" desc = "创建explain测试索引">
         <![CDATA[{
             "mappings": {
@@ -388,9 +390,9 @@ bboss执行上述模板：
 
 ## 3.2.导入测试数据
 
-数据导入DSL如下：**一定要保证_bluk DSL的格式,一行索引，一行数据，不能换行，多行。**
+**一定要保证_bluk DSL的格式,一行索引，一行数据，不能换行，多行。**数据导入DSL如下：
 
-```java
+```xml
   <property name="blukExplainIndex" desc = "导入ExplainI索引数据">
         <![CDATA[
             {"index":{"_index":"explain_index","_id":"1"}}
@@ -443,7 +445,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 
 先创建一个使用explain查询的DSL：
 
-```java
+```xml
     <property name="testExplain" desc = "测试explain查看ES查询执行计划">
         <![CDATA[{
              "explain": true,
@@ -688,7 +690,7 @@ $$
 
 我们检索博客时，我们一般会认为标题 title 的权重应该比内容 content 的权重大，那么这个时候我们就可以使用boost参数进行控制。测试DSL如下
 
-```java
+```xml
 <property name="testBoost" desc="boost 测试字段权重">
         <![CDATA[
             {
@@ -821,7 +823,7 @@ constant_score：常量打分。嵌套一个filter查询，为任意一个匹配
 
 查询DSL如下：
 
-```java
+```xml
 <property name="testConstantScore" desc="constant_score 指定分数打分测试">
         <![CDATA[
             {
@@ -894,7 +896,7 @@ FunctionScore：函数打分。在使用时，我们必须定义一个查询和�
 
 查询DSL如下：
 
-```java
+```xml
 <property name="testFunctionScore" desc="FunctionScore 函数评分测试">
         <![CDATA[
             {
@@ -1059,7 +1061,7 @@ dis_max：最佳字段查询。可以通过参数 tie_breaker（默认值为0）
 
 查询DSL如下：
 
-```java
+```xml
 <property name="testDisMax" desc="dis_max 最佳字段得分测试">
         <![CDATA[
             {
@@ -1167,7 +1169,7 @@ boosting：结果集字段权重评分。查询可以实现对文档结果集的
 
 查询DSL如下：
 
-```java
+```xml
  <property name="testBoosting" desc="boosting 结果集权重测试">
         <![CDATA[
             {
@@ -1286,7 +1288,7 @@ rescore 和 上面的 Boosting Query 是比较相似的，都是在 query 结果
 
 查询DSL如下：
 
-```java
+```xml
  <property name="testRescore" desc="rescore 结果集重新打分">
         <![CDATA[
             {
@@ -1441,7 +1443,7 @@ $$
 
 修改BM25DSL如下：
 
-```java
+```xml
 <property name="setBM25" desc="设置BM25的参数">
         <![CDATA[
             {
@@ -1518,7 +1520,7 @@ bboss执行上述模板：
 
 重建DSL如下：
 
-```java
+```xml
 <property name="rebuildExplainIndex" desc="重建explain测试索引">
         <![CDATA[
             {
@@ -1609,7 +1611,17 @@ bboss执行上述模板：
 
 5. 要想物尽其用并将搜索结果提高到极高的水平，唯一途径就是需要具备能评价度量用户行为的强大能力。
 
-# 7.开发交流
+# 7.相关资料
+
+相关度官方文档
+
+https://www.elastic.co/guide/cn/elasticsearch/guide/current/controlling-relevance.html
+
+相关度控制文档
+
+https://mp.weixin.qq.com/s?__biz=MzIxMjE3NjYwOQ==&mid=2247483997&idx=1&sn=fb27712c41806adaea934b30d215faac&scene=19#wechat_redirect
+
+# 8.开发交流
 
 bboss elasticsearch交流：166471282
 

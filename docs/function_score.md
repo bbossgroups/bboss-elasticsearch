@@ -12,6 +12,10 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
+本案例以Elasticsearch6.8.9版本，bboss6.1.5单元测试时，建议版本选择不要太低
+
+DSL的配置文件[resources/esmapper/function_score.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml)，本文涉及到的DSL都会放到该配置文件，本案例测试代码[FunctionScore](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/FunctionScore.java)。
+
 # 1.function_score介绍
 
 在Elasticsearch中function_score是用于处理文档分值的 DSL，它会在查询结束后对每一个匹配的文档进行一系列的重打分操作，最后以生成的最终分数进行排序。
@@ -833,7 +837,7 @@ bboss执行上述模板：
 
 另一个例子是类似于新浪微博的社交网站。现在要优化搜索功能，使其以文本相关度排序为主，但是越新的微博会排在相对靠前的位置，点赞（忽略相同计算方式的转发和评论）数较高的微博也会排在较前面。如果这篇微博购买了推广并且是创建不到 24 小时（同时满足），它的位置会非常靠前。
 
-```json
+```xml
 <!--新浪微博评分 综合函数-->
 <property name="testSinaFunctionScore">
         <![CDATA[
@@ -933,7 +937,7 @@ bboss dsl配置规范
 
 https://esdoc.bbossgroups.com/#/development?id=_53-dsl%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83
 
-Function Score评分相似文档
+Function Score评分相关文档
 
 https://blog.csdn.net/wwd0501/article/details/78652850?tdsourcetag=s_pcqq_aiomsg
 
