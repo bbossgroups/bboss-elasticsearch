@@ -68,7 +68,7 @@
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
   - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
   - [Elasticsearch实现同段同语句搜索](SpanQuery.md)
-  - [Elasticsearch检索相关度控制](DocRelevancy.md)
+  - [Elasticsearch：TF-IDF，BM25和相关度控制](DocRelevancy.md)
 - [Http负载均衡器使用介绍](httpproxy.md) 
   
 
