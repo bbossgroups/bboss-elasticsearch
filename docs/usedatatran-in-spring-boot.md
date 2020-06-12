@@ -16,7 +16,7 @@ https://github.com/bbossgroups/springboot-elasticsearch-webservice
  <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.7.2</version>
+      <version>5.7.5</version>
 
 </dependency>
 <dependency>

@@ -67,7 +67,8 @@
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
   - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
-  - [同段同语句搜索](SpanQuery.md)
+  - [Elasticsearch实现同段同语句搜索](SpanQuery.md)
+  - [Elasticsearch：TF-IDF，BM25和相关度控制](DocRelevancy.md)
 - [Http负载均衡器使用介绍](httpproxy.md) 
   
 
