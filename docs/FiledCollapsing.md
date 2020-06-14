@@ -12,6 +12,10 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
+本案例以Elasticsearch6.8.9版本，bboss6.1.5单元测试时，建议版本选择不要太低
+
+DSL的配置文件[resources/esmapper/field_collapsing.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml)，本文涉及到的DSL都会放到该配置文件，测试代码[FieldCollapsing](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/FieldCollapsing.java)。
+
 # 1.field_collapsing介绍
 
 字段折叠实现方式和效果：
@@ -35,7 +39,7 @@ https://esdoc.bbossgroups.com/#/README
 
 在配置文件中添加菜谱索引的mapping定义createRecipesIndice
 
-```java
+```xml
  <!--
      通过function_score函数计算相关度打分案例
      参考官方文档
@@ -99,9 +103,9 @@ https://esdoc.bbossgroups.com/#/README
 
 ### 2.1.2.添加菜品数据
 
-添加数据使用es的_bulk接口，将准备的数据写入到配置文件，执行即可。数据DSL如下：
+**一定要保证_bluk DSL的格式,一行索引，一行数据，不能换行，多行。**数据导入DSL如下：
 
-```java
+```xml
 <!--添加菜品数据-->
 <property name="bulkImportRecipesData">
         <![CDATA[
@@ -164,7 +168,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 
 想吃鱼,直接搜索鱼的关键字即可得到关于鱼的菜品。那么这条查询 DSL 可以是这样的：在esmapper/field_collapsing.xml定义一个名称为testQueryByField；指定菜品名为“鱼”即可；DSL如下：
 
-```java
+```xml
 <!--搜索鱼食材-->
 <property name="testQueryByField">
         <![CDATA[{
@@ -223,7 +227,7 @@ RecipesPo{name='红烧鲫鱼', rating=3.0, type='湘菜'}]
 
 从上述结果来看，菜系过于单一，数据不是很理想，我们就可以借助排序，得到打分比较高的菜品。DSL如下：
 
-```java
+```xml
 <!--搜索鱼食材，打分排序查询-->
 <property name="testSortField">
     <![CDATA[{
@@ -275,16 +279,18 @@ RecipesPo{name='红烧鲫鱼', rating=3.0, type='湘菜'}]
 返回的结果如下：
 
 ```java
-[RecipesPo{name='鲫鱼汤（变态辣）', rating=5.0, type='湘菜'}, 
+[
+ RecipesPo{name='鲫鱼汤（变态辣）', rating=5.0, type='湘菜'}, 
  RecipesPo{name='广式鲫鱼汤', rating=5.0, type='粤菜'}, 
- RecipesPo{name='鲫鱼汤（微辣）', rating=4.0, type='湘菜'}]
+ RecipesPo{name='鲫鱼汤（微辣）', rating=4.0, type='湘菜'}
+]
 ```
 
 ### 2.2.2.Agg聚合桶查询
 
 加入打分排序，我们能得到一些其他菜系的菜品，但是如果想看看该餐厅所有菜系，就需要Agg聚合查询后，使用top_hits得到所有菜系的评分高的菜品。DSL如下：
 
-```java
+```xml
 <!--搜索所有菜系，返回菜系打分排名第一的菜品-->
 <property name="testQueryAllType">
         <![CDATA[{
@@ -407,7 +413,7 @@ RecipesPo{name='奶油鲍鱼汤', rating=2, type='西菜'}
 
 字段折叠的使用也很简单，属于一个独立的API，配合query等查询API使用即可，DSL如下：
 
-```java
+```xml
    <!--字段折叠-->
     <property name="testFieldCollapsing">
         <![CDATA[{
@@ -473,7 +479,7 @@ public void testFieldCollapsing() {
 
 inner_hits可以对组内的数据再次聚合，指定排序、返回数据条数等，组数据再有collapse合并返回。 DSL如下
 
-```java
+```xml
 <!--字段折叠 控制组内数据-->
 <property name="testFieldCollapsingInnerHits">
         <![CDATA[{
@@ -574,13 +580,13 @@ elasticsearch字段折叠官方文档
 
 https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-collapse
 
-字段折叠相关文档
-
-https://blog.csdn.net/weixin_41997172/article/details/80484975
-
 bboss聚合查询操作API
 
 https://esdoc.bbossgroups.com/#/agg
+
+字段折叠相关文档
+
+https://blog.csdn.net/weixin_41997172/article/details/80484975
 
 # 4.开发交流
 

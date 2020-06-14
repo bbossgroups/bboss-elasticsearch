@@ -12,6 +12,10 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
+本案例以Elasticsearch6.8.9版本，bboss6.1.5单元测试时，建议版本选择不要太低
+
+DSL的配置文件[resources/esmapper/span_query.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/span_query.xml)，本文涉及到的DSL都会放到该配置文件，测试代码[SpanQuery](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/SpanQuery.java)。
+
 # 1.Span Query
 
 ## 1.1.Span Query介绍
@@ -35,7 +39,7 @@ https://esdoc.bbossgroups.com/#/README
 
 在配置文件中添加创建索引的mapping，名称为createArticleIndice，索引名称在代码中指定。
 
-```java
+```xml
   <!--SpanQuery测试案例-->
 
     <!--创建SpanQuery测试索引-->
@@ -90,9 +94,9 @@ Bboss执行上面的DSL:
 
 #### 1.2.1.2.添加索引数据
 
-将准备的JSON数据写入到配置文件，Bboss可以将JSON数据插入到ES。数据DSL如下：
+**一定要保证_bluk DSL的格式,一行索引，一行数据，不能换行，多行。**数据导入DSL如下：
 
-```java
+```xml
  <!--添加索引数据-->
     <property name="bulkInsertArticleData">
         <![CDATA[
@@ -142,7 +146,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 
 SpanTermQuery 和 Term Query 类似, 只会返回包含指定条件的文档，查询DSL如下：
 
-```java
+```xml
 <!--测试SpanTermQuery-->
     <property name="testSpanTermQuery">
         <![CDATA[{
@@ -202,7 +206,7 @@ SpanNearQuery表示邻近搜索，查找多个 term 是否邻近。同时具有�
 
 查询DSL如下：
 
-```java
+```xml
   <!--测试SpanTermQuery-->
     <property name="testSpanNearQuery">
         <![CDATA[{
@@ -280,7 +284,7 @@ SpanNotQuery 非常重要，它要求两个 SpanQuery 的跨度，不能够重�
 
 查询DSL如下：
 
-```java
+```xml
  <!--测试SpanNotQuery-->
     <property name="testSpanNotQuery ">
         <![CDATA[{
@@ -368,7 +372,7 @@ Bboss执行上面的DSL：
 
 示例DSL如下，下面会有实际案例。
 
-```java
+```xml
 
 GET article/_search
 {
@@ -450,7 +454,7 @@ simple1_mainContent分词器的期望是：替换p , h1 , h2标签为统一的�
 
 注意：分词器的script要用@进行转义，否则url校验不通过。DSL如下：
 
-```java
+```xml
 <!--创建html分词索引-->
     <property name="createSample1Indice">
         <![CDATA[{
@@ -533,7 +537,7 @@ Bboss执行上面的DSL:
 
 将准备的JSON数据写入到配置文件，Bboss可以将JSON数据插入到ES。数据DSL如下：
 
-```java
+```xml
     <!--添加索引数据-->
     <property name="bulkSample1Data">
         <![CDATA[
@@ -574,7 +578,7 @@ Bboss执行上面的DSL:
 
 为了保证同段搜索的效果，先测试下上述定义的分词器效果。如果出现sentence，paragraph词元，证明分词成功，可以进行同段搜索。DSL如下：
 
-```java
+```xml
  <!--测试html分词效果-->
     <property name="testHtmlAnalyze">
         <![CDATA[{
@@ -619,7 +623,7 @@ Bboss执行上面的DSL:
 
 得到分词后，就能进行同段查询。DSL如下：
 
-```java
+```xml
  <!--同段搜索 html和text为同一个查询-->
     <property name="testParagraphQuery">
         <![CDATA[{
@@ -721,7 +725,7 @@ simple1_mainContent分词器的期望是：替换p , h1 , h2标签为统一的�
 
 DSL如下：
 
-```java
+```xml
 <!--创建text分词索引-->
     <property name="createSample2Indice">
         <![CDATA[{
@@ -797,7 +801,7 @@ Bboss执行上面的DSL:
 
 将准备的JSON数据写入到配置文件，Bboss可以将JSON数据插入到ES。数据DSL如下：
 
-```java
+```xml
  <!--添加索引数据-->
     <property name="bulkSample2Data">
         <![CDATA[
@@ -838,7 +842,7 @@ Bboss执行上面的DSL:
 
 为了保证同段搜索的效果，先测试下上述定义的分词器效果。如果出现sentence，paragraph词元，证明分词成功，可以进行同段搜索。DSL如下：
 
-```java
+```xml
  <!--测试Text分词器-->
     <property name="testTextAnalyze">
         <![CDATA[{
