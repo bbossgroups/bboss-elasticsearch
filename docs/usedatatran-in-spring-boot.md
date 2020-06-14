@@ -42,6 +42,17 @@ https://github.com/bbossgroups/springboot-elasticsearch-webservice
 private BBossESStarter bbossESStarter;
 ```
 
+如果需要自己配置增量status表对应的数据库，还需要在同步组件中导入：
+
+```java
+	@Autowired
+	private BBossStarter bbossStarter;
+```
+并且设置：
+```java
+    importBuilder.setStatusDbname("default");//default是一个数据库datasource的名称，具体配置参考application.properties文件内容
+```
+default是一个数据库datasource的名称，具体配置参考[application.properties](https://github.com/bbossgroups/springboot-elasticsearch-webservice/blob/master/src/main/resources/application.properties)文件内容
 另外在定义DB2ESImportBuilder和DataStream两个类级变量,
 
 ```java
