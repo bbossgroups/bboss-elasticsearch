@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.5 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.6 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.5</version>
+            <version>6.1.6</version>
         </dependency>
 ```
 
@@ -44,9 +44,13 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.5</version>
+            <version>6.1.6</version>
         </dependency>
 ```
+# v6.1.6 功能改进
+1. 改进节点发现机制和健康检查机制：节点发现机制和健康检查机制分配独立的http连接池根据正式连接池配置决定是否启用失败重试机制
+2. 功能改进：当没有可用节点时，没有将导致节点不可用的实际Exception抛出
+
 # v6.1.5 功能改进
 1. 改进节点发现机制和健康检查机制：为节点发现机制和健康检查机制分配独立的http连接池，与正式的连接池隔离，避免相互影响
 
