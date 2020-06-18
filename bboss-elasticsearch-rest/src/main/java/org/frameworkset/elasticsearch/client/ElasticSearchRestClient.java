@@ -497,7 +497,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -507,7 +507,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             } catch (UnknownHostException ex) {
             	host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+            	if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -518,7 +518,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoRouteToHostException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -529,7 +529,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoHttpResponseException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -545,7 +545,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = handleConnectionTimeOutException(connectTimeoutException);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -688,7 +688,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -698,7 +698,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			} catch (UnknownHostException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -709,7 +709,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoRouteToHostException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -720,7 +720,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoHttpResponseException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -736,7 +736,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = handleConnectionTimeOutException(connectTimeoutException);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -842,7 +842,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -852,7 +852,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             } catch (UnknownHostException ex) {
             	host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+            	if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -863,7 +863,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoRouteToHostException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -875,7 +875,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoHttpResponseException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -982,7 +982,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 
 					continue;
@@ -994,7 +994,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
             } catch (UnknownHostException ex) {
             	host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-            	if (triesCount < serversList.size()) {//失败尝试下一个地址
+            	if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 
 					continue;
@@ -1007,7 +1007,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoRouteToHostException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -1018,7 +1018,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (NoHttpResponseException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -1034,7 +1034,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = handleConnectionTimeOutException(connectTimeoutException);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
