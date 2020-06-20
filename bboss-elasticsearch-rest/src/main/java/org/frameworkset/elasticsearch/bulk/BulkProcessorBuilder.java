@@ -28,7 +28,23 @@ public class BulkProcessorBuilder {
 	public BulkProcessorBuilder(){
 		bulkConfig = new BulkConfig();
 	}
+	public BulkProcessorBuilder setBulkRetryHandler(BulkRetryHandler bulkRetryHandler) {
+		this.bulkConfig.setBulkRetryHandler( bulkRetryHandler);
+		return this;
+	}
 
+
+	public BulkProcessorBuilder setRetryTimes(int retryTimes) {
+		this.bulkConfig.setRetryTimes( retryTimes);
+		return this;
+	}
+
+
+
+	public BulkProcessorBuilder setRetryInterval(long retryInterval) {
+		this.bulkConfig.setRetryInterval( retryInterval);
+		return this;
+	}
 
 
 	public BulkProcessorBuilder setBulkSizes(int bulkSizes) {

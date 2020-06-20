@@ -431,7 +431,7 @@ spring.elasticsearch.bboss.dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshell
 ## 2.8 设置scroll查询线程池线程数和等待队列长度
 
 ### 设置slice scroll查询对应的线程数和等待队列数
-elasticsearch.sliceScrollThreadCount=100
+elasticsearch.sliceScrollThreadCount=50
 
 elasticsearch.sliceScrollThreadQueue=100
 
@@ -440,9 +440,9 @@ elasticsearch.sliceScrollBlockedWaitTimeout=0  #单位毫秒
 
 
 ### 设置scroll查询对应的线程数和等待队列数
-elasticsearch.scrollThreadCount=200
+elasticsearch.scrollThreadCount=50
 
-elasticsearch.scrollThreadQueue=200
+elasticsearch.scrollThreadQueue=100
 
 elasticsearch.scrollBlockedWaitTimeout=0   #单位毫秒
 

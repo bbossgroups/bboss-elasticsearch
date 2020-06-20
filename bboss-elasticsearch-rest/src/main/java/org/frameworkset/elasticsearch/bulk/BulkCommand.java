@@ -66,6 +66,37 @@ public class BulkCommand implements Runnable{
 	public String getRefreshOption() {
 		return bulkProcessor.getRefreshOption();
 	}
+
+	private void directRun(List<BulkInterceptor> bulkInterceptors ){
+		String result = clientInterface.executeBulk(this);
+		bulkProcessor.increamentTotalsize(this.getBulkDataSize());
+
+
+		boolean hasError = ResultUtil.bulkResponseError(result);
+		if (!hasError) {
+			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+				try {
+
+					bulkInterceptor.afterBulk(this, result);
+				} catch (Exception e) {
+					if (logger.isErrorEnabled())
+						logger.error("bulkInterceptor.afterBulk", e);
+				}
+			}
+		} else {
+			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+				try {
+
+					bulkInterceptor.errorBulk(this, result);
+				} catch (Exception e) {
+					if (logger.isErrorEnabled())
+						logger.error("bulkInterceptor.errorBulk", e);
+				}
+			}
+		}
+	}
 	@Override
 	public void run() {
 		BulkConfig bulkConfig = bulkProcessor.getBulkConfig();
@@ -77,37 +108,132 @@ public class BulkCommand implements Runnable{
 				bulkInterceptor.beforeBulk(this);
 			}
 			catch(Exception e){
-				logger.error("bulkInterceptor.beforeBulk",e);
+				if(logger.isErrorEnabled())
+					logger.error("bulkInterceptor.beforeBulk",e);
 			}
 		}
+		BulkRetryHandler bulkRetryHandler = bulkConfig.getBulkRetryHandler();
+		int retryTimes = bulkConfig.getRetryTimes();
+		if(bulkRetryHandler == null || retryTimes <= 0){//当有异常发生时，不需要重试
+			try {
+				this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
+				directRun( bulkInterceptors );
+			}
+			catch (Throwable throwable){
+				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
+				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+					try {
+						bulkInterceptor.exceptionBulk(this,throwable);
+					}
+					catch(Exception e){
+						logger.error("bulkInterceptor.errorBulk",e);
+					}
+				}
+			}
+			finally {
+				this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
+				if(batchBulkDatas != null) {
+					this.batchBulkDatas.clear();
+					batchBulkDatas = null;
+				}
+			}
+		}
+		else{
+			try {
+				this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
+				Exception exception = null;
+				int count = 0;
+				long retryInterval = bulkConfig.getRetryInterval();
+				do {
+					if(count > 0){
+						if(logger.isInfoEnabled()){
+							logger.info("Retry bulkprocess {} times.",count);
+						}
+					}
+					try {
+						directRun(bulkInterceptors);
+						exception = null;
+						break;
+					}
+					catch (Exception e){
+						exception = e;
+						if(!bulkRetryHandler.neadRetry(e,this) || count == retryTimes){//异常不需要重试或者达到最大重试次数，中断重试
+							break;
+						}
+						else {
+							if(logger.isErrorEnabled()){
+								logger.error("Exception occur and  Retry process will be take.",e);
+							}
+							count ++;
+							if(retryInterval > 0l){
+								try {
+									Thread.sleep(retryInterval);
+								}
+								catch (Exception interupt){
+									break;
+								}
+							}
+							continue;
+						}
+					}
+				}while(true);
+				if(exception != null){
+					throw exception;
+				}
+
+			}
+			catch (Throwable throwable){
+				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
+				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
+					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
+					try {
+						bulkInterceptor.exceptionBulk(this,throwable);
+					}
+					catch(Exception e){
+						logger.error("bulkInterceptor.errorBulk",e);
+					}
+				}
+			}
+			finally {
+				this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
+				if(batchBulkDatas != null) {
+					this.batchBulkDatas.clear();
+					batchBulkDatas = null;
+				}
+			}
+		}
+		/**
 		try {
 			this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
+
 			String result = clientInterface.executeBulk(this);
 			bulkProcessor.increamentTotalsize(this.getBulkDataSize());
-
 			boolean hasError = ResultUtil.bulkResponseError(result);
-			if(!hasError) {
+			if (!hasError) {
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 					try {
 
 						bulkInterceptor.afterBulk(this, result);
 					} catch (Exception e) {
-						logger.error("bulkInterceptor.afterBulk", e);
+						if (logger.isErrorEnabled())
+							logger.error("bulkInterceptor.afterBulk", e);
 					}
 				}
-			}
-			else{
+			} else {
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 					try {
 
 						bulkInterceptor.errorBulk(this, result);
 					} catch (Exception e) {
-						logger.error("bulkInterceptor.errorBulk", e);
+						if (logger.isErrorEnabled())
+							logger.error("bulkInterceptor.errorBulk", e);
 					}
 				}
 			}
+
 		}
 
 		catch (Throwable throwable){
@@ -128,7 +254,7 @@ public class BulkCommand implements Runnable{
 				this.batchBulkDatas.clear();
 				batchBulkDatas = null;
 			}
-		}
+		}*/
 
 
 	}

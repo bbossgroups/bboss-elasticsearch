@@ -372,9 +372,9 @@ public void testSimleScrollParallelAPIHandler(){
 
 我们可以在application.properties文件中增加以下配置来设置slice scroll查询线程池线程数和等待队列长度：
 
-elasticsearch.sliceScrollThreadCount 默认值500
+elasticsearch.sliceScrollThreadCount 默认值50
 
-elasticsearch.sliceScrollThreadQueue 默认值500
+elasticsearch.sliceScrollThreadQueue 默认值100
 
 ## 并行中断
 

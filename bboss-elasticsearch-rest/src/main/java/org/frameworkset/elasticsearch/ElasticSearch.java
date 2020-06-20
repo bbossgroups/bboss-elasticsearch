@@ -114,12 +114,12 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected ElasticSearchClient restClient = null;
 	protected ExecutorService sliceScrollQueryExecutorService;
 	protected ExecutorService scrollQueryExecutorService;
-	protected int sliceScrollThreadCount = 100;
+	protected int sliceScrollThreadCount = 50;
 	protected int sliceScrollThreadQueue = 100;
 	protected long sliceScrollBlockedWaitTimeout = 0l;
 
-	protected int scrollThreadCount = 200;
-	protected int scrollThreadQueue = 200;
+	protected int scrollThreadCount = 50;
+	protected int scrollThreadQueue = 100;
 	protected long scrollBlockedWaitTimeout = 0l;
 
 	public boolean isIncludeTypeName() {

@@ -36,6 +36,12 @@ public class BulkConfig implements BulkActionConfig{
 //	private long pollTimeOut = 1000;
 	private String refreshOption;
 	/**
+	 * 失败重试机制
+	 */
+	private BulkRetryHandler bulkRetryHandler;
+	private int retryTimes = 3;
+	private long retryInterval = 0l;
+	/**
 	 * 记录数达到bulkRecords指定的条数时执行一次bulk操作
 	 */
 	private int bulkSizes;
@@ -237,5 +243,29 @@ public class BulkConfig implements BulkActionConfig{
 
 	public void setRouting(Object routing) {
 		this.routing = routing;
+	}
+
+	public BulkRetryHandler getBulkRetryHandler() {
+		return bulkRetryHandler;
+	}
+
+	public void setBulkRetryHandler(BulkRetryHandler bulkRetryHandler) {
+		this.bulkRetryHandler = bulkRetryHandler;
+	}
+
+	public int getRetryTimes() {
+		return retryTimes;
+	}
+
+	public void setRetryTimes(int retryTimes) {
+		this.retryTimes = retryTimes;
+	}
+
+	public long getRetryInterval() {
+		return retryInterval;
+	}
+
+	public void setRetryInterval(long retryInterval) {
+		this.retryInterval = retryInterval;
 	}
 }
