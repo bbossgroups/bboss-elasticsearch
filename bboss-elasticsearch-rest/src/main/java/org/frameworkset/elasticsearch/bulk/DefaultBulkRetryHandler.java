@@ -18,6 +18,7 @@ package org.frameworkset.elasticsearch.bulk;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
+import org.frameworkset.elasticsearch.client.NoServerElasticSearchException;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -54,6 +55,7 @@ public class DefaultBulkRetryHandler implements BulkRetryHandler{
 				|| exception instanceof ConnectTimeoutException //连接超时重试
 				|| exception instanceof UnknownHostException
 				|| exception instanceof NoHttpResponseException
+				|| exception instanceof NoServerElasticSearchException
 //              || exception instanceof SocketTimeoutException    //响应超时不重试，避免造成业务数据不一致
 		) {
 
