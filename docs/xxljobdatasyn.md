@@ -12,12 +12,12 @@ bboss提供了三种数据同步调度机制：
 
 bboss提供两种xxl-job作业参考实现：
 
-1. 基于bboss gradle运行环境发布作业的executor
-2. 基于spring 发布作业executor
+1. 基于bboss gradle运行环境数据同步
+2. 基于spring 环境数据同步
 
 首先介绍第一种实现。
 
-# 1.基于bboss gradle运行环境发布作业
+# 1.基于bboss gradle运行环境数据同步
 
 在开始编写作业之前，可以先从以下地址下载gradle工程环境：
 
@@ -32,7 +32,11 @@ bboss提供两种xxl-job作业参考实现：
 
 ## 1.1 定义xxl-job同步作业
 
-在工程中定义一个XXJobImportTask作业类，必须从AbstractDB2ESXXJobHandler抽象类型继承并实现init抽象方法，在init方法中定义一个ExternalScheduler同步作业组件，通过datastream方法传入所有作业配置DB2ESImportBuilder（本案例基于数据库到elasticsearch数据同步，其他数据源同步参考文档：https://esdoc.bbossgroups.com/#/db-es-tool），直接看代码：
+在工程中定义一个XXJobImportTask作业类，必须从AbstractDB2ESXXJobHandler抽象类型继承并实现init抽象方法，在init方法中定义一个ExternalScheduler同步作业组件，通过datastream方法传入所有作业配置DB2ESImportBuilder，本案例基于数据库到elasticsearch数据同步，其他数据源同步参考文档：
+
+https://esdoc.bbossgroups.com/#/db-es-tool
+
+下面是完整的XXJobImportTask代码：
 
 ```java
 package org.frameworkset.elasticsearch.imp.jobhandler;
@@ -307,7 +311,7 @@ linux: restart.sh
 
 接下来看基于spring 环境来定义一个xxl-job作业
 
-# 2.基于spring 发布作业executor
+# 2.基于spring环境数据同步
 
 spring xxl-job作业运行环境可以参考xxl-job官方文档搭建：
 
@@ -563,5 +567,53 @@ public class SyncDataXXLJob extends IJobHandler {
 3. 在execute方法中调度也运行数据同步作业功能
 4. 在destroy方法中注销作业组件ExternalScheduler，释放资源
 
+# 3.增量状态数据源配置
+xxl-job是一个分布式的调度引擎，在进行增量数据同步作业时，就不能使用本地文件数据库sqlite来保存增量同步作业状态，一旦因发生故障作业迁移或者作业重启后被调度到其他的executor，丢失增量状态，所以需要将增量状态保存到mysql或者oracle这样的关系数据库中，下面介绍配置保存增量状态数据源方法。
 
+## 3.1 通过配置文件配置
 
+在application.properties配置文件中进行配置
+
+```properties
+# 增量导入状态存储数据源配置，默认采用sqlite，增量导入装存储到本地的sqlite数据库中，采用分布式的外部定时任务引擎时，
+# 就不能将状态存储到本地，需要采用外部的数据库（mysql,oracle等）来存储增量导入状态。
+# 如果做了config.db配置，则采用配置的的数据源，必须指定创建statusTableName的建表语句，每种数据库对应的语法做适当调整
+# create table $statusTableName  (ID number(2),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))
+#
+# 一般情况下不需要使用外部状态数据源，除非采用分布式的外部定时任务引擎，
+# 外部状态数据源可以直接使用上面的导入数据源，可以引用已经存在的数据源test，只需要配置config.db.name即可
+config.db.name=test
+
+## 也可以用以下配置配置一个全新的数据源，数据源名称由config.db.name指定
+#config.db.name = testconfig
+#config.db.user = root
+#config.db.password = 123456
+#config.db.driver = com.mysql.jdbc.Driver
+#config.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+#config.db.usePool = true
+#config.db.validateSQL = select 1
+#config.db.jdbcFetchSize = 10000
+#config.db.showsql = true
+
+```
+
+## 3.2 通过bboss spring starter配置
+
+在spring boot项目中，可以通过bboss spring starter对应的配置application.properties配置一个数据源：
+
+```properties
+# 数据库数据源配置
+spring.bboss.db.name = default
+spring.bboss.db.user = root
+spring.bboss.db.password = 123456
+spring.bboss.db.driver = com.mysql.jdbc.Driver
+spring.bboss.db.url = jdbc:mysql://10.13.11.5:3306/mysql
+spring.bboss.db.usePool = true
+spring.bboss.db.validateSQL = select 1
+```
+
+然后在同步作业builder上设置状态数据源：
+
+```java
+importBuilder.setStatusDbname("default");
+```

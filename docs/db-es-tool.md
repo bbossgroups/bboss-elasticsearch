@@ -1713,7 +1713,7 @@ importBuilder.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor");
 
 采用分布式作业调度引擎时，定时增量导入需要指定保存增量状态的数据源：
 
-修改配置文件src\test\resources\application.properties
+修改配置文件src\main\resources\application.properties
 
 ```properties
 # 增量导入状态存储数据源配置，默认采用sqlite，增量导入装存储到本地的sqlite数据库中，采用分布式的外部定时任务引擎时，
