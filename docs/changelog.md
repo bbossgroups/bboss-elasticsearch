@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.7 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.8 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.8</version>
         </dependency>
 ```
 
@@ -44,9 +44,13 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.8</version>
         </dependency>
 ```
+# v6.1.8
+1. 优化http重试机制：禁用重试后，不再重试
+2. 优化http负载轮询机制：client protecol协议异常轮询下一节点
+3. http负载均衡器优化：所有节点失败后，将实际的异常抛出到应用
 # v6.1.7 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
 

@@ -574,7 +574,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
+				host.setStatus(1);
+				e = ex;
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+				//throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				e = ex;
@@ -764,7 +772,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
+				host.setStatus(1);
+				e = ex;
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+				//throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				e = ex;
@@ -891,7 +907,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (ConnectTimeoutException connectTimeoutException){
 				host.setStatus(1);
 				e = handleConnectionTimeOutException(connectTimeoutException);
-				if (triesCount < serversList.size()) {//失败尝试下一个地址
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
 					triesCount++;
 					continue;
 				} else {
@@ -919,7 +935,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
+				host.setStatus(1);
+				e = ex;
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+//				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				throw ex;
@@ -1068,7 +1092,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				break;
 			}
 			catch (ClientProtocolException ex){
-				throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
+				host.setStatus(1);
+				e = ex;
+				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+					triesCount++;
+					continue;
+				} else {
+					break;
+				}
+				//throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
 				throw ex;
