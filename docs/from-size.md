@@ -114,7 +114,7 @@
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
-<https://gitee.com/bbossgroups/eshelloword-booter>
+<https://gitee.com/bboss/eshelloword-booter>
 
 
 

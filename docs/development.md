@@ -251,7 +251,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -280,7 +280,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -350,13 +350,13 @@ http.defaultMaxPerRoute = 200
 
 http.retryTime = 3
 
-##automaticRetriesDisabled开关
+##automaticRetriesDisabled开关，关闭重试机制
 
 http.automaticRetriesDisabled=false
 
 没有指定重试机制http.retryTime为0或-1的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-##自定义重试机制 ，判断哪些场景下需要进行重试：
+##自定义重试判断逻辑 ，在http.retryTime>0的情况下起作用，判断哪些场景下需要进行重试：
 
 ```properties
 #* 自定义重试控制接口，必须实现接口方法
@@ -371,17 +371,17 @@ http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionRe
 
 ### 2.6.3 保活机制配置
 
-- **推荐配置：**控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，过期时间由timeToLive指定，单位毫秒，默认值为true，false 禁用
+- **推荐配置：**主动清理过期的连接，过期时间由timeToLive设置，如果已经设置了validateAfterInactivity，则可以关闭evictExpiredConnections，控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，过期时间由timeToLive指定，timeToLive单位毫秒，默认值为true，false 禁用
 
 
 http.evictExpiredConnections=true
 
-http.timeToLive=3600000 单位毫秒，
+http.timeToLive=3600000 单位毫秒
 
-- 不推荐配置：空闲连接保活校验频率，单位毫秒，>0起作用，默认值 -1
+- 推荐配置：单位：毫秒，当获取连接时，判断连接是否已经空闲了validateAfterInactivity对应的时间，如果是则对连接进行有效性校验，无效链接直接清理掉，>0起作用，默认值 -1
 
 
-http.validateAfterInactivity=-1
+http.validateAfterInactivity=2000
 
 - 不推荐配置：每次获取connection时校验连接，true，校验，默认false
 

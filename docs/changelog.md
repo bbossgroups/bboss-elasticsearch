@@ -49,7 +49,7 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.1.8
 1. 优化http重试机制：禁用重试后，不再重试
-2. 优化http负载轮询机制：client protecol协议异常轮询下一节点
+2. 优化http负载轮询机制：client protocol协议异常轮询下一节点
 3. http负载均衡器优化：所有节点失败后，将实际的异常抛出到应用
 # v6.1.7 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
@@ -1182,7 +1182,7 @@ if(log.isWarnEnabled()){
 
 24. Innerhit检索时层级超过2级的对象（继承ESBaseData对象）中没有设置文档id等信息问题修复
 
-更多功能改进请浏览：[commit](https://gitee.com/bboss/bboss-elastic/commits/master)
+更多功能改进请浏览：[commit](https://github.com/bbossgroups/bboss-elasticsearch/commits/master)
 
 # **bboss elasticsearch 使用参考文档** 
 
@@ -1193,7 +1193,7 @@ if(log.isWarnEnabled()){
 # 相关链接
 
 - bboss-elastic 的详细介绍：[点击查看](README.md)
-- bboss-elastic 的下载地址：[点击下载](https://gitee.com/bboss/bboss-elastic)
+- bboss-elastic 的下载地址：[点击下载](https://github.com/bbossgroups/bboss-elasticsearch)
 
 # 开发交流
 
