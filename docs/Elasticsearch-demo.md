@@ -39,7 +39,7 @@ bboss elasticsearch开发库使用文档：
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

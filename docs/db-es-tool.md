@@ -3036,7 +3036,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)
 
 
-**elasticsearch交流：166471282**
+**elasticsearch交流QQ群：21220580,166471282**
 
 **elasticsearch微信公众号：**
 

@@ -102,7 +102,7 @@ scroll检索对应的代码和脚本文件：
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

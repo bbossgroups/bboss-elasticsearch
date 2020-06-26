@@ -982,7 +982,7 @@ configs.put("report.http.health","/health.html");//health监控检查地址必�
 
 
 
-bboss http交流：166471282
+bboss http交流QQ群：21220580,166471282
 
 **bboss http微信公众号：**
 

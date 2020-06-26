@@ -954,7 +954,7 @@ MultiESDocumentCRUD:各种增删改查操作实例，在demo工程中提供
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

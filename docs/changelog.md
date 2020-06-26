@@ -47,10 +47,46 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.1.8</version>
         </dependency>
 ```
-# v6.1.8
+# v6.1.8 功能改进
 1. 优化http重试机制：禁用重试后，不再重试
+
 2. 优化http负载轮询机制：client protocol协议异常轮询下一节点
+
 3. http负载均衡器优化：所有节点失败后，将实际的异常抛出到应用
+
+4. bulkprocessor增加异常重试机制：重试次数，重试时间间隔，是否需要重试的异常类型判断：
+
+   ```java
+   // 重试配置
+   				BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+   		bulkProcessorBuilder.setBulkRetryHandler(new BulkRetryHandler() { //设置重试判断策略，哪些异常需要重试
+   					public boolean neadRetry(Exception exception, BulkCommand bulkCommand) { //判断哪些异常需要进行重试
+   						if (exception instanceof HttpHostConnectException     //NoHttpResponseException 重试
+   								|| exception instanceof ConnectTimeoutException //连接超时重试
+   								|| exception instanceof UnknownHostException
+   								|| exception instanceof NoHttpResponseException
+   //              				|| exception instanceof SocketTimeoutException    //响应超时不重试，避免造成业务数据不一致
+   						) {
+   
+   							return true;//需要重试
+   						}
+   
+   						if(exception instanceof SocketException){
+   							String message = exception.getMessage();
+   							if(message != null && message.trim().equals("Connection reset")) {
+   								return true;//需要重试
+   							}
+   						}
+   
+   						return false;//不需要重试
+   					}
+   				})
+   				.setRetryTimes(3) // 设置重试次数，默认为0，设置 > 0的数值，会重试给定的次数，否则不会重试
+   				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
+   
+   ```
+
+   
 # v6.1.7 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
 
@@ -1199,7 +1235,7 @@ if(log.isWarnEnabled()){
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

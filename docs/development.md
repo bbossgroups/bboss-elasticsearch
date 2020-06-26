@@ -350,6 +350,12 @@ http.defaultMaxPerRoute = 200
 
 http.retryTime = 3
 
+##重试时间间隔，单位：毫秒，默认值-1,直接重试，>0时需要等待给定的时间后再重试
+
+```
+http.retryInterval=1000
+```
+
 ##automaticRetriesDisabled开关，关闭重试机制
 
 http.automaticRetriesDisabled=false
@@ -366,6 +372,8 @@ http.automaticRetriesDisabled=false
 #* 方法返回true，进行重试，false不重试
 # http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.DefaultHttpRequestRetryHandler
 ```
+
+可以设置为自己实现的重试控制组件：
 
 http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
 
@@ -4103,7 +4111,7 @@ http://192.168.137.1:9200/_cat/indices?v
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

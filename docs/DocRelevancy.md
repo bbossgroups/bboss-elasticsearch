@@ -1629,7 +1629,7 @@ https://mp.weixin.qq.com/s?__biz=MzIxMjE3NjYwOQ==&mid=2247483997&idx=1&sn=fb2771
 
 # 8.开发交流
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 

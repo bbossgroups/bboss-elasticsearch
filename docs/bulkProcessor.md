@@ -11,6 +11,38 @@ BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。�
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
 
+BulkProcessor提供了失败重试机制，可以方便地设置重试次数，重试时间间隔，是否需要重试的异常类型判断：
+
+   ```java
+   // 重试配置
+   				BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+   		bulkProcessorBuilder.setBulkRetryHandler(new BulkRetryHandler() { //设置重试判断策略，哪些异常需要重试
+   					public boolean neadRetry(Exception exception, BulkCommand bulkCommand) { //判断哪些异常需要进行重试
+   						if (exception instanceof HttpHostConnectException     //NoHttpResponseException 重试
+   								|| exception instanceof ConnectTimeoutException //连接超时重试
+   								|| exception instanceof UnknownHostException
+   								|| exception instanceof NoHttpResponseException
+   //              				|| exception instanceof SocketTimeoutException    //响应超时不重试，避免造成业务数据不一致
+   						) {
+   
+   							return true;//需要重试
+   						}
+   
+   						if(exception instanceof SocketException){
+   							String message = exception.getMessage();
+   							if(message != null && message.trim().equals("Connection reset")) {
+   								return true;//需要重试
+   							}
+   						}
+   
+   						return false;//不需要重试
+   					}
+   				})
+   				.setRetryTimes(3) // 设置重试次数，默认为0，设置 > 0的数值，会重试给定的次数，否则不会重试
+   				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
+   
+   ```
+
 使用BulkProcessor api处理索引文档时，如果是Elasticsearch 7以上的版本就无需传递indexType参数，Elasticsearch7以前的版本带上indexType参数，bulk中的每个操作都可以通过ClientOptions来指定文档添加、修改删除的控制参数，ClientOptions控制参数设置方法可以参考文档：
 
 [基于ClientOption指定添加修改文档控制参数](https://esdoc.bbossgroups.com/#/development?id=_482-基于clientoptionupdateoption指定添加修改文档控制参数)
@@ -102,7 +134,30 @@ public class TestBulkProcessor {
 //				.setWaitForActiveShards(2)
 //				.setRouting("1") //(Optional, string) Target the specified primary shard.
 //				.setPipeline("1") // (Optional, string) ID of the pipeline to use to preprocess incoming documents.
-				
+				.setBulkRetryHandler(new BulkRetryHandler() { //设置重试判断策略，哪些异常需要重试
+					public boolean neadRetry(Exception exception, BulkCommand bulkCommand) { //判断哪些异常需要进行重试
+						if (exception instanceof HttpHostConnectException     //NoHttpResponseException 重试
+								|| exception instanceof ConnectTimeoutException //连接超时重试
+								|| exception instanceof UnknownHostException
+								|| exception instanceof NoHttpResponseException
+//              				|| exception instanceof SocketTimeoutException    //响应超时不重试，避免造成业务数据不一致
+						) {
+
+							return true;//需要重试
+						}
+
+						if(exception instanceof SocketException){
+							String message = exception.getMessage();
+							if(message != null && message.trim().equals("Connection reset")) {
+								return true;//需要重试
+							}
+						}
+
+						return false;//不需要重试
+					}
+				})
+				.setRetryTimes(3) // 设置重试次数，默认为0，设置 > 0的数值，会重试给定的次数，否则不会重试
+				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
             ;
 		/**
 		 * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用

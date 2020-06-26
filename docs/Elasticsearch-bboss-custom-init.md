@@ -125,7 +125,7 @@ ElasticSearchHelper.stopElasticsearch("default");//指定要停止的数据源�
 
 
 
-bboss elasticsearch交流：166471282
+bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 
