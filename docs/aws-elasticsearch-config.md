@@ -47,6 +47,11 @@ public class HttpClientBuilderCallbackDemo implements HttpClientBuilderCallback 
        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(
        "es", signer, awsCredentialsProvider);
        builder.addInterceptorLast(interceptor);
+       /**  添加自定义请求头
+       List<Header> headerList = new ArrayList<Header>();
+		Header header = new BasicHeader("test","asdfasdf");
+		builder.setDefaultHeaders(headerList);
+		*/
        return builder;
    }
 }
