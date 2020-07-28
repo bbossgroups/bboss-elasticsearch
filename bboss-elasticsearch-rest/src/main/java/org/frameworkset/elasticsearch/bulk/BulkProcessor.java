@@ -53,7 +53,7 @@ public class BulkProcessor {
 	}
 
 	private BulkConfig bulkConfig;
-	private Thread flush;
+	private Flush flush;
 	private ExecutorService executor ;
 
 	public ClientInterface getClientInterface() {
@@ -67,8 +67,11 @@ public class BulkProcessor {
 	 * 1 stop;
 	 */
 	private int status;
-	private void stop(){
+	private  void stop(){
 		this.status = 1;
+		synchronized (flush) {
+			flush.notify();
+		}
 	}
 	public String getRefreshOption() {
 		return bulkConfig.getRefreshOption();
@@ -99,7 +102,7 @@ public class BulkProcessor {
 													,this.bulkConfig.getWarnMultsRejects());
 //		dataQueue =  new ArrayBlockingQueue<BulkData>(bulkConfig.getBulkQueue());
 		if(bulkConfig.getFlushInterval() > 0) {
-			flush = new Thread(new Flush(), bulkConfig.getBulkProcessorName() + "-flush-thread");
+			flush = new Flush("Elasticsearch["+(bulkConfig.getElasticsearch()!=null?bulkConfig.getElasticsearch():"default") + "]-"+bulkConfig.getBulkProcessorName() + "-flush-thread");
 			flush.start();
 		}
 		BaseApplicationContext.addShutdownHook(new Runnable() {
@@ -709,7 +712,10 @@ public class BulkProcessor {
 		}
 	}
 */
-	class Flush implements Runnable{
+	class Flush extends Thread{
+		public Flush(String name){
+			super(name);
+		}
 
 		@Override
 		public void run() {
@@ -736,7 +742,7 @@ public class BulkProcessor {
 				} catch (InterruptedException e) {
 					break;
 				}
-			}while(true);
+			}
 		}
 	}
 
@@ -747,14 +753,14 @@ public class BulkProcessor {
 		if(logger.isInfoEnabled())
 			logger.info("ShutDown BulkProcessor[{}] begin.....",this.bulkConfig.getBulkProcessorName());
 		stop();
-		try{
-			if(flush != null){
-				flush.interrupt();
-			}
-		}
-		catch (Exception e){
-
-		}
+//		try{
+//			if(flush != null){
+//				flush.interrupt();
+//			}
+//		}
+//		catch (Exception e){
+//
+//		}
 		try {
 			this.forceExecute();
 		}

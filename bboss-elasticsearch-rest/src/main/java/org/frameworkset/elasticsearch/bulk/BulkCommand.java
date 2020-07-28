@@ -60,9 +60,7 @@ public class BulkCommand implements Runnable{
 		this.bulkProcessor = bulkProcessor;
 		this.clientInterface = bulkProcessor.getClientInterface();
 	}
-//	public BulkCommand(List<BulkData> batchBulkDatas) {
-//		this.batchBulkDatas = batchBulkDatas;
-//	}
+
 	public String getRefreshOption() {
 		return bulkProcessor.getRefreshOption();
 	}

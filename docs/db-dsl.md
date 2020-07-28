@@ -165,7 +165,7 @@ DSL表脚本及将xml文件中管理的dsl转换: 其中的dslTemplate字段为c
 		//初始化dsl配置：将配置文件中的sql转存到数据库中
 		String dslpath = "esmapper/demo.xml";
 	    final String namespace = "testnamespace";//一个命名空间的dsl可以对应为一个ClientInterface实例
-		AOPTemplateContainerImpl aopTemplateContainer = new AOPTemplateContainerImpl(dslpath);
+		AOPTemplateContainerImpl aopTemplateContainer = ElasticSearchHelper.getAOPTemplateContainerImpl(dslpath);
 		int perKeyDSLStructionCacheSize = aopTemplateContainer.getPerKeyDSLStructionCacheSize();
 		boolean alwaysCacheDslStruction = aopTemplateContainer.isAlwaysCacheDslStruction();
 		List<TemplateMeta> templateMetaList = aopTemplateContainer.getTemplateMetas(namespace);//将demo.xml文件中配置的dsl转换为属于namespace命名空间的对象列表

@@ -2344,7 +2344,7 @@ $myarray.size()
 
 ### **5.3.7 @{pianduan}-片段变量使用**
 
-@{}类型变量用于在query dsl中引用脚本片段。很多的dsl脚本会包含一些公共内容，比如查询条件，聚合操作脚本等待，可以把这些公共部分抽取出来定义成dsl片段；另外，一些复杂的搜索聚合查询的dsl脚本很长，由很多比较通用独立的部分组成，这样也可以将独立部分剥离形成片段，这样dsl的结构更加清晰，更加易于维护。**片段定义一定要定义在引用片段的dsl脚本前面**，片段引用变量示例如下：
+@{}类型变量用于在query dsl中引用脚本片段。很多的dsl脚本会包含一些公共内容，比如查询条件，聚合操作脚本等等，可以把这些公共部分抽取出来定义成dsl片段；另外，一些复杂的搜索聚合查询的dsl脚本很长，由很多比较通用独立的部分组成，这样也可以将独立部分剥离形成片段，这样dsl的结构更加清晰，更加易于维护。**片段定义一定要定义在引用片段的dsl脚本前面**，片段引用变量示例如下：
 
 定义片段searchAfterAggs和qcondition：
 
@@ -2362,7 +2362,7 @@ $myarray.size()
                 "search_after": [#[lastStartTime],"trace#$lastId"],
                 #end
             #end
-            "size": $pageSize,
+            "size": #[pageSize],
             "sort": [
                  #if($orderBy && $orderBy.equals("elapsed")){"elapsed": "desc"},#end
                 {"startTime": "desc"},

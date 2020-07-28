@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.8 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.9 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.8</version>
+            <version>6.1.9</version>
         </dependency>
 ```
 
@@ -44,9 +44,13 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.8</version>
+            <version>6.1.9</version>
         </dependency>
 ```
+# v6.1.9 功能改进
+1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
+2. 完善dsl打印机制
+
 # v6.1.8 功能改进
 1. 优化http重试机制：禁用重试后，不再重试
 

@@ -476,12 +476,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if(options != null){
 			endpoint = new StringBuilder().append(endpoint).append("?").append(options).toString();
 		}
-		if(this.showTemplate ){
-			if(logger.isInfoEnabled()) {
-				logger.info("ElasticSearch http request action:{},request body:\n{}",endpoint,entity);
-			}
 
-		}
 		while (true) {
 
 
@@ -489,6 +484,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				host = serversList.get();
 				url = new StringBuilder().append(host.getAddress()).append( "/" ).append( endpoint).toString();
 //				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
+				if(this.showTemplate ){
+					if(logger.isInfoEnabled()) {
+						logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+					}
+
+				}
 				ESStringResponseHandler responseHandler = new ESStringResponseHandler();
 				response = restSeachExecutor.execute(url,entity,responseHandler);
 				e = getException(  responseHandler );
@@ -667,16 +668,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		T response = null;
 		Throwable e = null;
-		if(this.showTemplate && !discoverHost ){
-			if(logger.isInfoEnabled()) {
-				if(entity != null)
-					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
-				else
-					logger.info("ElasticSearch http request action:{}",path);
-			}
 
-
-		}
 		ESAddress host = null;
 		String url = null;
 		while (true) {
@@ -685,6 +677,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				url = getPath(host.getAddress(),path);
 
 				if(!discoverHost) {
+					if(this.showTemplate && !discoverHost ){
+						if(logger.isInfoEnabled()) {
+							if(entity != null)
+								logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+							else
+								logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+						}
+
+
+					}
 					response = this.restSeachExecutor.executeHttp(url, entity, action, responseHandler);
 				}
 				else {
@@ -830,14 +832,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
-		if(this.showTemplate ){
-			if(logger.isInfoEnabled()) {
-				if(entity != null)
-					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
-				else
-					logger.info("ElasticSearch http request action:{}",path);
-			}
-		}
+
 		ESAddress host = null;
 		String url = null;
 		while (true) {
@@ -849,6 +844,14 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
 //				else
 //					response = HttpRequestUtil.sendJsonBody(entity, url, this.headers);
+				if(this.showTemplate ){
+					if(logger.isInfoEnabled()) {
+						if(entity != null)
+							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+						else
+							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+					}
+				}
 				ESStringResponseHandler responseHandler = new ESStringResponseHandler();
 				response = this.restSeachExecutor.executeSimpleRequest(url,entity,responseHandler);
 				e = getException(  responseHandler );
@@ -984,22 +987,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		T response = null;
 		int triesCount = 0;
 		Throwable e = null;
-		if(this.showTemplate  ){
-			if(logger.isInfoEnabled()) {
-				if(entity != null)
-					logger.info("ElasticSearch http request action:{},request body:\n{}",path,entity);
-				else
-					logger.info("ElasticSearch http request action:{}",path);
-			}
 
-
-		}
 		ESAddress host = null;
 		String url = null;
 		while (true) {
 			try {
 				host = serversList.get();
 				url =  getPath(host.getAddress(),path);
+				if(this.showTemplate  ){
+					if(logger.isInfoEnabled()) {
+						if(entity != null)
+							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+						else
+							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+					}
+
+
+				}
 				response = this.restSeachExecutor.executeRequest(url,entity,action,responseHandler);
 				e = getException(  responseHandler );
 				break;
