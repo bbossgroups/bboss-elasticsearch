@@ -991,7 +991,29 @@ importBuilder
 				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
+#### 2.3.13.4 设置routing的方法
 
+在DataRefactor中指定routing值
+
+```java
+importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+			     
+				org.frameworkset.tran.config.ClientOptions clientOptions = new org.frameworkset.tran.config.ClientOptions();
+				clientOptions.setRouting("1");
+				context.setClientOptions(clientOptions);
+				
+			}
+		});
+```
+
+通过importBuilder全局指定routing field，将对应字段的值作为routing：
+
+```java
+org.frameworkset.tran.config.ClientOptions clientOptions = new org.frameworkset.tran.config.ClientOptions();
+clientOptions.setRoutingField(new ESField("parentid"));
+importBuilder.setClientOptions(clientOptions);
+```
 
 ### 2.3.14 Mysql ResultSet Stream机制说明
 
@@ -1332,6 +1354,79 @@ bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现�
 可以在spring boot中使用数据同步功能，这里以db-elasticsearch定时增量数据同步为例进行说明，其他数据源方法类似。
 
 参考文档：https://esdoc.bbossgroups.com/#/usedatatran-in-spring-boot
+
+## 2.8 数据导入不完整原因分析及处理
+
+如果在任务执行完毕后，发现es中的数据与数据库源表的数据不匹配，可能的原因如下：
+
+**1.并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析**
+
+参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2312-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
+
+```java
+ public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+//任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
+     if(need retry)
+     	taskCommand.execute();
+}
+```
+
+解决办法：
+
+a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
+
+b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
+
+```java
+importBuilder.setBatchSize(10000);//每次bulk批处理的记录条数
+importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+importBuilder.setQueue(100);//设置批量导入线程池等待队列长度
+importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+```
+
+c) 对于read或者等待超时的异常，亦可以调整配置文件src\test\resources\application.properties中的http timeout时间参数
+
+http.timeoutConnection = 50000
+
+http.timeoutSocket = 50000
+
+
+
+**2.任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析**
+
+参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2312-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
+
+bulk拒绝记录解决办法：
+
+a) 优化elasticsearch服务器配置(加节点，加内存和cpu等运算资源，调优网络性能等)
+
+调整elasticsearch的相关线程和队列：调优elasticsearch配置参数
+
+thread_pool.bulk.queue_size: 1000   es线程等待队列长度
+
+thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
+
+b) 调整同步程序导入线程数、批处理batchSize参数，降低并行度。
+
+数据内容不合规解决办法：拿到执行的原始批量数据，分析错误信息对应的数据记录，进行修改，然后重新导入失败的记录即可
+
+```java
+@Override
+         public void error(TaskCommand<String,String> taskCommand, String result) {
+            //任务执行完毕，但是结果中包含错误信息
+            //具体怎么处理失败数据可以自行决定,下面的示例显示重新导入失败数据的逻辑：
+            // 从result中分析出导入失败的记录，然后重新构建data，设置到taskCommand中，重新导入，
+            // 支持的导入次数由getMaxRetry方法返回的数字决定
+              String datas = taskCommand.getDatas();//拿到执行的原始批量数据，分析错误信息对应的数据记录，进行修改，然后重新导入失败的记录即可
+            // String failDatas = ...;
+            //taskCommand.setDatas(failDatas);
+            //taskCommand.execute();
+           
+//          System.out.println(result);//打印成功结果
+         }
+```
+
+# 
 
 # 3 Elasticsearch-db数据同步使用方法
 
