@@ -45,12 +45,12 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 			initType = 1;
 		}
 	}
-	public int getInitType(){
+	public int getInitType(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes){
 		return initType;
 	}
 
 	@Override
-	public void restore() {
+	public void restore(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
 		elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
 		configProperties = null;
 		/**
@@ -62,12 +62,12 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 	}
 
 	@Override
-	public Map getConfigProperties(BaseApplicationContext applicationContext) {
+	public Map getConfigProperties(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
 		return configProperties;
 	}
 
 	@Override
-	public String getFiles(BaseApplicationContext applicationContext) {
+	public String getFiles(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
 		return elasticSearchConfigFiles;
 	}
 }

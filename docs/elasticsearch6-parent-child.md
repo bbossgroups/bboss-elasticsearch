@@ -5,7 +5,7 @@
 - 父子关系维护检索实战一 [Elasticsearch 5.x 父子关系维护检索实战](elasticsearch5-parent-child.md)
 - 父子关系维护检索实战二 Elasticsearch 6.x 父子关系维护检索实战
 
-本文是其中第二篇
+本文是其中第二篇,适用于Elasticsearch 6.x,7.x
 
 \- Elasticsearch 6.x 父子关系维护检索实战，涵盖以下部分内容：
 
@@ -29,7 +29,7 @@ https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapp
 ```xml
 <properties>
     <!--
-    本案例适用于es 6.x
+    本案例适用于es 6.x,7.x
     创建包问卷索引表
     https://www.elastic.co/guide/en/elasticsearch/reference/6.2/parent-join.html
     https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-inner-hits.html
