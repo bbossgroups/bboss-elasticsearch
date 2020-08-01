@@ -20,6 +20,8 @@ import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 
+import java.util.Map;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -39,6 +41,11 @@ public class WrapperGetProperties implements GetProperties {
 	}
 
 	@Override
+	public String getSystemEnvProperty(String property) {
+		return context.getSystemEnvProperty(property);
+	}
+
+	@Override
 	public String getExternalProperty(String property, String defaultValue) {
 		return context.getExternalProperty(property,defaultValue);
 	}
@@ -51,6 +58,11 @@ public class WrapperGetProperties implements GetProperties {
 	@Override
 	public Object getExternalObjectProperty(String property, Object defaultValue) {
 		return context.getExternalObjectProperty(property,defaultValue);
+	}
+
+	@Override
+	public boolean getExternalBooleanProperty(String property, boolean defaultValue) {
+		return context.getExternalBooleanProperty(property,defaultValue);
 	}
 
 	/**
@@ -127,5 +139,10 @@ public class WrapperGetProperties implements GetProperties {
 	@Override
 	public Object getExternalObjectPropertyWithNS(String namespace, String property, Object defaultValue) {
 		return context.getExternalObjectProperty(property,defaultValue);
+	}
+
+	@Override
+	public Map getAllExternalProperties() {
+		return context.getAllExternalProperties();
 	}
 }

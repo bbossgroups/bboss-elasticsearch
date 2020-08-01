@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.boot;/*
  */
 
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.assemble.plugin.PropertiesFilePlugin;
 
 import java.util.Map;
@@ -45,12 +46,12 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 			initType = 1;
 		}
 	}
-	public int getInitType(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes){
+	public int getInitType(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes, PropertiesContainer propertiesContainer){
 		return initType;
 	}
 
 	@Override
-	public void restore(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
+	public void restore(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes, PropertiesContainer propertiesContainer) {
 		elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
 		configProperties = null;
 		/**
@@ -62,12 +63,12 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 	}
 
 	@Override
-	public Map getConfigProperties(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
+	public Map getConfigProperties(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes, PropertiesContainer propertiesContainer) {
 		return configProperties;
 	}
 
 	@Override
-	public String getFiles(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes) {
+	public String getFiles(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes, PropertiesContainer propertiesContainer) {
 		return elasticSearchConfigFiles;
 	}
 }

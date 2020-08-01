@@ -25,6 +25,6 @@ sourceSets {
 }
 
 
-dependencies {
-	compile project(':bboss-elasticsearch-rest')
-}
+//dependencies {
+//	compile project(':bboss-elasticsearch-rest')
+//}
