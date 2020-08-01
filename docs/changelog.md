@@ -50,8 +50,62 @@ https://esdoc.bbossgroups.com/#/development
 # v6.1.9 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
 2. 完善dsl打印机制
+3. 非spring boot项目支持通过apollo来管理客户端配置，只需要将maven坐标做如下处理即可
+
+```xml
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+    <version>6.1.9</version>
+    <!--排除bboss-elasticsearch-rest-booter包-->
+    <exclusions>
+        <exclusion>
+            <artifactId>bboss-elasticsearch-rest-booter</artifactId>
+            <groupId>com.bbossgroups.plugins</groupId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<!--导入bboss apollo插件-->
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-plugin-apollo</artifactId>
+    <version>5.7.6</version>
+</dependency>
+```
+
+在应用resources/META-INF目录下面增加app.properties文件，内容如下：
+
+```properties
+# apollo应用id
+app.id=visualops
+# apollo应用地址
+apollo.meta=http://10.13.11.7:8080
+```
+
+在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：
+
+```xml
+<properties>
+    <!--
+       指定apollo属性配置namespace
+    -->
+
+    <config apolloNamespace="application"/>
+ </properties>
+```
+
+在C:\opt\settings（windows）或者/opt/settings(linux)新增文件server.properties，内容如下：
+
+```properties
+env=PRO
+#集群编号
+idc=XJ-dpq-a
+```
+
+
 
 # v6.1.8 功能改进
+
 1. 优化http重试机制：禁用重试后，不再重试
 
 2. 优化http负载轮询机制：client protocol协议异常轮询下一节点
