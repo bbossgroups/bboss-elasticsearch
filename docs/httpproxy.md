@@ -412,7 +412,7 @@ http.routing=#[area]
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>5.7.0</version>
+  <version>5.7.8</version>
 </dependency>
 ```
 
