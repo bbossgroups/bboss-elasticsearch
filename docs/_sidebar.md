@@ -10,7 +10,9 @@
 
   - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md) 
 
-  - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md) 
+  - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md)
+
+  - [Apollo对接与配置 (非spring boot项目)](apollo-config.md)
 
   - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
 
