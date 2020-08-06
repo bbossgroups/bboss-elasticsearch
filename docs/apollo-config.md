@@ -188,13 +188,137 @@ public class ApolloPropertiesFilePluginTest{
 }
 ```
 ## 7.3 http proxy中加载apollo中配置案例
+bboss http proxy是一个轻量级的java http客户端负载均衡器，对应的配置可以通过apollo进行配置管理，同时亦可以通过apollo实现服务节点自动发现功能，
+这里介绍具体的使用方法。
 
+首先定义一个apollo 监听器，用于实现服务节点自动发现功能
 ```java
-HttpRequestProxy.startHttpPoolsFromApollo("application");//加载http协议配置
-```
+package org.frameworkset.http.client;
 
+
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import org.frameworkset.spi.remote.http.HttpHost;
+import org.frameworkset.spi.remote.http.proxy.HttpProxyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>Description: </p>
+ * <p></p>
+ * <p>Copyright (c) 2020</p>
+ * @Date 2020/8/2 20:07
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public class AddressConfigChangeListener implements ConfigChangeListener {
+	private static Logger logger = LoggerFactory.getLogger(AddressConfigChangeListener.class);
+	private void handleDiscoverHosts(String _hosts,String poolName){
+		if(_hosts != null && !_hosts.equals("")){
+			String[] hosts = _hosts.split(",");
+			List<HttpHost> httpHosts = new ArrayList<HttpHost>();
+			HttpHost host = null;
+			for(int i = 0; i < hosts.length; i ++){
+				host = new HttpHost(hosts[i]);
+				httpHosts.add(host);
+			}
+			//将被动获取到的地址清单加入poolName对应的服务地址组中
+			HttpProxyUtil.handleDiscoverHosts(poolName,httpHosts);
+		}
+	}
+	/**
+	 * //模拟被动获取监听地址清单
+	 * List<HttpHost> hosts = new ArrayList<HttpHost>();
+	 * // https服务必须带https://协议头,例如https://192.168.137.1:808
+	 * HttpHost host = new HttpHost("192.168.137.1:808");
+	 * hosts.add(host);
+	 *
+	 *    host = new HttpHost("192.168.137.1:809");
+	 *    hosts.add(host);
+	 *
+	 * host = new HttpHost("192.168.137.1:810");
+	 * hosts.add(host);
+	 * //将被动获取到的地址清单加入服务地址组report中
+	 * HttpProxyUtil.handleDiscoverHosts("schedule",hosts);
+	 */
+	public void onChange(ConfigChangeEvent changeEvent) {
+		logger.info("Changes for namespace {}", changeEvent.getNamespace());
+		ConfigChange change = null;
+		for (String key : changeEvent.changedKeys()) {
+			if(key.equals("schedule.http.hosts")){//schedule集群
+				change = changeEvent.getChange(key);
+				logger.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", change.getPropertyName(), change.getOldValue(), change.getNewValue(), change.getChangeType());
+				if(change.getChangeType() == PropertyChangeType.MODIFIED) {
+					String _hosts = change.getNewValue();
+					handleDiscoverHosts(_hosts, "schedule");
+				}
+
+			}
+			else if(key.equals("http.hosts")){//default集群
+				change = changeEvent.getChange(key);
+				logger.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", change.getPropertyName(), change.getOldValue(), change.getNewValue(), change.getChangeType());
+				if(change.getChangeType() == PropertyChangeType.MODIFIED) {
+					String _hosts = change.getNewValue();
+					handleDiscoverHosts(_hosts, "default");
+				}
+
+
+			}
+
+		}
+	}
+}
+```
+从apollo加载配置启动http proxy：
+```java
+    @Before
+	public void startPool(){
+//		HttpRequestProxy.startHttpPools("application.properties");
+		/**
+         * 从apollo加载配置启动http proxy：
+		 * 配置了两个连接池：default,schedule
+         * apollo namespace:  application
+         * 服务地址变化发现监听器： org.frameworkset.http.client.AddressConfigChangeListener
+		 */
+
+		HttpRequestProxy.startHttpPoolsFromApollo("application","org.frameworkset.http.client.AddressConfigChangeListener");
+	}
+	@Test
+	public void testGet(){
+		String data = null;
+		try {
+            //服务调用
+			data = HttpRequestProxy.httpGetforString("schedule", "/testBBossIndexCrud");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		System.out.println(data);
+		do {
+			try {
+				data = HttpRequestProxy.httpGetforString("schedule","/testBBossIndexCrud");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(3000l);
+			} catch (Exception e) {
+				break;
+			}
+
+		}
+		while(true);
+	}
+```
 # 8.参考文档
 
 [Spring boot整合Elasticsearch](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=spring-boot整合elasticsearch案例分享)
 
 [Apollo Java客户端使用指南](https://github.com/ctripcorp/apollo/wiki/Java客户端使用指南)
+
+[httpproxy使用文档](https://esdoc.bbossgroups.com/#/httpproxy)

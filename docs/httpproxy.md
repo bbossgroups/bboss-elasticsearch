@@ -841,7 +841,7 @@ zookeeper，etcd，consul，eureka，db，其他第三方注册中心
 
 **主动发现模式**：bboss通过调用http.discoverService配置的服务发现方法，定时从数据库和注册中心中查询最新的服务地址数据清单，本文上面介绍的http.discoverService就是一种主动定时发现模式
 
-**被动发现模式**：监听zookeeper，etcd，consul，eureka数据变化，适用于发布订阅模式
+**被动发现模式**：监听apollo，zookeeper，etcd，consul，eureka等配置中心中管理的服务节点地址清单数据变化，更新本地服务器地址清单，适用于发布订阅模式
 
 被动发现模式示例代码如下：
 
@@ -860,7 +860,132 @@ hosts.add(host);
 //将被动获取到的地址清单加入服务地址组report中
 HttpProxyUtil.handleDiscoverHosts("report",hosts);
 ```
+## 4.1 基于apollo配置中心被动发现模式示例
+首先定义一个apollo 监听器
+```java
+package org.frameworkset.http.client;
 
+
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import org.frameworkset.spi.remote.http.HttpHost;
+import org.frameworkset.spi.remote.http.proxy.HttpProxyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>Description: </p>
+ * <p></p>
+ * <p>Copyright (c) 2020</p>
+ * @Date 2020/8/2 20:07
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public class AddressConfigChangeListener implements ConfigChangeListener {
+	private static Logger logger = LoggerFactory.getLogger(AddressConfigChangeListener.class);
+	private void handleDiscoverHosts(String _hosts,String poolName){
+		if(_hosts != null && !_hosts.equals("")){
+			String[] hosts = _hosts.split(",");
+			List<HttpHost> httpHosts = new ArrayList<HttpHost>();
+			HttpHost host = null;
+			for(int i = 0; i < hosts.length; i ++){
+				host = new HttpHost(hosts[i]);
+				httpHosts.add(host);
+			}
+			//将被动获取到的地址清单加入服务地址组report中
+			HttpProxyUtil.handleDiscoverHosts(poolName,httpHosts);
+		}
+	}
+	/**
+	 * //模拟被动获取监听地址清单
+	 * List<HttpHost> hosts = new ArrayList<HttpHost>();
+	 * // https服务必须带https://协议头,例如https://192.168.137.1:808
+	 * HttpHost host = new HttpHost("192.168.137.1:808");
+	 * hosts.add(host);
+	 *
+	 *    host = new HttpHost("192.168.137.1:809");
+	 *    hosts.add(host);
+	 *
+	 * host = new HttpHost("192.168.137.1:810");
+	 * hosts.add(host);
+	 * //将被动获取到的地址清单加入服务地址组report中
+	 * HttpProxyUtil.handleDiscoverHosts("schedule",hosts);
+	 */
+	public void onChange(ConfigChangeEvent changeEvent) {
+		logger.info("Changes for namespace {}", changeEvent.getNamespace());
+		ConfigChange change = null;
+		for (String key : changeEvent.changedKeys()) {
+			if(key.equals("schedule.http.hosts")){//schedule集群
+				change = changeEvent.getChange(key);
+				logger.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", change.getPropertyName(), change.getOldValue(), change.getNewValue(), change.getChangeType());
+				if(change.getChangeType() == PropertyChangeType.MODIFIED) {
+					String _hosts = change.getNewValue();
+					handleDiscoverHosts(_hosts, "schedule");
+				}
+
+			}
+			else if(key.equals("http.hosts")){//default集群
+				change = changeEvent.getChange(key);
+				logger.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", change.getPropertyName(), change.getOldValue(), change.getNewValue(), change.getChangeType());
+				if(change.getChangeType() == PropertyChangeType.MODIFIED) {
+					String _hosts = change.getNewValue();
+					handleDiscoverHosts(_hosts, "default");
+				}
+
+
+			}
+
+		}
+	}
+}
+```
+从apollo加载配置启动http proxy：
+```java
+    @Before
+	public void startPool(){
+//		HttpRequestProxy.startHttpPools("application.properties");
+		/**
+         * 从apollo加载配置启动http proxy：
+		 * 配置了两个连接池：default,schedule
+         * apollo namespace:  application
+         * 服务地址变化发现监听器： org.frameworkset.http.client.AddressConfigChangeListener
+		 */
+
+		HttpRequestProxy.startHttpPoolsFromApollo("application","org.frameworkset.http.client.AddressConfigChangeListener");
+	}
+	@Test
+	public void testGet(){
+		String data = null;
+		try {
+            //服务调用
+			data = HttpRequestProxy.httpGetforString("schedule", "/testBBossIndexCrud");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		System.out.println(data);
+		do {
+			try {
+				data = HttpRequestProxy.httpGetforString("schedule","/testBBossIndexCrud");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(3000l);
+			} catch (Exception e) {
+				break;
+			}
+
+		}
+		while(true);
+	}
+```
+Apollo配置使用参考文档：<https://esdoc.bbossgroups.com/#/apollo-config>
 # 5.主备和异地灾备配置和服务发现
 
 主备和异地灾备配置和服务发现
@@ -975,6 +1100,11 @@ configs.put("http.health","/health.html");//health监控检查地址必须配置
 ```java
 configs.put("report.http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机
 ```
+- 健康检查服务开启条件
+http.healthCheckInterval必须大于0，单位毫秒，默认值-1,设置示例：
+http.healthCheckInterval=1000
+同时必须设置http.health健康检查服务，例如：
+http.health=/health.html
 
 **bboss以get方式发送http.health对应的健康检查服务请求，健康检查服务只需要响应状态码为200-300即认为服务节点健康可用**。
 
