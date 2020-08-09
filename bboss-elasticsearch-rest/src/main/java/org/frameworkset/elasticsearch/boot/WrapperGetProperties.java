@@ -35,6 +35,12 @@ public class WrapperGetProperties implements GetProperties {
 	public WrapperGetProperties(GetProperties context){
 		this.context = context;
 	}
+
+	@Override
+	public void reset() {
+		context.reset();
+	}
+
 	@Override
 	public String getExternalProperty(String property) {
 		return context.getExternalProperty(property);

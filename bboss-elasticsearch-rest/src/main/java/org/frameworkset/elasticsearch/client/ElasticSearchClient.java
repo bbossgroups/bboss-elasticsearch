@@ -22,6 +22,7 @@ import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,6 +31,10 @@ import java.util.Properties;
  * of events to ElasticSearch.
  */
 public interface ElasticSearchClient {
+	public void recoverRemovedNodes(List<ESAddress> hosts);
+	public boolean containAddress(ESAddress address);
+	public void addAddresses(List<ESAddress> address);
+	public void handleRemoved(List<ESAddress> hosts);
 	void configure(Properties elasticsearchPropes);
 
 	/**

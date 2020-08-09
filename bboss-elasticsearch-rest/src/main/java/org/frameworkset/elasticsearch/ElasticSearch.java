@@ -110,7 +110,11 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	}
 
 	protected String origineRestServerAddresses;
-	
+
+	public ElasticSearchClient getRestClient() {
+		return restClient;
+	}
+
 	protected ElasticSearchClient restClient = null;
 	protected ExecutorService sliceScrollQueryExecutorService;
 	protected ExecutorService scrollQueryExecutorService;
@@ -275,9 +279,13 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		}
 		origineRestServerAddresses = elasticsearchPropes.getProperty(REST_HOSTNAMES);
 		if (SimpleStringUtil.isNotEmpty(origineRestServerAddresses)) {
-			origineRestServerAddresses = origineRestServerAddresses.trim();
+//			origineRestServerAddresses = origineRestServerAddresses.trim();
 
-			restServerAddresses = origineRestServerAddresses.split(",");
+			String[] restServerAddresses = origineRestServerAddresses.split(",");
+			this.restServerAddresses = new String[restServerAddresses.length];
+			for(int i = 0; i < restServerAddresses.length; i ++){
+				this.restServerAddresses[i] = restServerAddresses[i].trim();
+			}
 		}
 		
 //		Preconditions.checkState(serverAddresses != null

@@ -38,11 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import static org.frameworkset.elasticsearch.ElasticSearchSinkConstants.DEFAULT_PORT;
 
@@ -299,6 +296,26 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 	// }
 	// client = node.client();
 	// }
+
+	@Override
+	public void recoverRemovedNodes(List<ESAddress> hosts) {
+
+	}
+
+	@Override
+	public boolean containAddress(ESAddress address) {
+		return false;
+	}
+
+	@Override
+	public void addAddresses(List<ESAddress> address) {
+
+	}
+
+	@Override
+	public void handleRemoved(List<ESAddress> hosts) {
+
+	}
 
 	@Override
 	public void configure(Properties elasticsearchPropes) {

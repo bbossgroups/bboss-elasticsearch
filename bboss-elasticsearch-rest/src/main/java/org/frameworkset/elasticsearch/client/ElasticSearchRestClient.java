@@ -20,7 +20,6 @@ package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
@@ -157,7 +156,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public boolean containAddress(ESAddress address){
 		return addressMap.containsKey(address.getAddress());
 	}
-	public void handleRemoved(List<HttpHost> hosts){
+	public void handleRemoved(List<ESAddress> hosts){
 		boolean hasHosts = true;
 		if(hosts == null || hosts.size() == 0){//没有可用节点
 			hasHosts = false;
@@ -169,7 +168,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			ESAddress address = esAddressEntry.getValue();
 			if(hasHosts) {
 				boolean exist = false;
-				for (HttpHost httpHost : hosts) {
+				for (ESAddress httpHost : hosts) {
 					if (httpHost.toString().equals(host)) {
 						exist = true;
 						break;
@@ -178,14 +177,14 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				if (!exist) {
 					address.setStatus(2);
 					if(logger.isInfoEnabled()){
-						logger.info("ElasticSearch Node["+address.toString()+"] is down.");
+						logger.info("ElasticSearch Node["+address.toString()+"] is down or removed.");
 					}
 				}
 			}
 			else {
 				address.setStatus(2);
 				if(logger.isInfoEnabled()){
-					logger.info("ElasticSearch Node["+address.toString()+"] is down.");
+					logger.info("ElasticSearch Node["+address.toString()+"] is down  or removed.");
 				}
 			}
 
@@ -1158,11 +1157,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		this.showTemplate = showTemplate;
 	}
 
-	public void recoverRemovedNodes(List<HttpHost> hosts) {
+	public void recoverRemovedNodes(List<ESAddress> hosts) {
 		if(hosts == null || hosts.size() == 0){
 			return;
 		}
-		for(HttpHost httpHost: hosts) {
+		for(ESAddress httpHost: hosts) {
 			ESAddress address = this.addressMap.get(httpHost.toString());
 			if(address != null  ){
 				if(address.getStatus() == 2){//节点还原

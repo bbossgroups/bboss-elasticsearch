@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.boot;/*
  */
 
 import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.assemble.plugin.PropertiesFilePlugin;
 
@@ -60,6 +61,11 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 		 * -1:采用默认配置文件
 		 */
 		initType = -1;
+	}
+
+	@Override
+	public void afterLoaded(GetProperties applicationContext, PropertiesContainer propertiesContainer) {
+
 	}
 
 	@Override

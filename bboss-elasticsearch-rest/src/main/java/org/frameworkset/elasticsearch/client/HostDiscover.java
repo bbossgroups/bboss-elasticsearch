@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自动发现es 主机节点
+ * 主动发现：自动发现es 主机节点
  */
 public class HostDiscover extends Thread{
 	private final JsonFactory jsonFactory;
@@ -53,7 +53,12 @@ public class HostDiscover extends Thread{
 		this.interrupt();
 	}
 
-	private void handleDiscoverHosts(List<HttpHost> hosts){
+	private void handleDiscoverHosts(List<HttpHost> httpHosts){
+		List<ESAddress> hosts = new ArrayList<ESAddress>();
+		for(HttpHost host:httpHosts){
+			ESAddress esAddress = new ESAddress(host.toString());
+			hosts.add(esAddress);
+		}
 		List<ESAddress> newAddress = new ArrayList<ESAddress>();
 		//恢复移除节点
 		elasticSearchRestClient.recoverRemovedNodes(hosts);
@@ -158,7 +163,7 @@ public class HostDiscover extends Thread{
 					try {
 						inputStream.close();
 					} catch (Throwable var15) {
-						var3.addSuppressed(var15);
+
 					}
 				} else {
 					inputStream.close();
