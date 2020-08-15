@@ -135,6 +135,11 @@ public class ElasticSearchTransportClient implements EventElasticSearchClient {
 		return null;
 	}
 
+	@Override
+	public void setShowTemplate(boolean showdsl) {
+
+	}
+
 	// /**
 	// * Local transport client only for testing
 	// *

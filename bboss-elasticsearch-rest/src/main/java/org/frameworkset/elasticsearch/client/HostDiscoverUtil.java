@@ -15,7 +15,6 @@ public class HostDiscoverUtil{
 	private static Logger logger = LoggerFactory.getLogger(HostDiscoverUtil.class);
 	/**
 	 * 默认Elasticsearch数据源
-	 * HttpHost httpHost = new HttpHost(boundAddressAsURI.getHost(), boundAddressAsURI.getPort(), boundAddressAsURI.getScheme());
 	 * @param hosts
 	 *
 	 */
@@ -23,7 +22,6 @@ public class HostDiscoverUtil{
 		handleDiscoverHosts(hosts,"default");
 	}
 	/**
-	 * HttpHost httpHost = new HttpHost(boundAddressAsURI.getHost(), boundAddressAsURI.getPort(), boundAddressAsURI.getScheme());
 	 * @param hosts
 	 * @param elasticsearch
 	 */
@@ -40,8 +38,9 @@ public class HostDiscoverUtil{
 		if(elasticSearch == null ){
 			throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
 		}
-		List<ESAddress> newAddress = new ArrayList<ESAddress>();
+
 		ElasticSearchClient elasticSearchRestClient = elasticSearch.getRestClient();
+		List<ESAddress> newAddress = new ArrayList<ESAddress>();
 		//恢复移除节点
 		elasticSearchRestClient.recoverRemovedNodes(addressList);
 		//识别新增节点
@@ -60,6 +59,31 @@ public class HostDiscoverUtil{
 		}
 		//处理删除节点
 		elasticSearchRestClient.handleRemoved(addressList);
+	}
+
+	/**
+	 * 动态切换是否打印dsl到控制台开关标识
+	 * 默认dedault es数据源
+	 * @param showdsl
+	 */
+	public static synchronized void swithShowdsl(boolean showdsl){
+		swithShowdsl(  showdsl,"default");
+	}
+
+	/**
+	 * 动态切换是否打印dsl到控制台开关标识
+	 * 指定 es数据源
+	 * @param showdsl
+	 * @param elasticsearch es数据源名称
+	 */
+	public static synchronized void swithShowdsl(boolean showdsl,String elasticsearch){
+		ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSink(elasticsearch);
+		if(elasticSearch == null ){
+			throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
+		}
+
+		ElasticSearchClient elasticSearchRestClient = elasticSearch.getRestClient();
+		elasticSearchRestClient.setShowTemplate(showdsl);
 	}
 
 }

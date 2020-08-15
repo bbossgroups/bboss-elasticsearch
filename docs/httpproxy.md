@@ -14,6 +14,7 @@ bboss http基于http/https协议实现客户端-服务端点到点的负载均�
 2.服务健康检查
 3.服务容灾故障恢复
 4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
+5.动态监听路由变化
 5.分组服务管理
 可以配置多组服务集群地址，每一组地址清单支持的配置格式：
 http://ip:port
@@ -839,9 +840,31 @@ zookeeper，etcd，consul，eureka，db，其他第三方注册中心
 
 为了支持第三方注册中心，服务发现机制的提供两种工作模式：
 
-**主动发现模式**：bboss通过调用http.discoverService配置的服务发现方法，定时从数据库和注册中心中查询最新的服务地址数据清单，本文上面介绍的http.discoverService就是一种主动定时发现模式
+## **4.1 主动发现模式**
 
-**被动发现模式**：监听apollo，zookeeper，etcd，consul，eureka等配置中心中管理的服务节点地址清单数据变化，更新本地服务器地址清单，适用于发布订阅模式
+bboss通过调用http.discoverService配置的服务发现方法，定时从数据库和注册中心中查询最新的服务地址数据清单，本文上面介绍的http.discoverService就是一种主动定时发现模式
+
+## **4.2 被动发现模式**
+
+监听apollo，zookeeper，etcd，consul，eureka等配置中心中管理的服务节点地址清单数据变化，监听路由规则变化，更新本地服务器地址清单，适用于发布订阅模式,对应的api
+
+```java
+//当路由规则发生变化时，可以调用下面的api更新
+HttpProxyUtil.changeRouting(String poolName,String newCurrentRounte) //切换服务组poolName对应的路由规则
+//当服务节点发生变化时，可以调用下面的api更新
+public static void handleDiscoverHosts(String poolName, List<HttpHost> hosts) //更新服务节点
+
+//当路由规则和服务节点同时发生变化时，调用下面的api更新
+	/**
+	 *
+	 * @param poolName 服务组名称
+	 * @param hosts 新的主机节点信息
+	 * @param newCurrentRounte 新的路由组
+	 */
+	public static void handleDiscoverHosts(String poolName, List<HttpHost> hosts,String newCurrentRounte)
+```
+
+
 
 被动发现模式示例代码如下：
 
@@ -857,10 +880,14 @@ hosts.add(host);
 
 host = new HttpHost("192.168.137.1:810");
 hosts.add(host);
-//将被动获取到的地址清单加入服务地址组report中
+//将被动获取到的地址清单加入服务地址组report中，动态节点发现
 HttpProxyUtil.handleDiscoverHosts("report",hosts);
+
+//动态路由切换
+
+HttpProxyUtil.changeRouting(String poolName,String newCurrentRounte)
 ```
-## 4.1 基于apollo配置中心被动发现模式示例
+## 4.3 基于apollo配置中心被动发现模式示例
 首先定义一个apollo 监听器
 ```java
 package org.frameworkset.http.client;
@@ -986,6 +1013,22 @@ public class AddressConfigChangeListener implements ConfigChangeListener {
 	}
 ```
 Apollo配置使用参考文档：<https://esdoc.bbossgroups.com/#/apollo-config>
+
+直接调用http proxy api监听路由变化和节点变化
+
+```java
+       /**
+       * 1.服务健康检查
+       * 2.服务负载均衡
+       * 3.服务容灾故障恢复
+       * 4.服务自动发现（apollo，zk，etcd，consul，eureka，db，其他第三方注册中心）
+       * 配置了两个连接池：default,report
+       * 本示例演示基于apollo提供配置管理、服务自动发现以及灰度/生产，主备切换功能
+       */
+
+
+      HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
+```
 # 5.主备和异地灾备配置和服务发现
 
 主备和异地灾备配置和服务发现

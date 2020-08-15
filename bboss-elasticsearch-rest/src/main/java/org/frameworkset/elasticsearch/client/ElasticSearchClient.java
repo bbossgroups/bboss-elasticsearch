@@ -54,6 +54,8 @@ public interface ElasticSearchClient {
 	public Integer slowDslThreshold();
 	public SlowDslCallback getSlowDslCallback();
 	public ElasticSearch getElasticSearch();
+
+	void setShowTemplate(boolean showdsl);
 //	BulkRequestBuilder prepareBulk();
 //
 //	IndexRequestBuilder createIndexRequest(IndexNameBuilder indexNameBuilder, Event event) throws IOException;

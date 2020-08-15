@@ -1,14 +1,16 @@
 # Apollo对接与配置 (非spring boot项目)
 本文介绍在非spring boot项目中，bboss与Apollo对接与配置方法。
 
-# 1.添加Apollo和bbossEs相关依赖
+# 1.elasticsearch客户端与Apollo对接
+
+## 1.1 添加Apollo和bbossEs相关依赖
 
 maven项目pom.xml添加Apollo和bbossEs相关依赖
 ```xml
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.1.9</version>
+    <version>6.2.0</version>
      <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -20,13 +22,13 @@ maven项目pom.xml添加Apollo和bbossEs相关依赖
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-plugin-apollo</artifactId>
-    <version>5.7.6</version>
+    <version>5.7.7</version>
 </dependency>
 ```
 
  注意：一定要排除bboss-elasticsearch-rest-booter包
 
-# 2.增加app.properties文件 
+## 1.2 增加app.properties文件 
 在应用resources/META-INF目录下面增加app.properties文件，内容如下：
 
 ```properties
@@ -36,20 +38,22 @@ app.id=visualops
 apollo.meta=http://10.13.11.7:8080
 ```
 
-# 3.增加elasticsearch-boot-config.xml
+## 1.3 增加elasticsearch-boot-config.xml
 在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：
 
 ```xml
 <properties>
     <!--
-       指定apollo属性配置namespace
+       指定apolloNamespace属性配置namespace
+       指定configChangeListener属性，设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器
     -->
 
-    <config apolloNamespace="application"/>
+    <config apolloNamespace="application" 
+            configChangeListener="org.frameworkset.apollo.ESNodeChangeListener"/>
  </properties>
 ```
 
-# 4.增加server.properties文件
+## 1.4 增加server.properties文件
 在C:\opt\settings（windows）或者/opt/settings(linux)新增文件server.properties，内容如下：
 
 ```properties
@@ -60,7 +64,7 @@ idc=XJ-dpq-a
 ```
 
 
-# 5.Apollo中创建项目和namespace
+## 1.5 Apollo中创建项目和namespace
 应用名称：visualops
 
 es服务器的相关信息，那么就可以创建一个名为application的namespace，其中主要配置信息如下：
@@ -112,10 +116,10 @@ http.keepAlive = 3600000
 ![image-20200802133509704](images/apollo.png)
 
 
-# 6.完成上述操作之后，就可以正常使用bbosses的api了
+## 1.6 完成上述操作之后，就可以正常使用bbosses的api了
 
-# 7.bboss中使用apollo管理属性的其他作用
-##  7.1 IOC与apollo集成并管理属性案例
+# 2.bboss中使用apollo管理属性的其他作用
+##  2.1 IOC与apollo集成并管理属性案例
 ```xml
 <properties>
     <config apolloNamespace="application" changeReload="false"/>
@@ -135,9 +139,11 @@ http.keepAlive = 3600000
 config元素支持的属性说明
 
 apolloNamespace 指定apollo namespace，多个用逗号分隔
+
 changeReload   指定是否热加载修改后的属性，true 加载， false不加载，热加载时IOC中的属性和组件都会重新初始化
+
 configChangeListener 指定自己的apollo值变化监听器
-## 7.2 在代码中直接加载apollo中的配置
+## 2.2 在代码中直接加载apollo中的配置
 
 ```java
 public class ApolloPropertiesFilePluginTest{
@@ -187,9 +193,11 @@ public class ApolloPropertiesFilePluginTest{
    }
 }
 ```
-## 7.3 http proxy中加载apollo中配置案例
+## 2.3 http proxy中加载apollo中配置案例
 bboss http proxy是一个轻量级的java http客户端负载均衡器，对应的配置可以通过apollo进行配置管理，同时亦可以通过apollo实现服务节点自动发现功能，
 这里介绍具体的使用方法。
+
+### 2.3.1 自定义监听器
 
 首先定义一个apollo 监听器，用于实现服务节点自动发现功能
 ```java
@@ -315,7 +323,23 @@ public class AddressConfigChangeListener implements ConfigChangeListener {
 		while(true);
 	}
 ```
-# 8.参考文档
+### 2.3.2 直接调用http proxy api监听路由变化和节点变化
+
+```java
+       /**
+       * 1.服务健康检查
+       * 2.服务负载均衡
+       * 3.服务容灾故障恢复
+       * 4.服务自动发现（apollo，zk，etcd，consul，eureka，db，其他第三方注册中心）
+       * 配置了两个连接池：default,report
+       * 本示例演示基于apollo提供配置管理、服务自动发现以及灰度/生产，主备切换功能
+       */
+
+
+      HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
+```
+
+# 3.参考文档
 
 [Spring boot整合Elasticsearch](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=spring-boot整合elasticsearch案例分享)
 

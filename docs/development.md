@@ -162,9 +162,21 @@ http.pemkeyPassword = 7240a0366eb6a764103e
 
 
 
-## 2.3 集群节点自动发现discover控制开关
+## 2.3 集群节点自动发现
 
-集群节点自动发现控制开关，true开启，false关闭
+bboss提供了非常方便的elasticsearch节点动态发现机制，能够动态发现elasticsearch服务端的节点的变化（新增节点，删除节点等），从而调整客户端的地址清单；支持主动和被动两种节点发现模式。
+
+如果启用了节点自动发现机制，我们只需要在elasticsearch.rest.hostNames中配置几个初始节点即可：
+
+```properties
+elasticsearch.rest.hostNames=127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202
+```
+
+
+
+### 2.3.1 主动发现模式
+
+主动模式集群节点自动发现机制通过elasticsearch.discoverHost参数来控制，true开启，false关闭
 
 elasticsearch.discoverHost=false
 
@@ -172,13 +184,69 @@ elasticsearch.discoverHost=false
 
 **注意**：
 
-访问容器环境/云环境或者其他通过代理转发环境中部署的Elasticsearch时，请关闭：elasticsearch.discoverHost=false
+访问容器环境/云环境部署的Elasticsearch时或者通过Elasticsearch proxy client协调节点访问时，请关闭：elasticsearch.discoverHost=false
 
+这种情况，可以通过被动监听的方式通过bboss提供的api来动态修改客户端地址列表
 
+### 2.3.2 被动发现模式
+
+被动发现模式通过组件org.frameworkset.elasticsearch.client.HostDiscoverUtil提供的静态方法api来支持：
+
+```java
+/**
+ * 默认Elasticsearch数据源
+ * @param hosts 最新的地址清单
+ *
+ */
+public static synchronized void handleDiscoverHosts(String[] hosts)
+/**
+ * @param hosts 最新的地址清单
+ * @param elasticsearch elasticsearch数据源
+ */
+public static synchronized void handleDiscoverHosts(String[] hosts,String elasticsearch)
+```
+
+如果节点发生变化时，可以调用上面的方法之一来处理，例如：
+
+```java
+String hosts[] = {"127.0.0.1:9200","127.0.0.1:9201","127.0.0.1:9202","127.0.0.1:9203"};
+HostDiscoverUtil.handleDiscoverHosts(hosts);//default es数据源
+HostDiscoverUtil.handleDiscoverHosts(hosts,"loges");//指定loges数据源
+```
+
+注意：需要将elasticsearch.discoverHost设置为false
+
+elasticsearch.discoverHost=false
+
+### 2.3.3 基于apollo配置中心的节点发现机制
+
+直接在apollo 对应的bboss elasticsearch配置启动文件中指定节点发现监听器：
+
+src\main\resources\conf\elasticsearch-boot-config.xml
+
+```xml
+<properties>
+    <!--
+       指定apolloNamespace属性配置namespace
+       指定configChangeListener属性，设置elasticsearch节点自动发现监听器
+    -->
+
+    <config apolloNamespace="application"
+            configChangeListener="org.frameworkset.apollo.ESNodeChangeListener"/>
+ </properties>
+```
+
+注意：需要将elasticsearch.discoverHost设置为false
+
+elasticsearch.discoverHost=false
+
+参考apollo管理配置文档：
+
+https://esdoc.bbossgroups.com/#/apollo-config
 
 ## 2.4 DSL调试日志开关和日志组件配置
 
-### DSL脚本调试日志开关
+### 2.4.1 DSL脚本调试日志开关
 
 DSL脚本调试日志开关，将showTemplate设置为true，同时将日志级别设置为INFO，则会将query dsl脚本输出到日志文件中：
 
@@ -241,7 +309,7 @@ logging.level.org.apache=INFO
 
 在生产环境请关闭：elasticsearch.showTemplate=false
 
-### 日志组件切换
+### 2.4.2 日志组件切换
 
 如果需要使用其他日志组件，那么只需要在bboss的maven坐标中排除log4j的包，导入其他日志组件的依赖库即可，以log4j 2为示例进行说明：
 
@@ -301,7 +369,48 @@ logging.level.org.apache=INFO
         </dependency>
 ```
 
+### 2.4.3 动态切换Dsl日志打印
 
+org.frameworkset.elasticsearch.client.HostDiscoverUtil组件提供了以下方法来动态切换Dsl日志打印功能：
+
+```java
+/**
+ * 动态切换是否打印dsl到控制台开关标识
+ * 默认dedault es数据源
+ * @param showdsl
+ */
+public static synchronized void swithShowdsl(boolean showdsl)
+
+/**
+ * 动态切换是否打印dsl到控制台开关标识
+ * 指定 es数据源
+ * @param showdsl
+ * @param elasticsearch es数据源名称
+ */
+public static synchronized void swithShowdsl(boolean showdsl,String elasticsearch)
+```
+
+### 2.4.4 基于apollo配置中心动态切换Dsl日志打印
+
+直接在apollo 对应的bboss elasticsearch配置启动文件中指定节点发现监听器：
+
+src\main\resources\conf\elasticsearch-boot-config.xml
+
+```xml
+<properties>
+    <!--
+       指定apolloNamespace属性配置namespace
+       指定configChangeListener属性，设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器
+    -->
+
+    <config apolloNamespace="application"
+            configChangeListener="org.frameworkset.apollo.ESNodeChangeListener"/>
+ </properties>
+```
+
+参考apollo管理配置文档：
+
+https://esdoc.bbossgroups.com/#/apollo-config
 
 ## **2.5 按日期动态产生的索引索引名称的日期格式**
 
