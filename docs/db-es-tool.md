@@ -1975,49 +1975,9 @@ public class ES2DBSliceScrollResultCallbackDemo {
 
  https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
 
-调试测试以及运行quatz作业同步功能方法，按如下配置进行操作：
+参考文档：
 
- 1.在配置文件中添加quartz作业任务配置-[resources/org/frameworkset/task/quarts-task.xml](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/resources/org/frameworkset/task/quarts-task.xml)相关内容
-
-```xml
-<list>
-	<property name="QuartzImportTask" jobid="QuartzImportTask"
-					  bean-name="QuartzImportTask"
-					  method="execute"
-					  cronb_time="${quartzImportTask.crontime:*/20 * * * * ?}" used="true"
-					  shouldRecover="false"
-			/>
-</list>
-<!-- 作业组件配置-->
-<property name="QuartzImportTask" class="org.frameworkset.elasticsearch.imp.QuartzImportTask"
-		  destroy-method="destroy"
-		  init-method="init"
-/>
-```
-
- 2.添加一个带main方法的作业运行
-
-```java
- public class QuartzTest {
- 	public static void main(String[] args){
- 		TaskService.getTaskService().startService();
-        }
- }
-```
-
- 然后运行main方法即可
-
-
-
- 3.实际运行和发布作业方法， 使用quartz定时器运行导入数据作业时，先参考第一步做quartz作业任务配置，然后将application.properties文件中的mainclass设置为如下值即可：
-
- 
-
-```properties
-mainclass=org.frameworkset.task.Main
-```
-
- 4.发布和运行quartz定时任务：参考章节【2.4.10 发布版本】
+[基于quartz调度数据同步作业](datasyn-quartz.md)
 
 ## 3.4 xxl-job同步器demo
 

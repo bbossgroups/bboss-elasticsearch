@@ -47,6 +47,11 @@ public class AOPTemplateMeta implements TemplateMeta{
 
 
 	@Override
+	public boolean isEscapeQuoted() {
+		return pro.isEscapeQuoted();
+	}
+
+	@Override
 	public String getReferenceNamespace() {
 		return (String)pro.getExtendAttribute(TemplateContainer.NAME_templateFile);
 	}

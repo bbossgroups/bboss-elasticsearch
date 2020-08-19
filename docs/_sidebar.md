@@ -53,6 +53,7 @@
     - [Mongodb-Elasticsearch同步工具](mongodb-elasticsearch.md)
     - [HBase-Elasticsearch数据同步](hbase-elasticsearch.md)
     - [基于xxl-job数据同步作业调度](xxljobdatasyn.md)
+    - [基于quartz调度数据同步作业](datasyn-quartz.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)

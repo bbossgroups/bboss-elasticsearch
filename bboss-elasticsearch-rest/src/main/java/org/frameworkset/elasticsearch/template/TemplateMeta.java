@@ -25,6 +25,7 @@ package org.frameworkset.elasticsearch.template;
  * @see org.frameworkset.elasticsearch.template.AOPTemplateMeta
  */
 public interface TemplateMeta {
+	public boolean isEscapeQuoted();
 	/**
 	 * 非xml配置情况下不支持，如果模板是一个引用，则需要指定引用对应的namespace，通过referenceTemplateName指定对应namespace下面的dsl模板名称
 	 * @return

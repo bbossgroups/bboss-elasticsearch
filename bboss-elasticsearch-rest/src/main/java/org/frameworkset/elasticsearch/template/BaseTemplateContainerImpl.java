@@ -127,7 +127,7 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 		String value = (String)templateMeta.getDslTemplate();
 		//先进行特殊字符转换
 		if(value != null && !value.equals("")){
-			value = configProperties.escapeValue(value, valueHandler);
+			value = configProperties.escapeValue(value, valueHandler,templateMeta.isEscapeQuoted());
 		}
 		//再进行片段解析
 		String resultValue = configProperties.evalValue(parentLinks,value, valueHandler,valueContainer);

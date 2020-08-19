@@ -64,7 +64,16 @@ public class BaseTemplateMeta implements TemplateMeta{
 
 	private boolean parsered;
 
+	@Override
+	public boolean isEscapeQuoted() {
+		return escapeQuoted;
+	}
 
+	public void setEscapeQuoted(boolean escapeQuoted) {
+		this.escapeQuoted = escapeQuoted;
+	}
+
+	private boolean escapeQuoted = true;
 	private Boolean multiparser;
 	@Override
 	public String getReferenceNamespace() {
