@@ -63,6 +63,7 @@ import org.frameworkset.tran.schedule.ExternalScheduler;
 import org.frameworkset.tran.schedule.TaskContext;
 import org.frameworkset.tran.task.TaskCommand;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -76,30 +77,25 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ImportDataJob implements Job {
 
-   Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
+    private static Logger logger = LoggerFactory.getLogger(ImportDataJob.class);
+    private boolean inited ;
 
     public ImportDataJob(){
-        init();
-        BaseApplicationContext.addShutdownHook(new Runnable() {
-            @Override
-            public void run() {
-                destroy();
-            }
-        });
+
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
             lock.lock();
+            if(!inited){
+                try {
+                    init(context.getJobDetail().getJobDataMap());
+                }
+                finally {
+                    inited = true;
+                }
+            }
             externalScheduler.execute(null);
 
         }
@@ -116,7 +112,7 @@ public class ImportDataJob implements Job {
         }
     }
 
-    public void init(){
+    public void init(JobDataMap jobDataMap){
         externalScheduler = new ExternalScheduler();
         externalScheduler.dataStream((Object params)->{
             DB2DBExportBuilder importBuilder = DB2DBExportBuilder.newInstance();
@@ -126,7 +122,8 @@ public class ImportDataJob implements Job {
                     "#[create_time], ## 来源dbdemo索引中的 logContent字段\n" +
                     "#[update_time]) ## 通过datarefactor增加的地理位置信息字段";
 
-
+            // 获取作业参数
+            Object data = jobDataMap.get("aa");
             //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
             // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
             // select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
@@ -242,6 +239,13 @@ public class ImportDataJob implements Job {
                 }
             });
             return importBuilder;
+        });
+
+        BaseApplicationContext.addShutdownHook(new Runnable() {
+            @Override
+            public void run() {
+                destroy();
+            }
         });
 
     }

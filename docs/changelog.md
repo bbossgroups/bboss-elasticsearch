@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.1.9 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.0 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.1.9</version>
+            <version>6.2.0</version>
         </dependency>
 ```
 
@@ -44,9 +44,67 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.1.9</version>
+            <version>6.2.0</version>
         </dependency>
 ```
+
+# v6.2.0 功能改进
+1. es客户端改进：可以通过apollo配置中心设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器，参考文档：https://esdoc.bbossgroups.com/#/apollo-config
+2. es客户端改进：增加动态泛型es节点方法，参考文档：[Elasticsearch节点被动发现模式](https://esdoc.bbossgroups.com/#/development?id=_232-被动发现模式)
+3. es客户端改进：增加动态设置打印dsl控制方法，参考文档：[动态切换dsl日志打印](https://esdoc.bbossgroups.com/#/development?id=_243-动态切换dsl日志打印)
+4. es客户端改进：dsl片段支持多行sql脚本和多行script脚本：通过在片段property上指定escapeQuoted="false"来实现：
+
+```xml
+   <!--
+           分页sql query
+           每页显示 fetch_size对应的记录条数
+   
+   
+   -->
+   <property name="sqlPianduan" escapeQuoted="false">
+       <![CDATA[
+         #"""
+           channelId,
+           application,
+           applicationName,
+           address,
+           timeDate,
+           day
+         """
+       ]]>
+   </property>
+   <!--
+       分页sql query
+       每页显示 fetch_size对应的记录条数
+   
+   -->
+   <property name="sqlPagineQueryUsePianduan">
+       <![CDATA[
+        {
+        ## 指示sql语句中的回车换行符会被替换掉开始符,注意dsl注释不能放到sql语句中，否则会有问题，因为sql中的回车换行符会被去掉，导致回车换行符后面的语句变道与注释一行
+        ##  导致dsl模板解析的时候部分sql段会被去掉
+           "query": #"""
+                   SELECT
+                   @{sqlPianduan}
+                   FROM dbclobdemo
+                   where channelId=#[channelId]
+            """,
+            ## 指示sql语句中的回车换行符会被替换掉结束符
+           "fetch_size": #[fetchSize]
+        }
+       ]]>
+   </property>
+
+```
+
+5. httpproxy改进：增加路由规则动态切换api，可以监听路由规则动态变化
+
+6. httpproxy改进：增加http proxy api监听路由变化和节点变化
+
+7. httpproxy改进：使用参考文档：[服务发现机制的两种工作模式](https://esdoc.bbossgroups.com/#/httpproxy?id=_4服务发现机制的两种工作模式)
+
+   
+
 # v6.1.9 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
 2. 完善dsl打印机制
@@ -56,7 +114,7 @@ https://esdoc.bbossgroups.com/#/development
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.1.9</version>
+    <version>6.2.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -69,7 +127,7 @@ https://esdoc.bbossgroups.com/#/development
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-plugin-apollo</artifactId>
-    <version>5.7.6</version>
+    <version>5.7.7</version>
 </dependency>
 ```
 
