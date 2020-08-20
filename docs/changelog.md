@@ -50,7 +50,7 @@ https://esdoc.bbossgroups.com/#/development
 
 # v6.2.0 功能改进
 1. es客户端改进：可以通过apollo配置中心设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器，参考文档：https://esdoc.bbossgroups.com/#/apollo-config
-2. es客户端改进：增加动态泛型es节点方法，参考文档：[Elasticsearch节点被动发现模式](https://esdoc.bbossgroups.com/#/development?id=_232-被动发现模式)
+2. es客户端改进：增加动态发现es节点方法，参考文档：[Elasticsearch节点被动发现模式](https://esdoc.bbossgroups.com/#/development?id=_232-被动发现模式)
 3. es客户端改进：增加动态设置打印dsl控制方法，参考文档：[动态切换dsl日志打印](https://esdoc.bbossgroups.com/#/development?id=_243-动态切换dsl日志打印)
 4. es客户端改进：dsl片段支持多行sql脚本和多行script脚本：通过在片段property上指定escapeQuoted="false"来实现：
 
@@ -101,7 +101,7 @@ https://esdoc.bbossgroups.com/#/development
 
 6. httpproxy改进：增加http proxy api监听路由变化和节点变化
 
-7. httpproxy改进：使用参考文档：[服务发现机制的两种工作模式](https://esdoc.bbossgroups.com/#/httpproxy?id=_4服务发现机制的两种工作模式)
+7. httpproxy改进使用参考文档：[服务发现机制的两种工作模式](https://esdoc.bbossgroups.com/#/httpproxy?id=_4服务发现机制的两种工作模式)
 
    
 

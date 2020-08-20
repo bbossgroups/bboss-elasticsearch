@@ -2677,6 +2677,53 @@ bboss elastic还支持不同dsl配置文件之间的dsl引用,例如：
 
 ![img](https://oscimg.oschina.net/oscnet/2e1115df01f4ef89faa689ce4747870db82.jpg)
 
+比较复杂的情况就是在多行sql中引用多行片段，需要通过在property元素上加escapeQuoted="false"控制引用的片段不加""，否则会在SQL中出现双引号，破坏sql语法结构，下面是一个实例：
+
+```xml
+   <!--
+           分页sql query
+           每页显示 fetch_size对应的记录条数
+   
+   
+   -->
+   <property name="sqlPianduan" escapeQuoted="false">
+       <![CDATA[
+         #"""
+           channelId,
+           application,
+           applicationName,
+           address,
+           timeDate,
+           day
+         """
+       ]]>
+   </property>
+   <!--
+       分页sql query
+       每页显示 fetch_size对应的记录条数
+   
+   -->
+   <property name="sqlPagineQueryUsePianduan">
+       <![CDATA[
+        {
+        ## 指示sql语句中的回车换行符会被替换掉开始符,注意dsl注释不能放到sql语句中，否则会有问题，因为sql中的回车换行符会被去掉，导致回车换行符后面的语句变道与注释一行
+        ##  导致dsl模板解析的时候部分sql段会被去掉
+           "query": #"""
+                   SELECT
+                   @{sqlPianduan}
+                   FROM dbclobdemo
+                   where channelId=#[channelId]
+            """,
+            ## 指示sql语句中的回车换行符会被替换掉结束符
+           "fetch_size": #[fetchSize]
+        }
+       ]]>
+   </property>
+
+```
+
+
+
 ### **5.3.10 变量使用注意事项**
 
 bboss dsl语法支持#[channelId]和$channelId两种模式的变量定义，在sql语句中使用变量需要注意几个地方，下面的举例说明。
