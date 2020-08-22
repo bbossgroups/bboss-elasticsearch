@@ -22,7 +22,17 @@ gradle项目参考demo2：
 
 [elasticsearch-gradle-demo](https://github.com/bbossgroups/elasticsearch-gradle-example)  （gradle）
 
-# 2.快速集成和应用 
+# 2.基于apollo配置中心案例
+
+https://github.com/bbossgroups/elasticsearch-example-apollo
+
+https://github.com/bbossgroups/db-elasticsearch-tool-apollo
+
+https://github.com/bbossgroups/httpproxy-apollo
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo
+
+# 3.快速集成和应用 
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md) 
@@ -35,9 +45,7 @@ bboss elasticsearch开发库使用文档：
 
 [How to use Elasticsearch BBoss](quickstart.md)
 
-# 3.开发交流
-
-
+# 4.开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 
