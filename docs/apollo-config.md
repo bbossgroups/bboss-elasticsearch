@@ -45,7 +45,7 @@ apollo.meta=http://10.13.11.7:8080
 <properties>
     <!--
        指定apolloNamespace属性配置namespace
-       指定configChangeListener属性，设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器
+       指定configChangeListener属性，设置elasticsearch节点（elasticsearch.rest.hostNames）自动发现和动态切换Dsl日志打印开关（elasticsearch.showTemplate）监听器
     -->
 
     <config apolloNamespace="application" 
@@ -71,11 +71,11 @@ es服务器的相关信息，那么就可以创建一个名为application的name
 ```properties
 elasticsearch.rest.hostNames = ip:9200
 
+## 自动按日期时间分表时指定日期格式，例如 按照下面格式生成的索引名称示例：indexname-2000.03.05
 elasticsearch.dateFormat = yyyy.MM.dd
-
+## 自动按日期时间分表时指定日期格式时区
 elasticsearch.timeZone = Asia/Shanghai
 
-elasticsearch.ttl = 2d
 
 #在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
 
@@ -90,26 +90,22 @@ dslfile.refreshInterval = -1
 ##es client http连接池配置
 
 http.timeoutConnection = 50000
-
 http.timeoutSocket = 50000
-
-http.connectionRequestTimeout = 50000
-
-http.retryTime = 1
-
-http.maxLineLength = -1
-
+http.connectionRequestTimeout=50000
+http.retryTime = 3
+http.automaticRetriesDisabled= false
+#http.staleConnectionCheckEnabled=true
+http.validateAfterInactivity=2000
+http.evictExpiredConnections=false
+http.timeToLive = 3600000
 http.maxHeaderCount = 200
-
-http.maxTotal = 400
-
+http.maxTotal = 600
 http.defaultMaxPerRoute = 200
 
 http.soReuseAddress = false
 
 http.soKeepAlive = false
 
-http.timeToLive = 3600000
 
 http.keepAlive = 3600000
 ```
@@ -157,13 +153,17 @@ public class ApolloPropertiesFilePluginTest{
    }
    @Test
    public void test(){
+      // 打印从apollo获取的配置信息
       dbinfo("");
       dbinfo("ecop.");
+      //每隔两秒获取最新的配置信息，可以验证热加载apollo中发生改变的配置
       while(true){
          try {
             synchronized (this) {
-               Thread.currentThread().wait(1000l);
+               Thread.currentThread().wait(2000l);
             }
+            dbinfo("");
+            dbinfo("ecop.");
          }
          catch (Exception e){
 

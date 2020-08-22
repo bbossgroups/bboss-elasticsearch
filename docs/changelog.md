@@ -47,6 +47,8 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.2.0</version>
         </dependency>
 ```
+# v6.2.1 功能改进
+1. 数据同步改进：增加原始quartz调度作业基础类org.frameworkset.tran.schedule.quartz.BaseQuartzDatasynJob
 
 # v6.2.0 功能改进
 1. es客户端改进：可以通过apollo配置中心设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器，参考文档：https://esdoc.bbossgroups.com/#/apollo-config
@@ -107,7 +109,7 @@ https://esdoc.bbossgroups.com/#/development
 
 # v6.1.9 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
-2. 完善dsl打印机制
+2. 完善dsl打印机制:打印dsl的时候，会同时把接收dsl的elasticsearch 节点url地址，重试次数打印出来
 3. 非spring boot项目支持通过apollo来管理客户端配置，只需要将maven坐标做如下处理即可
 
 ```xml
