@@ -3,7 +3,12 @@
 bboss http一个简单而功能强大的http/https负载均衡器模块，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
 项目源码
+
 https://github.com/bbossgroups/bboss-http
+
+httpproxy 案例：基于apollo进行配置管理、节点自动发现、路由规则自动切换，源码地址
+
+https://github.com/bbossgroups/httpproxy-apollo
 
 # 1.负载均衡器特色
 
