@@ -58,9 +58,7 @@ https://esdoc.bbossgroups.com/#/development
 
 ```xml
    <!--
-           分页sql query
-           每页显示 fetch_size对应的记录条数
-   
+           通用sql字段列表，可以被其他sql引用 
    
    -->
    <property name="sqlPianduan" escapeQuoted="false">
