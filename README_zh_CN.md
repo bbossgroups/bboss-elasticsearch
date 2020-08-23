@@ -70,19 +70,19 @@ elasticsearch.rest.hostNames=10.21.20.168:9200
 #elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200
 ```
 
-And last  create a jsp file named testElasticsearch.jsp :
+And write java code to test bboss api:
 
-```jsp
-<%@ page import="org.frameworkset.elasticsearch.ElasticSearchHelper" %>
-<%@ page import="org.frameworkset.elasticsearch.client.ClientInterface" %>
-<%@ page import="org.frameworkset.elasticsearch.entity.ESDatas" %>
-<%@ page import="org.frameworkset.elasticsearch.scroll.ScrollHandler" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.frameworkset.common.poolman.SQLExecutor" %>
-<%@ page language="java" pageEncoding="UTF-8"%>
-<%@ page import="org.frameworkset.elasticsearch.scroll.HandlerInfo" %>
-<%
+```java
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.scroll.ScrollHandler;
+import java.util.List;
+import java.util.Map;
+import com.frameworkset.common.poolman.SQLExecutor;
+
+import org.frameworkset.elasticsearch.scroll.HandlerInfo;
+ 
 	ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 	//get elasticsearch cluster state
 	String result = clientUtil.executeHttp("_cluster/state?pretty",ClientInterface.HTTP_GET);
@@ -119,13 +119,9 @@ And last  create a jsp file named testElasticsearch.jsp :
     //Use slice parallel scoll query all documents of indice  twitter by 2 thread tasks. DEFAULT_FETCHSIZE is 5000
 	//You can also use ScrollHandler to process each batch of datas on your own.
 	esDatas = clientUtil.searchAllParallel("twitter", Map.class,2);
-	out.println("searchAllParallel:ok");
-%>
+	
 
 ```
-
-Put the file into the web project that has been connected to pinpoint, run the program, log on pinpoint to see the execution effect of bboss plugin.
-
 # Elasticsearch Java Demos
 
 The following Demo and related documentation is compatible with Elasticsearch 2. X,5. X,6. X,+ versions
