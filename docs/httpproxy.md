@@ -79,7 +79,7 @@ HttpRequestProxy.startHttpPools("application.properties");
 
 加载Map属性配置启动负载均衡器示例-
 
-**简单的配置和启动**
+#### **简单的配置和启动**
 
 ```java
 Map<String,Object> configs = new HashMap<String,Object>();
@@ -92,7 +92,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
 HttpRequestProxy.startHttpPools(configs);
 ```
 
-**启动时指定服务发现机制**
+#### **启动时指定服务发现机制**
 
 ```java
        Map<String,Object> configs = new HashMap<String,Object>();
@@ -106,6 +106,34 @@ HttpRequestProxy.startHttpPools(configs);
 configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3:9200");
  
       HttpRequestProxy.startHttpPools(configs);
+```
+
+#### **加载apollo配置启动httpproxy**
+
+指定apollo命名空间和配置参数变化监听器（自定义）
+
+```java
+	/**
+     * 从apollo加载配置启动http proxy：
+	 * 配置了两个连接池：default,schedule
+     * apollo namespace:  application
+     * 服务地址变化发现监听器： org.frameworkset.http.client.AddressConfigChangeListener
+	 */
+
+	HttpRequestProxy.startHttpPoolsFromApollo("application","org.frameworkset.http.client.AddressConfigChangeListener");
+```
+指定apollo命名空间并监听服务节点及路由规则变化
+```java
+       /**
+       * 1.服务健康检查
+       * 2.服务负载均衡
+       * 3.服务容灾故障恢复
+       * 4.服务自动发现（apollo，zk，etcd，consul，eureka，db，其他第三方注册中心）
+       * 配置了两个连接池：default,report
+       * 本示例演示基于apollo提供配置管理、服务自动发现以及灰度/生产，主备切换功能
+       */
+
+  HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
 ```
 
 ### 3.1.2 调用服务API及示例
