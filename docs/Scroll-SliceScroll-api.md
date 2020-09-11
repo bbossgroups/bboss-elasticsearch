@@ -96,7 +96,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 # 3.基本scroll api与自定义scorll结果集handler函数结合使用
 
-## 串行
+## 3.1 串行
 
 ```java
 	@Test
@@ -121,7 +121,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 	}
 ```
 
-## 串行中断
+## 3.2 串行中断
 
 在一定的条件下，可以中断整个串行scroll的处理，通过抽象类SerialBreakableScrollHandler的setBreaked(true)方法来实现中断串行scroll执行：
 
@@ -154,7 +154,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 
 
-## 并行
+## 3.3 并行
 
 ```java
 @Test
@@ -178,7 +178,7 @@ public void testSimleScrollParallelAPIHandler(){
 }
 ```
 
-## 并行中断
+## 3.4 并行中断
 
 在一定的条件下，可以中断整个并行scroll的处理，通过抽象类ParralBreakableScrollHandler的setBreaked(true)方法来实现中断并行scroll执行：
 
@@ -214,7 +214,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 
 
-##  串行
+##  4.1 串行
 
 ```java
 	/**
@@ -238,7 +238,7 @@ public void testSimleScrollParallelAPIHandler(){
 	}
 ```
 
-##  并行
+##  4.2 并行
 
 ```java
 	/**
@@ -269,7 +269,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 
 
-## 串行
+## 5.1 串行
 
 ```java
 	/**
@@ -301,7 +301,7 @@ public void testSimleScrollParallelAPIHandler(){
 	}
 ```
 
-## 串行中断
+## 5.2 串行中断
 
 在一定的条件下，可以中断整个串行slice scroll的处理，通过抽象类SerialBreakableScrollHandler的setBreaked(true)方法来实现中断串行slice scroll执行：
 
@@ -337,7 +337,7 @@ public void testSimleScrollParallelAPIHandler(){
 
 
 
-## 并行
+## 5.3 并行
 
 ```java
 	/**
@@ -376,7 +376,7 @@ elasticsearch.sliceScrollThreadCount 默认值50
 
 elasticsearch.sliceScrollThreadQueue 默认值100
 
-## 并行中断
+## 5.4 并行中断
 
 在一定的条件下，可以中断整个并行slice scroll的处理，通过抽象类ParralBreakableScrollHandler的setBreaked(true)方法来实现中断并行slice scroll执行：
 
@@ -413,11 +413,27 @@ elasticsearch.sliceScrollThreadQueue 默认值100
 
 
 
-## ES之间数据导入导出
+## 5.5 ES之间数据导入导出
 
 可以使用并行方式执行slice scroll操作来实现ES之间数据导入导出，将一个elasticsearch的数据导入另外一个elasticsearch，需要在application.properties文件中定义两个es集群配置：default(默认集群，源集群),es233（目标集群），default对应目标集群，es233对应源集群，目标集群和源集群的elasticsearch版本可以为elasticsearch 1.x,2.x,5.x,6.x,7.x，+；[参考配置](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/applicationtwo.properties)
 
-### 源库索引全量数据导入
+如果要运行下面的案例，需要将参考包含两个elasticsearch数据源的配置文件applicationtwo.properties中的配置项，并将其中内容拷贝并替换配置文件application.properties（bboss只会加载application.properties文件，项目中其他文件为bboss功能配置案例）中的内容，然后修改default数据源和es233数据源的地址以及其他账号信息即可，例如修改es地址：
+
+defualt数据源elasticsearch地址
+
+```properties
+elasticsearch.rest.hostNames=192.168.137.1:9200
+```
+
+es233数据源elasticsearch地址
+
+```properties
+es233.elasticsearch.rest.hostNames=192.168.137.1:9200
+```
+
+
+
+### 5.5.1 源库索引全量数据导入
 
 ```java
 /**
@@ -450,7 +466,7 @@ public void testSimpleSliceScrollApiParralHandlerExport() {
 
 
 
-### 源库索引有查询条件的导入
+### 5.5.2 源库索引有查询条件的导入
 
 可以通过配置文件定义导入数据的dsl语句，将符合条件的数据导入目标库：其中esmapper/scroll.xml配置文件参考章节[**1.dsl配置文件定义**](https://esdoc.bbossgroups.com/#/Scroll-SliceScroll-api?id=_1dsl配置文件定义)
 
