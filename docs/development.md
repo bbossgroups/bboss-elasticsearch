@@ -319,7 +319,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -348,7 +348,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -2173,7 +2173,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和\*#包起来
 
 - #### #[application]变量属性
 
-另外，可以在#[]变量中指定escapeCount,serialJson,quoted、lpad、rpad、escape、dateformat/locale/timezone属性，属性和变量名称用逗号分隔：
+另外，可以在#[]变量中指定escapeCount,serialJson,quoted、lpad、rpad、escape、esEncode、dateformat/locale/timezone属性，属性和变量名称用逗号分隔：
 
 \#[变量名,quoted=false,lpad=xxx,rpad=ddd]
 
@@ -2293,6 +2293,34 @@ protected Date agentStarttime;
      "applicationName": #[applicationName,escape=false,quote=false]
  }
 ```
+
+- **esEncode** boolean 类型，默认值false（不转义elasticsearch操作符），true（转义elasticsearch操作符），用于在query_string中对应不要作为elasticsearch操作符字符（\+ - = && || ! ( ) { } [ ] ^ " ~ * ? : \ /）进行转义处理，例如：
+
+  ```json
+  {
+    "query" : {
+      "query_string" : {
+        "query" : "kimchy\\!",
+        "fields"  : ["user"]
+      }
+    }
+  }
+  ```
+
+​      使用bboss时只需要传入变量值kimchy!，然后用#[xxx,esEncode=true]可控制操作符转义处理：
+
+```json
+{
+  "query" : {
+    "query_string" : {
+      "query" : #[condition,esEncode=true],   ## condition变量传入的值为kimchy!
+      "fields"  : ["user"]
+    }
+  }
+}
+```
+
+
 
 ### **5.3.4 $application类型变量使用**
 

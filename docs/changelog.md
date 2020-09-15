@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.1</version>
         </dependency>
 ```
 
@@ -44,11 +44,38 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.1</version>
         </dependency>
 ```
 # v6.2.1 功能改进
 1. 数据同步改进：增加原始quartz调度作业基础类org.frameworkset.tran.schedule.quartz.BaseQuartzDatasynJob
+2. dsl模板变量增加esEncode属性，说明如下：
+ **esEncode** boolean 类型，默认值false（不转义elasticsearch操作符），true（转义elasticsearch操作符），用于在query_string中对应不要作为elasticsearch操作符字符（\+ - = && || ! ( ) { } [ ] ^ " ~ * ? : \ /）进行转义处理，例如：
+
+  ```json
+  {
+    "query" : {
+      "query_string" : {
+        "query" : "kimchy\\!",
+        "fields"  : ["user"]
+      }
+    }
+  }
+  ```
+
+​      使用bboss时只需要传入变量值kimchy!，然后用#[xxx,esEncode=true]可控制操作符转义处理：
+
+```json
+{
+  "query" : {
+    "query_string" : {
+      "query" : #[condition,esEncode=true],   ## condition变量传入的值为kimchy!
+      "fields"  : ["user"]
+    }
+  }
+}
+```
+
 
 # v6.2.0 功能改进
 1. es客户端改进：可以通过apollo配置中心设置elasticsearch节点自动发现和动态切换Dsl日志打印开关监听器，参考文档：https://esdoc.bbossgroups.com/#/apollo-config
@@ -114,7 +141,7 @@ https://esdoc.bbossgroups.com/#/development
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.2.0</version>
+    <version>6.2.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -433,13 +460,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.7.9</version>
+      <version>5.8.0</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.7.9", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.8.0", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
