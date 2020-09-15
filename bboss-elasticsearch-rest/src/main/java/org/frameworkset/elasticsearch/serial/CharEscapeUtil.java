@@ -877,5 +877,41 @@ public class CharEscapeUtil  //extends JsonGeneratorImpl
 		return buf;
 	}
 
+	/**
+	 * Reserved characters
+	 * If you need to use any of the characters which function as operators in your query itself (and not as operators), then you should escape them with a leading backslash. For instance, to search for (1+1)=2, you would need to write your query as \(1\+1\)\=2. When using JSON for the request body, two preceding backslashes (\\) are required; the backslash is a reserved escaping character in JSON strings.
+	 *
+	 * GET /twitter/_search
+	 * {
+	 *   "query" : {
+	 *     "query_string" : {
+	 *       "query" : "kimchy\\!",
+	 *       "fields"  : ["user"]
+	 *     }
+	 *   }
+	 * }
+	 * The reserved characters are: + - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ /
+	 *
+	 * Failing to escape these special characters correctly could lead to a syntax error which prevents your query from running.
+	 *
+	 * Note: < and > can’t be escaped at all. The only way to prevent them from attempting to create a range query is to remove them from the query string entirely.
+	 * @param s
+	 * @return
+	 */
+	public static String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			// These characters are part of the query syntax and must be escaped
+			if (c == '=' || c == '\\' || c == '+' || c == '-' || c == '!' || c == '(' || c == ')' || c == ':'
+					|| c == '^' || c == '[' || c == ']' || c == '\"' || c == '{' || c == '}' || c == '~'
+					|| c == '*' || c == '?' || c == '|' || c == '&' || c == '/') {
+				sb.append('\\');
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
 
 }

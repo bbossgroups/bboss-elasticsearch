@@ -1,5 +1,8 @@
 package org.frameworkset.elasticsearch.serial;
 
+import com.fasterxml.jackson.core.io.CharTypes;
+
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -7,20 +10,12 @@ import java.io.Writer;
  */
 public class CustomCharEscapeUtil  extends CharEscapeUtil
 {
-
-	public CustomCharEscapeUtil(Writer w, int features) {
-		super(w, features);
-		extendEscapse();
-	}
-
-	public CustomCharEscapeUtil() {
-		super();
-		extendEscapse();
-	}
-	private void extendEscapse(){
+	private final static int[] _customOutputEscapes;
+	static {
 		int temp[] = new int[128];
-		for(int i = 0 ; i < _outputEscapes.length; i ++) {
-			temp[i] = _outputEscapes[i];
+		int[] sOutputEscapes = CharTypes.get7BitOutputEscapes();
+		for(int i = 0 ; i < sOutputEscapes.length; i ++) {
+			temp[i] = sOutputEscapes[i];
 
 		}
 		//		escapeCodesForAscii['\\'] = '\\';
@@ -49,11 +44,31 @@ public class CustomCharEscapeUtil  extends CharEscapeUtil
 		temp['&'] = '&';
 
 		temp['/'] = '/';
-		this._outputEscapes = temp;
+		_customOutputEscapes = temp;
+	}
+	private boolean esEncode;
+	public CustomCharEscapeUtil(Writer w, int features,boolean esEncode) {
+		super(w, features);
+		this.esEncode = esEncode;
 	}
 
-	public CustomCharEscapeUtil(Writer w) {
+	public CustomCharEscapeUtil(boolean esEncode) {
+		super();
+
+		this.esEncode = esEncode;
+	}
+
+
+	public CustomCharEscapeUtil(Writer w,boolean esEncode) {
 		super(w);
-		extendEscapse();
+
+		this.esEncode = esEncode;
+	}
+
+	@Override
+	public void _writeString(String text) throws IOException {
+		if(esEncode)
+			text = escape(text);
+		super._writeString(text);
 	}
 }

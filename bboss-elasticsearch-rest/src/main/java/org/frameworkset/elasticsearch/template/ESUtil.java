@@ -297,14 +297,14 @@ public class ESUtil {
 				builder.append(innerValue.toString());
 			} else {
 				if(escapeCount <= 1){
-					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),variable.getEsEncode());
 					charEscapeUtil.writeString(innerValue.toString(), true);
 				}
 				else{
 					String innerValueString = innerValue.toString();
 					innerValue.setLength(0);
 					for(int i = 0; i < escapeCount; i ++) {
-						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
+						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue),variable.getEsEncode());
 						charEscapeUtil.writeString(innerValueString, true);
 						innerValueString = innerValue.toString();
 						innerValue.setLength(0);
@@ -323,13 +323,13 @@ public class ESUtil {
 //				charEscapeUtil.writeString(value, true);
 
 				if(escapeCount <= 1){
-					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),variable.getEsEncode());
 					charEscapeUtil.writeString(value, true);
 				}
 				else{
 					StringBuilder innerValue = new StringBuilder();
 					for(int i = 0; i < escapeCount; i ++) {
-						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
+						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue),variable.getEsEncode());
 						charEscapeUtil.writeString(value, true);
 						value = innerValue.toString();
 						innerValue.setLength(0);
@@ -593,7 +593,7 @@ public class ESUtil {
 				String _value = SerialUtil.object2json(value);
 				StringBuilder innerValue = new StringBuilder();
 				for(int i = 0; i < escapeCount - 1; i ++) {
-					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue),variable.getEsEncode());
 					charEscapeUtil.writeString(_value, true);
 					_value = innerValue.toString();
 					innerValue.setLength(0);

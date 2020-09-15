@@ -485,7 +485,7 @@ public abstract class BuildTool {
 				.append(fieldName).append("\":");
 
 
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 		if(fieldValue instanceof String) {
 			builder.append("\"");
 			charEscapeUtil.writeString((String) fieldValue, true);
@@ -513,7 +513,7 @@ public abstract class BuildTool {
 				.append(fieldName).append("\":");
 
 
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 
 			builder.append("\"");
 			charEscapeUtil.writeString(String.valueOf( fieldValue), true);
@@ -529,7 +529,7 @@ public abstract class BuildTool {
 				.append(fieldName).append("\":");
 
 
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 		if(fieldValue instanceof String) {
 			builder.append("\"");
 			charEscapeUtil.writeString((String) fieldValue, true);
@@ -557,7 +557,7 @@ public abstract class BuildTool {
 				.append(fieldName).append("\":");
 
 
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 
 		builder.append("\"");
 		charEscapeUtil.writeString(String.valueOf( fieldValue), true);
@@ -632,7 +632,7 @@ public abstract class BuildTool {
 		StringBuilder builder = new StringBuilder();
 //		builder.append("/").append(indexName).append("/").append(indexType).append("/").append(documentId);
 		builder.append("/").append(indexName).append("/").append(indexType).append("/");
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 		charEscapeUtil.writeString(documentId, true);
 		if(options != null){
 			builder.append("?");
@@ -687,7 +687,7 @@ public abstract class BuildTool {
 			}
 			else{
 				builder.append("\"");
-				CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
+				CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
 				charEscapeUtil.writeString((String) id, true);
 				builder.append("\"");
 			}
@@ -704,7 +704,7 @@ public abstract class BuildTool {
 				writer.write((String) id);
 			}
 			else{
-				CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer);
+				CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
 				charEscapeUtil.writeString((String) id, true);
 			}
 			writer.write("\"");

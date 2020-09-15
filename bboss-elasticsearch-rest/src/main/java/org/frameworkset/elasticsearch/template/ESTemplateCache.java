@@ -78,6 +78,15 @@ public class ESTemplateCache {
 		protected String locale;
 		protected String timeZone;
 		private Boolean escape;
+
+
+
+
+
+		/**
+		 * 对elasticsearch关键字符进行转义处理
+		 */
+		private boolean esEncode = false;
 		private Boolean serialJson ;
 		protected DateFormateMeta dateFormateMeta;
 		/**
@@ -119,7 +128,9 @@ public class ESTemplateCache {
 			return pad;
 		}
 
-
+		public Boolean getEsEncode() {
+			return esEncode;
+		}
 		public void after(){
 			super.after();
 			if(this.attributes != null) {
@@ -157,6 +168,12 @@ public class ESTemplateCache {
 							escape = new Boolean(false);
 						else if(escape_.equals("true"))
 							escape = new Boolean(true);
+
+					}
+					else if(t.startsWith("esEncode=")){
+						String esEncode_ = t.substring("esEncode=".length()).trim();
+						if(esEncode_.equals("true"))
+							esEncode = true;
 
 					}
 					else if(t.startsWith("serialJson=")){
