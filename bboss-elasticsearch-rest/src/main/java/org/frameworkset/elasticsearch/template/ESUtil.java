@@ -23,6 +23,7 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
+import org.frameworkset.elasticsearch.serial.CustomCharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
@@ -296,14 +297,14 @@ public class ESUtil {
 				builder.append(innerValue.toString());
 			} else {
 				if(escapeCount <= 1){
-					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
 					charEscapeUtil.writeString(innerValue.toString(), true);
 				}
 				else{
 					String innerValueString = innerValue.toString();
 					innerValue.setLength(0);
 					for(int i = 0; i < escapeCount; i ++) {
-						CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
 						charEscapeUtil.writeString(innerValueString, true);
 						innerValueString = innerValue.toString();
 						innerValue.setLength(0);
@@ -322,13 +323,13 @@ public class ESUtil {
 //				charEscapeUtil.writeString(value, true);
 
 				if(escapeCount <= 1){
-					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(builder));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder));
 					charEscapeUtil.writeString(value, true);
 				}
 				else{
 					StringBuilder innerValue = new StringBuilder();
 					for(int i = 0; i < escapeCount; i ++) {
-						CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+						CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
 						charEscapeUtil.writeString(value, true);
 						value = innerValue.toString();
 						innerValue.setLength(0);
@@ -592,7 +593,7 @@ public class ESUtil {
 				String _value = SerialUtil.object2json(value);
 				StringBuilder innerValue = new StringBuilder();
 				for(int i = 0; i < escapeCount - 1; i ++) {
-					CharEscapeUtil charEscapeUtil = new CharEscapeUtil(new BBossStringWriter(innerValue));
+					CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(innerValue));
 					charEscapeUtil.writeString(_value, true);
 					_value = innerValue.toString();
 					innerValue.setLength(0);

@@ -150,7 +150,11 @@ public class CharEscapeUtil  //extends JsonGeneratorImpl
     /**********************************************************
      */
 
-
+	/**
+	 * see org.apache.lucene.queryparser.classic.QueryParser
+	 * @param text
+	 * @param flush
+	 */
 	public void writeString(String text,boolean flush)
 	{
 		try {

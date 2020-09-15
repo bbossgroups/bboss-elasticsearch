@@ -1,3 +1,20 @@
+tasks.withType(JavaCompile) {
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	options.encoding = 'UTF-8'
+	// disable the crazy super-strict doclint tool in Java 8
+	// noinspection SpellCheckingInspection
+	if (JavaVersion.current().isJava8Compatible()) {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
+}
 sourceSets {
     main {
         java {
@@ -39,9 +56,10 @@ repositories {
 		
 		
 	}
+/**
 configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-}
+}*/
 dependencies {
     compile project(':bboss-elasticsearch-rest')
 	compile (
@@ -60,15 +78,20 @@ dependencies {
 	compile 'com.unboundid:unboundid-ldapsdk:3.2.0'
 	compile 'org.bouncycastle:bcprov-jdk15on:1.58'
 	compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
-
+   compileOnly(
+		   [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: false],
+		   [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
+		   [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
+   )
    compile (
 
         [group: 'com.google.code.gson', name: 'gson', version: "2.2.2", transitive: true],
-        [group: 'com.google.guava', name: 'guava', version: "11.0.2", transitive: true],         
+        [group: 'com.google.guava', name: 'guava', version: "11.0.2", transitive: true],
+		   /**
 		[group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: false],
         [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
-        [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
-        [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25', transitive: false],
+        [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],*/
+       // [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.28', transitive: true],
 		//[group: 'org.elasticsearch.plugin', name: 'jdbc', version: "${elasticsearch}", transitive: true]
 
     )

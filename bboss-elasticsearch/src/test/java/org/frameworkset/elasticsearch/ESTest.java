@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch;
 
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.elasticsearch.common.settings.Settings;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
@@ -20,6 +21,10 @@ public class ESTest {
 
 	public ESTest() {
 		// TODO Auto-generated constructor stub
+	}
+	@Test
+	public void escap(){
+		System.out.println(QueryParser.escape("title+/"));
 	}
 	@Test
 	public void testFastDateFormat() throws ParseException{
