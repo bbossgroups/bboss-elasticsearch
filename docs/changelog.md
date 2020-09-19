@@ -54,10 +54,10 @@ https://esdoc.bbossgroups.com/#/development
    处理方法如下：增加ESStringResponseHandler参数，设置字符编码为UTF-8,列如
    ```java
    ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-   String data = clientUtil.executeHttp("_sql?format=txt",
-                       "{"query": "SELECT * FROM dbclobdemo"}",
-                       ClientInterface.HTTP_POST,new ESStringResponseHandler("UTF-8")
-                       );
+   String json = clientUtil.executeHttp("_sql?format=txt",
+   				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
+   				ClientInterface.HTTP_POST,new ESStringResponseHandler("UTF-8")
+   				);
    System.out.println(data);
    ```
 # v6.2.1 功能改进
