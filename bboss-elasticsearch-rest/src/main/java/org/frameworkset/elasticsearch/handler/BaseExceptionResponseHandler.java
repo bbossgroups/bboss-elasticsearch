@@ -42,16 +42,26 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 	}
 	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException {
 
+		return handleException(url, entity ,status,(String)null);
+	}
+	protected Object handleException(String url,HttpEntity entity ,int status,String charSet) throws IOException {
+
 		if(status == 404){//在有些场景下面，404不能作为异常抛出，这里作一次桥接，避免不必要的exception被apm性能监控工具探测到
 
 			if (entity != null) {
 				if(_logger.isDebugEnabled()) {
 					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
 				}
-				this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity), status);
+				if(charSet == null ) {
+					this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity), status);
+				}
+				else{
+					this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity,charSet), status);
+				}
 			}
 			else
-				this.elasticSearchException = new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
+				this.elasticSearchException = new ElasticSearchException(new StringBuilder().append("Request url:").append(url)
+						.append(",Unexpected response status: ").append( status).toString(), status);
 
 			return null;
 		}
@@ -60,10 +70,16 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 				if (_logger.isDebugEnabled()) {
 					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
 				}
-				throw new ElasticSearchException(EntityUtils.toString(entity), status);
+				if(charSet == null ) {
+					throw new ElasticSearchException(EntityUtils.toString(entity), status);
+				}
+				else{
+					throw new ElasticSearchException(EntityUtils.toString(entity,charSet), status);
+				}
 			}
 			else
-				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url).append(",Unexpected response status: ").append( status).toString(), status);
+				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url)
+						.append(",Unexpected response status: ").append( status).toString(), status);
 		}
 	}
 

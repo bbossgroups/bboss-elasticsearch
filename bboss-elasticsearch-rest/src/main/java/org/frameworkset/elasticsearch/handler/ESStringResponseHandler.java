@@ -36,6 +36,11 @@ public class ESStringResponseHandler extends BaseExceptionResponseHandler implem
 	public ESStringResponseHandler() {
 		// TODO Auto-generated constructor stub
 	}
+	private String charSet;
+	public ESStringResponseHandler(String charSet) {
+		// TODO Auto-generated constructor stub
+		this.charSet = charSet;
+	}
 
 	@Override
 	public String handleResponse(final HttpResponse response)
@@ -45,7 +50,15 @@ public class ESStringResponseHandler extends BaseExceptionResponseHandler implem
 		if (status >= 200 && status < 300) {
 			HttpEntity entity = response.getEntity();
 
-			return entity != null ? EntityUtils.toString(entity) : null;
+			if( entity != null) {
+				if(charSet == null)
+					return EntityUtils.toString(entity);
+				else
+					return EntityUtils.toString(entity,charSet);
+			}
+			else {
+				return null;
+			}
 		} else {
 			HttpEntity entity = response.getEntity();
 //			if(status == 404){
@@ -58,7 +71,7 @@ public class ESStringResponseHandler extends BaseExceptionResponseHandler implem
 //				else
 //					throw new ElasticSearchException("Unexpected response status: " + status, status);
 //			}
-			return (String)handleException(url,entity ,status);
+			return (String)handleException(url,entity ,status,charSet);
 		}
 	}
 
