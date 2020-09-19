@@ -47,6 +47,19 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.2.1</version>
         </dependency>
 ```
+
+# v6.2.2 功能改进
+1. 处理问题：执行_sql?format=txt，格式为txt时，返回结果中文乱码问题，json格式没有问题
+   
+   处理方法如下：增加ESStringResponseHandler参数，设置字符编码为UTF-8,列如
+   ```java
+   ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+   String data = clientUtil.executeHttp("_sql?format=txt",
+                       "{"query": "SELECT * FROM dbclobdemo"}",
+                       ClientInterface.HTTP_POST,new ESStringResponseHandler("UTF-8")
+                       );
+   System.out.println(data);
+   ```
 # v6.2.1 功能改进
 1. 数据同步改进：增加原始quartz调度作业基础类org.frameworkset.tran.schedule.quartz.BaseQuartzDatasynJob
 2. dsl模板变量增加esEncode属性，说明如下：
