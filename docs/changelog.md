@@ -60,6 +60,7 @@ https://esdoc.bbossgroups.com/#/development
    				);
    System.out.println(data);
    ```
+2. 完善http 响应报文处理机制，增加响应报文为空时的判断和处理   
 # v6.2.1 功能改进
 1. 数据同步改进：增加原始quartz调度作业基础类org.frameworkset.tran.schedule.quartz.BaseQuartzDatasynJob
 2. dsl模板变量增加esEncode属性，说明如下：

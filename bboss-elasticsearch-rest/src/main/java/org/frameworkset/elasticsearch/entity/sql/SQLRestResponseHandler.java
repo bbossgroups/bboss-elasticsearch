@@ -26,6 +26,8 @@ import org.frameworkset.spi.remote.http.URLResponseHandler;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -49,10 +51,14 @@ public class SQLRestResponseHandler implements URLResponseHandler<SQLRestRespons
 		if (status >= 200 && status < 300) {
 			HttpEntity entity = response.getEntity();
 			if (entity != null ) {
+
 				InputStream inputStream = null;
 				try {
 					SQLRestResponse searchResponse = null;
 					inputStream = entity.getContent();
+					if(entityEmpty(entity,inputStream)){
+						return null;
+					}
 					searchResponse = SimpleStringUtil.json2Object(inputStream, SQLRestResponse.class);
 					return searchResponse;
 				}

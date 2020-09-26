@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+
 /**
  * @see <p>https://esdoc.bbossgroups.com/#/development</p>
  */
@@ -86,44 +88,55 @@ public class RestClientUtil extends ClientUtil{
 
 					if (status >= 200 && status < 300) {
 						HttpEntity entity = response.getEntity();
-						/**
-						 * Map<indexName,Mapping<Type,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>>
-						 */
-						if(!client.isUpper7()) {
-							Map<String, Object> map = SimpleStringUtil.json2ObjectWithType(entity.getContent(), new JsonTypeReference<Map<String, Object>>() {
-							});
-							Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-							while (entries.hasNext()) {
-								Map.Entry<String, Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
-								Map<String, Map<String, Object>> mapping = (Map<String, Map<String, Object>>) entry.getValue();
-								Map<String, Map<String, Object>> typeProperties = (Map<String, Map<String, Object>>) mapping.get("mappings").get(indexType);
-								Map<String, Object> properties = (Map<String, Object>) typeProperties.get("properties");
-								Iterator<Map.Entry<String, Object>> fileds = properties.entrySet().iterator();
-								while (fileds.hasNext()) {
-									Map.Entry<String, Object> field = fileds.next();
-									IndexField indexField = BuildTool.buildIndexField(field, fields, null);
-								}
-								break;
+						InputStream inputStream = null;
+						try{
+							inputStream = entity.getContent();
+							if(entityEmpty(entity,inputStream)){
+								return null;
+							}
+							/**
+							 * Map<indexName,Mapping<Type,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>>
+							 */
+							if(!client.isUpper7()) {
+								Map<String, Object> map = SimpleStringUtil.json2ObjectWithType(inputStream, new JsonTypeReference<Map<String, Object>>() {
+								});
+								Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
+								while (entries.hasNext()) {
+									Map.Entry<String, Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
+									Map<String, Map<String, Object>> mapping = (Map<String, Map<String, Object>>) entry.getValue();
+									Map<String, Map<String, Object>> typeProperties = (Map<String, Map<String, Object>>) mapping.get("mappings").get(indexType);
+									Map<String, Object> properties = (Map<String, Object>) typeProperties.get("properties");
+									Iterator<Map.Entry<String, Object>> fileds = properties.entrySet().iterator();
+									while (fileds.hasNext()) {
+										Map.Entry<String, Object> field = fileds.next();
+										IndexField indexField = BuildTool.buildIndexField(field, fields, null);
+									}
+									break;
 
+								}
+							}
+							else{
+								Map<String, Object> map = SimpleStringUtil.json2ObjectWithType(inputStream, new JsonTypeReference<Map<String, Object>>() {
+								});
+								Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
+								while (entries.hasNext()) {
+									Map.Entry<String, Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
+									Map<String, Map<String, Object>> index = (Map<String, Map<String, Object>>) entry.getValue();
+									Map<String,Object> mapping = index.get("mappings");
+									Map<String, Object> properties = (Map<String, Object>) mapping.get("properties");
+									Iterator<Map.Entry<String, Object>> fileds = properties.entrySet().iterator();
+									while (fileds.hasNext()) {
+										Map.Entry<String, Object> field = fileds.next();
+										IndexField indexField = BuildTool.buildIndexField(field, fields, null);
+									}
+									break;
+
+								}
 							}
 						}
-						else{
-							Map<String, Object> map = SimpleStringUtil.json2ObjectWithType(entity.getContent(), new JsonTypeReference<Map<String, Object>>() {
-							});
-							Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-							while (entries.hasNext()) {
-								Map.Entry<String, Object> entry = entries.next();//去最新的映射版本，区别于每天的索引表版本
-								Map<String, Map<String, Object>> index = (Map<String, Map<String, Object>>) entry.getValue();
-								Map<String,Object> mapping = index.get("mappings");
-								Map<String, Object> properties = (Map<String, Object>) mapping.get("properties");
-								Iterator<Map.Entry<String, Object>> fileds = properties.entrySet().iterator();
-								while (fileds.hasNext()) {
-									Map.Entry<String, Object> field = fileds.next();
-									IndexField indexField = BuildTool.buildIndexField(field, fields, null);
-								}
-								break;
-
-							}
+						finally {
+							if(inputStream != null)
+								inputStream.close();
 						}
 						/**
 						 * Map<indexName,Properties<fieldName<"fileds",Map<subFieldName,IndexField>>,Type>>

@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+
 /**
  * 主动发现：自动发现es 主机节点
  */
@@ -115,10 +117,18 @@ public class HostDiscover extends Thread{
 	}
 
 	private List<HttpHost> readHosts(HttpEntity entity) throws IOException {
-		InputStream inputStream = entity.getContent();
+
+		InputStream inputStream = null;
+
+
 		Throwable var3 = null;
 
 		try {
+			inputStream = entity.getContent();
+
+			if(entityEmpty(entity,inputStream)){
+				throw new IOException(new StringBuilder().append("Read Hosts from http entity for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] failed: entity contentLength = 0 " ).toString());
+			}
 			JsonParser parser = this.jsonFactory.createParser(inputStream);
 			if (parser.nextToken() != JsonToken.START_OBJECT) {
 				throw new IOException(new StringBuilder().append("expected data to start with an object for elasticsearch[").append(elasticSearch.getElasticSearchName()).append("]").toString());
