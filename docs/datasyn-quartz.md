@@ -46,7 +46,7 @@
 mainclass=org.frameworkset.task.Main
 ```
 
- 4.发布和运行quartz定时任务：参考章节【2.4.10 发布版本】
+ 4.发布和运行quartz定时任务：参考章节[【发布版本】](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
  
 # 二、原生quartz同步作业demo
  下面看一个完整quartz原生数据同步作业程序
