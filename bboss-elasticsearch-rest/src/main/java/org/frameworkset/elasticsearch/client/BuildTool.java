@@ -2393,7 +2393,7 @@ public abstract class BuildTool {
 		indexField.setNormalizer((String)fieldInfo.get("normalizer"));
 		indexField.setBoost(fieldInfo.get("boost"));
 		indexField.setCoerce(parseBoolean( fieldInfo.get("coerce")));
-		indexField.setCopyTo((String)fieldInfo.get("copy_to"));
+		indexField.setCopyTo(fieldInfo.get("copy_to"));
 		indexField.setDocValues(parseBoolean(fieldInfo.get("doc_values")));//setCoerce();
 		indexField.setDynamic(parseBoolean(fieldInfo.get("doc_values")));	//dynamic
 		indexField.setEnabled(parseBoolean(fieldInfo.get("enabled")));			//enabled

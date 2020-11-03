@@ -16,7 +16,7 @@ public class IndexField implements Serializable {
 	private String 		normalizer;
 	private Object 		boost;
 	private Boolean 		coerce;
-	private String 		copyTo;
+	private Object 		copyTo;
 	private Boolean 		docValues;
 	private Boolean 		dynamic;
 	private Boolean 		enabled;
@@ -75,11 +75,11 @@ public class IndexField implements Serializable {
 		this.coerce = coerce;
 	}
 
-	public String getCopyTo() {
+	public Object getCopyTo() {
 		return copyTo;
 	}
 
-	public void setCopyTo(String copyTo) {
+	public void setCopyTo(Object copyTo) {
 		this.copyTo = copyTo;
 	}
 
