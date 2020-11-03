@@ -2597,6 +2597,8 @@ public interface ClientInterface extends ClientInterfaceNew {
 	public String getIndiceSetting(String indice,String params);
 	public String getIndiceSetting(String indice);
 
+	public String getIndiceSettingByName(String indice,String settingName);
+
 	/**
 	 * {
 	 *             "settings":{

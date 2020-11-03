@@ -4335,6 +4335,13 @@ public class RestClientUtil extends ClientUtil{
 		return this.client.executeHttp(builder.toString(),ClientInterface.HTTP_GET);
 
 	}
+	public String getIndiceSettingByName(String indice,String settingName){
+		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+		if(settingName != null && settingName.length() > 0){
+			builder.append("/").append(settingName);
+		}
+		return this.client.executeHttp(builder.toString(),ClientInterface.HTTP_GET);
+	}
 
 	/**
 	 * {
