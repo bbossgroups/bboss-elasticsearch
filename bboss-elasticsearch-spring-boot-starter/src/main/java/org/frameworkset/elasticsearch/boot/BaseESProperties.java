@@ -138,6 +138,24 @@ public abstract class BaseESProperties {
 		}
 
 		private String asnDatabase;
+		private String ispConverter;
+		private String ip2regionDatabase;
+
+		public String getIspConverter() {
+			return ispConverter;
+		}
+
+		public void setIspConverter(String ispConverter) {
+			this.ispConverter = ispConverter;
+		}
+
+		public String getIp2regionDatabase() {
+			return ip2regionDatabase;
+		}
+
+		public void setIp2regionDatabase(String ip2regionDatabase) {
+			this.ip2regionDatabase = ip2regionDatabase;
+		}
 	}
 	public static class Db{
 		private String name;
@@ -972,6 +990,11 @@ public abstract class BaseESProperties {
 				properties.put("ip.cachesize",this.ip.getCachesize());
 			if(SimpleStringUtil.isNotEmpty(this.ip.getServiceUrl()))
 				properties.put("ip.serviceUrl",this.ip.getServiceUrl());
+			if(SimpleStringUtil.isNotEmpty(this.ip.getIspConverter()))
+				properties.put("ip.ispConverter",this.ip.getIspConverter());
+			if(SimpleStringUtil.isNotEmpty(this.ip.getIp2regionDatabase()))
+				properties.put("ip.ip2regionDatabase",this.ip.getIp2regionDatabase());
+
 
 		}
 		return properties;

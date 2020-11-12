@@ -16,12 +16,12 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class ElasticSearchHelper {
-	private static Logger logger = LoggerFactory.getLogger(ElasticSearchHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(ElasticSearchHelper.class);
 	protected static DefaultApplicationContext context = null;
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
 
-	private static Map<String,String> geoipConfig = new HashMap<String, String>();
+	private static final Map<String,String> geoipConfig = new HashMap<String, String>();
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
@@ -53,7 +53,7 @@ public class ElasticSearchHelper {
 	public static void setDslfileRefreshInterval(long dslfileRefreshInterval){
 		ElasticSearchHelper.dslfileRefreshInterval = dslfileRefreshInterval;
 	}
-	private static Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
+	private static final Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
 	public ElasticSearchHelper() {
 		// TODO Auto-generated constructor stub
 	}
@@ -198,6 +198,11 @@ public class ElasticSearchHelper {
 				ElasticSearchHelper._getStringValue("","ip.database",configContext,""));
 		geoipConfig.put("ip.asnDatabase",
 				ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
+		geoipConfig.put("ip.ispConverter",
+				ElasticSearchHelper._getStringValue("","ip.ispConverter",configContext,""));
+		geoipConfig.put("ip.ip2regionDatabase",
+				ElasticSearchHelper._getStringValue("","ip.ip2regionDatabase",configContext,""));
+
 		geoipConfig.put("ip.cachesize",
 				ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"10000"));
 		geoipConfig.put("ip.serviceUrl",
@@ -241,13 +246,13 @@ public class ElasticSearchHelper {
 	private static long _getLongValue(String poolName,String propertyName,GetProperties context,long defaultValue) throws Exception {
 		String _value = null;
 		if(poolName.equals("default")){
-			_value = (String)context.getExternalProperty(propertyName);
+			_value = context.getExternalProperty(propertyName);
 			if(_value == null)
-				_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+				_value = context.getExternalProperty(poolName+"."+propertyName);
 
 		}
 		else{
-			_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+			_value = context.getExternalProperty(poolName+"."+propertyName);
 		}
 		if(_value == null){
 			return defaultValue;
@@ -264,13 +269,13 @@ public class ElasticSearchHelper {
 	private static int _getIntValue(String poolName,String propertyName,BaseApplicationContext context,int defaultValue) throws Exception {
 		String _value = null;
 		if(poolName.equals("default")){
-			_value = (String)context.getExternalProperty(propertyName);
+			_value = context.getExternalProperty(propertyName);
 			if(_value == null)
-				_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+				_value = context.getExternalProperty(poolName+"."+propertyName);
 
 		}
 		else{
-			_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+			_value = context.getExternalProperty(poolName+"."+propertyName);
 		}
 		if(_value == null){
 			return defaultValue;
@@ -286,16 +291,16 @@ public class ElasticSearchHelper {
 	public static String _getStringValue(String poolName,String propertyName,GetProperties context,String defaultValue){
 		String _value = null;
 		if(poolName.equals("default")){
-			_value = (String)context.getExternalProperty(propertyName);
+			_value = context.getExternalProperty(propertyName);
 			if(_value == null)
-				_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+				_value = context.getExternalProperty(poolName+"."+propertyName);
 
 		}
 		else{
 			if(!poolName.equals(""))
-				_value = (String)context.getExternalProperty(poolName+"."+propertyName);
+				_value = context.getExternalProperty(poolName+"."+propertyName);
 			else{
-				_value = (String)context.getExternalProperty(propertyName);
+				_value = context.getExternalProperty(propertyName);
 			}
 		}
 		if(_value == null){
