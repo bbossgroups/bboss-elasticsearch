@@ -27,13 +27,15 @@ org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasti
 
 ## 问题处理
 
-1..没有正确加载application.properties文件问题处理：
+### 1.application.properties文件没有正确加载问题处理
 
 如果不存在application.properties文件，那么参考文档建立文件：
 
 https://esdoc.bbossgroups.com/#/quickstart
 
-2.如果是spring boot环境中获取ClientInterface实例方式不对，则参考以下方式获取ClientInterface实例：
+### 2.spring boot环境中获取ClientInterface实例方式不对问题处理
+
+spring boot环境中获取ClientInterface实例方式不对问题处理,则参考以下方式获取ClientInterface实例。
 
 需要按照spring boot的方式使用和运行代码，spring boot获取客户端组件实例以及操作代码样例：
 
@@ -67,6 +69,34 @@ public class DocumentCRUD {
 
    }
 ```
+
+如果获取实例方式不正确，我们可以在启动日志中看到类似以下信息：Start Elasticsearch Datasource[default] from springboot[false]
+
+```shell
+Start Elasticsearch Datasource[default] from springboot[false]:{"elasticsearch.ttl":"2d","elasticsearch.timeZone":"Asia/Shanghai","elasticsearch.client":"restful","elasticsearch.includeTypeName":"false","elasticsearch.sliceScrollThreadCount":"50","elasticsearch.scrollThreadQueue":"200","elasticsearch.httpPool":"default","elasticsearch.healthCheckInterval":"3000","elasticsearch.dateFormat":"yyyy.MM.dd","elasticUser":"","elasticsearch.scrollBlockedWaitTimeout":"0","elasticsearch.sliceScrollThreadQueue":"100","elasticsearch.showTemplate":"false","elasticsearch.rest.hostNames":"127.0.0.1:9200","elasticsearch.discoverHost":"false","elasticsearch.scrollThreadCount":"50","elasticPassword":"","elasticsearch.sliceScrollBlockedWaitTimeout":"0"}
+```
+
+如果正确的话应该是：Start Elasticsearch Datasource[default] from springboot[true]
+
+可以将log日志级别设置为debug，这样可以定位到具体哪个地方获取ClientInterface实例的方式不正确，应用启动时将在日志文件中打印相应的异常堆栈信息，例如：
+
+```shell
+java.lang.Exception: Debug Elasticsearch Datasource[default] start trace:if use spring boot and unload spring boot config right,please get the reason from question-answer document:https://esdoc.bbossgroups.com/#/question-answer ,if not ignore this message.
+	at org.frameworkset.elasticsearch.ElasticSearch.configureWithConfigContext(ElasticSearch.java:271)
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.booter(ElasticSearchHelper.java:186)
+	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:57)
+	at org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot.boot(ElasticSearchConfigBoot.java:29)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.init(ElasticSearchHelper.java:342)
+	at org.frameworkset.elasticsearch.ElasticSearchHelper.getConfigRestClientUtil(ElasticSearchHelper.java:445)
+	at org.bboss.elasticsearchtest.crud.DocumentCRUD7.testCreateIndice(DocumentCRUD7.java:229)
+	at org.bboss.elasticsearchtest.crud.DocumentCRUD7Test.main(DocumentCRUD7Test.java:50)
+```
+
+其中，org.bboss.elasticsearchtest.crud.DocumentCRUD7.testCreateIndice(DocumentCRUD7.java:229)就是不正确获取实例方式的代码行。
 
 # 问题2 添加文档时，如何将值为null的字段忽略掉
 

@@ -1426,7 +1426,243 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
          }
 ```
 
-# 
+## 2.9 跨库跨表数据同步
+
+在同步数据库中数据到elasticsearch时，会存在支持跨多个数据库跨多张表同步的情况，bboss通过以下方式进行处理。
+
+首先在application.properties文件中配置三个db数据源:db1,db2,db3
+
+```properties
+## 在数据导入过程可能需要使用的其他数据名称，需要在配置文件中定义相关名称的db配置
+thirdDatasources = db1,db2,db3
+
+db1.db.user = root
+db1.db.password = 123456
+db1.db.driver = com.mysql.jdbc.Driver
+##db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+db1.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
+db1.db.usePool = true
+db1.db.validateSQL = select 1
+##db.jdbcFetchSize = 10000
+db1.db.jdbcFetchSize = -2147483648
+db1.db.showsql = true
+##db1.db.dbtype = mysql -2147483648
+##db1.db.dbAdaptor = org.frameworkset.elasticsearch.imp.TestMysqlAdaptor
+
+db2.db.user = root
+db2.db.password = 123456
+db2.db.driver = com.mysql.jdbc.Driver
+##db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+db2.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
+db2.db.usePool = true
+db2.db.validateSQL = select 1
+##db.jdbcFetchSize = 10000
+db2.db.jdbcFetchSize = -2147483648
+db2.db.showsql = true
+##db2.db.dbtype = mysql -2147483648
+##db2.db.dbAdaptor = org.frameworkset.elasticsearch.imp.TestMysqlAdaptor
+
+db3.db.user = root
+db3.db.password = 123456
+db3.db.driver = com.mysql.jdbc.Driver
+##db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+db3.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false
+db3.db.usePool = true
+db3.db.validateSQL = select 1
+##db.jdbcFetchSize = 10000
+db3.db.jdbcFetchSize = -2147483648
+db3.db.showsql = true
+##db3.db.dbtype = mysql -2147483648
+##db3.db.dbAdaptor = org.frameworkset.elasticsearch.imp.TestMysqlAdaptor
+```
+
+定义好三个数据源后，下面看看同步的代码
+
+```java
+//设置同步数据源db1，对应主表数据库
+      importBuilder.setDbName("db1");
+
+      //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+      // select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+      // log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
+      // 但是需要设置setLastValueType告诉工具增量字段的类型
+      
+      importBuilder.setSql("select * from td_cms_document ");
+
+      /**
+       * 重新设置es数据结构
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+            //可以根据条件定义是否丢弃当前记录
+            //context.setDrop(true);return;
+//          if(s.incrementAndGet() % 2 == 0) {
+//             context.setDrop(true);
+//             return;
+//          }
+            //空值处理，判断字段content的值是否为空
+            if(context.getValue("content") == null){
+               context.addFieldValue("content","");//将content设置为""
+            }
+            context.addFieldValue("content","");//将content设置为""
+            CustomObject customObject = new CustomObject();
+            customObject.setAuthor((String)context.getValue("author"));
+            customObject.setTitle((String)context.getValue("title"));
+            customObject.setSubtitle((String)context.getValue("subtitle"));
+
+            customObject.setIds(new int[]{1,2,3});
+            context.addFieldValue("author",customObject);
+//          org.frameworkset.tran.config.ClientOptions clientOptions = new org.frameworkset.tran.config.ClientOptions();
+//          clientOptions.setRouting("1");
+//          context.setClientOptions(clientOptions);
+            long testtimestamp = context.getLongValue("testtimestamp");//将long类型的时间戳转换为Date类型
+            context.addFieldValue("testtimestamp",new Date(testtimestamp));//将long类型的时间戳转换为Date类型
+            /**
+             Date create_time = context.getDateValue("create_time");
+             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+             context.addFieldValue("createTime",simpleDateFormat.format(create_time));
+             context.addIgnoreFieldMapping("create_time");
+             */
+//          context.addIgnoreFieldMapping("title");
+            //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//          context.addIgnoreFieldMapping("author");
+
+            //修改字段名称title为新名称newTitle，并且修改字段的值
+            context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+            context.addIgnoreFieldMapping("subtitle");
+            /**
+             * 获取ip对应的运营商和区域信息
+             */
+            IpInfo ipInfo = context.getIpInfo("remoteAddr");
+            context.addFieldValue("ipInfo",ipInfo);
+            context.addFieldValue("collectTime",new Date());
+            
+             //关联查询数据,单值查询，指定要查询的数据库为数据源db2
+             Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,"db2",
+             "select * from head where billid = ? and othercondition= ?",
+             context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("headdata",headdata);
+             //关联查询数据,多值查询，指定要查询的数据库为数据源db3
+             List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"db3",
+             "select * from facedata where billid = ?",
+             context.getIntegerValue("billid"));
+             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("facedatas",facedatas);
+             
+         }
+      });
+```
+
+关键点说明：
+
+1.首先需要指定主表对应的数据源
+
+importBuilder.setDbName("db1");
+
+2.然后在DataRefactor中跨库检索其他关联表的的数据封装到对象中
+
+```java
+ //关联查询数据,单值查询，指定要查询的数据库为数据源db2
+             Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,"db2",
+             "select * from head where billid = ? and othercondition= ?",
+             context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("headdata",headdata);
+             //关联查询数据,多值查询，指定要查询的数据库为数据源db3
+             List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"db3",
+             "select * from facedata where billid = ?",
+             context.getIntegerValue("billid"));
+             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("facedatas",facedatas);
+```
+
+## 2.10 自定义启动db数据源案例
+
+如果在application.properties中配置了数据库数据源连接池visualops：
+
+```properties
+db.name = visualops
+db.user = root
+db.password = 123456
+db.driver = com.mysql.jdbc.Driver
+db.url = jdbc:mysql://100.13.11.5:3306/visualops?useUnicode=true&characterEncoding=utf-8&useSSL=false
+db.validateSQL = select 1
+db.initialSize = 5
+db.minimumSize = 5
+db.maximumSize = 5
+db.showsql = true
+
+```
+
+那么我们可以通过代码来加载并启动对应的连接池
+
+```java
+PropertiesContainer propertiesContainer = new PropertiesContainer();
+			propertiesContainer.addConfigPropertiesFile("application.properties");
+		String dbName  = propertiesContainer.getProperty("db.name");
+		String dbUser  = propertiesContainer.getProperty("db.user");
+		String dbPassword  = propertiesContainer.getProperty("db.password");
+		String dbDriver  = propertiesContainer.getProperty("db.driver");
+		String dbUrl  = propertiesContainer.getProperty("db.url");
+
+		String showsql  = propertiesContainer.getProperty("db.showsql");
+		String validateSQL  = propertiesContainer.getProperty("db.validateSQL");
+		String dbInfoEncryptClass = propertiesContainer.getProperty("db.dbInfoEncryptClass");
+
+		DBConf tempConf = new DBConf();
+		tempConf.setPoolname(dbName);
+		tempConf.setDriver(dbDriver);
+		tempConf.setJdbcurl(dbUrl);
+		tempConf.setUsername(dbUser);
+		tempConf.setPassword(dbPassword);
+		tempConf.setValidationQuery(validateSQL);
+		tempConf.setShowsql(showsql != null && showsql.equals("true"));
+		//tempConf.setTxIsolationLevel("READ_COMMITTED");
+		tempConf.setJndiName("jndi-"+dbName);
+		tempConf.setDbInfoEncryptClass(dbInfoEncryptClass);
+		String initialConnections  = propertiesContainer.getProperty("db.initialSize");
+		int _initialConnections = 10;
+		if(initialConnections != null && !initialConnections.equals("")){
+			_initialConnections = Integer.parseInt(initialConnections);
+		}
+		String minimumSize  = propertiesContainer.getProperty("db.minimumSize");
+		int _minimumSize = 10;
+		if(minimumSize != null && !minimumSize.equals("")){
+			_minimumSize = Integer.parseInt(minimumSize);
+		}
+		String maximumSize  = propertiesContainer.getProperty("db.maximumSize");
+		int _maximumSize = 20;
+		if(maximumSize != null && !maximumSize.equals("")){
+			_maximumSize = Integer.parseInt(maximumSize);
+		}
+		tempConf.setInitialConnections(_initialConnections);
+		tempConf.setMinimumSize(_minimumSize);
+		tempConf.setMaximumSize(_maximumSize);
+		tempConf.setUsepool(true);
+		tempConf.setExternal(false);
+		tempConf.setEncryptdbinfo(false);
+		if(showsql != null && showsql.equalsIgnoreCase("true"))
+			tempConf.setShowsql(true);
+		else{
+			tempConf.setShowsql(false);
+		}
+		//启动数据源
+		SQLManager.startPool(tempConf);
+```
+
+使用数据源visualops访问数据库示例代码：
+
+```java
+List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"visualops",
+             "select * from facedata where billid = ?",
+             0);
+```
+
+更多的持久层使用文档访问：
+
+https://doc.bbossgroups.com/#/persistent/tutorial
 
 # 3 Elasticsearch-db数据同步使用方法
 
