@@ -21,7 +21,7 @@ public class ElasticSearchHelper {
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
 
-	private static final Map<String,String> geoipConfig = new HashMap<String, String>();
+	private static final Map<String,Object> geoipConfig = new HashMap<String, Object>();
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
@@ -41,7 +41,7 @@ public class ElasticSearchHelper {
 			}
 		}
 	}
-	public static Map<String,String> getGeoipConfig(){
+	public static Map<String,Object> getGeoipConfig(){
 		return geoipConfig;
 	}
 	public static long getDslfileRefreshInterval(){
