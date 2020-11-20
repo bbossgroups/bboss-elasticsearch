@@ -18,7 +18,7 @@ First add the maven dependency of BBoss to your pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@ Second if it's a spring boot project, add following maven dependency to pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
 
@@ -180,11 +180,11 @@ import java.util.Map;
  */
 @Service
 public class DocumentCRUD {
-	private Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
+	private final Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
 	@Autowired
 	private BBossESStarter bbossESStarter;
 	//DSL config file path
-	private String mappath = "esmapper/demo.xml";
+	private final String mappath = "esmapper/demo.xml";
 
 
 	public void dropAndCreateAndGetIndice(){
@@ -401,7 +401,7 @@ First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
 
 ```properties
-gradle install
+gradle=install
 ```
 
 Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build

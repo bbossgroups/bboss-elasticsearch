@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.2 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.3 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
 
@@ -44,10 +44,11 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
-
+# v6.2.3 功能改进
+1.数据同步模块改进：增加对开源ip地址库ip2region的支持
 # v6.2.2 功能改进
 1. 处理问题：执行_sql?format=txt，格式为txt时，返回结果中文乱码问题，json格式没有问题
    
@@ -155,7 +156,7 @@ https://esdoc.bbossgroups.com/#/development
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.2.2</version>
+    <version>6.2.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -474,13 +475,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.8.0</version>
+      <version>5.8.1</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.8.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.8.1", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

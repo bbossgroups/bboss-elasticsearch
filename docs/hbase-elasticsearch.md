@@ -56,14 +56,14 @@ Spring booter 1.x,2.x,+
 
 hbase 1.x,hbase 2.x
 
-bboss 6.2.2
+bboss 6.2.3
 ## 2.2.maven坐标
 
 ```xml
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-hbase</artifactId>
-  <version>6.2.2</version>
+  <version>6.2.3</version>
   <scope>compile</scope>
 </dependency>
 <!--
@@ -544,7 +544,7 @@ targetElasticsearch.elasticsearch.rest.hostNames=192.168.137.1:9200
 
 ```java
 public class HBase2ESScrollTimestampDemo223 {
-	public static void main(String args[]){
+	public static void main(String[] args){
 
 	HBase2ESScrollTimestampDemo223 esDemo = new HBase2ESScrollTimestampDemo223();
 		esDemo.scheduleScrollRefactorImportData();

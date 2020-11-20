@@ -63,7 +63,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.2.2</version>
+<version>6.2.3</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -963,18 +963,18 @@ final Random random = new Random();
 #### 2.3.13.3 index和type可以有以下几种动态生成方法
 
 ```properties
-索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
-dbclobdemo-{agentStarttime,yyyy.MM.dd}
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成=
+dbclobdemo-{agentStarttime,yyyy.MM.dd}=
  
-索引名称由demowithesindex和当前日期通过yyyy.MM.dd格式化后的值拼接而成
+索引名称由demowithesindex和当前日期通过yyyy.MM.dd格式化后的值拼接而成=
 demowithesindex-{dateformat=yyyy.MM.dd}
 
-索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成
+索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成=
 demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 
-索引类型为typeFieldName字段对应的值:
+索引类型为typeFieldName字段对应的值=
 {field=typeFieldName}
-或者{typeFieldName}
+或者{typeFieldName}=
 ```
 
 示例如下：
@@ -2006,10 +2006,10 @@ public class ES2DBScrollTimestampDemo {
 
 ```java
 public class ES2DBSliceScrollResultCallbackDemo {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public static void main(String[] args){
 		ES2DBSliceScrollResultCallbackDemo esDemo = new ES2DBSliceScrollResultCallbackDemo();
-		esDemo.scheduleSlieRefactorImportData();;
+		esDemo.scheduleSlieRefactorImportData();
 //		esDemo.directExport();
 //		esDemo.exportData();
 //		esDemo.exportSliceData();
@@ -2263,8 +2263,8 @@ mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-
 
 ​```java
 public class Mongodb2ESdemo {
-	private static Logger logger = LoggerFactory.getLogger(Mongodb2ESdemo.class);
-	public static void main(String args[]){
+	private static final Logger logger = LoggerFactory.getLogger(Mongodb2ESdemo.class);
+	public static void main(String[] args){
 		Mongodb2ESdemo dbdemo = new Mongodb2ESdemo();
 		boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
 
@@ -2553,10 +2553,10 @@ https://github.com/bbossgroups/hbase-elasticsearch
 内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
 ```properties
--Xms1g
--Xmx1g
--XX:NewSize=512m
--XX:MaxNewSize=512m
+-Xms1g=
+-Xmx1g=
+-XX=NewSize=512m
+-XX=MaxNewSize=512m
 ```
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1

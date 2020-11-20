@@ -1832,10 +1832,10 @@ elasticsearch.showTemplate=false
 根据服务器资源和作业运行情况，可以适当调整jvm内存，修改jvm.options,设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
 ```properties
--Xms1g
--Xmx1g
--XX:NewSize=512m
--XX:MaxNewSize=512m
+-Xms1g=
+-Xmx1g=
+-XX=NewSize=512m
+-XX=MaxNewSize=512m
 ```
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1
@@ -1921,7 +1921,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
-	private static Logger logger = LoggerFactory.getLogger(XXJobMongodb2ESImportTask.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXJobMongodb2ESImportTask.class);
 	public void init(){
 		// 可参考Sample示例执行器中的示例任务"ShardingJobHandler"了解试用
 
@@ -2242,7 +2242,7 @@ import org.slf4j.LoggerFactory;
  * @author xuxueli 2018-10-31 19:05:43
  */
 public class XXLJobApplicationTest {
-    private static Logger logger = LoggerFactory.getLogger(XXLJobApplicationTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(XXLJobApplicationTest.class);
 
     public static void main(String[] args) {
 
@@ -2312,7 +2312,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
 
@@ -2354,7 +2354,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.2</version>
+            <version>6.2.3</version>
         </dependency>
 ```
 
