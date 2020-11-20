@@ -24,7 +24,7 @@ First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
 
 ```properties
-gradle install
+gradle=install
 ```
 
 Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
@@ -82,7 +82,7 @@ import org.springframework.context.annotation.Bean;
 
 public class Application {
 
-    private Logger logger = LoggerFactory.getLogger(Application.class);
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
    
     public static void main(String[] args) {
@@ -324,11 +324,11 @@ public class BBossESStarterTestCase {
 ```java
 @Service
 public class DocumentCRUD {
-    private Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
+    private final Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
     @Autowired
     private BBossESStarter bbossESStarter;
     //DSL config file path
-    private String mappath = "esmapper/demo.xml";
+    private final String mappath = "esmapper/demo.xml";
 
 
     public void dropAndCreateAndGetIndice(){
@@ -515,8 +515,8 @@ public class DocumentCRUD {
 其中
 
 ```properties
-BBossESStarter：由bboss提供，直接在代码中声明引用，并使用即可
-DocumentCRUD:各种增删改查操作实例，在demo工程中提供
+BBossESStarter：由bboss提供，直接在代码中声明引用，并使用即可=
+DocumentCRUD=各种增删改查操作实例，在demo工程中提供
 ```
 
 
@@ -613,13 +613,13 @@ spring.elasticsearch.bboss.dslfile.refreshInterval = -1
 default集群的配置项前缀为：
 
 ```properties
-spring.elasticsearch.bboss.default
+spring.elasticsearch.bboss.default=
 ```
 
 logs集群的配置项前缀为：
 
 ```properties
-spring.elasticsearch.bboss.logs
+spring.elasticsearch.bboss.logs=
 ```
 
 同时每个集群的配置项目里面必须包含name项目的配置
@@ -797,7 +797,8 @@ BBossESStarter bbossESStarterLogs  对应spring.elasticsearch.bboss.logs配置�
 
 ```java
     @Autowired
-    private BBossESStarter bbossESStarterDefault;
+	@Qualifier("bbossESStarterDefault")
+	private BBossESStarter bbossESStarterDefault;
 //Create a client tool to load configuration files, single instance multithreaded security，指定default数据源的名称
     ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("default",mappath);
         //Build a create/modify/get/delete document client object, single instance multi-thread security，指定default数据源的名称
@@ -808,11 +809,12 @@ logs数据源
 
 ```java
     @Autowired
-    private BBossESStarter bbossESStarterDefault;
+	@Qualifier("bbossESStarterLogs")
+	private BBossESStarter bbossESStarterLogs;
 //Create a client tool to load configuration files, single instance multithreaded security，指定logs数据源的名称
-    ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("logs",mappath);
+    ClientInterface clientUtil = bbossESStarterLogs.getConfigRestClient("logs",mappath);
         //Build a create/modify/get/delete document client object, single instance multi-thread security，指定logs数据源的名称
-        ClientInterface clientUtil = bbossESStarterDefault.getRestClient("logs");    
+        ClientInterface clientUtil = bbossESStarterLogs.getRestClient("logs");    
 ```
 
 ## 4.3 多es集群测试用例
@@ -861,8 +863,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @ActiveProfiles("multi-datasource")
 public class MultiBBossESStartersTestCase {
-	@Autowired
+    @Autowired
+	@Qualifier("bbossESStarterDefault")
 	private BBossESStarter bbossESStarterDefault;
+    @Autowired
+	@Qualifier("bbossESStarterLogs")
+	private BBossESStarter bbossESStarterLogs;
 	@Autowired
 	MultiESDocumentCRUD multiESDocumentCRUD;
     @Test

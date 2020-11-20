@@ -73,92 +73,19 @@ elasticPassword=changeme
 
 
 
-### **ES单节点配置**
+### **2.2.1 ES单节点配置**
 
 elasticsearch.rest.hostNames=127.0.0.1:9200
 
 
 
-### **ES集群节点配置**
+### **2.2.2 ES集群节点配置**
 
 Elasticsearch集群地址采用逗号分隔即可，如果开启了discovery机制可以只配置部分节点；
 
 **如果启用了ES的client node模式则只能配置所有client node的地址即可，并且关闭discovery机制**
 
 elasticsearch.rest.hostNames=127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202
-
-
-
-### **https协议配置**
-
-如果开启了Elasticsearch https协议，则需要在elasticsearch地址中添加https://协议头并且设置elasticsearch.useHttps为true
-
-```properties
-elasticsearch.useHttps=true
-elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
-```
-
-Elasticsearch 启用https协议后，如果不想再客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下三种方式配置ssl证书
-
-1 Using PEM certificates：
-
-| 参数名称                | 说明                                               |
-| ----------------------- | -------------------------------------------------- |
-| http.pemCert            | pem证书路径，String                                |
-| http.pemtrustedCA       | trustedHTTPCertificates证书路径，String            |
-| http.supportedProtocols | ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
-| http.pemkeyPassword     | 私钥pem证书口令，String                            |
-| http.pemKey             | 私钥pem证书路径，String                            |
-
-配置示例（search guard）：
-
-```properties
-# Using PEM certificates
-http.pemCert = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.crtfull.pem
-http.pemtrustedCA = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/chain-ca.pem
-http.pemKey = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.key.pem
-http.pemkeyPassword = 7240a0366eb6a764103e
-```
-
-2 Using the keystore and truststore file：
-
-| 参数名称                | 说明                                                     |
-| ----------------------- | -------------------------------------------------------- |
-| http.keystoreAlias      | 可选，String                                             |
-| http.trustAlias         | 可选，String                                             |
-| http.supportedProtocols | 可选，ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
-| http.truststore         | truststore证书文件路径，证书类型为JKS                    |
-| http.trustPassword      | truststore证书口令，String                               |
-| http.keystore           | keystore证书路径，证书类型为JKS                          |
-| http.keyPassword        | keystore证书口令                                         |
-
-配置示例（search guard）：
-
-```properties
-# Using the keystore- and truststore file
- http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
- http.keyPassword = 7240a0366eb6a764103e
- http.truststore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/truststore.jks
- http.trustPassword = 6aa4bd79096852203a5b
-```
-
-3 Using the keystore :
-
-| 参数名称                | 说明                                                     |
-| ----------------------- | -------------------------------------------------------- |
-| http.supportedProtocols | ssl协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
-| http.keystore           | keystore证书路径，证书类型为JKS                          |
-| http.keyPassword        | keystore证书口令                                         |
-
-配置示例：
-
-
-```properties
-# Using the keystore file
- http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
- http.keyPassword = 7240a0366eb6a764103e
- 
-```
 
 
 
@@ -218,6 +145,8 @@ HostDiscoverUtil.handleDiscoverHosts(hosts,"loges");//指定loges数据源
 
 elasticsearch.discoverHost=false
 
+
+
 ### 2.3.3 基于apollo配置中心的节点发现机制
 
 直接在apollo 对应的bboss elasticsearch配置启动文件中指定节点发现监听器：
@@ -243,6 +172,16 @@ elasticsearch.discoverHost=false
 参考apollo管理配置文档：
 
 https://esdoc.bbossgroups.com/#/apollo-config
+
+### 2.3.4 故障节点健康检查配置
+
+通过下面的参数开启故障节点健康检查机制以及设置故障节点健康检查探测时间间隔（单位毫秒），为-1时关闭检查机制：
+
+```
+elasticsearch.healthCheckInterval=5000
+```
+
+
 
 ## 2.4 DSL调试日志开关和日志组件配置
 
@@ -517,6 +456,78 @@ http.timeoutSocket = 50000
 #申请连接超时时间，设置为0不超时，单位：毫秒
 http.connectionRequestTimeout=10000
 ```
+
+### **2.6.5 https协议配置**
+
+如果开启了Elasticsearch https协议，则需要在elasticsearch地址中添加https://协议头并且设置elasticsearch.useHttps为true
+
+```properties
+elasticsearch.useHttps=true
+elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
+```
+
+Elasticsearch 启用https协议后，如果不想再客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下三种方式配置ssl证书
+
+1 Using PEM certificates：
+
+| 参数名称                | 说明                                               |
+| ----------------------- | -------------------------------------------------- |
+| http.pemCert            | pem证书路径，String                                |
+| http.pemtrustedCA       | trustedHTTPCertificates证书路径，String            |
+| http.supportedProtocols | ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.pemkeyPassword     | 私钥pem证书口令，String                            |
+| http.pemKey             | 私钥pem证书路径，String                            |
+
+配置示例（search guard）：
+
+```properties
+# Using PEM certificates
+http.pemCert = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.crtfull.pem
+http.pemtrustedCA = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/chain-ca.pem
+http.pemKey = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.key.pem
+http.pemkeyPassword = 7240a0366eb6a764103e
+```
+
+2 Using the keystore and truststore file：
+
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.keystoreAlias      | 可选，String                                             |
+| http.trustAlias         | 可选，String                                             |
+| http.supportedProtocols | 可选，ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.truststore         | truststore证书文件路径，证书类型为JKS                    |
+| http.trustPassword      | truststore证书口令，String                               |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
+
+配置示例（search guard）：
+
+```properties
+# Using the keystore- and truststore file
+ http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
+ http.keyPassword = 7240a0366eb6a764103e
+ http.truststore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/truststore.jks
+ http.trustPassword = 6aa4bd79096852203a5b
+```
+
+3 Using the keystore :
+
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.supportedProtocols | ssl协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
+
+配置示例：
+
+
+```properties
+# Using the keystore file
+ http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
+ http.keyPassword = 7240a0366eb6a764103e
+ 
+```
+
 
 
 ## 2.7 DSL加载机制配置
@@ -3527,7 +3538,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resour
 如果在程序运行过程中出现以下日志：
 
 ```properties
-the number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache
+the=number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache
 ```
 
 那么可能存在两个原因：
@@ -3583,7 +3594,7 @@ the number of real dsl cache records exceeded the maximum cache size n allowed b
 如果不想缓存dsl语法结构，可以设置cacheDsl为false：
 
 ```properties
-ds配置文件中xml节点property元素增加cacheDsl属性:指示框架是否启用dsl语法结构缓存机制，如果启用则只在第一次对dsl进行硬解析dsl语法结构，后续从缓冲中读取解析好的语法结构；如果禁用，则每次都硬解析dsl语法结构，默认true
+ds配置文件中xml节点property元素增加cacheDsl属性=指示框架是否启用dsl语法结构缓存机制，如果启用则只在第一次对dsl进行硬解析dsl语法结构，后续从缓冲中读取解析好的语法结构；如果禁用，则每次都硬解析dsl语法结构，默认true
 ```
 
 使用cacheDsl禁用dsl语法结构缓存示例：

@@ -198,7 +198,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			return detaultClientInterface;
 		}
 	}
-	private Map<String,ClientInterface> configClientUtis = new HashMap<String,ClientInterface>();
+	private final Map<String,ClientInterface> configClientUtis = new HashMap<String,ClientInterface>();
 	public ClientInterface getConfigRestClientUtil(String configFile) {
 		ClientInterface clientInterface = configClientUtis.get(configFile);
 		if(clientInterface != null)
@@ -378,7 +378,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		String ttl = elasticsearchPropes.getProperty(TTL);
 		if (SimpleStringUtil.isNotEmpty(ttl)) {
 			this.ttlMs = parseTTL(ttl);
-			logger.info("elasticsearch.TTL:"+ttlMs+",config value is:"+ttl);
+//			logger.info("elasticsearch.TTL:"+ttlMs+",config value is:"+ttl);
 //			Preconditions.checkState(ttlMs > 0, TTL
 //					+ " must be greater than 0 or not set.");
 		}

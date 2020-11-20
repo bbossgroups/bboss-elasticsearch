@@ -318,6 +318,10 @@ public class ElasticSearchHelper {
 		String _dslfileMappingDir = ElasticSearchHelper._getStringValue("default","dslfile.dslMappingDir",context,null);
 		if(_dslfileMappingDir != null && !_dslfileMappingDir.trim().equals(""))
 			dslfileMappingDir = _dslfileMappingDir;
+		if(logger.isInfoEnabled()){
+			logger.info("dslfile.refreshInterval {} ms",dslfileRefreshInterval);
+			logger.info("dslfile.dslMappingDir {}",dslfileMappingDir);
+		}
 	}
 
 	protected static void init(){
