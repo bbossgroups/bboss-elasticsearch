@@ -48,7 +48,11 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.2.3 功能改进
-1.数据同步模块改进：增加对开源ip地址库ip2region的支持
+1. 数据同步模块改进：增加对开源ip地址库ip2region的支持，使用参考文档
+ [IP-地区运营商经纬度坐标转换](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2311-ip-地区运营商经纬度坐标转换)
+2. 完善http 响应报文处理机制，增加响应报文为空时的判断和处理 
+3. 完善http-proxy rpc异常信息，添加rpc url信息到异常消息中
+
 # v6.2.2 功能改进
 1. 处理问题：执行_sql?format=txt，格式为txt时，返回结果中文乱码问题，json格式没有问题
    

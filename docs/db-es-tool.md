@@ -826,9 +826,9 @@ final AtomicInteger s = new AtomicInteger(0);
 
 ![](images\datarefactor.png)
 
-### 2.3.11 IP转换为地理坐标城市运营商信息
+### 2.3.11 IP-地区运营商经纬度坐标转换
 
-在DataRefactor中，可以获取ip对应的运营商和区域信息，举例说明：
+与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：
 
 ```java
 /**
@@ -848,13 +848,19 @@ final AtomicInteger s = new AtomicInteger(0);
       });
 ```
 
-首先从以下地址下载ip信息库：
+首先需下载最新的开源信息库
+
+geolite2 ip库文件：
 
  https://dev.maxmind.com/geoip/geoip2/geolite2/#Downloads 
 
-Geoip地址库设置方式有两种：
+ip2region 库文件：
 
-- 在appliction.properties文件中配置geoip的ip地址信息库
+https://github.com/lionsoul2014/ip2region/blob/master/data/ip2region.db
+
+ip地址库设置方式有两种：
+
+- 在appliction.properties文件中配置ip地址信息库
 
 在application.properties文件中配置对应的ip信息库文件地址
 
@@ -863,15 +869,17 @@ ip.cachesize = 10000
 # geoip的ip地址信息库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
 ip.database = E:/workspace/geolite2/GeoLite2-City.mmdb
 ip.asnDatabase = E:/workspace/geolite2/GeoLite2-ASN.mmdb
+ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
 ```
 
-这种配置方式适用于存在Elasticsearch数据源（源库和目标库），对应db-db的情况需要使用代码配置方式
 
-- 代码中直接设置geoip的ip地址信息库
+
+- 代码中直接设置ip地址信息库
 
   ```java
   importBuilder.setGeoipDatabase("E:/workspace/geolite2/GeoLite2-City.mmdb");
   importBuilder.setGeoipAsnDatabase("E:/workspace/geolite2/GeoLite2-ASN.mmdb");
+  	importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
   ```
 
 ### 2.3.12 设置任务执行结果回调处理函数
