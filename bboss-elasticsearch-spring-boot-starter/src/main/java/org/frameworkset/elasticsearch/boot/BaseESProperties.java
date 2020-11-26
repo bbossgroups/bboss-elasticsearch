@@ -589,8 +589,17 @@ public abstract class BaseESProperties {
 		private String sliceScrollThreadQueue;
 		private String sliceScrollBlockedWaitTimeout;
 		private String healthCheckInterval;
+		private String failAllContinue;
 		private String slowDslThreshold;
 		private String useHttps;
+
+		public String getFailAllContinue() {
+			return failAllContinue;
+		}
+
+		public void setFailAllContinue(String failAllContinue) {
+			this.failAllContinue = failAllContinue;
+		}
 
 		public void setUseHttps(String useHttps) {
 			this.useHttps = useHttps;
@@ -880,6 +889,9 @@ public abstract class BaseESProperties {
 				properties.put(_name+"elasticsearch.includeTypeName",this.getElasticsearch().getIncludeTypeName());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getHealthCheckInterval()))
 				properties.put(_name+"elasticsearch.healthCheckInterval",this.getElasticsearch().getHealthCheckInterval());
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getFailAllContinue()))
+				properties.put(_name+"elasticsearch.failAllContinue",this.getElasticsearch().getFailAllContinue());
+
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslThreshold()))
 				properties.put(_name+"elasticsearch.slowDslThreshold",this.getElasticsearch().getSlowDslThreshold());
 

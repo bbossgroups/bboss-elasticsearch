@@ -69,8 +69,8 @@ public class RoundRobinList {
 			lock.unlock();
 		}
 	}
-	private Lock lock = new ReentrantLock();
-	public ESAddress get(){
+	private final Lock lock = new ReentrantLock();
+	private ESAddress _get(){
 		try {
 			lock.lock();
 			ESAddress address = null;
@@ -102,6 +102,47 @@ public class RoundRobinList {
 		finally {
 			lock.unlock();
 		}
+	}
+
+	private ESAddress _getOkOrFailed(){
+		try {
+			lock.lock();
+			ESAddress address = null;
+			ESAddress temp = null;
+			while (iterator.hasNext()) {
+				address = iterator.next();
+				if (address.okOrFailed()){
+					temp = address;
+					break;
+				}
+			}
+			if (temp != null) {
+				return temp;
+
+			} else {
+				iterator = elements.iterator();
+				while (iterator.hasNext()) {
+					address = iterator.next();
+					if (address.okOrFailed()){
+						temp = address;
+						break;
+					}
+				}
+				if(temp == null)
+					throw new NoServerElasticSearchException(message);
+				return temp;
+			}
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+	public ESAddress get(boolean failAllContinue){
+		ESAddress esAddress = _get();
+		if(esAddress != null || !failAllContinue)
+			return esAddress;
+
+		return _getOkOrFailed();
 	}
 
 	public int size() {

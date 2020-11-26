@@ -1,7 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * es节点健康检查
@@ -101,10 +99,21 @@ public class HealthCheck implements Runnable{
 					 }
 			 		 if(this.stop)
 					 		break;
-					 try {
-						 sleep(checkInterval);
-					 } catch (InterruptedException e) {					 
-						 break;
+			 		 if(address.failedCheck()) {
+						 try {
+							 sleep(checkInterval);
+						 } catch (InterruptedException e) {
+							 break;
+						 }
+					 }
+			 		 else{
+						 try {
+							 synchronized(this){
+								 wait();
+							 }
+						 } catch (InterruptedException e) {
+							 break;
+						 }
 					 }
 			 	 }
 			 	 else{

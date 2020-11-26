@@ -1602,6 +1602,7 @@ es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api�
 在工程的resources目录下面准备一个xml配置文件demo.xml，其中定义名称为searchDatas的dsl
 
 ```xml
+<properties>
 <property name="searchDatas">
         <![CDATA[{
             "query": {
@@ -1627,6 +1628,7 @@ es7+版本将去掉indexType，因此bboss提供了一组不带indexType的api�
             "size":#[size]
         }]]>
     </property>
+</properties>    
 ```
 
 在上面的dsl中使用了applicationName1、applicationName2、startTime、endTime、size5个变量，还包含了## 开头的注释，这样就准备好了dsl配置文件了，相关语法可以参考章节：【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl%e9%85%8d%e7%bd%ae%e8%a7%84%e8%8c%83)】，接下来看看在代码里面如何加载配置文件，传递检索需要的变量参数值，实现检索操作

@@ -390,7 +390,7 @@ public class TraceExtraCriteria {
 检索文档对应的dsl语句queryServiceByCondition定义：esmapper/estrace/ESTracesMapper.xml
 
 ```xml
- 
+ <properties>
     <!--
     全文检索查询条件
     -->
@@ -469,6 +469,7 @@ public class TraceExtraCriteria {
                 "fragment_size": 2147483647
             }
         }]]></property>
+</properties>
 ```
 
 执行检索的java代码

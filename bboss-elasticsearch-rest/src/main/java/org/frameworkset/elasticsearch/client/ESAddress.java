@@ -83,6 +83,10 @@ public class ESAddress {
 		return this.status == 0;
 	}
 
+	public boolean okOrFailed(){
+		return this.status == 0 || this.status == 1;
+	}
+
 	public boolean failedCheck(){
 		return this.status == 1;
 	}

@@ -40,9 +40,12 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 	public ElasticSearchException getElasticSearchException() {
 		return elasticSearchException;
 	}
+	public void clean(){
+		elasticSearchException = null;
+	}
 	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException {
 
-		return handleException(url, entity ,status,(String)null);
+		return handleException(url, entity ,status, null);
 	}
 	protected Object handleException(String url,HttpEntity entity ,int status,String charSet) throws IOException {
 

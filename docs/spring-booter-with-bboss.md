@@ -214,9 +214,9 @@ Spring boot 通过@Autowired BBossESStarter 来获取Elasticsearch rest client i
 ```java
     @Autowired
     private BBossESStarter bbossESStarter;
-//Create a client tool to load configuration files, single instance multithreaded security
-    ClientInterface configClientUtil = bbossESStarter.getConfigRestClient(mappath);
-        //Build a create/modify/get/delete document client object, single instance multi-thread security
+//Create a client tool to load dsl xml configuration files(获取加载读取dsl xml配置文件的api接口实例，可以在代码里面直接通过dsl配置名称引用dsl即可）, single instance multithreaded security
+    ClientInterface configClientUtil = bbossESStarter.getConfigRestClient("esmapper/gateway.xml");
+        //Build a create/modify/get/delete document client object(获取不需要读取dsl xml配置文件的api接口实例，可以在代码里面直接编写dsl), single instance multi-thread security
         ClientInterface clientUtil = bbossESStarter.getRestClient();   
 ```
 
@@ -332,8 +332,8 @@ public class DocumentCRUD {
 
 
     public void dropAndCreateAndGetIndice(){
-        //Create a client tool to load configuration files, single instance multithreaded security
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
+        //Create a client tool to load configuration files(获取加载读取dsl xml配置文件的api接口实例，可以在代码里面直接通过dsl的配置名称引用dsl即可）, single instance multithreaded security
+        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/gateway.xml");
         try {
             //To determine whether the indice demo exists, it returns true if it exists and false if it does not
             boolean exist = clientUtil.existIndice("demo");
@@ -459,7 +459,7 @@ public class DocumentCRUD {
      */
     public DemoSearchResult search()   {
         //Create a load DSL file client instance to retrieve documents, single instance multithread security
-        ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
+        ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/gateway.xml");
         //Set query conditions, pass variable parameter values via map,key for variable names in DSL
         //There are four variables in the DSL:
         //        applicationName1
@@ -800,7 +800,7 @@ BBossESStarter bbossESStarterLogs  对应spring.elasticsearch.bboss.logs配置�
 	@Qualifier("bbossESStarterDefault")
 	private BBossESStarter bbossESStarterDefault;
 //Create a client tool to load configuration files, single instance multithreaded security，指定default数据源的名称
-    ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("default",mappath);
+    ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient("default","esmapper/gateway.xml");
         //Build a create/modify/get/delete document client object, single instance multi-thread security，指定default数据源的名称
         ClientInterface clientUtil = bbossESStarterDefault.getRestClient("default");    
 ```
@@ -812,7 +812,7 @@ logs数据源
 	@Qualifier("bbossESStarterLogs")
 	private BBossESStarter bbossESStarterLogs;
 //Create a client tool to load configuration files, single instance multithreaded security，指定logs数据源的名称
-    ClientInterface clientUtil = bbossESStarterLogs.getConfigRestClient("logs",mappath);
+    ClientInterface clientUtil = bbossESStarterLogs.getConfigRestClient("logs","esmapper/gateway.xml");
         //Build a create/modify/get/delete document client object, single instance multi-thread security，指定logs数据源的名称
         ClientInterface clientUtil = bbossESStarterLogs.getRestClient("logs");    
 ```

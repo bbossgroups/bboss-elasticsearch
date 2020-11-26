@@ -69,6 +69,16 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected String elasticUser;
 	protected String elasticPassword;
 	protected long healthCheckInterval = -1l;
+
+	public boolean isFailAllContinue() {
+		return failAllContinue;
+	}
+
+	/**
+	 * 如果所有节点都挂掉，是否允许使用挂掉节点处理请求
+	 */
+	protected boolean failAllContinue = true;
+
 	protected RestSearchExecutor restSeachExecutor;
 //	private HttpClient httpClient;
 //	protected Map<String, String> headers = new HashMap<String, String>();
@@ -136,7 +146,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return addressMap;
 	}
 
-	private Map<String,ESAddress> addressMap = new HashMap<String,ESAddress>();
+	private final Map<String,ESAddress> addressMap = new HashMap<String,ESAddress>();
 	public ElasticSearchRestClient(ElasticSearch elasticSearch,String[] hostNames, String elasticUser, String elasticPassword,
 								     Properties extendElasticsearchPropes) {
 		this.extendElasticsearchPropes = extendElasticsearchPropes;
@@ -225,7 +235,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
 				@Override
-				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+				public Void handleResponse(HttpResponse response) throws IOException {
 					int status = response.getStatusLine().getStatusCode();
 					if (status >= 200 && status < 300) {
 						HttpEntity entity = response.getEntity();
@@ -279,6 +289,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return healthPool;
 	}
 
+	public boolean healthCheckEnabled(){
+		return healthCheckInterval > 0;
+	}
 	public void init() {
 		//Authorization
 //		if (elasticUser != null && !elasticUser.equals(""))
@@ -358,6 +371,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (Exception e){
 				logger.error("Parse Long healthCheckInterval parameter failed:"+healthCheckInterval_,e);
 			}
+		}
+
+		String failAllContinue_ = elasticsearchPropes.getProperty("elasticsearch.failAllContinue");
+		if(failAllContinue_ != null && failAllContinue_.equals("false")){
+			this.failAllContinue = false;
 		}
 		String _slowDslThreshold = elasticsearchPropes.getProperty("elasticsearch.slowDslThreshold");
 		if(_slowDslThreshold != null){
@@ -465,23 +483,42 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 
-	public String execute(String entity,String options) throws ElasticSearchException {
+	public String execute(final String entity,String options) throws ElasticSearchException {
+		String endpoint = BULK_ENDPOINT;
+		if(options != null){
+			endpoint = new StringBuilder().append(endpoint).append("?").append(options).toString();
+		}
+		final ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+		return _executeHttp(endpoint, responseHandler,  new ExecuteRequest() {
+			@Override
+			public Object execute(ESAddress host,String url,int triesCount) throws Exception {
+				Object response = null;
+
+				if(showTemplate ){
+					if(logger.isInfoEnabled()) {
+						logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+					}
+
+				}
+				response = restSeachExecutor.execute(url,entity,responseHandler);
+				return response;
+			}
+		});
+		/**
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
 		ESAddress host = null;
 		String url = null;
-		String endpoint = BULK_ENDPOINT;
-		if(options != null){
-			endpoint = new StringBuilder().append(endpoint).append("?").append(options).toString();
-		}
+
 
 		while (true) {
 
 
 			try {
-				host = serversList.get();
+				host = serversList.get(failAllContinue || !this.healthCheckEnabled());
 				url = new StringBuilder().append(host.getAddress()).append( "/" ).append( endpoint).toString();
+
 //				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, this.headers);
 				if(this.showTemplate ){
 					if(logger.isInfoEnabled()) {
@@ -493,7 +530,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				response = restSeachExecutor.execute(url,entity,responseHandler);
 				e = getException(  responseHandler );
 				break;
-			} 
+			}
 			catch (HttpHostConnectException ex) {
 				host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
@@ -503,7 +540,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				} else {
 					break;
 				}
-                
+
             } catch (UnknownHostException ex) {
             	host.setStatus(1);
 				e = new NoServerElasticSearchException(ex);
@@ -513,7 +550,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				} else {
 					break;
 				}
-                 
+
             }
 			catch (NoRouteToHostException ex) {
 				host.setStatus(1);
@@ -606,7 +643,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			throw new ElasticSearchException(e);
 		}
 		return response;
-
+		*/
 
 	}
 
@@ -663,20 +700,14 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	private <T> T _executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler,boolean discoverHost) throws ElasticSearchException {
-		int triesCount = 0;
-		T response = null;
-		Throwable e = null;
-
-		ESAddress host = null;
-		String url = null;
-		while (true) {
-			try {
-				host = serversList.get();
-				url = getPath(host.getAddress(),path);
+	private <T> T _executeHttp(String path, final String entity,final String action,final ResponseHandler<T> responseHandler,final boolean discoverHost) throws ElasticSearchException {
+		return _executeHttp(path,   responseHandler, new ExecuteRequest() {
+			@Override
+			public Object execute(ESAddress host,String url,int triesCount) throws Exception {
+				Object response = null;
 
 				if(!discoverHost) {
-					if(this.showTemplate && !discoverHost ){
+					if(showTemplate && !discoverHost ){
 						if(logger.isInfoEnabled()) {
 							if(entity != null)
 								logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
@@ -686,13 +717,183 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 
 					}
-					response = this.restSeachExecutor.executeHttp(url, entity, action, responseHandler);
+					response = restSeachExecutor.executeHttp(url, entity, action, responseHandler);
 				}
 				else {
-					response = this.restSeachExecutor.discoverHost(url, entity, action, responseHandler);
+					response = restSeachExecutor.discoverHost(url, entity, action, responseHandler);
 				}
+				return response;
+			}
+		});
+//		int triesCount = 0;
+//		T response = null;
+//		Throwable e = null;
+//
+//		ESAddress host = null;
+//		String url = null;
+//		while (true) {
+//			try {
+//				host = serversList.get(!healthCheckEnabled());
+//				url = getPath(host.getAddress(),path);
+//
+//				if(!discoverHost) {
+//					if(this.showTemplate && !discoverHost ){
+//						if(logger.isInfoEnabled()) {
+//							if(entity != null)
+//								logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+//							else
+//								logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+//						}
+//
+//
+//					}
+//					response = this.restSeachExecutor.executeHttp(url, entity, action, responseHandler);
+//				}
+//				else {
+//					response = this.restSeachExecutor.discoverHost(url, entity, action, responseHandler);
+//				}
+//
+//				e = getException(  responseHandler );
+//				break;
+//			} catch (HttpHostConnectException ex) {
+//				host.setStatus(1);
+//				e = new NoServerElasticSearchException(ex);
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//
+//			} catch (UnknownHostException ex) {
+//				host.setStatus(1);
+//				e = new NoServerElasticSearchException(ex);
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//
+//			}
+//			catch (NoRouteToHostException ex) {
+//				host.setStatus(1);
+//				e = new NoServerElasticSearchException(ex);
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//
+//			}
+//			catch (NoHttpResponseException ex) {
+//				host.setStatus(1);
+//				e = new NoServerElasticSearchException(ex);
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//
+//			}
+//			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
+//
+//				e = handleConnectionPoolTimeOutException( ex);
+//				break;
+//			}
+//			catch (ConnectTimeoutException connectTimeoutException){
+//				host.setStatus(1);
+//				e = handleConnectionTimeOutException(connectTimeoutException);
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//			}
+////			catch (IOException ex) {
+////				host.setStatus(1);
+////				if (triesCount < serversList.size()) {//失败尝试下一个地址
+////					triesCount++;
+////					e = ex;
+////					continue;
+////				} else {
+////					e = ex;
+////					break;
+////				}
+////
+////            }
+//			catch (SocketTimeoutException ex) {
+//				e = handleSocketTimeoutException( ex);
+//				break;
+//			}
+//			catch (NoServerElasticSearchException ex){
+//				e = ex;
+//				break;
+//			}
+//			catch (ClientProtocolException ex){
+//				host.setStatus(1);
+//				e = ex;
+//				if (triesCount < serversList.size() - 1) {//失败尝试下一个地址
+//					triesCount++;
+//					continue;
+//				} else {
+//					break;
+//				}
+//				//throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
+//			}
+//			catch (ElasticSearchException ex) {
+//				e = ex;
+//				break;
+//			}
+//			catch (Exception ex) {
+//				e = ex;
+//				break;
+//			}
+//			catch (Throwable ex) {
+//				e = ex;
+//				break;
+//			}
+//		}
+//		if (e != null){
+//			if(e instanceof ElasticSearchException)
+//				throw (ElasticSearchException)e;
+//			throw new ElasticSearchException(e);
+//		}
+//		return response;
+	}
+
+	/**
+	 *
+	 * @param path
+
+	 * @return
+	 * @throws ElasticSearchException
+	 */
+	private <T> T _executeHttp(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
+		int triesCount = 0;
+		T response = null;
+		Throwable e = null;
+
+		ESAddress host = null;
+		String url = null;
+		while (true) {
+			try {
+				host = serversList.get(failAllContinue || !healthCheckEnabled());
+				url = getPath(host.getAddress(),path);
+				if(responseHandler != null && responseHandler instanceof  BaseExceptionResponseHandler){
+					((BaseExceptionResponseHandler)responseHandler).clean();
+				}
+				response = (T)executeRequest.execute(host,url,triesCount);
+
+
 
 				e = getException(  responseHandler );
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
@@ -738,7 +939,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 			}
 			catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
-
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				e = handleConnectionPoolTimeOutException( ex);
 				break;
 			}
@@ -765,6 +968,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //
 //            }
 			catch (SocketTimeoutException ex) {
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				e = handleSocketTimeoutException( ex);
 				break;
 			}
@@ -784,14 +990,23 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				//throw new ElasticSearchException(new StringBuilder().append("Request[").append(url).append("] handle failed: must use http/https protocol port such as 9200,do not use transport such as 9300.").toString(),ex);
 			}
 			catch (ElasticSearchException ex) {
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				e = ex;
 				break;
 			}
 			catch (Exception ex) {
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				e = ex;
 				break;
 			}
 			catch (Throwable ex) {
+				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
+					host.onlySetStatus(0);
+				}
 				e = ex;
 				break;
 			}
@@ -803,6 +1018,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		return response;
 	}
+
+
 	/**
 	 *
 	 * @param path
@@ -827,7 +1044,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return executeHttp( path,  entity, action,new ESStringResponseHandler());
 	}
 
-	public String executeRequest(String path, String entity) throws ElasticSearchException {
+	public String executeRequest(String path, final String entity) throws ElasticSearchException {
+		final ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+		return _executeHttp(path,   responseHandler, new ExecuteRequest() {
+			@Override
+			public Object execute(ESAddress host,String url,int triesCount) throws Exception {
+				Object response = null;
+
+				if(showTemplate ){
+					if(logger.isInfoEnabled()) {
+						if(entity != null)
+							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+						else
+							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+					}
+				}
+
+				response = restSeachExecutor.executeSimpleRequest(url,entity,responseHandler);
+				return response;
+			}
+		});
+		/**
 		int triesCount = 0;
 		String response = null;
 		Throwable e = null;
@@ -837,7 +1074,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		while (true) {
 
 			try {
-				host = serversList.get();
+				host = serversList.get(!healthCheckEnabled());
 				url =  getPath(host.getAddress(),path);
 //				if (entity == null)
 //					response = HttpRequestUtil.httpPostforString(url, null, this.headers);
@@ -963,7 +1200,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		if (e != null){
 			throw new ElasticSearchException(e);
 		}
-		return response;
+		return response;*/
 	}
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return executeRequest(path, entity,responseHandler,ClientUtil.HTTP_POST);
@@ -982,7 +1219,27 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler,String action) throws ElasticSearchException {
+	public <T> T executeRequest(String path, final String entity,final ResponseHandler<T> responseHandler,final String action) throws ElasticSearchException {
+		return _executeHttp(path,  responseHandler, new ExecuteRequest() {
+			@Override
+			public Object execute(ESAddress host,String url,int triesCount) throws Exception {
+				Object response = null;
+
+				if(showTemplate  ){
+					if(logger.isInfoEnabled()) {
+						if(entity != null)
+							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+						else
+							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+					}
+
+
+				}
+				response = restSeachExecutor.executeRequest(url,entity,action,responseHandler);
+				return response;
+			}
+		});
+		/**
 		T response = null;
 		int triesCount = 0;
 		Throwable e = null;
@@ -991,7 +1248,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		String url = null;
 		while (true) {
 			try {
-				host = serversList.get();
+				host = serversList.get(!healthCheckEnabled());
 				url =  getPath(host.getAddress(),path);
 				if(this.showTemplate  ){
 					if(logger.isInfoEnabled()) {
@@ -1125,8 +1382,12 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				throw (ElasticSearchException)e;
 			throw new ElasticSearchException(e);
 		}
-		return response;
+		return response;*/
 	}
+	private interface ExecuteRequest{
+		Object execute(ESAddress host, String url, int triesCount) throws Exception;
+	}
+
 
 	public FastDateFormat getFastDateFormat() {
 		return fastDateFormat;
