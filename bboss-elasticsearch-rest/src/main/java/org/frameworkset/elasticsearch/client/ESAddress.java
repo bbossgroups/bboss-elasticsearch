@@ -1,9 +1,13 @@
 package org.frameworkset.elasticsearch.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ESAddress {
 	private String address;
 	private String healthPath;
 	private transient Thread healthCheck;
+	private static final Logger logger = LoggerFactory.getLogger(ESAddress.class);
 	/**
 	 * 服务器状态：0 正常 1 异常 2 removed
 	 */
@@ -75,6 +79,20 @@ public class ESAddress {
 				this.status = status;
 		}
 		
+	}
+	/**
+	 * 没有配置health检查地址的情况下，被动恢复异常状态节点为正常状态
+	 *
+	 */
+	public void recover(){
+		if(status == 1){//failed
+			synchronized (this){
+				if(status == 1){
+					status = 0;
+					logger.info("Recover failed node {} to normal node.",address);
+				}
+			}
+		}
 	}
 	public String toString(){
 		return this.address;

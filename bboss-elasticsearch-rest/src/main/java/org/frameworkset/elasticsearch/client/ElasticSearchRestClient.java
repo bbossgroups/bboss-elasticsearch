@@ -887,13 +887,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					((BaseExceptionResponseHandler)responseHandler).clean();
 				}
 				response = (T)executeRequest.execute(host,url,triesCount);
-
-
-
+				//如果是故障节点，则设置为正常节点
+				host.recover();
 				e = getException(  responseHandler );
-				if(host.failedCheck()){//如果是故障节点，则设置为正常节点
-					host.onlySetStatus(0);
-				}
 				break;
 			} catch (HttpHostConnectException ex) {
 				host.setStatus(1);
