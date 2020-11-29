@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.5 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.3</version>
+            <version>6.2.5</version>
         </dependency>
 ```
 
@@ -44,9 +44,33 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.3</version>
+            <version>6.2.5</version>
         </dependency>
 ```
+# v6.2.5 功能改进
+1. 改进Elasticsearch rest client负载均衡调度机制：如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点
+默认值true
+非spring boot项目配置
+```properties
+        elasticsearch.failAllContinue = true
+```
+spring boot配置项
+```properties
+        spring.elasticsearch.bboss.elasticsearch.failAllContinue = true
+```
+
+2. 改进http-proxy负载均衡调度机制：如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点
+  默认值true
+非spring boot项目配置
+```properties
+        http.failAllContinue = true
+```
+spring boot配置项
+```properties
+        spring.bboss.http.failAllContinue = true
+``` 
+
+还需进一步优化http-proxy:代码去重，如果失败节点能够正常处理请求，则需要将故障节点状态设置为正常节点状态
 # v6.2.3 功能改进
 1. 数据同步模块改进：增加对开源ip地址库ip2region的支持，使用参考文档
  [IP-地区运营商经纬度坐标转换](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2311-ip-地区运营商经纬度坐标转换)
@@ -160,7 +184,7 @@ https://esdoc.bbossgroups.com/#/development
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.2.3</version>
+    <version>6.2.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
