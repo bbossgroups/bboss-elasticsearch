@@ -105,6 +105,12 @@ mysql 8.x驱动依赖包(mysql 8必须采用相应版本的驱动，否则不能
 <version>8.0.16</version>
 </dependency>
 ```
+## 1.2 提前创建索引结构
+
+一般情况下elasticsearch会根据bboss导入数据的类型自动创建索引mapping结构，但是默认创建的索引mapping往往不能满足实际要求，这时就需提前建立好自定义的索引mapping结构或者与索引名称匹配的索引mapping模板，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
+
+
+
 # 2.数据库表数据导入到Elasticsearch
 
 ## 2.1.案例对应的源码
@@ -1300,6 +1306,10 @@ importBuilder.setTargetElasticsearch("default,test");
 多个集群数据源名称用逗号分隔，多ES集群数据源配置参考文档：
 
 [5.2 多elasticsearch服务器集群支持](https://esdoc.bbossgroups.com/#/development?id=_52-多elasticsearch服务器集群支持)
+
+### 2.3.21 导入日期类型数据少8小时问题
+
+在数据导入时，如果是时间类型，Elasticsearch默认采用UTC时区（而不是东八区时区）保存日期数据，如果通过json文本查看数据，会发现少8小时，这个是正常现象，通过bboss orm检索数据，日期类型数据就会自动将UTC时区转换为东八区时间（也就是中国时区，自动加8小时）
 
 ## 2.4.DB-ES数据同步工具使用方法
 
