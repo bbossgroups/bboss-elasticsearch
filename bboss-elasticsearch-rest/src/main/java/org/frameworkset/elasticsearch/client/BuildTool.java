@@ -1478,8 +1478,16 @@ public abstract class BuildTool {
 		Object version = null;
 		Object versionType = null;
 		if(!bulkData.isDelete()){
-			if(clientOption != null && clientOption.getIdField() != null) {
-				id = BuildTool.getId(params, beanInfo, clientOption.getIdField());
+			if(clientOption != null) {
+				if( clientOption.getIdField() != null) {
+					id = BuildTool.getId(params, beanInfo, clientOption.getIdField());
+				}
+				else if( clientOption.getId() != null){
+					id = clientOption.getId();
+				}
+				else{
+					id = getId(params,  beanInfo );
+				}
 			}
 			else{
 				id = getId(params,  beanInfo );
@@ -1492,33 +1500,55 @@ public abstract class BuildTool {
 
 
 		if(clientOption != null) {
-
-			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanInfo, clientOption.getParentIdField()) : getParentId(params,  beanInfo );
-			if(clientOption.getRouting() == null) {
-				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOption.getRoutingField()) : getRouting(params,beanInfo);
+			if(clientOption.getParentIdField() != null){
+				parentId = BuildTool.getParentId(params, beanInfo, clientOption.getParentIdField());
+			}
+			else if(clientOption.getParentId() != null){
+				parentId = clientOption.getParentId();
 			}
 			else{
+				parentId = getParentId(params,  beanInfo );
+			}
+			if(clientOption.getRoutingField() != null){
+				routing = BuildTool.getRouting(params, beanInfo, clientOption.getRoutingField());
+			}
+			else if(clientOption.getRouting() != null){
 				routing = clientOption.getRouting();
 			}
-
-			if(clientOption.getEsRetryOnConflict() == null) {
-				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
-						clientOption.getEsRetryOnConflictField()) : getEsRetryOnConflict(params,beanInfo);
-			}
 			else{
+				routing = getRouting(params,beanInfo);
+			}
+
+			if(clientOption.getEsRetryOnConflictField() != null){
+				esRetryOnConflict = BuildTool.getEsRetryOnConflict(params, beanInfo,
+						clientOption.getEsRetryOnConflictField());
+			}
+			else if(clientOption.getEsRetryOnConflict() != null){
 				esRetryOnConflict = clientOption.getEsRetryOnConflict();
 			}
-			if(clientOption.getVersion() == null) {
-				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionField()) : getVersion(  beanInfo,   params);
-			}
 			else{
+				esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+			}
+			if(clientOption.getVersionField() != null){
+				version = BuildTool.getFieldValue(params, beanInfo, clientOption.getVersionField());
+			}
+			else if(clientOption.getVersion() != null){
 				version = clientOption.getVersion();
 			}
-			if(clientOption.getVersionType() == null) {
-				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionTypeField()) : getVersionType(  beanInfo,   params);
-			}else{
+			else{
+				version =  getVersion(  beanInfo,   params);
+			}
+
+			if(clientOption.getVersionTypeField() != null){
+				versionType = BuildTool.getFieldValue(params, beanInfo, clientOption.getVersionTypeField()) ;
+			}
+			else if(clientOption.getVersionType() != null){
 				versionType = clientOption.getVersionType();
 			}
+			else{
+				versionType =  getVersionType(  beanInfo,   params);
+			}
+
 		}
 		else{
 
