@@ -32,7 +32,7 @@ Elasticsearch source filter检索案例分享
 
 # 2.定义source filter dsl语句
 
-首先，在[DocumentCRUD ](https://gitee.com/bboss/eshelloword/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)案例对应的dsl配置文件esmapper/demo.xml中添加searchSourceFilter：
+首先，在[DocumentCRUD ](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7.java)案例对应的dsl配置文件esmapper/demo.xml中添加searchSourceFilter：
 
 ```xml
     <property name="searchSourceFilter">
@@ -80,7 +80,7 @@ Elasticsearch source filter检索案例分享
 
 # 3.定义source filter检索方法
 
-在[DocumentCRUD ](https://gitee.com/bboss/eshelloword/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)中增加方法：
+在[DocumentCRUD ](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7.java)中增加方法：
 
 ```java
     /**
@@ -178,7 +178,7 @@ Elasticsearch source filter检索案例分享
 
 案例对应源码工程：
 
-<https://gitee.com/bboss/eshelloword>
+<https://github.com/bbossgroups/eshelloword>
 
 # 开发交流
 

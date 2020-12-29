@@ -114,8 +114,6 @@
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
-<https://gitee.com/bboss/eshelloword-booter>
-
 
 
 # 4 开发交流

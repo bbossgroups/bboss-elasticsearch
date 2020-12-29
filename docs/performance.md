@@ -21,7 +21,7 @@ jdk 1.8
 
 # 性能测试代码
 
-[DocumentCRUD](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
+[DocumentCRUD](https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)
 
 ```java
     /**

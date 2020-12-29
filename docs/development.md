@@ -745,7 +745,7 @@ getConfigRestClientUtil方法获取的ClientInterface实例是getRestClientUtil�
 
 ## **4.1 配置es查询dsl**
 
-在resources下创建配置文件[estrace/ESTracesqlMapper.xml](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTracesMapper.xml)，配置一个query dsl脚本，名称为queryServiceByCondition，我们将在后面的ClientInterface 组件中通过queryServiceByCondition引用这个脚本，脚本内容定义如下：
+在resources下创建配置文件[estrace/ESTracesqlMapper.xml](https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/main/resources/esmapper/estrace/ESTracesMapper.xml)，配置一个query dsl脚本，名称为queryServiceByCondition，我们将在后面的ClientInterface 组件中通过queryServiceByCondition引用这个脚本，脚本内容定义如下：
 
 ```xml
 <properties>
@@ -991,7 +991,7 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 				Demo.class);
 ```
 
-批量删除文档的示例，这里不举例说明，请访问github [demo](https://gitee.com/bboss/elasticsearchdemo)
+批量删除文档的示例，这里不举例说明，请访问github [demo](https://github.com/bbossgroups/elasticsearch-gradle-example)
 
 
 
@@ -2013,6 +2013,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 ```velocity
 #foreach($xxx in $xxxs)
+     #if($velocityCount > 0) ,#end
      {"term": {
      	"applicationName": #[xxxs[$velocityCount]]
      }}
@@ -2026,6 +2027,7 @@ logs对应的es集群服务器相关参数配置，请参考文档：
      ## 定义保存外部循环变量velocityCount的临时变量
      #set($outIndex = $velocityCount)
      #foreach($item in $subxxxs.innerList)
+         #if($outIndex > 0) ,#end
          {"term": {
             "applicationName": #[xxxs[$outIndex]->innerList[$velocityCount]]
          }}
@@ -3915,7 +3917,7 @@ https://esdoc.bbossgroups.com/#/db-dsl
 
 ## 6.1 完整query dsl定义文件
 
-[esmapper/estrace/ESTracesMapper.xml](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTracesMapper.xml)
+[esmapper/estrace/ESTracesMapper.xml](https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/main/resources/esmapper/estrace/ESTracesMapper.xml)
 
 > ```xml
 > <!--es
@@ -3928,7 +3930,7 @@ https://esdoc.bbossgroups.com/#/db-dsl
 
 ## 6.2 索引表模板新增和删除
 
-[ESTemplate.xml文件定义](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTemplate.xml)
+[ESTemplate.xml文件定义](https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/main/resources/esmapper/estrace/ESTemplate.xml)
 
 ```java
 public void testTempate() throws ParseException{
@@ -3965,7 +3967,7 @@ public void testTempate() throws ParseException{
 
 ## 6.3 创建和查询索引表模板
 
-[ESTemplate.xml文件定义](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/ESTemplate.xml)
+[ESTemplate.xml文件定义](https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/main/resources/esmapper/estrace/ESTemplate.xml)
 
 > ```java
 > public void testCreateTempate() throws ParseException{
@@ -4180,7 +4182,7 @@ public void testQueryDocMapping(){
 
 
 
-## 6.10 执行列子代码：[TestMain.java](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/java/org/frameworkset/elasticsearch/TestMain.java)
+## 6.10 执行列子代码：[TestMain.java](https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/test/java/org/frameworkset/elasticsearch/TestMain.java)
 
 > ```java
 > public static void main(String[] args) throws ParseException {
@@ -4208,9 +4210,9 @@ public void testQueryDocMapping(){
 
 ## 6.12 suggest使用案例
 
-<https://gitee.com/bboss/elasticsearchdemo/tree/master/src/test/java/org/frameworkset/elasticsearch/suggest>
+<https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/test/java/org/frameworkset/elasticsearch/suggest>
 
-<https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/estrace/suggest.xml>
+<https://github.com/bbossgroups/elasticsearch-gradle-example/blob/master/src/main/resources/esmapper/estrace/suggest.xml>
 
 
 
@@ -4252,11 +4254,11 @@ https://esdoc.bbossgroups.com/#/elasticsearch5-parent-child
 
 ## **7.1 完整的demo**
 
-**https://gitee.com/bboss/eshelloword-booter**（基于maven）
+**https://github.com/bbossgroups/eshelloword-booter**（基于maven）
 
-<https://gitee.com/bboss/eshelloword-spring-boot-starter>（基于maven）
+<https://github.com/bbossgroups/eshelloword-spring-boot-starter>（基于maven）
 
-<https://gitee.com/bboss/elasticsearchdemo> （基于gradle）
+<https://github.com/bbossgroups/elasticsearch-gradle-example> （基于gradle）
 
 
 

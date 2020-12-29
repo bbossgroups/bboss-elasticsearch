@@ -16,7 +16,6 @@
 
 Elasticsearch 6.x 案例源码
 
-码云：https://gitee.com/bboss/eshelloword-booter/tree/master/src/test/java/org/bboss/elasticsearchtest/jointype
 
 GitHub：https://github.com/bbossgroups/elasticsearch-example/tree/master/src/test/java/org/bboss/elasticsearchtest/jointype
 
@@ -24,7 +23,7 @@ GitHub：https://github.com/bbossgroups/elasticsearch-example/tree/master/src/te
 
 创建pager join_type父子关系dsl、导入测试数据dsl、父子关系检索dsl配置如下：
 
-https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/joinparentchild.xml
+https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/resources/esmapper/joinparentchild.xml
 
 ```xml
 <properties>

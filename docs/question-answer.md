@@ -27,9 +27,9 @@ org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasti
 
 ## 问题处理
 
-### 1.application.properties文件没有正确加载问题处理
+### 1.非spring boot环境application.properties文件没有正确加载问题处理
 
-如果不存在application.properties文件，那么参考文档建立文件：
+非spring boot环境,如果不存在application.properties文件，那么参考文档建立文件：
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -42,10 +42,20 @@ spring boot环境中获取ClientInterface实例方式不对问题处理,则参�
 ```java
 @Service
 public class DocumentCRUD {
+
+	
    private Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
-    //必须导入下面的组件才能正确加载客户端配置
+    //如果是单个集群，必须导入下面的组件才能正确加载客户端配置
    @Autowired
    private BBossESStarter bbossESStarter;
+   //如果是多集群，需要通过Qualifier指定每个集群的Starter名称，多集群配置starter初始化参考下面的多集群配置-开始
+   @Autowired
+   @Qualifier("bbossESStarterDefault")
+   private BBossESStarter bbossESStarterDefault;
+	@Autowired
+	@Qualifier("bbossESStarterLogs") 
+   private BBossESStarter bbossESStarterLogs;
+	//如果是多集群，需要通过Qualifier指定每个集群的Starter名称，多集群配置starter初始化参考下面的多集群配置-结束
    //DSL config file path
    private String mappath = "esmapper/demo.xml";
 
@@ -68,6 +78,32 @@ public class DocumentCRUD {
 
 
    }
+```
+
+多集群配置初始化：
+```java
+/**
+* 多个es集群starter初始化
+
+  */
+  @Configuration
+  public class MultiESSTartConfigurer {
+  @Primary
+  @Bean(initMethod = "start")
+  @ConfigurationProperties("spring.elasticsearch.bboss.default")
+  public BBossESStarter bbossESStarterDefault(){
+  return new BBossESStarter();
+
+  }
+
+  @Bean(initMethod = "start")
+  @ConfigurationProperties("spring.elasticsearch.bboss.logs")
+  public BBossESStarter bbossESStarterLogs(){
+  return new BBossESStarter();
+
+  }
+
+}
 ```
 
 如果获取实例方式不正确，我们可以在启动日志中看到类似以下信息：Start Elasticsearch Datasource[default] from springboot[false]

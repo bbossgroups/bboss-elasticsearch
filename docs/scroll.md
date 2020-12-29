@@ -90,13 +90,13 @@ Elasticsearch Scroll分页检索案例分享
 
 项目地址：
 
-<https://gitee.com/bboss/elasticsearchdemo/>
+<https://github.com/bbossgroups/elasticsearchdemo/>
 
 scroll检索对应的代码和脚本文件：
 
-<https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/resources/esmapper/scroll.xml>
+<https://github.com/bbossgroups/elasticsearchdemo/blob/master/src/main/resources/esmapper/scroll.xml>
 
-<https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/java/org/frameworkset/elasticsearch/TestScrollQuery.java>
+<https://github.com/bbossgroups/elasticsearchdemo/blob/master/src/test/java/org/frameworkset/elasticsearch/TestScrollQuery.java>
 
 # 开发交流
 

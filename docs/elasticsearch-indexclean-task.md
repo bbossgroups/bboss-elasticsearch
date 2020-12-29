@@ -132,8 +132,7 @@ elasticsearch.dateFormat=yyyy.MM.dd
 
    github: https://github.com/bbossgroups/elasticsearch-task
 
-   码云: https://gitee.com/bboss/elktask
-
+ 
 ## 4.2 利用gradle构建发布版本
 利用gradle构建发布版本，在下载的源码根目录的cmd下运行下面的指令:
 

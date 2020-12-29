@@ -12,7 +12,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 <dependency> 
     <groupId>com.bbossgroups</groupId> 
     <artifactId>bboss-persistent</artifactId> 
-    <version>5.7.5</version> 
+    <version>5.7.7</version> 
 </dependency> 
 
 在pom中添加elastic maven库 
@@ -41,7 +41,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 <dependency>
   <groupId>org.elasticsearch.plugin</groupId>
   <artifactId>x-pack-sql-jdbc</artifactId>
-  <version>7.5.2</version>
+  <version>7.10.0</version>
 </dependency>
 ```
 
@@ -50,7 +50,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 - 启动es数据源
 - 执行elasticsearch sql相关功能
 
-直接看执行各种sql功能的代码[ESJdbcTest](https://gitee.com/bboss/bestpractice/blob/master/persistent/src/com/frameworkset/sqlexecutor/ESJdbcTest.java)：
+直接看执行各种sql功能的代码[ESJdbcTest](https://github.com/bbossgroups/bestpractice/blob/master/persistent/src/com/frameworkset/sqlexecutor/ESJdbcTest.java)：
 
 ```java
 package com.frameworkset.sqlexecutor;
@@ -241,9 +241,9 @@ public class ESJdbcTest {
 bboss 提供一组sql和fetchQuery API，可替代es jdbc模块；采用bboss即可拥有bboss的客户端自动发现和容灾能力、对es、jdk、spring boot的兼容性能力，又可以拥有es jdbc的所有功能，同时还解决了因为引入es jdbc导致项目对es版本的强依赖和兼容性问题，参考demo：
 
 orm查询
-<https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
+<https://github.com/bbossgroups/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLOrmTest.java>
 分页查询
-<https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLPagineTest.java>
+<https://github.com/bbossgroups/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/sql/SQLPagineTest.java>
 
 
 

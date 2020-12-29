@@ -338,12 +338,7 @@ sql转换为dsl的结果：
 
 # 5.完整的demo
 
-<https://gitee.com/bboss/eshelloword-booter>
-
 <https://github.com/bbossgroups/eshelloword-booter>
-
-
-
 
 
 # 6.开发交流

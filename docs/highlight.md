@@ -12,7 +12,7 @@
 
 # 2.创建索引表和初始化数据
 
-通过组件[DocumentCRUD ](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)来创建索引表和初始化数据，[DocumentCRUD ](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)组件实现本文不做重点介绍：
+通过组件[DocumentCRUD ](https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)来创建索引表和初始化数据，[DocumentCRUD ](https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)组件实现本文不做重点介绍：
 
 ```java
 /**
@@ -33,7 +33,7 @@ public void initIndiceAndData(){
 
 ## 3.1 定义高亮检索dsl
 
-在文件[esmapper/demo.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中增加testHighlightSearch配置：
+在文件[esmapper/demo.xml](https://github.com/bbossgroups/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中增加testHighlightSearch配置：
 
 dsl中变量语法参考文档：[开发指南](https://esdoc.bbossgroups.com/#/development?id=_53-dsl%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83)
 
@@ -281,8 +281,6 @@ name:刘德华<mark>喜</mark><mark>欢</mark><mark>唱</mark><mark>歌</mark>51
 # 5.完整的demo实例工程
 
 <https://github.com/bbossgroups/eshelloword-booter>
-
-<https://gitee.com/bboss/eshelloword-booter>
 
 
 

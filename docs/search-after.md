@@ -16,7 +16,7 @@ Elasticsearch search after分页查询案例分享
 
 # 2.编写创建索引表和初始化数据方法
 
-创建索引表和初始化数据的组件[DocumentCRUD ](https://gitee.com/bboss/eshelloword/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD.java)实现本文不做重点介绍，请访问[视频教程](https://pan.baidu.com/s/1kXjAOKn)了解：
+创建索引表和初始化数据的组件[DocumentCRUD ](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7.java)实现本文不做重点介绍，请访问[视频教程](https://pan.baidu.com/s/1kXjAOKn)了解：
 
 ```java
 /**
@@ -147,7 +147,7 @@ public void initIndiceAndData(){
 
 案例对应源码工程：
 
-<https://gitee.com/bboss/eshelloword>
+<https://github.com/bbossgroups/elasticsearch-example>
 
 # 开发交流
 

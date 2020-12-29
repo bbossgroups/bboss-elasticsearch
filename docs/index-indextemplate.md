@@ -40,7 +40,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 # 2 定义创建Indice的dsl脚本
 
-在配置文件-[esmapper/demo.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中定义一个名称为createDemoIndice的dsl脚本：
+在配置文件-[esmapper/demo.xml](https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中定义一个名称为createDemoIndice的dsl脚本：
 
 ```xml
     <!--

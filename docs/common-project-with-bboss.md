@@ -227,9 +227,6 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("defaul
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
-<https://gitee.com/bboss/eshelloword-booter>
-
-
 
 # 4.参考文档
 
