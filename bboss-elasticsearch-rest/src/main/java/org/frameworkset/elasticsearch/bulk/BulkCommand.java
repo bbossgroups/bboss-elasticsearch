@@ -201,59 +201,6 @@ public class BulkCommand implements Runnable{
 				}
 			}
 		}
-		/**
-		try {
-			this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
-
-			String result = clientInterface.executeBulk(this);
-			bulkProcessor.increamentTotalsize(this.getBulkDataSize());
-			boolean hasError = ResultUtil.bulkResponseError(result);
-			if (!hasError) {
-				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-					try {
-
-						bulkInterceptor.afterBulk(this, result);
-					} catch (Exception e) {
-						if (logger.isErrorEnabled())
-							logger.error("bulkInterceptor.afterBulk", e);
-					}
-				}
-			} else {
-				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-					try {
-
-						bulkInterceptor.errorBulk(this, result);
-					} catch (Exception e) {
-						if (logger.isErrorEnabled())
-							logger.error("bulkInterceptor.errorBulk", e);
-					}
-				}
-			}
-
-		}
-
-		catch (Throwable throwable){
-			this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
-			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-				try {
-					bulkInterceptor.exceptionBulk(this,throwable);
-				}
-				catch(Exception e){
-					logger.error("bulkInterceptor.errorBulk",e);
-				}
-			}
-		}
-		finally {
-			this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
-			if(batchBulkDatas != null) {
-				this.batchBulkDatas.clear();
-				batchBulkDatas = null;
-			}
-		}*/
-
 
 	}
 

@@ -667,6 +667,7 @@ java代码
 ```java
 ClientInterface clientInterface = ElasticSearchHelper.getConfigRestClientUtil("esmapper/testagg.xml"); 
 ESDatas<Traces> response = null;
+        //执行检索操作，将文档数据封装为Traces类型返回
         if(!traceExtraCriteria.isExactSearch())
         	response = clientUtil.searchList("trace-*/_search","queryServiceByCondition",traceExtraCriteria,Traces.class);
         else
@@ -674,12 +675,12 @@ ESDatas<Traces> response = null;
         JsonDataResult ret = new JsonDataResult();
         if(response != null) {
         	if(response.getDatas() != null)
-				ret.setData(response.getDatas());//获取文档数据结合，包含了高亮检索信息
+				ret.setData(response.getDatas());//获取文档数据集合，包含了高亮检索信息
         	else{
 				ret.setData(new ArrayList<Traces>());
 			}
-			ret.setTotalSize(response.getTotalSize());
-			if (response.getAggregations() != null) {
+			ret.setTotalSize(response.getTotalSize());//获取命中的总记录数据
+			if (response.getAggregations() != null) {//处理返回的聚合结果
 				/**
 				 *  "key_as_string": "2017-09-22T14:30:00.000+08:00",
 				 "key": 1506061800000,
