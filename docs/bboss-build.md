@@ -16,12 +16,12 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 M2_HOME: 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构建的本地包才能被maven项目引用到，gradle 通过M2_HOME环境变量查找maven安装目录，一定要与idea或者eclipse中配置的maven安装目录一致
 
-![img](http://dl2.iteye.com/upload/attachment/0121/1503/e9a82561-3edf-3dd9-a6c1-b4676817a398.png)
-![img](http://dl2.iteye.com/upload/attachment/0121/1507/7f1c4f3b-783d-37bb-b7f4-274ea693b76a.png)
+![img](images/gradle_path.png)
+![img](images/gradle_home.png)
 
 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构建的本地包才能被maven项目引用到，gradle 通过M2_HOME环境变量查找maven安装环境，一定要与idea或者eclipse中配置的maven安装目录一致，配置M2_HOME环境变量如下图： 
 
-![img](http://dl2.iteye.com/upload/attachment/0128/6041/40647d96-5017-3a8d-a7db-b7ba7b099463.jpg)
+![img](images/m2_home.jpg)
 
 M2_HOME变量中的maven安装路径要与idea中maven配置保持一致：
 
@@ -32,7 +32,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致：
 安装后gradle后，我们就可以利用gradle来构建Elasticsearch Bboss的源码了。
 
 首先从github下载两个Elasticsearch bboss的源码工程：
- 
+
 https://github.com/bbossgroups/bboss-elasticsearch
 
 https://github.com/bbossgroups/bboss-elastic-tran
