@@ -23,7 +23,6 @@ import org.frameworkset.util.concurrent.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
@@ -49,7 +48,7 @@ public class BulkProcessor {
 
 	private BulkCommand buildBulkCommand(){
 
-		return new BulkCommand(new ArrayList<BulkData>(bulkConfig.getBulkSizes()),this);
+		return new BulkCommand(this);
 	}
 
 	private BulkConfig bulkConfig;
@@ -640,7 +639,11 @@ public class BulkProcessor {
 		}
 	}
 
-/**
+	public int getBulkSizes() {
+		return bulkConfig.getBulkSizes();
+	}
+
+	/**
 	class Worker implements Runnable{
 
 		@Override

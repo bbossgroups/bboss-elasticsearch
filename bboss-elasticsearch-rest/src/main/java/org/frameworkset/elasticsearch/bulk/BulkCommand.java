@@ -20,6 +20,7 @@ import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,8 +56,8 @@ public class BulkCommand implements Runnable{
 	public void setBulkCommandCompleteTime(Date bulkCommandCompleteTime) {
 		this.bulkCommandCompleteTime = bulkCommandCompleteTime;
 	}
-	public BulkCommand(List<BulkData> batchBulkDatas,BulkProcessor bulkProcessor) {
-		this.batchBulkDatas = batchBulkDatas;
+	public BulkCommand(BulkProcessor bulkProcessor) {
+		this.batchBulkDatas = new ArrayList<BulkData>(bulkProcessor.getBulkSizes());
 		this.bulkProcessor = bulkProcessor;
 		this.clientInterface = bulkProcessor.getClientInterface();
 	}
