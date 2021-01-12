@@ -50,6 +50,8 @@ mainclass=org.frameworkset.task.Main
  
 # 二、原生quartz同步作业demo
  下面看一个完整quartz原生数据同步作业程序
+## quartz作业处理类 
+quartz作业处理类[ImportDataJob.java](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/ImportDataJob.java)
  
  ```java
 package org.frameworkset.elasticsearch.imp.quartz;
@@ -254,7 +256,10 @@ public class ImportDataJob implements Job {
 }
 
 ```
-下面的代码将作业ImportDataJob注册到quartz引擎中：
+
+## 调度执行quartz作业
+下面的代码将作业ImportDataJob注册到quartz引擎中并调度执行：
+[Bootstrap.java](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/Bootstrap.java)
 ```java
  public  void quartz(Scheduler scheduler) throws InterruptedException, SchedulerException {
         //2020.8.19在这定义加载的任务类,然后业务逻辑是每一次都在
