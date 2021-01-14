@@ -52,6 +52,12 @@ public class BulkCommand implements Runnable{
 	public Date getBulkCommandCompleteTime() {
 		return bulkCommandCompleteTime;
 	}
+	public long getElapsed(){
+		if(bulkCommandCompleteTime != null && bulkCommandStartTime != null){
+			return bulkCommandCompleteTime.getTime() - bulkCommandStartTime.getTime();
+		}
+		return 0;
+	}
 
 	public void setBulkCommandCompleteTime(Date bulkCommandCompleteTime) {
 		this.bulkCommandCompleteTime = bulkCommandCompleteTime;
@@ -115,10 +121,12 @@ public class BulkCommand implements Runnable{
 		int retryTimes = bulkConfig.getRetryTimes();
 		if(bulkRetryHandler == null || retryTimes <= 0){//当有异常发生时，不需要重试
 			try {
-				this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
+				this.setBulkCommandStartTime(new Date());
 				directRun( bulkInterceptors );
+				this.setBulkCommandCompleteTime(new Date());
 			}
 			catch (Throwable throwable){
+				this.setBulkCommandCompleteTime(new Date());
 				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
@@ -131,7 +139,7 @@ public class BulkCommand implements Runnable{
 				}
 			}
 			finally {
-				this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
+
 				if(batchBulkDatas != null) {
 					this.batchBulkDatas.clear();
 					batchBulkDatas = null;
@@ -140,7 +148,7 @@ public class BulkCommand implements Runnable{
 		}
 		else{
 			try {
-				this.setBulkCommandStartTime(new Date(System.currentTimeMillis()));
+				this.setBulkCommandStartTime(new Date());
 				Exception exception = null;
 				int count = 0;
 				long retryInterval = bulkConfig.getRetryInterval();
@@ -177,12 +185,14 @@ public class BulkCommand implements Runnable{
 						}
 					}
 				}while(true);
+				this.setBulkCommandCompleteTime(new Date());
 				if(exception != null){
 					throw exception;
 				}
 
 			}
 			catch (Throwable throwable){
+				this.setBulkCommandCompleteTime(new Date());
 				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
@@ -195,7 +205,7 @@ public class BulkCommand implements Runnable{
 				}
 			}
 			finally {
-				this.setBulkCommandCompleteTime(new Date(System.currentTimeMillis()));
+
 				if(batchBulkDatas != null) {
 					this.batchBulkDatas.clear();
 					batchBulkDatas = null;
