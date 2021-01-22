@@ -4,7 +4,7 @@
 
 spring boot必看demo1：
 
-[spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)
+[spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)（maven）
 
 spring boot必看demo2：
 
@@ -12,7 +12,7 @@ spring boot必看demo2：
 
 spring boot必看demo3：
 
-[spring boot多个Elasticsearch集群环境案例web demo](https://github.com/bbossgroups/es_bboss_web/tree/multiesdatasource)
+[spring boot多个Elasticsearch集群环境案例web demo](https://github.com/bbossgroups/es_bboss_web/tree/multiesdatasource)（maven）
 
 maven项目参考demo1：
 
@@ -24,13 +24,13 @@ gradle项目参考demo2：
 
 # 2.基于apollo配置中心案例
 
-https://github.com/bbossgroups/elasticsearch-example-apollo
+https://github.com/bbossgroups/elasticsearch-example-apollo （maven）
 
-https://github.com/bbossgroups/db-elasticsearch-tool-apollo
+https://github.com/bbossgroups/db-elasticsearch-tool-apollo （gradle）
 
-https://github.com/bbossgroups/httpproxy-apollo
+https://github.com/bbossgroups/httpproxy-apollo （maven）
 
-https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo
+https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo （gradle）
 
 # 3.快速集成和应用 
 

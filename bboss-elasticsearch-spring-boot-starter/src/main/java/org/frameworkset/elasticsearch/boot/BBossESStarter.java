@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.util.DBConf;
+import com.frameworkset.common.poolman.util.SQLManager;
 import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
@@ -80,6 +82,30 @@ public class BBossESStarter  extends BaseESProperties{
 
 	}
 	private void initDS(Db db){
+		DBConf temConf = new DBConf();
+		temConf.setPoolname(db.getName());
+		temConf.setDriver(db.getDriver());
+		temConf.setJdbcurl(db.getUrl());
+		temConf.setUsername(db.getUser());
+		temConf.setPassword(db.getPassword());
+		temConf.setReadOnly(null);
+		temConf.setTxIsolationLevel(null);
+		temConf.setValidationQuery(db.getValidateSQL());
+		temConf.setJndiName(db.getName()+"_jndi");
+		temConf.setInitialConnections(db.getInitSize() != null?Integer.parseInt(db.getInitSize()):10);
+		temConf.setMinimumSize(db.getMinIdleSize() != null?Integer.parseInt(db.getMinIdleSize()):10);
+		temConf.setMaximumSize(db.getMaxSize() != null?Integer.parseInt(db.getMaxSize()):50);
+		temConf.setUsepool(db.getUsePool() != null?Boolean.parseBoolean(db.getUsePool()):true);
+		temConf.setExternal(false);
+		temConf.setExternaljndiName(null);
+		temConf.setShowsql(db.getShowSql()!= null?Boolean.parseBoolean(db.getShowSql()):true);
+		temConf.setEncryptdbinfo(false);
+		temConf.setQueryfetchsize(db.getJdbcFetchSize() != null?Integer.parseInt(db.getInitSize()):0);
+		temConf.setDbAdaptor(db.getDbAdaptor());
+		temConf.setDbtype(db.getDbtype());
+		boolean ff = db.getColumnLableUpperCase() == null ? true:db.getColumnLableUpperCase().equals("true");
+		temConf.setColumnLableUpperCase(ff);
+		SQLManager.startPool(temConf);
 		SQLUtil.startPool(db.getName(),//数据源名称
 				db.getDriver(),//jdbc驱动
 				db.getUrl(),//mysql链接串

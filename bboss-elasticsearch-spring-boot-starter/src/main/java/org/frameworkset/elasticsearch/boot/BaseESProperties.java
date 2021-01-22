@@ -173,6 +173,15 @@ public abstract class BaseESProperties {
 		private String dbAdaptor;
 		private String jdbcFetchSize;
 		private String datasources;
+		public String getColumnLableUpperCase() {
+			return columnLableUpperCase;
+		}
+
+		public void setColumnLableUpperCase(String columnLableUpperCase) {
+			this.columnLableUpperCase = columnLableUpperCase;
+		}
+
+		private String columnLableUpperCase ;
 		public String getName() {
 			return name;
 		}
