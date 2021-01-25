@@ -12,7 +12,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 <dependency> 
     <groupId>com.bbossgroups</groupId> 
     <artifactId>bboss-persistent</artifactId> 
-    <version>5.7.7</version> 
+    <version>5.7.8</version> 
 </dependency> 
 
 在pom中添加elastic maven库 
