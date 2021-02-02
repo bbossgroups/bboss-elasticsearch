@@ -87,4 +87,18 @@ public class SerialUtil {
 
 
 	}
+
+	public  static void normalObject2json(Object bean, Writer writer) {
+		try {
+
+			normaMapper.writeValue(writer,bean);
+
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error JSON serialization operation",e);
+		}
+
+
+
+
+	}
 }
