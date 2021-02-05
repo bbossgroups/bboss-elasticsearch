@@ -20,8 +20,9 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 4. 将Elasticsearch数据同步到Elasticsearch
 5. 将mongodb数据同步到Elasticsearch
 6. 将mongodb数据同步到数据库表
-7. kafka数据导入Elasticsearch，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
+7. kafka数据导入Elasticsearch和数据库，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
 8. HBase数据导入Elasticsearch
+9. 将elasticsearch导出到文本文件以及通过ftp/sftp上传文件到文件服务器
 
 数据导入的方式
 

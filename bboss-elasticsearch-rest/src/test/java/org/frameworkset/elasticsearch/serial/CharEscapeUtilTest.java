@@ -31,7 +31,7 @@ public class CharEscapeUtilTest {
 	@Test
 	public void escape(){
 		StringWriter writer = new StringWriter();
-		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer);
+		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
 		charEscapeUtil.writeString("/+\"\\", true);
 		System.out.println(writer.toString());
 
