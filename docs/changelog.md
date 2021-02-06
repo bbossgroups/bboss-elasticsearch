@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.6 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.2.7 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.2.6</version>
+            <version>6.2.7</version>
         </dependency>
 ```
 
@@ -44,10 +44,10 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.2.6</version>
+            <version>6.2.7</version>
         </dependency>
 ```
-# v6.2.6 功能改进
+# v6.2.7 功能改进
 1. 数据同步工具功能改进：database到database数据同步增加修改和删除数据的同步，参考案例：[Db2DBdemoWithStatusConfigDB](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoWithStatusConfigDB.java)
 2. 数据同步工具功能改进：增加kafka到database数据同步插件，支持增加、修改、删除操作同步,参考案例：[Kafka2DBdemo](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2DBdemo.java)
 3. 持久层orm时，针对map类型时，通过columnLableUpperCase控制列名不进行大写转换处理，默认true，转换列名为大写，false 不转换
@@ -190,7 +190,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.2.6</version>
+    <version>6.2.7</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

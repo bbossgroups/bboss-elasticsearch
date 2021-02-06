@@ -22,12 +22,12 @@ https://github.com/bbossgroups/springboot-elasticsearch-webservice
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.2.6</version>
+    <version>6.2.7</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>6.2.6</version>
+    <version>6.2.7</version>
 </dependency>
 ```
 
