@@ -214,7 +214,6 @@ public class BulkProcessor {
 		BulkData bulkData = new BulkData(BulkData.INSERT,data);
 		bulkData.setIndex(index);
 		bulkData.setIndexType(indexType);
-//		bulkData.setClientOptions(clientOptions);
 		appendBulkData( bulkData);
 	}
 

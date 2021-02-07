@@ -826,8 +826,14 @@ public class MultiBBossStartersTestCase {
 	private BBossStarter bbossStarterDefault;
 ```
 
+### 3.2.6 failAllContinue配置
+failAllContinue配置
+如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点 默认值true 非spring boot项目配置
 
+     http.failAllContinue = true
+spring boot配置项
 
+     spring.bboss.http.failAllContinue = true
 
 ## 3.3 使用负载均衡器调用服务
 

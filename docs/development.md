@@ -180,7 +180,17 @@ https://esdoc.bbossgroups.com/#/apollo-config
 ```
 elasticsearch.healthCheckInterval=5000
 ```
-
+### 2.3.5 failAllContinue配置
+如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点
+默认值true
+非spring boot项目配置
+```properties
+        elasticsearch.failAllContinue = true
+```
+spring boot配置项
+```properties
+        spring.elasticsearch.bboss.elasticsearch.failAllContinue = true
+```
 
 
 ## 2.4 DSL调试日志开关和日志组件配置

@@ -48,6 +48,16 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.2.7 功能改进
+
+1. 数据同步工具改进：增加Elasticsearch-File-Ftp/Sftp数据同步上传功能
+2. 数据同步工具改进：增加Database-File-Ftp/Sftp数据同步上传功能
+
+​    es和数据库数据导出到文件并上传到ftp和sftp案例：
+
+https://github.com/bbossgroups/elasticsearch-file2ftp
+
+# v6.2.6 功能改进
+
 1. 数据同步工具功能改进：database到database数据同步增加修改和删除数据的同步，参考案例：[Db2DBdemoWithStatusConfigDB](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoWithStatusConfigDB.java)
 2. 数据同步工具功能改进：增加kafka到database数据同步插件，支持增加、修改、删除操作同步,参考案例：[Kafka2DBdemo](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2DBdemo.java)
 3. 持久层orm时，针对map类型时，通过columnLableUpperCase控制列名不进行大写转换处理，默认true，转换列名为大写，false 不转换
@@ -66,7 +76,7 @@ spring boot配置项
 ```
 
 2. 改进http-proxy负载均衡调度机制：如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点
-  默认值true
+    默认值true
 非spring boot项目配置
 ```properties
         http.failAllContinue = true
@@ -74,7 +84,7 @@ spring boot配置项
 spring boot配置项
 ```properties
         spring.bboss.http.failAllContinue = true
-``` 
+```
 
 还需进一步优化http-proxy:代码去重，如果失败节点能够正常处理请求，则需要将故障节点状态设置为正常节点状态
 # v6.2.3 功能改进
