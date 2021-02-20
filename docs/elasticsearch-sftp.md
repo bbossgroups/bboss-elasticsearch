@@ -77,8 +77,7 @@ public class ES2FileFtpBatchSplitFileDemo {
       importBuilder.setBatchSize(500).setFetchSize(1000);
       String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定了默认值
       FileFtpOupputConfig fileFtpOupputConfig = new FileFtpOupputConfig();
-      fileFtpOupputConfig.setBackupSuccessFiles(true);
-      fileFtpOupputConfig.setTransferEmptyFiles(true);
+
       fileFtpOupputConfig.setFtpIP(ftpIp);
       fileFtpOupputConfig.setFileDir("D:\\workdir");
       fileFtpOupputConfig.setFtpPort(5322);
@@ -87,13 +86,19 @@ public class ES2FileFtpBatchSplitFileDemo {
       fileFtpOupputConfig.setFtpPassword("ecs@123");
       fileFtpOupputConfig.setRemoteFileDir("/home/ecs/failLog");
       fileFtpOupputConfig.setKeepAliveTimeout(100000);
+      fileFtpOupputConfig.setTransferEmptyFiles(true);
       fileFtpOupputConfig.setFailedFileResendInterval(-1);
+      fileFtpOupputConfig.setBackupSuccessFiles(true);
+
+      fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
+      fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
+      //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
          @Override
          public String genName( TaskContext taskContext,int fileSeq) {
-
-            String time = (String)taskContext.getTaskData("time");
+		    //fileSeq为切割文件时的文件递增序号
+            String time = (String)taskContext.getTaskData("time");//从任务上下文中获取本次任务执行前设置时间戳
             String _fileSeq = fileSeq+"";
             int t = 6 - _fileSeq.length();
             if(t > 0){
@@ -109,11 +114,14 @@ public class ES2FileFtpBatchSplitFileDemo {
             return "HN_BOSS_TRADE"+_fileSeq + "_"+time +"_" + _fileSeq+".txt";
          }
       });
+      //指定文件中每条记录格式，不指定默认为json格式输出
       fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
          public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
-            SerialUtil.normalObject2json(record.getDatas(),builder);
-            String data = (String)taskContext.getTaskContext().getTaskData("data");
+             //直接将记录按照json格式输出到文本文件中
+            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+                                         builder);
+            String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
 
          }
@@ -337,11 +345,12 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
       fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
       fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
+      //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
          @Override
          public String genName( TaskContext taskContext,int fileSeq) {
-
-            String time = (String)taskContext.getTaskData("time");
+		    //fileSeq为切割文件时的文件递增序号
+            String time = (String)taskContext.getTaskData("time");//从任务上下文中获取本次任务执行前设置时间戳
             String _fileSeq = fileSeq+"";
             int t = 6 - _fileSeq.length();
             if(t > 0){
@@ -357,11 +366,14 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
             return "HN_BOSS_TRADE"+_fileSeq + "_"+time +"_" + _fileSeq+".txt";
          }
       });
+      //指定文件中每条记录格式，不指定默认为json格式输出
       fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
          public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
-            SerialUtil.normalObject2json(record.getDatas(),builder);
-            String data = (String)taskContext.getTaskContext().getTaskData("data");
+             //直接将记录按照json格式输出到文本文件中
+            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+                                         builder);
+            String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
 
          }
