@@ -136,10 +136,16 @@ public class ES2FileFtpBatchSplitFileDemo {
 //          .setSliceQuery(true)
 //          .setSliceSize(5)
 //          .setQueryUrl("dbdemo/_search")
-            .setQueryUrlFunction((Date lastTime)->{
-               return "dbdemo/_search";
-//             return "vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27/_search";
-            })
+            //通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.2.8将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
+			.setQueryUrlFunction((Date lastTime)->{
+					String formate = "yyyy.MM.dd";
+					SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+					String startTime = dateFormat.format(lastTime);
+					Date endTime = new Date();
+					String endTimeStr = dateFormat.format(endTime);
+					return "dbdemo-"+startTime+ ",dbdemo-"+endTimeStr+"/_search";
+//					return "vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27/_search";
+			})
             .addParam("fullImport",false)
 //          //添加dsl中需要用到的参数及参数值
             .addParam("var1","v1")
@@ -278,12 +284,9 @@ public class ES2FileFtpBatchSplitFileDemo {
       importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
       importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-//    importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//    importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-      importBuilder.setPrintTaskLog(true);
-      importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-      importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
 
+      importBuilder.setPrintTaskLog(true);
+    
       /**
        * 执行es数据导出和sftp上传作业
        */
@@ -404,6 +407,37 @@ importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截
 | queryUrlFunction    | QueryUrlFunction接口类型，可选，public String queryUrl(Date lastTime)，根据接口方法同步数据参数lastTime来动态设置同步的索引名称和检索服务地址，适用于于按时间分索引的场景。 |        |
 | sourceElasticsearch | String类型，可选，设置elasticsearch数据源（bboss支持[配置多个数据源](https://esdoc.bbossgroups.com/#/common-project-with-bboss?id=_22%e5%a4%9a%e9%9b%86%e7%be%a4%e9%85%8d%e7%bd%ae)），具体的配置在[application.properties](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/resources/application.properties)中配置 |        |
 | addParam            | 方法类型，可选，通过name/value方式，添加dsl中的检索条件，例如：importBuilder.addParam("var1","v1");对应dsl中的写法：{     "term": {         "var1.keyword": #[var1]     } } |        |
+| sliceQuery          | 可选，boolean 类型，标记查询是否是slicescroll 查询           | false  |
+| sliceSize           | 可选，int类型，设置slice scroll并行查询的slicesize           |        |
+
+配置代码示例：
+
+```java
+importBuilder
+            .setDsl2ndSqlFile("dsl2ndSqlFile.xml")
+            .setDslName("scrollQuery")
+            .setScrollLiveTime("10m")
+//          .setSliceQuery(true)
+//          .setSliceSize(5)
+//          .setQueryUrl("dbdemo/_search")
+            //通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.2.8将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
+			.setQueryUrlFunction((Date lastTime)->{
+					String formate = "yyyy.MM.dd";
+					SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+					String startTime = dateFormat.format(lastTime);
+					Date endTime = new Date();
+					String endTimeStr = dateFormat.format(endTime);
+					return "dbdemo-"+startTime+ ",dbdemo-"+endTimeStr+"/_search";
+//					return "vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27/_search";
+			})
+            .addParam("fullImport",false)
+//          //添加dsl中需要用到的参数及参数值
+            .addParam("var1","v1")
+            .addParam("var2","v2")
+            .addParam("var3","v3");
+      //指定elasticsearch数据源名称
+      importBuilder.setSourceElasticsearch("default");
+```
 
 ## 3.7 定时任务配置
 
@@ -519,7 +553,68 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-## 3.9 增量同步配置
+## 3.9 调整记录数据内容
+
+可以通过datarefactor接口调整记录数据内容，示例代码如下：
+
+```java
+/**
+       * 重新设置es数据结构
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+            //可以根据条件定义是否丢弃当前记录
+            //context.setDrop(true);return;
+//          if(s.incrementAndGet() % 2 == 0) {
+//             context.setDrop(true);
+//             return;
+//          }
+            String data = (String)context.getTaskContext().getTaskData("data");
+//          System.out.println(data);
+
+//          context.addFieldValue("author","duoduo");//将会覆盖全局设置的author变量
+            context.addFieldValue("title","解放");
+            context.addFieldValue("subtitle","小康");
+
+//          context.addIgnoreFieldMapping("title");
+            //上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//          context.addIgnoreFieldMapping("author");
+
+//          //修改字段名称title为新名称newTitle，并且修改字段的值
+//          context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+            /**
+             * 获取ip对应的运营商和区域信息
+             */
+            Map ipInfo = (Map)context.getValue("ipInfo");
+            if(ipInfo != null)
+               context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
+            else{
+               context.addFieldValue("ipinfo", "");
+            }
+            DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
+//          Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
+//          context.addFieldValue("logOpertime",optime);
+            context.addFieldValue("newcollecttime",new Date());
+
+            /**
+             //关联查询数据,单值查询
+             Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+             "select * from head where billid = ? and othercondition= ?",
+             context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("headdata",headdata);
+             //关联查询数据,多值查询
+             List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+             "select * from facedata where billid = ?",
+             context.getIntegerValue("billid"));
+             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+             context.addFieldValue("facedatas",facedatas);
+             */
+         }
+      });
+```
+
+## 3.10 增量同步配置
 
 ```java
        //增量配置开始
@@ -535,7 +630,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       //增量配置结束
 ```
 
-## 3.10 并行同步配置
+## 3.11 并行同步配置
 
 ```java
 importBuilder.setParallel(false);//设置为多线程并行批量导入,true并行，false串行
@@ -545,13 +640,13 @@ importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行
 importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 ```
 
-## 3.11 同步任务日志打印开关
+## 3.12 同步任务日志打印开关
 
 ```java
 importBuilder.setPrintTaskLog(true);// true打印，false不打印
 ```
 
-## 3.12  同步作业执行
+## 3.13  同步作业执行
 
 ```java
 /**
@@ -561,7 +656,7 @@ DataStream dataStream = importBuilder.builder();
 dataStream.execute();//启动同步作业
 ```
 
-## 3.13 同步作业调试、发布和部署运行
+## 3.14 同步作业调试、发布和部署运行
 
 下载elasticsearcch/database-sftp/ftp同步作业[样板工程](https://github.com/bbossgroups/elasticsearch-file2ftp)，定义好自己的作业后，可以按照以下文档调试、发布和部署运行同步作业
 
@@ -573,3 +668,12 @@ dataStream.execute();//启动同步作业
 
 作业发布和部署：[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
 
+# 3.15开发交流
+
+
+
+bboss elasticsearch交流QQ群：21220580,166471282
+
+**bboss elasticsearch微信公众号：**
+
+<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
