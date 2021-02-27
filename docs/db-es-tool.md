@@ -914,7 +914,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
       //taskCommand.setDatas(failDatas);
       //taskCommand.execute();
       String datas = taskCommand.getDatas();//执行的批量数据
-      System.out.println(result);//打印成功结果
+      System.out.println(result);//打印失败结果
    }
 @Override
 			public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
