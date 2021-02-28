@@ -24,6 +24,8 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 8. HBase数据导入Elasticsearch
 9. 将elasticsearch数据导出到文本文件以及通过ftp/sftp上传文件到文件服务器
 10. 将数据库表数据导出到文本文件以及通过ftp/sftp上传文件到文件服务器
+11. 将elasticsearch数据导出发送到Kafka服务器
+12. 将数据库表数据发送到Kafka服务器
 
 数据导入的方式
 
@@ -65,7 +67,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.2.7</version>
+<version>6.2.8</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -74,7 +76,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
-      <version>3.30.1</version>
+      <version>3.40.0</version>
       <scope>compile</scope>
  </dependency>
 ```
@@ -2724,9 +2726,23 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 		*/		
 ```
 
+# 12 数据导出到文件并上传SFTP/FTP
 
+支持将elasticsearch和关系数据库中的数据导出到文件并上传到sftp和ftp服务器，支持自定义数据记录格式，使用案例和参考文档：
 
-# 12 开发交流
+https://esdoc.bbossgroups.com/#/elasticsearch-sftp
+
+# 13 数据导出发送到Kafka
+
+支持将elasticsearch和关系数据库中的数据导出并发送到kafka服务器，支持自定义数据记录格式，使用案例
+
+1. elasticsearch数据导出发送到kafka模块，使用案例：
+   https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java
+
+2. 关系数据库数据导出发送到kafka模块，使用案例：
+   https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java
+
+# 14 开发交流
 
 完整的数据导入demo工程
 
