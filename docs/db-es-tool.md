@@ -870,7 +870,7 @@ https://github.com/lionsoul2014/ip2region/blob/master/data/ip2region.db
 
 ip地址库设置方式有两种：
 
-- 在appliction.properties文件中配置ip地址信息库
+- 方式1 在appliction.properties文件中配置ip地址信息库（可选，如果有elasticsearch数据源时有效，否则需采用方式2）
 
 在application.properties文件中配置对应的ip信息库文件地址
 
@@ -884,7 +884,7 @@ ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
 
 
 
-- 代码中直接设置ip地址信息库
+- 方式2 代码中直接设置ip地址信息库
 
   ```java
   importBuilder.setGeoipDatabase("E:/workspace/geolite2/GeoLite2-City.mmdb");
