@@ -428,6 +428,8 @@ importBuilder.setEsIdGenerator(new EsIdGenerator() {
 		//定时任务配置结束
 ```
 
+#### 2.3.5.1 数字增量同步
+
 支持按照数字字段和时间字段进行增量导入，增量导入sql的语法格式：
 
 ```sql
@@ -448,13 +450,103 @@ importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没�
 importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 ```
 
+#### 2.3.5.2 日期时间戳增量同步
+
+sql语句格式：
+
+```sql
+select * from td_sm_log where collecttime > #[collecttime]
+```
+
 日期类型增量导入配置
 
 ```java
-importBuilder.setLastValueColumn("log_id");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+importBuilder.setLastValueColumn("collecttime");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 
 importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
 ```
+
+日期类型增量导入，还可以设置一个导入截止时间偏移量
+
+```java
+importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截止时间当前时间前5分钟的数据，下次继续从上次截止时间开始同步数据
+```
+
+bboss会自动增加一个内部变量collecttime\_\_endTime（增量字段名称后面加上\_\_endTime后缀），这样我们增量同步sql就可以写成如下方式：
+
+```sql
+select * from td_sm_log where collecttime > #[collecttime] and collecttime <= 
+#[collecttime__endTime] 
+```
+
+看一个增量时间戳同步的elasticsearch dsl用法
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置数据导入的dsl
+         ]]>
+    </description>
+    <!--
+          条件片段
+     -->
+    <property name="queryCondition">
+        <![CDATA[
+         "query": {
+                "bool": {
+                    "filter": [                        
+                         {   ## 增量检索范围，可以是时间范围，也可以是数字范围，这里采用的是数字增量字段
+                            "range": {                               
+                                "collecttime": { ## 时间增量检索字段
+                                    "gt": #[collecttime],
+                                    "lte": #[collecttime__endTime]
+                                }                               
+                            }
+                        }
+
+                    ]
+                }
+            }
+        ]]>
+    </property>
+
+    <!--
+       简单的scroll query案例，复杂的条件修改query dsl即可
+       -->
+    <property name="scrollQuery">
+        <![CDATA[
+         {
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+    <!--
+        简单的slice scroll query案例，复杂的条件修改query dsl即可
+    -->
+    <property name="scrollSliceQuery">
+        <![CDATA[
+         {
+           "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
+            },
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+
+
+</properties>
+
+```
+
+
+
+#### 2.3.5.3 控制重启作业是否重新开始同步数据
 
 setFromFirst的使用
 
