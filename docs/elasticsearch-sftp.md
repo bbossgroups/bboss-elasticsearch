@@ -1,27 +1,29 @@
 # Elasticsearch/DB到SFTP/FTP数据同步
 
-通过bboss数据同步工具，可以非常高效快速方便地将Elasticsearch和Database中的数据实时导出到文件并上传到SFTP/FTP服务器，本文通过案例来详细介绍。
+通过bboss数据同步工具，可以非常高效快速方便地将Elasticsearch和Database中的数据实时导出（增量/全量）到文件并上传到SFTP/FTP服务器，本文通过案例来详细介绍。
 
-![](images\datasyn.png)
+![](https://esdoc.bbossgroups.com/images/datasyn.png)
 
 # 1.案例源码工程
+
+https://gitee.com/bboss/elasticsearch-file2ftp
 
 https://github.com/bbossgroups/elasticsearch-file2ftp
 
 # 2.案例功能说明
 
 1. 串行将数据导出到文件并上传ftp和sftp
-
 2. 串行批量将数据导出到文件并上传ftp和sftp
 3. 并行将数据批量导出到文件并上传ftp和sftp
+4. 通过设置disableftp为true，控制只生成数据文件，禁用文件上传sftp/ftp功能（生成的文件保留在fileDir对应的目录下）
 
-特别关注点
+**特别关注点**
 
 除了bboss同步工具通用特性（增量/全量同步、异步/同步、增删改查同步），需额外说明一下本案例中特定的特色：
 
 1. 支持上传失败文件重传功能
 2. 支持上传成功文件备份功能
-3. 支持按记录条数切割生成文件
+3. 支持按记录条数切割文件
 4. 优雅解决elasticsearch异步延迟写入特性可能导致增量同步遗漏步数据问题
 
 本文只介绍elasticsearch数据同步上传到sftp案例
@@ -93,6 +95,8 @@ public class ES2FileFtpBatchSplitFileDemo {
       fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
       fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
+      fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）
+		 
       //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
          @Override
@@ -136,16 +140,17 @@ public class ES2FileFtpBatchSplitFileDemo {
 //          .setSliceQuery(true)
 //          .setSliceSize(5)
 //          .setQueryUrl("dbdemo/_search")
-            //通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.2.8将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
-			.setQueryUrlFunction((TaskContext taskContext,Date lastStartTime,Date lastEndTime)->{
+            //通过简单的示例，演示根据实间范围计算queryUrl,lastStartTime 记录查询开始时间，lastEndtime 查询为截止时间（在设置了IncreamentEndOffset情况下有值）
+				.setQueryUrlFunction((TaskContext taskContext,Date lastStartTime,Date lastEndTime)->{
 					String formate = "yyyy.MM.dd";
 					SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
-					String startTime = dateFormat.format(lastTime);
-					Date endTime = new Date();
-					String endTimeStr = dateFormat.format(endTime);
+					String startTime = dateFormat.format(lastEndTime);
+//					Date lastEndTime = new Date();
+					String endTimeStr = dateFormat.format(lastEndTime);
 					return "dbdemo-"+startTime+ ",dbdemo-"+endTimeStr+"/_search";
 //					return "vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27/_search";
-			})
+//					return "dbdemo/_search";
+				})
             .addParam("fullImport",false)
 //          //添加dsl中需要用到的参数及参数值
             .addParam("var1","v1")
@@ -218,7 +223,10 @@ public class ES2FileFtpBatchSplitFileDemo {
 //    importBuilder.addFieldMapping("operModule","OPER_MODULE");
 //    importBuilder.addFieldMapping("logContent","LOG_CONTENT");
 //    importBuilder.addFieldMapping("logOperuser","LOG_OPERUSER");
-
+//设置ip地址信息库地址
+	  importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
+	  importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
+		importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
 
       /**
        * 重新设置es数据结构
@@ -245,14 +253,14 @@ public class ES2FileFtpBatchSplitFileDemo {
 //          //修改字段名称title为新名称newTitle，并且修改字段的值
 //          context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
             /**
-             * 获取ip对应的运营商和区域信息
-             */
-            Map ipInfo = (Map)context.getValue("ipInfo");
-            if(ipInfo != null)
-               context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
-            else{
-               context.addFieldValue("ipinfo", "");
-            }
+			* 获取ip对应的运营商和区域信息
+			*/
+             IpInfo ipInfo = (IpInfo) context.getIpInfo("logVisitorial");
+             if(ipInfo != null)
+                 context.addFieldValue("ipinfo", ipInfo);
+             else{
+                 context.addFieldValue("ipinfo", "");
+             }
             DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
 //          Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
 //          context.addFieldValue("logOpertime",optime);
@@ -326,6 +334,7 @@ public class ES2FileFtpBatchSplitFileDemo {
 | filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
 | hostKeyVerifier           | 必填，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
 | reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |
+| disableftp                | 可选，boolean类型。false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面） | false                | ftp/sftp |
 
 示例代码如下：
 
@@ -348,6 +357,8 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
       fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
       fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
+      fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）
+		
       //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
          @Override
@@ -384,7 +395,133 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
       importBuilder.setFileFtpOupputConfig(fileFtpOupputConfig);
 ```
 
-## 3.5 elasticsearch增量导出截止时间偏移量设置
+## 3.5 文件名称生成机制配置
+
+必须通过FileFtpOupputConfig对象的setFilenameGenerator方法设置文件名称生成接口FilenameGenerator，示例代码如下：
+
+```java
+ //自定义文件名称
+      fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+         @Override
+         public String genName( TaskContext taskContext,int fileSeq) {
+		    //fileSeq为切割文件时的文件递增序号
+            String time = (String)taskContext.getTaskData("time");//从任务上下文中获取本次任务执行前设置时间戳
+            String _fileSeq = fileSeq+"";
+            int t = 6 - _fileSeq.length();
+            if(t > 0){
+               String tmp = "";
+               for(int i = 0; i < t; i ++){
+                  tmp += "0";
+               }
+               _fileSeq = tmp+_fileSeq;
+            }
+
+
+
+            return "HN_BOSS_TRADE"+_fileSeq + "_"+time +"_" + _fileSeq+".txt";
+         }
+      });
+```
+
+接口方法genName带有两个参数：
+
+**TaskContext taskContext**, 任务上下文对象，包含任务执行过程中需要的上下文数据，比如任务执行时间戳、其他任务执行过程中需要用到的数据
+
+**int fileSeq**   文件序号，从1开始，自动递增，如果指定了每个文件保存的最大记录数，fileSeq就会被用到文件名称中，用来区分各种文件
+
+## 3.6 自定义记录输出格式
+
+默认采用json格式输出每条记录到文件中，我们可以FileFtpOupputConfig对象的setReocordGenerator方法设置自定义记录生成接口ReocordGenerator。
+
+接口方法buildRecord参数说明：
+
+**Context recordContext**, 记录处理上下文对象，可以通过recordContext.getTaskContext()获取任务执行上下文对象，并获取任务上下文数据
+
+**CommonRecord record**, 处理当前记录对象，包含记录数据Map<key,value> 
+
+**Writer builder**   记录数据写入器   
+
+直接将record中的数据转换为json文本并输出到Writer builder中：
+
+```java
+ //指定文件中每条记录格式，不指定默认为json格式输出
+      fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
+         @Override
+         public void buildRecord(Context recordContext, CommonRecord record, Writer builder) {
+             //直接将记录按照json格式输出到文本文件中
+            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+                                         builder);
+            //String data = (String)recordContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+//          System.out.println(data);
+
+         }
+      });
+```
+
+竖线|分隔字段值：
+
+```java
+public class DataSendReocordGenerator implements ReocordGenerator {
+    @Override
+    public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
+            Map<String, Object> datas = record.getDatas();
+            try {
+                Map<String,String> chanMap = (Map<String,String>)taskContext.getTaskContext().getTaskData("chanMap");//从任务上下文中获取渠道字典数据
+
+                String phoneNumber = (String) datas.get("phoneNumber");//手机号码
+                if(phoneNumber==null){
+                    phoneNumber="";
+                }
+                builder.write(phoneNumber);//将字段内容输出到文件
+                builder.write("|");//输出字段分隔符
+
+                String chanId = (String) datas.get("chanId");//办理渠道名称 通过Id获取名称
+                String chanName = null;
+                if(chanId==null){
+                    chanName="";
+                }else{
+                    chanName=chanMap.get(chanId);
+                    if(chanName == null){
+                        chanName = chanId;
+                    }
+                }
+                builder.write(chanName);
+                builder.write("|");
+
+              
+                builder.write(goodsName);
+                builder.write("|");
+
+                String goodsCode = (String) datas.get("goodsCode");//资费档次编码
+                if(goodsCode==null){
+                    goodsCode="";
+                }
+                builder.write(goodsCode);
+                builder.write("|");
+
+                String bossErrorCode = (String) datas.get("bossErrorCode");//错误码
+                if(bossErrorCode==null){
+                    bossErrorCode="";
+                }
+                builder.write(bossErrorCode);
+                builder.write("|");
+
+                String bossErrorDesc = (String) datas.get("bossErrorDesc");//错误码描述
+                if(bossErrorDesc==null){
+                    bossErrorDesc="";
+                }else{
+                    bossErrorDesc = bossErrorDesc.replace("|","\\|").replace("\r\n","\\\\r\\\\n"); //处理字段内容中包含的|字符和回车换行符
+                }
+                builder.write(bossErrorDesc);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+}
+```
+
+## 3.7 elasticsearch增量导出截止时间偏移量设置
 
 elasticsearch增量导出截止时间偏移量设置-IncreamentEndOffset，由于elasticsearch异步写入数据的特性，如果采用原有的增量时间戳机制（起始时间>lastImporttime，没有截止时间）,会导致遗漏部分未落盘数据，因此需要指定基于当前时间往前偏移IncreamentEndOffset对应的时间作为数据导出截止时间，单位：秒
 
@@ -394,7 +531,7 @@ elasticsearch增量导出截止时间偏移量设置-IncreamentEndOffset，由�
 importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截止时间当前时间前5分钟的数据，下次继续从上次截止时间开始同步数据
 ```
 
-## 3.6 从elasticsearch检索数据配置
+## 3.8 从elasticsearch检索数据配置
 
    下面介绍从Elasticsearch检索数据的相关配置参数
 
@@ -420,16 +557,17 @@ importBuilder
 //          .setSliceQuery(true)
 //          .setSliceSize(5)
 //          .setQueryUrl("dbdemo/_search")
-            //通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.2.8将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
-			.setQueryUrlFunction((TaskContext taskContext,Date lastStartTime,Date lastEndTime)->{
+            //通过简单的示例，演示根据实间范围计算queryUrl,lastStartTime 记录查询开始时间，lastEndtime 查询为截止时间（在设置了IncreamentEndOffset情况下有值）
+				.setQueryUrlFunction((TaskContext taskContext,Date lastStartTime,Date lastEndTime)->{
 					String formate = "yyyy.MM.dd";
 					SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
-					String startTime = dateFormat.format(lastTime);
-					Date endTime = new Date();
-					String endTimeStr = dateFormat.format(endTime);
+					String startTime = dateFormat.format(lastEndTime);
+//					Date lastEndTime = new Date();
+					String endTimeStr = dateFormat.format(lastEndTime);
 					return "dbdemo-"+startTime+ ",dbdemo-"+endTimeStr+"/_search";
 //					return "vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27/_search";
-			})
+//					return "dbdemo/_search";
+				})
             .addParam("fullImport",false)
 //          //添加dsl中需要用到的参数及参数值
             .addParam("var1","v1")
@@ -439,7 +577,97 @@ importBuilder
       importBuilder.setSourceElasticsearch("default");
 ```
 
-## 3.7 定时任务配置
+dsl配置文件dsl2ndSqlFile.xml和对应的dsl语句名称案例：
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置数据导入的dsl
+         ]]>
+    </description>
+    <!--
+          条件片段
+     -->
+    <property name="queryCondition">
+        <![CDATA[
+         "query": {
+                "bool": {
+                    "filter": [
+                        ## 可以设置同步数据的过滤参数条件，通过addParam方法添加var1变量值，下面的条件已经被注释掉
+                        #*
+                        {
+                            "term": {
+                                "var1.keyword": #[var1]
+                            }
+                        },
+                        {
+                            "term": {
+                                "var2.keyword": #[var2]
+                            }
+                        },
+                        {
+                            "term": {
+                                "var3.keyword": #[var3]
+                            }
+                        },
+                        *#
+                        ## 根据fullImport参数控制是否设置增量检索条件，true 全量检索 false增量检索，通过addParam方法添加fullImport变量值
+                        #if(!$fullImport)
+                        {   ## 增量检索范围，可以是时间范围，也可以是数字范围，这里采用的是数字增量字段
+                            "range": {
+
+                                #if($collecttime)
+                                "collecttime": { ## 时间增量检索字段
+                                    "gt": #[collecttime],
+                                    "lte": #[collecttime__endTime]
+                                }
+                                #end
+                            }
+                        }
+                        #end
+                    ]
+                }
+            }
+        ]]>
+    </property>
+
+    <!--
+       简单的scroll query案例，复杂的条件修改query dsl即可
+       -->
+    <property name="scrollQuery">
+        <![CDATA[
+         {
+            "size":#[size], ## size变量对应于作业定义时设置的fetchSize参数
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+    <!--
+        简单的slice scroll query案例，复杂的条件修改query dsl即可
+    -->
+    <property name="scrollSliceQuery">
+        <![CDATA[
+         {
+           "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称，框架自动填充变量值
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称，对应于作业定义时设置的sliceSize参数值
+            },
+            "size":#[size], ## size变量对应于作业定义时设置的fetchSize参数
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+
+</properties>
+```
+
+scrollQuery为本案例对应的dsl，scrollSliceQuery为slice导出需要用到的dsl，他们共用了条件片段queryCondition，内部基于bboss开源的另外一个elasticsearch rest java client项目从elasticsearch检索数据，该客户端使用参考文档：
+
+https://esdoc.bbossgroups.com/#/development
+
+## 3.9 定时任务配置
 
 ```java
     //定时任务配置，
@@ -449,15 +677,17 @@ importBuilder
             .setPeriod(30000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
-## 3.8 定义和获取任务每次调度执行时需要的全局参数
+上面的配置表示：同步作业任务延迟1秒执行，每隔30秒执行一次。
 
-在一些特定场景下需要在任务每次调度执行前时定义全局参数，并在任务执行时获取全局参数。
+## 3.10 任务上下文数据定义和获取
 
-通过TaskContext对象的addTaskData方法来添加全局参数，通过TaskContext对象的getTaskData方法来获取全局参数.
+在一些特定场景下，避免任务执行过程中重复加载数据，需要在任务每次调度执行前加载一些任务执行过程中不会变化的数据,放入任务上下文TaskContext；任务执行过程中，直接从任务上下文中获取数据即可。例如：将每次任务执行的时间戳放入任务执行上下文。
 
-### 3.8.1 全局参数定义
+通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
 
-全局参数定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加全局参数
+### 3.10.1  定义任务上下文数据
+
+ 任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
 
 ```java
 @Override
@@ -466,11 +696,11 @@ public void preCall(TaskContext taskContext) {
    //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
    SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
    String time = dateFormat.format(new Date());
-   taskContext.addTaskData("time",time);//定义全局时间戳参数time
+   taskContext.addTaskData("time",time);//定义任务执行时时间戳参数time
 }
 ```
 
-完整代码-全局参数定义
+完整代码- 任务上下文数据定义
 
 ```java
        //设置任务执行拦截器，可以添加多个
@@ -481,7 +711,7 @@ public void preCall(TaskContext taskContext) {
             //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
             SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
             String time = dateFormat.format(new Date());
-            taskContext.addTaskData("time",time);//定义全局时间戳参数time
+            taskContext.addTaskData("time",time);//定义任务执行时时间戳参数time
          }
 
          @Override
@@ -497,16 +727,16 @@ public void preCall(TaskContext taskContext) {
     //设置任务执行拦截器结束，可以添加多个
 ```
 
-### 3.8.2 全局参数获取
+### 3.10.2 获取任务上下文数据
 
-在生成文件名称的接口方法中获取全局参数
+在生成文件名称的接口方法中获取任务上下文数据
 
 ```java
 fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
    @Override
    public String genName( TaskContext taskContext,int fileSeq) {
 
-      String time = (String)taskContext.getTaskData("time");//获取全局时间戳参数time
+      String time = (String)taskContext.getTaskData("time");//获取任务执行时间戳参数time
       String _fileSeq = fileSeq+"";
       int t = 6 - _fileSeq.length();
       if(t > 0){
@@ -524,7 +754,7 @@ fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
 });
 ```
 
-在生成文件中的记录内容时获取全局参数
+在生成文件中的记录内容时获取任务上下文数据
 
 ```java
 fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
@@ -538,7 +768,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-在datarefactor方法中获取全局参数
+在datarefactor方法中获取任务上下文数据
 
 ```java
 /**
@@ -553,7 +783,20 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-## 3.9 调整记录数据内容
+## 3.11 设置IP地址信息库地址
+
+我们通过以下代码设置IP地址信息库地址：
+
+```java
+//设置ip地址信息库地址，配置参考文档
+		importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
+		importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
+		importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
+```
+
+IP地址库配置详细参考文档：[设置IP地址信息库地址](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2311-ip-%e5%9c%b0%e5%8c%ba%e8%bf%90%e8%90%a5%e5%95%86%e7%bb%8f%e7%ba%ac%e5%ba%a6%e5%9d%90%e6%a0%87%e8%bd%ac%e6%8d%a2)
+
+## 3.12 调整记录数据内容
 
 可以通过datarefactor接口调整记录数据内容，示例代码如下：
 
@@ -583,14 +826,14 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
 //          //修改字段名称title为新名称newTitle，并且修改字段的值
 //          context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
             /**
-             * 获取ip对应的运营商和区域信息
-             */
-            Map ipInfo = (Map)context.getValue("ipInfo");
-            if(ipInfo != null)
-               context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
-            else{
-               context.addFieldValue("ipinfo", "");
-            }
+			* 获取ip对应的运营商和区域信息，字段logVisitorial值对应了一个ip地址
+			*/
+             IpInfo ipInfo = (IpInfo) context.getIpInfo("logVisitorial");
+             if(ipInfo != null)
+                 context.addFieldValue("ipinfo", ipInfo);
+             else{
+                 context.addFieldValue("ipinfo", "");
+             }
             DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
 //          Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
 //          context.addFieldValue("logOpertime",optime);
@@ -614,7 +857,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-## 3.10 增量同步配置
+## 3.13 增量同步配置
 
 ```java
        //增量配置开始
@@ -630,7 +873,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       //增量配置结束
 ```
 
-## 3.11 并行同步配置
+## 3.14 并行同步配置
 
 ```java
 importBuilder.setParallel(false);//设置为多线程并行批量导入,true并行，false串行
@@ -640,13 +883,13 @@ importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行
 importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 ```
 
-## 3.12 同步任务日志打印开关
+## 3.15 同步任务日志打印开关
 
 ```java
 importBuilder.setPrintTaskLog(true);// true打印，false不打印
 ```
 
-## 3.13  同步作业执行
+## 3.16  同步作业执行
 
 ```java
 /**
@@ -656,7 +899,7 @@ DataStream dataStream = importBuilder.builder();
 dataStream.execute();//启动同步作业
 ```
 
-## 3.14 同步作业调试、发布和部署运行
+## 3.17 同步作业调试、发布和部署运行
 
 下载elasticsearcch/database-sftp/ftp同步作业[样板工程](https://github.com/bbossgroups/elasticsearch-file2ftp)，定义好自己的作业后，可以按照以下文档调试、发布和部署运行同步作业
 
@@ -668,9 +911,7 @@ dataStream.execute();//启动同步作业
 
 作业发布和部署：[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
 
-# 3.15开发交流
-
-
+## 3.18开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 
