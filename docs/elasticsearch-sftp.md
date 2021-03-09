@@ -22,9 +22,10 @@ https://github.com/bbossgroups/elasticsearch-file2ftp
 除了bboss同步工具通用特性（增量/全量同步、异步/同步、增删改查同步），需额外说明一下本案例中特定的特色：
 
 1. 支持上传失败文件重传功能
-2. 支持上传成功文件备份功能
-3. 支持按记录条数切割文件
-4. 优雅解决elasticsearch异步延迟写入特性可能导致增量同步遗漏步数据问题
+2. 支持上传成功文件备份功能，并可指定备份多长时间
+3. 支持备份文件自动清理功能
+4. 支持按记录条数切割文件
+5. 优雅解决elasticsearch异步延迟写入特性可能导致增量同步遗漏步数据问题
 
 本文只介绍elasticsearch数据同步上传到sftp案例
 
@@ -88,11 +89,11 @@ public class ES2FileFtpBatchSplitFileDemo {
       fileFtpOupputConfig.setFtpPassword("ecs@123");
       fileFtpOupputConfig.setRemoteFileDir("/home/ecs/failLog");
       fileFtpOupputConfig.setKeepAliveTimeout(100000);
-      fileFtpOupputConfig.setTransferEmptyFiles(true);
-      fileFtpOupputConfig.setFailedFileResendInterval(-1);
-      fileFtpOupputConfig.setBackupSuccessFiles(true);
+      fileFtpOupputConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
+      fileFtpOupputConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
+      fileFtpOupputConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
 
-      fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
+      fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);//定期扫描清理过期备份文件时间间隔，单位：毫秒
       fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
       fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）
@@ -350,11 +351,11 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
       fileFtpOupputConfig.setFtpPassword("ecs@123");
       fileFtpOupputConfig.setRemoteFileDir("/home/ecs/failLog");
       fileFtpOupputConfig.setKeepAliveTimeout(100000);
-      fileFtpOupputConfig.setTransferEmptyFiles(true);
-      fileFtpOupputConfig.setFailedFileResendInterval(-1);
-      fileFtpOupputConfig.setBackupSuccessFiles(true);
+      fileFtpOupputConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
+      fileFtpOupputConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
+      fileFtpOupputConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
 
-      fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);
+      fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);//定期扫描清理过期备份文件时间间隔，单位：毫秒
       fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
       fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）

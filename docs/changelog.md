@@ -47,6 +47,11 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.2.8</version>
         </dependency>
 ```
+# v6.2.9 功能改进
+1. 数据同步改进：完善ip2region和geoip数据库热加载机制
+2. 升级httpcliet组件版本到最新的官方版本
+3. 升级fastxml jackson databind版本
+
 # v6.2.8 功能改进
 1. 数据同步工具改进：Elasticsearch-File-Ftp/Sftp数据同步时，全局配置/记录级别添加的自定义字段不起作用问题修复
 2. 数据同步工具扩展：增加elasticsearch数据导出发送到kafka模块，使用案例：
