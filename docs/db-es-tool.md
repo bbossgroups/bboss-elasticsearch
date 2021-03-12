@@ -53,7 +53,13 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 
 bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包，能够非常方便地加工和处理需要同步的源数据，然后将最终的数据保存到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本，即可构建和发布出可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器。
 
-​	下面我们通过案例来介绍mongodb-elasticsearch的使用方法，你会发现整个过程下来，开发一个同步作业，其实就是在用大家熟悉的方式做一个简单的java开发编程的事情。
+​	下面我们通过案例来介绍databaseb-elasticsearch的使用方法，你会发现整个过程下来，开发一个同步作业，其实就是在用大家熟悉的方式做一个简单的java开发编程的事情。
+
+本文案例工程地址
+
+https://github.com/bbossgroups/db-elasticsearch-tool
+
+https://gitee.com/bboss/db-elasticsearch-tool
 
 下面详细介绍本案例。
 

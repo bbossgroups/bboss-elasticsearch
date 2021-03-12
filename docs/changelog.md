@@ -58,8 +58,8 @@ https://esdoc.bbossgroups.com/#/development
    https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java
 3. 数据同步工具扩展：增加关系数据库数据导出发送到kafka模块，使用案例：
    https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java
-# v6.2.7 功能改进
 
+# v6.2.7 功能改进
 1. 数据同步工具改进：增加Elasticsearch-File-Ftp/Sftp数据同步上传功能
 2. 数据同步工具改进：增加Database-File-Ftp/Sftp数据同步上传功能
 
