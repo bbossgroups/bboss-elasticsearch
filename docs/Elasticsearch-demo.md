@@ -1,5 +1,7 @@
 # Elasticsearch Demo
+_如果github访问不了，可以访问码云下载demo：_
 
+https://gitee.com/bboss
 # 1.Elasticsearch Demo
 
 spring boot必看demo1：
@@ -37,9 +39,6 @@ https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo （gradle）
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md) 
 
-github源码地址：
-
-<https://github.com/bbossgroups/bboss-elasticsearch>
 
 bboss elasticsearch开发库使用文档：
 
