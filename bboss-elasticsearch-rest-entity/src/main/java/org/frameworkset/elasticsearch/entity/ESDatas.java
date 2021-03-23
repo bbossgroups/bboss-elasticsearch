@@ -22,7 +22,9 @@ public class ESDatas<T> extends BaseHitsTotal {
 	public List<T> getDatas() {
 		return datas;
 	}
-
+	public String getPitId() {
+		return restResponse != null ? restResponse.getPitId():null;
+	}
 	public void setDatas(List<T> datas) {
 		this.datas = datas;
 	}

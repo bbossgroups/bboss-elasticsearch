@@ -19,6 +19,8 @@ public abstract  class BaseRestResponse implements Serializable {
 	private Shards shards;
 
 
+	@JsonProperty("pit_id")
+	private String pitId;
 	/**
 	 * The count API allows to easily execute a query and get the number of matches for that query. It can be executed across one or more indices and across one or more types. The query can either be provided using a simple query string as a parameter, or using the Query DSL defined within the request body. Here is an example:
 
@@ -197,5 +199,13 @@ public abstract  class BaseRestResponse implements Serializable {
 
 	public void setReponseStatus(int reponseStatus) {
 		this.reponseStatus = reponseStatus;
+	}
+
+	public String getPitId() {
+		return pitId;
+	}
+
+	public void setPitId(String pitId) {
+		this.pitId = pitId;
 	}
 }

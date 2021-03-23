@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch.client;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.entity.MapSearchHit;
+import org.frameworkset.elasticsearch.entity.PitId;
 import org.frameworkset.util.annotations.ThreadSafe;
 
 import java.util.List;
@@ -967,4 +968,20 @@ public interface ClientInterfaceNew {
 	public String updateDocument(String index,  Object params, ClientOptions updateOptions) throws ElasticSearchException;
 
 	public boolean isVersionUpper7();
+
+	/**
+	 * see https://www.elastic.co/guide/en/elasticsearch/reference/current/point-in-time-api.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+	 * @param index
+	 * @param keepaliveTime
+	 * @return
+	 */
+	public PitId requestPitId(String index, String keepaliveTime);
+	/**
+	 * see https://www.elastic.co/guide/en/elasticsearch/reference/current/point-in-time-api.html
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+	 * @param pitId
+	 * @return
+	 */
+	public String deletePitId(String pitId);
 }

@@ -53,7 +53,7 @@ public abstract class ResultUtil {
 	public static final int OPERTYPE_updateIndiceMapping = 9;
 	public static final int OPERTYPE_getScript = 10;
 
-
+	public static final int OPERTYPE_deletePitId = 11;
 	public static final Boolean exist = new Boolean(false);
 
 
@@ -1741,6 +1741,10 @@ public abstract class ResultUtil {
 
 				}
 				else if(operType == ResultUtil.OPERTYPE_getScript) {
+					return (T) null;
+
+				}
+				else if(operType == ResultUtil.OPERTYPE_deletePitId) {
 					return (T) null;
 
 				}

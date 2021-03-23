@@ -6152,6 +6152,25 @@ public class RestClientUtil extends ClientUtil{
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_getScript);
 		}
 	}
-
+	public PitId requestPitId(String index, String keepaliveTime){
+		if(!keepaliveTime.startsWith("keep_alive=")) {
+			return this.client.executeHttp(new StringBuilder().append("/").append(index).append("/_pit?keep_alive=").append(keepaliveTime).toString(),
+					ClientUtil.HTTP_POST,new ESPitIdResponseHandler());
+		}
+		else{
+			return this.client.executeHttp(new StringBuilder().append("/").append(index).append("/_pit?").append(keepaliveTime).toString(),
+					ClientUtil.HTTP_POST,new ESPitIdResponseHandler());
+		}
+	}
+	public String deletePitId(String pitId){
+		try {
+			return this.client.executeHttp("/_pit",
+					new StringBuilder().append("{\"id\" : \"").append(pitId).append("\"}").toString(),
+					ClientUtil.HTTP_DELETE);
+		}
+		catch(ElasticSearchException e){
+			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deletePitId);
+		}
+	}
 
 }
