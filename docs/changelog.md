@@ -51,6 +51,9 @@ https://esdoc.bbossgroups.com/#/development
 1. 数据同步改进：完善ip2region和geoip数据库热加载机制
 2. 升级httpcliet组件版本到最新的官方版本
 3. 升级fastxml jackson databind版本
+4. 增加对pit机制的支持，参考用例：testPitId方法
+   https://gitee.com/bboss/eshelloword-spring-boot-starter/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/SimpleBBossESStarterTestCase.java
+5. 数据同步工具扩展：日志文件实时采集插件filelog-elasticsearch
 
 # v6.2.8 功能改进
 1. 数据同步工具改进：Elasticsearch-File-Ftp/Sftp数据同步时，全局配置/记录级别添加的自定义字段不起作用问题修复
