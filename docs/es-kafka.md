@@ -27,9 +27,11 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 
 准备工作：
 1).下载同步作业开发环境工程（基于gradle管理）
+
 https://gitee.com/bboss/kafka2x-elasticsearch
 
 2).我们用gradle和idea作为构建和开发环境，下载后需导入idea，环境搭建参考文档：
+
 https://esdoc.bbossgroups.com/#/bboss-build
 
 假设工程已经导入idea
