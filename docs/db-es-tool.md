@@ -711,7 +711,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 
 ### 2.3.7 定时任务指定执行拦截器使用
 
-可以为同步定时任务指定执行拦截器，任务拦截器对FileLog-to-target和kafka-to-target类型的数据同步不起作用，示例如下：
+可以为同步定时任务指定执行拦截器，示例如下：
 
 ```java
         //设置任务执行拦截器，可以添加多个
@@ -749,7 +749,113 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 		});
 ```
 
+拦截器常被应用于任务上下文数据的定义和获取，***任务拦截器对FileLog-to-target和kafka-to-target类型的数据同步作业***不起作用。
 
+#### 2.3.7.1 任务上下文数据定义和获取
+
+在一些特定场景下，避免任务执行过程中重复加载数据，需要在任务每次调度执行前加载一些任务执行过程中不会变化的数据,放入任务上下文TaskContext；任务执行过程中，直接从任务上下文中获取数据即可。例如：将每次任务执行的时间戳放入任务执行上下文。
+
+通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
+
+##### 2.3.7.1.1  定义任务上下文数据
+
+ 任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
+
+```java
+@Override
+public void preCall(TaskContext taskContext) {
+   String formate = "yyyyMMddHHmmss";
+   //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
+   SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+   String time = dateFormat.format(new Date());
+   taskContext.addTaskData("time",time);//定义任务执行时时间戳参数time
+}
+```
+
+完整代码- 任务上下文数据定义
+
+```java
+       //设置任务执行拦截器，可以添加多个
+      importBuilder.addCallInterceptor(new CallInterceptor() {
+         @Override
+         public void preCall(TaskContext taskContext) {
+            String formate = "yyyyMMddHHmmss";
+            //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
+            SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+            String time = dateFormat.format(new Date());
+            taskContext.addTaskData("time",time);//定义任务执行时时间戳参数time
+         }
+
+         @Override
+         public void afterCall(TaskContext taskContext) {
+            System.out.println("afterCall 1");
+         }
+
+         @Override
+         public void throwException(TaskContext taskContext, Exception e) {
+            System.out.println("throwException 1");
+         }
+      });
+    //设置任务执行拦截器结束，可以添加多个
+```
+
+##### 2.3.7.1.2 获取任务上下文数据
+
+在生成文件名称的接口方法中获取任务上下文数据
+
+```java
+fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+   @Override
+   public String genName( TaskContext taskContext,int fileSeq) {
+
+      String time = (String)taskContext.getTaskData("time");//获取任务执行时间戳参数time
+      String _fileSeq = fileSeq+"";
+      int t = 6 - _fileSeq.length();
+      if(t > 0){
+         String tmp = "";
+         for(int i = 0; i < t; i ++){
+            tmp += "0";
+         }
+         _fileSeq = tmp+_fileSeq;
+      }
+
+
+
+      return "HN_BOSS_TRADE"+_fileSeq + "_"+time +"_" + _fileSeq+".txt";
+   }
+});
+```
+
+在生成文件中的记录内容时获取任务上下文数据
+
+```java
+fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
+         @Override
+         public void buildRecord(Context context, CommonRecord record, Writer builder) {
+            //SerialUtil.normalObject2json(record.getDatas(),builder);
+            String data = (String)context.getTaskContext().getTaskData("data");//获取全局参数
+//          System.out.println(data);
+
+         }
+      });
+```
+
+在datarefactor方法中获取任务上下文数据
+
+```java
+/**
+       * 重新设置es数据结构
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+
+            String data = (String)context.getTaskContext().getTaskData("data");
+
+         }
+      });
+```
+
+## 
 
 ### 2.3.8 定时任务调度说明
 
