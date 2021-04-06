@@ -1174,8 +1174,10 @@ public class RestClientUtil extends ClientUtil{
 
 			return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig()), builder.toString(), ClientUtil.HTTP_POST);
 
+
 		}
 		finally {
+			builder.setLength(0);
 			builder = null;
 			writer = null;
 		}

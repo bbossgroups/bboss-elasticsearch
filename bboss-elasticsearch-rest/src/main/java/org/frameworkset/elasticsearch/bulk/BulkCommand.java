@@ -101,6 +101,7 @@ public class BulkCommand implements Runnable{
 				}
 			}
 		}
+		result = null;
 	}
 	@Override
 	public void run() {
