@@ -57,6 +57,7 @@ public class HealthCheck implements Runnable{
 			super("Elasticsearch["+elasticsearch+"] server["+address.toString()+"] health check");
 			address.setHealthCheck(this);
 			this.address = address;
+			this.setDaemon(true);
 		}
 		public synchronized void stopRun(){
 			if(stop)

@@ -6,6 +6,7 @@
 
 本文介绍通过bboss实现Elasticsearch索引文档添加/修改/查询/删除/批量删除功能。
 # 准备工作
+先在项目中导入bboss，导入bboss请参考文档：[Quick Start](https://esdoc.bbossgroups.com/#/quickstart)
 
 bboss操作Elasticsearch都是通过ClientInterface接口，spring boot项目环境和非spring boot项目环境获取ClientInterface接口实例的方法不一样，分别介绍一下：
 spring boot环境：
