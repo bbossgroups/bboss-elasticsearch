@@ -26,6 +26,7 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 10. 将数据库表数据导出到文本文件以及通过ftp/sftp上传文件到文件服务器
 11. 将elasticsearch数据导出发送到Kafka服务器
 12. 将数据库表数据发送到Kafka服务器
+13. 实时采集日志文件数据到kafka/elasticsearch/database
 
 数据导入的方式
 
