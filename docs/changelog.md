@@ -53,7 +53,12 @@ https://esdoc.bbossgroups.com/#/development
 3. 升级fastxml jackson databind版本
 4. 增加对pit机制的支持，参考用例：testPitId方法
    https://gitee.com/bboss/eshelloword-spring-boot-starter/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/SimpleBBossESStarterTestCase.java
-5. 数据同步工具扩展：日志文件实时采集插件filelog-elasticsearch
+5. 数据同步工具扩展：增加日志文件采集插件，支持全量和增量采集两种模式，实时采集日志文件数据到kafka/elasticsearch/database
+
+   日志文件采集插件使用案例：
+   1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+   2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+   3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/filelog/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
 
 # v6.2.8 功能改进
 1. 数据同步工具改进：Elasticsearch-File-Ftp/Sftp数据同步时，全局配置/记录级别添加的自定义字段不起作用问题修复
