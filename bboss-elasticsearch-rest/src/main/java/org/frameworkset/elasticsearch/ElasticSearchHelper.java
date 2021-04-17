@@ -141,6 +141,8 @@ public class ElasticSearchHelper {
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.httpPool",configContext,serverName));
 			elasticsearchPropes.put("elasticsearch.discoverHost",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.discoverHost",configContext,"false"));
+			elasticsearchPropes.put("elasticsearch.version",
+					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.version",configContext,"7.0.0"));
 
 			elasticsearchPropes.put("elasticsearch.sliceScrollThreadCount",
 					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadCount",configContext,"50"));

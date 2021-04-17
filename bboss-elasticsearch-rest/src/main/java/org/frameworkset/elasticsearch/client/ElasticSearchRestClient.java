@@ -28,10 +28,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.util.EntityUtils;
-import org.frameworkset.elasticsearch.ElasticSearch;
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.IndexNameBuilder;
-import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
+import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
@@ -232,6 +229,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	private void initVersionInfo(){
 		try {
+			//获取es的实际版本信息
 			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
 
 				@Override
@@ -246,27 +244,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
 						Object version = clusterInfo.get("version");
 						if (version instanceof Map) {
-							esVersion = String.valueOf(((Map) version).get("number"));
-							if (esVersion != null) {
-								if (esVersion.startsWith("1.")) {
-									v1 = true;
-								}
-								int idx = esVersion.indexOf(".");
-								if (idx > 0) {
-									String max = esVersion.substring(0, idx);
-									try {
-										int v = Integer.parseInt(max);
-										if (v >= 7) {
-											upper7 = true;
-										}
-										if (v < 5) {
-											lower5 = true;
-										}
-									} catch (Exception e) {
-
-									}
-								}
-							}
+							String _esVersion = String.valueOf(((Map) version).get("number"));
+							if(_esVersion != null && !_esVersion.equals(""))
+								esVersion = _esVersion;
+							
 							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + esVersion;
 						} else {
 							clusterVersionInfo = "clusterName:" + clusterInfo.get("cluster_name") + ",version:" + version;
@@ -277,9 +258,30 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 					return null;
 				}
 			});
+			
 		}
 		catch (Exception e){
 			logger.warn("Init Elasticsearch Cluster Version Information failed:",e);
+		}
+		if (esVersion != null) {
+			if (esVersion.startsWith("1.")) {
+				v1 = true;
+			}
+			int idx = esVersion.indexOf(".");
+			if (idx > 0) {
+				String max = esVersion.substring(0, idx);
+				try {
+					int v = Integer.parseInt(max);
+					if (v >= 7) {
+						upper7 = true;
+					}
+					if (v < 5) {
+						lower5 = true;
+					}
+				} catch (Exception e) {
+				
+				}
+			}
 		}
 	}
 	private String healthPool;
@@ -409,6 +411,14 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				logger.error("Parse Boolean discoverHost parameter failed:"+discoverHost_,e);
 			}
 		}
+		String version_ = elasticsearchPropes.getProperty("elasticsearch.version");
+		if(version_ != null && !version_.equals("")){
+			esVersion = version_;
+		}
+		else{
+			esVersion = "7.0.0";
+		}
+
 
 		String useHttps_ = elasticsearchPropes.getProperty("elasticsearch.useHttps");
 		if(useHttps_ != null && !useHttps_.equals("")){

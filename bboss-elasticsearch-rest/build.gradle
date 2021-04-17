@@ -26,16 +26,16 @@ sourceSets {
 
 
 dependencies {
-	compile project(':bboss-elasticsearch-rest-entity')
-   compile([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
-	compile([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
-    compile([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])  
-   	 compile([group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonversion}",transitive: false],
+	api project(':bboss-elasticsearch-rest-entity')
+   api([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
+	api([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
+    api([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])
+   	 api([group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonversion}",transitive: false],
 			 [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksondatabaindversion}",transitive: false],
 			 [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonversion}",transitive: false]
 	 )
 
-    testCompile(
+    testImplementation(
     	[group: 'org.mockito', name: 'mockito-all', version: "1.9.0", transitive: true]
     
     )

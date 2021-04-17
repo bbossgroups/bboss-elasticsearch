@@ -640,10 +640,19 @@ public abstract class BaseESProperties {
 		private String scrollThreadQueue;
 		private String scrollBlockedWaitTimeout;
 		private String discoverHost;
+		private String version;
 		public Rest getRest() {
 			return rest;
 		}
-
+		
+		public void setVersion(String version) {
+			this.version = version;
+		}
+		
+		public String getVersion() {
+			return version;
+		}
+		
 		public void setRest(Rest rest) {
 			this.rest = rest;
 		}
@@ -875,6 +884,8 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDiscoverHost()))
 				properties.put(_name+"elasticsearch.discoverHost",this.getElasticsearch().getDiscoverHost());
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getVersion()))
+				properties.put(_name+"elasticsearch.version",this.getElasticsearch().getVersion());
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSliceScrollThreadCount()))
 				properties.put(_name+"elasticsearch.sliceScrollThreadCount",this.getElasticsearch().getSliceScrollThreadCount());
