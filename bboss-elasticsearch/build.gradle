@@ -58,32 +58,32 @@ repositories {
 	}
 /**
 configurations {
-    compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    api.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }*/
 dependencies {
-    compile project(':bboss-elasticsearch-rest')
-	compile (
+	api project(':bboss-elasticsearch-rest')
+	api (
 			[group: 'org.elasticsearch', name: 'elasticsearch', version: "${elasticsearch}", transitive: true],
 	){
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
 	}
 
-	compile (
+	api (
 			[group: 'org.elasticsearch.client', name: 'x-pack-transport', version: "${elasticsearch}", transitive: true]
 
 	){
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
 		exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
 	}
-	compile 'com.unboundid:unboundid-ldapsdk:3.2.0'
-	compile 'org.bouncycastle:bcprov-jdk15on:1.58'
-	compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
+	api 'com.unboundid:unboundid-ldapsdk:3.2.0'
+	api 'org.bouncycastle:bcprov-jdk15on:1.58'
+	api 'org.bouncycastle:bcpkix-jdk15on:1.58'
    compileOnly(
 		   [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: false],
 		   [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
 		   [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
    )
-   compile (
+	api (
 
         [group: 'com.google.code.gson', name: 'gson', version: "2.2.2", transitive: true],
         [group: 'com.google.guava', name: 'guava', version: "11.0.2", transitive: true],
@@ -95,7 +95,7 @@ dependencies {
 		//[group: 'org.elasticsearch.plugin', name: 'jdbc', version: "${elasticsearch}", transitive: true]
 
     )
-    testCompile(
+	testImplementation(
     	[group: 'org.mockito', name: 'mockito-all', version: "1.9.0", transitive: true],
     
     )
