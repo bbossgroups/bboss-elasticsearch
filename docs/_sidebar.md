@@ -48,6 +48,7 @@
   - [Elasticsearch聚合查询](agg.md) 
   - [数据库和Elasticsearch同步工具](db-es-tool.md)
   - 数据同步案例    
+    - [日志文件采集使用指南](filelog-guide.md)
     - [DB-ES数据同步工具使用方法](db-es-datasyn.md)
     - [Spring boot与数据同步工具应用](usedatatran-in-spring-boot.md)
     - [Mongodb-Elasticsearch同步工具](mongodb-elasticsearch.md)

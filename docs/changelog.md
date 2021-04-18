@@ -58,12 +58,12 @@ https://esdoc.bbossgroups.com/#/development
    日志文件采集插件使用案例：
    1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
-   3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/filelog/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+   3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
 6. 设每个elasticsearch数据源默认版本兼容性为7，为了处理启动时无法连接es的情况，可以根据连接的es来配置和调整每个elasticsearch数据源的配置，示例如下：
    elasticsearch.version=7.12.0
 7. 调整gradle构建脚本语法，保持与gradle 7的兼容性   
 
-# v6.2.9 功能改进
+# v6.2.8 功能改进
 1. 数据同步工具改进：Elasticsearch-File-Ftp/Sftp数据同步时，全局配置/记录级别添加的自定义字段不起作用问题修复
 2. 数据同步工具扩展：增加elasticsearch数据导出发送到kafka模块，使用案例：
    https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java

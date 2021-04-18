@@ -2953,11 +2953,20 @@ https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 
 1. elasticsearch数据导出发送到kafka模块，使用案例：
    https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java
-
 2. 关系数据库数据导出发送到kafka模块，使用案例：
    https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java
 
-# 14 开发交流
+# 14 日志文件数据采集插件使用案例
+
+支持全量和增量采集两种模式，实时采集日志文件数据到kafka/elasticsearch/database
+
+日志文件采集插件使用案例：
+
+1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+
+# 15 开发交流
 
 完整的数据导入demo工程
 
