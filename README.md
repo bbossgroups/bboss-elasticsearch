@@ -35,7 +35,7 @@ First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
 Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
 
 ```
-gradle install
+gradle publishToMavenLocal
 ```
 
 Build from source code guide:

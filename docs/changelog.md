@@ -49,19 +49,44 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.2.9 功能改进
 1. 数据同步改进：完善ip2region和geoip数据库热加载机制
-2. 升级httpcliet组件版本到最新的官方版本
-3. 升级fastxml jackson databind版本
-4. 增加对pit机制的支持，参考用例：testPitId方法
+
+2. 升级httpcliet组件版本到最新的官方版本4.5.13
+
+3. 升级fastxml jackson databind版本2.9.10.8
+
+4. 增加对pit机制的支持，参考用例：
+   
+   testPitId方法
+   
    https://gitee.com/bboss/eshelloword-spring-boot-starter/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/SimpleBBossESStarterTestCase.java
+   
 5. 数据同步工具扩展：增加日志文件采集插件，支持全量和增量采集两种模式，实时采集日志文件数据到kafka/elasticsearch/database
+   
+   使用文档：https://esdoc.bbossgroups.com/#/filelog-guide
 
    日志文件采集插件使用案例：
    1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
    3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+   
+   升级6.2.9注意事项，需手动修改增量同步状态表结构，增加下面三个字段：
+   
+   ```
+   status number(1) ,  //数据采集完成状态：0-采集中（默认值）  1-完成  适用于文件日志采集 默认值 0
+   filePath varchar(500)  //日志文件路径，默认值""
+   fileId varchar(500)  //日志文件indoe标识，默认值""
+   ```
+
 6. 设每个elasticsearch数据源默认版本兼容性为7，为了处理启动时无法连接es的情况，可以根据连接的es来配置和调整每个elasticsearch数据源的配置，示例如下：
    elasticsearch.version=7.12.0
+   
+   如果正常连上elasticsearch，侧会使用elasticsearch实际的版本信息，忽略配置的版本信息
+   
 7. 调整gradle构建脚本语法，保持与gradle 7的兼容性   
+
+8. elasticsearch节点自动发现和故障节点健康检查后台线程模型调整为daemon模式
+
+9. http-proxy节点自动发现和故障节点健康检查后台线程模型调整为daemon模式
 
 # v6.2.8 功能改进
 1. 数据同步工具改进：Elasticsearch-File-Ftp/Sftp数据同步时，全局配置/记录级别添加的自定义字段不起作用问题修复

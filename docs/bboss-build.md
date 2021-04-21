@@ -37,14 +37,14 @@ https://github.com/bbossgroups/bboss-elasticsearch
 
 https://github.com/bbossgroups/bboss-elastic-tran
 
-然后分别按照下面的顺序在命令行源码根目录执行gradle install指令构建bboss 源码：
+然后分别按照下面的顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
 
 ```shell
 cd bboss-elasticsearch
-gradle install
+gradle publishToMavenLocal
 
 cd bboss-elastic-tran
-gradle install
+gradle publishToMavenLocal
 ```
 
 # 开发交流
