@@ -72,6 +72,10 @@ public class BulkCommand implements Runnable{
 		return bulkProcessor.getRefreshOption();
 	}
 
+	public String getFilterPath(){
+		return bulkProcessor.getBulkConfig().getFilterPath();
+	}
+
 	private void directRun(List<BulkInterceptor> bulkInterceptors ){
 		String result = clientInterface.executeBulk(this);
 		bulkProcessor.increamentTotalsize(this.getBulkDataSize());

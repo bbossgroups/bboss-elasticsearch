@@ -162,4 +162,8 @@ public class BulkProcessorBuilder {
 		this.bulkConfig.setRouting( routing);
 		return this;
 	}
+	public BulkProcessorBuilder setFilterPath(String filterPath){
+		this.bulkConfig.setFilterPath(filterPath);
+		return this;
+	}
 }

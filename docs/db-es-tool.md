@@ -2790,10 +2790,15 @@ https://github.com/bbossgroups/hbase-elasticsearch
 内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
 ```properties
--Xms1g=
--Xmx1g=
--XX=NewSize=512m
--XX=MaxNewSize=512m
+# Xms represents the initial size of total heap space
+# Xmx represents the maximum size of total heap space
+
+-Xms1g
+-Xmx1g
+-XX:NewSize=512m
+-XX:MaxNewSize=512m
+# explicitly set the stack size
+-Xss1m
 ```
 
 Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大小保持的比例可以为3:1或者2:1

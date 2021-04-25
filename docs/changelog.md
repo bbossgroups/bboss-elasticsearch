@@ -47,6 +47,9 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.2.9</version>
         </dependency>
 ```
+# v6.3.0 功能改进
+1. 数据同步改进：日志文件采集插件添加控制是否删除采集完的文件控制变量，默认false 不删除，true 删除
+
 # v6.2.9 功能改进
 1. 数据同步改进：完善ip2region和geoip数据库热加载机制
 

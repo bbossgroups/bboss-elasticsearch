@@ -37,4 +37,6 @@ public interface BulkActionConfig extends Serializable {
 	Integer getWaitForActiveShards();
 
 	String getPipeline();
+	public String getFilterPath() ;
+
 }

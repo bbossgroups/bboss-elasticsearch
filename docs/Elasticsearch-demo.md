@@ -26,13 +26,21 @@ gradle项目参考demo2：
 
 # 2.基于apollo配置中心案例
 
-https://github.com/bbossgroups/elasticsearch-example-apollo （maven）
+maven工程-elasticsearch java client案例
 
-https://github.com/bbossgroups/db-elasticsearch-tool-apollo （gradle）
+https://github.com/bbossgroups/elasticsearch-example-apollo 
 
-https://github.com/bbossgroups/httpproxy-apollo （maven）
+gradle工程-数据同步案例
 
-https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo （gradle）
+https://github.com/bbossgroups/db-elasticsearch-tool-apollo 
+
+maven工程-http proxy案例
+
+https://github.com/bbossgroups/httpproxy-apollo 
+
+gradle工程-基于xxl-job调度的数据同步案例
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo 
 
 # 3.快速集成和应用 
 

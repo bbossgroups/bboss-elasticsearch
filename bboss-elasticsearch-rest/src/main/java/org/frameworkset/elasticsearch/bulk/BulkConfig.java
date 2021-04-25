@@ -64,6 +64,8 @@ public class BulkConfig implements BulkActionConfig{
 	private String refresh;
 	private String pipeline;
 	private Object routing;
+	public static final String ERROR_FILTER_PATH = "took,errors,items.*.error";
+	private String filterPath = ERROR_FILTER_PATH;
 	public int getBulkSizes() {
 		return bulkSizes;
 	}
@@ -267,5 +269,13 @@ public class BulkConfig implements BulkActionConfig{
 
 	public void setRetryInterval(long retryInterval) {
 		this.retryInterval = retryInterval;
+	}
+
+	public String getFilterPath() {
+		return filterPath;
+	}
+
+	public void setFilterPath(String filterPath) {
+		this.filterPath = filterPath;
 	}
 }

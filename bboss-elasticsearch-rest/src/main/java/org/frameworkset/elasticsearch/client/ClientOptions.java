@@ -47,7 +47,7 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	private Object version;
 	private Object versionType;
 	private Object routing;
-
+	private String filterPath;
 	private String pipeline;
 	private String opType;
 	protected String refreshOption;
@@ -302,6 +302,16 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 
 	public String getPipeline() {
 		return pipeline;
+	}
+
+
+	public void setFilterPath(String filterPath) {
+		this.filterPath = filterPath;
+	}
+
+	@Override
+	public String getFilterPath() {
+		return filterPath;
 	}
 
 	public ClientOptions setPipeline(String pipeline) {
