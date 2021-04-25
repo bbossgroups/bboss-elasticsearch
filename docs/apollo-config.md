@@ -327,6 +327,7 @@ public class AddressConfigChangeListener implements ConfigChangeListener {
 
 ```java
        /**
+       * 启动http proxy并监听路由变化和节点变化
        * 1.服务健康检查
        * 2.服务负载均衡
        * 3.服务容灾故障恢复
@@ -339,7 +340,25 @@ public class AddressConfigChangeListener implements ConfigChangeListener {
       HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
 ```
 
-# 3.参考文档
+# 3.基于apollo配置中心案例工程
+
+maven工程-elasticsearch java client案例
+
+https://github.com/bbossgroups/elasticsearch-example-apollo 
+
+gradle工程-数据同步案例
+
+https://github.com/bbossgroups/db-elasticsearch-tool-apollo 
+
+maven工程-http proxy案例
+
+https://github.com/bbossgroups/httpproxy-apollo 
+
+gradle工程-基于xxl-job调度的数据同步案例
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo 
+
+# 4.参考文档
 
 [Spring boot整合Elasticsearch](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=spring-boot整合elasticsearch案例分享)
 
