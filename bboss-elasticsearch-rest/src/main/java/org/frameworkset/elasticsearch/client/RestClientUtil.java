@@ -10,6 +10,7 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.SliceRunTask;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
+import org.frameworkset.elasticsearch.bulk.BulkConfig;
 import org.frameworkset.elasticsearch.bulk.BulkData;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
@@ -445,7 +446,7 @@ public class RestClientUtil extends ClientUtil{
 			}
 		}
 		writer.flush();
-		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
+		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions, BulkConfig.ERROR_FILTER_PATH),builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
@@ -951,7 +952,7 @@ public class RestClientUtil extends ClientUtil{
 //		if(clientOptions == null)
 //			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 //		else
-			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
+			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions, BulkConfig.ERROR_FILTER_PATH),builder.toString(),ClientUtil.HTTP_POST);
 	}
 
 	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException{
@@ -993,7 +994,7 @@ public class RestClientUtil extends ClientUtil{
 		}
 		writer.flush();
 //		if(clientOptions != null) {
-			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions), builder.toString(), ClientUtil.HTTP_POST);
+			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions, BulkConfig.ERROR_FILTER_PATH), builder.toString(), ClientUtil.HTTP_POST);
 //		}
 //		else {
 //			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
@@ -1172,7 +1173,7 @@ public class RestClientUtil extends ClientUtil{
 			}
 			writer.flush();
 
-			return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig()), builder.toString(), ClientUtil.HTTP_POST);
+			return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig(), BulkConfig.ERROR_FILTER_PATH), builder.toString(), ClientUtil.HTTP_POST);
 
 
 		}
@@ -1317,7 +1318,7 @@ public class RestClientUtil extends ClientUtil{
 //			}
 //		}
 
-		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions), builder.toString(), ClientUtil.HTTP_POST);
+		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions, BulkConfig.ERROR_FILTER_PATH), builder.toString(), ClientUtil.HTTP_POST);
 
 	}
 

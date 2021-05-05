@@ -781,144 +781,23 @@ public abstract class BuildTool {
 	}
  */
 	public static String buildActionUrl(BulkActionConfig bulkConfig){
-		if(bulkConfig == null)
-			return "_bulk";
-		StringBuilder url = new StringBuilder();
-		url.append("_bulk");
-		String refreshOption = bulkConfig.getRefreshOption();
-		if(refreshOption != null)
-			url.append("?").append(refreshOption);
-		else{
-			String refresh  = bulkConfig.getRefresh();
-			boolean p = false;
-			if(refresh != null) {
-				url.append("?refresh=").append(refresh);
-				p = true;
-			}
-			/**
-			 Long if_seq_no = clientOptions.getIfSeqNo();
-			 if(if_seq_no != null){
-			 if(p){
-			 url.append("&if_seq_no=").append(if_seq_no);
-			 }
-			 else{
-			 url.append("?if_seq_no=").append(if_seq_no);
-			 p = true;
-			 }
-			 }
-			 Long if_primary_term = clientOptions.getIfPrimaryTerm();
-			 if(if_primary_term != null){
-			 if(p){
-			 url.append("&if_primary_term=").append(if_primary_term);
-			 }
-			 else{
-			 url.append("?if_primary_term=").append(if_primary_term);
-			 p = true;
-			 }
-			 }*/
-
-			/**
-			 Object retry_on_conflict = clientOptions.getEsRetryOnConflict();
-			 if(retry_on_conflict != null){
-			 if(p){
-			 url.append("&retry_on_conflict=").append(retry_on_conflict);
-			 }
-			 else{
-			 url.append("?retry_on_conflict=").append(retry_on_conflict);
-			 p = true;
-			 }
-			 }*/
-			Object routing = bulkConfig.getRouting();
-			if(routing != null){
-				if(p){
-					url.append("&routing=").append(routing);
-				}
-				else{
-					url.append("?routing=").append(routing);
-					p = true;
-				}
-			}
-			String timeout = bulkConfig.getTimeout();
-			if(timeout != null){
-				if(p){
-					url.append("&timeout=").append(timeout);
-				}
-				else{
-					url.append("?timeout=").append(timeout);
-					p = true;
-				}
-			}
-			/**
-			 String master_timeout = clientOptions.getMasterTimeout();
-			 if(master_timeout != null){
-			 if(p){
-			 url.append("&master_timeout=").append(master_timeout);
-			 }
-			 else{
-			 url.append("?master_timeout=").append(master_timeout);
-			 p = true;
-			 }
-			 }*/
-			Integer wait_for_active_shards = bulkConfig.getWaitForActiveShards();
-			if(wait_for_active_shards != null){
-				if(p){
-					url.append("&wait_for_active_shards=").append(wait_for_active_shards);
-				}
-				else{
-					url.append("?wait_for_active_shards=").append(wait_for_active_shards);
-					p = true;
-				}
-			}
-			/**
-			 String op_type = clientOptions.getOpType();
-			 if(op_type != null){
-			 if(p){
-			 url.append("&op_type=").append(op_type);
-			 }
-			 else{
-			 url.append("?op_type=").append(op_type);
-			 p = true;
-			 }
-			 }*/
-			String pipeline = bulkConfig.getPipeline();
-			if(pipeline != null){
-				if(p){
-					url.append("&pipeline=").append(pipeline);
-				}
-				else{
-					url.append("?pipeline=").append(pipeline);
-					p = true;
-				}
-			}
-			//took,errors,items.*.error
-			String filterPath = bulkConfig.getFilterPath();
-			if(filterPath != null){
-				if(p){
-					url.append("&filter_path=").append(filterPath);
-				}
-				else{
-					url.append("?filter_path=").append(filterPath);
-					p = true;
-				}
-			}
-
-
-		}
-		return url.toString();
+		return buildActionUrl( bulkConfig,(String)null);
 	}
 	public static String buildActionUrl(BulkActionConfig bulkConfig,String filterPath){
 		if(bulkConfig == null) {
-			if(filterPath == null)
+			if(filterPath == null  || filterPath.equals(""))
 				return "_bulk";
 			else{
 				return "_bulk?filter_path="+filterPath;
 			}
 		}
+		if(bulkConfig.getFilterPath() != null)
+			filterPath = bulkConfig.getFilterPath();
 		StringBuilder url = new StringBuilder();
 		url.append("_bulk");
 		String refreshOption = bulkConfig.getRefreshOption();
 		if(refreshOption != null) {
-			if(refreshOption.indexOf("filter_path") >= 0) {
+			if(refreshOption.indexOf("filter_path") >= 0 || filterPath == null || filterPath.equals("")) {
 				url.append("?").append(refreshOption);
 			}
 			else{
@@ -1028,9 +907,8 @@ public abstract class BuildTool {
 				}
 			}
 			//took,errors,items.*.error
-			if(bulkConfig.getFilterPath() != null)
-				filterPath = bulkConfig.getFilterPath();
-			if(filterPath != null){
+
+			if(filterPath != null && !filterPath.equals("")){
 				if(p){
 					url.append("&filter_path=").append(filterPath);
 				}
