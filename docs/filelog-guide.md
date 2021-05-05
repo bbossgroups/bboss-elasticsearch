@@ -41,7 +41,7 @@ FileConfig用于指定文件级别配置
 | FileConfig.startPointer                  | long ,指定采集的日志文件内容开始位置                         | 0       |
 | FileConfig.ignoreOlderTime               | Long类型，If this option is enabled, bboss ignores any files that were modified before the specified timespan. Configuring ignore_older can be especially useful if you keep log files for a long time. For example, if you want to start bboss, but only want to send the newest files and files from last week, you can configure this option. You can use time strings like 2h (2 hours) and 5m (5 minutes). The default is null,  which disables the setting. Commenting out the config has the same effect as setting it to null.如果为null忽略该机制 | null    |
 | FileConfig.closeEOF                      | 布尔类型，true 采集到日志文件末尾后关闭本文件采集通道，后续不再采集； false不关闭，适用于文件只采集一次的场景 | false   |
-| FileConfig.deleteEOFFile                 | 布尔类型，如果deleteEOFFile为true,则删除采集完数据的eof文件，后续有必要进行优化并在回调函数中处理，适用于文件只采集一次的场景 | false   |
+| FileConfig.deleteEOFFile                 | 布尔类型，如果deleteEOFFile为true,则删除采集完数据的文件，适用于文件只采集一次的场景 | false   |
 
 enableMeta控制的信息如下
 
