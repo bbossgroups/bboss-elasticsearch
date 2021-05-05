@@ -791,7 +791,7 @@ public abstract class BuildTool {
 				return "_bulk?filter_path="+filterPath;
 			}
 		}
-		if(bulkConfig.getFilterPath() != null)
+		if(bulkConfig.getFilterPath() != null && !bulkConfig.getFilterPath().equals(""))
 			filterPath = bulkConfig.getFilterPath();
 		StringBuilder url = new StringBuilder();
 		url.append("_bulk");
