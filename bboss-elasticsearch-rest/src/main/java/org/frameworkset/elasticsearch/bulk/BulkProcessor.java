@@ -376,7 +376,7 @@ public class BulkProcessor {
 	 * @param datas
 	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
-	public void insertDatas(String index,String indexType,List<Object> datas,ClientOptions clientOptions){
+	public void insertDatas(String index,String indexType,List<?> datas,ClientOptions clientOptions){
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -406,7 +406,7 @@ public class BulkProcessor {
 	 * @param indexType
 	 * @param datas Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
-	public void insertDatas(String index,String indexType,List<Object> datas){
+	public void insertDatas(String index,String indexType,List<?> datas){
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -437,7 +437,7 @@ public class BulkProcessor {
 	 * @param datas
 	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
-	public void insertDatas(String index,List<Object> datas,ClientOptions clientOptions){
+	public void insertDatas(String index,List<?> datas,ClientOptions clientOptions){
 		insertDatas( index,(String)null, datas,clientOptions);
 	}
 
@@ -446,7 +446,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param datas Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
-	public void insertDatas(String index,List<Object> datas){
+	public void insertDatas(String index,List<?> datas){
 		insertDatas( index,(String)null, datas,null);
 	}
 
@@ -457,7 +457,7 @@ public class BulkProcessor {
 	 * @param datas
 	 * @param updateOptions Object中有@ESId指定的文档id字段或者updateOptions设置了esidfield
 	 */
-	public void updateDatas(String index, String indexType, List<Object> datas, ClientOptions updateOptions){
+	public void updateDatas(String index, String indexType, List<?> datas, ClientOptions updateOptions){
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -487,7 +487,7 @@ public class BulkProcessor {
 	 * @param indexType
 	 * @param datas  Object中必须要有@ESId注解设置的文档id信息
 	 */
-	public void updateDatas(String index, String indexType, List<Object> datas){
+	public void updateDatas(String index, String indexType, List<?> datas){
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -516,7 +516,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param datas Object中必须要要有@ESId指定的文档id字段
 	 */
-	public void updateDatas(String index,  List<Object> datas){
+	public void updateDatas(String index,  List<?> datas){
 		updateDatas(  index,   (String)null, datas,null);
 	}
 
@@ -526,7 +526,7 @@ public class BulkProcessor {
 	 * @param datas
 	 * @param updateOptions Object中有@ESId指定的文档id字段或者updateOptions设置了esidfield
 	 */
-	public void updateDatas(String index, List<Object> datas, ClientOptions updateOptions){
+	public void updateDatas(String index, List<?> datas, ClientOptions updateOptions){
 		updateDatas(  index, (String)null,  datas,  updateOptions);
 	}
 
@@ -545,7 +545,7 @@ public class BulkProcessor {
 	 * @param datas 待删除的文档_id集合
 	 * @param updateOptions
 	 */
-	public void deleteDatas(String index,String indexType,List<Object> datas, ClientOptions updateOptions){
+	public void deleteDatas(String index,String indexType,List<?> datas, ClientOptions updateOptions){
 		if(datas == null || datas.size() == 0){
 			return ;
 		}
@@ -575,7 +575,7 @@ public class BulkProcessor {
 	 * @param indexType
 	 * @param datas 待删除的文档_id集合
 	 */
-	public void deleteDatas(String index,String indexType,List<Object> datas){
+	public void deleteDatas(String index,String indexType,List<?> datas){
 		if(datas == null || datas.size() == 0){
 			return ;
 		}
@@ -605,7 +605,7 @@ public class BulkProcessor {
 	 * @param datas 待删除的文档_id集合
 	 * @param updateOptions
 	 */
-	public void deleteDatas(String index,List<Object> datas, ClientOptions updateOptions){
+	public void deleteDatas(String index,List<?> datas, ClientOptions updateOptions){
 		deleteDatas(  index,(String)null,  datas,  updateOptions);
 	}
 
@@ -614,7 +614,7 @@ public class BulkProcessor {
 	 * @param index
 	 * @param datas 待删除的文档_id集合
 	 */
-	public void deleteDatas(String index, List<Object> datas){
+	public void deleteDatas(String index, List<?> datas){
 		deleteDatas(  index,(String)null,  datas,  (ClientOptions)null);
 	}
 
