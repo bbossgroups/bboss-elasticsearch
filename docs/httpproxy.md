@@ -36,7 +36,11 @@ ip:port（默认http协议）
 
 ```
 
+![](images/httpproxy1.JPEG)
 
+![](images/httpproxy2.JPEG)
+
+![](images/httpproxy3.JPEG)
 
 # 2.导入http负载均衡器
 
@@ -64,22 +68,22 @@ org.frameworkset.spi.remote.http.HttpRequestProxy
 
 ## 3.1 负载均衡组件API
 
-### 3.1.1 启动相关的api及示例
+### 3.1.1 初始化http proxy
 
-HttpRequestProxy.startHttpPools(Map configs);
+HttpRequestProxy.startHttpPools(Map configs);  --通过在代码中设置参数，初始化httpproxy
 
-HttpRequestProxy.startHttpPools(String configFile);
+HttpRequestProxy.startHttpPools(String configFile);--加载配置文件（classpath相对路径）中设置参数，初始化httpproxy
 
-加载配置文件启动示例
+#### **1）加载配置文件启动示例**
 
 ```java
 //加载配置文件，启动负载均衡器
 HttpRequestProxy.startHttpPools("application.properties");
 ```
 
-加载Map属性配置启动负载均衡器示例-
+#### 2）加载Map属性配置启动负载均衡器示例
 
-#### **简单的配置和启动**
+**简单的配置和启动**
 
 ```java
 Map<String,Object> configs = new HashMap<String,Object>();
@@ -92,7 +96,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
 HttpRequestProxy.startHttpPools(configs);
 ```
 
-#### **启动时指定服务发现机制**
+**启动时指定服务发现机制**
 
 ```java
        Map<String,Object> configs = new HashMap<String,Object>();
@@ -108,7 +112,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
       HttpRequestProxy.startHttpPools(configs);
 ```
 
-#### **加载apollo配置启动httpproxy**
+#### **3）加载apollo配置启动httpproxy**
 
 指定apollo命名空间和配置参数变化监听器（自定义）
 
