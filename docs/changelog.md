@@ -48,7 +48,25 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.3.0 功能改进
-1. 数据同步改进：日志文件采集插件添加控制是否删除采集完的文件控制变量，默认false 不删除，true 删除
+1. elasticsearch rest client改进：优化批处理性能，执行批处理bulk操作后，默认只返回三个信息：took,errors,items.*.error，既耗时、错误标记、错误记录信息
+2. 数据同步功能改进：日志文件采集插件添加控制是否删除采集完的文件控制变量，默认false 不删除，true 删除
+3. 数据同步功能bug修复：修复hbase数据导出因columns信息为空导致的导出异常
+4. 数据同步功能bug修复：修改es2db导出时存在targetdb空指针问题
+5. 数据同步功能改进：增加采集日志文件数据，导出到文件并上传ftp/sftp服务器功能
+6. 数据同步功能改进：从kafka接收数据，处理后按照固定记录条数导出到文件并上传ftp/sftp服务器功能
+7. 数据同步功能改进：增加hbase数据导出到文件并上传ftp/sftp服务器功能
+8. 数据同步功能改进：增加mongodb数据导出到文件并上传ftp/sftp服务器功能
+9. 数据同步功能改进：增加hbase、mongodb到dummy/logger的输出功能
+10. 数据同步功能改进：增加日志文件数据采集到dummy/logger的输出功能
+11. 数据同步功能改进：增加kafka到dummy/logger输出功能
+12. 数据同步工具改进：增加kafka、hbase、mongodb到kafka的数据抽取同步功能
+13. 数据同步工具改进：增加kafka、hbase、mongodb到kafka的数据抽取同步功能
+14. 数据同步功能改进：增加hbase到database数据同步功能
+15. 数据同步功能改进：增加数据库/elasticsearch数据导出（增量/全量）到log4j日志文件dummy插件
+
+**说明：**数据同步功能新增的dummy插件，便于调试采集数据作业，将采集的数据打印到控制台，观察数据的正确性
+
+
 
 # v6.2.9 功能改进
 1. 数据同步改进：完善ip2region和geoip数据库热加载机制
