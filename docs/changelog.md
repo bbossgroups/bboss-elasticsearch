@@ -60,7 +60,6 @@ https://esdoc.bbossgroups.com/#/development
 10. 数据同步功能改进：增加日志文件数据采集到dummy/logger的输出功能
 11. 数据同步功能改进：增加kafka到dummy/logger输出功能
 12. 数据同步工具改进：增加kafka、hbase、mongodb到kafka的数据抽取同步功能
-13. 数据同步工具改进：增加kafka、hbase、mongodb到kafka的数据抽取同步功能
 14. 数据同步功能改进：增加hbase到database数据同步功能
 15. 数据同步功能改进：增加数据库/elasticsearch数据导出（增量/全量）到log4j日志文件dummy插件
 

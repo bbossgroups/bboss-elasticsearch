@@ -8,25 +8,11 @@
 
 # 工具特性
 
-bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文介绍各种数据同步案例（支持各种数据库和各种es版本）
+bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
 ![](images\datasyn.png)
 
-通过bboss，可以非常方便地实现：
-
-1. 将数据库表数据同步到Elasticsearch
-2. 将数据库表数据同步到数据库表
-3. 将Elasticsearch数据同步到数据库表
-4. 将Elasticsearch数据同步到Elasticsearch
-5. 将mongodb数据同步到Elasticsearch
-6. 将mongodb数据同步到数据库表
-7. kafka数据导入Elasticsearch和数据库，支持kafka_2.12-0.10.2.0系列版本和kafka_2.12-2.3.0 系列版本
-8. HBase数据导入Elasticsearch
-9. 将elasticsearch数据导出到文本文件以及通过ftp/sftp上传文件到文件服务器
-10. 将数据库表数据导出到文本文件以及通过ftp/sftp上传文件到文件服务器
-11. 将elasticsearch数据导出发送到Kafka服务器
-12. 将数据库表数据发送到Kafka服务器
-13. 实时采集日志文件数据到kafka/elasticsearch/database
+通过bboss，可以非常方便地采集database/mongodb/Elasticsearch/kafka/hbase/日志文件源数据，经过数据转换处理后，再推送到目标库elasticsearch/database/file/ftp/kafka/dummy/logger。
 
 数据导入的方式
 
