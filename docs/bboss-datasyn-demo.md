@@ -13,7 +13,7 @@
 ​		bboss同步功能非常丰富，为了方便快速使用上手bboss，本文将各种数据同步案例呈现给大家，可以根据实际情况选用合适的案例。
 
 下面以目标库为主线，列举数据采集同步案例
-# 2.目标库Elasticsearch
+# 2.导入Elasticsearch案例
 
 ## 2.1 Database到Elasticsearch数据同步
 ### 案例1 简单定时同步案例-数字增量/时间戳增量/全量同步
@@ -99,6 +99,14 @@
 [github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2ES.java)
 
 [gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2ES.java)
+### 案例3 基于quartz调度同步案例
+[github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzImportTask.java)
+
+[gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzImportTask.java)
+### 案例4 基于xxl-job同步案例
+[github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/XXJobMongodb2ESImportTask.java)
+
+[gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/XXJobMongodb2ESImportTask.java)
 
 ## 2.5 Hbase到Elasticsearch数据同步
 ### 案例1 hbase定时全量同步案例
@@ -109,10 +117,16 @@
 [github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemoWithFilter.java)
 
 [gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESFullDemoWithFilter.java)
-### 案例3 基于时间戳hbase定时增量量同步案例-自定义hbase filter检索数据条件
+### 案例3 基于时间戳hbase定时增量同步案例-自定义hbase filter检索数据条件
 [github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo.java)
 
 [gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2ESScrollTimestampDemo.java)
+### 案例4 基于quartz调度同步案例-自定义hbase filter检索数据条件
+[github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
+
+[gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzHBase2ESImportTask.java)
+
+
 ## 2.6 Elasticsearch到Elasticsearch数据同步
 ### 案例1 全量同步案例
 [github地址](https://github.com/bbossgroups/elasticsearch-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2ESScrollAllTimestampDemo.java)
@@ -131,16 +145,183 @@
 
 [gitee地址](https://gitee.com/bboss//elasticsearch-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2ESImportTask.java)
 
-# 3 目标库Database
+# 3 导入Database案例
 
-补充中
-# 4 目标文件-File和Ftp
+## 3.1 elasticsearch导入database案例
 
-补充中
-# 5 目标Kafka
+### 案例1 基于数字字段增量导入案例
 
-补充中
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java)
 
-# 6 目标Dummy/Logger
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java)
+
+### 案例2 基于时间戳字段增量导入案例
+
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java)
+
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java)
+
+### 案例3 基于数字字段slice增量导入案例
+
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollDemo.java)
+
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollDemo.java)
+
+### 案例4 基于数字字段slice增量导入以及任务处理结果回调案例
+
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java)
+
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java)
+
+### 案例5 基于apollo管理配置的同步作业工程案例
+
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool-apollo)
+
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool-apollo)
+
+## 3.2 database导入database案例
+
+### 案例1 基于数字字段增量导入案例
+
+[github地址](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java)
+
+[gitee地址](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java)
+
+### 案例2 spring boot导入案例-基于配置文件管理sql
+
+[github地址](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemo.java)
+
+[gitee地址](https://gitee.com/bboss/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemo.java)
+
+### 案例3 spring boot导入案例-sql在代码中
+
+[github地址](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoSQL.java)
+
+[gitee地址](https://gitee.com/bboss/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoSQL.java)
+
+### 案例4 spring boot导入案例-基于配置数据库管理增量导入状态
+
+[github地址](https://github.com/bbossgroups/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoWithStatusConfigDB.java)
+
+[gitee地址](https://gitee.com/bboss/db-db-job/blob/master/src/main/java/com/frameworkset/sqlexecutor/Db2DBdemoWithStatusConfigDB.java)
+
+## 3.3 接收kafka消息导入database
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2DBdemo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2DBdemo.java)
+
+## 3.4 采集日志文件数据到database
+
+[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+
+[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+
+## 3.4 采集hbase数据到database
+
+[github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2DBFullDemo.java)
+
+[gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2DBFullDemo.java)
+
+## 3.5 采集mongodb数据到database
+
+[github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2DBdemo.java)
+
+[gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2DBdemo.java)
+
+# 4 生成File并上传Ftp案例
+
+## 4.1 采集elasticsearch数据生成文件并上传ftp（可以通过disableftp控制只生成文件）
+案例1 ES2FileFtpDemo-sftp协议上传
+
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpDemo.java)
+
+案例2 ES2FileFtpBatchDemo-sftp协议上传
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchDemo.java)
+
+案例3 ES2FileFtpBatchSplitFileDemo-按照记录大写分割文件-sftp协议上传
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchSplitFileDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchSplitFileDemo.java)
+
+案例3 ES2FileFtpBatchSplitFileDemo-按照记录大写分割文件-ftp协议上传
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java)
+## 4.2 采集日志文件数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/filelog/Filelog2FileFtpDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/filelog/Filelog2FileFtpDemo.java)
+## 4.4 采集database数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+
+
+[github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java)
+
+[gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java)
+
+## 4.4 接收kafka数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2FileFtpDemo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2FileFtpDemo.java)
+
+## 4.5 采集hbase数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+
+[github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2FileFtpBatchSplitFileDemo.java)
+
+[gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2FileFtpBatchSplitFileDemo.java)
+
+## 4.6 采集mongodb数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+
+[github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2FileFtp.java)
+
+[gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2FileFtp.java)
+
+
+# 5 推送Kafka案例
+
+## 5.1 采集elasticsearch数据推送kafka
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java)
+## 5.2 采集database数据推送kafka
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java)
+## 5.3 采集日志文件数据推送kafka
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+## 5.4 接收kafka数据，经处理后推送kafka
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2Kafkademo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2Kafkademo.java)
+## 5.5 接收kafka数据，经处理后推送kafka
+
+[github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2Kafkademo.java)
+
+[gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2Kafkademo.java)
+## 5.6 采集mongodb数据，经处理后推送kafka
+
+[github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2Kafka.java)
+
+[gitee地址](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2Kafka.java)
+## 5.7 采集hbase数据，经处理后推送kafka
+
+[github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2KafkaFullDemo.java)
+
+[gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2KafkaFullDemo.java)
+
+# 6 输出到Dummy/Logger案例
 
 补充中
