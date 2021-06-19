@@ -129,7 +129,7 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 第二步 进入setting，设置工程的gradle配置：
 
-![](https://esdoc.bbossgroups.com/images/mongodb/settingprojectgradle.png)
+![](images/mongodb/settingprojectgradle.png)
 第三步 验证工程
 设置完毕后，进入gradle面板
 

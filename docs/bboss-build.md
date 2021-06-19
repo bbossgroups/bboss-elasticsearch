@@ -6,7 +6,7 @@
 
 [下载gradle](https://gradle.org/releases) 
 
-![img](images/gradle.png)
+![image-20210619095208788](images\gradle.png)
 
 下载完毕后解压，然后配置好gradle环境变量： 
 
@@ -23,9 +23,13 @@ M2_HOME: 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构�
 
 ![img](images/m2_home.jpg)
 
-M2_HOME变量中的maven安装路径要与idea中maven配置保持一致：
+M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入setting，配置maven：
 
 ![image-20200510093315247](images/maven-idea.png)
+
+新版本的idea必须调整导入工程的gradle配置，进入setting，设置工程的gradle配置：
+
+![](images/mongodb/settingprojectgradle.png)
 
 # 构建Elasticsearch bboss源码
 
