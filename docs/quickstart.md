@@ -117,7 +117,9 @@ A maven project demo github url:
 
 https://github.com/bbossgroups/elasticsearch-example
 
-参考文档：[集成和配置Elasticsearch bboss](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
+参考文档
+
+[集成和配置Elasticsearch bboss](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
 
 ## **2.spring boot maven project config**
 
@@ -369,7 +371,6 @@ A spring boot Web demo github url:
 <https://github.com/bbossgroups/es_bboss_web>
 
 参考文档
-[集成和配置Elasticsearch bboss](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
 
 [Spring boot集成和配置Elasticsearch](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
 
