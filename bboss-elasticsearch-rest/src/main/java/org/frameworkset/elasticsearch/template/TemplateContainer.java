@@ -38,7 +38,7 @@ public interface TemplateContainer {
 	public final String NAME_multiparser = "multiparser";
 	String getNamespace();
 
-	Set getTempalteNames();
+	Set<String> getTempalteNames();
 
 	TemplateMeta getProBean(String key);
 

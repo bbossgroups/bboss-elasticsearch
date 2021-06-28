@@ -76,5 +76,12 @@ public class AOPTemplateMeta implements TemplateMeta{
 		return pro.getObject();
 	}
 
+	@Override
+	public Object getMetaConfig() {
+		return pro;
+	}
+
+
+
 
 }

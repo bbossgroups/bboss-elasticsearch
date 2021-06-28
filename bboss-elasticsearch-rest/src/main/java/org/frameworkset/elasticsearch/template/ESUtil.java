@@ -78,6 +78,10 @@ public class ESUtil {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
 
+	public TemplateContainer getTemplatecontext() {
+		return templatecontext;
+	}
+
 	/**
 	 * since 5.0.6.0,去掉vm模板解析时变量的转义，因此在模板中的使用$aaa模式变量的情况时，需要注意转义的问题，如果存在转义问题，请使用#[]模式变量
 	 * 日期也不做格式化转换，使用$aaa模式变量的情况下需要注意日期格式问题，如果存在日期，则需要使用#[]模式变量，这样bboss会根据bean属性配置的格式，或者变量中指定的格式

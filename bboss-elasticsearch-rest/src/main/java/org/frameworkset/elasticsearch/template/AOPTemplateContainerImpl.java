@@ -50,7 +50,7 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 		return templatecontext.getConfigfile();
 	}
 
-	public Set getTempalteNames(){
+	public Set<String> getTempalteNames(){
 		return templatecontext.getPropertyKeys();
 	}
 

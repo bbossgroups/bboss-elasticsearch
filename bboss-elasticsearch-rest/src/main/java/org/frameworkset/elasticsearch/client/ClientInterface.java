@@ -13,6 +13,7 @@ import org.frameworkset.elasticsearch.handler.ESAggBucketHandle;
 import org.frameworkset.elasticsearch.scroll.ScrollHandler;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.elasticsearch.template.ESInfo;
+import org.frameworkset.elasticsearch.template.TemplateContainer;
 import org.frameworkset.util.annotations.ThreadSafe;
 
 import java.util.Date;
@@ -2765,5 +2766,5 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 */
 	public String getElasticsearchVersion();
-
+	public TemplateContainer getTemplatecontext();
 }

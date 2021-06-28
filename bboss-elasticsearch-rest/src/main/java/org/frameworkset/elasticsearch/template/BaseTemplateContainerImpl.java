@@ -145,7 +145,7 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 		}
 
 	}
-	public Set getTempalteNames(){
+	public Set<String> getTempalteNames(){
 		if(templateMetas == null){
 			init();
 		}

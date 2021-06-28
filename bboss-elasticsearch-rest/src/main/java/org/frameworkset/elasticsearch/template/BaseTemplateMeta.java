@@ -137,5 +137,7 @@ public class BaseTemplateMeta implements TemplateMeta{
 	public void setReferenceTemplateName(String referenceTemplateName) {
 		this.referenceTemplateName = referenceTemplateName;
 	}
-
+	public Object getMetaConfig(){
+		return this;
+	}
 }

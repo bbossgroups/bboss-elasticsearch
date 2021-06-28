@@ -59,6 +59,13 @@ public class ConfigRestClientUtil extends RestClientUtil {
 		this.esUtil = ESUtil.getInstance(  client.getElasticSearch().getDslMappingDir(),configFile);
 	}
 
+	public TemplateContainer getTemplatecontext() {
+		if(esUtil != null) {
+			return esUtil.getTemplatecontext();
+		}
+		return null;
+	}
+
 	/**
 	 * 自定义dsl管理机制：可以基于redis、db、配置管理中心管理dsl，只需要实现BaseTemplateContainerImpl抽象类中的抽象方法：
 	 *
