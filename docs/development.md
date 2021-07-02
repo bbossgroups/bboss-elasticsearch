@@ -3327,7 +3327,37 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 
 
 
-#### 案例10 foreach循环嵌套遍历map
+#### 案例10 foreach循环嵌套遍历
+
+遍历list
+
+```xml
+ <property name="dynamicInnerDsl">
+        <![CDATA[{ ## 最多返回1000条记录
+            size: #[size],
+            "query": {
+                "bool": {
+                    "must": [
+                    
+                    #foreach($innerList in $outList)
+                        #set($outVelocityCount = $velocityCount)
+                        #foreach($item in $innerList)
+                        #if($velocityCount > 0), #end
+                        {
+                            "xxxx": {
+                                "xxxx": #[outList[$outVelocityCount][$velocityCount]]
+                            }
+                        }
+                        #end
+                    #end
+                    ]
+                }
+            }
+        }]]>
+    </property>
+```
+
+遍历map
 
 foreach嵌套dsl脚本定义
 
