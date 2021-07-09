@@ -2767,4 +2767,5 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 */
 	public String getElasticsearchVersion();
 	public TemplateContainer getTemplatecontext();
+	public String evalConfigDsl(String dslName,Object params);
 }

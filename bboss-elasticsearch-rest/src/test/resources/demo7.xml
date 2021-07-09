@@ -1,0 +1,678 @@
+<properties>
+    <!--
+        For Elasticsearch 7.0.0
+        创建demo需要的索引表结构
+    -->
+    <property name="createDemoIndice">
+        <![CDATA[{
+            "settings": {
+                "number_of_shards": 6,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "properties": {
+                    "demoId":{
+                        "type":"long"
+                    },
+                    "contentbody": {
+                        "type": "text"
+
+                    },
+                    "agentStarttime": {
+                        "type": "date"
+                         ## ,"format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                    },
+                    "applicationName": {
+                        "type": "text",
+                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "text"
+                    },
+                    "contrastStatus":{
+                        "type":"integer"
+                    },
+                    "orderId": {
+                        "type": "text",
+                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+
+    <!--
+            For Elasticsearch 7.0.0
+            创建demo需要的索引表结构
+        -->
+    <property name="testesencode">
+        <![CDATA[
+
+          #[aaa,esEncode=true]
+            ]]>
+    </property>
+
+
+
+
+    <!--
+        一个简单的检索dsl,中有四个变量
+        name 全文检索字段
+        startTime
+        endTime
+        通过map传递变量参数值
+        cacheDsl:指示框架是否启用dsl语法结构缓存机制，如果启用则只在第一次对dsl进行硬解析dsl语法结构，后续从缓冲中读取解析好的语法结构；如果禁用，则每次都硬解析dsl语法结构，默认true
+        变量语法参考文档：https://my.oschina.net/bboss/blog/1556866
+    -->
+    <property name="testHighlightSearch" cacheDsl="false">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ],
+                    "must": [
+                        #*
+                        {
+                            "query_string": {
+                                "query": #[condition],
+                                "analyze_wildcard": true
+                            }
+                        }
+                        *#
+                        {
+                        ## 全文检索参考文档  https://www.elastic.co/guide/en/elasticsearch/reference/6.2/full-text-queries.html
+                            "match_phrase" : {
+                                "name" : {
+                                    "query" : #[condition]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回1000条记录
+            "size":1000,
+            ## 高亮检索定义，参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-request-highlighting.html
+            "highlight": {
+                "pre_tags": [
+                    "<mark>"
+                ],
+                "post_tags": [
+                    "</mark>"
+                ],
+                "fields": {
+                    "*": {}
+                },
+                "fragment_size": 2147483647
+            }
+        }]]>
+    </property>
+
+    <!--
+        一个简单的检索dsl,中有四个变量
+        applicationName1
+        applicationName2
+        startTime
+        endTime
+        通过map传递变量参数值
+
+        变量语法参考文档：
+    -->
+    <property name="searchDatas">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回1000条记录
+            "size":1000,
+            "explain":true
+        }]]>
+    </property>
+
+    <property name="countDatas">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+            ## 最多返回1000条记录
+            ## "size":1000 es 7.0 count不支持size
+        }]]>
+    </property>
+
+
+    <property name="searchWithCustomEscapeWithError">
+        <![CDATA[{## 这是一个错误的案例，本条dsl会运行失败，变量中的特殊字符，日期类型都没有得到正确处理
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录,参数applicationName1和applicationName2中都包含特殊字符
+                           ## 通过escape属性禁用applicationName1变量的自动转义
+                           ## $applicationName2 模式变量不会自动转移义，不会对日期自动进行格式化处理，这种模式的变量适用于逻辑判断/foreach循环变量/以及不带特殊字符的String/数字参数
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1,escape=false],"$applicationName2"]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间，startTime为日期类型，#[startTime]自动对日期类型进行正确的格式化处理
+                                    "lt": "$endTime"  ## 统计截止时间,endTime为日期类型参数，但是$endTime变量不会对日期进行格式化处理，会有日期格式问题,这里会报错
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回1000条记录
+            "size":1000
+        }]]>
+    </property>
+    <property name="queryPid"><![CDATA[{
+        "query": { "match": { "pid": #[pid] } }
+     }]]>
+    </property>
+    <property name="searchWithCustomEscape">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录,自动转义，可以正常运行
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回1000条记录
+            "size":1000
+        }]]>
+    </property>
+
+    <!--
+       一个简单的检索dsl,中有四个变量
+       applicationName1
+       applicationName2
+       startTime
+       endTime
+       通过map传递变量参数值
+
+       变量语法参考文档：
+   -->
+    <property name="searchPagineDatas">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 分页起点
+            "from":#[from],
+            ## 最多返回size条记录
+            "size":#[size]
+        }]]>
+    </property>
+
+    <!--
+        一个简单的检索dsl,中有四个变量
+        applicationName1
+        applicationName2
+        startTime
+        endTime
+        通过map传递变量参数值
+
+        变量语法参考文档：
+    -->
+    <property name="searchDatasArray">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                            "terms": {
+                                "applicationName.keyword":#[applicationNames,serialJson=true]
+                            }
+                        },
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回1000条记录
+            "size":1000
+        }]]>
+    </property>
+
+    <!--
+        一个SourceFilter的检索dsl,中有四个参数变量
+        applicationName1
+        applicationName2
+        startTime
+        endTime
+        通过map传递变量参数值
+
+        {
+            "_source": {
+                "includes": [ "agentStarttime", "applicationName" ],
+                "excludes": [ "contentbody" ]
+            },
+            "query" : {
+                "term" : { "user" : "kimchy" }
+            }
+        }
+
+    -->
+    <property name="searchSourceFilter">
+        <![CDATA[{
+        #if($includes || $excludes) ## 只有指定了includes或者excludes才需要添加source filter
+            "_source": {
+                #if($includes && $includes.size() > 0) ##设置includes filter
+                    "includes": [
+                        #foreach($include in $includes)
+                             #if($velocityCount > 0),#end "$include"
+                        #end
+                    ]
+                    #if($excludes && $excludes.size() > 0),#end ##如果还存在排斥字段，则需要加一个逗号
+                #end
+                #if($excludes && $excludes.size() > 0)  ##设置excludes filter
+                    "excludes": [
+                        #foreach($exclude in $excludes)
+                             #if($velocityCount > 0),#end "$exclude"
+                        #end
+                    ]
+                #end
+            },
+        #end
+            "query": {
+                "bool": {
+                    "filter": [
+                    #if($applicationNames && $applicationNames.size() > 0) ##只有传递了需要检索的应用名称集合，才需要添加下面的条件
+                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                            "terms": {
+                                "applicationName.keyword":[
+                                    #foreach($applicationName in $applicationNames)
+                                         #if($velocityCount > 0),#end "$applicationName"
+                                    #end
+                                ]
+                            }
+                        },
+                    #end
+                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##统计开始时间
+                                    "lt": #[endTime]  ##统计截止时间
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## 最多返回pageSize参数对应记录条数
+            "size":#[pageSize]
+        }]]>
+    </property>
+
+
+    <!--部分更新,注意：dsl不能换行-->
+    <property name="updatePartDocument">
+        <![CDATA[{"applicationName" : #[applicationName],"agentStarttime" : #[agentStarttime],"contentbody" : #[contentbody]}]]>
+    </property>
+
+    <property name="demoTemplate">
+        <![CDATA[{
+            "index_patterns": "demo-*", ## 5.x版本中请使用语法："template": "demo-*"
+            "settings": {
+                "number_of_shards": 30,
+                "number_of_replicas" : 2,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+
+                "properties": {
+                    "contentbody": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
+                            }
+                        }
+                    },
+                    "agentStarttime": {
+                        "type": "date",
+                        "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                    },
+                    "applicationName": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
+                            }
+                        }
+                    }
+                }
+
+            }
+        }]]>
+    </property>
+
+    <!--
+    修改demo 索引表的结构，增加email字段
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
+    -->
+    <property name="updateDemoIndice">
+        <![CDATA[{
+          "properties": {
+            "email": {
+              "type": "keyword"
+            }
+          }
+        }]]>
+    </property>
+
+
+    <property name="scriptPianduan1">
+        <![CDATA[
+            "params": {
+              "last": #[last],
+              "nick": #[nick],
+              "goodsId": #[dynamicPriceTemplate->goodsId],
+              "rules":[
+                   #foreach($rule in $dynamicPriceTemplate.rules)
+                       #if($velocityCount > 0),#end
+                   {
+                        "ruleId": #[dynamicPriceTemplate->rules[$velocityCount]->ruleId],
+                        "ruleCount": #[dynamicPriceTemplate->rules[$velocityCount]->ruleCount],
+                        "ruleExist": #[dynamicPriceTemplate->rules[$velocityCount]->ruleExist]
+                    }
+                   #end
+              ]
+            }
+        ]]>
+    </property>
+
+    <property name="scriptPianduan">
+        <![CDATA[
+            "params": {
+              "last": #[last],
+              "nick": #[nick],
+              "goodsId": #[dynamicPriceTemplate->goodsId],
+              "rules":[
+                   #foreach($rule in $dynamicPriceTemplate.rules)
+                       #if($velocityCount > 0),#end
+                   {
+
+                        "ruleId": "$rule.ruleId",
+                        "ruleCount": $rule.ruleCount,
+                        "ruleExist":  $rule.ruleExist
+
+                    }
+                   #end
+              ]
+            }
+        ]]>
+    </property>
+    <property name="scriptDsl">
+        <![CDATA[{
+          "script": {
+            "lang": "painless",
+            "source": @"""
+              ctx._source.last = params.last;
+              ctx._source.nick = params.nick;
+              ctx._source.rules = params.rules
+            """,
+            @{scriptPianduan}
+          }
+        }]]>
+    </property>
+
+    <property name="scriptPianduan2">
+        <![CDATA[
+            "params": {
+              "last": #[last],
+              "nick": #[nick],
+              "goodsId": #[dynamicPriceTemplate->goodsId],
+              "rules":[
+                   #foreach($rule in $dynamicPriceTemplate.rules)
+                       #[dynamicPriceTemplate->rules[$velocityCount],serialJson=true] ## 通过属性serialJson指示框架直接将对象序列化为json数据
+                        #if($velocityCount != ($dynamicPriceTemplate.rules.size() - 1)),#end
+                   #end
+              ]
+            }
+        ]]>
+    </property>
+    <property name="scriptDslByQuery">
+        <![CDATA[{
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "_id": #[id]
+                  }
+                }
+              ]
+            }
+          },
+          "script": {
+            "lang": "painless",
+            "source": @"""
+              ctx._source.last = params.last;
+              ctx._source.lastSpecial = "#[last,quoted=false]";
+              ctx._source.nick = params.nick;
+              ctx._source.goodName = #[dynamicPriceTemplate->goodName,escapeCount=2];#*在脚本中，含有特殊字符的goodName需要转义2次*#
+              ctx._source.goodsId = #[dynamicPriceTemplate->goodsId];
+              ctx._source.dynamicPriceTemplate.goodsId = params.goodsId;
+              ctx._source.rules = params.rules
+            """,
+            @{scriptPianduan2}
+          }
+        }]]>
+    </property>
+
+    <property name="mapbianli"><![CDATA[
+        ## map遍历实例，通过$item.value直接输出值，如果值中存在的特殊字符，不会对特殊字符进行转义处理，请自行处理
+        #foreach($item in $softTypeMap.entrySet())
+            #if($velocityCount > 0),#end
+            { "match": { "$item.key": "$item.value" } }
+        #end
+    ]]>
+    </property>
+
+
+    <property name="mapbianliescape"><![CDATA[
+        ## map<String,List<String>>遍历实例，可以通过#[]绑定变量对值中存在的特殊字符进行转义处理
+        #foreach($item in $softTypeMap.entrySet())
+            #if($item.value)
+                #if($velocityCount > 0),#end
+                { "match": { "$item.key": #[softTypeMap[$item.key],serialJson=true] } }
+            #end
+        #end
+    ]]>
+    </property>
+
+    <property name="queryArray">
+        <![CDATA[
+        {
+            "size":10000,
+            "query": {
+                "bool": {
+                    "must": [
+                            #foreach($item in $softTypeMap.entrySet())
+                                #if($velocityCount > 0),#end
+                                { "match":
+                                    {
+                                    #if($item.value)
+                                    "$item.key":
+                                    [
+                                        #foreach($applicationName in $item.value)
+                                             #if($velocityCount > 0),#end #[softTypeMap[$item.key][$velocityCount]]
+                                        #end
+                                    ]
+                                    #end
+                                    }
+                                 }
+                            #end
+                    ]
+                 }
+            }
+        }
+        ]]>
+    </property>
+
+    <property name="queryArray1">
+        <![CDATA[
+        #if($mustShouldMap)
+                        #foreach($item in $mustShouldMap.entrySet())
+                            ,
+                            "must":{
+                                "bool":{
+                                    "should":[
+                                        #foreach($children in $item)
+                                            #if($velocityCount > 0),#end
+                                            { "match": { "$item.key": #[$mustShouldMap[$item.key][$velocityCount]] } }
+                                        #end
+                                    ]
+                                }
+                            }
+                        #end
+                    #end
+
+        ]]>
+    </property>
+
+    <!--
+        简单的scroll query案例，复杂的条件修改query dsl即可
+        -->
+    <property name="scrollQuery">
+        <![CDATA[
+         {
+            "size":#[size],
+            "query": {"match_all": {}},
+            "sort": [
+                "_doc"
+            ]
+        }
+        ]]>
+    </property>
+    <!--
+        简单的slice scroll query案例，复杂的条件修改query dsl即可
+    -->
+    <property name="scrollSliceQuery">
+        <![CDATA[
+         {
+           "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
+            },
+            "size":#[size],
+            "query": {"match_all": {}},
+            "sort": [
+                "_doc"
+            ]
+        }
+        ]]>
+    </property>
+    <property name="queryOrderList">
+        <![CDATA[{
+		     "from": 0,
+			"size": 200,
+			"query": {
+				"bool": {
+					"filter": [
+						{
+							"term": {
+								"orderId.keyword":  "NFZF15045871807281445364228"
+							}
+						},
+						{
+							"term": {
+								"contrastStatus": 2
+							}
+						}
+					]
+				}
+			}
+		}]]>
+    </property>
+
+</properties>

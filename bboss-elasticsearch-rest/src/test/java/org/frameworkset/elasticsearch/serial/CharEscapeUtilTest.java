@@ -15,9 +15,14 @@ package org.frameworkset.elasticsearch.serial;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ConfigRestClientUtil;
 import org.junit.Test;
 
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -34,6 +39,13 @@ public class CharEscapeUtilTest {
 		CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
 		charEscapeUtil.writeString("/+\"\\", true);
 		System.out.println(writer.toString());
-
+		writer = new StringWriter();
+		charEscapeUtil = new CustomCharEscapeUtil(writer,true);
+		charEscapeUtil.writeString("&/+\"\\", true);
+		System.out.println(writer.toString());
+		ClientInterface util = (ConfigRestClientUtil) ElasticSearchHelper.getConfigRestClientUtil("demo7.xml");
+		Map params = new HashMap();
+		params.put("aaa","_&/+\"\\.");
+		System.out.println(util.evalConfigDsl("testesencode",params));
 	}
 }

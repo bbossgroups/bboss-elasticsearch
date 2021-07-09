@@ -96,6 +96,10 @@ public class ConfigRestClientUtil extends RestClientUtil {
 	public String reindexByDsl(String actionUrl,String dslName,Object params){
 		return this.client.executeHttp(actionUrl,ESTemplateHelper.evalTemplate(esUtil,dslName, params),ClientUtil.HTTP_POST);
 	}
+
+	public String evalConfigDsl(String dslName,Object params){
+		return ESTemplateHelper.evalTemplate(esUtil,dslName, params);
+	}
 	/**
 	 *
 	 * Reindex does not attempt to set up the destination index.
