@@ -47,6 +47,16 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.3.0</version>
         </dependency>
 ```
+# v6.3.1 功能改进
+1. elasticsearch rest client改进：使用params中的参数变量，解析配置文件中dslName对应的dsl语句，并返回解析结果
+
+```java
+        ClientInterface util = (ConfigRestClientUtil) ElasticSearchHelper.getConfigRestClientUtil("demo7.xml");
+		Map params = new HashMap();
+		params.put("aaa","_&/+\"\\.");
+		System.out.println(util.evalConfigDsl("testesencode",params));
+```
+
 # v6.3.0 功能改进
 1. elasticsearch rest client改进：优化批处理性能，执行批处理bulk操作后，默认只返回三个信息：took,errors,items.*.error，既耗时、错误标记、错误记录信息
 2. 数据同步功能改进：日志文件采集插件添加控制是否删除采集完的文件控制变量，默认false 不删除，true 删除
