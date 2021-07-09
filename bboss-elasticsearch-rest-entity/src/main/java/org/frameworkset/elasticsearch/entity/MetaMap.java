@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.entity;
  * limitations under the License.
  */
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class MetaMap extends HashMap {
+public class MetaMap extends LinkedHashMap {
 	/**文档_id*/
 	private String id;
 	/**文档对应索引类型信息*/

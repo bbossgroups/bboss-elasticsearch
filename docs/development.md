@@ -199,8 +199,12 @@ spring boot配置项
 
 DSL脚本调试日志开关，将showTemplate设置为true，同时将日志级别设置为INFO，则会将query dsl脚本输出到日志文件中：
 
+```properties
+    elasticsearch.showTemplate=true
 ```
-elasticsearch.showTemplate=true
+spring boot配置项
+```properties
+        spring.elasticsearch.bboss.elasticsearch.showTemplate=true
 ```
 
 bboss可以通过常用的日志组件输出真实的dsl语句，支持的日志组件有：log4j（默认）,log4j2,logback,javalog等。
