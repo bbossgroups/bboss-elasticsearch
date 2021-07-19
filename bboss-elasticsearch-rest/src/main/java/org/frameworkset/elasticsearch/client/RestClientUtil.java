@@ -1394,7 +1394,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public   String getTempate(String template) throws ElasticSearchException {
+	public   String getTemplate(String template) throws ElasticSearchException {
 		try {
 			return client.executeHttp("/_template/" + template, ClientUtil.HTTP_GET);
 		}
@@ -1408,7 +1408,7 @@ public class RestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public   String getTempate() throws ElasticSearchException {
+	public   String getTemplate() throws ElasticSearchException {
 		return client.executeHttp("/_template",ClientUtil.HTTP_GET);
 	}
 	/**
