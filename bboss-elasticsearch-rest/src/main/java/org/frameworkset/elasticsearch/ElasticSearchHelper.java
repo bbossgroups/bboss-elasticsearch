@@ -53,7 +53,17 @@ public class ElasticSearchHelper {
 	public static void setDslfileRefreshInterval(long dslfileRefreshInterval){
 		ElasticSearchHelper.dslfileRefreshInterval = dslfileRefreshInterval;
 	}
-	private static final Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
+	private static final Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
+
+	/**
+	 * 获取所有的es数据源配置对象
+	 * @return
+	 */
+	public static Map<String,ElasticSearch> getAllElasticSearchs(){
+		LinkedHashMap temp = new LinkedHashMap<String, ElasticSearch>();
+		temp.putAll(elasticSearchMap);
+		return temp;
+	}
 	public ElasticSearchHelper() {
 		// TODO Auto-generated constructor stub
 	}
