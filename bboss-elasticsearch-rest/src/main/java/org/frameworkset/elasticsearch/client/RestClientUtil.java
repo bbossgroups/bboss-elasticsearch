@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
+import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.SliceRunTask;
@@ -62,6 +63,13 @@ public class RestClientUtil extends ClientUtil{
 	public RestClientUtil(ElasticSearchClient client,IndexNameBuilder indexNameBuilder) {
 		this.client = (ElasticSearchRestClient)client;
 		this.indexNameBuilder = indexNameBuilder;
+	}
+
+	public String getElasticsearchName(){
+		return client.getElasticsearchName();
+	}
+	public ElasticSearch getElasticSearch() {
+		return client.getElasticSearch();
 	}
 
 	public String getCurrentDateString(){

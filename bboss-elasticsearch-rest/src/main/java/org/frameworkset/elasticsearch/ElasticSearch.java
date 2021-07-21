@@ -568,5 +568,15 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		this.fromspringboot = fromspringboot;
 	}
 
+	public Properties getElasticsearchPropes() {
+		return elasticsearchPropes;
+	}
 
+	public String getElasticUser() {
+		return elasticUser;
+	}
+
+	public String getElasticPassword() {
+		return elasticPassword;
+	}
 }

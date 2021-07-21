@@ -199,29 +199,38 @@ public class ElasticSearchHelper {
 
 
 		}
-		geoipConfig.put("ip.database",
-				ElasticSearchHelper._getStringValue("","ip.database",configContext,""));
-		geoipConfig.put("ip.asnDatabase",
-				ElasticSearchHelper._getStringValue("","ip.asnDatabase",configContext,""));
-		geoipConfig.put("ip.ispConverter",
-				ElasticSearchHelper._getStringValue("","ip.ispConverter",configContext,""));
-		geoipConfig.put("ip.ip2regionDatabase",
-				ElasticSearchHelper._getStringValue("","ip.ip2regionDatabase",configContext,""));
 
-		geoipConfig.put("ip.cachesize",
-				ElasticSearchHelper._getStringValue("","ip.cachesize",configContext,"10000"));
-		geoipConfig.put("ip.serviceUrl",
-				ElasticSearchHelper._getStringValue("","ip.serviceUrl",configContext,""));
+		synchronized (geoipConfig) {
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.database")) )
+				geoipConfig.put("ip.database",
+					ElasticSearchHelper._getStringValue("", "ip.database", configContext, ""));
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.asnDatabase")) )
+				geoipConfig.put("ip.asnDatabase",
+					ElasticSearchHelper._getStringValue("", "ip.asnDatabase", configContext, ""));
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.ispConverter")) )
+				geoipConfig.put("ip.ispConverter",
+					ElasticSearchHelper._getStringValue("", "ip.ispConverter", configContext, ""));
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.ip2regionDatabase")) )
+				geoipConfig.put("ip.ip2regionDatabase",
+					ElasticSearchHelper._getStringValue("", "ip.ip2regionDatabase", configContext, ""));
 
-		if(logger.isInfoEnabled()) {
-			try {
-				logger.info("Geo ipinfo config {},from springboot:{}", SimpleStringUtil.object2json(geoipConfig), fromspringboot);
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.cachesize")) )
+				geoipConfig.put("ip.cachesize",
+					ElasticSearchHelper._getStringValue("", "ip.cachesize", configContext, "10000"));
+			if(SimpleStringUtil.isEmpty(geoipConfig.get("ip.serviceUrl")) )
+				geoipConfig.put("ip.serviceUrl",
+					ElasticSearchHelper._getStringValue("", "ip.serviceUrl", configContext, ""));
+
+			if (logger.isInfoEnabled()) {
+				try {
+					logger.info("Geo ipinfo config {},from springboot:{}", SimpleStringUtil.object2json(geoipConfig), fromspringboot);
+				} catch (Exception e) {
+
+				}
 			}
-			catch (Exception e){
 
-			}
 		}
-		if(ElasticSearchHelper.elasticSearchSink == null) {
+		if (ElasticSearchHelper.elasticSearchSink == null) {
 			if (elasticSearchSink == null)
 				elasticSearchSink = firstElasticSearch;
 

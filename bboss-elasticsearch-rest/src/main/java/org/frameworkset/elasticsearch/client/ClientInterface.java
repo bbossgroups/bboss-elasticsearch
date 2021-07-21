@@ -1,6 +1,7 @@
 package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
+import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.entity.*;
@@ -2775,4 +2776,16 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 */
 	public String evalConfigDsl(String dslName,Object params);
+
+	/**
+	 * 获取es数据源名称
+	 * @return
+	 */
+	public String getElasticsearchName();
+
+	/**
+	 * 获取es数据源参数配置对象
+	 * @return
+	 */
+	public ElasticSearch getElasticSearch() ;
 }

@@ -96,7 +96,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public boolean isUseHttps() {
 		return useHttps;
 	}
-
+	public String getElasticsearchName(){
+		return elasticSearch.getElasticSearchName();
+	}
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
 	}
