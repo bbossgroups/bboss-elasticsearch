@@ -21,7 +21,7 @@ public class ElasticSearchHelper {
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
 
-	private static final Map<String,Object> geoipConfig = new HashMap<String, Object>();
+	private static final Map<String,Object> geoipConfig = new LinkedHashMap<String, Object>();
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
@@ -59,7 +59,7 @@ public class ElasticSearchHelper {
 	 * 获取所有的es数据源配置对象
 	 * @return
 	 */
-	public static Map<String,ElasticSearch> getAllElasticSearchs(){
+	public static Map<String,ElasticSearch> getAllElasticSearches(){
 		LinkedHashMap temp = new LinkedHashMap<String, ElasticSearch>();
 		temp.putAll(elasticSearchMap);
 		return temp;
@@ -122,7 +122,7 @@ public class ElasticSearchHelper {
 		ElasticSearch elasticSearchSink = null;
 		ElasticSearch firstElasticSearch = null;
 		initDslFileRefreshInterval( configContext);
-		Map<String,ElasticSearch> elasticSearchMap = new HashMap<String,ElasticSearch>();
+		Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
 		for(String serverName:elasticsearchServerNames){
 			if(ElasticSearchHelper.elasticSearchMap.containsKey(serverName))
 				continue;
