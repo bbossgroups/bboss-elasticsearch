@@ -56,6 +56,22 @@ https://esdoc.bbossgroups.com/#/development
 		params.put("aaa","_&/+\"\\.");
 		System.out.println(util.evalConfigDsl("testesencode",params));
 ```
+2. 数据同步工具改进：
+  日志采集探针，字符串maxBytes为0或者负数时忽略长度截取
+  
+  日志采集探针，增加忽略条件匹配类型：文件记录包含与排除条件匹配类型
+  REGEX_MATCH("REGEX_MATCH"),REGEX_CONTAIN("REGEX_CONTAIN"),STRING_CONTAIN("STRING_CONTAIN"),
+  	STRING_EQUALS("STRING_EQUALS"),STRING_PREFIX("STRING_PREFIX"),STRING_END("STRING_END");
+  	使用案例：
+```java  	
+  				config.addConfig(new FileConfig(logPath,//指定目录
+    							fileName+".log",//指定文件名称，可以是正则表达式
+    							startLabel)//指定多行记录的开头识别标记，正则表达式
+    							.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+    							.addField("tag",fileName.toLowerCase())//添加字段tag到记录中
+    							.setEnableInode(true)
+    							.setIncludeLines(levelArr, LineMatchType.STRING_CONTAIN)
+```
 
 # v6.3.0 功能改进
 1. elasticsearch rest client改进：优化批处理性能，执行批处理bulk操作后，默认只返回三个信息：took,errors,items.*.error，既耗时、错误标记、错误记录信息
