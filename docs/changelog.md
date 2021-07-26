@@ -72,7 +72,8 @@ https://esdoc.bbossgroups.com/#/development
     							.setEnableInode(true)
     							.setIncludeLines(levelArr, LineMatchType.STRING_CONTAIN)
 ```
-
+3. 数据同步工具改进：默认采用异步机制保存增量同步数据状态，提升同步性能，可以通过以下机制关闭异步机制：
+importBuilder.setAsynFlushStatus(false);
 # v6.3.0 功能改进
 1. elasticsearch rest client改进：优化批处理性能，执行批处理bulk操作后，默认只返回三个信息：took,errors,items.*.error，既耗时、错误标记、错误记录信息
 2. 数据同步功能改进：日志文件采集插件添加控制是否删除采集完的文件控制变量，默认false 不删除，true 删除
