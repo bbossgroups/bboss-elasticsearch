@@ -183,6 +183,12 @@ public class ElasticSearchHelper {
 				elasticsearchPropes.put("elasticsearch.slowDslCallback",
 						slowDslCallback);
 			}
+			String logDslCallback = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.logDslCallback",configContext,null);
+			if(logDslCallback != null) {
+				elasticsearchPropes.put("elasticsearch.logDslCallback",
+						logDslCallback);
+			}
+
 			String useHttps = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.useHttps",configContext,null);
 			if(useHttps != null) {
 				elasticsearchPropes.put("elasticsearch.useHttps",

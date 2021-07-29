@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.entity;
+package org.frameworkset.elasticsearch.client;
 /**
  * Copyright 2008 biaoping.yin
  * <p>
@@ -15,23 +15,17 @@ package org.frameworkset.elasticsearch.entity;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.entity.LogDsl;
+
 /**
  * <p>Description: </p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
- * @Date 2019/11/13 14:08
+ * @Date 2019/11/13 12:52
  * @author biaoping.yin
  * @version 1.0
  */
-public class SlowDsl extends LogDsl{
+public interface LogDslCallback {
 
-	private  int slowDslThreshold;
-
-	public int getSlowDslThreshold() {
-		return slowDslThreshold;
-	}
-
-	public void setSlowDslThreshold(int slowDslThreshold) {
-		this.slowDslThreshold = slowDslThreshold;
-	}
+	void logDsl(LogDsl slowDsl);
 }

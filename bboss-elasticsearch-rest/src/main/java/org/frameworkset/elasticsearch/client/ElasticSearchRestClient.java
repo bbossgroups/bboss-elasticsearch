@@ -91,6 +91,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
 	protected  boolean discoverHost = false;
 	protected SlowDslCallback slowDslCallback;
+	protected LogDslCallback logDslCallback;
 	private boolean useHttps;
 
 	public boolean isUseHttps() {
@@ -107,6 +108,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 	public SlowDslCallback getSlowDslCallback(){
 		return slowDslCallback;
+	}
+
+	public LogDslCallback getLogDslCallback(){
+		return logDslCallback;
 	}
 	protected ElasticSearch elasticSearch;
 	protected HealthCheck healthCheck = null;
@@ -391,6 +396,19 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 		}
 
+
+		String _logDslCallback = elasticsearchPropes.getProperty("elasticsearch.logDslCallback");
+		if(_logDslCallback != null){
+			try {
+				this.logDslCallback = (LogDslCallback) Class.forName(_logDslCallback).newInstance();
+			}
+			catch (Exception e){
+				logger.error("Parse logDslCallback parameter failed:"+_logDslCallback,e);
+			}
+			catch (Throwable e){
+				logger.error("Parse logDslCallback parameter failed:"+_logDslCallback,e);
+			}
+		}
 		String _slowDslCallback = elasticsearchPropes.getProperty("elasticsearch.slowDslCallback");
 		if(_slowDslCallback != null){
 			try {
@@ -402,6 +420,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			catch (Throwable e){
 				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);
 			}
+		}
+		else{
+			this.slowDslCallback = new DefaultSlowDslCallback();
 		}
 
 		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");

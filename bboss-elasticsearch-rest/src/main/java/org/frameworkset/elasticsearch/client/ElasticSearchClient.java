@@ -53,6 +53,7 @@ public interface ElasticSearchClient {
 	public boolean isV1();
 	public Integer slowDslThreshold();
 	public SlowDslCallback getSlowDslCallback();
+	public LogDslCallback getLogDslCallback();
 	public ElasticSearch getElasticSearch();
 
 	void setShowTemplate(boolean showdsl);

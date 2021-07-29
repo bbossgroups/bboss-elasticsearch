@@ -627,6 +627,7 @@ public abstract class BaseESProperties {
 		}
 
 		private String slowDslCallback;
+		private String logDslCallback;
 		public String getIncludeTypeName() {
 			return includeTypeName;
 		}
@@ -644,7 +645,15 @@ public abstract class BaseESProperties {
 		public Rest getRest() {
 			return rest;
 		}
-		
+
+		public String getLogDslCallback() {
+			return logDslCallback;
+		}
+
+		public void setLogDslCallback(String logDslCallback) {
+			this.logDslCallback = logDslCallback;
+		}
+
 		public void setVersion(String version) {
 			this.version = version;
 		}
@@ -917,6 +926,11 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSlowDslCallback()))
 				properties.put(_name+"elasticsearch.slowDslCallback",this.getElasticsearch().getSlowDslCallback());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getLogDslCallback()))
+				properties.put(_name+"elasticsearch.logDslCallback",this.getElasticsearch().getLogDslCallback());
+
+
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getUseHttps()))
 				properties.put(_name+"elasticsearch.useHttps",this.getElasticsearch().getUseHttps());
 
