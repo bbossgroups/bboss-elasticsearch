@@ -27,5 +27,5 @@ import org.frameworkset.elasticsearch.entity.LogDsl;
  */
 public interface LogDslCallback {
 
-	void logDsl(LogDsl slowDsl);
+	void logDsl(LogDsl logDsl);
 }

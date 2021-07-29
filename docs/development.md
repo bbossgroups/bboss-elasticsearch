@@ -365,6 +365,45 @@ src\main\resources\conf\elasticsearch-boot-config.xml
 
 https://esdoc.bbossgroups.com/#/apollo-config
 
+### 2.4.5 dsl输出组件logDslCallback使用方法
+
+通过实现接口org.frameworkset.elasticsearch.client.LogDslCallback，可以将dsl输出到自己需要的地方，LogDslCallback实现实例-将dsl执行信息输出到日志文件中
+
+```java
+package org.frameworkset.elasticsearch.client;
+
+import org.frameworkset.elasticsearch.entity.LogDsl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LoggerDslCallback implements LogDslCallback{
+   private static final Logger logger = LoggerFactory.getLogger(LoggerDslCallback.class);
+
+   public void logDsl(LogDsl logDsl){
+      if(logger.isInfoEnabled()) {
+         logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}]",
+               logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   logDsl.getDsl());
+
+      }
+   }
+}
+```
+
+然后在配置文件中进行配置：
+非spring boot项目
+
+```properties
+elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
+```
+
+springboot项目
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
+```
+
+
+
 ## **2.5 按日期动态产生的索引索引名称的日期格式**
 
 elasticsearch.dateFormat=yyyy.MM.dd

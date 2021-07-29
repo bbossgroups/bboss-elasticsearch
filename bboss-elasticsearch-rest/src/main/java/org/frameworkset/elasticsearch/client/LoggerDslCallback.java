@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 public class LoggerDslCallback implements LogDslCallback{
 	private static final Logger logger = LoggerFactory.getLogger(LoggerDslCallback.class);
 
-	public void logDsl(LogDsl slowDsl){
+	public void logDsl(LogDsl logDsl){
 		if(logger.isInfoEnabled()) {
 			logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}]",
-					slowDsl.getUrl(),slowDsl.getAction(), slowDsl.getTime(),   RestSearchExecutorUtil.chunkEntity(slowDsl.getDsl()));
+					logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   RestSearchExecutorUtil.chunkEntity(logDsl.getDsl()));
 
 		}
 	}
