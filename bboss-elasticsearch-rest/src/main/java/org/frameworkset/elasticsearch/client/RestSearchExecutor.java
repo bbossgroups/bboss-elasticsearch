@@ -52,8 +52,13 @@ public class RestSearchExecutor {
 		if(slowDslThreshold == null) {
 			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				return HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 
@@ -67,15 +72,21 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.logDsl( slowDsl);
 				}
 			}
 		}
 		else{
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 				return response;
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				long end = System.currentTimeMillis();
@@ -95,6 +106,7 @@ public class RestSearchExecutor {
 						slowDsl.setAction("post");
 						slowDsl.setStartTime(new Date(start));
 						slowDsl.setEndTime(new Date(end));
+						slowDsl.setResultCode(resultCode);
 						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
 					}
 
@@ -116,10 +128,14 @@ public class RestSearchExecutor {
 
 		if(slowDslThreshold == null) {
 			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
-
+			int resultCode = 0;
 			long start = System.currentTimeMillis();
 			try {
 				return RestSearchExecutorUtil.__executeHttp(httpPool, (Map<String, String>) null, url, entity, action, responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 
@@ -133,6 +149,7 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.logDsl( slowDsl);
 				}
 			}
@@ -141,8 +158,13 @@ public class RestSearchExecutor {
 		else{
 			SlowDslCallback slowDslCallback = elasticSearchClient.getSlowDslCallback();
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				long end = System.currentTimeMillis();
@@ -156,6 +178,7 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.slowDslHandle( slowDsl);
 
 				}
@@ -176,9 +199,14 @@ public class RestSearchExecutor {
 		if(slowDslThreshold == null) {
 			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
 
+			int resultCode = 0;
 			long start = System.currentTimeMillis();
 			try {
 				return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 
@@ -192,6 +220,7 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.logDsl( slowDsl);
 				}
 			}
@@ -199,8 +228,13 @@ public class RestSearchExecutor {
 
 		else{
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				long end = System.currentTimeMillis();
@@ -220,6 +254,7 @@ public class RestSearchExecutor {
 						slowDsl.setDsl(entity);
 						slowDsl.setStartTime(new Date(start));
 						slowDsl.setEndTime(new Date(end));
+						slowDsl.setResultCode(resultCode);
 						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
 					}
 
@@ -242,6 +277,7 @@ public class RestSearchExecutor {
 		if(slowDslThreshold == null) {
 			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				String response = null;
 				if (entity == null) {
@@ -251,6 +287,10 @@ public class RestSearchExecutor {
 				}
 
 				return response;
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				if(slowDslCallback != null){
@@ -263,6 +303,7 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.logDsl( slowDsl);
 				}
 			}
@@ -270,6 +311,7 @@ public class RestSearchExecutor {
 		}
 		else {
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				String response = null;
 				if (entity == null) {
@@ -279,26 +321,26 @@ public class RestSearchExecutor {
 				}
 
 				return response;
-			} finally {
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
+			}finally {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					if (elasticSearchClient.getSlowDslCallback() == null) {
-						if(logger.isWarnEnabled()) {
-							logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
 
-						}
-					}else {
-						SlowDsl slowDsl = new SlowDsl();
-						slowDsl.setUrl(url);
-						slowDsl.setTime(time);
-						slowDsl.setSlowDslThreshold(slowDslThreshold);
-						slowDsl.setDsl(entity);
-						slowDsl.setAction("post");
-						slowDsl.setStartTime(new Date(start));
-						slowDsl.setEndTime(new Date(end));
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
-					}
+					SlowDsl slowDsl = new SlowDsl();
+					slowDsl.setUrl(url);
+					slowDsl.setTime(time);
+					slowDsl.setSlowDslThreshold(slowDslThreshold);
+					slowDsl.setDsl(entity);
+					slowDsl.setAction("post");
+					slowDsl.setStartTime(new Date(start));
+					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
+					elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
+
 
 				}
 			}
@@ -316,8 +358,13 @@ public class RestSearchExecutor {
 
 			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				if(slowDslCallback != null){
@@ -330,6 +377,7 @@ public class RestSearchExecutor {
 					slowDsl.setDsl(entity);
 					slowDsl.setStartTime(new Date(start));
 					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
 					slowDslCallback.logDsl( slowDsl);
 				}
 			}
@@ -337,29 +385,29 @@ public class RestSearchExecutor {
 
 		else{
 			long start = System.currentTimeMillis();
+			int resultCode = 0;
 			try {
 				return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
+			}
+			catch(Exception e){
+				resultCode = 1;
+				throw e;
 			}
 			finally {
 				long end = System.currentTimeMillis();
 				long time = end - start;
 				if (time > slowDslThreshold.intValue()) {
-					if (elasticSearchClient.getSlowDslCallback() == null) {
-						if(logger.isWarnEnabled()) {
-							logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms],use DSL[{}] ", url,action, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
 
-						}
-					}else {
-						SlowDsl slowDsl = new SlowDsl();
-						slowDsl.setUrl(url);
-						slowDsl.setAction(action);
-						slowDsl.setTime(time);
-						slowDsl.setSlowDslThreshold(slowDslThreshold);
-						slowDsl.setDsl(entity);
-						slowDsl.setStartTime(new Date(start));
-						slowDsl.setEndTime(new Date(end));
-						elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
-					}
+					SlowDsl slowDsl = new SlowDsl();
+					slowDsl.setUrl(url);
+					slowDsl.setAction(action);
+					slowDsl.setTime(time);
+					slowDsl.setSlowDslThreshold(slowDslThreshold);
+					slowDsl.setDsl(entity);
+					slowDsl.setStartTime(new Date(start));
+					slowDsl.setEndTime(new Date(end));
+					slowDsl.setResultCode(resultCode);
+					elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
 
 				}
 			}

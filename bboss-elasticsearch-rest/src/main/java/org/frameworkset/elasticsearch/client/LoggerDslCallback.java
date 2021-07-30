@@ -32,8 +32,8 @@ public class LoggerDslCallback implements LogDslCallback{
 
 	public void logDsl(LogDsl logDsl){
 		if(logger.isInfoEnabled()) {
-			logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}]",
-					logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   RestSearchExecutorUtil.chunkEntity(logDsl.getDsl()));
+			logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}],execute result:{}",
+					logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   RestSearchExecutorUtil.chunkEntity(logDsl.getDsl()),logDsl.result());
 
 		}
 	}

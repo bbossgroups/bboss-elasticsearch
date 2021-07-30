@@ -33,8 +33,8 @@ public class DefaultSlowDslCallback extends AbstractSlowDslCallback{
 	@Override
 	public void slowDslHandle(SlowDsl slowDsl){
 		if(logger.isWarnEnabled()) {
-			logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]",
-					slowDsl.getUrl(),slowDsl.getAction(), slowDsl.getTime(), slowDsl.getSlowDslThreshold(),  RestSearchExecutorUtil.chunkEntity(slowDsl.getDsl()));
+			logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}],execute result:{}",
+					slowDsl.getUrl(),slowDsl.getAction(), slowDsl.getTime(), slowDsl.getSlowDslThreshold(),  RestSearchExecutorUtil.chunkEntity(slowDsl.getDsl()),slowDsl.result());
 
 		}
 	}

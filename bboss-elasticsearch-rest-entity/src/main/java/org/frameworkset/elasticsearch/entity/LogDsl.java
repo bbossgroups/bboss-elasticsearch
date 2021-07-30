@@ -26,13 +26,38 @@ import java.util.Date;
  * @version 1.0
  */
 public class LogDsl {
+	/**
+	 * elasticsearch rest http服务请求地址
+	 */
 	private String url;
+	/**
+	 * http request method：post,get,put,delete
+	 */
 	private String action;
+	/**
+	 * request handle elapsed ms
+	 */
 	private long time;
+	/**
+	 * elasticsearch dsl
+	 */
 	private  String dsl;
+	/**
+	 * request handle begin time.
+	 */
 	private Date startTime;
+	/**
+	 * request handle end time.
+	 */
 	private Date endTime;
 
+
+
+	/**
+	 * 0 - dsl执行成功
+	 * 1 - dsl执行异常
+	 */
+	private int resultCode;
 	public String getUrl() {
 		return url;
 	}
@@ -79,5 +104,16 @@ public class LogDsl {
 
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+	public int getResultCode() {
+		return resultCode;
+	}
+
+	public void setResultCode(int resultCode) {
+		this.resultCode = resultCode;
+	}
+
+	public String result(){
+		return resultCode == 0?"success":"failed";
 	}
 }

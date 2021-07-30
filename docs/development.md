@@ -381,15 +381,15 @@ public class LoggerDslCallback implements LogDslCallback{
 
    public void logDsl(LogDsl logDsl){
       if(logger.isInfoEnabled()) {
-         logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}]",
-               logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   logDsl.getDsl());
-
-      }
+      			logger.info("Request[{}] action[{}] took time:{} ms ], use DSL[{}],execute result:{}",
+      					logDsl.getUrl(),logDsl.getAction(), logDsl.getTime(),   logDsl.getDsl(),logDsl.result());
+      
+      		}
    }
 }
 ```
 
-然后在配置文件中进行配置：
+然后在配置文件中配置logDslCallback：
 非spring boot项目
 
 ```properties
