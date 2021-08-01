@@ -26,6 +26,9 @@ import java.util.Date;
  * @version 1.0
  */
 public class LogDsl {
+	/**
+	 * 慢dsl输出阈值
+	 */
 	private  int slowDslThreshold;
 
 	public int getSlowDslThreshold() {

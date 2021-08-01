@@ -90,7 +90,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
 	protected  boolean discoverHost = false;
-	protected SlowDslCallback slowDslCallback;
+	protected LogDslCallback slowDslCallback;
 	protected LogDslCallback logDslCallback;
 	private boolean useHttps;
 
@@ -106,7 +106,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public Integer slowDslThreshold(){
 		return slowDslThreshold;
 	}
-	public SlowDslCallback getSlowDslCallback(){
+	public LogDslCallback getSlowDslCallback(){
 		return slowDslCallback;
 	}
 
@@ -412,7 +412,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		String _slowDslCallback = elasticsearchPropes.getProperty("elasticsearch.slowDslCallback");
 		if(_slowDslCallback != null){
 			try {
-				this.slowDslCallback = (SlowDslCallback) Class.forName(_slowDslCallback).newInstance();
+				this.slowDslCallback = (LogDslCallback) Class.forName(_slowDslCallback).newInstance();
 			}
 			catch (Exception e){
 				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);

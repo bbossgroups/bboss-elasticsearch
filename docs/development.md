@@ -272,7 +272,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.3.0</version>
+            <version>6.3.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -301,7 +301,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.0</version>
+            <version>6.3.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -366,6 +366,51 @@ src\main\resources\conf\elasticsearch-boot-config.xml
 https://esdoc.bbossgroups.com/#/apollo-config
 
 ### 2.4.5 dsl输出组件logDslCallback使用方法
+
+通过组件logDslCallback中回调接口方法可以自定义采集dsl的执行信息行为
+
+```java
+public void logDsl(LogDsl logDsl);
+```
+参数LogDsl封装了以下信息
+
+ ```java
+    /**
+	 * 慢dsl输出阈值
+	 */
+	private  int slowDslThreshold;
+	
+	/**
+	 * elasticsearch rest http服务请求地址
+	 */
+	private String url;
+	/**
+	 * http request method：post,get,put,delete
+	 */
+	private String action;
+	/**
+	 * request handle elapsed ms
+	 */
+	private long time;
+	/**
+	 * elasticsearch dsl
+	 */
+	private  String dsl;
+	/**
+	 * request handle begin time.
+	 */
+	private Date startTime;
+	/**
+	 * request handle end time.
+	 */
+	private Date endTime;
+
+	/**
+	 * 0 - dsl执行成功
+	 * 1 - dsl执行异常
+	 */
+	private int resultCode;
+ ```
 
 通过实现接口org.frameworkset.elasticsearch.client.LogDslCallback，可以将dsl输出到自己需要的地方，LogDslCallback实现实例-将dsl执行信息输出到日志文件中
 
@@ -649,8 +694,8 @@ bboss能够非常方便地采集耗时慢的dsl操作， 可以将慢dsl打印�
 # 如果要关闭慢dsl采集功能，注释掉elasticsearch.slowDslThreshold配置即可
 elasticsearch.slowDslThreshold=10000
 # 指定采集慢dsl的回调函数,对应的函数必须实现以下接口：
-#   public interface SlowDslCallback {
-#          void slowDslHandle( SlowDsl slowDsl);
+#   public interface LogDslCallback {
+#          void logDsl(LogDsl slowDsl);
 #      }  
 #  方法参数SlowDsl包含了慢dsl的相关信息：
 #    url 处理请求的rest服务地址
@@ -662,17 +707,37 @@ elasticsearch.slowDslThreshold=10000
 #    endTime   请求处理结束时间
 #  如果不需要回调函数则注释elasticsearch.slowDslCallback即可，这样将会把慢dsl打印到日志文件中（日志 #  输出级别为WARN），打印到日志文件中的entity如果超过2048个字节，则会被截取掉超过部分的内容，并用.....
 #  替代表示dsl被截取了，传递给回调函数的entity没有这个限制
-elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback 
+elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.DefaultSlowDslCallback 
 ```
 
 对应的spring boot配置为：
 
 ```properties
 spring.elasticsearch.bboss.elasticsearch.slowDslThreshold = 10000
-spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
+spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.DefaultSlowDslCallback
 ```
 
- 如果没有指定回调处理接口，将直接打印警告信息到日志文件，WARN级别 ， 如果dsl过长，需要截取掉部分内容再打印到日志文件中:超过2048的dsl将被截取掉超过的内容，替换为.....，否则调用SlowDslCallback接口方法slowDslHandle传递慢dsl的相关信息 
+ 如果没有指定回调处理接口，将直接打印警告信息到日志文件，WARN级别 ， 如果dsl过长，需要截取掉部分内容再打印到日志文件中:超过2048的dsl将被截取掉超过的内容，替换为.....，否则调用LogDslCallback接口方法logDsl传递慢dsl的相关信息 
+
+组件示例：
+
+```java
+public class DefaultSlowDslCallback implements LogDslCallback{
+
+   private static final Logger logger = LoggerFactory.getLogger(DefaultSlowDslCallback.class);
+   @Override
+   public void logDsl(LogDsl slowDsl){
+      if(logger.isWarnEnabled()) {
+         logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}],execute result:{}",
+               slowDsl.getUrl(),slowDsl.getAction(), slowDsl.getTime(), slowDsl.getSlowDslThreshold(),  RestSearchExecutorUtil.chunkEntity(slowDsl.getDsl()),slowDsl.result());
+
+      }
+   }
+
+}
+```
+
+
 
 ***完成导入和配置，接下来就可以开始使用bboss操作和访问elasticsearch了。***
 

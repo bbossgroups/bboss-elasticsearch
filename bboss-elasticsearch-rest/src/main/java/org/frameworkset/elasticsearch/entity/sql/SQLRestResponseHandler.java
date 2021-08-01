@@ -45,6 +45,11 @@ public class SQLRestResponseHandler implements URLResponseHandler<SQLRestRespons
 	}
 
 	@Override
+	public String getUrl() {
+		return url;
+	}
+
+	@Override
 	public SQLRestResponse handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 		int status = response.getStatusLine().getStatusCode();
 

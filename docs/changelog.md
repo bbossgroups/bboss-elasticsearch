@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -75,15 +75,63 @@ https://esdoc.bbossgroups.com/#/development
 3. 数据同步工具改进：默认采用异步机制保存增量同步数据状态，提升数据同步效率，可以通过以下机制关闭异步机制：
 importBuilder.setAsynFlushStatus(false);
 
-4. 客户端改进：增加dsl输出组件logDslCallback，使用方法
+4. 客户端改进：增加dsl输出组件logDslCallback
+通过组件logDslCallback，通过回调接口方法可以自定义采集dsl的执行信息：
+
+```java
+public void logDsl(LogDsl logDsl);
+```
+参数LogDsl封装了以下信息
+
+ ```java
+    /**
+	 * 慢dsl输出阈值
+	 */
+	private  int slowDslThreshold;
+	
+	/**
+	 * elasticsearch rest http服务请求地址
+	 */
+	private String url;
+	/**
+	 * http request method：post,get,put,delete
+	 */
+	private String action;
+	/**
+	 * request handle elapsed ms
+	 */
+	private long time;
+	/**
+	 * elasticsearch dsl
+	 */
+	private  String dsl;
+	/**
+	 * request handle begin time.
+	 */
+	private Date startTime;
+	/**
+	 * request handle end time.
+	 */
+	private Date endTime;
+
+	/**
+	 * 0 - dsl执行成功
+	 * 1 - dsl执行异常
+	 */
+	private int resultCode;
+```
+
+使用方法：
 组件LogDslCallback实现接口org.frameworkset.elasticsearch.client.LogDslCallback
 然后在配置文件中进行配置：
 非spring boot项目
-elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.CatLogDslCallback
+elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
 
 springboot项目
-spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.CatLogDslCallback
+spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
 
+
+5. 客户端改造：将SlowDslCallback和LogDslCallback两个接口合并，保留接口LogDslCallback，dsl信息采集
 
 
 # v6.3.0 功能改进
@@ -306,7 +354,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.3.0</version>
+    <version>6.3.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
