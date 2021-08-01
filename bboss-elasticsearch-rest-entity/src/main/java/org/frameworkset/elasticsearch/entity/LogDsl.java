@@ -26,6 +26,15 @@ import java.util.Date;
  * @version 1.0
  */
 public class LogDsl {
+	private  int slowDslThreshold;
+
+	public int getSlowDslThreshold() {
+		return slowDslThreshold;
+	}
+
+	public void setSlowDslThreshold(int slowDslThreshold) {
+		this.slowDslThreshold = slowDslThreshold;
+	}
 	/**
 	 * elasticsearch rest http服务请求地址
 	 */

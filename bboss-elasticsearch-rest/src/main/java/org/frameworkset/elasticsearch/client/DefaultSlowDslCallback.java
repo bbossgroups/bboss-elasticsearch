@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.entity.SlowDsl;
+import org.frameworkset.elasticsearch.entity.LogDsl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * @author biaoping.yin
  * @version 1.0
  */
-public class DefaultSlowDslCallback extends AbstractSlowDslCallback{
+public class DefaultSlowDslCallback implements LogDslCallback{
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultSlowDslCallback.class);
 	@Override
-	public void slowDslHandle(SlowDsl slowDsl){
+	public void logDsl(LogDsl slowDsl){
 		if(logger.isWarnEnabled()) {
 			logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}],execute result:{}",
 					slowDsl.getUrl(),slowDsl.getAction(), slowDsl.getTime(), slowDsl.getSlowDslThreshold(),  RestSearchExecutorUtil.chunkEntity(slowDsl.getDsl()),slowDsl.result());

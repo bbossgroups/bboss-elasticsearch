@@ -52,7 +52,7 @@ public interface ElasticSearchClient {
 	public String getClusterVersionInfo();
 	public boolean isV1();
 	public Integer slowDslThreshold();
-	public SlowDslCallback getSlowDslCallback();
+	public LogDslCallback getSlowDslCallback();
 	public LogDslCallback getLogDslCallback();
 	public ElasticSearch getElasticSearch();
 

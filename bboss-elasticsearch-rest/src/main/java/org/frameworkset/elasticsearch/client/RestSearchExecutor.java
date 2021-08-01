@@ -18,9 +18,9 @@ package org.frameworkset.elasticsearch.client;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.LogDsl;
-import org.frameworkset.elasticsearch.entity.SlowDsl;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,77 +42,62 @@ public class RestSearchExecutor {
 	private ElasticSearchClient elasticSearchClient;
 	private String discoverHttpPool;
 	public RestSearchExecutor(String httpPool,String discoverHttpPool, ElasticSearchClient elasticSearchClient){
-//		this.headers = headers;
 		this.httpPool = httpPool;
 		this.discoverHttpPool = discoverHttpPool;
 		this.elasticSearchClient = elasticSearchClient;
 	}
-	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
+	private void logDsl(long start,String url,String action,String dsl,int resultCode ){
+		LogDslCallback logDslCallback = null;
+		LogDslCallback logSlowDslCallback = null;
 		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
-		if(slowDslThreshold == null) {
-			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				return HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
 
-				if(slowDslCallback != null){
-					long end = System.currentTimeMillis();
-					long time = end - start;
-					LogDsl slowDsl = new LogDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction("post");
-					slowDsl.setTime(time);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.logDsl( slowDsl);
-				}
+		logDslCallback = elasticSearchClient.getLogDslCallback();
+
+		if(slowDslThreshold != null && slowDslThreshold > 0) {
+			logSlowDslCallback = elasticSearchClient.getSlowDslCallback();
+		}
+
+		if(logDslCallback != null || logSlowDslCallback != null){
+			long end = System.currentTimeMillis();
+			long time = end - start;
+			LogDsl slowDsl = new LogDsl();
+			slowDsl.setUrl(url);
+			slowDsl.setAction(action);
+			slowDsl.setTime(time);
+			slowDsl.setDsl(dsl);
+			if(slowDslThreshold != null)
+				slowDsl.setSlowDslThreshold(slowDslThreshold);
+			slowDsl.setStartTime(new Date(start));
+			slowDsl.setEndTime(new Date(end));
+			slowDsl.setResultCode(resultCode);
+
+			if(logDslCallback != null){
+				logDslCallback.logDsl( slowDsl);
+			}
+			if(logSlowDslCallback != null){
+				logSlowDslCallback.logDsl( slowDsl);
 			}
 		}
-		else{
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				String response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
-				return response;
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				long end = System.currentTimeMillis();
-				long time = end - start;
-				if (time > slowDslThreshold.intValue()) {
-					if (elasticSearchClient.getSlowDslCallback() == null) {
-						if(logger.isWarnEnabled()) {
-							logger.warn("Slow request[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
+	}
+	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
 
-						}
-					}else {
-						SlowDsl slowDsl = new SlowDsl();
-						slowDsl.setUrl(url);
-						slowDsl.setTime(time);
-						slowDsl.setSlowDslThreshold(slowDslThreshold);
-						slowDsl.setDsl(entity);
-						slowDsl.setAction("post");
-						slowDsl.setStartTime(new Date(start));
-						slowDsl.setEndTime(new Date(end));
-						slowDsl.setResultCode(resultCode);
-						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
-					}
-
-				}
-			}
+		long start = System.currentTimeMillis();
+		int resultCode = 0;
+		try {
+			return HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 		}
+		catch(Exception e){
+			resultCode = 1;
+			throw e;
+		}
+		finally {
+			if(responseHandler.getUrl() != null )//转换为具体的es节点请求url
+				url = responseHandler.getUrl();
+			logDsl( start, url, "post",entity, resultCode );
+
+		}
+
+
 
 	}
 	/**
@@ -123,67 +108,26 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-//		return _executeHttp(  url,   entity,  action, responseHandler);
-		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
 
-		if(slowDslThreshold == null) {
-			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
-			int resultCode = 0;
-			long start = System.currentTimeMillis();
-			try {
-				return RestSearchExecutorUtil.__executeHttp(httpPool, (Map<String, String>) null, url, entity, action, responseHandler);
+		int resultCode = 0;
+		long start = System.currentTimeMillis();
+		try {
+			return RestSearchExecutorUtil.__executeHttp(httpPool, (Map<String, String>) null, url, entity, action, responseHandler);
+		}
+		catch(Exception e){
+			resultCode = 1;
+			throw e;
+		}
+		finally {
+			if(responseHandler instanceof  URLResponseHandler ) {//转换为具体的es节点请求url
+				String temp = ((URLResponseHandler)responseHandler).getUrl();
+				if(temp != null)
+					url = temp;
 			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
+			logDsl( start, url, action,entity, resultCode );
 
-				if(slowDslCallback != null){
-					long end = System.currentTimeMillis();
-					long time = end - start;
-					LogDsl slowDsl = new LogDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction(action);
-					slowDsl.setTime(time);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.logDsl( slowDsl);
-				}
-			}
 		}
 
-		else{
-			SlowDslCallback slowDslCallback = elasticSearchClient.getSlowDslCallback();
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				long end = System.currentTimeMillis();
-				long time = end - start;
-				if (time > slowDslThreshold.intValue()) {
-					SlowDsl slowDsl = new SlowDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction(action);
-					slowDsl.setTime(time);
-					slowDsl.setSlowDslThreshold(slowDslThreshold);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.slowDslHandle( slowDsl);
-
-				}
-			}
-		}
 	}
 
 
@@ -195,9 +139,6 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
-		if(slowDslThreshold == null) {
-			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
 
 			int resultCode = 0;
 			long start = System.currentTimeMillis();
@@ -209,58 +150,15 @@ public class RestSearchExecutor {
 				throw e;
 			}
 			finally {
-
-				if(slowDslCallback != null){
-					long end = System.currentTimeMillis();
-					long time = end - start;
-					LogDsl slowDsl = new LogDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction(action);
-					slowDsl.setTime(time);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.logDsl( slowDsl);
+				if(responseHandler instanceof  URLResponseHandler ) {//转换为具体的es节点请求url
+					String temp = ((URLResponseHandler)responseHandler).getUrl();
+					if(temp != null)
+						url = temp;
 				}
-			}
-		}
+				logDsl( start, url, action,entity, resultCode );
 
-		else{
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				long end = System.currentTimeMillis();
-				long time = end - start;
-				if (time > slowDslThreshold.intValue()) {
-					if (elasticSearchClient.getSlowDslCallback() == null) {
-						if(logger.isWarnEnabled()) {
-							logger.warn("Slow request[{}] action[{}] took time:{} ms > slowDslThreshold[{} ms], use DSL[{}]", url,action, time, slowDslThreshold.intValue(), RestSearchExecutorUtil.chunkEntity(entity));
 
-						}
-					}else {
-						SlowDsl slowDsl = new SlowDsl();
-						slowDsl.setUrl(url);
-						slowDsl.setAction(action);
-						slowDsl.setTime(time);
-						slowDsl.setSlowDslThreshold(slowDslThreshold);
-						slowDsl.setDsl(entity);
-						slowDsl.setStartTime(new Date(start));
-						slowDsl.setEndTime(new Date(end));
-						slowDsl.setResultCode(resultCode);
-						elasticSearchClient.getSlowDslCallback().slowDslHandle( slowDsl);
-					}
-
-				}
-			}
-		}
 	}
 
 
@@ -273,78 +171,30 @@ public class RestSearchExecutor {
 	 * @throws Exception
 	 */
 	public String executeSimpleRequest(String url, String entity,ESStringResponseHandler responseHandler) throws Exception {
-		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
-		if(slowDslThreshold == null) {
-			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				String response = null;
-				if (entity == null) {
-					response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
-				} else {
-					response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
-				}
+		long start = System.currentTimeMillis();
+		int resultCode = 0;
+		try {
+			String response = null;
+			if (entity == null) {
+				response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
+			} else {
+				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
+			}
 
-				return response;
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				if(slowDslCallback != null){
-					long end = System.currentTimeMillis();
-					long time = end - start;
-					LogDsl slowDsl = new LogDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction("post");
-					slowDsl.setTime(time);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.logDsl( slowDsl);
-				}
-			}
+			return response;
+		}
+		catch(Exception e){
+			resultCode = 1;
+			throw e;
+		}
+		finally {
+			String temp = responseHandler.getUrl();
+			if(temp != null)
+				url = temp;
+			logDsl( start, url, "post",entity, resultCode );
 
 		}
-		else {
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				String response = null;
-				if (entity == null) {
-					response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
-				} else {
-					response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
-				}
 
-				return response;
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}finally {
-				long end = System.currentTimeMillis();
-				long time = end - start;
-				if (time > slowDslThreshold.intValue()) {
-
-					SlowDsl slowDsl = new SlowDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setTime(time);
-					slowDsl.setSlowDslThreshold(slowDslThreshold);
-					slowDsl.setDsl(entity);
-					slowDsl.setAction("post");
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
-
-
-				}
-			}
-		}
 	}
 	/**
 	 * @param entity
@@ -353,66 +203,24 @@ public class RestSearchExecutor {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T executeRequest(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
-		Integer slowDslThreshold = elasticSearchClient.slowDslThreshold();
-		if(slowDslThreshold == null) {
-
-			LogDslCallback slowDslCallback = elasticSearchClient.getLogDslCallback();
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				if(slowDslCallback != null){
-					long end = System.currentTimeMillis();
-					long time = end - start;
-					LogDsl slowDsl = new LogDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction(action);
-					slowDsl.setTime(time);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					slowDslCallback.logDsl( slowDsl);
-				}
-			}
+		long start = System.currentTimeMillis();
+		int resultCode = 0;
+		try {
+			return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
 		}
-
-		else{
-			long start = System.currentTimeMillis();
-			int resultCode = 0;
-			try {
-				return RestSearchExecutorUtil._executeRequest(httpPool,(Map<String, String>)null,url, entity,action, responseHandler);
-			}
-			catch(Exception e){
-				resultCode = 1;
-				throw e;
-			}
-			finally {
-				long end = System.currentTimeMillis();
-				long time = end - start;
-				if (time > slowDslThreshold.intValue()) {
-
-					SlowDsl slowDsl = new SlowDsl();
-					slowDsl.setUrl(url);
-					slowDsl.setAction(action);
-					slowDsl.setTime(time);
-					slowDsl.setSlowDslThreshold(slowDslThreshold);
-					slowDsl.setDsl(entity);
-					slowDsl.setStartTime(new Date(start));
-					slowDsl.setEndTime(new Date(end));
-					slowDsl.setResultCode(resultCode);
-					elasticSearchClient.getSlowDslCallback().slowDslHandle(  slowDsl);
-
-				}
-			}
+		catch(Exception e){
+			resultCode = 1;
+			throw e;
 		}
+		finally {
+			if(responseHandler instanceof  URLResponseHandler ) {//转换为具体的es节点请求url
+				String temp = ((URLResponseHandler)responseHandler).getUrl();
+				if(temp != null)
+					url = temp;
+			}
+			logDsl( start, url, action,entity, resultCode );
 
+		}
 	}
 
 
