@@ -47,7 +47,15 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.3.1</version>
         </dependency>
 ```
+# v6.3.2 功能改进
+
+1. 数据同步改进：启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集
+2. 数据同步改进：日志文件采集插件增加对CallInterceptor的支持，采集文件任务新增/结束时会调用拦截器方法，可以在refactor方法中获取拦截器设置的
+3. 数据同步工具完善：修复同步数据到kafka productor初始化问题
+4. 数据同步工具完善：优化异步发送优雅启停作业问题
+
 # v6.3.1 功能改进
+
 1. elasticsearch rest client改进：使用params中的参数变量，解析配置文件中dslName对应的dsl语句，并返回解析结果
 
 ```java
@@ -56,13 +64,12 @@ https://esdoc.bbossgroups.com/#/development
 		params.put("aaa","_&/+\"\\.");
 		System.out.println(util.evalConfigDsl("testesencode",params));
 ```
-2. 数据同步工具改进：
-  日志采集探针，字符串maxBytes为0或者负数时忽略长度截取
-  
-  日志采集探针，增加忽略条件匹配类型：文件记录包含与排除条件匹配类型
-  REGEX_MATCH("REGEX_MATCH"),REGEX_CONTAIN("REGEX_CONTAIN"),STRING_CONTAIN("STRING_CONTAIN"),
-  	STRING_EQUALS("STRING_EQUALS"),STRING_PREFIX("STRING_PREFIX"),STRING_END("STRING_END");
-  	使用案例：
+2. 数据同步工具改进：日志采集探针，字符串maxBytes为0或者负数时忽略长度截取
+3. 日志采集探针，增加忽略条件匹配类型：文件记录包含与排除条件匹配类型
+       REGEX_MATCH("REGEX_MATCH"),REGEX_CONTAIN("REGEX_CONTAIN"),STRING_CONTAIN("STRING_CONTAIN"),
+       	STRING_EQUALS("STRING_EQUALS"),STRING_PREFIX("STRING_PREFIX"),STRING_END("STRING_END");
+       	使用案例：
+
 ```java  	
   				config.addConfig(new FileConfig(logPath,//指定目录
     							fileName+".log",//指定文件名称，可以是正则表达式
@@ -72,11 +79,12 @@ https://esdoc.bbossgroups.com/#/development
     							.setEnableInode(true)
     							.setIncludeLines(levelArr, LineMatchType.STRING_CONTAIN)
 ```
-3. 数据同步工具改进：默认采用异步机制保存增量同步数据状态，提升数据同步效率，可以通过以下机制关闭异步机制：
+4. 数据同步工具改进：默认采用异步机制保存增量同步数据状态，提升数据同步效率，可以通过以下机制关闭异步机制：
+
 importBuilder.setAsynFlushStatus(false);
 
-4. 客户端改进：增加dsl输出组件logDslCallback
-通过组件logDslCallback，通过回调接口方法可以自定义采集dsl的执行信息：
+5. 客户端改进：增加dsl输出组件logDslCallback
+   通过组件logDslCallback，通过回调接口方法可以自定义采集dsl的执行信息：
 
 ```java
 public void logDsl(LogDsl logDsl);
@@ -119,19 +127,22 @@ public void logDsl(LogDsl logDsl);
 	 * 1 - dsl执行异常
 	 */
 	private int resultCode;
-```
+ ```
 
 使用方法：
 组件LogDslCallback实现接口org.frameworkset.elasticsearch.client.LogDslCallback
+
 然后在配置文件中进行配置：
+
 非spring boot项目
+
 elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
 
 springboot项目
+
 spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
 
-
-5. 客户端改造：将SlowDslCallback和LogDslCallback两个接口合并，保留接口LogDslCallback，dsl信息采集
+6. 客户端改造：将SlowDslCallback和LogDslCallback两个接口合并，保留接口LogDslCallback，dsl信息采集
 
 
 # v6.3.0 功能改进
