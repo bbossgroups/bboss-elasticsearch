@@ -32,7 +32,8 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
 | FileConfig.sourcePath                    | String,日志文件目录                                          |         |
-| FileConfig.fileNameRegular               | String,日志文件名称正则表达式                                |         |
+| FileConfig.fileNameRegular               | String,日志文件名称正则表达式，fileNameRegular和fileFilter只能指定一个 |         |
+| FileConfig.fileFilter                    | FileFilter类型，用于筛选需要采集的日志文件，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.addField                      | 方法，为对应的日志文件记录添加字段和值，例如：FileConfig.addField("tag","elasticsearch")//添加字段tag到记录中，其他记录级别或全局添加字段，可以参考文档[5.2.4.5 数据加工处理](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5245-数据加工处理) |         |
 | FileConfig.fileHeadLineRegular           | 行记录开头标识正则表达式，用来区分一条日志包含多行的情况，行记录以什么开头,正则匹配，不指定时，不区分多行记录，例如：^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\] |         |
 | FileConfig.includeLines                  | String[],需包含记录的内容表达式数组，需要包含的记录条件,正则匹配 |         |
@@ -45,6 +46,23 @@ FileConfig用于指定文件级别配置
 | FileConfig.closeEOF                      | 布尔类型，true 采集到日志文件末尾后关闭本文件采集通道，后续不再采集； false不关闭，适用于文件只采集一次的场景 | false   |
 | FileConfig.deleteEOFFile                 | 布尔类型，如果deleteEOFFile为true,则删除采集完数据的文件，适用于文件只采集一次的场景 | false   |
 | FileConfig.closeOlderTime                | Long类型，启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集，0或者null不起作用 | null    |
+
+添加采集配置示例
+
+```java
+config.addConfig(new FileConfig()//指定多行记录的开头识别标记，正则表达式
+                  .setSourcePath("D:\\logs\\sale_data").setFileFilter(new FileFilter() {
+                     @Override
+                     public boolean accept(File dir, String name, FileConfig fileConfig) {
+                        return name.endsWith(".txt");
+                     }
+                  })//指定文件过滤器.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+                  .setEnableInode(true).setCloseEOF(true)
+//                .setCharsetEncode("GB2312") //文件集级别配置
+//          .setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+            //.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+      );
+```
 
 enableMeta控制的信息如下
 

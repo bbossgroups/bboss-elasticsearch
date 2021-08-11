@@ -810,12 +810,13 @@ http.hostnameVerifier =
 
 本节介绍并行任务执行功能，相关参数如下：
 
-| 参数名称    | 参数类型 | 参数说明                                                     |
-| ----------- | -------- | ------------------------------------------------------------ |
-| parallel    | boolean  | 是否启用并行执行任务机制，true 启用 false不启用(默认值)      |
-| queue       | int      | 任务并行执行等待队列大小，如果工作线程全忙，允许排队等待的任务数，队列满了后，阻塞后续新任务加入，直到有空闲的位置出来，根据同步服务器资源进行合理配置 |
-| threadCount | int      | 任务并行执行线程数，根据同步服务器资源和elasticsearch处理能力进行合理设置 |
-| asyn        | boolean  | 任务并行执行后，是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回;保持默认值即可，定时任务场景下必须设置为false |
+| 参数名称            | 参数类型 | 参数说明                                                     |
+| ------------------- | -------- | ------------------------------------------------------------ |
+| parallel            | boolean  | 是否启用并行执行任务机制，true 启用 false不启用(默认值)      |
+| queue               | int      | 任务并行执行等待队列大小，如果工作线程全忙，允许排队等待的任务数，队列满了后，阻塞后续新任务加入，直到有空闲的位置出来，根据同步服务器资源进行合理配置 |
+| threadCount         | int      | 任务并行执行线程数，根据同步服务器资源和elasticsearch处理能力进行合理设置 |
+| asyn                | boolean  | 任务并行执行后，是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回;保持默认值即可，定时任务场景下必须设置为false |
+| tranDataBufferQueue | int      | //数据异步同步通道缓存队列设置，默认为10 importBuilder.setTranDataBufferQueue(50); |
 
 通过importBuilder组件设置并行任务执行参数：
 
@@ -2312,7 +2313,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
-            <version>6.3.1</version>
+            <version>6.3.3</version>
         </dependency>
 ```
 
@@ -2354,7 +2355,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.1</version>
+            <version>6.3.3</version>
         </dependency>
 ```
 

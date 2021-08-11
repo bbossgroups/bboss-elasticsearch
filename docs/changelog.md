@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.3 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.3.1</version>
+            <version>6.3.3</version>
         </dependency>
 ```
 
@@ -44,15 +44,23 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.1</version>
+            <version>6.3.3</version>
         </dependency>
 ```
+# v6.3.3 功能改进
+1. 数据同步改进：处理异步更新状态可能导致的死锁问题
+2. 数据同步改进：处理在closeEOF为true情况下filelog插件重启后不采集数据问题和filelog插件不采集新增文件数据问题
+3. 数据同步改进：优化作业停止资源处理机制
+4. 数据同步改进：优化作业状态管理机制
+5. 数据同步改进：filelog插件增加FileFilter机制，自定义筛选需要采集日志的文件
+
 # v6.3.2 功能改进
 
 1. 数据同步改进：启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集
 2. 数据同步改进：日志文件采集插件增加对CallInterceptor的支持，采集文件任务新增/结束时会调用拦截器方法，可以在refactor方法中获取拦截器设置的
 3. 数据同步工具完善：修复同步数据到kafka productor初始化问题
-4. 数据同步工具完善：优化异步发送优雅启停作业问题
+4. 数据同步工具完善：修复停止filelog作业报错问题
+5. 数据同步工具改进：发送kafka控件改进，设置发送多少条消息后打印发送统计信息
 
 # v6.3.1 功能改进
 
@@ -365,7 +373,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.3.1</version>
+    <version>6.3.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

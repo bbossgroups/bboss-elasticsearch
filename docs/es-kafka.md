@@ -82,6 +82,7 @@ importBuilder.setFetchSize(300);
 //		kafkaOutputConfig.addKafkaProperty("linger.ms","10000");
 //		kafkaOutputConfig.addKafkaProperty("buffer.memory","10000");
 		kafkaOutputConfig.setKafkaAsynSend(true);
+		kafkaOutputConfig.setLogsendTaskMetric(1000l);//设置发送多少条消息后打印发送kafka统计信息
 ```
 
 ![img](images/es-kafka-idea-kafkaconf.png)
