@@ -379,6 +379,8 @@ db.usePool = true
 db.validateSQL = select 1
 db.jdbcFetchSize = 10000
 db.showsql = true
+# 控制map中的列名采用小写，默认为大写
+db.columnLableUpperCase = false
 ```
 
 # 5 自定义适配器数据源配置
@@ -431,6 +433,8 @@ db.showsql = true
 db.dbtype = dm
 #指定dm数据库适配器
 db.dbAdaptor = org.frameworkset.elasticsearch.imp.DMAdaptor
+# 控制map中的列名采用小写，默认为大写
+db.columnLableUpperCase = false
 ```
 
 api方式配置自定义适配器：
@@ -448,7 +452,7 @@ importBuilder.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor");
 ```properties
 # 增量导入状态存储数据源配置，默认采用sqlite，增量导入装存储到本地的sqlite数据库中，采用分布式的外部定时任务引擎时，
 # 就不能将状态存储到本地，需要采用外部的数据库（mysql,oracle等）来存储增量导入状态。
-# 如果做了config.db配置，则采用配置的的数据源，必须指定创建statusTableName的建表语句，每种数据库对应的语法做适当调整
+# 如果做了config.db配置，则采用配置的的数据源，如果使用的数据库不是mysql、oracle、sql server，则必须指定创建statusTableName的建表语句，每种数据库对应的语法做适当调整
 # create table $statusTableName  (ID number(2),lasttime number(10),lastvalue number(10),lastvaluetype number(1),PRIMARY KEY (ID))
 #
 # 一般情况下不需要使用外部状态数据源，除非采用分布式的外部定时任务引擎，
