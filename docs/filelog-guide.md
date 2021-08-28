@@ -10,6 +10,9 @@
 
 直接通过java开发数据采集作业的业界也就只有bboss能够做到，下面具体介绍kafka/elasticsearch/database三个案例。
 
+filelog插件工作原理图
+
+![](images\filelog-es.jpg)
 # 1.日志采集插件属性说明
 
 importBuilder（FileLog2ESImportBuilder/FileLog2DBImportBuilder/FileLog2KafkaImportBuilder)用于采集作业基础属性配置
@@ -32,6 +35,7 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
 | FileConfig.sourcePath                    | String,日志文件目录                                          |         |
+| FileConfig.renameFileSourcePath          | String,重命名文件监听路径：一些日志组件会指定将滚动日志文件放在与当前日志文件不同的目录下，需要通过renameFileSourcePath指定这个不同的目录地址，以便可以追踪到未采集完毕的滚动日志文件，从而继续采集文件中没有采集完毕的日志本路径只有在inode机制有效并且启用的情况下才起作用,默认与sourcePath一致，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fileNameRegular               | String,日志文件名称正则表达式，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.fileFilter                    | FileFilter类型，用于筛选需要采集的日志文件，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.addField                      | 方法，为对应的日志文件记录添加字段和值，例如：FileConfig.addField("tag","elasticsearch")//添加字段tag到记录中，其他记录级别或全局添加字段，可以参考文档[5.2.4.5 数据加工处理](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5245-数据加工处理) |         |
@@ -974,3 +978,8 @@ bboss扩展了log4j滚动切割文件插件org.apache.log4j.NormalRollingFileApp
 https://doc.bbossgroups.com/#/log4j
 
 基于bboss 扩展的log4j Appender可以实现滚动生成日志文件时，增量添加新文件而不重名之前的日志文件，这样就可以设置setEnableInode(false)来关闭inode机制。
+
+# 6.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+
+https://my.oschina.net/bboss/blog/5207723
