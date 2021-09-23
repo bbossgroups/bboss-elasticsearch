@@ -8,9 +8,11 @@
 
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java
 
-**问题背景**
+# **1 问题背景**
 
 用户行为分析系统服务器上部署了非常多的数据分析作业进程（近100个进程），每个进程通过log4j2输出日志到日志文件，考虑到bboss filelog日志采集插件的高度定制化和灵活性，采用一个bboss filelog作业来实时采集分析服务器上所有日志文件中的日志并写入elasticsearch![img](https://esdoc.bbossgroups.com/images/filelog-es.jpg)
+
+## 1.1 原始作业定义
 
 采集作业定义初始定义如下：
 
@@ -166,7 +168,7 @@ PropertiesContainer propertiesContainer = PropertiesUtil.getPropertiesContainer(
 }
 ```
 
-**作业采集配置**
+## 1.2 采集作业配置
 
 单文件并行写elasticsearch线程数threadCount ：10个
 
@@ -187,15 +189,15 @@ jvm分配内存大小：考虑服务器资源情况分配2g内存，thead stack�
 
 作业运行一段数据后，出现filelog进程jvm内存全部耗尽溢出问题
 
-**问题分析**
+# 2 问题分析
 
 首先考虑filelog是否存在内存泄漏问题，通过eclipse mat内存分析工具查看dump出来的内存快照文件，分析截图如下
 
-1.内存泄漏表为空，所以不存在内存泄漏问题
+## 2.1 内存泄漏表为空，所以不存在内存泄漏问题
 
 ![img](https://oscimg.oschina.net/oscnet/up-c461634fa2cfab80aeddd2ecca9e7a35b0a.JPEG)
 
-2.再来看看内存占用分布情况
+## 2.2 内存占用分布情况
 
 下面是mat给出的filelog进去2g内存占用分布情况，并给出了三个占用内存比较大对象实例，问题定位还是非常明确。
 
@@ -215,7 +217,7 @@ jvm分配内存大小：考虑服务器资源情况分配2g内存，thead stack�
 
 上述三类对象占用内存将近1.8G，所以filelog采集作业启动后，内存很快就达到最大值2G，导致内存溢出问题发生，原因已经找到，接下来就可以来分析和解决问题了。
 
-**问题解决**
+# 3 问题解决
 
 根据上面的分析，可以通过以下途径解决问题：
 
@@ -227,7 +229,7 @@ jvm分配内存大小：考虑服务器资源情况分配2g内存，thead stack�
 
 最简单的办法就是调大jvm内存，但是服务器资源有限，所以通过分配更多的内存给filelog就不可行，那么只剩下途径2和途径3了，减少线程数量、减少线程stack大小、减少内存缓存大小，牺牲部分性能，以换取日志采集的稳定性。以下是优化过程
 
-**优化1 减少日志目录监听线程**
+## 优化1 减少日志目录监听线程
 
 由于日志文件都在一个目录下面，索引可以将将以下代码
 
@@ -312,7 +314,7 @@ config.addConfig(new FileConfig().setSourcePath(logPath)//指定目录
 
 调整后的作业将只配置一个目录的fileconfig，因此采集作业只会分配一个日志目录扫描线程，从而大幅减少日志目录扫描线程。
 
-**优化2 减少elasticsearch写入线程数量和线程队列数**
+## 优化2 减少elasticsearch线程数量和队列大小
 
 优化前
 
@@ -330,7 +332,7 @@ int threadCount = propertiesContainer.getIntSystemEnvProperty("log.threadCount",
 int threadQueue = propertiesContainer.getIntSystemEnvProperty("log.threadQueue",50);
 ```
 
-**优化3 减少线程stack大小**
+## 优化3 减少JVM内存和线程stack大小
 
 修改jvm.options中的内存配置和Xss参数
 
@@ -340,7 +342,7 @@ int threadQueue = propertiesContainer.getIntSystemEnvProperty("log.threadQueue",
 -Xss256k
 ```
 
-**优化4 减少从日志文件分批读取日志记录大小和批量写入elasticsearch记录大小**
+## 优化4 减少日志预读取和ES批处理记录数
 
 ```java
 int batchSize = PropertiesUtil.getPropertiesContainer().getIntSystemEnvProperty("log.batchSize",10);
@@ -348,11 +350,15 @@ int batchSize = PropertiesUtil.getPropertiesContainer().getIntSystemEnvProperty(
 int fetchSize = PropertiesUtil.getPropertiesContainer().getIntSystemEnvProperty("log.fetchSize",10);
 ```
 
-**优化5 设置closeOlderTime，关闭长时间没有变化的日志文件，大幅减少文件采集作业线程**
+## 优化5 设置closeOlderTime，关闭静默日志文件
+
+合理设置closeOlderTime，关闭长时间没有变化的日志文件，大幅减少文件采集作业线程
 
 ```java
 setCloseOlderTime(2*24*60*60*1000l) //如果2天内日志内容没变化，则不再采集对应的日志文件，重启作业也不会采集
 ```
+
+## 优化改造后的作业代码
 
 优化改造后的作业代码如下：
 
@@ -559,8 +565,18 @@ public class VOPSTestdevLog2ESNew {
 }
 ```
 
-重新构建发布作业（[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)），启动新的filelog采集作业，jvm内存溢出问题得到解决，日志采集功能恢复正常。
+## 重新构建发布作业
 
-**bboss日志采集插件使用参考文档**
+重新构建发布作业（[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)），启动新的filelog采集作业,日志采集功能恢复正常。
+
+# 4 问题总结
+
+1. jvm内存溢出问题得到解决
+
+2. filelog进程本身消耗jvm内存也由2g缩小到512m，更加绿色环保。
+
+# 5 相关文档
+
+bboss日志采集插件使用参考文档
 
 [https://esdoc.bbossgroups.com/#/filelog-guide](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Ffilelog-guide)
