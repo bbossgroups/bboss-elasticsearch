@@ -123,7 +123,7 @@ ElasticSearchHelper.stopElasticsearch("default");//指定要停止的数据源�
 
 # 开发交流
 
-
+参考文档：[快速开始bboss](https://esdoc.bbossgroups.com/#/quickstart)
 
 bboss elasticsearch交流QQ群：21220580,166471282
 

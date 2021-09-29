@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.3.5</version>
+            <version>6.3.6</version>
         </dependency>
 ```
 
@@ -44,9 +44,47 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.5</version>
+            <version>6.3.6</version>
         </dependency>
 ```
+
+# v6.3.6 功能改进
+1. 数据同步改进：增加记录切割功能，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值
+使用案例：
+
+```java
+        importBuilder.setSplitFieldName("@message");
+		importBuilder.setSplitHandler(new SplitHandler() {
+			/**
+			 * 如果方法返回null，则继续将原记录写入目标库
+			 * @param taskContext
+			 * @param record
+			 * @param splitValue
+			 * @return List<KeyMap<String, Object>> KeyMap是LinkedHashMap的子类，定义key字段，如果是往kafka推送数据，可以设置推送的key
+			 */
+			@Override
+			public List<KeyMap<String, Object>> splitField(TaskContext taskContext,//调度任务上下文
+														   Record record,//原始记录对象
+														   Object splitValue) {//待切割的字段值
+//				Map<String,Object > data = (Map<String, Object>) record.getData();//获取原始记录中包含的数据对象
+				List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
+				//模拟将数据切割为10条记录
+				for(int i = 0 ; i < 10; i ++){
+					KeyMap<String, Object> d = new KeyMap<String, Object>();//创建新记录对象
+					d.put("id",i+"-" + record.getValue("id"));//用新的id值覆盖原来的唯一标识id字段的值
+					d.put("message",i+"-"+splitValue);//我们只切割splitValue到message字段，继承原始记录中的其他字段
+//					d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+					splitDatas.add(d);
+				}
+				return splitDatas;
+			}
+		});
+		importBuilder.addFieldMapping("@message","message");
+```
+
+# v6.3.5 功能改进
+1. 数据同步改进：filelog插码优化
+
 # v6.3.3 功能改进
 1. 数据同步改进：处理异步更新状态可能导致的死锁问题
 2. 数据同步改进：处理在closeEOF为true情况下filelog插件重启后不采集数据问题和filelog插件不采集新增文件数据问题
