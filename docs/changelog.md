@@ -81,6 +81,11 @@ https://esdoc.bbossgroups.com/#/development
 		});
 		importBuilder.addFieldMapping("@message","message");
 ```
+2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
+       
+   将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 
 # v6.3.5 功能改进
 1. 数据同步改进：filelog插码优化

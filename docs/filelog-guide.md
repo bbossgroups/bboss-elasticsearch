@@ -1,10 +1,12 @@
 # 日志采集插件使用指南
 
-基于java语言的日志文件采集插件，支持全量和增量采集两种模式，实时采集日志文件数据到kafka/elasticsearch/database，使用案例：
+基于java语言的日志文件采集插件，支持全量和增量采集两种模式，实时采集本地/FTP日志文件数据到kafka/elasticsearch/database，使用案例：
 
-   1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-   2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
-   3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+   1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+   2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+   3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 
 ![](images\datasyn.png)
 
@@ -28,7 +30,7 @@ FileConfig用于指定文件级别配置
 | importBuilder.batchSize                  | int ，设置批量入库的记录数                                   |         |
 | FileImportConfig.jsondata                | 布尔类型，标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中 |         |
 | FileImportConfig.rootLevel               | jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message |         |
-| FileImportConfig.interval                | long 单位：毫秒，扫描新文件时间间隔                          | 5000L   |
+| FileImportConfig.scanNewFileInterval | long 单位：毫秒，扫描新文件时间间隔                          | 5000L   |
 | FileImportConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理 | null    |
 | FileImportConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
 | FileImportConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
@@ -54,6 +56,11 @@ FileConfig用于指定文件级别配置
 | FileConfig.closeOlderTime                | Long类型，启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集，0或者null不起作用 | null    |
 | FileConfig.closeOldedFileAssert          | CloseOldedFileAssert类型，如果指定了closeOlderTime，但是有些文件是特例不能不关闭，那么可以通过指定CloseOldedFileAssert来检查静默时间达到closeOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fieldBuilder                  | FieldBuilder类型，根据文件信息动态为不同的日志文件添加固定的字段，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileImportConfig.backupSuccessFiles | 备份采集完成文件  true 备份  false 不备份 | false |
+| FileImportConfig.backupSuccessFileDir | 文件备份目录 |  |
+| FileImportConfig.backupSuccessFileInterval | 备份文件清理线程执行时间间隔，单位：毫秒  默认每隔10秒执行一次 | 10000ms |
+| FileImportConfig.backupSuccessFileLiveTime | 备份文件保留时长，单位：秒  默认保留7天 | 7天 |
+| FileImportConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
 
 添加采集配置示例
 
@@ -112,9 +119,31 @@ enableMeta控制的信息如下
 		 */
 ```
 
+# 2.定时调度机制切换配置
 
+内部扫描新文件调度配置
 
-# 2.采集日志数据并写入Elasticsearch
+```java
+FileImportConfig config = new FileImportConfig();
+config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
+```
+外部扫描新文件调度配置-以jdk timer为案例（还可以支持[quartz](https://esdoc.bbossgroups.com/#/datasyn-quartz)和[xxl-job](https://esdoc.bbossgroups.com/#/xxljobdatasyn)）
+```java
+FileImportConfig config = new FileImportConfig();
+      /**
+       *  设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job
+       *      true 采用，false 不采用，默认false
+       */
+      config.setUseETLScheduleForScanNewFile(true);
+      //定时任务配置，
+      importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//              .setScheduleDate(date) //指定任务开始执行时间：日期
+            .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+            .setPeriod(1*60*1000l); //每隔period毫秒执行，如果不设置，只执行一次
+      //定时任务配置结束
+```
+
+# 3.采集日志数据并写入Elasticsearch
 
 可以从以下地址下载“日志数据采集并写入Elasticsearch作业”开发工程环境（基于gradle）
 
@@ -156,6 +185,26 @@ public class FileLog2ESDemo {
 		importBuilder.setFlushInterval(10000l);
 
 		FileImportConfig config = new FileImportConfig();
+        /**
+		 * 备份采集完成文件
+		 * true 备份
+		 * false 不备份
+		 */
+		config.setBackupSuccessFiles(true);
+		/**
+		 * 备份文件目录
+		 */
+		config.setBackupSuccessFileDir("d:/ftpbackup");
+		/**
+		 * 备份文件清理线程执行时间间隔，单位：毫秒
+		 * 默认每隔10秒执行一次
+		 */
+		config.setBackupSuccessFileInterval(20000l);
+		/**
+		 * 备份文件保留时长，单位：秒
+		 * 默认保留7天
+		 */
+		config.setBackupSuccessFileLiveTime( 10 * 60l);
 		//.*.txt.[0-9]+$
 		//[17:21:32:388]
 //		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
@@ -350,7 +399,7 @@ release.bat
 
 更多作业配置和运行资料参考：[帮助文档](https://gitee.com/bboss/filelog-elasticsearch/blob/main/README.md)
 
-# 3.采集日志数据并写入数据库
+# 4.采集日志数据并写入数据库
 
 可以从以下地址下载“日志数据采集并写入数据库作业”开发工程环境（基于gradle）
 
@@ -611,7 +660,7 @@ release.bat
 
 更多作业配置和运行资料参考：[帮助文档](https://gitee.com/bboss/filelog-elasticsearch/blob/main/README.md)
 
-# 4.采集日志数据并发送到kafka
+# 5.采集日志数据并发送到kafka
 
 可以从以下地址下载“日志数据采集并发送到kafka作业”开发工程环境（基于gradle）
 
@@ -958,7 +1007,7 @@ release.bat
 
 
 
-# 5.inode机制说明
+# 6.inode机制说明
 
 通过开启inode机制（linux环境下支持）来识别文件重命名操作，避免漏采被重名文件中的没有采集完的日志数据。
 
@@ -980,7 +1029,70 @@ https://doc.bbossgroups.com/#/log4j
 
 基于bboss 扩展的log4j Appender可以实现滚动生成日志文件时，增量添加新文件而不重名之前的日志文件，这样就可以设置setEnableInode(false)来关闭inode机制。
 
-# 6.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 7.Ftp采集配置
+
+第一节介绍了采集日志文件的通用配置，通用配置同样适用于从ftp下载的日志文件数据采集，特殊之处：
+
+ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，下面介绍FTP特有的属性
+
+| 属性                                  | 说明                                                         |
+| ------------------------------------- | ------------------------------------------------------------ |
+| FtpConfig.ftpIp                       | ftpIP地址                                                    |
+| FtpConfig.ftpPort                     | ftp端口号                                                    |
+| FtpConfig.ftpUser                     | ftp用户                                                      |
+| FtpConfig.ftpPassword                 | ftp口令                                                      |
+| FtpConfig.remoteFileDir               | ftp目录                                                      |
+| FtpConfig.ftpFileFilter               | ftp文件筛选器                                                |
+| FtpConfig.addScanNewFileTimeRange     | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器 添加扫码新文件的时间段，每天扫描新文件时间段，优先级高于不扫码时间段，先计算是否在扫描时间段，如果是则扫描，不是则不扫码 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
+| FtpConfig.addSkipScanNewFileTimeRange | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器添加不扫码新文件的时间段 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
+| FtpConfig.sourcePath                  | 指定下钻到本地日志文件目录                                   |
+
+配置案例
+
+```java
+SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+      Date _startDate = null;
+      try {
+         _startDate = format.parse("20201211");//下载和采集2020年12月11日以后的数据文件
+      } catch (ParseException e) {
+         logger.error("",e);
+      }
+      final Date startDate = _startDate;
+      config.addConfig(new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
+                               .setFtpUser("ecs").setFtpPassword("ecs@123")
+                              .setRemoteFileDir("/home/ecs/failLog")
+                              .setFtpFileFilter(new FtpFileFilter() {//指定ftp文件筛选规则
+                                 @Override
+                                 public boolean accept(RemoteResourceInfo remoteResourceInfo,//Ftp文件服务目录
+                                                  String name, //Ftp文件名称
+                                                  FileConfig fileConfig) {
+                                    //判断是否采集文件数据，返回true标识采集，false 不采集
+                                    boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
+                                    if(nameMatch){
+                                       String day = name.substring("731_tmrt_user_login_day_".length());
+                                       SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                                       try {
+                                          Date fileDate = format.parse(day);
+                                          if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
+                                             return true;
+                                       } catch (ParseException e) {
+                                          logger.error("",e);
+                                       }
+
+
+                                    }
+                                    return false;
+                                 }
+                              })
+                              .addScanNewFileTimeRange("12:37-15:30")
+//                            .addSkipScanNewFileTimeRange("11:30-13:00")
+                              .setSourcePath("D:/ftplogs")//指定目录
+                              .addField("tag","elasticsearch")//添加字段tag到记录中
+                  );
+```
+
+# 8.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 https://my.oschina.net/bboss/blog/5207723
