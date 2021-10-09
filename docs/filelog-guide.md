@@ -1033,6 +1033,13 @@ https://doc.bbossgroups.com/#/log4j
 
 # 7.Ftp采集配置
 
+ftp采集的一些特性：
+
+1. 如果文件没有下载完，不会被采集，如果在下载的过程中作业停了，下次启动作业后未下载完成的文件会接着下载
+2. 文件只有下载完成后，才会被采集，否则不被采集，不会再次下载采集已经采集过的文件，如果在文件采集过程中，作业停了，作业下次启动后会继续采集未采集完成的日志文件
+
+3. 已经下载过的文件不会再次下载采集（除非删除了作业增量状态库文件）
+
 第一节介绍了采集日志文件的通用配置，通用配置同样适用于从ftp下载的日志文件数据采集，特殊之处：
 
 ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，下面介绍FTP特有的属性
@@ -1046,53 +1053,96 @@ ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，�
 | FtpConfig.remoteFileDir               | ftp目录                                                      |
 | FtpConfig.ftpFileFilter               | ftp文件筛选器                                                |
 | FtpConfig.addScanNewFileTimeRange     | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器 添加扫码新文件的时间段，每天扫描新文件时间段，优先级高于不扫码时间段，先计算是否在扫描时间段，如果是则扫描，不是则不扫码 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
-| FtpConfig.addSkipScanNewFileTimeRange | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器添加不扫码新文件的时间段 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
+| FtpConfig.addSkipScanNewFileTimeRange | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器添加不扫码新文件的时间段， timeRange必须是以下三种类型格式：                                                                    * 11:30-12:30  每天在11:30和12:30之间运行                              * 11:30-    每天11:30开始执行,到23:59结束                                 * -12:30    每天从00:00开始到12:30 |
 | FtpConfig.sourcePath                  | 指定下钻到本地日志文件目录                                   |
-| FtpConfig.transferProtocol                  | 指定ftp协议类型：FtpConfig.TRANSFER_PROTOCOL_FTP  FtpConfig.TRANSFER_PROTOCOL_SFTP,默认值：FtpConfig.TRANSFER_PROTOCOL_SFTP                                   |   
+| FtpConfig.transferProtocol            | bboss 支持ftp和sftp两种协议类型：FtpConfig.TRANSFER_PROTOCOL_FTP  FtpConfig.TRANSFER_PROTOCOL_SFTP                                默认值：FtpConfig.TRANSFER_PROTOCOL_SFTP |
+| FtpConfig.deleteRemoteFile            | 控制是否删除下载完毕的ftp文件，true 删除，false 不删除，默认值false |
 
-配置案例
+ftp配置案例
 
 ```java
-SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-      Date _startDate = null;
-      try {
-         _startDate = format.parse("20201211");//下载和采集2020年12月11日以后的数据文件
-      } catch (ParseException e) {
-         logger.error("",e);
-      }
-      final Date startDate = _startDate;
-      config.addConfig(new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
-                               .setFtpUser("ecs").setFtpPassword("ecs@123")
-                              .setRemoteFileDir("/home/ecs/failLog")
-                              .setFtpFileFilter(new FtpFileFilter() {//指定ftp文件筛选规则
-                                 @Override
-                                 public boolean accept(RemoteResourceInfo remoteResourceInfo,//Ftp文件服务目录
+FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
+        importBuilder.setBatchSize(500)//设置批量入库的记录数
+                .setFetchSize(1000);//设置按批读取文件行数
+        //设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+        importBuilder.setFlushInterval(10000l);
+        FileImportConfig config = new FileImportConfig();
+
+        config.setJsondata(true);//标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中
+        config.setRootLevel(true);//jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message
+
+        config.setScanNewFileInterval(1 * 60 * 1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
+        /**
+         * 备份采集完成文件
+         * true 备份
+         * false 不备份
+         */
+        config.setBackupSuccessFiles(true);
+        /**
+         * 备份文件目录
+         */
+        config.setBackupSuccessFileDir("d:/ftpbackup");
+        /**
+         * 备份文件清理线程执行时间间隔，单位：毫秒
+         * 默认每隔10秒执行一次
+         */
+        config.setBackupSuccessFileInterval(20000l);
+        /**
+         * 备份文件保留时长，单位：秒
+         * 默认保留7天
+         */
+        config.setBackupSuccessFileLiveTime(10 * 60l);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        Date _startDate = null;
+        try {
+            _startDate = format.parse("20191211");//下载和采集2020年12月11日以后的数据文件
+        } catch (ParseException e) {
+            logger.error("", e);
+        }
+        final Date startDate = _startDate;
+        config.addConfig(new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
+                        .setFtpUser("test").setFtpPassword("123456")
+                        .setRemoteFileDir("/").setDeleteRemoteFile(true)//
+                        //.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP) //采用ftp协议
+                        .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) //采用sftp协议
+                        .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
+                            @Override
+                            public boolean accept(String parentDir,//Ftp文件服务目录
                                                   String name, //Ftp文件名称
                                                   FileConfig fileConfig) {
-                                    //判断是否采集文件数据，返回true标识采集，false 不采集
-                                    boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
-                                    if(nameMatch){
-                                       String day = name.substring("731_tmrt_user_login_day_".length());
-                                       SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-                                       try {
-                                          Date fileDate = format.parse(day);
-                                          if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
-                                             return true;
-                                       } catch (ParseException e) {
-                                          logger.error("",e);
-                                       }
-
-
+                                //判断是否采集文件数据，返回true标识采集，false 不采集
+                                boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
+                                if(nameMatch){
+                                    String day = name.substring("731_tmrt_user_login_day_".length());
+                                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                                    try {
+                                        Date fileDate = format.parse(day);
+                                        if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
+                                            return true;
+                                    } catch (ParseException e) {
+                                        logger.error("",e);
                                     }
-                                    return false;
-                                 }
-                              })
-                              .addScanNewFileTimeRange("12:37-15:30")
-//                            .addSkipScanNewFileTimeRange("11:30-13:00")
-                              .setSourcePath("D:/ftplogs")//指定目录
-                              .addField("tag","elasticsearch")//添加字段tag到记录中
-                  );
+
+
+                                }
+                                return false;
+                            }
+                        })
+                        .addScanNewFileTimeRange("10:00-18:30")
+//										.addSkipScanNewFileTimeRange("11:30-13:00")
+                        .setSourcePath("D:\\ftplogs\\dbdemo")//指定目录
+                //.addField("tag", "elasticsearch")//添加字段tag到记录中
+                //.setCloseEOF(true)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+                //.setEnableInode(false)
+        );
+
+
+        config.setEnableMeta(true);
+        importBuilder.setFileImportConfig(config);
 ```
+
+
 
 # 8.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
