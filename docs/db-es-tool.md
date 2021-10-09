@@ -8,7 +8,7 @@
 
 # 工具特性
 
-bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
+bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例，支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理，支持从kafka接收数据；支持将单条记录切割为多条记录；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
 ![](images\datasyn.png)
 
@@ -21,6 +21,8 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 - 批量数据多线程并行导入
 - 定时全量（串行/并行）数据导入
 - 定时增量（串行/并行）数据导入
+- 支持记录切割功能
+
 
 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
 
@@ -1507,6 +1509,39 @@ importBuilder.setTargetElasticsearch("default,test");
 ### 2.3.21 导入日期类型数据少8小时问题
 
 在数据导入时，如果是时间类型，Elasticsearch默认采用UTC时区（而不是东八区时区）保存日期数据，如果通过json文本查看数据，会发现少8小时，这个是正常现象，通过bboss orm检索数据，日期类型数据就会自动将UTC时区转换为东八区时间（也就是中国时区，自动加8小时）
+
+### 2.3.22 记录切割
+
+在数据导入时，有时需将单条记录切割为多条记录，通过设置切割字段以及SplitHandler接口来实现，示例代码如下：可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值
+
+```java
+      importBuilder.setSplitFieldName("@message");
+      importBuilder.setSplitHandler(new SplitHandler() {
+         /**
+          * 将记录字段值splitValue切割为多条记录，如果方法返回null，则继续将原记录写入目标库
+          * @param taskContext
+          * @param record
+          * @param splitValue
+          * @return List<KeyMap<String, Object>> KeyMap是LinkedHashMap的子类，添加key字段，如果是往kafka推送数据，可以设置推送的key
+          */
+         @Override
+         public List<KeyMap<String, Object>> splitField(TaskContext taskContext,//调度任务上下文
+                                             Record record,//原始记录对象
+                                             Object splitValue) {//待切割的字段值
+//          Map<String,Object > data = (Map<String, Object>) record.getData();//获取原始记录中包含的数据对象
+            List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
+            //模拟将数据切割为10条记录
+            for(int i = 0 ; i < 10; i ++){
+               KeyMap<String, Object> d = new KeyMap<String, Object>();//创建新记录对象
+               d.put("id", SimpleStringUtil.getUUID());//用新的id值覆盖原来的唯一标识id字段的值
+               d.put("message",i+"-"+splitValue);//我们只切割splitValue到message字段，继承原始记录中的其他字段
+//             d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+               splitDatas.add(d);
+            }
+            return splitDatas;
+         }
+      });
+```
 
 ## 2.4.DB-ES数据同步工具使用方法
 

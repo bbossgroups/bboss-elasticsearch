@@ -7,6 +7,8 @@
    3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
    4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
    5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
 
 ![](images\datasyn.png)
 
@@ -1046,6 +1048,7 @@ ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，�
 | FtpConfig.addScanNewFileTimeRange     | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器 添加扫码新文件的时间段，每天扫描新文件时间段，优先级高于不扫码时间段，先计算是否在扫描时间段，如果是则扫描，不是则不扫码 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
 | FtpConfig.addSkipScanNewFileTimeRange | filelog插件支持内置定时监听ftp目录新增文件功能，可以为内置定时器添加不扫码新文件的时间段 * timeRange必须是以下三种类型格式 * 11:30-12:30  每天在11:30和12:30之间运行 * 11:30-    每天11:30开始执行,到23:59结束 * -12:30    每天从00:00开始到12:30 |
 | FtpConfig.sourcePath                  | 指定下钻到本地日志文件目录                                   |
+| FtpConfig.transferProtocol                  | 指定ftp协议类型：FtpConfig.TRANSFER_PROTOCOL_FTP  FtpConfig.TRANSFER_PROTOCOL_SFTP,默认值：FtpConfig.TRANSFER_PROTOCOL_SFTP                                   |   
 
 配置案例
 
