@@ -86,8 +86,31 @@ https://esdoc.bbossgroups.com/#/development
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
 [FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
 [FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
+4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
+
+```java
+FileLog2DummyExportBuilder importBuilder = new FileLog2DummyExportBuilder();
+//自己处理数据
+importBuilder.setCustomOutPut(new CustomOutPut() {
+   @Override
+   public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+      //You can do any thing here for datas
+      for(CommonRecord record:datas){
+         Map<String,Object> data = record.getDatas();
+         logger.info(SimpleStringUtil.object2json(data));
+      }
+   }
+});
+```
+
+自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
+
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 # v6.3.5 功能改进
+
 1. 数据同步改进：filelog插码优化
 
 # v6.3.3 功能改进

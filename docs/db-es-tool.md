@@ -1,4 +1,4 @@
-# 数据导入Elasticsearch案例分享
+# bboss数据同步ETL工具介绍
 
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
@@ -8,11 +8,11 @@
 
 # 工具特性
 
-bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例，支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理，支持从kafka接收数据；支持将单条记录切割为多条记录；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
+bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例。
 
 ![](images\datasyn.png)
 
-通过bboss，可以非常方便地采集database/mongodb/Elasticsearch/kafka/hbase/日志文件源数据，经过数据转换处理后，再推送到目标库elasticsearch/database/file/ftp/kafka/dummy/logger。
+通过bboss，可以非常方便地采集database/mongodb/Elasticsearch/kafka/hbase/本地或者Ftp日志文件源数据，经过数据转换处理后，再推送到目标库elasticsearch/database/file/ftp/kafka/dummy/logger。
 
 数据导入的方式
 
@@ -22,6 +22,20 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 - 定时全量（串行/并行）数据导入
 - 定时增量（串行/并行）数据导入
 - 支持记录切割功能
+
+支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
+
+支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
+
+支持将单条记录切割为多条记录；
+
+可以将加工后的数据写入File并上传到ftp/sftp服务器；
+
+支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
+
+支持自动清理下载完毕后ftp服务器上的文件;
+
+提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可。
 
 
 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
@@ -34,7 +48,7 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 
 **支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
 
-支持多种定时任务执行引擎：
+支持以下三种作业调度机制：
 
 - jdk timer （内置）
 - quartz
@@ -62,7 +76,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.3.5</version>
+<version>6.3.6</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1543,6 +1557,44 @@ importBuilder.setTargetElasticsearch("default,test");
       });
 ```
 
+### 2.3.23 自定义处理器
+
+通过自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可，例如：
+
+```java
+FileLog2DummyExportBuilder importBuilder = new FileLog2DummyExportBuilder();
+//自己处理数据
+importBuilder.setCustomOutPut(new CustomOutPut() {
+   @Override
+   public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+      //You can do any thing here for datas
+      for(CommonRecord record:datas){
+         Map<String,Object> data = record.getDatas();
+         logger.info(SimpleStringUtil.object2json(data));
+      }
+   }
+});
+```
+
+自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
+
+自定义处理作业根据不同的数据来源，可以选择不同的作业构建器：
+
+FileLog2DummyExportBuilder
+
+Mongodb2DummyExportBuilder
+
+HBase2DummyExportBuilder
+
+DB2DummyExportBuilder
+
+ES2DummyExportBuilder
+
+Kafka2DummyExportBuilder
+
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+
 ## 2.4.DB-ES数据同步工具使用方法
 
 上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
@@ -2988,9 +3040,13 @@ https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 
 # 14 日志文件数据采集插件使用案例
 
-支持全量和增量采集两种模式，实时采集日志文件数据到kafka/elasticsearch/database
+支持全量和增量采集两种模式，实时采集本地/ftp日志文件数据到kafka/elasticsearch/database/
 
-日志文件采集插件使用案例：
+日志文件采集插件使用文档：
+
+https://esdoc.bbossgroups.com/#/filelog-guide
+
+使用案例：
 
 1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
 2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  

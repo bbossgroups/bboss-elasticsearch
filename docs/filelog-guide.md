@@ -1,6 +1,6 @@
 # 日志采集插件使用指南
 
-基于java语言的日志文件采集插件，支持全量和增量采集两种模式，实时采集本地/FTP日志文件数据到kafka/elasticsearch/database，使用案例：
+基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件数据到kafka/elasticsearch/database/自定义处理器；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
 
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
@@ -9,6 +9,7 @@
    5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
    6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
    7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 

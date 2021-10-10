@@ -10,7 +10,7 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
 
 # **1 问题背景**
 
-用户行为分析系统服务器上部署了非常多的数据分析作业进程（近100个进程），每个进程通过log4j2输出日志到日志文件，考虑到bboss filelog日志采集插件的高度定制化和灵活性，采用一个bboss filelog作业来实时采集分析服务器上所有日志文件中的日志并写入elasticsearch![img](https://esdoc.bbossgroups.com/images/filelog-es.jpg)
+用户行为分析系统服务器上部署了非常多的数据分析作业进程（近100个进程），每个进程通过log4j2输出日志到日志文件，考虑到bboss filelog日志采集插件的高度定制化和灵活性以及对linux inode机制的友好支持，因此我们采用bboss filelog插件来实时采集用户行为分析服务器上所有日志文件，并写入elasticsearch![img](https://esdoc.bbossgroups.com/images/filelog-es.jpg)
 
 ## 1.1 原始作业定义
 
