@@ -178,7 +178,7 @@ PropertiesContainer propertiesContainer = PropertiesUtil.getPropertiesContainer(
 
 单文件并行批量写elasticsearch记录数batchSize：500
 
-jvm分配内存大小：考虑服务器资源情况分配2g内存，thead stack大小1m
+jvm分配内存大小：考虑服务器资源情况，为作业分配2g内存，thead stack大小1m
 
 ```
 -Xms2g
@@ -187,7 +187,7 @@ jvm分配内存大小：考虑服务器资源情况分配2g内存，thead stack�
 -Xss1m
 ```
 
-作业运行一段数据后，出现filelog进程jvm内存全部耗尽溢出问题
+作业运行一段时间后，出现filelog进程jvm内存全部耗尽溢出问题
 
 # 2 问题分析
 
@@ -314,7 +314,7 @@ config.addConfig(new FileConfig().setSourcePath(logPath)//指定目录
 
 调整后的作业将只配置一个目录的fileconfig，因此采集作业只会分配一个日志目录扫描线程，从而大幅减少日志目录扫描线程。
 
-## 优化2 减少elasticsearch线程数量和队列大小
+## 优化2 减少写入elasticsearch线程数量和队列大小
 
 优化前
 
