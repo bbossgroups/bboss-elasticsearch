@@ -8,9 +8,11 @@ import org.frameworkset.elasticsearch.template.TemplateContainer;
  */
 public abstract class ClientUtil implements ClientInterface{
 
+	@Override
 	public TemplateContainer getTemplatecontext(){
 		return null;
 	}
+	@Override
 	public String evalConfigDsl(String dslName,Object params){
 		return null;
 	}

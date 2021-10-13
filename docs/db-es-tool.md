@@ -298,6 +298,17 @@ thread_pool.bulk.queue_size: 1000   es线程等待队列长度
 
 thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
+#### 2.3.2.1 异步ResultSet缓冲队列大小配置
+
+```java
+//数据异步同步通道缓存队列设置，默认为10
+importBuilder.setTranDataBufferQueue(20);
+```
+
+bboss会将采集数据先放入异步结果迭代器resultset缓冲队列，队列长度对应的参数为tranDataBufferQueue；
+
+如果目标写入比较慢，通过调整数据采集异步结果迭代器resultset数据缓冲队列tranDataBufferQueue大小，可以得到更好的数据采集性能，如果调大该参数会占用更多的jvm内存。
+
 ### 2.3.3 一个有字段属性映射的稍微复杂案例实现
 
 ```java
@@ -1526,36 +1537,98 @@ importBuilder.setTargetElasticsearch("default,test");
 
 ### 2.3.22 记录切割
 
-在数据导入时，有时需将单条记录切割为多条记录，通过设置切割字段以及SplitHandler接口来实现，示例代码如下：可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值
+在数据导入时，有时需将单条记录切割为多条记录，通过设置切割字段以及SplitHandler接口来实现，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值,示例代码如下：
 
 ```java
       importBuilder.setSplitFieldName("@message");
-      importBuilder.setSplitHandler(new SplitHandler() {
-         /**
-          * 将记录字段值splitValue切割为多条记录，如果方法返回null，则继续将原记录写入目标库
-          * @param taskContext
-          * @param record
-          * @param splitValue
-          * @return List<KeyMap<String, Object>> KeyMap是LinkedHashMap的子类，添加key字段，如果是往kafka推送数据，可以设置推送的key
-          */
-         @Override
-         public List<KeyMap<String, Object>> splitField(TaskContext taskContext,//调度任务上下文
-                                             Record record,//原始记录对象
-                                             Object splitValue) {//待切割的字段值
-//          Map<String,Object > data = (Map<String, Object>) record.getData();//获取原始记录中包含的数据对象
-            List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
-            //模拟将数据切割为10条记录
-            for(int i = 0 ; i < 10; i ++){
-               KeyMap<String, Object> d = new KeyMap<String, Object>();//创建新记录对象
-               d.put("id", SimpleStringUtil.getUUID());//用新的id值覆盖原来的唯一标识id字段的值
-               d.put("message",i+"-"+splitValue);//我们只切割splitValue到message字段，继承原始记录中的其他字段
-//             d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
-               splitDatas.add(d);
-            }
-            return splitDatas;
-         }
-      });
+		importBuilder.setSplitHandler(new SplitHandler() {
+			/**
+			 * 将记录字段值splitValue切割为多条记录，如果方法返回null，则继续将原记录写入目标库
+			 * @param taskContext
+			 * @param record
+			 * @param fieldValue
+			 * @return List<KeyMap<String, Object>> KeyMap是LinkedHashMap的子类，添加key字段，如果是往kafka推送数据，可以设置推送的key
+			 */
+			@Override
+			public List<KeyMap> splitField(TaskContext taskContext,//调度任务上下文
+										   Record record,//原始记录对象
+										   Object fieldValue) {//待切割的字段值
+				//如果@message不是一个数组格式的json，那么就不要拆分原来的记录，直接返回null就可以了
+				String data =  String.valueOf(fieldValue);
+				if(!data.startsWith("["))
+					return null;
+				//把@message字段进行切割为一个List<Map>对象
+				List<Map> datas = SimpleStringUtil.json2ListObject(data, Map.class);
+				List<KeyMap> splitDatas =  new ArrayList<>(datas.size());
+				for(int i = 0; i < datas.size(); i ++){
+					Map map = datas.get(i);
+					KeyMap keyMap = new KeyMap();
+					keyMap.put("@message",map);//然后循环将map再放回新记录，作为新记录字段@message的值
+					splitDatas.add(keyMap);
+				}
+				return splitDatas;
+			}
+		});
 ```
+
+上面的列子是把@message字段进行切割为一个List<Map>对象，然后循环将map再放回新记录，作为新记录字段@message的值，需要注意的是如果@message不是一个数组格式的json，那么就不要拆分原来的记录，直接返回null就可以了：
+
+```java
+String data =  String.valueOf(fieldValue);
+if(!data.startsWith("["))
+   return null;//保留原记录，不切割
+List<Map> datas = SimpleStringUtil.json2ListObject(data, Map.class);
+```
+
+最后一个注意事项，如果我们在最终的输出字段中，需要将@message名称变成名称message,那么只需加上以下代码即可：
+
+//将@message名称映射转换为message
+
+​		importBuilder.addFieldMapping("@message","message");
+
+完整的代码：
+
+```java
+importBuilder.setSplitFieldName("@message");
+		importBuilder.setSplitHandler(new SplitHandler() {
+			/**
+			 * 将记录字段值splitValue切割为多条记录，如果方法返回null，则继续将原记录写入目标库
+			 * @param taskContext
+			 * @param record
+			 * @param fieldValue
+			 * @return List<KeyMap<String, Object>> KeyMap是LinkedHashMap的子类，添加key字段，如果是往kafka推送数据，可以设置推送的key
+			 */
+			@Override
+			public List<KeyMap> splitField(TaskContext taskContext,//调度任务上下文
+										   Record record,//原始记录对象
+										   Object fieldValue) {//待切割的字段值
+				//如果@message不是一个数组格式的json，那么就不要拆分原来的记录，直接返回null就可以了
+				String data =  String.valueOf(fieldValue);
+				if(!data.startsWith("["))
+					return null;
+				//把@message字段进行切割为一个List<Map>对象
+				List<Map> datas = SimpleStringUtil.json2ListObject(data, Map.class);
+				List<KeyMap> splitDatas =  new ArrayList<>(datas.size());
+				for(int i = 0; i < datas.size(); i ++){
+					Map map = datas.get(i);
+					KeyMap keyMap = new KeyMap();
+					keyMap.put("@message",map);//然后循环将map再放回新记录，作为新记录字段@message的值
+					splitDatas.add(keyMap);
+				}
+				return splitDatas;
+			}
+		});
+		//将@message名称映射转换为message
+		importBuilder.addFieldMapping("@message","message");
+```
+
+生成的正确记录如下：
+
+```json
+{"uuid":"7af4eee7-61d7-4ab8-8678-117fd6f37e24","message":{"userId":"123457","userName":"李四3","yearMonth":"202104","readTime":"20210401","payTime":"20210501","waterNum":"100","waterType":"工业用水"},"@timestamp":"2021-10-12T02:45:06.419Z","@filemeta":{"hostName":"DESKTOP-U3V5C85","pointer":1354,"hostIp":"169.254.252.194","filePath":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json","fileId":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json"}}
+```
+
+
 
 ### 2.3.23 自定义处理器
 
@@ -1594,6 +1667,8 @@ ES2DummyExportBuilder
 Kafka2DummyExportBuilder
 
 [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.6/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+
+
 
 ## 2.4.DB-ES数据同步工具使用方法
 

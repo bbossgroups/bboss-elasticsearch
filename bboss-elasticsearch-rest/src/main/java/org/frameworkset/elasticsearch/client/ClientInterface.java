@@ -3,6 +3,7 @@ package org.frameworkset.elasticsearch.client;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.entity.*;
 import org.frameworkset.elasticsearch.entity.sql.ColumnMeta;
@@ -26,7 +27,7 @@ import java.util.Set;
  * @see <url>https://esdoc.bbossgroups.com/#/development</url>
  */
 @ThreadSafe
-public interface ClientInterface extends ClientInterfaceNew {
+public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	public final String HTTP_GET = "get";
 	public final String HTTP_POST = "post";
 	public final String HTTP_DELETE = "delete";
@@ -1342,14 +1343,14 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @param entity
 	 * @return
 	 */
-	public abstract Object executeRequest(String path, String entity) throws ElasticSearchException;
+	public abstract String executeRequest(String path, String entity) throws ElasticSearchException;
 
 
 	/**
 	 * @param path
 	 * @return
 	 */
-	public abstract Object executeRequest(String path) throws ElasticSearchException;
+	public abstract String executeRequest(String path) throws ElasticSearchException;
 
 	/**
 	 * 发送es restful请求，获取String类型json报文
@@ -2788,4 +2789,12 @@ public interface ClientInterface extends ClientInterfaceNew {
 	 * @return
 	 */
 	public ElasticSearch getElasticSearch() ;
+
+	/**
+	 * 获取es数据源client对象
+	 * @return
+	 */
+	public ElasticSearchRestClient getClient() ;
+
+	IndexNameBuilder getIndexNameBuilder();
 }

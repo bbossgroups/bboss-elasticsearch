@@ -15,7 +15,8 @@ package org.frameworkset.elasticsearch;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.RestClientUtil;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ExecuteRequestUtil;
 import org.frameworkset.elasticsearch.scroll.ParallelSliceScrollResult;
 import org.frameworkset.elasticsearch.serial.SerialContext;
 
@@ -34,9 +35,9 @@ public class SliceRunTask<T> implements Runnable {
 	private   String scroll;
 	private   Class<T> type;
 	private   ParallelSliceScrollResult sliceScrollResult;
-	private RestClientUtil restClientUtil;
+	private ClientInterface restClientUtil;
 	private SerialContext serialContext ;
-	public SliceRunTask(RestClientUtil restClientUtil,int sliceId,String path,String sliceDsl,  String scroll,  Class<T> type,
+	public SliceRunTask(ClientInterface restClientUtil, int sliceId, String path, String sliceDsl, String scroll, Class<T> type,
 						ParallelSliceScrollResult sliceScrollResult, SerialContext serialContext){
 		this.restClientUtil = restClientUtil;
 		this.sliceId = sliceId;
@@ -53,7 +54,7 @@ public class SliceRunTask<T> implements Runnable {
 			if(serialContext != null){
 				this.serialContext.continueSerialTypes();
 			}
-			restClientUtil._doSliceScroll( sliceId, path,
+			ExecuteRequestUtil._doSliceScroll(restClientUtil.getClient(), sliceId, path,
 					sliceDsl,
 					scroll, type,
 					sliceScrollResult,true);
