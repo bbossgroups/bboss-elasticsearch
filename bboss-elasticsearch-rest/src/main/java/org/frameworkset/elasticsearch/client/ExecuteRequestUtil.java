@@ -427,4 +427,25 @@ public abstract class ExecuteRequestUtil {
 		return ExecuteRequestUtil._slice(clientInterface,path,  scrollHandler,type,max, scroll, sliceScroll);
 
 	}
+
+	public static String _addDocuments(ElasticSearchRestClient client, ESUtil esUtil,String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		for(Object bean:beans) {
+			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,addTemplate,bean,"index",client.isUpper7());
+		}
+		if(refreshOption == null)
+			return client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+	}
+	public static String _updateDocuments(ElasticSearchRestClient client, ESUtil esUtil,String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+		StringBuilder builder = new StringBuilder();
+		for(Object bean:beans) {
+			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,updateTemplate,bean,"update",client.isUpper7());
+		}
+		if(refreshOption != null && !refreshOption.equals(""))
+			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+		else
+			return client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
+	}
 }

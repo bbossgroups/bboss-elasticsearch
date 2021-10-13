@@ -2778,14 +2778,6 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	public String getElasticsearchVersionWithCluster(String datasourceName);
 	public TemplateContainer getTemplatecontext();
 
-	/**
-	 * 使用params中的参数变量，解析配置文件中dslName对应的dsl语句，并返回解析结果
-	 * @param dslName
-	 * @param params
-	 * @return
-	 */
-	public String evalConfigDslWithCluster(String datasourceName,String dslName,Object params);
-
 
 
 	/**

@@ -1857,11 +1857,6 @@ public class RestClientUtil extends AbstractRestClientUtil{
 		return clientInterface.getElasticsearchVersion();
 	}
 
-	@Override
-	public String evalConfigDslWithCluster(String datasourceName, String dslName, Object params) {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.evalConfigDsl(  dslName,  params);
-	}
 
 	@Override
 	public ElasticSearch getElasticSearchWithCluster(String datasourceName) {

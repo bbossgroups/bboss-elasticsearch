@@ -77,7 +77,7 @@ public class ConfigRestClientUtil extends AbstractConfigRestClientUtil {
 	@Override
 	public String addDocumentsWithCluster(String datasourceName, String indexName, String indexType, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return  _addDocuments(clientInterface.getClient(), indexName, indexType,addTemplate, beans, refreshOption);
+		return  ExecuteRequestUtil._addDocuments(clientInterface.getClient(), esUtil, indexName, indexType,addTemplate, beans, refreshOption);
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class ConfigRestClientUtil extends AbstractConfigRestClientUtil {
 	@Override
 	public String updateDocumentsWithCluster(String datasourceName, String indexName, String indexType, String updateTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return _updateDocuments(clientInterface.getClient(),indexName, indexType, updateTemplate, beans, refreshOption);
+		return ExecuteRequestUtil._updateDocuments( clientInterface.getClient(), esUtil,indexName, indexType, updateTemplate, beans, refreshOption);
 	}
 
 	@Override
@@ -638,74 +638,57 @@ public class ConfigRestClientUtil extends AbstractConfigRestClientUtil {
 
 
 	@Override
-	public <T> ESDatas<T> scrollParallelWithCluster(String datasourceName, String path, String entity,
+	public <T> ESDatas<T> scrollParallelWithCluster(String datasourceName, String path, String dslTemplate,
 													String scroll, Class<T> type, ScrollHandler<T> scrollHandler) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.scrollParallel(path, entity,
-				scroll, type, scrollHandler);
+		return super.scrollParallelWithCluster(datasourceName,path,ESTemplateHelper.evalTemplate(esUtil,dslTemplate),scroll,type,scrollHandler);
 	}
 
 
 
 	@Override
-	public String createScriptWithCluster(String datasourceName, String scriptName, String scriptDsl) {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.createScript(  scriptName,  scriptDsl);
+	public String createScriptWithCluster(String datasourceName, String scriptName, String dslTemplate) {
+		return super.createScriptWithCluster(datasourceName,scriptName,ESTemplateHelper.evalTemplate(esUtil,dslTemplate));
+
 	}
 
 	@Override
 	public String createScriptWithCluster(String datasourceName, String scriptName, String scriptDslTemplate, Map params) {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.createScript(   scriptName,   scriptDslTemplate,   params);
+		return super.createScriptWithCluster(datasourceName,scriptName,ESTemplateHelper.evalTemplate(esUtil,scriptDslTemplate,params));
 	}
 
 	@Override
 	public String createScriptWithCluster(String datasourceName, String scriptName, String scriptDslTemplate, Object params) {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.createScript(   scriptName,   scriptDslTemplate,   params);
+		return super.createScriptWithCluster(datasourceName,scriptName,ESTemplateHelper.evalTemplate(esUtil,scriptDslTemplate,params));
 	}
-
-	@Override
-	public String evalConfigDslWithCluster(String datasourceName, String dslName, Object params) {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.evalConfigDsl(  dslName,  params);
-	}
-
 
 	@Override
 	public String addDocumentsNewWithCluster(String datasourceName, String indexName, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDocumentsNew(indexName, addTemplate, beans,  refreshOption);
+		return addDocumentsWithCluster( datasourceName,indexName,   _doc,addTemplate,  beans,refreshOption);
 	}
 
 	@Override
 	public String addDocumentsNewWithCluster(String datasourceName, String indexName, String addTemplate, List<?> beans) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDocumentsNew(indexName, addTemplate, beans);
+		return addDocumentsWithCluster( datasourceName,indexName,   _doc,addTemplate,  beans);
 	}
 
 	@Override
 	public String addDocumentNewWithCluster(String datasourceName, String indexName, String addTemplate, Object bean) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDocumentNew(indexName, addTemplate,  bean);
+		return addDocumentWithCluster( datasourceName,indexName,    _doc,addTemplate,  bean);
 	}
 
 	@Override
 	public String addDocumentNewWithCluster(String datasourceName, String indexName, String addTemplate, Object bean, String refreshOption) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDocumentNew(indexName, addTemplate,  bean,  refreshOption);
+		return addDocumentWithCluster( datasourceName,indexName,    _doc,addTemplate,  bean,refreshOption);
 	}
 
 	@Override
 	public String updateDocumentsNewWithCluster(String datasourceName, String indexName, String updateTemplate, List<?> beans) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.updateDocumentsNew(indexName, updateTemplate,  beans);
+		return updateDocumentsWithCluster(  datasourceName,indexName,    _doc,   updateTemplate,   beans);
 	}
 
 	@Override
 	public String updateDocumentsNewWithCluster(String datasourceName, String indexName, String updateTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
-		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.updateDocumentsNew(indexName, updateTemplate,beans,  refreshOption);
+		return updateDocumentsWithCluster(  datasourceName,indexName,    _doc,   updateTemplate,   beans,refreshOption);
 	}
 
 
@@ -719,19 +702,19 @@ public class ConfigRestClientUtil extends AbstractConfigRestClientUtil {
 	@Override
 	public String addDateDocumentNewWithCluster(String datasourceName, String indexName, String addTemplate, Object bean, String refreshOption) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDateDocumentNew(indexName, addTemplate,  bean,  refreshOption);
+		return addDocumentNewWithCluster( datasourceName, clientInterface.getDynamicIndexName( indexName),  addTemplate,  bean,  refreshOption) ;
 	}
 
 	@Override
 	public String addDateDocumentsNewWithCluster(String datasourceName, String indexName, String addTemplate, List<?> beans) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDateDocumentsNew(indexName, addTemplate, beans);
+		return addDocumentsNewWithCluster( datasourceName, clientInterface.getDynamicIndexName( indexName),  addTemplate,  beans) ;
 	}
 
 	@Override
 	public String addDateDocumentsNewWithCluster(String datasourceName, String indexName, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.addDateDocumentsNew(indexName, addTemplate, beans, refreshOption);
+		return addDocumentsNewWithCluster( datasourceName, clientInterface.getDynamicIndexName( indexName),  addTemplate,  beans,refreshOption) ;
 	}
 
 

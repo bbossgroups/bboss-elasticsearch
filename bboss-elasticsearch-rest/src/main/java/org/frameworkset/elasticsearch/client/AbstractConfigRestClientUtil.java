@@ -164,20 +164,10 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		 return _addDocuments(client, indexName, indexType,addTemplate, beans, refreshOption);
+		 return ExecuteRequestUtil._addDocuments(client, esUtil,indexName, indexType,addTemplate, beans, refreshOption);
 	}
 
-	protected String _addDocuments(ElasticSearchRestClient client, String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
-		for(Object bean:beans) {
-			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,addTemplate,bean,"index",client.isUpper7());
-		}
-		if(refreshOption == null)
-			return client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
-	}
-	
+
 
 	/**
 	 * 批量更新索引，对于按时间分区存储的索引，需要应用程序自行处理带日期时间的索引名称
@@ -192,19 +182,10 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 		return updateDocuments( indexName,  indexType, updateTemplate, beans,(String)null);
 	}
 	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		return _updateDocuments( client, indexName,  indexType, updateTemplate, beans, refreshOption);
+		return ExecuteRequestUtil._updateDocuments( client, esUtil,indexName,  indexType, updateTemplate, beans, refreshOption);
 	}
 
-	protected String _updateDocuments(ElasticSearchRestClient client,String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
-		for(Object bean:beans) {
-			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,updateTemplate,bean,"update",client.isUpper7());
-		}
-		if(refreshOption != null && !refreshOption.equals(""))
-			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
-		else
-			return client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-	}
+
 
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
