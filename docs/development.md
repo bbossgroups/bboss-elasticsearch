@@ -1998,6 +1998,8 @@ String datasr = clientUtil.executeHttp("demowithesindex-*/_search","querydsl",pa
 
 ## **5.2 多elasticsearch服务器集群支持**
 
+bboss对多集群elasticsearch的支持非常棒，可以在客户端接口ClientInterface 实例级别指定操作的elasticsearch数据源名称，亦可以在客户端接口ClientInterface的方法级别指定操作的elasticsearch数据源名称，下面分别介绍其使用方法
+
 ### 5.2.1 普通maven项目多ES集群数据源客户端组件定义方法
 
 初始化bboss elasticsearch组件ClientInterface 时，可以指定elasticsearch服务器，支持在指定的elasticsearch服务器集群进行操作,例如：
@@ -2050,6 +2052,55 @@ logs对应的es集群服务器相关参数配置，请参考文档：
 
 [spring boot多集群配置](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=_4%e5%a4%9aes%e9%9b%86%e7%be%a4%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b)
 
+
+
+### 5.2.3 在接口方法上指定datasourceName
+
+ClientInterface接口提供了一系列直接指定数据源的api，涉及的组件有RestClientUtil（支撑直接操作dsl或者无dsl的方法）和ConfigRestClientUtil
+
+```java
+org.frameworkset.elasticsearch.client.ClientInterfaceWithESDatasource
+```
+
+```java
+addDocumentWithCluster(String datasourceName,...)
+addDocumentsWithCluster(String datasourceName,...)
+deleteDocumentWithCluster(String datasourceName,...)    
+deleteDocumentsWithCluster(String datasourceName,...)
+getDocumentWithCluster(String datasourceName,...)
+getDocumentByFieldWithCluster(String datasourceName,...)
+getDocumentByFieldLikeWithCluster(String datasourceName,...)
+searchListWithCluster(String datasourceName,...)
+searchObjectWithCluster(String datasourceName,...)
+searchWithCluster(String datasourceName,...)
+sqlObjectWithCluster(String datasourceName,...)
+sqlWithCluster(String datasourceName,...)
+scrollParallelWithCluster(String datasourceName,...)
+scrollWithCluster(String datasourceName,...)
+scrollSliceParallelWithCluster(String datasourceName,...)
+scrollSliceWithCluster(String datasourceName,...)
+```
+
+示例代码-searchListWithCluster
+
+```java
+ESDatas<Demo> esDatas = 
+            clientUtil.searchListWithCluster(datasourceName,//指定操作的Elasticsearch集群数据源
+                  "demo/_search",//demo为索引表，_search为检索操作action
+            "searchDatas",//esmapper/demo7.xml中定义的dsl语句
+            params,//变量参数
+            Demo.class);//返回的文档封装对象类型
+      //获取结果对象列表，最多返回1000条记录
+      List<Demo> demos = esDatas.getDatas();
+
+//    String json = clientUtil.executeRequest("demo/_search",//demo为索引表，_search为检索操作action
+//          "searchDatas",//esmapper/demo7.xml中定义的dsl语句
+//          params);
+
+//    String json = com.frameworkset.util.SimpleStringUtil.object2json(demos);
+      //获取总记录数
+      long totalSize = esDatas.getTotalSize();
+```
 
 ## **5.3 dsl配置规范**
 

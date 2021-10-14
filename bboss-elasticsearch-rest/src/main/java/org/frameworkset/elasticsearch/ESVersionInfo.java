@@ -24,7 +24,7 @@ package org.frameworkset.elasticsearch;
  * @version 1.0
  */
 public class ESVersionInfo {
-	public static String getESVersion631(){
-		return "6.3.1";
+	public static String getESVersion636(){
+		return "6.3.6";
 	}
 }

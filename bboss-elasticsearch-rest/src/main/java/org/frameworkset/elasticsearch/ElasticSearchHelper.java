@@ -354,7 +354,7 @@ public class ElasticSearchHelper {
 		}
 	}
 
-	protected static void init(){
+	public synchronized static void init(){
 		if(inited )
 			return;
 		synchronized (elasticSearchMap) {
