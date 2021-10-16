@@ -264,7 +264,7 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 ![img](images\jacson.png)
 
-- 升级bboss到6.3.5
+- 升级bboss到6.3.6
 
 # 问题7 spring boot工程构建问题
 
