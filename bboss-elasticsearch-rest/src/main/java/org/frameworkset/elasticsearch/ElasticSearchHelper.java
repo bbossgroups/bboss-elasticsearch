@@ -55,6 +55,12 @@ public class ElasticSearchHelper {
 	}
 	private static final Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
 
+
+	/**
+	 * 引用elasticsearch数据源
+	 */
+	private static final Map<String,String> referElasticSearchMap = new LinkedHashMap<String, String>();
+
 	/**
 	 * 获取所有的es数据源配置对象
 	 * @return
@@ -62,6 +68,15 @@ public class ElasticSearchHelper {
 	public static Map<String,ElasticSearch> getAllElasticSearches(){
 		LinkedHashMap temp = new LinkedHashMap<String, ElasticSearch>();
 		temp.putAll(elasticSearchMap);
+		return temp;
+	}
+	/**
+	 * 获取所有的被定义为引用其他数据源的es数据源配置信息
+	 * @return Map<elasticsearchDatasource,referedElasticsearchDatasource>
+	 */
+	public static Map<String,String> getAllReferElasticSearches(){
+		LinkedHashMap temp = new LinkedHashMap<String, ElasticSearch>();
+		temp.putAll(referElasticSearchMap);
 		return temp;
 	}
 	public ElasticSearchHelper() {
@@ -123,94 +138,107 @@ public class ElasticSearchHelper {
 		ElasticSearch firstElasticSearch = null;
 		initDslFileRefreshInterval( configContext);
 		Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
+
+		Map<String,String> referElasticSearchMap = new LinkedHashMap<String, String>();
 		for(String serverName:elasticsearchServerNames){
-			if(ElasticSearchHelper.elasticSearchMap.containsKey(serverName))
+			if(ElasticSearchHelper.elasticSearchMap.containsKey(serverName) || ElasticSearchHelper.referElasticSearchMap.containsKey(serverName))
 				continue;
 			else if (serverName.equals("default")){
-				if(ElasticSearchHelper.elasticSearchMap.containsKey(DEFAULT_SEARCH))
+				if(ElasticSearchHelper.elasticSearchMap.containsKey(DEFAULT_SEARCH) || ElasticSearchHelper.referElasticSearchMap.containsKey(DEFAULT_SEARCH))
 					continue;
 			}
-			Properties elasticsearchPropes = new Properties();
-			elasticsearchPropes.put("elasticsearch.client",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.client",configContext,"restful"));
-			elasticsearchPropes.put("elasticUser",
-					ElasticSearchHelper._getStringValue(serverName,"elasticUser",configContext,""));
-			elasticsearchPropes.put("elasticPassword",
-					ElasticSearchHelper._getStringValue(serverName,"elasticPassword",configContext,""));
-			elasticsearchPropes.put("elasticsearch.rest.hostNames",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.rest.hostNames",configContext,"127.0.0.1:9200"));
-			elasticsearchPropes.put("elasticsearch.dateFormat",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.dateFormat",configContext,"yyyy.MM.dd"));
-			elasticsearchPropes.put("elasticsearch.timeZone",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.timeZone",configContext,"Asia/Shanghai"));
-			elasticsearchPropes.put("elasticsearch.ttl",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.ttl",configContext,"2d"));
-			elasticsearchPropes.put("elasticsearch.showTemplate",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.showTemplate",configContext,"false"));
-			elasticsearchPropes.put("elasticsearch.httpPool",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.httpPool",configContext,serverName));
-			elasticsearchPropes.put("elasticsearch.discoverHost",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.discoverHost",configContext,"false"));
-			elasticsearchPropes.put("elasticsearch.version",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.version",configContext,"7.0.0"));
+//			# 直接与指标数据库保持一致，直接引用即可
 
-			elasticsearchPropes.put("elasticsearch.sliceScrollThreadCount",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadCount",configContext,"50"));
-			elasticsearchPropes.put("elasticsearch.sliceScrollThreadQueue",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollThreadQueue",configContext,"100"));
-			elasticsearchPropes.put("elasticsearch.sliceScrollBlockedWaitTimeout",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.sliceScrollBlockedWaitTimeout",configContext,"0"));
-			elasticsearchPropes.put("elasticsearch.includeTypeName",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.includeTypeName",configContext,"false"));
-			elasticsearchPropes.put("elasticsearch.scrollThreadCount",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadCount",configContext,"50"));
-			elasticsearchPropes.put("elasticsearch.scrollThreadQueue",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollThreadQueue",configContext,"200"));
-			elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.scrollBlockedWaitTimeout",configContext,"0"));
-			elasticsearchPropes.put("elasticsearch.healthCheckInterval",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.healthCheckInterval",configContext,"3000"));
+			String referExternal = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.referExternal",configContext,null);
+			if(referExternal == null || referExternal.equals("")) {
+				Properties elasticsearchPropes = new Properties();
+				elasticsearchPropes.put("elasticsearch.client",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.client", configContext, "restful"));
+				elasticsearchPropes.put("elasticUser",
+						ElasticSearchHelper._getStringValue(serverName, "elasticUser", configContext, ""));
+				elasticsearchPropes.put("elasticPassword",
+						ElasticSearchHelper._getStringValue(serverName, "elasticPassword", configContext, ""));
+				elasticsearchPropes.put("elasticsearch.rest.hostNames",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.rest.hostNames", configContext, "127.0.0.1:9200"));
+				elasticsearchPropes.put("elasticsearch.dateFormat",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.dateFormat", configContext, "yyyy.MM.dd"));
+				elasticsearchPropes.put("elasticsearch.timeZone",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.timeZone", configContext, "Asia/Shanghai"));
+				elasticsearchPropes.put("elasticsearch.ttl",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.ttl", configContext, "2d"));
+				elasticsearchPropes.put("elasticsearch.showTemplate",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.showTemplate", configContext, "false"));
+				elasticsearchPropes.put("elasticsearch.httpPool",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.httpPool", configContext, serverName));
+				elasticsearchPropes.put("elasticsearch.discoverHost",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.discoverHost", configContext, "false"));
+				elasticsearchPropes.put("elasticsearch.version",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.version", configContext, "7.0.0"));
 
-			elasticsearchPropes.put("elasticsearch.failAllContinue",
-					ElasticSearchHelper._getStringValue(serverName,"elasticsearch.failAllContinue",configContext,"true"));
-			String slowDslThreshold = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.slowDslThreshold",configContext,null);
-			if(slowDslThreshold != null) {
-				elasticsearchPropes.put("elasticsearch.slowDslThreshold",
-						slowDslThreshold);
+				elasticsearchPropes.put("elasticsearch.sliceScrollThreadCount",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.sliceScrollThreadCount", configContext, "50"));
+				elasticsearchPropes.put("elasticsearch.sliceScrollThreadQueue",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.sliceScrollThreadQueue", configContext, "100"));
+				elasticsearchPropes.put("elasticsearch.sliceScrollBlockedWaitTimeout",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.sliceScrollBlockedWaitTimeout", configContext, "0"));
+				elasticsearchPropes.put("elasticsearch.includeTypeName",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.includeTypeName", configContext, "false"));
+				elasticsearchPropes.put("elasticsearch.scrollThreadCount",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.scrollThreadCount", configContext, "50"));
+				elasticsearchPropes.put("elasticsearch.scrollThreadQueue",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.scrollThreadQueue", configContext, "200"));
+				elasticsearchPropes.put("elasticsearch.scrollBlockedWaitTimeout",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.scrollBlockedWaitTimeout", configContext, "0"));
+				elasticsearchPropes.put("elasticsearch.healthCheckInterval",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.healthCheckInterval", configContext, "3000"));
+
+				elasticsearchPropes.put("elasticsearch.failAllContinue",
+						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.failAllContinue", configContext, "true"));
+				String slowDslThreshold = ElasticSearchHelper._getStringValue(serverName, "elasticsearch.slowDslThreshold", configContext, null);
+				if (slowDslThreshold != null) {
+					elasticsearchPropes.put("elasticsearch.slowDslThreshold",
+							slowDslThreshold);
+				}
+				String slowDslCallback = ElasticSearchHelper._getStringValue(serverName, "elasticsearch.slowDslCallback", configContext, null);
+				if (slowDslCallback != null) {
+					elasticsearchPropes.put("elasticsearch.slowDslCallback",
+							slowDslCallback);
+				}
+				String logDslCallback = ElasticSearchHelper._getStringValue(serverName, "elasticsearch.logDslCallback", configContext, null);
+				if (logDslCallback != null) {
+					elasticsearchPropes.put("elasticsearch.logDslCallback",
+							logDslCallback);
+				}
+
+				String useHttps = ElasticSearchHelper._getStringValue(serverName, "elasticsearch.useHttps", configContext, null);
+				if (useHttps != null) {
+					elasticsearchPropes.put("elasticsearch.useHttps",
+							useHttps);
+				}
+
+
+				final ElasticSearch elasticSearch = new ElasticSearch();
+				if (firstElasticSearch == null)
+					firstElasticSearch = elasticSearch;
+				elasticSearch.setFromspringboot(fromspringboot);
+				elasticSearch.setElasticSearchName(serverName);
+				elasticSearch.setElasticsearchPropes(elasticsearchPropes);
+				elasticSearch.configureWithConfigContext(configContext);
+				if (!serverName.equals("default")) {
+
+					elasticSearchMap.put(serverName, elasticSearch);
+				} else {
+					elasticSearchMap.put(DEFAULT_SEARCH, elasticSearch);
+					elasticSearchSink = elasticSearch;
+				}
 			}
-			String slowDslCallback = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.slowDslCallback",configContext,null);
-			if(slowDslCallback != null) {
-				elasticsearchPropes.put("elasticsearch.slowDslCallback",
-						slowDslCallback);
-			}
-			String logDslCallback = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.logDslCallback",configContext,null);
-			if(logDslCallback != null) {
-				elasticsearchPropes.put("elasticsearch.logDslCallback",
-						logDslCallback);
-			}
+			else{
+				if (!serverName.equals("default")) {
 
-			String useHttps = ElasticSearchHelper._getStringValue(serverName,"elasticsearch.useHttps",configContext,null);
-			if(useHttps != null) {
-				elasticsearchPropes.put("elasticsearch.useHttps",
-						useHttps);
-			}
-
-
-
-
-			final ElasticSearch elasticSearch = new ElasticSearch();
-			if(firstElasticSearch == null)
-				firstElasticSearch = elasticSearch;
-			elasticSearch.setFromspringboot(fromspringboot);
-			elasticSearch.setElasticSearchName(serverName);
-			elasticSearch.setElasticsearchPropes(elasticsearchPropes);
-			elasticSearch.configureWithConfigContext(configContext);
-			if (!serverName.equals("default")) {
-
-				elasticSearchMap.put(serverName, elasticSearch);
-			} else {
-				elasticSearchMap.put(DEFAULT_SEARCH, elasticSearch);
-				elasticSearchSink = elasticSearch;
+					referElasticSearchMap.put(serverName,referExternal);
+				} else {
+					referElasticSearchMap.put(DEFAULT_SEARCH,referExternal);
+				}
 			}
 
 
@@ -270,6 +298,11 @@ public class ElasticSearchHelper {
 				ElasticSearchHelper.elasticSearchMap.putAll(elasticSearchMap);
 			}
 
+		}
+		if(referElasticSearchMap.size() > 0){
+			synchronized (referElasticSearchMap) {
+				ElasticSearchHelper.referElasticSearchMap.putAll(referElasticSearchMap);
+			}
 		}
 	}
 
@@ -397,27 +430,65 @@ public class ElasticSearchHelper {
 	}
 
 	public static synchronized void stopElasticsearch(String esname){
-		ElasticSearch elasticSearch = getElasticSearchSinkOnly(esname);
+		ElasticSearch elasticSearch = getElasticSearchSinkOnly(esname,true);
 		if(elasticSearch != null) {
 			elasticSearch.stop();
 			if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
 
 				 elasticSearchSink = null;
 				 elasticSearchMap.remove(DEFAULT_SEARCH);
+				 referElasticSearchMap.remove(DEFAULT_SEARCH);
 			}
 			else {
 				elasticSearchMap.remove(esname);
 			}
 		}
+		referElasticSearchMap.remove(esname);
 	}
 	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch){
+		return getElasticSearchSinkOnly(elasticSearch,false);
+	}
+	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch,boolean direct){
 		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
 
 			return elasticSearchSink;
 		}
+		if(!direct) {
+			elasticSearch = getRealElasticserachName(elasticSearch);
+			if (elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default")) {
+
+				return elasticSearchSink;
+			}
+		}
 		ElasticSearch elasticSearchSink = elasticSearchMap.get(elasticSearch);
 
 		return elasticSearchSink;
+	}
+	public static String getRealElasticserachName(String elasticSearch){
+		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
+
+			return DEFAULT_SEARCH;
+		}
+		String name = referElasticSearchMap.get(elasticSearch);
+		if(name == null)
+			return elasticSearch;
+		do{
+			String name_ = referElasticSearchMap.get(name);
+			if(name_ == null) {
+				break;
+			}
+			else{
+				if(name_.equals(name)){
+					throw new ElasticSearchException("Elasticsearch数据源不能直接或者间接引用自己："+name);
+				}
+				else{
+					name = name_;
+				}
+			}
+
+		}while (true);
+
+		return name;
 	}
 	/**
 	 * 获取elasticSearch对应的elasticSearch服务器对象
@@ -426,6 +497,11 @@ public class ElasticSearchHelper {
 	 */
 	public static ElasticSearch getElasticSearchSink(String elasticSearch){
 		init();
+		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
+
+			return elasticSearchSink;
+		}
+		elasticSearch = getRealElasticserachName( elasticSearch);
 		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
 
 			return elasticSearchSink;

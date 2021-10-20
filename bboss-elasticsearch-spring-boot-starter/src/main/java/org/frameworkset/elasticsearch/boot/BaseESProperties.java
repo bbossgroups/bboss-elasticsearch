@@ -602,6 +602,19 @@ public abstract class BaseESProperties {
 		private String slowDslThreshold;
 		private String useHttps;
 
+		public String getReferExternal() {
+			return referExternal;
+		}
+
+		public void setReferExternal(String referExternal) {
+			this.referExternal = referExternal;
+		}
+
+		/**
+		 * 引用其他数据源
+		 */
+		private String referExternal;
+
 		public String getFailAllContinue() {
 			return failAllContinue;
 		}
@@ -933,6 +946,9 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getUseHttps()))
 				properties.put(_name+"elasticsearch.useHttps",this.getElasticsearch().getUseHttps());
+
+			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getReferExternal()))
+				properties.put(_name+"elasticsearch.referExternal",this.getElasticsearch().getReferExternal());
 
 		}
 
