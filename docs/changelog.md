@@ -47,7 +47,81 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.3.6</version>
         </dependency>
 ```
+# v6.3.7 功能改进
+1. elasticsearch客户端改进：多数据源支持数据源引用功能，如果两个数据源都指向同一个数据源，则可以将第二个数据源指向第一个数据源，配置示例：
 
+普通项目
+
+```properties
+elasticsearch.referExternal=default
+```
+
+spring boot项目
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.referExternal=default
+```
+
+
+
+2. 数据源同步改进：增加自定义定时同步调度机制，可以指定作业执行的时间段（支持指定多个时间段）和忽略执行时间段（支持指定多个时间段），使用案例：
+
+```java
+		//定时任务配置，
+		importBuilder.setScheduleSelf()//使用bboss自带的定时器,bboss timer
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(1*60*1000l)//每隔period毫秒执行，如果不设置，只执行一次
+				.addScanNewFileTimeRange("12:37-23:59");//添加每天调度执行的时间段，可以调用多次addScanNewFileTimeRange方法添加多个时间段
+				//添加每天排除的时间段（不调度执行作业），可以调用多次addSkipScanNewFileTimeRange方法添加多个时间段,设置addScanNewFileTimeRange，则SkipScanNewFileTimeRange不起作用
+//				.addSkipScanNewFileTimeRange("11:30-13:00");
+		//定时任务配置结束
+```
+
+如果是Filelog插件，还需要额外指定：
+```java
+		FileImportConfig config = new FileImportConfig();
+		/**
+        * 设置是否采用外部新文件扫描调度机制：bboss timer,jdk timer,quartz,xxl-job
+        * true 采用，false 不采用，默认false
+        */
+        config.setUseETLScheduleForScanNewFile(true);		
+```
+3. 在任务CallInterceptor.preCall中，可以根据taskContext中对应的不同的文件指定不同数据库添加、修改、删除sql,使用参考案例：
+```java
+//导出到数据源配置
+		DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+		dbConfigBuilder
+				.setSqlFilepath("sql-dbtran.xml")//指定sql配置文件地址
+				.setTargetDbName("test");//指定目标数据库，在application.properties文件中配置
+
+		importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+				FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+				String filePath = fileTaskContext.getFileInfo().getOriginFilePath();
+				/**
+				 * 根据文件名称指定插入数据库的sql语句
+				 */
+				if(filePath.endsWith("metrics-report.log")) {
+					DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+					dbConfigBuilder.setInsertSqlName("insertSql");//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+
+					taskContext.setDbmportConfig(dbConfigBuilder.buildDBImportConfig());
+				}
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Exception e) {
+
+			}
+		});
+```
 # v6.3.6 功能改进
 1. 数据同步改进：增加记录切割功能，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值
 使用案例：

@@ -1511,7 +1511,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
-		return searchObject(actionUrl,dsl,  type);
+//		return searchObject(actionUrl,dsl,  type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildObject(result, type);
 	}
 
 	/**
@@ -1540,7 +1542,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
-		return searchObject(actionUrl,dsl,  type);
+//		return searchObject(actionUrl,dsl,  type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildObject(result, type);
 	}
 
 	/**
@@ -1568,7 +1572,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
-		return searchObject(actionUrl,dsl,  type);
+//		return searchObject(actionUrl,dsl,  type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildObject(result, type);
 	}
 
 
@@ -1576,7 +1582,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object fieldValue,Class<T> type,int from,int size) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue,from, size);
-		return searchList(actionUrl,dsl,type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildESDatas(result,type);
 	}
 	/**
 	 * 根据属性获取type类型文档对象
@@ -1589,13 +1596,15 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,value,from, size);
-		return searchList(actionUrl,dsl,type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildESDatas(result,type);
 	}
 
 	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
-		return searchList(actionUrl,dsl,type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildESDatas(result,type);
 	}
 	/**
 	 * 根据属性获取type类型文档对象
@@ -1608,7 +1617,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
-		return searchList(actionUrl,dsl,type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildESDatas(result,type);
 	}
 
 
@@ -1638,7 +1648,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
 		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
-		return searchObject(actionUrl,dsl,  type);
+//		return searchObject(actionUrl,dsl,  type);
+		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
+		return ResultUtil.buildObject(result, type);
 	}
 
 	/**
@@ -2581,6 +2593,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
 	}
+
+
 	@Override
 	public <T> ESDatas<T> searchList(String path, Class<T> type) throws ElasticSearchException {
 		RestResponse result = this.client.executeRequest(path, (String)null, new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);

@@ -18,6 +18,9 @@
 filelog插件工作原理图
 
 ![](images\filelog-es.jpg)
+
+借助bboss可以非常方便地将ftp和本地文件目录下的文件数据导入到不同的数据库表中，亦可以将数据导入到不同的elasticsearch索引中。
+
 # 1.日志采集插件属性说明
 
 importBuilder（FileLog2ESImportBuilder/FileLog2DBImportBuilder/FileLog2KafkaImportBuilder)用于采集作业基础属性配置
@@ -662,6 +665,56 @@ release.bat
 ```
 
 更多作业配置和运行资料参考：[帮助文档](https://gitee.com/bboss/filelog-elasticsearch/blob/main/README.md)
+
+## 4.1 不同文件数据写入不同的表
+
+借助bboss可以非常方便地将ftp和本地文件目录下的文件数据导入到不同的数据库表中。在同时采集多个文件日志数据时，需要将每个文件的数据写入特定的表，通过在文件任务上下文指定不同的insertsql/updatesql/deletesql即可.
+
+```java
+//导出到数据源配置
+		DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+		dbConfigBuilder
+				.setSqlFilepath("sql-dbtran.xml")//指定sql配置文件地址
+				.setTargetDbName("test");//指定目标数据库，在application.properties文件中配置
+
+		importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+				FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+				String filePath = fileTaskContext.getFileInfo().getOriginFilePath();
+				/**
+				 * 根据文件名称指定不同的insert sql语句
+				 */
+				if(filePath.endsWith("metrics-report.log")) {
+					DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+					dbConfigBuilder.setInsertSqlName("insertSql");//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+
+					taskContext.setDbmportConfig(dbConfigBuilder.buildDBImportConfig());
+				}
+                else{
+                    DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+					dbConfigBuilder.setInsertSqlName("insertOtherSql");//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+
+					taskContext.setDbmportConfig(dbConfigBuilder.buildDBImportConfig());
+                }
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Exception e) {
+
+			}
+		});
+```
+
+
+
+
 
 # 5.采集日志数据并发送到kafka
 
