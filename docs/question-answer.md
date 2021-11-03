@@ -198,7 +198,7 @@ the number of real dsl cache records exceeded the maximum cache size n allowed b
    如果是这种情况，可以在dsl xml配置文件中，添加或者修改perKeyDSLStructionCacheSize参数，将值设置更大一些：
      <property name="perKeyDSLStructionCacheSize" value="4000"/>
 2. dsl中使用的$var模式变量，而且值变化频繁，导致缓存命中率下降并使得缓存的dsl 结构超过perKeyDSLStructionCacheSize对应的数字，所以告警
-   如果是这种情况，一个是调大perKeyDSLStructionCacheSize参数值，另外一个必须将dsl中的$var变量写法调整为#[var]方式，例如：
+   如果是这种情况，一个是调大perKeyDSLStructionCacheSize参数值，同时将dsl中的$var变量写法调整为#[var]方式（foreach、if/else条件表达式中$xxx变量不需调整），例如：
 
 ```xml
  <property name="updateByQuery">
@@ -247,6 +247,10 @@ perKeyDSLStructionCacheSize参数含义，参考文档：
 [dsl配置文件中关于dsl解析语法树缓存相关配置](https://esdoc.bbossgroups.com/#/development?id=_5314-dsl配置文件中关于dsl解析语法树缓存相关配置)
 
 [dsl动态语法](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)
+
+最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到6.3.6或以上版本，从而解决该问题，从以下地址获取最新版本信息：
+
+https://esdoc.bbossgroups.com/#/changelog
 
 # 问题6 Conflicting property name definitions: '_source'
 

@@ -122,6 +122,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 			}
 		});
 ```
+4. 修改客户端方法过载不正确问题：getDocumentByField/getDocumentByFieldLike/searchListByField/searchListByFieldLike
+
 # v6.3.6 功能改进
 1. 数据同步改进：增加记录切割功能，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值
 使用案例：
