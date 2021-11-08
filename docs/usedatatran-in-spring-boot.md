@@ -4,7 +4,13 @@
 
 我们以spring boot web demo工程来介绍spring boot中使用数据同步功能,工程源码地址:
 
+github
+
 https://github.com/bbossgroups/springboot-elasticsearch-webservice
+
+码云
+
+https://gitee.com/bboss/springboot-elasticsearch
 
 # 1.导入maven坐标
 
@@ -13,11 +19,10 @@ https://github.com/bbossgroups/springboot-elasticsearch-webservice
 
 
 ```xml
- <dependency>
-      <groupId>com.bbossgroups</groupId>
-      <artifactId>5.8.2</artifactId>
-      <version>5.8.6</version>
-
+<dependency>
+    <groupId>com.bbossgroups</groupId>
+    <artifactId>bboss-spring-boot-starter</artifactId>
+    <version>5.8.8</version> 			
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
