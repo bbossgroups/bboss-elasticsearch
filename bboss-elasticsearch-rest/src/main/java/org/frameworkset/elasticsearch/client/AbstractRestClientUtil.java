@@ -3265,7 +3265,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	  */
 	 public String updateIndiceMapping(String action,String indexMapping)  throws ElasticSearchException {
 	 	try {
-			return this.client.executeHttp(action, indexMapping, ClientUtil.HTTP_PUT);
+			return this.client.executeHttp(handleIndexName(action), indexMapping, ClientUtil.HTTP_PUT);
 		}
 		catch(ElasticSearchException e){
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_updateIndiceMapping);
