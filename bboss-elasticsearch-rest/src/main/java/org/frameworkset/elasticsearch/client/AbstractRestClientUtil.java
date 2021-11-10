@@ -2531,7 +2531,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		if(!this.client.isV1()) {
 			StringBuilder entity = new StringBuilder();
 			entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
-			String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_GET);
+			String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_POST);
 			return result;
 		}
 		else {
