@@ -204,7 +204,7 @@ public class HostDiscover extends Thread{
 								}
 
 								if (parser.getCurrentToken() == JsonToken.VALUE_STRING && "publish_address".equals(parser.getCurrentName())) {
-									URI boundAddressAsURI = URI.create(scheme + "://" + parser.getValueAsString());
+									URI boundAddressAsURI = URI.create(scheme + "://" + publishAddressHandle(parser.getValueAsString()));
 									httpHost = new HttpHost(boundAddressAsURI.getHost(), boundAddressAsURI.getPort(), boundAddressAsURI.getScheme());
 								} else if (parser.getCurrentToken() == JsonToken.START_OBJECT) {
 									parser.skipChildren();
@@ -224,6 +224,14 @@ public class HostDiscover extends Thread{
 
 			return httpHost;
 		}
+	}
+	public static String publishAddressHandle(String publishAddress){
+		int i = publishAddress.indexOf("/");
+		if(i >= 0){
+			return publishAddress.substring(i + 1);
+		}
+		else
+			return publishAddress;
 	}
 
 
