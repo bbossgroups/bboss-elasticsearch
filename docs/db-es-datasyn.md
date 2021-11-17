@@ -4,9 +4,11 @@ bboss提供了一个数据库到Elasticsearch数据同步样板工程:[db-elasti
 
 # 1 环境准备
 
-首先需要从Github下载最新的工具源码：
+首先需要从Github或者gitee下载最新的工具源码：
 
 https://github.com/bbossgroups/db-elasticsearch-tool
+
+https://gitee.com/bboss/db-elasticsearch-tool
 
 工具目录结构说明：
 

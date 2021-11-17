@@ -1,5 +1,9 @@
 # 基于quartz调度数据同步作业案例
 
+bboss quartz使用参考文档：
+
+https://doc.bbossgroups.com/#/quartz/raider
+
 # 一、基于bboss 管理的quartz同步作业demo
 
  https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
@@ -47,12 +51,12 @@ mainclass=org.frameworkset.task.Main
 ```
 
  4.发布和运行quartz定时任务：参考章节[【发布版本】](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
- 
+
 # 二、原生quartz同步作业demo
  下面看一个完整quartz原生数据同步作业程序
 ## quartz作业处理类 
 quartz作业处理类[ImportDataJob.java](https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/ImportDataJob.java)
- 
+
  ```java
 package org.frameworkset.elasticsearch.imp.quartz;
 
@@ -255,7 +259,7 @@ public class ImportDataJob implements Job {
 
 }
 
-```
+ ```
 
 ## 调度执行quartz作业
 下面的代码将作业ImportDataJob注册到quartz引擎中并调度执行：
