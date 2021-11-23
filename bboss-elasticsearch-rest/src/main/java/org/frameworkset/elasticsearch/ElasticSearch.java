@@ -264,8 +264,8 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	private Map copy(){
 		Map _elasticsearchPropes = new HashMap();
 		_elasticsearchPropes.putAll(elasticsearchPropes);
-		if(!PropertiesContainer.showPassword)
-			_elasticsearchPropes.remove("elasticPassword");
+		if(!PropertiesContainer.showPassword && _elasticsearchPropes.containsKey("elasticPassword"))
+			_elasticsearchPropes.put("elasticPassword","******");
 		return _elasticsearchPropes;
 	}
 	public void configureWithConfigContext(GetProperties configContext) {
