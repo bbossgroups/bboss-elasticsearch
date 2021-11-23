@@ -26,6 +26,7 @@ import org.frameworkset.elasticsearch.scroll.thread.ThreadPoolFactory;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
+import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
@@ -259,13 +260,21 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public void configure(){
 		configureWithConfigContext(null);
 	}
+
+	private Map copy(){
+		Map _elasticsearchPropes = new HashMap();
+		_elasticsearchPropes.putAll(elasticsearchPropes);
+		if(!PropertiesContainer.showPassword)
+			_elasticsearchPropes.remove("elasticPassword");
+		return _elasticsearchPropes;
+	}
 	public void configureWithConfigContext(GetProperties configContext) {
 		if(configContext != null && configContext instanceof BaseApplicationContext)
 			this.setApplicationContext((BaseApplicationContext)configContext);
 		if(logger.isInfoEnabled()) {
 			try {
 
-				logger.info("Start Elasticsearch Datasource[{}] from springboot[{}]:{}", this.getElasticSearchName(), this.isFromspringboot(), SimpleStringUtil.object2json(elasticsearchPropes));
+				logger.info("Start Elasticsearch Datasource[{}] from springboot[{}]:{}", this.getElasticSearchName(), this.isFromspringboot(), SimpleStringUtil.object2json(copy()));
 				if(!this.isFromspringboot()){
 					if(logger.isDebugEnabled()){
 						Exception exception = new Exception("Debug Elasticsearch Datasource["+this.getElasticSearchName()+"] start trace:if use spring boot and unload spring boot config right,please get the reason from question-answer document:https://esdoc.bbossgroups.com/#/question-answer ,if not ignore this message.");

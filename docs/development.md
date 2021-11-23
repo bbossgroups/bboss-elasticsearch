@@ -2102,7 +2102,37 @@ ESDatas<Demo> esDatas =
       long totalSize = esDatas.getTotalSize();
 ```
 
-## **5.3 dsl配置规范**
+### 5.2.4 数据源之间的引用
+
+在一些情况下，可能会用到数据源之间的引用关系，例如，本来是分库的default和detail两个elasticsearch数据源，因存储方案调整，detail也需放入default数据源对应elasticsearch，为了不调整应用程序，直接将detail数据源指向default数据源的引用即可，使用方法如下：
+
+普通工程项目
+
+```properties
+##多集群配置样例，如果需要做多集群配置，请将参照本文内容修改application.properties文件内容
+# default: 指标数据源
+# detail: 明细数据源
+elasticsearch.serverNames = default,detail
+。。。。
+# 拨测明细数据elasticsearch集群配置
+# 指标数据库保持一致，直接引用即可
+detail.elasticsearch.referExternal=default
+```
+
+spring boot项目
+```properties
+##多集群配置样例，如果需要做多集群配置，请将参照本文内容修改application.properties文件内容
+# default: 指标数据源
+# detail: 明细数据源
+spring.elasticsearch.bboss.elasticsearch.serverNames = default,detail
+。。。。
+# 拨测明细数据elasticsearch集群配置
+# 指标数据库保持一致，直接引用即可
+spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
+```
+
+
+## 5.3 dsl配置规范**
 
 
 
