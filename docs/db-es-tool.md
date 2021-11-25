@@ -76,7 +76,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.3.7</version>
+<version>6.3.8</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -913,7 +913,7 @@ importBuilder.setExternalTimer(true);
 
 #### 2.3.9.1 排序设置
 
-bboss 5.8.9及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
+bboss 5.9.0及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
 
 ```java
 importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
@@ -1666,7 +1666,7 @@ ES2DummyExportBuilder
 
 Kafka2DummyExportBuilder
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.7/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.8/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 
 

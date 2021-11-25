@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.7 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.8 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.3.7</version>
+            <version>6.3.8</version>
         </dependency>
 ```
 
@@ -44,9 +44,13 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.7</version>
+            <version>6.3.8</version>
         </dependency>
 ```
+# v6.3.8 功能改进
+1. 日志完善：屏蔽httpproxy和elasticsearch客户端输出日志中的用户口令信息
+2. 兼容老版本升级到最新的数据同步框架：自动创建增量状态表和增量状态历史表中新增的字段
+3. 修复httpproxy问题：停止默认连接池时，没有清空默认配置对象
 # v6.3.7 功能改进
 1. elasticsearch客户端改进：多数据源支持数据源引用功能，如果两个数据源都指向同一个数据源，则可以将第二个数据源指向第一个数据源，配置示例：
 
@@ -160,8 +164,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
        
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
-[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.7/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.7/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.8/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.8/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
 4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
 
@@ -183,10 +187,10 @@ importBuilder.setCustomOutPut(new CustomOutPut() {
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.7/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.8/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 5. Elasticsearch客户端：ClientInterface增加一组指定elasticsearch datasource名称的方法，详情如下：
 
-https://gitee.com/bboss/bboss-elastic/blob/v6.3.7/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
+https://gitee.com/bboss/bboss-elastic/blob/v6.3.8/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
 
 # v6.3.5 功能改进
 
@@ -518,7 +522,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.3.7</version>
+    <version>6.3.8</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -837,13 +841,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.8.8</version>
+      <version>5.8.9</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.8.8", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.8.9", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -1471,7 +1475,7 @@ spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearch
 
 7.json库fastjackson升级到2.10.0 
 
-# v5.8.9 功能改进
+# v5.9.0 功能改进
 
 1.改进检索Meta数据：增加seqNo和primaryTerm属性。
 
@@ -1480,7 +1484,7 @@ spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearch
 3.BUG fixed: sql查询日期处理问题 [#11](https://github.com/bbossgroups/bboss-elasticsearch/issues/11) 
 
 
-# v5.8.8 功能改进
+# v5.8.9 功能改进
 
 1.改进检索Meta数据：增加explanation属性。
 
@@ -1504,7 +1508,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/o
 
 3.数据同步工具：解决可能存在的数据序列化问题
 
-# v5.8.2 功能改进
+# v5.8.3 功能改进
 
 1.增加URL参数检索API，参考文档：[通过URL参数检索文档](https://esdoc.bbossgroups.com/#/document-crud?id=通过url参数检索文档)
 
