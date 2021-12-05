@@ -60,7 +60,7 @@ https://esdoc.bbossgroups.com/#/development
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.5",transitive: false 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.5",transitive: true 
   ```
 
   **maven坐标**
