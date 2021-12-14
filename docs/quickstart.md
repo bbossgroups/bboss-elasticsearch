@@ -406,12 +406,12 @@ Elasticsearch bboss development document:
 
 # 从源码构建Elasticsearch BBoss
 
-First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+First Get source code from https://github.com/bbossgroups/bboss-elasticsearch and https://github.com/bbossgroups/bboss-elastic-tran
 
-Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
+Then change to cmd window under directory bboss-elasticsearch and bboss-elastic-tran to run gradle build command：
 
 ```properties
-gradle=install
+gradle publishToMavenLocal
 ```
 
 Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
