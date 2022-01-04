@@ -1,5 +1,21 @@
 # 基于自定义配置文件/Map属性集初始化bboss es方法介绍
 
+本文涉及的案例源码和工程地址
+
+gitee工程地址
+
+https://gitee.com/bboss/eshelloword-booter
+
+github地址
+
+https://github.com/bbossgroups/eshelloword-booter
+
+自定义初始化java类
+
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
+
+https://github.com/bbossgroups/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
+
 # 1.指定配置文件启动和初始化
 
 指定配置文件启动和初始化Elasticsearch bboss
