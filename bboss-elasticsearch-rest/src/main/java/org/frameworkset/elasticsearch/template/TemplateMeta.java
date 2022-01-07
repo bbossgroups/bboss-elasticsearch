@@ -24,7 +24,7 @@ package org.frameworkset.elasticsearch.template;
  * @version 1.0
  * @see org.frameworkset.elasticsearch.template.AOPTemplateMeta
  */
-public interface TemplateMeta {
+public interface TemplateMeta<T> {
 	public Object getMetaConfig();
 	public boolean isEscapeQuoted();
 	/**
@@ -55,7 +55,7 @@ public interface TemplateMeta {
 	 * 返回dsl 模板值
 	 * @return
 	 */
-	Object getDslTemplate();
+	T getDslTemplate();
 
 	/**
 	 * 返回模板名称

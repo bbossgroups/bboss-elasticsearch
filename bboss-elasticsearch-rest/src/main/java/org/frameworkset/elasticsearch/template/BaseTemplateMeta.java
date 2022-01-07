@@ -26,7 +26,7 @@ import com.frameworkset.orm.annotation.PrimaryKey;
  * @author biaoping.yin
  * @version 1.0
  */
-public class BaseTemplateMeta implements TemplateMeta{
+public class BaseTemplateMeta implements TemplateMeta<String>{
 	@PrimaryKey
 	private String id;
 	private String name;
@@ -103,7 +103,7 @@ public class BaseTemplateMeta implements TemplateMeta{
 		return true;
 	}
 
-	public Object getDslTemplate(){
+	public String getDslTemplate(){
 		return dslTemplate;
 	}
 	/**

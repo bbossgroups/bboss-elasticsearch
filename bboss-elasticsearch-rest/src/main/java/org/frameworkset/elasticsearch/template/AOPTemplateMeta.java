@@ -25,7 +25,7 @@ import org.frameworkset.spi.assemble.Pro;
  * @author biaoping.yin
  * @version 1.0
  */
-public class AOPTemplateMeta implements TemplateMeta{
+public class AOPTemplateMeta implements TemplateMeta<Object>{
 	private Pro pro;
 	public AOPTemplateMeta(Pro pro){
 		this.pro = pro;
