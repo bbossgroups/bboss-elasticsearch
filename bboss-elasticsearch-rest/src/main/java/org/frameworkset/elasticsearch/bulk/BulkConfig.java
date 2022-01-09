@@ -64,7 +64,28 @@ public class BulkConfig implements BulkActionConfig{
 	private String refresh;
 	private String pipeline;
 	private Object routing;
-	public static final String ERROR_FILTER_PATH = "took,errors,items.*.error";
+	/**
+	 * {
+	 *   "took" : 0,
+	 *   "errors" : true,
+	 *   "items" : [
+	 *     {
+	 *       "index" : {
+	 *         "_index" : "metrics-test-report",
+	 *         "_type" : "_doc",
+	 *         "_id" : null,
+	 *         "status" : 400,
+	 *         "error" : {
+	 *           "type" : "illegal_argument_exception",
+	 *           "reason" : "only write ops with an op_type of create are allowed in data streams"
+	 *         }
+	 *       }
+	 *     }
+	 *   ]
+	 * }
+	 */
+	public static final String ERROR_FILTER_PATH = "took,errors,items.*._index,items.*._type,items.*._id,items.*.status,items.*.error";
+	public static final String ERROR_FILTER_PATH_ONLY = "took,errors,items.*.error";
 	private String filterPath = ERROR_FILTER_PATH;
 	public int getBulkSizes() {
 		return bulkSizes;
