@@ -34,7 +34,6 @@ import org.frameworkset.util.annotations.DateFormateMeta;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.frameworkset.elasticsearch.client.ClientInterfaceNew._doc;
@@ -399,9 +398,10 @@ public abstract class BuildTool {
 	 * @param esIndice
 	 * @param indiceHeader
 	 * @param token
-	 * @param format
+	 * @param dateFormats
 	 */
-	private static void putField(ESIndice esIndice,IndiceHeader indiceHeader,StringBuilder token,SimpleDateFormat format){
+	private static void putField(ESIndice esIndice,IndiceHeader indiceHeader,
+								 StringBuilder token,DateFormats dateFormats){
 //		IndiceHeader indiceHeader = indiceHeaders.get(position);
 		if(indiceHeader.getHeaderName().equals("health")) {
 			if(token.length() > 0) {
@@ -418,7 +418,7 @@ public abstract class BuildTool {
 		else if(indiceHeader.getHeaderName().equals("index")) {
 			if(token.length() > 0) {
 				esIndice.setIndex(token.toString());
-				putGendate(esIndice, format);
+				putGendate(esIndice,  dateFormats);
 				token.setLength(0);
 			}
 		}
@@ -566,7 +566,7 @@ public abstract class BuildTool {
 
 		return builder.toString();
 	}
-	public static ESIndice buildESIndice(String line, SimpleDateFormat format,
+	public static ESIndice buildESIndice(String line, DateFormats dateFormats,
 										 List<IndiceHeader> indiceHeaderList)
 	{
 		StringBuilder token = new StringBuilder();
@@ -580,7 +580,7 @@ public abstract class BuildTool {
 
 				}
 				else{
-					putField(esIndice,indiceHeader,token,format);
+					putField(esIndice,indiceHeader,token,  dateFormats);
 				}
 				indiceHeader = _indiceHeader;
 			}
@@ -594,7 +594,7 @@ public abstract class BuildTool {
 				}
 				if(indiceHeader != null) {
 
-					putField(esIndice, indiceHeader, token, format);
+					putField(esIndice, indiceHeader, token, dateFormats);
 					indiceHeader = null;
 				}
 
@@ -602,17 +602,21 @@ public abstract class BuildTool {
 			}
 		}
 		if(token.length() > 0){
-			putField(esIndice,indiceHeader,token,format);
+			putField(esIndice,indiceHeader,token, dateFormats);
 		}
 		return esIndice;
 	}
-	public static void putGendate(ESIndice esIndice,SimpleDateFormat format){
+
+	public static void putGendate(ESIndice esIndice,DateFormats dateFormats){
 		int dsplit = esIndice.getIndex().lastIndexOf('-');
 
 		try {
 			if(dsplit > 0){
 				String date = esIndice.getIndex().substring(dsplit+1);
-				esIndice.setGenDate((Date)format.parseObject(date));
+
+				esIndice.setGenDate((Date)dateFormats.parserDate(date));
+				esIndice.setIndiceSplitPolicy(dateFormats.getIndiceSplitPolicy());
+				dateFormats.resetIndiceSplitPolicy();
 			}
 
 		} catch (Exception e) {

@@ -87,12 +87,30 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
       TimeZone.getTimeZone("Etc/UTC"));
     protected Integer slowDslThreshold;
 	protected String dateFormat = "yyyy.MM.dd";
+	/**
+	 * 默认分表策略日期格式
+	 */
+	protected String dayDateFormat = "yyyy.MM.dd";
+	protected String monthDateFormat = "yyyy.MM";
+	protected String yearDateFormat = "yyyy";
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("Etc/UTC");
 	protected  boolean discoverHost = false;
 	protected LogDslCallback slowDslCallback;
 	protected LogDslCallback logDslCallback;
 	private boolean useHttps;
+
+	public String getDayDateFormat() {
+		return dayDateFormat;
+	}
+
+	public String getMonthDateFormat() {
+		return monthDateFormat;
+	}
+
+	public String getYearDateFormat() {
+		return yearDateFormat;
+	}
 
 	public boolean isUseHttps() {
 		return useHttps;

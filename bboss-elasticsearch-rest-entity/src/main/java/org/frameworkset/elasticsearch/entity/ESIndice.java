@@ -13,6 +13,16 @@ import java.util.Map;
  * .watcher-history-3-2017.07.02
  */
 public class ESIndice {
+
+
+    /**
+     * 分表策略：
+     * yyyy  年 3
+     * yyyy.MM 月 2
+     * yyyy.MM.dd 天 1
+     * 未知 -1或者null
+     */
+    private Integer indiceSplitPolicy ;
     private String health;
     private String status ;
     private String index;
@@ -133,5 +143,12 @@ public class ESIndice {
     }
     public Map<String, String> getOtherDatas() {
         return otherDatas;
+    }
+    public Integer getIndiceSplitPolicy() {
+        return indiceSplitPolicy;
+    }
+
+    public void setIndiceSplitPolicy(Integer indiceSplitPolicy) {
+        this.indiceSplitPolicy = indiceSplitPolicy;
     }
 }

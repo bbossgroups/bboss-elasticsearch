@@ -3408,7 +3408,15 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	            br = new BufferedReader(reader);
 		        List<ESIndice> indices = new ArrayList<ESIndice>();
 		        int i = 0;
-		        SimpleDateFormat format = new SimpleDateFormat(client.getDateFormat());
+		        SimpleDateFormat dayDateFormat = new SimpleDateFormat(client.getDayDateFormat());
+
+				SimpleDateFormat monthDateFormat = new SimpleDateFormat(client.getMonthDateFormat());
+
+				SimpleDateFormat yearDateFormat = new SimpleDateFormat(client.getYearDateFormat());
+				DateFormats dateFormats = new DateFormats();
+				dateFormats.setDayDateFormat(dayDateFormat);
+				dateFormats.setMonthDateFormat(monthDateFormat);
+				dateFormats.setYearDateFormat(yearDateFormat);
 				List<IndiceHeader> indiceHeaderList = null;
 		        while(true){
 		            String line = br.readLine();
@@ -3420,7 +3428,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		                continue;
 		            }
 		            
-		            ESIndice esIndice = BuildTool.buildESIndice(  line,  format,indiceHeaderList);
+		            ESIndice esIndice = BuildTool.buildESIndice(  line,    dateFormats,indiceHeaderList);
 		            indices.add(esIndice);
 
 		        }
