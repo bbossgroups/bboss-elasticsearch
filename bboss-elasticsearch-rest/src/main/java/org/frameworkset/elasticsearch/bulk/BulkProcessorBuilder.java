@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch.bulk;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>Description: </p>
  * <p></p>
@@ -24,6 +27,7 @@ package org.frameworkset.elasticsearch.bulk;
  * @version 1.0
  */
 public class BulkProcessorBuilder {
+	private static Logger logger = LoggerFactory.getLogger(BulkProcessorBuilder.class);
 	private BulkConfig bulkConfig;
 	public BulkProcessorBuilder(){
 		bulkConfig = new BulkConfig();
@@ -96,8 +100,14 @@ public class BulkProcessorBuilder {
 		if(bulkConfig == null){
 			throw new BulkProcessorException("build BulkProcessor failed:bulkConfig is null.");
 		}
+		if(logger.isInfoEnabled()){
+			logger.info("Build Elasticsearch client BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] start.....");
+		}
 		BulkProcessor bulkProcessor = new BulkProcessor(this.bulkConfig);
 		bulkProcessor.init();
+		if(logger.isInfoEnabled()){
+			logger.info("Build  Elasticsearch client BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] completed.");
+		}
 		return bulkProcessor;
 	}
 
