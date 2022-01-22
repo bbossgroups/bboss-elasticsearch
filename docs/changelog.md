@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.3.9 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.0 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.3.9</version>
+            <version>6.5.0</version>
         </dependency>
 ```
 
@@ -44,7 +44,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.3.9</version>
+            <version>6.5.0</version>
         </dependency>
 ```
 # v6.5.0
@@ -82,7 +82,7 @@ https://gitee.com/bboss/csv-dbhandle
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.5",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.6",transitive: true 
   ```
 
   **maven坐标**
@@ -93,7 +93,7 @@ https://gitee.com/bboss/csv-dbhandle
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>5.8.5</version>  
+      <version>5.8.6</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -218,8 +218,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
        
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
-[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
 4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
 
@@ -241,10 +241,10 @@ importBuilder.setCustomOutPut(new CustomOutPut() {
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.3.9/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.0/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 5. Elasticsearch客户端：ClientInterface增加一组指定elasticsearch datasource名称的方法，详情如下：
 
-https://gitee.com/bboss/bboss-elastic/blob/v6.3.9/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
+https://gitee.com/bboss/bboss-elastic/blob/v6.5.0/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
 
 # v6.3.5 功能改进
 
@@ -576,7 +576,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.3.9</version>
+    <version>6.5.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -895,13 +895,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.9.0</version>
+      <version>5.9.1</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.1", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

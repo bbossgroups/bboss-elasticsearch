@@ -860,7 +860,7 @@ public abstract class BaseESProperties {
 	 * db.name = test
 	 * db.user = root
 	 * db.password = 123456
-	 * db.driver = com.mysql.jdbc.Driver
+	 * db.driver = com.mysql.cj.jdbc.Driver
 	 * db.url = jdbc:mysql://localhost:3306/bboss
 	 * db.usePool = false
 	 * db.validateSQL = select 1
