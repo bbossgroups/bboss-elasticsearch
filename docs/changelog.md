@@ -47,7 +47,7 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.5.0</version>
         </dependency>
 ```
-# v6.5.0
+# v6.5.0 功能改进
 
 1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能，涉及相对子路径的地方
 2. db管理dsl mysql无法创建加载dsl问题处理
@@ -62,14 +62,20 @@ https://gitee.com/bboss/csv-dbhandle
 7. 优化运行容器工具，增加从环境变量、jvm属性配置检索mainclass功能
 
  默认使用org.frameworkset.elasticsearch.imp.DB2CSVFile作为作业主程序，
- 
+
  如果设置了环境变量mainclassevn，则使用mainclassevn作为作业主程序
- 
+
  环境变量名称不能和属性名称一致，否则报循环引用异常，并将原始值返回
- 
+
   mainclass=#[mainclassevn:org.frameworkset.elasticsearch.imp.DB2CSVFile]
-  
-# v6.3.9
+
+8. 升级mysql驱动版本号为8.0.28
+
+9. 增加通用异步批处理组件，使用案例：
+
+   https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/PersistentBulkProcessor.java
+
+# v6.3.9 功能改进
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题
 2. bboss安全过滤器改造：增加xss攻击和敏感词攻击策略配置
 3. 运行容器工具改进：完善运行容器工具，增加启动bootrap类，负责运行、停止、重启mainclass，并将mainclass运行、停止、重启过程中的日志、异常输出到log日志文件
