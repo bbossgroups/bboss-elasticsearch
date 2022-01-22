@@ -47,6 +47,10 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.3.9</version>
         </dependency>
 ```
+# v6.5.0
+
+1. filelog插件改进：支持本地文件夹/ftp文件夹/sftp文件夹中子目录中日志文件采集
+2. 
 # v6.3.9
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题
 2. bboss安全过滤器改造：增加xss攻击和敏感词攻击策略配置
