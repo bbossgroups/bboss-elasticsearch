@@ -49,8 +49,26 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.5.0
 
-1. filelog插件改进：支持本地文件夹/ftp文件夹/sftp文件夹中子目录中日志文件采集
-2. 
+1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能，涉及相对子路径的地方
+2. db管理dsl mysql无法创建加载dsl问题处理
+3. log4j2版本升级2.17.1、slfj版本升级1.7.32
+4. 修复空行处理器Record问题：关闭key大写机制后，根据字段名称获取数据失效
+5. 忽略mysql stream机制情况下获取rowid失败异常
+6. 增加excel csv文件采集案例
+
+https://github.com/bbossgroups/csv-dbhandle
+
+https://gitee.com/bboss/csv-dbhandle
+7. 优化运行容器工具，增加从环境变量、jvm属性配置检索mainclass功能
+
+ 默认使用org.frameworkset.elasticsearch.imp.DB2CSVFile作为作业主程序，
+ 
+ 如果设置了环境变量mainclassevn，则使用mainclassevn作为作业主程序
+ 
+ 环境变量名称不能和属性名称一致，否则报循环引用异常，并将原始值返回
+ 
+  mainclass=#[mainclassevn:org.frameworkset.elasticsearch.imp.DB2CSVFile]
+  
 # v6.3.9
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题
 2. bboss安全过滤器改造：增加xss攻击和敏感词攻击策略配置
