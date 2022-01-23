@@ -49,17 +49,64 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.5.0 功能改进
 
-1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能，涉及相对子路径的地方
-2. db管理dsl mysql无法创建加载dsl问题处理
-3. log4j2版本升级2.17.1、slfj版本升级1.7.32
-4. 修复空行处理器Record问题：关闭key大写机制后，根据字段名称获取数据失效
-5. 忽略mysql stream机制情况下获取rowid失败异常
-6. 增加excel csv文件采集案例
+1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能
+2. 对filelog插件文件选择过滤器FileFilter接口方法accept进行了重构，增加目录和文件区分标识对象FilterFileInfo，以适配本地目录、ftp和sftp三种场景，调整如下
+
+   重构前
+
+```java
+ public boolean accept(String parentDir,String fileName, FileConfig fileConfig)
+```
+
+   重构后
+
+```java
+ public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
+                                            FileConfig fileConfig)
+```
+
+使用案例
+
+```java
+fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
+                           @Override
+                           public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
+                                            FileConfig fileConfig) {
+                              if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以如果是目录则直接返回true，当然也可以根据目录名称决定哪些子目录要采集
+                                 return true;
+                              String name = filterFileInfo.getFileName();
+                              //判断是否采集文件数据，返回true标识采集，false 不采集
+                              boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
+                              if(nameMatch){
+                                 String day = name.substring("731_tmrt_user_login_day_".length());
+                                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                                 try {
+                                    Date fileDate = format.parse(day);
+                                    if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
+                                       return true;
+                                 } catch (ParseException e) {
+                                    logger.error("",e);
+                                 }
+
+
+                              }
+                              return false;
+                           }
+                        })
+```
+
+**因此升级到6.5.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
+
+3. db管理dsl mysql无法创建加载dsl问题处理
+4. log4j2版本升级2.17.1、slfj版本升级1.7.32
+5. 修复空行处理器Record问题：关闭key大写机制后，根据字段名称获取数据失效
+6. 忽略mysql stream机制情况下获取rowid失败异常
+7. 增加excel csv文件采集案例
 
 https://github.com/bbossgroups/csv-dbhandle
 
 https://gitee.com/bboss/csv-dbhandle
-7. 优化运行容器工具，增加从环境变量、jvm属性配置检索mainclass功能
+8. 优化运行容器工具，增加从环境变量、jvm属性配置检索mainclass功能
 
  默认使用org.frameworkset.elasticsearch.imp.DB2CSVFile作为作业主程序，
 
@@ -69,11 +116,15 @@ https://gitee.com/bboss/csv-dbhandle
 
   mainclass=#[mainclassevn:org.frameworkset.elasticsearch.imp.DB2CSVFile]
 
-8. 升级mysql驱动版本号为8.0.28
+9. 升级mysql驱动版本号为8.0.28
 
-9. 增加通用异步批处理组件，使用案例：
+10. 增加通用异步批处理组件
+使用案例：
 
-   https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/PersistentBulkProcessor.java
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/PersistentBulkProcessor.java
+
+使用文档
+https://esdoc.bbossgroups.com/#/bulkProcessor-common
 
 # v6.3.9 功能改进
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题

@@ -43,6 +43,7 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
 | FileConfig.sourcePath                    | String,日志文件目录                                          |         |
+| FileConfig.scanChild | 是否检测子目录 ,如果扫描子目录，则inode机制强制关闭,默认false，适用于本地目录/ftp目录/sftp目录 | |
 | FileConfig.renameFileSourcePath          | String,重命名文件监听路径：一些日志组件会指定将滚动日志文件放在与当前日志文件不同的目录下，需要通过renameFileSourcePath指定这个不同的目录地址，以便可以追踪到未采集完毕的滚动日志文件，从而继续采集文件中没有采集完毕的日志本路径只有在inode机制有效并且启用的情况下才起作用,默认与sourcePath一致，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fileNameRegular               | String,日志文件名称正则表达式，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.fileFilter                    | FileFilter类型，用于筛选需要采集的日志文件，fileNameRegular和fileFilter只能指定一个 |         |
@@ -74,7 +75,9 @@ FileConfig用于指定文件级别配置
 config.addConfig(new FileConfig()//指定多行记录的开头识别标记，正则表达式
                   .setSourcePath("D:\\logs\\sale_data").setFileFilter(new FileFilter() {
                      @Override
-                     public boolean accept(File dir, String name, FileConfig fileConfig) {
+                     public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
+                                           FileConfig fileConfig) {
+                         String name = filterFileInfo.getFileName();
                         return name.endsWith(".txt");
                      }
                   })//指定文件过滤器.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
@@ -1162,9 +1165,9 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
                         .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) //采用sftp协议
                         .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                             @Override
-                            public boolean accept(String parentDir,//Ftp文件服务目录
-                                                  String name, //Ftp文件名称
+                            public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
                                                   FileConfig fileConfig) {
+                                String name = filterFileInfo.getFileName();
                                 //判断是否采集文件数据，返回true标识采集，false 不采集
                                 boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
                                 if(nameMatch){
@@ -1196,9 +1199,68 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
         importBuilder.setFileImportConfig(config);
 ```
 
+# 8.采集子目录案例
+
+通过设置setScanChild(true)来控制采集子目录下的日志文件，采集子目录时，还需要在Filter中这对目录进行额外处理：
+
+```java
+if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以如果是目录则直接返回true，当然也可以根据目录名称决定哪些子目录要采集
+                                 return true;
+```
+
+以sftp为案例进行说明，本地目录和ftp设置方式类似：
+
+```java
+config.addConfig(new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
+                         .setFtpUser("ecs").setFtpPassword("ecs@123")
+                        .setRemoteFileDir("/home/ecs/ftp")//指定sftp根目录
+                        .setDeleteRemoteFile(true)//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除
+                        .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
+                           @Override
+                           public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
+                                            FileConfig fileConfig) {
+                              if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以如果是目录则直接返回true，当然也可以根据目录名称决定哪些子目录要采集
+                                 return true;
+                              String name = filterFileInfo.getFileName();
+                              //判断是否采集文件数据，返回true标识采集，false 不采集
+                              boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
+                              if(nameMatch){
+                                 String day = name.substring("731_tmrt_user_login_day_".length());
+                                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                                 try {
+                                    Date fileDate = format.parse(day);
+                                    if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
+                                       return true;
+                                 } catch (ParseException e) {
+                                    logger.error("",e);
+                                 }
 
 
-# 8.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+                              }
+                              return false;
+                           }
+                        })
+                        .setScanChild(true)//采集子目录下的日志文件
+                        .setSourcePath("D:/sftplogs")//指定目录
+                        .addField("tag","elasticsearch")//添加字段tag到记录中
+            );
+```
+
+具体的子目录采集案例 ：
+
+本地文件
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileSubDirLog2ESDemo.java
+
+ftp
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpSubdirLog2ESDemo.java
+
+sftp
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpSubdirLog2ESETLScheduleDemo.java
+
+# 9.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
