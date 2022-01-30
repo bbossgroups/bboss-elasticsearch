@@ -11,6 +11,7 @@
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
 
+
 通用BulkProcessor提供了失败重试机制，可以方便地设置重试次数，重试时间间隔，是否需要重试的异常类型判断：
 
    ```java
@@ -44,7 +45,16 @@
    ```
 
 # 2.通用BulkProcessor案例
-用一个简单的demo来介绍上述功能：
+通过以下maven坐标导入通用BulkProcessor即可：
+
+```xml
+<dependency>
+  <groupId>com.bbossgroups</groupId>
+  <artifactId>bboss-core-entity</artifactId>
+  <version>5.8.6</version>
+</dependency>
+```
+用一个简单的demo来介绍通用BulkProcessor功能：
 
 
 

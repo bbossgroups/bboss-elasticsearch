@@ -116,15 +116,23 @@ https://gitee.com/bboss/csv-dbhandle
 
   mainclass=#[mainclassevn:org.frameworkset.elasticsearch.imp.DB2CSVFile]
 
+使用参考文档：
+
+https://my.oschina.net/bboss/blog/469411
+
 9. 升级mysql驱动版本号为8.0.28
 
 10. 增加通用异步批处理组件
+
 使用案例：
 
 https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/PersistentBulkProcessor.java
 
 使用文档
+
 https://esdoc.bbossgroups.com/#/bulkProcessor-common
+
+
 
 # v6.3.9 功能改进
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题
