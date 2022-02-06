@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
         </dependency>
 ```
 
@@ -44,7 +44,29 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
+        </dependency>
+```
+# v6.5.1 功能改进
+1. 处理增量时间状态值写入mysql管理的增量状态数据库失败问题
+2. 时间转换优化:localdatetime和localdate向date类型转换，避免出错误
+3. 数据同步作业调度增加对xxl-job 2.3.0的支持，需将原maven坐标bboss-elasticsearch-rest-jdbc调整为bboss-datatran-schedule-xxljob
+
+示例如下：
+xxl-job 2.3.0以下版本采用的maven坐标
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <version>6.5.1</version>
+        </dependency>
+```
+调整为xxl-job 2.3.0及更高版本采用的maven坐标：
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-datatran-schedule-xxljob</artifactId>
+            <version>6.5.1</version>
         </dependency>
 ```
 # v6.5.0 功能改进
