@@ -54,6 +54,7 @@ https://esdoc.bbossgroups.com/#/development
 
 示例如下：
 xxl-job 2.3.0以下版本采用的maven坐标
+
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
@@ -69,6 +70,19 @@ xxl-job 2.3.0以下版本采用的maven坐标
             <version>6.5.1</version>
         </dependency>
 ```
+xxl job 低版本案例工程
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob
+
+xxl job 2x案例工程
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob2x
+4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
+                  
+                  private int skipHeaderLines;
+5. 增加excel文件采集功能:可以采集本地excel文件，亦可以从ftp/sftp服务器下载excel文件并采集
+6. 增加生成excel文件功能：生成excel，亦可以将生成的excel文件上传到ftp服务器                  
+                  
 # v6.5.0 功能改进
 
 1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能
