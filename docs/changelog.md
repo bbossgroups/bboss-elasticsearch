@@ -8,7 +8,7 @@ https://esdoc.bbossgroups.com/#/development
 
 # **主要功能特色**
 
-1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,+
+1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,8.x,+
 
 2. JDK兼容性： jdk 1.7+
 
@@ -79,10 +79,34 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
                   private int skipHeaderLines;
-5. 增加excel文件采集功能:可以采集本地excel文件，亦可以从ftp/sftp服务器下载excel文件并采集
-6. 增加生成excel文件功能：生成excel，亦可以将生成的excel文件上传到ftp服务器                  
-                  
+              
+5. 写入文件插件支持添加标题行功能：在生成csv文件或者其他需要头部行的文件可以使用，参考案例：
+
+      
+
+https://gitee.com/bboss/csv-dbhandle/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/DB2CSVFile.java
+
+6. 增加excel文件采集功能:可以采集本地excel文件，亦可以从ftp/sftp服务器下载excel文件并采集，参考案例：
+
+   
+
+   https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo.java
+
+7. 增加生成excel文件功能：生成excel，亦可以将生成的excel文件上传到ftp服务器  
+
+生成excel 文件
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2ExcelFile.java
+
+
+
+生成excel文件并上传ftp服务器      
+
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2ExcelFile2Ftp.java               
+
 # v6.5.0 功能改进
 
 1. filelog插件添加子目录/ftp子目录/sftp子目录下日志文件采集功能

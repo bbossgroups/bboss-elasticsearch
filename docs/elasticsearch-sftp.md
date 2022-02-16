@@ -60,7 +60,7 @@ import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
 import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.input.fileftp.es.ES2FileFtpExportBuilder;
-import org.frameworkset.tran.output.fileftp.FileFtpOupputConfig;
+import org.frameworkset.tran.output.fileftp.*;
 import org.frameworkset.tran.output.fileftp.FilenameGenerator;
 import org.frameworkset.tran.output.fileftp.ReocordGenerator;
 import org.frameworkset.tran.schedule.CallInterceptor;
@@ -79,24 +79,28 @@ public class ES2FileFtpBatchSplitFileDemo {
       ES2FileFtpExportBuilder importBuilder = new ES2FileFtpExportBuilder();
       importBuilder.setBatchSize(500).setFetchSize(1000);
       String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定了默认值
-      FileFtpOupputConfig fileFtpOupputConfig = new FileFtpOupputConfig();
+      FileOupputConfig fileFtpOupputConfig = new FileOupputConfig();
+	   FtpOutConfig ftpOutConfig = new FtpOutConfig();
+	  fileFtpOupputConfig.setFtpOutConfig(ftpOutConfig);
+       
+      ftpOutConfig.setFtpIP(ftpIp);
+     
+      ftpOutConfig.setFtpPort(5322);
 
-      fileFtpOupputConfig.setFtpIP(ftpIp);
-      fileFtpOupputConfig.setFileDir("D:\\workdir");
-      fileFtpOupputConfig.setFtpPort(5322);
-      fileFtpOupputConfig.addHostKeyVerifier("2a:da:5a:6a:cf:7d:65:e5:ac:ff:d3:73:7f:2c:55:c9");
-      fileFtpOupputConfig.setFtpUser("ecs");
-      fileFtpOupputConfig.setFtpPassword("ecs@123");
-      fileFtpOupputConfig.setRemoteFileDir("/home/ecs/failLog");
-      fileFtpOupputConfig.setKeepAliveTimeout(100000);
-      fileFtpOupputConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
-      fileFtpOupputConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
-      fileFtpOupputConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
+      ftpOutConfig.setFtpUser("ecs");
+      ftpOutConfig.setFtpPassword("ecs@123");
+      ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
+      ftpOutConfig.setKeepAliveTimeout(100000);
+      ftpOutConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
+      ftpOutConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
+      ftpOutConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
 
       fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);//定期扫描清理过期备份文件时间间隔，单位：毫秒
-      fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
+      ftpOutConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
+
+      fileFtpOupputConfig.setFileDir("D:\\workdir");
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
-      fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）
+     
 		 
       //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
@@ -131,7 +135,7 @@ public class ES2FileFtpBatchSplitFileDemo {
 
          }
       });
-      importBuilder.setFileFtpOupputConfig(fileFtpOupputConfig);
+      importBuilder.setFileOupputConfig(fileFtpOupputConfig);
       importBuilder.setIncreamentEndOffset(300);//单位秒
       //vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27
       importBuilder
@@ -335,30 +339,32 @@ public class ES2FileFtpBatchSplitFileDemo {
 | filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
 | hostKeyVerifier           | 必填，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
 | reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |
-| disableftp                | 可选，boolean类型。false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面） | false                | ftp/sftp |
 
 示例代码如下：
 
 ```java
 String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定了默认值
-      FileFtpOupputConfig fileFtpOupputConfig = new FileFtpOupputConfig();
+      FileOupputConfig fileFtpOupputConfig = new FileOupputConfig();
+	   FtpOutConfig ftpOutConfig = new FtpOutConfig();
+	  fileFtpOupputConfig.setFtpOutConfig(ftpOutConfig);
+       
+      ftpOutConfig.setFtpIP(ftpIp);
+     
+      ftpOutConfig.setFtpPort(5322);
 
-      fileFtpOupputConfig.setFtpIP(ftpIp);
-      fileFtpOupputConfig.setFileDir("D:\\workdir");
-      fileFtpOupputConfig.setFtpPort(5322);
-      fileFtpOupputConfig.addHostKeyVerifier("2a:da:5a:6a:cf:7d:65:e5:ac:ff:d3:73:7f:2c:55:c9");
-      fileFtpOupputConfig.setFtpUser("ecs");
-      fileFtpOupputConfig.setFtpPassword("ecs@123");
-      fileFtpOupputConfig.setRemoteFileDir("/home/ecs/failLog");
-      fileFtpOupputConfig.setKeepAliveTimeout(100000);
-      fileFtpOupputConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
-      fileFtpOupputConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
-      fileFtpOupputConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
+      ftpOutConfig.setFtpUser("ecs");
+      ftpOutConfig.setFtpPassword("ecs@123");
+      ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
+      ftpOutConfig.setKeepAliveTimeout(100000);
+      ftpOutConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
+      ftpOutConfig.setFailedFileResendInterval(5000); //上传失败文件重传时间间隔，单位：毫秒，<=0时不重传
+      ftpOutConfig.setBackupSuccessFiles(true);//true 备份上传成功文件，false不备份
 
       fileFtpOupputConfig.setSuccessFilesCleanInterval(5000);//定期扫描清理过期备份文件时间间隔，单位：毫秒
-      fileFtpOupputConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
+      ftpOutConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
+
+      fileFtpOupputConfig.setFileDir("D:\\workdir");
       fileFtpOupputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
-      fileFtpOupputConfig.setDisableftp(false);//false 启用sftp/ftp上传功能,true 禁止（只生成数据文件，保留在FileDir对应的目录下面）
 		
       //自定义文件名称
       fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
@@ -393,7 +399,7 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
 
          }
       });
-      importBuilder.setFileFtpOupputConfig(fileFtpOupputConfig);
+      importBuilder.setFileOupputConfig(fileFtpOupputConfig);
 ```
 
 ## 3.5 文件名称生成机制配置
@@ -522,7 +528,53 @@ public class DataSendReocordGenerator implements ReocordGenerator {
 }
 ```
 
-## 3.7 elasticsearch增量导出截止时间偏移量设置
+## 3.7 设置文件标题行
+
+通过设置HeaderRecordGenerator类型的接口，可以在设置输出日志格式的同时，设置标题行，在生成csv文件时可以使用这个功能
+
+```java
+fileFtpOupputConfig.setRecordGenerator(new HeaderRecordGenerator() {
+    @Override
+    public void buildHeaderRecord(Writer builder) throws Exception {
+        builder.write("社保经办机构（建议填写）,人员编号,*姓名,*证件类型,*证件号码,*征收项目,*征收品目,征收子目,*缴费年度,*缴费档次");
+    }
+
+    @Override
+    public void buildRecord(Context context, CommonRecord record, Writer builder)throws Exception {
+        Map<String,Object> datas = record.getDatas();
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(datas.get("shebao_org"))   ;
+        strBuilder.append(",")   ;
+        String person_no = (String)datas.get("person_no");
+        if(person_no == null )
+            strBuilder.append("");
+        else {
+            strBuilder.append("^").append(person_no);
+        }
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("name"))   ;
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("cert_type"))   ;
+        strBuilder.append(",^")   ;
+        strBuilder.append(datas.get("cert_no"))   ;
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("zhs_item"))   ;
+
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("zhs_class"))   ;
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("zhs_sub_class"))   ;
+        strBuilder.append(",")   ;
+        strBuilder.append(datas.get("zhs_year"))   ;
+        strBuilder.append(",")   ;
+
+        strBuilder.append(datas.get("zhs_level"))   ;
+        builder.write(strBuilder.toString());
+    }
+});
+```
+
+## 3.8 elasticsearch增量导出截止时间偏移量设置
 
 elasticsearch增量导出截止时间偏移量设置-IncreamentEndOffset，由于elasticsearch异步写入数据的特性，如果采用原有的增量时间戳机制（起始时间>lastImporttime，没有截止时间）,会导致遗漏部分未落盘数据，因此需要指定基于当前时间往前偏移IncreamentEndOffset对应的时间作为数据导出截止时间，单位：秒
 
@@ -532,7 +584,7 @@ elasticsearch增量导出截止时间偏移量设置-IncreamentEndOffset，由�
 importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截止时间当前时间前5分钟的数据，下次继续从上次截止时间开始同步数据
 ```
 
-## 3.8 从elasticsearch检索数据配置
+## 3.9 从elasticsearch检索数据配置
 
    下面介绍从Elasticsearch检索数据的相关配置参数
 
@@ -668,7 +720,7 @@ scrollQuery为本案例对应的dsl，scrollSliceQuery为slice导出需要用到
 
 https://esdoc.bbossgroups.com/#/development
 
-## 3.9 定时任务配置
+## 3.10 定时任务配置
 
 ```java
     //定时任务配置，
@@ -680,13 +732,13 @@ https://esdoc.bbossgroups.com/#/development
 
 上面的配置表示：同步作业任务延迟1秒执行，每隔30秒执行一次。
 
-## 3.10 任务上下文数据定义和获取
+## 3.11 任务上下文数据定义和获取
 
 在一些特定场景下，避免任务执行过程中重复加载数据，需要在任务每次调度执行前加载一些任务执行过程中不会变化的数据,放入任务上下文TaskContext；任务执行过程中，直接从任务上下文中获取数据即可。例如：将每次任务执行的时间戳放入任务执行上下文。
 
 通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
 
-### 3.10.1  定义任务上下文数据
+### 3.11.1  定义任务上下文数据
 
  任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
 
@@ -728,7 +780,7 @@ public void preCall(TaskContext taskContext) {
     //设置任务执行拦截器结束，可以添加多个
 ```
 
-### 3.10.2 获取任务上下文数据
+### 3.11.2 获取任务上下文数据
 
 在生成文件名称的接口方法中获取任务上下文数据
 
@@ -784,7 +836,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-## 3.11 设置IP地址信息库地址
+## 3.12 设置IP地址信息库地址
 
 我们通过以下代码设置IP地址信息库地址：
 
@@ -797,7 +849,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
 
 IP地址库配置详细参考文档：[设置IP地址信息库地址](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2311-ip-%e5%9c%b0%e5%8c%ba%e8%bf%90%e8%90%a5%e5%95%86%e7%bb%8f%e7%ba%ac%e5%ba%a6%e5%9d%90%e6%a0%87%e8%bd%ac%e6%8d%a2)
 
-## 3.12 调整记录数据内容
+## 3.13 调整记录数据内容
 
 可以通过datarefactor接口调整记录数据内容，示例代码如下：
 
@@ -858,7 +910,7 @@ IP地址库配置详细参考文档：[设置IP地址信息库地址](https://es
       });
 ```
 
-## 3.13 增量同步配置
+## 3.14 增量同步配置
 
 ```java
        //增量配置开始
@@ -874,7 +926,7 @@ IP地址库配置详细参考文档：[设置IP地址信息库地址](https://es
       //增量配置结束
 ```
 
-## 3.14 并行同步配置
+## 3.15 并行同步配置
 
 ```java
 importBuilder.setParallel(false);//设置为多线程并行批量导入,true并行，false串行
@@ -884,13 +936,13 @@ importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行
 importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 ```
 
-## 3.15 同步任务日志打印开关
+## 3.16 同步任务日志打印开关
 
 ```java
 importBuilder.setPrintTaskLog(true);// true打印，false不打印
 ```
 
-## 3.16  同步作业执行
+## 3.17  同步作业执行
 
 ```java
 /**
@@ -900,7 +952,237 @@ DataStream dataStream = importBuilder.builder();
 dataStream.execute();//启动同步作业
 ```
 
-## 3.17 同步作业调试、发布和部署运行
+## 3.18 生成excel文件
+
+通过ExcelFileOupputConfig配置文件来设置excel导出配置，例如：
+
+```java
+     //配置excel列与来源字段映射关系、列对应的中文标题（如果没有设置，默认采用字段名称作为excel列标题）
+     fileFtpOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+             .addCellMapping(1,"person_no","人员编号")
+             .addCellMapping(2,"name","*姓名")
+             .addCellMapping(3,"cert_type","*证件类型")
+ 
+             .addCellMapping(4,"cert_no","*证件号码","")
+             .addCellMapping(5,"zhs_item","*征收项目")
+ 
+             .addCellMapping(6,"zhs_class","*征收品目")
+             .addCellMapping(7,"zhs_sub_class","征收子目")
+ 
+             .addCellMapping(8,"zhs_year","*缴费年度","2022")//指定了列默认值
+             .addCellMapping(9,"zhs_level","*缴费档次","1");//指定了列默认值
+```
+
+只生成excel文件
+
+```java
+DB2FileFtpImportBuilder importBuilder = new DB2FileFtpImportBuilder();
+        importBuilder
+                .setBatchSize(500)
+                .setFetchSize(1000);
+
+
+        ExcelFileOupputConfig fileFtpOupputConfig = new ExcelFileOupputConfig();        
+
+        fileFtpOupputConfig.setTitle("湖南师大2021年新生医保（2021年）申报名单");
+        fileFtpOupputConfig.setSheetName("2021年新生医保申报单");
+        //配置excel列与来源字段映射关系、列对应的中文标题（如果没有设置，默认采用字段名称作为excel列标题）
+        fileFtpOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+                .addCellMapping(1,"person_no","人员编号")
+                .addCellMapping(2,"name","*姓名")
+                .addCellMapping(3,"cert_type","*证件类型")
+
+                .addCellMapping(4,"cert_no","*证件号码","")
+                .addCellMapping(5,"zhs_item","*征收项目")
+
+                .addCellMapping(6,"zhs_class","*征收品目")
+                .addCellMapping(7,"zhs_sub_class","征收子目")
+
+                .addCellMapping(8,"zhs_year","*缴费年度","2022")//指定了列默认值
+                .addCellMapping(9,"zhs_level","*缴费档次","1");//指定了列默认值
+        fileFtpOupputConfig.setFileDir("D:\\excelfiles\\hebin");//数据生成目录
+
+        fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+            @Override
+            public String genName(TaskContext taskContext, int fileSeq) {
+
+
+                return "湖南师大2021年新生医保（2021年）申报名单-合并.xlsx";
+            }
+        });
+
+        importBuilder.setFileOupputConfig(fileFtpOupputConfig);
+//    importBuilder.setIncreamentEndOffset(300);//单位秒
+        //vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27
+
+        importBuilder
+                .setSqlFilepath("sql.xml")
+                .setSqlName("querynewmanrequests");
+
+//        //定时任务配置，
+//        importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+////                .setScheduleDate(date) //指定任务开始执行时间：日期
+//                .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+//                .setPeriod(30000L); //每隔period毫秒执行，如果不设置，只执行一次
+//        //定时任务配置结束
+
+        //设置任务执行拦截器，可以添加多个
+        importBuilder.addCallInterceptor(new CallInterceptor() {
+            @Override
+            public void preCall(TaskContext taskContext) {
+
+
+            }
+
+            @Override
+            public void afterCall(TaskContext taskContext) {
+
+            }
+
+            @Override
+            public void throwException(TaskContext taskContext, Exception e) {
+                System.out.println("throwException 1");
+            }
+        });
+
+        /**
+         * 重新设置es数据结构
+         */
+        importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception {
+
+            }
+        });
+        //映射和转换配置结束
+
+        /**
+         * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+         */
+        importBuilder.setParallel(false);//设置为多线程并行批量导入,false串行
+        importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+        importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+        importBuilder.setPrintTaskLog(true);
+
+        /**
+         * 执行db数据导入csv操作
+         */
+        DataStream dataStream = importBuilder.builder();
+        dataStream.execute();//执行导入操作
+        logger.info("job started.");
+```
+
+生成excel文件并上传ftp服务器：
+
+```java
+ DB2FileFtpImportBuilder importBuilder = new DB2FileFtpImportBuilder();
+        importBuilder
+                .setBatchSize(500)
+                .setFetchSize(1000);
+
+
+        ExcelFileOupputConfig fileFtpOupputConfig = new ExcelFileOupputConfig();
+
+        String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定了默认值
+        FtpOutConfig ftpOutConfig = new FtpOutConfig();
+        fileFtpOupputConfig.setFtpOutConfig(ftpOutConfig);
+        ftpOutConfig.setBackupSuccessFiles(true);
+        ftpOutConfig.setTransferEmptyFiles(true);
+        ftpOutConfig.setFtpIP(ftpIp);
+
+        ftpOutConfig.setFtpPort(5322);
+        ftpOutConfig.setFtpUser("ecs");
+        ftpOutConfig.setFtpPassword("ecs@123");
+        ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
+        ftpOutConfig.setKeepAliveTimeout(100000);
+        ftpOutConfig.setFailedFileResendInterval(300000);
+
+        fileFtpOupputConfig.setTitle("湖南师大2021年新生医保（2021年）申报名单");
+        fileFtpOupputConfig.setSheetName("2021年新生医保申报单");
+
+        fileFtpOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+                .addCellMapping(1,"person_no","人员编号")
+                .addCellMapping(2,"name","*姓名")
+                .addCellMapping(3,"cert_type","*证件类型")
+
+                .addCellMapping(4,"cert_no","*证件号码","")
+                .addCellMapping(5,"zhs_item","*征收项目")
+
+                .addCellMapping(6,"zhs_class","*征收品目")
+                .addCellMapping(7,"zhs_sub_class","征收子目")
+                .addCellMapping(8,"zhs_year","*缴费年度","2022")
+                .addCellMapping(9,"zhs_level","*缴费档次","1");
+        fileFtpOupputConfig.setFileDir("D:\\excelfiles\\hebin");//数据生成目录
+
+        fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+            @Override
+            public String genName(TaskContext taskContext, int fileSeq) {
+
+
+                return "湖南师大2021年新生医保（2021年）申报名单-合并.xlsx";
+            }
+        });
+
+        importBuilder.setFileOupputConfig(fileFtpOupputConfig);
+//    importBuilder.setIncreamentEndOffset(300);//单位秒
+        //vops-chbizcollect-2020.11.26,vops-chbizcollect-2020.11.27
+
+        importBuilder
+                .setSqlFilepath("sql.xml")
+                .setSqlName("querynewmanrequests");
+
+//        //定时任务配置，
+//        importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+////                .setScheduleDate(date) //指定任务开始执行时间：日期
+//                .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+//                .setPeriod(30000L); //每隔period毫秒执行，如果不设置，只执行一次
+//        //定时任务配置结束
+
+        //设置任务执行拦截器，可以添加多个
+        importBuilder.addCallInterceptor(new CallInterceptor() {
+            @Override
+            public void preCall(TaskContext taskContext) {
+
+
+            }
+
+            @Override
+            public void afterCall(TaskContext taskContext) {
+
+            }
+
+            @Override
+            public void throwException(TaskContext taskContext, Exception e) {
+                System.out.println("throwException 1");
+            }
+        });
+
+        /**
+         * 重新设置es数据结构
+         */
+        importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception {
+
+            }
+        });
+        //映射和转换配置结束
+
+        /**
+         * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+         */
+        importBuilder.setParallel(false);//设置为多线程并行批量导入,false串行
+        importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+        importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+        importBuilder.setPrintTaskLog(true);
+
+        /**
+         * 执行db数据导入csv操作
+         */
+        DataStream dataStream = importBuilder.builder();
+        dataStream.execute();//执行导入操作
+        logger.info("job started.");
+```
+
+## 3.19 同步作业调试、发布和部署运行
 
 下载elasticsearcch/database-sftp/ftp同步作业[样板工程](https://github.com/bbossgroups/elasticsearch-file2ftp)，定义好自己的作业后，可以按照以下文档调试、发布和部署运行同步作业
 
@@ -912,7 +1194,7 @@ dataStream.execute();//启动同步作业
 
 作业发布和部署：[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
 
-## 3.18开发交流
+## 3.20 开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 

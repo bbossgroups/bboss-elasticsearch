@@ -7,7 +7,7 @@ https://esdoc.bbossgroups.com/#/README
 # Environmental requirements
 
 JDK requirement: JDK 1.7+
-Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,+
+Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,+
 # bboss兼容性
 
 | bboss | Elasticsearch | spring boot |
@@ -18,7 +18,7 @@ Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,+
 | all   | 5.x           | 1.x,2.x     |
 | all   | 6.x           | 1.x,2.x     |
 | all   | 7.x           | 1.x,2.x     |
-
+| all   | 8.x           | 1.x,2.x     |
 
 # 快速开始bboss
 

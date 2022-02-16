@@ -63,6 +63,7 @@ FileConfig用于指定文件级别配置
 | FileConfig.closeOlderTime                | Long类型，启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集，0或者null不起作用 | null    |
 | FileConfig.closeOldedFileAssert          | CloseOldedFileAssert类型，如果指定了closeOlderTime，但是有些文件是特例不能不关闭，那么可以通过指定CloseOldedFileAssert来检查静默时间达到closeOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fieldBuilder                  | FieldBuilder类型，根据文件信息动态为不同的日志文件添加固定的字段，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileConfig.skipHeaderLines | 指定忽略前几行记录 |  |
 | FileImportConfig.backupSuccessFiles | 备份采集完成文件  true 备份  false 不备份 | false |
 | FileImportConfig.backupSuccessFileDir | 文件备份目录 |  |
 | FileImportConfig.backupSuccessFileInterval | 备份文件清理线程执行时间间隔，单位：毫秒  默认每隔10秒执行一次 | 10000ms |
@@ -81,6 +82,7 @@ config.addConfig(new FileConfig()//指定多行记录的开头识别标记，正
                         return name.endsWith(".txt");
                      }
                   })//指定文件过滤器.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+                 .setSkipHeaderLines(1) //指定忽略前几行记录，忽略第一行
                   .setEnableInode(true).setCloseEOF(true)
 //                .setCharsetEncode("GB2312") //文件集级别配置
 //          .setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
@@ -126,6 +128,142 @@ enableMeta控制的信息如下
 		 *
 		 * true 开启 false 关闭
 		 */
+```
+
+## 1.1 excel文件采集配置和案例
+
+```java
+//配置excel文件列与导出字段名称映射关系
+config.addConfig(new ExcelFileConfig()
+            .addCellMapping(0,"shebao_org")
+            .addCellMapping(1,"person_no")
+            .addCellMapping(2,"name")
+            .addCellMapping(3,"cert_type")
+
+            .addCellMapping(4,"cert_no","")
+            .addCellMapping(5,"zhs_item")
+
+            .addCellMapping(6,"zhs_class")
+            .addCellMapping(7,"zhs_sub_class")
+            .addCellMapping(8,"zhs_year","2022")
+            .addCellMapping(9,"zhs_level","1")
+            .setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
+            .setFileFilter(new FileFilter() {
+               @Override
+               public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+                  //判断是否采集文件数据，返回true标识采集，false 不采集
+                  return fileInfo.getFileName().equals("cityperson.xlsx");
+               }
+            })//指定文件过滤器
+              .setSkipHeaderLines(1) //忽略excel第一行
+);
+```
+
+完整的案例
+
+```java
+FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
+      importBuilder.setBatchSize(500)//设置批量入库的记录数
+            .setFetchSize(1000);//设置按批读取文件行数
+      //设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+      importBuilder.setFlushInterval(10000l);
+
+      ExcelFileImportConfig config = new ExcelFileImportConfig();
+
+      //shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+      //配置excel文件列与导出字段名称映射关系
+      config.addConfig(new ExcelFileConfig()
+                  .addCellMapping(0,"shebao_org")
+                  .addCellMapping(1,"person_no")
+                  .addCellMapping(2,"name")
+                  .addCellMapping(3,"cert_type")
+
+                  .addCellMapping(4,"cert_no","")
+                  .addCellMapping(5,"zhs_item")
+
+                  .addCellMapping(6,"zhs_class")
+                  .addCellMapping(7,"zhs_sub_class")
+                  .addCellMapping(8,"zhs_year","2022")
+                  .addCellMapping(9,"zhs_level","1")
+                  .setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
+                  .setFileFilter(new FileFilter() {
+                     @Override
+                     public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+                        //判断是否采集文件数据，返回true标识采集，false 不采集
+                        return fileInfo.getFileName().equals("cityperson.xlsx");
+                     }
+                  })//指定文件过滤器
+                    .setSkipHeaderLines(1)//忽略第一行
+      );
+
+
+      config.setEnableMeta(true);
+      importBuilder.setFileImportConfig(config);
+      //指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
+
+//导出到数据源配置
+      DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
+      dbConfigBuilder
+            .setSqlFilepath("sql-dbtran.xml")
+
+            .setTargetDbName("test")//指定目标数据库，在application.properties文件中配置
+//          .setTargetDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+//          .setTargetDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+//          .setTargetDbUser("root")
+//          .setTargetDbPassword("123456")
+//          .setTargetValidateSQL("select 1")
+//          .setTargetUsePool(true)//是否使用连接池
+            .setInsertSqlName("insertcityperson")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+
+            /**
+             * 是否在批处理时，将insert、update、delete记录分组排序
+             * true：分组排序，先执行insert、在执行update、最后执行delete操作
+             * false：按照原始顺序执行db操作，默认值false
+             * @param optimize
+             * @return
+             */
+            .setOptimize(false);//指定查询源库的sql语句，在配置文件中配置：sql-dbtran.xml
+      importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
+      //增量配置开始
+      importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+      //setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+      importBuilder.setLastValueStorePath("excelfilelogdb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+      //增量配置结束
+
+
+      final Count count = new Count();
+      /**
+       * 重新设置es数据结构
+       */
+      importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+
+            //shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+
+            context.addFieldValue("rowNo",count.getCount());
+            count.increament();
+
+//          logger.info(SimpleStringUtil.object2json(values));
+         }
+      });
+      //映射和转换配置结束
+
+      /**
+       * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+       */
+      importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+      importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+      importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
+      importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+      importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+      importBuilder.setPrintTaskLog(true);
+
+      /**
+       * 启动es数据导入文件并上传sftp/ftp作业
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();//启动同步作业
+      logger.info("job started.");
 ```
 
 # 2.定时调度机制切换配置
@@ -1158,11 +1296,13 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
             logger.error("", e);
         }
         final Date startDate = _startDate;
-        config.addConfig(new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
-                        .setFtpUser("test").setFtpPassword("123456")
-                        .setRemoteFileDir("/").setDeleteRemoteFile(true)//
-                        //.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP) //采用ftp协议
+ 		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
+                .setFtpUser("test").setFtpPassword("123456")
+                .setRemoteFileDir("/").setDeleteRemoteFile(true)//
+                //.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP) //采用ftp协议
                         .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) //采用sftp协议
+        config.addConfig(new FileConfig().setFtpConfig(ftpConfig)
+        
                         .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                             @Override
                             public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识

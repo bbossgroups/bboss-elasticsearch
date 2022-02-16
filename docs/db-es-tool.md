@@ -35,12 +35,16 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 
 支持自动清理下载完毕后ftp服务器上的文件;
 
+支持excel、csv文件采集（本地和ftp/sftp）
+
+支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
+
 提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可。
 
 
 支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
 
-支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,+
+支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
 支持海量PB级数据同步导入功能
 

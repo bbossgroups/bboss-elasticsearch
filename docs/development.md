@@ -21,7 +21,7 @@ bboss elasticsearch管理dsl的方式：
 
 ​    **bboss elasticsearch jdk兼容性： jdk 1.7+**
 
-  **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,7.x,+**   ,兼容spring boot 1.x,2,x
+  **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,7.x,8.x,+**   ,兼容spring boot 1.x,2,x
 
    bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
