@@ -10,10 +10,45 @@ bboss提供了三种数据同步调度机制：
 
 本文介绍xxl-job调度机制，bboss结合xxl-job分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
+
+
+要注意一下xxl-job2.3.0版本和老版本的区别如下：
+xxl-job 2.3.0以下版本采用的maven坐标
+
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <version>6.5.1</version>
+        </dependency>
+```
+
+调整为xxl-job 2.3.0及更高版本采用的maven坐标：
+
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-datatran-schedule-xxljob</artifactId>
+            <version>6.5.1</version>
+        </dependency>
+```
+
+xxl job 低版本案例工程
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob
+
+xxl job 2x案例工程
+
+https://github.com/bbossgroups/db-elasticsearch-xxjob2x
+
+
+
 bboss提供两种xxl-job作业参考实现：
 
 1. 基于bboss gradle运行环境数据同步
 2. 基于spring 环境数据同步
+
+
 
 首先介绍第一种实现。
 
