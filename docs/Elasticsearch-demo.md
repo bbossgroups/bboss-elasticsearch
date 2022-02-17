@@ -40,9 +40,11 @@ https://github.com/bbossgroups/httpproxy-apollo
 
 gradle工程-基于xxl-job调度的数据同步案例
 
-https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo 
+https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo
+# 3.bboss数据采集ETL案例大全
+https://esdoc.bbossgroups.com/#/bboss-datasyn-demo 
 
-# 3.快速集成和应用 
+# 4.快速集成和应用 
 
 - 所有类型项目：[common-project-with-bboss](common-project-with-bboss.md) 
 - spring boot 项目：[spring-booter-with-bboss](spring-booter-with-bboss.md) 
@@ -52,7 +54,7 @@ bboss elasticsearch开发库使用文档：
 
 [How to use Elasticsearch BBoss](quickstart.md)
 
-# 4.开发交流
+# 5.开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 
