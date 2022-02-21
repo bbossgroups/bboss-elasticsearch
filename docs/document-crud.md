@@ -483,8 +483,8 @@ TraceExtraCriteria traceExtraCriteria = new TraceExtraCriteria();
          searchFields.add("bbb");
         traceExtraCriteria.setSearchFields(searchFields);
         traceExtraCriteria.setApplication("test");
-		traceExtraCriteria.setStartTime(new Date(1516304868072l);
-		traceExtraCriteria.setEndTime(new Date(1516349516377l);
+		traceExtraCriteria.setStartTime(new Date(1516304868072l));
+		traceExtraCriteria.setEndTime(new Date(1516349516377l));
         traceExtraCriteria.setQueryCondition("asdfasfd");
 //执行查询操作
 ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize

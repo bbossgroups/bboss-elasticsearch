@@ -343,5 +343,26 @@
 
 [采集日志并切割推送kafka案例 gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaSplitDemo.java)
 
+# 9 生成和采集excel文件案例 
 
-补充中
+## 9.1 采集excel案例
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo.java
+
+## 9.2 从ftp采集excel案例
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpExcelFile2DBDemo.java
+
+## 9.3 生成excel案例
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2ExcelFile.java
+
+## 9.4 生成excel上传ftp案例
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2ExcelFile2Ftp.java
+
+# 10 生成和采集csv文件案例 
+
+https://gitee.com/bboss/csv-dbhandle
+
+补充中。。。。。
