@@ -490,7 +490,18 @@ importBuilder.setLastValueColumn("collecttime");//手动指定日期增量查询
 importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
 ```
 
-#### 2.3.5.3 时间戳增量导出截止时间偏移量配置
+#### 2.3.5.3 日期类型增量字段日期格式配置
+
+可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的yyyy-MM-dd'T'HH:mm:ss.SSS'Z'时，需要设置字段相对应的日期格式，例如：yyyy-MM-dd HH:mm:ss
+   //如果是默认utc格式yyyy-MM-dd'T'HH:mm:ss.SSS'Z'，则不需要手动设置指定
+
+```java
+  importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
+```
+
+   lastValueDateformat只对从elasticsearch增量采集数据起作用，因为elasticsearch返回非UTC格式日期字符串时，需要通过指定对应的日期格式，才能将字符串形式的日期转换为增量字段状态管理需要的Date类型。
+
+#### 2.3.5.4 时间戳增量导出截止时间偏移量配置
 
 日期类型增量导入，还可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。
 
@@ -572,7 +583,7 @@ select * from td_sm_log where collecttime > #[collecttime] and collecttime <=
 
 
 
-#### 2.3.5.4 控制重启作业是否重新开始同步数据
+#### 2.3.5.5 控制重启作业是否重新开始同步数据
 
 setFromFirst的使用
 
