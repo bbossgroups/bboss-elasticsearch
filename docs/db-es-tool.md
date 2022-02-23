@@ -492,8 +492,10 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果�
 
 #### 2.3.5.3 日期类型增量字段日期格式配置
 
-可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的yyyy-MM-dd'T'HH:mm:ss.SSS'Z'时，需要设置字段相对应的日期格式，例如：yyyy-MM-dd HH:mm:ss
-   //如果是默认utc格式yyyy-MM-dd'T'HH:mm:ss.SSS'Z'，则不需要手动设置指定
+可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的
+
+yyyy-MM-dd'T'HH:mm:ss.SSS'Z'时，需要设置字段相对应的日期格式，例如：yyyy-MM-dd HH:mm:ss
+   ,如果是默认utc格式，则不需要手动设置指定
 
 ```java
   importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
