@@ -100,7 +100,7 @@ public class BBossESStarter  extends BaseESProperties{
 		temConf.setExternaljndiName(null);
 		temConf.setShowsql(db.getShowSql()!= null?Boolean.parseBoolean(db.getShowSql()):true);
 		temConf.setEncryptdbinfo(false);
-		temConf.setQueryfetchsize(db.getJdbcFetchSize() != null?Integer.parseInt(db.getInitSize()):0);
+		temConf.setQueryfetchsize(db.getJdbcFetchSize() != null?Integer.parseInt(db.getJdbcFetchSize()):0);
 		temConf.setDbAdaptor(db.getDbAdaptor());
 		temConf.setDbtype(db.getDbtype());
 		boolean ff = db.getColumnLableUpperCase() == null ? true:db.getColumnLableUpperCase().equals("true");
