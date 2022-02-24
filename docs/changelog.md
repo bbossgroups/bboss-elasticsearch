@@ -48,12 +48,20 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.5.2 功能改进
-1. 数据同步改进：可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的yyyy-MM-dd'T'HH:mm:ss.SSS'Z'时，需要设置字段相对应的日期格式，例如：yyyy-MM-dd HH:mm:ss
-   //如果是默认utc格式yyyy-MM-dd'T'HH:mm:ss.SSS'Z'，则不需要手动设置指定
-   importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
-   
-   lastValueDateformat只对从elasticsearch增量采集数据起作用
+1. 数据同步改进：可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的
+```java
+yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+```
 
+时，需要设置字段相对应的日期格式，例如：
+```java
+yyyy-MM-dd HH:mm:ss
+```
+如果是默认utc格式，则不需要手动设置指定
+
+```java
+  importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
+```
 # v6.5.1 功能改进
 1. 处理增量时间状态值写入mysql管理的增量状态数据库失败问题
 2. 时间转换优化:localdatetime和localdate向date类型转换，避免出错误
