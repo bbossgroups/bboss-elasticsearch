@@ -274,12 +274,14 @@ public class ElasticSearchHelper {
 			}
 
 		}
-		if (ElasticSearchHelper.elasticSearchSink == null) {
-			if (elasticSearchSink == null)
-				elasticSearchSink = firstElasticSearch;
-
+		if(elasticSearchSink != null){
 			ElasticSearchHelper.elasticSearchSink = elasticSearchSink;
 		}
+		else if (ElasticSearchHelper.elasticSearchSink == null) {
+			elasticSearchSink = firstElasticSearch;
+			ElasticSearchHelper.elasticSearchSink = elasticSearchSink;
+		}
+
 
 		if(elasticSearchMap.size() > 0) {
 			Iterator<Map.Entry<String, ElasticSearch>> entries = elasticSearchMap.entrySet().iterator();
