@@ -62,7 +62,43 @@ yyyy-MM-dd HH:mm:ss
 ```java
   importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
 ```
+2. 大数据同步：postgresql fetchsize机制支持改进
+
+3. 优化es客户端多数据源管理功能：spring boot多数据源启动加载顺序问题处理
+
+4. sql模板变量#[xxxxx]支持设置数据字段sql类型，通过type属性设置数值类型，使用案例：
+
+   ```sql
+   #[collecttime,type=timestamp]
+   ```
+完整的sql
+   ```xml   
+       <property name="insertSQLpostgresql">
+           <![CDATA[INSERT INTO batchtest1 (id, name, author, content, title, optime, oper, subtitle, collecttime,testInt,ipinfo)
+                   VALUES ( #[id],#[operModule],  ## 来源dbdemo索引中的 operModule字段
+                            #[author], ## 通过datarefactor增加的字段
+                            #[logContent], ## 来源dbdemo索引中的 logContent字段
+                            #[title], ## 通过datarefactor增加的字段
+                            #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段
+                            #[logOperuser],  ## 来源dbdemo索引中的 logOperuser字段
+                            #[subtitle], ## 通过datarefactor增加的字段
+                            #[collecttime,type=timestamp], ## 通过datarefactor增加的字段
+                            #[testInt], ## 通过datarefactor增加的字段
+                            #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段
+   ]]></property>  
+       
+   ```
+
+   type属性值范围：
+
+   ```java
+         string,int,long,double,float,short,date,timestamp,bigdecimal,boolean,byte,blobfile,blob,clobfile,clob,object
+   ```
+
+   
+
 # v6.5.1 功能改进
+
 1. 处理增量时间状态值写入mysql管理的增量状态数据库失败问题
 2. 时间转换优化:localdatetime和localdate向date类型转换，避免出错误
 3. 数据同步作业调度增加对xxl-job 2.3.0的支持，需将原maven坐标bboss-elasticsearch-rest-jdbc调整为bboss-datatran-schedule-xxljob
@@ -94,6 +130,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
                   private int skipHeaderLines;
               
