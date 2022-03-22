@@ -231,7 +231,7 @@
 
 # 4 生成File并上传Ftp案例
 
-## 4.1 采集elasticsearch数据生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.1 采集elasticsearch数据生成文件并上传ftp
 案例1 ES2FileFtpDemo-sftp协议上传
 
 [github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpDemo.java)
@@ -252,32 +252,32 @@
 [github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java)
 
 [gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java)
-## 4.2 采集日志文件数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.2 采集日志文件数据，处理后生成文件并上传ftp
 
 [github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/filelog/Filelog2FileFtpDemo.java)
 
 [gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/filelog/Filelog2FileFtpDemo.java)
-## 4.4 采集database数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.4 采集database数据，处理后生成文件并上传ftp
 
 
 [github地址](https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java)
 
 [gitee地址](https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java)
 
-## 4.4 接收kafka数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.4 接收kafka数据，处理后生成文件并上传ftp
 
 
 [github地址](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2FileFtpDemo.java)
 
 [gitee地址](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2FileFtpDemo.java)
 
-## 4.5 采集hbase数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.5 采集hbase数据，处理后生成文件并上传ftp
 
 [github地址](https://github.com/bbossgroups/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2FileFtpBatchSplitFileDemo.java)
 
 [gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2FileFtpBatchSplitFileDemo.java)
 
-## 4.6 采集mongodb数据，处理后生成文件并上传ftp（可以通过disableftp控制只生成文件）
+## 4.6 采集mongodb数据，处理后生成文件并上传ftp
 
 [github地址](https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Mongodb2FileFtp.java)
 
