@@ -89,7 +89,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
-      <version>3.40.0</version>
+      <version>3.36.0.3</version>
       <scope>compile</scope>
  </dependency>
 ```
@@ -1436,6 +1436,8 @@ Elasticsearch控制参数参考文档：
 
 ### 2.3.17 数据同步任务执行统计信息获取
 
+#### 任务级别统计信息
+
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
 ```java
@@ -1470,9 +1472,9 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 
 ```json
 {
-    "jobStartTime": 1572920403541, //作业开始时间，date类型，输出json时被转换为long值
-    "taskStartTime": 1572920403571,//当前任务开始时间，date类型，输出json时被转换为long值
-    "taskEndTime": 1572920403585,//当前任务结束时间，date类型，输出json时被转换为long值
+    "jobStartTime": 2022-03-24 14:46:52, //作业开始时间，date类型，输出json时被转换为long值
+    "taskStartTime": 2022-03-24 14:46:53,//当前任务开始时间，date类型，输出json时被转换为long值
+    "taskEndTime": 2022-03-24 14:46:53,//当前任务结束时间，date类型，输出json时被转换为long值
     "totalRecords": 4, //作业处理总记录数
     "totalFailedRecords": 0,//作业处理总失败记录数
     "totalIgnoreRecords": 0,//作业处理总忽略记录数
@@ -1484,6 +1486,60 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
     "jobNo": "eece3d34320b490a980d3f501cb7ae8c" //任务对应的作业编号，一个作业会被拆分为多个任务执行
 }
 ```
+
+
+
+#### 作业级别统计信息
+
+
+
+通过CallInterceptor拦截器接口，在作业调度执行完成的时候，可以在方法afterCall和throwException中，通过taskContext.getJobTaskMetrics()获取作业任务统计信息，示例如下：
+
+```java
+//设置任务执行拦截器，可以添加多个
+importBuilder.addCallInterceptor(new CallInterceptor() {
+   @Override
+   public void preCall(TaskContext taskContext) {
+
+      String formate = "yyyyMMddHHmmss";
+      //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
+      SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+      String time = dateFormat.format(new Date());
+      //可以在preCall方法中设置任务级别全局变量，然后在其他任务级别和记录级别接口中通过taskContext.getTaskData("time");方法获取time参数
+      taskContext.addTaskData("time",time);
+
+   }
+
+   @Override
+   public void afterCall(TaskContext taskContext) {
+      logger.info(taskContext.getJobTaskMetrics().toString());
+   }
+
+   @Override
+   public void throwException(TaskContext taskContext, Exception e) {
+      logger.info(taskContext.getJobTaskMetrics().toString(),e);
+   }
+});
+```
+
+打印的统计信息格式如下：
+
+```properties
+JobNo:558e370ae01041c4baf4835882fc6a77,JobStartTime:2022-03-24 14:46:52,JobEndTime:2022-03-24 14:46:53,Total Records:497,Total Success Records:497,Total Failed Records:0,Total Ignore Records:0,Total Tasks:50
+```
+
+往kafka推送数据时，异步特性，因为任务全部提交完成后，数据还未发送完毕，回调afterCall方法时，作业级别统计信息可能不完整，如果需要完整的统计信息，可以调用方法来等待统计完成，例如：
+
+```java
+		@Override
+			public void afterCall(TaskContext taskContext) {
+				taskContext.await();
+                //taskContext.await(100000l); //指定一个最长等待时间
+				logger.info("afterCall ----------"+taskContext.getJobTaskMetrics().toString());
+			}
+```
+
+
 
 ### 2.3.18 设置并行导入参数
 

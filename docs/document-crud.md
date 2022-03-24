@@ -32,7 +32,7 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
 下面以非spring boot环境进行介绍。
 
 
-# 1. 添加文档
+# 1. 添加修改文档
 
 ```java
 
@@ -43,7 +43,7 @@ agentInfo.setLocation("28.292781,117.238963");
 //设置其他属性
 。。。。
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();	
-//添加/修改文档
+//添加/修改文档，如果文档id存在则修改，不存在则插入
 clientUtil.addDocument("agentinfo",//索引名称
                        "agentinfo",//索引类型
                         agentInfo);//索引数据对象
@@ -88,7 +88,7 @@ clientUtil.deleteDocuments("agentinfo",//索引表
 
 
 
-# 2. 批量添加文档
+# 2. 批量添加修改文档
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -107,7 +107,7 @@ demo.setApplicationName("blackcatdemo3");
 demo.setContentbody("四大天王，这种文化很好，中华人民共和国");
 demo.setName("张学友");
 demos.add(demo);
-//批量添加/修改文档
+//批量添加/修改文档，如果文档id存在则修改，不存在则插入
 String response = clientUtil.addDocuments("demo",//索引表
 "demo",//索引类型
 demos);
