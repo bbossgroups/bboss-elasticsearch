@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.2 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.3 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.2</version>
+            <version>6.5.3</version>
         </dependency>
 ```
 
@@ -44,10 +44,60 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.5.2</version>
+            <version>6.5.3</version>
         </dependency>
 ```
-# v6.5.2 功能改进
+# v6.5.3 功能改进
+1. 数据同步机制优化：各插件tran逻辑复用优化
+2. ftp/sftp文件下载锁优化
+3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
+```java
+FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(21)
+				.setFtpUser("ecsftp").setFtpPassword("ecsftp").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
+				.setRemoteFileDir("xcm").setRemoteFileValidate(new RemoteFileValidate() {
+					/**
+					 * 校验数据文件合法性和完整性接口
+
+					 * @param validateContext 封装校验数据文件信息
+					 *     dataFile 待校验零时数据文件，可以根据文件名称获取对应文件的md5签名文件名、数据量稽核文件名称等信息，
+					 *     remoteFile 通过数据文件对应的ftp/sftp文件路径，计算对应的目录获取md5签名文件、数据量稽核文件所在的目录地址
+					 *     ftpContext ftp配置上下文对象
+					 *     然后通过remoteFileAction下载md5签名文件、数据量稽核文件，再对数据文件进行校验即可
+					 *     redownload 标记校验来源是否是因校验失败重新下载文件导致的校验操作，true 为重下后 文件校验，false为第一次下载校验
+					 * @return int
+					 * 文件内容校验成功
+					 * 	RemoteFileValidate.FILE_VALIDATE_OK = 1;
+					 * 	校验失败不处理文件
+					 * 	RemoteFileValidate.FILE_VALIDATE_FAILED = 2;
+					 * 	文件内容校验失败并备份已下载文件
+					 * 	RemoteFileValidate.FILE_VALIDATE_FAILED_BACKUP = 3;
+					 * 	文件内容校验失败并删除已下载文件
+					 * 	RemoteFileValidate.FILE_VALIDATE_FAILED_DELETE = 5;
+					 */
+					public Result validateFile(ValidateContext validateContext) {
+//						if(redownload)
+//							return Result.default_ok;
+////						return Result.default_ok;
+//						Result result = new Result();
+//						result.setValidateResult(RemoteFileValidate.FILE_VALIDATE_FAILED_REDOWNLOAD);
+//						result.setRedownloadCounts(3);
+//						result.setMessage("MD5校验"+remoteFile+"失败，重试3次");//设置校验失败原因信息
+//						//根据remoteFile的信息计算md5文件路径地址，并下载，下载务必后进行签名校验
+//						//remoteFileAction.downloadFile("remoteFile.md5","dataFile.md5");
+//						return result;
+						return Result.default_ok;
+					}
+				})
+```				
+4. [完善数据同步作业任务监控指标统计信息](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
+5. 增加数据写入[redis案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)
+6. 增加[远程数据文件校验机制](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)，以实现对数据文件md5签名校验、记录数校验等功能
+
+7. 完善数据加工处理：context getValue方法可以获取解析后的日志文件记录字段值
+
+
+   
+# v6.5.3 功能改进
 1. 数据同步改进：可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的
 ```java
 yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
@@ -110,7 +160,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.2</version>
+            <version>6.5.3</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -118,7 +168,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.5.2</version>
+            <version>6.5.3</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -207,7 +257,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.5.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.5.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -259,7 +309,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.8",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.9",transitive: true 
   ```
 
   **maven坐标**
@@ -270,7 +320,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>5.8.8</version>  
+      <version>5.8.9</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -395,8 +445,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
        
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
-[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
 4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
 
@@ -418,10 +468,10 @@ importBuilder.setCustomOutPut(new CustomOutPut() {
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 5. Elasticsearch客户端：ClientInterface增加一组指定elasticsearch datasource名称的方法，详情如下：
 
-https://gitee.com/bboss/bboss-elastic/blob/v6.5.2/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
+https://gitee.com/bboss/bboss-elastic/blob/v6.5.3/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
 
 # v6.3.5 功能改进
 
@@ -753,7 +803,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.5.2</version>
+    <version>6.5.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1072,13 +1122,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.9.3</version>
+      <version>5.9.5</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.3", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.5", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -1725,7 +1775,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/o
 
 ![](/images/metaanno.png)
 
-# v5.8.8 功能改进
+# v5.8.9 功能改进
 
 1.新增bboss-elasticsearch-rest-entity模块，方便bboss相关的实体bean被第三方项目引用。
 

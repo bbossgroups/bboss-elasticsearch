@@ -48,14 +48,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.9.5</version>
+   <version>5.9.6</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:5.9.5'
+implementation 'com.bbossgroups:bboss-http:5.9.6'
 ```
 
 # 3.负载均衡组件
@@ -452,8 +452,8 @@ http.routing=#[area]
 ```xml
 <dependency>
   <groupId>com.bbossgroups</groupId>
-  <artifactId>5.8.8</artifactId>
-  <version>5.8.8</version>
+  <artifactId>5.8.9</artifactId>
+  <version>5.8.9</version>
 </dependency>
 ```
 

@@ -5,11 +5,11 @@
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
    3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
-   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
-      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 
@@ -1252,6 +1252,8 @@ ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，�
 | FtpConfig.sourcePath                  | 指定下钻到本地日志文件目录                                   |
 | FtpConfig.transferProtocol            | bboss 支持ftp和sftp两种协议类型：FtpConfig.TRANSFER_PROTOCOL_FTP  FtpConfig.TRANSFER_PROTOCOL_SFTP                                默认值：FtpConfig.TRANSFER_PROTOCOL_SFTP |
 | FtpConfig.deleteRemoteFile            | 控制是否删除下载完毕的ftp文件，true 删除，false 不删除，默认值false |
+| FtpConfig.downloadWorkThreads         | 设置并行下载线程数，默认为3个，如果设置为0代表串行下载       |
+| FtpConfig.remoteFileValidate          | [远程数据文件校验机制](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-从sftp服务器采集excel文件写入redis案例)，以实现对数据文件md5签名校验、记录数校验等功能 |
 
 ftp配置案例
 
@@ -1297,10 +1299,44 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
         }
         final Date startDate = _startDate;
  		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
-                .setFtpUser("test").setFtpPassword("123456")
+                .setFtpUser("test").setFtpPassword("123456").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
+            .setRemoteFileValidate(new RemoteFileValidate() {
+                 /**
+                  * 校验数据文件合法性和完整性接口
+
+                  * @param validateContext 封装校验数据文件信息
+                  *     dataFile 待校验零时数据文件，可以根据文件名称获取对应文件的md5签名文件名、数据量稽核文件名称等信息，
+                  *     remoteFile 通过数据文件对应的ftp/sftp文件路径，计算对应的目录获取md5签名文件、数据量稽核文件所在的目录地址
+                  *     ftpContext ftp配置上下文对象
+                  *     然后通过remoteFileAction下载md5签名文件、数据量稽核文件，再对数据文件进行校验即可
+                  *     redownload 标记校验来源是否是因校验失败重新下载文件导致的校验操作，true 为重下后 文件校验，false为第一次下载校验
+                  * @return int
+                  * 文件内容校验成功
+                  *     RemoteFileValidate.FILE_VALIDATE_OK = 1;
+                  *     校验失败不处理文件
+                  *     RemoteFileValidate.FILE_VALIDATE_FAILED = 2;
+                  *     文件内容校验失败并备份已下载文件
+                  *     RemoteFileValidate.FILE_VALIDATE_FAILED_BACKUP = 3;
+                  *     文件内容校验失败并删除已下载文件
+                  *     RemoteFileValidate.FILE_VALIDATE_FAILED_DELETE = 5;
+                  */
+                 public Result validateFile(ValidateContext validateContext) {
+//                        if(redownload)
+//                            return Result.default_ok;
+////                        return Result.default_ok;
+//                        Result result = new Result();
+//                        result.setValidateResult(RemoteFileValidate.FILE_VALIDATE_FAILED_REDOWNLOAD);
+//                        result.setRedownloadCounts(3);
+//                        result.setMessage("MD5校验"+remoteFile+"失败，重试3次");//设置校验失败原因信息
+//                        //根据remoteFile的信息计算md5文件路径地址，并下载，下载务必后进行签名校验
+//                        //remoteFileAction.downloadFile("remoteFile.md5","dataFile.md5");
+//                        return result;
+                     return Result.default_ok;
+                 }
+             })
                 .setRemoteFileDir("/").setDeleteRemoteFile(true)//
                 //.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP) //采用ftp协议
-                        .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) //采用sftp协议
+                        .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP); //采用sftp协议
         config.addConfig(new FileConfig().setFtpConfig(ftpConfig)
         
                         .setFileFilter(new FileFilter() {//指定ftp文件筛选规则

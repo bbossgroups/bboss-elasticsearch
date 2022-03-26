@@ -80,7 +80,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.5.2</version>
+<version>6.5.3</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1745,7 +1745,7 @@ ES2DummyExportBuilder
 
 Kafka2DummyExportBuilder
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.2/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 
 

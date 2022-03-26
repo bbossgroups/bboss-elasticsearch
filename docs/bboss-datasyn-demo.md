@@ -365,4 +365,18 @@ https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frame
 
 https://gitee.com/bboss/csv-dbhandle
 
+# 11 从sftp服务器采集excel文件写入redis案例 
+
+单写入redis案例：多线程并行下载，内含数据文件校验接口示例
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FTPFileLog2CustomRedisDemo.java
+
+批量写入redis案例，多线程并行下载，内含数据文件校验接口示例
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FTPFileLog2CustomRedisBatchDemo.java
+
+# 12 从ftp服务器采集avl文件写入elasticsearch案例 
+
+多线程并行下载，内含数据文件校验接口示例
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/avl/FtpAvl2ESDemo.java
+
+
 补充中。。。。。
