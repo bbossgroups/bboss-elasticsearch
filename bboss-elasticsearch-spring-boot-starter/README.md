@@ -2,7 +2,7 @@
 
 不错的elasticsearch客户端工具包,bboss es开发套件采用类似于mybatis的方式操作elasticsearch
 
-jdk要求： jdk 1.7+
+jdk要求： jdk 1.8+
 
 elasticsearch版本要求：2.x,5.x,6.x,+
 

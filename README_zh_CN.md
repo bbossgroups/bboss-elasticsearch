@@ -6,7 +6,7 @@ https://esdoc.bbossgroups.com/#/README
 
 # Environmental requirements
 
-JDK requirement: JDK 1.7+
+JDK requirement: JDK 1.8+
 Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,+
 # bboss兼容性
 
@@ -152,7 +152,7 @@ https://github.com/bbossgroups/elasticsearch-springboot-example
 
 不错的elasticsearch客户端工具包,bboss es开发套件采用类似于mybatis的方式操作elasticsearch
 
-jdk要求： jdk 1.7+
+jdk要求： jdk 1.8+
 
 elasticsearch版本要求：1.X,2.X,5.X,6.X,+
 

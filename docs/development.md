@@ -19,7 +19,7 @@ bboss elasticsearch管理dsl的方式：
 
 **如果喜欢直接使用query dsl（es的官方语言），但是又不想在代码里面编写冗长的dsl拼接串的话，可以考虑采用 bboss。**
 
-​    **bboss elasticsearch jdk兼容性： jdk 1.7+**
+​    **bboss elasticsearch jdk兼容性： jdk 1.8+**
 
   **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,7.x,8.x,+**   ,兼容spring boot 1.x,2,x
 

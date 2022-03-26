@@ -10,7 +10,7 @@ https://esdoc.bbossgroups.com/#/development
 
 1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,8.x,+
 
-2. JDK兼容性： jdk 1.7+
+2. JDK兼容性： jdk 1.8+
 
 3. Spring boot兼容性:1.x,2.x
 

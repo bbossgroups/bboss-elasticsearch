@@ -23,7 +23,7 @@ https://esdoc.bbossgroups.com/#/quickstart
 | all   | 7.x           | 1.x,2.x     |
 | all   | 8.x           | 1.x,2.x     |
 
-jdk兼容性：jdk 1.7+
+jdk兼容性：jdk 1.8+
 
 # 主要功能特色
 

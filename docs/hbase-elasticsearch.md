@@ -48,7 +48,7 @@ bboss提供了不错的数据同步功能，通过bboss可以非常方便地实�
 # 2.环境要求
 ## 2.1 基本要求
 
-JDK requirement: JDK 1.7+
+JDK requirement: JDK 1.8+
 
 Elasticsearch version requirements: 1.x,2.X,5.X,6.X,7.x,+
 
