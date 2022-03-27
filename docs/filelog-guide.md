@@ -1,6 +1,6 @@
 # 日志采集插件使用指南
 
-基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件数据到kafka/elasticsearch/database/自定义处理器；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
+基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器，支持多线程并行下载和处理远程数据文件，支持本地/ftp/sftp子目录下文件数据采集；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
 
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
@@ -42,7 +42,8 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
 | FileImportConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
-| FileConfig.sourcePath                    | String,日志文件目录                                          |         |
+| FileConfig.sourcePath                    | String,数据文件存放目录，或者远程文件下载目录                           |         |
+| FileConfig.ftpConfig | FtpConfig,可选，封装ftp/sftp配置信息，[设置ftpConfig](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)，代表作业从ftp和sftp服务器下载数据文件并采集处理，否则就是本地数据文件采集处理 | |
 | FileConfig.scanChild | 是否检测子目录 ,如果扫描子目录，则inode机制强制关闭,默认false，适用于本地目录/ftp目录/sftp目录 | |
 | FileConfig.renameFileSourcePath          | String,重命名文件监听路径：一些日志组件会指定将滚动日志文件放在与当前日志文件不同的目录下，需要通过renameFileSourcePath指定这个不同的目录地址，以便可以追踪到未采集完毕的滚动日志文件，从而继续采集文件中没有采集完毕的日志本路径只有在inode机制有效并且启用的情况下才起作用,默认与sourcePath一致，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fileNameRegular               | String,日志文件名称正则表达式，fileNameRegular和fileFilter只能指定一个 |         |
@@ -1232,8 +1233,10 @@ ftp采集的一些特性：
 
 1. 如果文件没有下载完，不会被采集，如果在下载的过程中作业停了，下次启动作业后未下载完成的文件会接着下载
 2. 文件只有下载完成后，才会被采集，否则不被采集，不会再次下载采集已经采集过的文件，如果在文件采集过程中，作业停了，作业下次启动后会继续采集未采集完成的日志文件
-
 3. 已经下载过的文件不会再次下载采集（除非删除了作业增量状态库文件）
+4. 支持多线程并行下载和处理远程数据文件
+5. 支持ftp/sftp子目录下数据文件采集
+6. 支持数据文件校验机制，可以根据需要实现对数据文件进行有效性和数据完整性校验，比如md5签名校验
 
 第一节介绍了采集日志文件的通用配置，通用配置同样适用于从ftp下载的日志文件数据采集，特殊之处：
 
@@ -1299,7 +1302,7 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
         }
         final Date startDate = _startDate;
  		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
-                .setFtpUser("test").setFtpPassword("123456").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
+                .setFtpUser("test").setFtpPassword("123456").setDownloadWorkThreads(4)//设置并行下载文件线程个数，设置为4，代表允许最多4个文件同时下载
             .setRemoteFileValidate(new RemoteFileValidate() {
                  /**
                   * 校验数据文件合法性和完整性接口
