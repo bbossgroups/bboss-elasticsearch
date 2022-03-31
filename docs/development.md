@@ -654,6 +654,12 @@ spring boot对应配置：
 spring.elasticsearch.bboss.dslfile.dslMappingDir=D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources
 ```
 
+### 2.7.3 基于数据库管理dsl
+
+bboss除了通过xml配置文件来管理dsl，还可以通过数据库来管理dsl，详细介绍参考文档：
+
+https://esdoc.bbossgroups.com/#/db-dsl
+
 ## 2.8 设置scroll查询线程池线程数和等待队列长度
 
 ### 设置slice scroll查询对应的线程数和等待队列数

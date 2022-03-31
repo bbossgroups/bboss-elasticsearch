@@ -124,7 +124,7 @@ import org.frameworkset.elasticsearch.scroll.HandlerInfo;
 ```
 # Elasticsearch Java Demos
 
-The following Demo and related documentation is compatible with Elasticsearch 2. X,5. X,6. X,+ versions
+The following Demo and related documentation is compatible with Elasticsearch 2. X,5. X,6. X,7.x,8.x,+ versions
 
 ## Elasticsearch demo for Java project:
 
