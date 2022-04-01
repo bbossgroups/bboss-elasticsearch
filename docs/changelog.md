@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.5 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
 
@@ -44,10 +44,10 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
-# v6.5.3 功能改进
+# v6.5.5 功能改进
 1. 数据同步机制优化：各插件tran逻辑复用优化
 2. ftp/sftp文件下载锁优化
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
@@ -88,16 +88,16 @@ FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(21)
 						return Result.default_ok;
 					}
 				})
-```				
+```
 4. [完善数据同步作业任务监控指标统计信息](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
 5. 增加数据写入[redis案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)
 6. 增加[远程数据文件校验机制](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)，以实现对数据文件md5签名校验、记录数校验等功能
-
 7. 完善数据加工处理：context getValue方法可以获取解析后的日志文件记录字段值
+8. 对作业启动日志中的数据源口令进行脱敏处理
 
 
-   
-# v6.5.3 功能改进
+
+# v6.5.2 功能改进
 1. 数据同步改进：可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的
 ```java
 yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
@@ -160,7 +160,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -168,7 +168,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -180,6 +180,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
               
                   private int skipHeaderLines;
@@ -257,7 +258,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.5.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.5.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -309,7 +310,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.8.9",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.9.0",transitive: true 
   ```
 
   **maven坐标**
@@ -320,7 +321,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>5.8.9</version>  
+      <version>5.9.0</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -445,8 +446,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
        
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
-[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
 4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
 
@@ -468,10 +469,10 @@ importBuilder.setCustomOutPut(new CustomOutPut() {
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.3/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 5. Elasticsearch客户端：ClientInterface增加一组指定elasticsearch datasource名称的方法，详情如下：
 
-https://gitee.com/bboss/bboss-elastic/blob/v6.5.3/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
+https://gitee.com/bboss/bboss-elastic/blob/v6.5.5/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
 
 # v6.3.5 功能改进
 
@@ -803,7 +804,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.5.3</version>
+    <version>6.5.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1122,13 +1123,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>5.9.5</version>
+      <version>5.9.6</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.5", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "5.9.6", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -1613,7 +1614,7 @@ importBuilder.setIgnoreNullValueField(true);
 3.解决mongodb-elasticsearch增量数据同步增量状态记录主键没有正确生成的问题
 
 # v5.9.5 功能改进
-1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.5！
+1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.6！
 
 2.数据同步模块扩展：增加数据库到数据库的数据同步功能
 
@@ -1775,7 +1776,7 @@ https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/java/o
 
 ![](/images/metaanno.png)
 
-# v5.8.9 功能改进
+# v5.8.6 功能改进
 
 1.新增bboss-elasticsearch-rest-entity模块，方便bboss相关的实体bean被第三方项目引用。
 
