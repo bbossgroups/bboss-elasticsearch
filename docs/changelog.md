@@ -49,7 +49,7 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.5.5 功能改进
 1. 数据同步机制优化：各插件tran逻辑复用优化
-2. ftp/sftp文件下载锁优化
+2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
 ```java
 FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(21)
@@ -90,7 +90,7 @@ FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(21)
 				})
 ```
 4. [完善数据同步作业任务监控指标统计信息](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
-5. 增加数据写入[redis案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)
+5. 增加数据批量/串行同步写入[redis案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)
 6. 增加[远程数据文件校验机制](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-%e4%bb%8esftp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%87%e9%9b%86excel%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5redis%e6%a1%88%e4%be%8b)，以实现对数据文件md5签名校验、记录数校验等功能
 7. 完善数据加工处理：context getValue方法可以获取解析后的日志文件记录字段值
 8. 对作业启动日志中的数据源口令进行脱敏处理
@@ -180,6 +180,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
               
               
