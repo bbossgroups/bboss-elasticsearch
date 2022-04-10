@@ -4,15 +4,21 @@
 
  
 
-*The best elasticsearch highlevel java rest api-----[bboss](https://esdoc.bbossgroups.com/#/README)* 
+*The best elasticsearch highlevel java rest api-----[bboss](https://www.bbossgroups.com)* 
 
 # 工具特性
 
-bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，本文为大家程序各种数据同步案例。
+Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。支持在Elasticsearch、关系数据库(mysql,oracle,db2,sqlserver、达梦等)、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
+
+提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
+
+Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用汇总运行；提供了作业任务监控api、作业启动和停止api，可轻松定制一款属于自己的ETL管理工具。
+
+如果您还在苦于logstash、flume、filebeat之类的开源工具无法满足复杂的、海量的数据处理加工场景，那么Elasticsearch-datatran将是一个不错的选择。
 
 ![](images\datasyn.png)
 
-通过bboss，可以非常方便地采集database/mongodb/Elasticsearch/kafka/hbase/本地或者Ftp日志文件源数据，经过数据转换处理后，再推送到目标库elasticsearch/database/file/ftp/kafka/dummy/logger。
+
 
 数据导入的方式
 
@@ -58,17 +64,13 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
-bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包，能够非常方便地加工和处理需要同步的源数据，然后将最终的数据保存到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本，即可构建和发布出可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器。
-
-​	下面我们通过案例来介绍databaseb-elasticsearch的使用方法，你会发现整个过程下来，开发一个同步作业，其实就是在用大家熟悉的方式做一个简单的java开发编程的事情。
-
-本文案例工程地址
+​	下面通过案例来介绍ETL工具的使用方法，本文案例工程地址
 
 https://github.com/bbossgroups/db-elasticsearch-tool
 
 https://gitee.com/bboss/db-elasticsearch-tool
 
-下面详细介绍本案例。
+
 
 
 

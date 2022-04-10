@@ -378,5 +378,11 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
 多线程并行下载，内含数据文件校验接口示例
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/avl/FtpAvl2ESDemo.java
 
+# 13 从Elasticsearch采集数据写入redis案例 
 
+单写入redis案例
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisDemo.java
+
+批量写入redis案例，多线程并行下载，内含数据文件校验接口示例
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisBatchDemo.java
 补充中。。。。。
