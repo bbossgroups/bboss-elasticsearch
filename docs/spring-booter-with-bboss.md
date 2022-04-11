@@ -39,20 +39,20 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
 ```
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.5.5"
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:6.5.5"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.5.6"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:6.5.6"
 ```
 
 

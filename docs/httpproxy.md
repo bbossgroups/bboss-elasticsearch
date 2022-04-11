@@ -452,8 +452,8 @@ http.routing=#[area]
 ```xml
 <dependency>
   <groupId>com.bbossgroups</groupId>
-  <artifactId>5.9.0</artifactId>
-  <version>5.9.0</version>
+  <artifactId>bboss-spring-boot-starter</artifactId>
+  <version>5.9.6</version>
 </dependency>
 ```
 

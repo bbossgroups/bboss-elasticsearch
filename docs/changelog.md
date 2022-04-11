@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.5 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.5.6 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
 ```
 
@@ -44,10 +44,14 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
 ```
-# v6.5.5 功能改进
+# v6.5.6 功能改进
+1. 数据同步改进：增加elasticsearch数据同步到自定义处理器功能
+2. 增加增加elasticsearch数据同步到redis案例（批处理和单条处理）
+
+# v6.5.6 功能改进
 1. 数据同步机制优化：各插件tran逻辑复用优化
 2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
@@ -160,7 +164,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -168,7 +172,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.5.5</version>
+            <version>6.5.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -259,7 +263,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.5.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.5.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -447,8 +451,8 @@ spring.elasticsearch.bboss.elasticsearch.referExternal=default
 2. 数据同步功能：扩展filelog插件，增加对ftp日志文件下载采集支持，支持实时监听下载ftp目录下生成的日志文件，
        
    将ftp文件中的数据采集写入elasticsearch、数据库、推送kafka、写入新的日志文件，参考案例：
-[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[FtpLog2ESETLScheduleDemo.java](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[FtpLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.6/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 3. 数据同步功能：支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件
 4. 数据同步功能：提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可
 
@@ -470,10 +474,10 @@ importBuilder.setCustomOutPut(new CustomOutPut() {
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.5/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.6/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 5. Elasticsearch客户端：ClientInterface增加一组指定elasticsearch datasource名称的方法，详情如下：
 
-https://gitee.com/bboss/bboss-elastic/blob/v6.5.5/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
+https://gitee.com/bboss/bboss-elastic/blob/v6.5.6/bboss-elasticsearch-rest/src/main/java/org/frameworkset/elasticsearch/client/ClientInterfaceWithESDatasource.java
 
 # v6.3.5 功能改进
 
@@ -805,7 +809,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.5.5</version>
+    <version>6.5.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
