@@ -51,7 +51,7 @@ https://esdoc.bbossgroups.com/#/development
 1. 数据同步改进：增加elasticsearch数据同步到自定义处理器功能
 2. 增加增加elasticsearch数据同步到redis案例（批处理和单条处理）
 
-# v6.5.6 功能改进
+# v6.5.5 功能改进
 1. 数据同步机制优化：各插件tran逻辑复用优化
 2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
