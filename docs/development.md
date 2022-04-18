@@ -53,11 +53,13 @@ Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#
 
 # **2 elasticsearch配置**
 
-**运行bboss es需要一个application.properties文件，放到资源目录（resources）目录下即可：**
+运行bboss es需要一个application.properties文件，放到资源目录（resources）目录下即可。
 
-配置文件[**application.properties**](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/application.properties)主要配置说明：
+本文主要以非spring boot项目配置为例，spring boot项目请参考：
 
+https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
 
+配置文件[**application.properties**](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/main/resources/application.properties)主要配置说明如下：
 
 ## **2.1 es服务器账号和口令配置**
 
@@ -67,7 +69,9 @@ elasticUser=elastic
 
 elasticPassword=changeme
 
+如果需要配置加密口令，那么可以通过配置属性拦截器来对加密口令进行识别处理，参考文档：
 
+[使用外部属性加载拦截器](https://doc.bbossgroups.com/#/aop/IntroduceIoc?id=_6-使用外部属性加载拦截器)
 
 ## **2.2 Elasticsearch 服务器http地址和端口配置**
 
