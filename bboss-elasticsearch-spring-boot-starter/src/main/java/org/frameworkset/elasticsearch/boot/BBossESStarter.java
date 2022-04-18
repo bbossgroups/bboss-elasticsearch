@@ -20,6 +20,9 @@ import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
+import org.frameworkset.spi.assemble.PropertiesContainer;
+import org.frameworkset.spi.assemble.PropertiesInterceptor;
+import org.frameworkset.spi.assemble.PropertyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +35,12 @@ public class BBossESStarter  extends BaseESProperties{
 	private BBossESProperties properties;
 	private static final Logger log = LoggerFactory.getLogger(BBossESStarter.class);
 	public void start() {
+		PropertiesContainer propertiesContainer = null;
 		if(this.getElasticsearch() == null) {
 			if (properties.getElasticsearch() != null) {
 				Map ps = properties.buildProperties();
 				if (ps != null && ps.size() > 0)
-					ElasticSearchBoot.boot(ps,true);
+					propertiesContainer = ElasticSearchBoot.boot(ps,true);
 				else {
 					log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 				}
@@ -45,9 +49,12 @@ public class BBossESStarter  extends BaseESProperties{
 		else{
 			if(properties.getDslfile() != null && this.getDslfile() == null)
 				this.setDslfile(properties.getDslfile());
+			if(properties.getPropertiesInterceptor() != null && this.getPropertiesInterceptor() == null){
+				this.setPropertiesInterceptor(properties.getPropertiesInterceptor());
+			}
 			Map ps = buildProperties();
 			if (ps != null && ps.size() > 0)
-				ElasticSearchBoot.boot(ps,true);
+				propertiesContainer = ElasticSearchBoot.boot(ps,true);
 			else {
 				log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 			}
@@ -68,15 +75,52 @@ public class BBossESStarter  extends BaseESProperties{
 		 * 							.setValidateSQL("select 1")
 		 * 							.setUsePool(false);//是否使用连接池
 		 */
+		String temp = null;
+		if(this.propertiesInterceptor == null){
+			temp = properties.getPropertiesInterceptor();
+		}
+		else{
+			temp = propertiesInterceptor;
+		}
+		if(temp != null && !temp.trim().equals("")){
+			temp = temp.trim();
 
+		}
 		if(this.getDb() == null ){
 			if(properties.getDb() != null && properties.getDb().getUrl() != null){
+				if(propertiesContainer != null)
+					propertiesContainer.interceptorValues(properties.getDb());
+				else{
+					try {
+						Class clz = Class.forName(temp);
+						PropertiesInterceptor propertiesInterceptor = (PropertiesInterceptor) clz.newInstance();
+						PropertyContext propertyContext = new PropertyContext();
+						propertyContext.setValue(properties.getDb());
+						propertiesInterceptor.convert(propertyContext);
+					}
+					catch (Exception e){
+						log.error("Init Ds "+temp,e);
+					}
+				}
 				initDS(properties.getDb());
 			}
 		}
 		else{
 			if(getDb().getUrl() != null)
-
+				if(propertiesContainer != null)
+					propertiesContainer.interceptorValues(getDb());
+				else{
+					try {
+						Class clz = Class.forName(temp);
+						PropertiesInterceptor propertiesInterceptor = (PropertiesInterceptor) clz.newInstance();
+						PropertyContext propertyContext = new PropertyContext();
+						propertyContext.setValue(getDb());
+						propertiesInterceptor.convert(propertyContext);
+					}
+					catch (Exception e){
+						log.error("Init Ds "+temp,e);
+					}
+				}
 				initDS(getDb());
 		}
 

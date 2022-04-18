@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.boot;/*
  */
 
 import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.spi.assemble.PropertiesContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,15 @@ public abstract class BaseESProperties {
 
 	private Ip ip;
 
+	public String getPropertiesInterceptor() {
+		return propertiesInterceptor;
+	}
+
+	public void setPropertiesInterceptor(String propertiesInterceptor) {
+		this.propertiesInterceptor = propertiesInterceptor;
+	}
+
+	protected String propertiesInterceptor;
 
 	private Dslfile dslfile;
 	public Dslfile getDslfile() {
@@ -1058,6 +1068,9 @@ public abstract class BaseESProperties {
 				properties.put("ip.ip2regionDatabase",this.ip.getIp2regionDatabase());
 
 
+		}
+		if(this.propertiesInterceptor != null){
+			properties.put(PropertiesContainer.propertiesInterceptorKey, propertiesInterceptor);
 		}
 		return properties;
 	}

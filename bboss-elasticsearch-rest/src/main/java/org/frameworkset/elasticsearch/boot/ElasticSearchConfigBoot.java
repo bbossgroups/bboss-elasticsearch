@@ -65,12 +65,13 @@ public abstract class ElasticSearchConfigBoot {
 
 
 	}
-	public static void boot(Map properties){
-		boot(  properties,false);
+	public static PropertiesContainer boot(Map properties){
+		return boot(  properties,false);
 	}
-	public static void boot(Map properties,boolean fromspringboot){
+	public static PropertiesContainer boot(Map properties,boolean fromspringboot){
+		PropertiesContainer propertiesContainer = new PropertiesContainer();
 		synchronized (ElasticSearchConfigBoot.class) {
-			final PropertiesContainer propertiesContainer = new PropertiesContainer();
+
 			propertiesContainer.addAll(properties);
 			String _elasticsearchServerNames = propertiesContainer.getExternalProperty("elasticsearch.serverNames", "default");
 			String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
@@ -81,6 +82,7 @@ public abstract class ElasticSearchConfigBoot {
 			//初始化ElasticSearchServer
 			ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
 		}
+		return propertiesContainer;
 
 
 

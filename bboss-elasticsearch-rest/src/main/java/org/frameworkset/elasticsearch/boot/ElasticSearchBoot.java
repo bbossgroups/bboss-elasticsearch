@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.boot;/*
  *  limitations under the License.
  */
 
+import org.frameworkset.spi.assemble.PropertiesContainer;
+
 import java.util.Map;
 
 public abstract class ElasticSearchBoot {
@@ -46,12 +48,12 @@ public abstract class ElasticSearchBoot {
 	 * 按照默认的配置文件初始化elasticsearch客户端工具
 	 * conf/elasticsearch.properties,application.properties,config/application.properties
 	 */
-	public final static void boot(Map configProperties){
-		boot(  configProperties,false);
+	public final static PropertiesContainer boot(Map configProperties){
+		return boot(  configProperties,false);
 	}
-	public final static void boot(Map configProperties,boolean fromspringboot){
+	public final static PropertiesContainer boot(Map configProperties, boolean fromspringboot){
 
-		ElasticSearchConfigBoot.boot(configProperties,fromspringboot);
+		return ElasticSearchConfigBoot.boot(configProperties,fromspringboot);
 
 	}
 }
