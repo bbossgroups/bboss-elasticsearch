@@ -48,7 +48,7 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>5.9.7</version>
+   <version>5.9.8</version>
 </dependency>
 ```
 
@@ -453,7 +453,7 @@ http.routing=#[area]
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>5.9.6</version>
+  <version>5.9.7</version>
 </dependency>
 ```
 
