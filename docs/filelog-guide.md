@@ -21,6 +21,24 @@ filelog插件工作原理图
 
 借助bboss可以非常方便地将ftp和本地文件目录下的文件数据导入到不同的数据库表中，亦可以将数据导入到不同的elasticsearch索引中。
 
+使用文件采集插件，需要在相关项目中，导入文件采集插件：
+
+maven坐标
+```xml
+<dependency>
+  <groupId>com.bbossgroups.plugins</groupId>
+  <artifactId>bboss-elasticsearch-rest-file2ftp</artifactId>
+  <version>6.5.7</version>
+</dependency>
+```
+gradle坐标
+```xml
+api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.5.7'
+```
+
+如果是spring boot项目还需导入其他相关坐标，参考文档：
+
+https://esdoc.bbossgroups.com/#/quickstart
 # 1.日志采集插件属性说明
 
 importBuilder（FileLog2ESImportBuilder/FileLog2DBImportBuilder/FileLog2KafkaImportBuilder)用于采集作业基础属性配置
