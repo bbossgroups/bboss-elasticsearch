@@ -989,6 +989,8 @@ importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的�
 
 ### 2.3.10 灵活控制文档数据结构
 
+#### 2.3.10.1 全局处理
+
 可以通过importBuilder全局扩展添加字段到es索引中：
 
 ```java
@@ -999,6 +1001,8 @@ importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的�
         importBuilder.addIgnoreFieldMapping("subtitle");//全局忽略字段
         importBuilder.addFieldMapping("dbcolumn","esFieldColumn");//全局添加字段名称映射
 ```
+
+#### 2.3.10.2 记录级别处理
 
 如果需要针对单条记录，bboss提供org.frameworkset.tran.DataRefactor接口和Context接口像结合来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，通过context可以对当前记录做以下调整：
 
@@ -1088,6 +1092,25 @@ final AtomicInteger s = new AtomicInteger(0);
 **2.一定要注意全局级和记录级调整区别：在DataRefactor接口中只能用Context来调整数据字段映射和字段添加修改和移除操作**
 
 ![](images\datarefactor.png)
+
+#### 2.3.10.3 过滤记录
+
+如果需要根据情况过滤特定的记录，可以通过以下方法将记录标记为过滤记录即可：
+
+```java
+ context.setDrop(true);
+```
+
+例如
+
+```java
+String id = context.getStringValue("_id");//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中 
+if(id.equals("5dcaa59e9832797f100c6806")){
+	context.setDrop(true);
+}
+```
+
+
 
 ### 2.3.11 IP-地区运营商经纬度坐标转换
 
