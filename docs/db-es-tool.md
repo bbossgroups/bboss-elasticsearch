@@ -954,7 +954,23 @@ bboss默认采用sqlite保存增量状态，通过setLastValueStorePath方法设
 importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
 ```
 
-/app/data/testdb代表/app/data/目录下的sqlite数据库文件testdb，我们也可以将增量状态保存到其他数据库中，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库，具体的配置方法如下：
+/app/data/testdb代表/app/data/目录下的sqlite数据库文件testdb，如果在同一个进程中运行多个数据采集作业，并且采用sqlite作为增量状态管理，由于sqlite的单线程数据库限制，必须每个作业一个独立的sqlite数据库，因此除了设置不同的sqlite数据库文件路径，还需指定不同的statusDBname，例如：
+
+作业1
+
+```java
+importBuilder.setStatusDbname("job1");
+importBuilder.setLastValueStorePath("/app/data/job1");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+作业2
+
+```java
+importBuilder.setStatusDbname("job2");
+importBuilder.setLastValueStorePath("/app/data/job2");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+我们也可以将增量状态保存到其他数据库中，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库，具体的配置方法如下：
 
 [保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
@@ -1110,7 +1126,90 @@ if(id.equals("5dcaa59e9832797f100c6806")){
 }
 ```
 
+#### 2.3.10.4 获取记录元数据
 
+可以通过context.getMetaValue(metaName)获取记录的元数据，比如文件信息、elasticsearch文档元数据、hbase元数据，使用示例：
+
+获取elasticsearch文档id
+
+```java
+String docId = (String)context.getMetaValue("_id");
+```
+
+elasticsearch元数据清单
+
+```java
+
+      /**文档id信息*/
+       private String  _id;
+      /**文档对应索引类型信息*/
+      private String  type;
+      /**文档对应索引字段信息*/
+      private Map<String, List<Object>> fields;
+  
+    /**文档对应版本信息*/
+    private long version;
+      /**文档对应的索引名称*/
+    private String index;
+      /**文档对应的高亮检索信息*/
+    private Map<String,List<Object>> highlight;
+      /**文档对应的排序信息*/
+    private Object[] sort;
+      /**文档对应的评分信息*/
+    private Double  score;
+      /**文档对应的父id*/
+    private Object parent;
+      /**文档对应的路由信息*/
+    private Object routing;
+      /**文档对应的是否命中信息*/
+    private boolean found;
+      /**文档对应的nested检索信息*/
+    private Map<String,Object> nested;
+      /**文档对应的innerhits信息*/
+    private Map<String,Map<String, InnerSearchHits>> innerHits;
+      /**文档对应的索引分片号*/
+    private String shard;
+      /**文档对应的elasticsearch集群节点名称*/
+    private String node;
+      /**文档对应的打分规则信息*/
+    private Explanation explanation;
+
+    private long seqNo;
+      
+    private long primaryTerm;
+ 
+```
+
+hbase元数据清单
+
+```java
+byte[] rowkey
+Date timestamp
+```
+
+文件元数据清单
+
+```java
+Date @timestamp
+Map @filemeta
+    
+filemeta的数据字段定义如下：
+
+common.put("hostIp", BaseSimpleStringUtil.getIp());
+common.put("hostName",BaseSimpleStringUtil.getHostName());
+common.put("filePath",FileInodeHandler.change(file.getAbsolutePath()));
+
+common.put("pointer",pointer);
+common.put("fileId",fileInfo.getFileId());
+FtpConfig ftpConfig = this.fileConfig.getFtpConfig();
+if(ftpConfig != null){
+    common.put("ftpDir",ftpConfig.getRemoteFileDir());
+    common.put("ftpIp",ftpConfig.getFtpIP());
+    common.put("ftpPort",ftpConfig.getFtpPort());
+    common.put("ftpUser",ftpConfig.getFtpUser() != null?ftpConfig.getFtpUser():"-");
+    common.put("ftpProtocol",ftpConfig.getTransferProtocolName());
+}
+```
 
 ### 2.3.11 IP-地区运营商经纬度坐标转换
 
