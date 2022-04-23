@@ -1,0 +1,49 @@
+package org.frameworkset.elasticsearch.boot;
+/**
+ * Copyright 2022 bboss
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.frameworkset.spi.assemble.PropertiesContainer;
+
+import java.util.List;
+
+/**
+ * <p>Description: 封装启动Elasticsearch数据源结果</p>
+ * <p></p>
+ * <p>Copyright (c) 2020</p>
+ * @Date 2022/4/23
+ * @author biaoping.yin
+ * @version 1.0
+ */
+public class ElasticsearchBootResult {
+	private PropertiesContainer propertiesContainer;
+	private List<String> initedElasticsearchs;
+
+	public PropertiesContainer getPropertiesContainer() {
+		return propertiesContainer;
+	}
+
+	public void setPropertiesContainer(PropertiesContainer propertiesContainer) {
+		this.propertiesContainer = propertiesContainer;
+	}
+
+	public List<String> getInitedElasticsearchs() {
+		return initedElasticsearchs;
+	}
+
+	public void setInitedElasticsearchs(List<String> initedElasticsearchs) {
+		this.initedElasticsearchs = initedElasticsearchs;
+	}
+}

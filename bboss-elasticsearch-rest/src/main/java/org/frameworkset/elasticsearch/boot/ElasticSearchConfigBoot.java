@@ -21,30 +21,32 @@ import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class ElasticSearchConfigBoot {
 	private static boolean inited = false;
-	public static void boot(){
-		boot(false);
+	public static ElasticsearchBootResult boot(){
+		return boot(false);
 	}
 
 	/**
 	 *
 	 * @param forceBoot 强制启动
 	 */
-	public static void boot(boolean forceBoot){
+	public static ElasticsearchBootResult boot(boolean forceBoot){
 		if(inited) {
 			if(!forceBoot)
-				return;
+				return null;
 		}
-
+		ElasticsearchBootResult elasticsearchBootResult = null;
 		synchronized (ElasticSearchConfigBoot.class) {
 			if(inited){
 				if(!forceBoot)
-					return;
+					return null;
 			}
 			try {
+				elasticsearchBootResult = new ElasticsearchBootResult();
 				final BaseApplicationContext context = DefaultApplicationContext.getApplicationContext("conf/elasticsearch-boot-config.xml",forceBoot);
 				String _elasticsearchServerNames = context.getExternalProperty("elasticsearch.serverNames", "default");
 				String[] elasticsearchServerNames = _elasticsearchServerNames.split(",");
@@ -54,22 +56,25 @@ public abstract class ElasticSearchConfigBoot {
 				ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, getProperties );
 				ClientConfiguration.bootHealthCheckClientConfiguations(elasticsearchServerNames,getProperties);
 				//初始化ElasticSearchServer
-				ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot,false);
+				List<String> initedElasticsearchs = ElasticSearchHelper.booter(elasticsearchServerNames, context,forceBoot,false);
+				elasticsearchBootResult.setInitedElasticsearchs(initedElasticsearchs);
 			}
 			finally {
 				inited = true;
 			}
 		}
+		return elasticsearchBootResult;
 
 
 
 
 	}
-	public static PropertiesContainer boot(Map properties){
+	public static ElasticsearchBootResult boot(Map properties){
 		return boot(  properties,false);
 	}
-	public static PropertiesContainer boot(Map properties,boolean fromspringboot){
+	public static ElasticsearchBootResult boot(Map properties,boolean fromspringboot){
 		PropertiesContainer propertiesContainer = new PropertiesContainer();
+		ElasticsearchBootResult elasticsearchBootResult = new ElasticsearchBootResult();
 		synchronized (ElasticSearchConfigBoot.class) {
 
 			propertiesContainer.addAll(properties);
@@ -80,9 +85,11 @@ public abstract class ElasticSearchConfigBoot {
 			ClientConfiguration.bootClientConfiguations(elasticsearchServerNames, getProperties);
 			ClientConfiguration.bootHealthCheckClientConfiguations(elasticsearchServerNames, getProperties);
 			//初始化ElasticSearchServer
-			ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
+			List<String> initedElasticsearchs =  ElasticSearchHelper.booter(elasticsearchServerNames,   propertiesContainer,true,fromspringboot);
+			elasticsearchBootResult.setInitedElasticsearchs(initedElasticsearchs);
 		}
-		return propertiesContainer;
+		elasticsearchBootResult.setPropertiesContainer(propertiesContainer);
+		return elasticsearchBootResult;
 
 
 

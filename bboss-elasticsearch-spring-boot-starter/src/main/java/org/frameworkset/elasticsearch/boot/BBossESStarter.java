@@ -39,8 +39,11 @@ public class BBossESStarter  extends BaseESProperties{
 		if(this.getElasticsearch() == null) {
 			if (properties.getElasticsearch() != null) {
 				Map ps = properties.buildProperties();
-				if (ps != null && ps.size() > 0)
-					propertiesContainer = ElasticSearchBoot.boot(ps,true);
+				if (ps != null && ps.size() > 0) {
+					ElasticsearchBootResult elasticsearchBootResult = ElasticSearchBoot.boot(ps, true);
+					propertiesContainer = elasticsearchBootResult.getPropertiesContainer();
+				}
+
 				else {
 					log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 				}
@@ -53,8 +56,11 @@ public class BBossESStarter  extends BaseESProperties{
 				this.setPropertiesInterceptor(properties.getPropertiesInterceptor());
 			}
 			Map ps = buildProperties();
-			if (ps != null && ps.size() > 0)
-				propertiesContainer = ElasticSearchBoot.boot(ps,true);
+			if (ps != null && ps.size() > 0) {
+				ElasticsearchBootResult elasticsearchBootResult = ElasticSearchBoot.boot(ps, true);
+				propertiesContainer = elasticsearchBootResult.getPropertiesContainer();
+//				propertiesContainer = ElasticSearchBoot.boot(ps, true);
+			}
 			else {
 				log.info("BBoss Elasticsearch Rest Client properties is not configed in spring application.properties file.Ignore load bboss elasticsearch rest client through spring boot starter.");
 			}

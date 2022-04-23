@@ -8,6 +8,7 @@ import org.frameworkset.elasticsearch.template.ESSOAFileApplicationContext;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
+import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,20 +126,30 @@ public class ElasticSearchHelper {
 	 *                 <description> <![CDATA[ 是否启动节点自动发现功能，默认关闭，开启后每隔10秒探测新加或者移除的es节点，实时更新本地地址清单]]></description>
 	 *             </property>
 	 */
-	public static void booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot){
-		booter(  elasticsearchServerNames,  configContext,  forceBoot,false);
+	public static List<String> booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot){
+		return booter(  elasticsearchServerNames,  configContext,  forceBoot,false);
 	}
-	public static void booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot,boolean fromspringboot){
+
+	/**
+	 *
+	 * @param elasticsearchServerNames
+	 * @param configContext
+	 * @param forceBoot
+	 * @param fromspringboot
+	 * @return 返回启动的elasticsearch数据源清单列表
+	 */
+
+	public static List<String> booter(String[] elasticsearchServerNames,GetProperties configContext,boolean forceBoot,boolean fromspringboot){
 		if(inited ) {
 			if(!forceBoot)
-				return;
+				return null;
 		}
 		inited = true;
 		ElasticSearch elasticSearchSink = null;
 		ElasticSearch firstElasticSearch = null;
 		initDslFileRefreshInterval( configContext);
 		Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
-
+		List<String> initedElasticsearchs = new ArrayList<>();
 		Map<String,String> referElasticSearchMap = new LinkedHashMap<String, String>();
 		for(String serverName:elasticsearchServerNames){
 			if(ElasticSearchHelper.elasticSearchMap.containsKey(serverName) || ElasticSearchHelper.referElasticSearchMap.containsKey(serverName))
@@ -231,6 +242,7 @@ public class ElasticSearchHelper {
 					elasticSearchMap.put(DEFAULT_SEARCH, elasticSearch);
 					elasticSearchSink = elasticSearch;
 				}
+				initedElasticsearchs.add(serverName);
 			}
 			else{
 				if (!serverName.equals("default")) {
@@ -289,7 +301,7 @@ public class ElasticSearchHelper {
 				Map.Entry<String, ElasticSearch> entry = entries.next();
 				final ElasticSearch elasticSearch = entry.getValue();
 				elasticSearch.start();
-				BaseApplicationContext.addShutdownHook(new Runnable() {
+				ShutdownUtil.addShutdownHook(new Runnable() {
 					@Override
 					public void run() {
 						elasticSearch.stop();
@@ -306,6 +318,7 @@ public class ElasticSearchHelper {
 				ElasticSearchHelper.referElasticSearchMap.putAll(referElasticSearchMap);
 			}
 		}
+		return initedElasticsearchs;
 	}
 
 	private static long _getLongValue(String poolName,String propertyName,GetProperties context,long defaultValue) throws Exception {
@@ -447,6 +460,15 @@ public class ElasticSearchHelper {
 		}
 		referElasticSearchMap.remove(esname);
 	}
+	public static synchronized void stopElasticsearchs(List<String> esnames){
+		if(esnames == null || esnames.size() == 0)
+			return;
+		for(String esname:esnames){
+			stopElasticsearch( esname);
+		}
+
+	}
+
 	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch){
 		return getElasticSearchSinkOnly(elasticSearch,false);
 	}

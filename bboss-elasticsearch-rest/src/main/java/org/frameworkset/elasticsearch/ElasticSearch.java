@@ -476,7 +476,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if(stoped )
 			return;
 		stoped = true;
-		logger.info("ElasticSearch[{}] client stopping",this.getElasticSearchName());
+		logger.info("Stop ElasticSearch[{}] client begin......",this.getElasticSearchName());
 		if (restClient != null) {
 			restClient.close();
 		}
@@ -489,6 +489,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if(this.scrollQueryExecutorService != null){
 			this.scrollQueryExecutorService.shutdown();
 		}
+		logger.info("Stop ElasticSearch[{}] client complete.",this.getElasticSearchName());
 	}
 
 	/*
