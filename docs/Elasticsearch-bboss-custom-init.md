@@ -53,10 +53,36 @@ properties.put("xxx","value");
 
 ...........
 
-ElasticSearchBoot.boot(properties);
+ElasticsearchBootResult elasticsearchBootResult = ElasticSearchBoot.boot(properties);
 ```
 
-支持单数据源和多数据源配置，下面举例说明。
+支持单数据源和多数据源配置，多数据源配置需要通过elasticsearch.serverNames指定数据源的名称，多个用逗号分割，
+
+然后添加对应数据源的属性时，需要在属性名称前添加数据源名称前缀，例如：
+```java
+properties.put("elasticsearch.serverNames","es233");
+properties.put("es233.elasticUser","elastic");
+properties.put("es233.elasticPassword","changeme");
+```
+如果没有指定数据源前缀，那么都是针对default数据源的配置，另外通过boot方法启动数据源时，如果对应名称的数据源已经存在，将忽略该数据源的启动
+
+boot方法执行后将返回本次启动的数据源清单和加载的属性信息container对象：ElasticsearchBootResult
+```java
+
+ElasticsearchBootResult elasticsearchBootResult  = ElasticSearchBoot.boot(properties);
+ElasticsearchBootResult包含以下两个属性：
+public class ElasticsearchBootResult {
+	/**
+	 * 加载的属性配置container
+	 */	
+	private PropertiesContainer propertiesContainer;
+	/**
+	 * 初始化的Elasticsearch数据源清单
+	 */
+	private List<String> initedElasticsearchs;
+}
+```
+下面详细介绍。
 
 ## 单个Elasticsearch数据源案例
 
@@ -130,6 +156,12 @@ properties.put("es233.http.timeoutConnection","40000");
 properties.put("es233.http.connectionRequestTimeout","70000");
 ElasticSearchBoot.boot(properties);
 ```
+通过boot方法启动数据源时，如果对应名称的数据源已经存在，将忽略该数据源的启动。
+
+数据源启动后，可以通过特定的方法获取特定数据源ClientInterface实例，参考文档：
+
+[获取多数据源ClientInterface方法](https://esdoc.bbossgroups.com/#/development?id=_521-%e6%99%ae%e9%80%9amaven%e9%a1%b9%e7%9b%ae%e5%a4%9aes%e9%9b%86%e7%be%a4%e6%95%b0%e6%8d%ae%e6%ba%90%e5%ae%a2%e6%88%b7%e7%ab%af%e7%bb%84%e4%bb%b6%e5%ae%9a%e4%b9%89%e6%96%b9%e6%b3%95)
+
 
 # 3.停止elasticsearch数据源
 

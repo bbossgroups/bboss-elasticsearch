@@ -28,7 +28,13 @@ import java.util.List;
  * @version 1.0
  */
 public class ElasticsearchBootResult {
+	/**
+	 * 加载的属性配置container
+	 */
 	private PropertiesContainer propertiesContainer;
+	/**
+	 * 初始化的Elasticsearch数据源清单
+	 */
 	private List<String> initedElasticsearchs;
 
 	public PropertiesContainer getPropertiesContainer() {

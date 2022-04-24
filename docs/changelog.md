@@ -47,6 +47,30 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.5.7</version>
         </dependency>
 ```
+# v6.5.8 功能改进
+1. 采用外部数据源管理增量状态时，停止作业后重启作业失败问题处理
+2. 优化同时向多个elasticsearch写入数据功能
+3. sqlite增量管理机制改进：bboss默认采用sqlite保存增量状态，通过setLastValueStorePath方法设置sqlite数据库文件路径
+
+```java
+importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+/app/data/testdb代表/app/data/目录下的sqlite数据库文件testdb，如果在同一个进程中运行多个数据采集作业，并且采用sqlite作为增量状态管理，由于sqlite的单线程数据库限制，必须每个作业一个独立的sqlite数据库，因此除了设置不同的sqlite数据库文件路径，还需指定不同的statusDBname，例如：
+
+作业1
+
+```java
+importBuilder.setStatusDbname("job1");
+importBuilder.setLastValueStorePath("/app/data/job1");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+作业2
+
+```java
+importBuilder.setStatusDbname("job2");
+importBuilder.setLastValueStorePath("/app/data/job2");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
 # v6.5.7 功能改进
 1. 数据同步改进：JobTaskMetrics和TaskMetrics增加lastValue属性，用于存放任务执行完毕后的增量状态
 2. 全局属性改进：增加属性配置解析拦截器PropertiesInterceptor，通过PropertiesInterceptor对加载后的属性值进行自定义处理，比如加密属性解密处理

@@ -2142,7 +2142,7 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
 ```
 
 
-## 5.3 dsl配置规范**
+## 5.3 dsl配置规范
 
 
 
