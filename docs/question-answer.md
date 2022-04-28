@@ -182,6 +182,11 @@ http.timeoutConnection = 5000
 
 http.connectionRequestTimeout=10000
 
+5. 关闭写入强制refresh机制
+
+6. 采用批量异步写入
+
+https://esdoc.bbossgroups.com/#/bulkProcessor
 
 
 # 问题5 the number of real dsl cache records exceeded the maximum cache size n allowed by DSL structure cache

@@ -107,7 +107,9 @@ public class TestBulkProcessor {
 				.setBulkProcessorName("test_bulkprocessor")//工作线程名称，实际名称为BulkProcessorName-+线程编号
 				.setBulkRejectMessage("Reject test bulkprocessor")//bulk处理操作被每被拒绝WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息提示前缀
 				.setElasticsearch("default")//指定Elasticsearch集群数据源名称，bboss可以支持多数据源
-				.addBulkInterceptor(new BulkInterceptor() {
+				//为了提升性能，并没有把所有响应数据都返回，过滤掉了部分数据，可以自行设置FilterPath进行控制
+                .setFilterPath("took,errors,items.*.error")
+                .addBulkInterceptor(new BulkInterceptor() {
 					public void beforeBulk(BulkCommand bulkCommand) {
 						System.out.println("beforeBulk");
 					}

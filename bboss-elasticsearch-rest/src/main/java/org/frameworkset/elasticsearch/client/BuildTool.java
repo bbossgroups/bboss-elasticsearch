@@ -36,6 +36,8 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.util.*;
 
+import static org.frameworkset.elasticsearch.bulk.BulkConfig.FILTER_PATH_DISABLE;
+import static org.frameworkset.elasticsearch.bulk.BulkConfig.FILTER_PATH_EMPTY;
 import static org.frameworkset.elasticsearch.client.ClientInterfaceNew._doc;
 
 public abstract class BuildTool {
@@ -788,10 +790,12 @@ public abstract class BuildTool {
 		return buildActionUrl( bulkConfig,(String)null);
 	}
 	public static String buildActionUrl(BulkActionConfig bulkConfig,String filterPath){
+
 		if(bulkConfig == null) {
-			if(filterPath == null  || filterPath.equals(""))
+			if(filterPath == null  || filterPath.equals(FILTER_PATH_EMPTY) )
 				return "_bulk";
 			else{
+
 				return "_bulk?filter_path="+filterPath;
 			}
 		}
@@ -801,11 +805,10 @@ public abstract class BuildTool {
 		url.append("_bulk");
 		String refreshOption = bulkConfig.getRefreshOption();
 		if(refreshOption != null) {
-			if(refreshOption.indexOf("filter_path") >= 0 || filterPath == null || filterPath.equals("")) {
-				url.append("?").append(refreshOption);
-			}
-			else{
-				url.append("?").append(refreshOption).append("&filter_path=").append(filterPath);
+			url.append("?").append(refreshOption);
+			boolean notneedfilter_path = refreshOption.indexOf("filter_path") >= 0 || filterPath == null ||  filterPath.equals(FILTER_PATH_EMPTY);
+			if(!notneedfilter_path) {
+				url.append("&filter_path=").append(filterPath);
 			}
 		}
 		else{
@@ -815,39 +818,7 @@ public abstract class BuildTool {
 				url.append("?refresh=").append(refresh);
 				p = true;
 			}
-			/**
-			 Long if_seq_no = clientOptions.getIfSeqNo();
-			 if(if_seq_no != null){
-			 if(p){
-			 url.append("&if_seq_no=").append(if_seq_no);
-			 }
-			 else{
-			 url.append("?if_seq_no=").append(if_seq_no);
-			 p = true;
-			 }
-			 }
-			 Long if_primary_term = clientOptions.getIfPrimaryTerm();
-			 if(if_primary_term != null){
-			 if(p){
-			 url.append("&if_primary_term=").append(if_primary_term);
-			 }
-			 else{
-			 url.append("?if_primary_term=").append(if_primary_term);
-			 p = true;
-			 }
-			 }*/
 
-			/**
-			 Object retry_on_conflict = clientOptions.getEsRetryOnConflict();
-			 if(retry_on_conflict != null){
-			 if(p){
-			 url.append("&retry_on_conflict=").append(retry_on_conflict);
-			 }
-			 else{
-			 url.append("?retry_on_conflict=").append(retry_on_conflict);
-			 p = true;
-			 }
-			 }*/
 			Object routing = bulkConfig.getRouting();
 			if(routing != null){
 				if(p){
@@ -912,7 +883,7 @@ public abstract class BuildTool {
 			}
 			//took,errors,items.*.error
 
-			if(filterPath != null && !filterPath.equals("")){
+			if(filterPath != null && !filterPath.equals(FILTER_PATH_DISABLE)){
 				if(p){
 					url.append("&filter_path=").append(filterPath);
 				}

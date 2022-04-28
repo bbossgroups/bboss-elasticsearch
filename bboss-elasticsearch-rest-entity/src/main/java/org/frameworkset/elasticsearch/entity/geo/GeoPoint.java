@@ -37,7 +37,9 @@ public class GeoPoint implements Serializable {
 	 */
 	private double lat;
 
-
+	/**
+	 * 纬度
+	 */
 	public double getLat() {
 		return lat;
 	}
@@ -45,7 +47,9 @@ public class GeoPoint implements Serializable {
 	public void setLat(double lat) {
 		this.lat = lat;
 	}
-
+	/**
+	 * 经度
+	 */
 	public double getLon() {
 		return lon;
 	}

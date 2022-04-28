@@ -31,8 +31,9 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
 
 下面以非spring boot环境进行介绍。
 
-
 # 1. 添加修改文档
+
+## 1.1 添加bean记录
 
 ```java
 
@@ -86,9 +87,46 @@ clientUtil.deleteDocuments("agentinfo",//索引表
       new String[]{"192.168.137.1","192.168.137.2","192.168.137.3"});//文档ids
 ```
 
+## 1.2 添加map记录
 
+```java
+//创建创建/修改/获取/删除文档的客户端对象，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+//构建一个对象，日期类型，字符串类型属性演示
+Map demo = new LinkedHashMap();
+demo.put("demoId","2");//文档id，唯一标识，@PrimaryKey注解标示,如果demoId已经存在做修改操作，否则做添加文档操作
+demo.put("agentStarttime",new Date());
+demo.put("applicationName","blackcatdemo2");
+demo.put("contentbody","this-is content body2");
+demo.put("agentStarttime",new Date());
+demo.put("name","|刘德华");
+demo.put("orderId","NFZF15045871807281445364228");
+demo.put("contrastStatus",2);
+
+//向固定index demo添加或者修改文档,如果demoId已经存在做修改操作，否则做添加文档操作，返回处理结果
+/**
+ //通过@ESId注解的字段值设置文档id
+ String response = clientUtil.addDocument("demo"//索引表
+
+ demo);
+ */
+/**
+ //直接指定文档id
+ String response = clientUtil.addDocumentWithId("demo",//索引表
+
+ demo,2l);
+ */
+//强制刷新
+ClientOptions addOptions = new ClientOptions();
+addOptions.setIdField("orderId");
+//如果orderId对应的文档已经存在则更新，不存在则插入新增
+String response = clientUtil.addDocument("demo",//索引表
+      demo,addOptions);
+```
 
 # 2. 批量添加修改文档
+
+## 2.1 批量添加bean记录
 
 ```java
 ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
@@ -113,6 +151,89 @@ String response = clientUtil.addDocuments("demo",//索引表
 demos);
 ```
 
+## 2.2 批量添加map记录
+
+```java
+/**
+ * 批量添加map记录
+ * @throws ParseException
+ */
+public void testAddAndUpdateMapDocuments() throws ParseException {
+   //创建创建/修改/获取/删除文档的客户端对象，单实例多线程安全
+   ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+   List<Map> datas = new ArrayList<Map>();
+   //构建一个对象，日期类型，字符串类型属性演示
+   Map demo = new LinkedHashMap();
+   demo.put("demoId","2");//文档id，唯一标识，@PrimaryKey注解标示,如果demoId已经存在做修改操作，否则做添加文档操作
+   demo.put("agentStarttime",new Date());
+   demo.put("applicationName","blackcatdemo2");
+   demo.put("contentbody","this-is content body2");
+   demo.put("agentStarttime",new Date());
+   demo.put("name","|刘德华");
+   demo.put("orderId","NFZF15045871807281445364228");
+   demo.put("contrastStatus",2);
+   datas.add(demo);
+
+   demo = new LinkedHashMap();
+   demo.put("demoId","3");//文档id，唯一标识，@PrimaryKey注解标示,如果demoId已经存在做修改操作，否则做添加文档操作
+   demo.put("agentStarttime",new Date());
+   demo.put("applicationName","blackcatdemo3");
+   demo.put("contentbody","this-is content body3");
+   demo.put("agentStarttime",new Date());
+   demo.put("name","张三");
+   demo.put("orderId","NFZF15045871807281445364228");
+   demo.put("contrastStatus",3);
+   datas.add(demo);
+
+
+   demo = new LinkedHashMap();
+   demo.put("demoId","4");//文档id，唯一标识，@PrimaryKey注解标示,如果demoId已经存在做修改操作，否则做添加文档操作
+   demo.put("agentStarttime",new Date());
+   demo.put("applicationName","blackcatdemo4");
+   demo.put("contentbody","this-is content body4");
+   demo.put("agentStarttime",new Date());
+   demo.put("name","李四");
+   demo.put("orderId","NFZF15045871807281445364229");
+   demo.put("contrastStatus",4);
+   datas.add(demo);
+
+   //向固定index demo添加或者修改文档,如果demoId已经存在做修改操作，否则做添加文档操作，返回处理结果
+   /**
+    //通过@ESId注解的字段值设置文档id
+    String response = clientUtil.addDocument("demo"//索引表
+
+    demo);
+    */
+   /**
+    //直接指定文档id
+    String response = clientUtil.addDocumentWithId("demo",//索引表
+
+    demo,2l);
+    */
+   //强制刷新
+   ClientOptions addOptions = new ClientOptions();
+   addOptions.setIdField("orderId");
+   //如果orderId对应的文档已经存在则更新，不存在则插入新增
+   String response = clientUtil.addDocuments("demo",//索引表
+         datas,addOptions);
+
+
+}
+```
+
+## 2.3 控制批量添加响应报文内容
+为了提升性能，并没有把所有响应数据都返回，过滤掉了部分数据，可以自行设置FilterPath进行控制
+```java
+		ClientOptions clientOptions = new ClientOptions();
+		clientOptions.setRefreshOption("refresh=false");//为了测试效果,能够实时查看数据，启用强制刷新机制，可是修改为"refresh=true"
+		//为了提升性能，并没有把所有响应数据都返回，过滤掉了部分数据，可以自行设置FilterPath进行控制
+		clientOptions.setFilterPath("took,errors,items.*.error");
+		//批量添加或者修改2万个文档，将两个对象添加到索引表demo中，批量添加2万条记录耗时1.8s，
+		String response = clientUtil.addDocuments("demo",//索引表
+									demos,//批量处理数据集合
+									clientOptions);
+
+```
 # 3. 根据文档id获取文档对象
 
 ```java

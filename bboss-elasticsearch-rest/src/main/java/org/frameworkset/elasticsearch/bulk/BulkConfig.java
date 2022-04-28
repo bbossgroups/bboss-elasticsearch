@@ -86,7 +86,10 @@ public class BulkConfig implements BulkActionConfig{
 	 */
 	public static final String ERROR_FILTER_PATH = "took,errors,items.*._index,items.*._type,items.*._id,items.*.status,items.*.error";
 	public static final String ERROR_FILTER_PATH_ONLY = "took,errors,items.*.error";
-	private String filterPath = ERROR_FILTER_PATH;
+	public static final String FILTER_PATH_EMPTY = "";
+	public static final String FILTER_PATH_DISABLE = "FILTER_PATH_DEFAULT";
+
+	private String filterPath = FILTER_PATH_EMPTY;
 	public int getBulkSizes() {
 		return bulkSizes;
 	}
