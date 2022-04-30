@@ -970,7 +970,9 @@ importBuilder.setStatusDbname("job2");
 importBuilder.setLastValueStorePath("/app/data/job2");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
 ```
 
-我们也可以将增量状态保存到其他数据库中，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定增量状态存储数据库，具体的配置方法如下：
+sqlite作为一个本地单线程文件数据库，可能在一些场景下无法满足要求，譬如要做监控界面实时查看作业数据采集状态，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定mysql等关系型增量状态存储数据库。
+
+bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
 
 [保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
@@ -1568,6 +1570,26 @@ Elasticsearch控制参数参考文档：
 
 ### 2.3.17 数据同步任务执行统计信息获取
 
+#### 任务日志相关设置
+
+```java
+ importBuilder.setPrintTaskLog(true);//true 打印作业任务执行统计日志，false 不打印作业任务统计信息
+```
+
+对于Elasticsearch写入和查询dsl日志的控制，可以参考文档进行关闭和打开
+
+DSL脚本调试日志开关，将showTemplate设置为true，同时将日志级别设置为INFO，则会将query dsl脚本输出到日志文件中：
+
+```properties
+    elasticsearch.showTemplate=true  ## true 打印dsl（logger必须设置info级别） false 不打印dsl
+```
+
+spring boot配置项
+
+```properties
+    spring.elasticsearch.bboss.elasticsearch.showTemplate=true  ## true 打印dsl（logger必须设置为info级别） false 不打印dsl
+```
+
 #### 任务级别统计信息
 
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
@@ -1615,6 +1637,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
     "failedRecords": 0,//当前任务处理总失败记录数
     "ignoreRecords": 0,//当前任务处理总忽略记录数    
     "taskNo": 3,//当前任务编号
+    "lastValue": 1998,//任务截止增量字段值或者增量时间戳    
     "jobNo": "eece3d34320b490a980d3f501cb7ae8c" //任务对应的作业编号，一个作业会被拆分为多个任务执行
 }
 ```
@@ -1657,7 +1680,7 @@ importBuilder.addCallInterceptor(new CallInterceptor() {
 打印的统计信息格式如下：
 
 ```properties
-JobNo:558e370ae01041c4baf4835882fc6a77,JobStartTime:2022-03-24 14:46:52,JobEndTime:2022-03-24 14:46:53,Total Records:497,Total Success Records:497,Total Failed Records:0,Total Ignore Records:0,Total Tasks:50
+JobNo:558e370ae01041c4baf4835882fc6a77,JobStartTime:2022-03-24 14:46:52,JobEndTime:2022-03-24 14:46:53,Total Records:497,Total Success Records:497,Total Failed Records:0,Total Ignore Records:0,Total Tasks:50,lastValue: 1998//任务截止增量字段值或者增量时间戳
 ```
 
 往kafka推送数据时，异步特性，因为任务全部提交完成后，数据还未发送完毕，回调afterCall方法时，作业级别统计信息可能不完整，如果需要完整的统计信息，可以调用方法来等待统计完成，例如：
