@@ -27,12 +27,12 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.5.7</version>
+    <version>6.5.8</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>6.5.7</version>
+    <version>6.5.8</version>
 </dependency>
 ```
 
