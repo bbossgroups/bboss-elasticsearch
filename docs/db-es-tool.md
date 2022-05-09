@@ -3361,7 +3361,88 @@ https://esdoc.bbossgroups.com/#/filelog-guide
 2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
 3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
 
-# 15 开发交流
+# 15 作业调度控制
+
+## 15.1 启动作业
+
+定时同步作业创建后，可以调用execute方法启动作业，会默认按照指定的定时器，周期性调度执行，例如
+
+```java
+/**
+ * 创建一个数据同步作业对象
+ */
+DataStream dataStream = importBuilder.builder();
+dataStream.execute();//启动作业
+```
+
+## 15.2 停止作业
+
+作业启动后，如果需要停止作业，可以调用DataStream的destroy方法停止作业
+
+```java
+//waitTranStopped true 等待同步作业处理完成后停止作业 false 不等待
+dataStream.destroy(true);
+```
+
+## 15.3 暂停调度/继续调度作业
+
+bboss提供了暂停调度/继续调度作业的能力，前提是我们要创建具备暂停调度/继续调度能力的作业
+
+通过以下方式创建的作业具备人工暂停调度/人工继续调度能力：
+
+```java
+//作业启动后持续运行，需要人工手动暂停才能暂停作业，当暂停后需执行resume作业才能继续调度执行
+dataStream = importBuilder.builder(new DefaultScheduleAssert());
+```
+
+通过以下方式创建的作业具备自动暂停调度/人工继续调度能力：
+
+```java
+/**
+ * 创建具备自动暂停功能的数据同步作业，控制调度执行后将作业自动进入为暂停状态，等待下一个人工resumeShedule指令才继续允许作业调度执行，
+ */
+dataStream = importBuilder.builder(true);
+```
+
+作业启动后可以调用dataStream.pauseSchedule()方法暂停调度作业，适用于人工暂停作业，自动暂停作业无效
+
+```java
+boolean ret = dataStream.pauseSchedule();//如果db2es作业采用的是调度后自动暂停机制，所以ret始终返回false
+if(ret) {
+   return "db2ESImport job schedule paused.";
+}
+else{
+   return "db2ESImport job schedule is not scheduled, Ignore pauseScheduleJob command.";
+}
+```
+
+暂停调度后的作业，可以调用dataStream.resumeSchedule()重新继续调度作业（适用于控制人工暂停和自动暂停后的作业继续调度）
+
+```java
+boolean ret = dataStream.resumeSchedule();
+if(ret) {
+   return "db2ESImport job schedule resume to continue.";
+}
+else{
+   return "db2ESImport job schedule is not paused, Ignore resumeScheduleJob command.";
+}
+```
+
+**暂停pauseSchedule操作对已经暂停状态或者停止状态的作业不起作用，如果作业正处于执行数据采集处理状态，暂停操作只会对本次采集处理完毕后的后续调度起作用**
+
+**resumeSchedule继续调度操作对停止作业不起作用，不会影响正处于执行数据采集处理过程中的作业，只会对本次采集处理完毕后的后续暂停状态的作业起作用**
+
+**pauseSchedule暂停/resumeSchedule继续操作对以下方式创建的作业不起作业**
+
+```java
+DataStream dataStream = importBuilder.builder();
+```
+
+作业启停、暂停、继续调度案例：
+
+https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/example/esbboss/service/AutoschedulePauseDataTran.java
+
+# 16 开发交流
 
 完整的数据导入demo工程
 
