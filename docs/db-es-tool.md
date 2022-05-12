@@ -3438,6 +3438,14 @@ else{
 DataStream dataStream = importBuilder.builder();
 ```
 
+文件采集插件需要注意以下情况：
+
+**1.文件采集插件如果存在CloseEOF为false的情况，那么将关闭自动暂停功能，人工暂停功能可以继续使用**
+
+**2.人工暂停时，将暂停扫描目录下的新文件，同时也会暂停已经在采集中的文件的后续采集动作；在继续调度后，会重新扫描目录下的新文件，暂停采集的文件也会继续开始采集暂停生成的新的以及后续的数据内容**
+
+
+
 作业启停、暂停、继续调度案例：
 
 https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/example/esbboss/service/AutoschedulePauseDataTran.java
