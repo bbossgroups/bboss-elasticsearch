@@ -5,11 +5,11 @@
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
    3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
-   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
-      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 
@@ -28,12 +28,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-file2ftp</artifactId>
-  <version>6.5.8</version>
+  <version>6.5.9</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.5.8'
+api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.5.9'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
@@ -88,6 +88,8 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.backupSuccessFileInterval | 备份文件清理线程执行时间间隔，单位：毫秒  默认每隔10秒执行一次 | 10000ms |
 | FileImportConfig.backupSuccessFileLiveTime | 备份文件保留时长，单位：秒  默认保留7天 | 7天 |
 | FileImportConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
+| FileImportConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
+| FileImportConfig.sleepAwaitTimeAfterCollectlong, | 单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 |  |
 
 添加采集配置示例
 
@@ -107,6 +109,16 @@ config.addConfig(new FileConfig()//指定多行记录的开头识别标记，正
 //          .setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
             //.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
       );
+	/**
+				 * 单位：毫秒
+				 * 从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0
+				 */
+				config.setSleepAwaitTimeAfterFetch(0l);
+				/**
+				 * 单位：毫秒
+				 * 从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0
+				 */
+				config.setSleepAwaitTimeAfterCollect(60l);
 ```
 
 enableMeta控制的信息如下

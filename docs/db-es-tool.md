@@ -82,7 +82,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.5.8</version>
+<version>6.5.9</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
@@ -1900,7 +1900,7 @@ ES2DummyExportBuilder
 
 Kafka2DummyExportBuilder
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.8/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 
 
@@ -3440,13 +3440,13 @@ DataStream dataStream = importBuilder.builder();
 
 文件采集插件需要注意以下情况：
 
-**1.文件采集插件如果存在CloseEOF为false的情况，那么将关闭自动暂停功能，人工暂停功能可以继续使用**
+**1.文件采集插件如果存在closeEOF为false的情况，那么将关闭自动暂停功能，人工暂停功能可以继续使用，也就是说自动暂停只对文件一次性采集完毕既关闭文件采集通道的作业（closeEOF为true）起作用**
 
-**2.人工暂停时，将暂停扫描目录下的新文件，同时也会暂停已经在采集中的文件的后续采集动作；在继续调度后，会重新扫描目录下的新文件，暂停采集的文件也会继续开始采集暂停生成的新的以及后续的数据内容**
+**2.人工暂停时，将暂停扫描目录下的新文件，同时也会暂停已经在采集中的文件的后续采集动作；在继续调度后，会重新扫描目录下的新文件，暂停采集的文件也会继续开始采集，并且暂停之后没有被采集的数据都会被采集**
 
 
 
-作业启停、暂停、继续调度案例：
+## 15.4 作业启停、暂停、继续调度案例
 
 https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/example/esbboss/service/AutoschedulePauseDataTran.java
 
