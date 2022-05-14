@@ -8,11 +8,7 @@
 
 # 工具特性
 
-Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。支持在Elasticsearch、关系数据库(mysql,oracle,db2,sqlserver、达梦等)、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
-
-提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
-
-Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用汇总运行；提供了作业任务监控api、作业启动和停止api，可轻松定制一款属于自己的ETL管理工具。
+Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用汇总运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
 
 如果您还在苦于logstash、flume、filebeat之类的开源工具无法满足复杂的、海量的数据处理加工场景，那么Elasticsearch-datatran将是一个不错的选择。
 
@@ -20,7 +16,7 @@ Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言�
 
 
 
-数据导入的方式
+1）数据导入的方式
 
 - 支持逐条数据导入
 - 批量数据导入
@@ -29,50 +25,49 @@ Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言�
 - 定时增量（串行/并行）数据导入
 - 支持记录切割功能
 
-支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
+2）支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
 
-支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
+支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
-支持将单条记录切割为多条记录；
+支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
 
-可以将加工后的数据写入File并上传到ftp/sftp服务器；
+支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
-支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
+3）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
 
-支持自动清理下载完毕后ftp服务器上的文件;
+4）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
 
-支持excel、csv文件采集（本地和ftp/sftp）
+5）支持将单条记录切割为多条记录；
 
-支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
+6）可以将加工后的数据写入File并上传到ftp/sftp服务器；
 
-提供自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可。
+7）支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
 
+8）支持自动清理下载完毕后ftp服务器上的文件;
 
-支持的数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
+9）支持excel、csv文件采集（本地和ftp/sftp）
 
-支持的Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
+10）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
 
-支持海量PB级数据同步导入功能
+11）支持海量PB级数据同步导入功能
 
-支持将ip转换为对应的运营商和城市地理坐标位置信息
+12）支持将ip转换为对应的运营商和城市地理坐标位置信息
 
-**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+13）**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
 
-支持以下三种作业调度机制：
+14）支持以下三种作业调度机制：
 
 - jdk timer （内置）
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
+
+15) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
 
 ​	下面通过案例来介绍ETL工具的使用方法，本文案例工程地址
 
 https://github.com/bbossgroups/db-elasticsearch-tool
 
 https://gitee.com/bboss/db-elasticsearch-tool
-
-
-
-
 
 # 1.准备工作
 
@@ -1900,7 +1895,7 @@ ES2DummyExportBuilder
 
 Kafka2DummyExportBuilder
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 
 
