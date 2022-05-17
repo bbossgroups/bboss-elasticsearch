@@ -48,7 +48,7 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.5.9 功能改进
-1. 数据同步改造：增加暂停任务调度和继续开始调度功能，使用文档：[作业调度控制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_15-%e4%bd%9c%e4%b8%9a%e8%b0%83%e5%ba%a6%e6%8e%a7%e5%88%b6)
+1. 数据同步改造：增加暂停任务调度和继续开始调度功能，使用文档：[作业调度控制](https://esdoc.bbossgroups.com/#/bboss-datasyn-control)
 2. 优化文件采集插件性能，增加sleepAwaitTimeAfterCollect和sleepAwaitTimeAfterFetch配置 
 
 sleepAwaitTimeAfterFetch	long,单位：毫秒 ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0	
@@ -229,6 +229,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
               
               

@@ -89,7 +89,7 @@ FileConfig用于指定文件级别配置
 | FileImportConfig.backupSuccessFileLiveTime | 备份文件保留时长，单位：秒  默认保留7天 | 7天 |
 | FileImportConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
 | FileImportConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
-| FileImportConfig.sleepAwaitTimeAfterCollectlong, | 单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 |  |
+| FileImportConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 
 添加采集配置示例
 
@@ -1469,7 +1469,41 @@ sftp
 
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpSubdirLog2ESETLScheduleDemo.java
 
-# 9.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 9.文件采集任务状态跟踪
+
+如果文件closeEof为true，那么一个文件采集完毕后，会调用CallInterceptor拦截器afterCall方法，跟踪任务执行状态,例如：
+
+```java
+importBuilder.addCallInterceptor(new CallInterceptor() {
+   @Override
+   public void preCall(TaskContext taskContext) {
+
+   }
+
+   @Override
+   public void afterCall(TaskContext taskContext) {
+      if(taskContext != null) {
+         FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+         logger.info("afterCall ---- 文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+      }
+   }
+
+   @Override
+   public void throwException(TaskContext taskContext, Exception e) {
+      if(taskContext != null) {
+         taskContext.await();//等待数据异步处理完成
+         FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+         logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+      }
+   }
+});
+```
+
+更多任务执行监控介绍，可以参考文档：
+
+[数据同步任务执行统计信息获取](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
+
+# 10.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 

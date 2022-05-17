@@ -51,6 +51,7 @@
   - 数据同步案例 
     - [bboss数据采集ETL案例大全](bboss-datasyn-demo.md)   
     - [日志文件采集使用指南](filelog-guide.md)
+    - [作业调度控制](bboss-datasyn-control.md)
     - [基于Filelog插件采集日志jvm溢出踩坑记](filelog-oom.md)
     - [DB-ES数据同步工具使用方法](db-es-datasyn.md)
     - [Spring boot与数据同步工具应用](usedatatran-in-spring-boot.md)

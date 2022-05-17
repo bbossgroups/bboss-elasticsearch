@@ -385,4 +385,17 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
 
 批量写入redis案例，多线程并行下载，内含数据文件校验接口示例
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisBatchDemo.java
-补充中。。。。。
+
+# 14 作业控制案例-spring boot web服务
+
+作业服务
+
+https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/example/esbboss/service/AutoschedulePauseDataTran.java
+
+作业web控制器
+
+https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/example/esbboss/controller/ScheduleControlDataTranController.java
+
+作业控制使用参考文档：
+
+https://esdoc.bbossgroups.com/#/bboss-datasyn-control
