@@ -1916,19 +1916,24 @@ Kafka2DummyExportBuilder
 mainclass=org.frameworkset.elasticsearch.imp.Dbdemo
 
 # 参数配置
-# 在代码中获取方法：CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值false
+# 在代码中获取方法：propertiesContainer.getBooleanSystemEnvProperty("dropIndice",false);//同时指定了默认值false
 dropIndice=false
 ```
 
 在代码中获取参数dropIndice方法：
 
+```java
+import org.frameworkset.elasticsearch.util.PropertiesUtil
 ```
-boolean dropIndice = CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值false
+
+```java
+PropertiesContainer propertiesContainer = PropertiesUtil.getPropertiesContainer();
+boolean dropIndice = propertiesContainer.getBooleanSystemEnvProperty("dropIndice",false);//同时指定了默认值false
 ```
 
 另外可以在src\test\resources\application.properties配置控制作业执行的一些参数，例如工作线程数，等待队列数，批处理size等等：
 
-```
+```properties
 queueSize=50
 workThreads=10
 batchSize=20
@@ -1936,16 +1941,15 @@ batchSize=20
 
 在作业执行方法中获取并使用上述参数：
 
-```
-int batchSize = CommonLauncher.getIntProperty("batchSize",10);//同时指定了默认值
-int queueSize = CommonLauncher.getIntProperty("queueSize",50);//同时指定了默认值
-int workThreads = CommonLauncher.getIntProperty("workThreads",10);//同时指定了默认值
+```java
+PropertiesContainer propertiesContainer = PropertiesUtil.getPropertiesContainer();
+int batchSize = propertiesContainer.getIntSystemEnvProperty("batchSize",10);//同时指定了默认值
+int queueSize = propertiesContainer.getIntSystemEnvProperty("queueSize",50);//同时指定了默认值
+int workThreads = propertiesContainer.getIntSystemEnvProperty("workThreads",10);//同时指定了默认值
 importBuilder.setBatchSize(batchSize);
 importBuilder.setQueue(queueSize);//设置批量导入线程池等待队列长度
 importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线程数量
 ```
-
-**注意：这些参数只有在正式发布后，用shell脚本启动作业才会从配置文件中读取并生效，所以需要指定默认值，在开发调试的时候采用参数默认值来运行作业。**
 
 ## 2.6 基于xxjob 同步DB-Elasticsearch数据
 
