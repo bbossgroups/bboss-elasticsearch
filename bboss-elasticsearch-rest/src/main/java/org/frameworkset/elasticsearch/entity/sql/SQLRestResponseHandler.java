@@ -26,7 +26,7 @@ import org.frameworkset.spi.remote.http.URLResponseHandler;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+import static org.frameworkset.spi.remote.http.ResponseUtil.entityEmpty;
 
 /**
  * <p>Description: </p>

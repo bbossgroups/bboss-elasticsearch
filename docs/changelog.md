@@ -47,6 +47,9 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.5.9</version>
         </dependency>
 ```
+# v6.6.0 功能改进
+1. 数据同步改造：ExcelFileOupputConfig增加flushRows属性，设置excel临时文件记录大小，达到flushRows时，将内存中的excel记录写入临时文件，默认5000条记录
+
 # v6.5.9 功能改进
 1. 数据同步改造：增加暂停任务调度和继续开始调度功能，使用文档：[作业调度控制](https://esdoc.bbossgroups.com/#/bboss-datasyn-control)
 2. 优化文件采集插件性能，增加sleepAwaitTimeAfterCollect和sleepAwaitTimeAfterFetch配置 

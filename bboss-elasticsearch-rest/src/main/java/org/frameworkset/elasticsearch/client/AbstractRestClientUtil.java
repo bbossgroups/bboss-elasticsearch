@@ -39,7 +39,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+import static org.frameworkset.spi.remote.http.ResponseUtil.entityEmpty;
 
 /**
  * @see <p>https://esdoc.bbossgroups.com/#/development</p>

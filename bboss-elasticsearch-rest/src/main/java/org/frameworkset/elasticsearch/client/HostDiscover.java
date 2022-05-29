@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.frameworkset.spi.remote.http.HttpRequestProxy.entityEmpty;
+import static org.frameworkset.spi.remote.http.ResponseUtil.entityEmpty;
 
 /**
  * 主动发现：自动发现es 主机节点
