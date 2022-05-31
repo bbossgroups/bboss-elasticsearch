@@ -33,7 +33,7 @@ ip:port（默认http协议）
 
  10.1.负载均衡器主备功能，如果主节点全部挂掉，请求转发到可用的备用节点，如果备用节点也挂了，就抛出异常，如果主节点恢复正常，那么请求重新发往主节点 
  10.2. 异地灾备，服务采用异地灾备模式部署，服务优先调用本地，当本地服务全部挂掉，服务请求转发到异地服务，如果本地服务部分恢复或者全部恢复，那么请求重新发往本地服务
-
+11.提供丰富的rpc api方法
 
 ```
 
@@ -842,7 +842,11 @@ spring boot配置项
 
      spring.bboss.http.failAllContinue = true
 
-## 3.3 使用负载均衡器调用服务
+# 4 使用负载均衡器调用服务
+
+HttpRequestProxy组件提供了非常丰富的服务调用API，可以去查看对应的api了解。
+
+## 4.1 一个简单的案例
 
 使用负载均衡器调用服务，在指定服务集群组report调用rest服务/testBBossIndexCrud,返回json字符串报文，通过循环调用，测试负载均衡机制
 
@@ -878,7 +882,73 @@ spring boot配置项
    }
 ```
 
-# 4.服务发现机制的两种工作模式
+
+
+## 4.2 返回简单结果对象或者 基本数据类型
+
+```java
+@ResponseBody
+public Map<String, Object> queryUrl(String isParam,String url ) {
+
+    Map<String, Object> ajaxData = new HashMap<>();
+    ajaxData.put(HNanConstant.resultCode, HNanConstant.SUCCESS);
+    ajaxData.put(HNanConstant.resultInfo, "");
+    Map params = new HashMap();
+    params.put("isParam",isParam);
+    params.put("url",url);
+    try {
+        //返回简单结果对象或者 基本数据类型
+        String data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", String.class);//返回String
+        int data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", int.class);//返回int
+                short data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", short.class);//返回short
+                long data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", long.class);//返回long
+                float data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", float.class);//返回float
+                double data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", double.class);//返回double
+                boolean data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", boolean.class);//返回boolean
+        Map data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", Map.class);//返回map对象
+        PoBean data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", PoBean.class);//返回普通java对象
+        if(data != null){
+            ajaxData.put("data", data);
+        }
+        else {
+            ajaxData.put("data", url);
+        }
+    } catch (Exception e) {
+        log.error("queryUrl error", e);
+        ajaxData.put(HNanConstant.resultCode, HNanConstant.FAIL);
+    }
+    return ajaxData;
+
+}
+```
+
+## 4.3 返回集合对象
+
+可以非常方便地返回List，Set，Map集合对象
+
+```java
+public @ResponseBody
+Map<String, Object> queryErrorMessage(HttpServletRequest request) {
+    String param = request.getParameter("data");
+    Map<String, Object> ajaxData = new HashMap<>();
+    ajaxData.put(HNanConstant.resultCode, HNanConstant.SUCCESS);
+    ajaxData.put(HNanConstant.resultInfo, "");
+    try {
+       List<ErrorInfo> result = HttpRequestProxy.sendJsonBodyForList(param, "/visualops/webpage/queryErrorMessage.api", ErrorInfo.class);
+            Set<ErrorInfo> set = HttpRequestProxy.sendJsonBodyForSet(param, "/visualops/webpage/queryErrorMessage.api", ErrorInfo.class);
+            Map<String,ErrorInfo> map = HttpRequestProxy.sendJsonBodyForMap(param, "/visualops/webpage/queryErrorMessage.api", String.class,ErrorInfo.class);
+        ajaxData.put("data", result);
+    } catch (Exception e) {
+        log.error("queryErrorMessage error", e);
+        ajaxData.put(HNanConstant.resultCode, HNanConstant.FAIL);
+    }
+    return ajaxData;
+}
+```
+
+总之，通过HttpRequestProxy调用服务就像我们调用本地类方法一样，支持post、get、put、delete、head http请求处理方法，提供or mapping机制，可以根据实际需要使用相关api即可。
+
+# 5.服务发现机制的两种工作模式
 
 本文开头介绍了http负载均衡器服务发现支持从各种数据源获取和发现服务地址：
 
@@ -886,11 +956,11 @@ zookeeper，etcd，consul，eureka，db，其他第三方注册中心
 
 为了支持第三方注册中心，服务发现机制的提供两种工作模式：
 
-## **4.1 主动发现模式**
+## 5.1 主动发现模式
 
 bboss通过调用http.discoverService配置的服务发现方法，定时从数据库和注册中心中查询最新的服务地址数据清单，本文上面介绍的http.discoverService就是一种主动定时发现模式
 
-## **4.2 被动发现模式**
+## 5.2 被动发现模式
 
 监听apollo，zookeeper，etcd，consul，eureka等配置中心中管理的服务节点地址清单数据变化，监听路由规则变化，更新本地服务器地址清单，适用于发布订阅模式,对应的api
 
@@ -933,7 +1003,7 @@ HttpProxyUtil.handleDiscoverHosts("report",hosts);
 
 HttpProxyUtil.changeRouting(String poolName,String newCurrentRounte)
 ```
-## 4.3 基于apollo配置中心被动发现模式示例
+## 5.3 基于apollo配置中心被动发现模式示例
 首先定义一个apollo 监听器
 ```java
 package org.frameworkset.http.client;
@@ -1075,7 +1145,7 @@ Apollo配置使用参考文档：<https://esdoc.bbossgroups.com/#/apollo-config>
 
       HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
 ```
-# 5.主备和异地灾备配置和服务发现
+# 6.主备和异地灾备配置和服务发现
 
 主备和异地灾备配置和服务发现
 
@@ -1174,7 +1244,7 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 
 ```
 
-# 6.健康检查服务
+# 7.健康检查服务
 
 可以通过http.health属性指定健康检查服务，服务为相对地址，不需要指定ip和端口，例如：
 
@@ -1197,7 +1267,7 @@ http.health=/health.html
 
 **bboss以get方式发送http.health对应的健康检查服务请求，健康检查服务只需要响应状态码为200-300即认为服务节点健康可用**。
 
-# 7.开发交流
+# 8.开发交流
 
 
 
