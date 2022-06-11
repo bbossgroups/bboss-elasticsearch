@@ -5,11 +5,11 @@
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
    3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
-   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
-      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.5.9/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.6.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.6.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.6.0/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.6.0/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.6.0/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 
@@ -28,12 +28,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-file2ftp</artifactId>
-  <version>6.5.9</version>
+  <version>6.6.0</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.5.9'
+api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.6.0'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：

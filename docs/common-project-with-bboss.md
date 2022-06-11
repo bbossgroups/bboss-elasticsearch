@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.5.9</version>
+            <version>6.6.0</version>
         </dependency>
 ```
 
@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.5.9"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-rest-jdbc:6.6.0"
 ```
 
 

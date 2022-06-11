@@ -1,6 +1,10 @@
-# 作业调度控制
+# 数据同步作业调度控制
 
-通过bboss创建的同步作业，可以非常方便地进行作业启动、暂停、继续、停止控制，本文详细介绍。
+通过bboss创建的同步作业，可以非常方便地进行作业启动、暂停、继续、停止控制，本文结合spring boot web服务案例来详细介绍数据同步作业调度控制功能。
+
+下载案例maven工程 
+
+https://git.oschina.net/bboss/springboot-elasticsearch
 
 ## 15.1 启动作业
 

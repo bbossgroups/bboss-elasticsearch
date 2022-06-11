@@ -77,7 +77,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.5.9</version>
+<version>6.6.0</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：

@@ -143,13 +143,11 @@ Elasticsearch 5.x中一个indice mapping支持多个mapping type，通过在子�
                         "diagnosis_type": {
                             "type": "text"
                         },
-                        "icd10_code": {
-                            "type": "text",
+                        "icd10_code": {                           
                             "type": "keyword"
                         },
                         "sd_disease_name": {
-                            "type": "text",
-                            "type": "keyword"
+                            "type": "text"                          
                         },
                         "created_date": {
                             "type": "date",
