@@ -26,6 +26,7 @@ bboss数据同步可以方便地实现多种数据源之间的数据同步功能
 # 2.准备工作
 
 准备工作：
+
 1).下载同步作业开发环境工程（基于gradle管理）
 
 https://gitee.com/bboss/kafka2x-elasticsearch
@@ -42,7 +43,50 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 ![img](images/es-kafka-idea-set.png)
 
+3) 根据kafka版本修改kafka客户端的版本号
 
+根据kafka服务端版本，修改[gradle.properties](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/gradle.properties)中kafka客户端的版本号
+
+kafka2x=1.1.0     --- kafka 1.x客户端版本号
+
+kafka2x=2.3.0      --- kafka 2.x客户端版本号
+
+kafka2x=3.2.0      --- kafka 3.x客户端版本号
+
+bboss kafka数据同步插件gradle依赖包 
+  
+```java
+       api(
+				[group: 'com.bbossgroups.plugins', name: 'bboss-elasticsearch-rest-kafka2x', version: "${bboss_es_version}", transitive: true],
+		)
+		api (
+				[group: 'org.apache.kafka', name: 'kafka_2.12', version: "${kafka2x}", transitive: true],
+		){
+			exclude group: 'log4j', module: 'log4j'
+			exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+		}
+
+		api ([group: 'org.apache.kafka', name: 'kafka-tools', version: "${kafka2x}", transitive: true],){
+			exclude group: 'log4j', module: 'log4j'
+			exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+			exclude group: 'org.eclipse.jetty', module: 'jetty-server'
+
+			exclude group: 'org.eclipse.jetty', module: 'jetty-servlets'
+
+			exclude group: 'org.eclipse.jetty', module: 'jetty-servlet'
+			exclude group: 'org.glassfish.jersey.containers', module: 'jersey-container-servlet'
+		}
+
+		api ([group: 'org.apache.kafka', name: 'kafka-clients', version: "${kafka2x}", transitive: true],){
+			exclude group: 'log4j', module: 'log4j'
+			exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+		}
+
+		api ([group: 'org.apache.kafka', name: 'kafka-streams', version: "${kafka2x}", transitive: true],){
+			exclude group: 'log4j', module: 'log4j'
+			exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+		}
+```
 
 # 3.案例介绍
 
