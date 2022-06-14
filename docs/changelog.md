@@ -47,6 +47,30 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.6.0</version>
         </dependency>
 ```
+# v6.6.1 功能改进
+1. 数据同步改造：DB导出插件改进，可以为sql语句额外指定同步条件进行全量或者定时增量导入
+
+定时按特定条件导入数据
+```java
+importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime]");
+
+		importBuilder.addParam("start_optime", TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2018-03-21 00:27:21"))
+				.addParam("end_optime",TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2019-12-30 00:27:21"));
+```
+
+定时按特定条件增量导入数据
+```java
+importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime] and collecttime > #[collecttime]");
+		importBuilder.setLastValueColumn("collecttime");
+		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);
+
+		importBuilder.addParam("start_optime", TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2018-03-21 00:27:21"))
+				.addParam("end_optime",TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2019-12-30 00:27:21"));
+```
+使用参考文档：
+
+https://esdoc.bbossgroups.com/#/db-es-datasyn
+
 # v6.6.0 功能改进
 1. 数据同步改造：ExcelFileOupputConfig增加flushRows属性，设置excel临时文件记录大小，达到flushRows时，将内存中的excel记录写入临时文件，默认5000条记录
 2. 数据同步改造：处理Excel poi包升级后的兼容性问题

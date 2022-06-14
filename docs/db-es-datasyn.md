@@ -322,6 +322,33 @@ Dbdemo完整的内容参考：
 
 开发过程中可以直接运行Dbdemo中的main方法来调试作业程序。
 
+## 2.1 数据同步条件设置
+
+可以额外设置数据同步条件，实现有条件的定时/一次性全量同步或者定时增量导入。
+
+通过importBuilder.addParam添加sql条件变量值，然后在sql语句中用 #[xxx]变量语法引用变量，xxx代表变量名称。举例说明如下： 
+
+定时按特定条件导入数据
+
+```java
+importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime]");
+
+		importBuilder.addParam("start_optime", TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2018-03-21 00:27:21"))
+				.addParam("end_optime",TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2019-12-30 00:27:21"));
+```
+
+定时按特定条件增量导入数据
+```java
+importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime] and collecttime > #[collecttime]");
+		importBuilder.setLastValueColumn("collecttime");
+		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);
+
+		importBuilder.addParam("start_optime", TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2018-03-21 00:27:21"))
+				.addParam("end_optime",TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2019-12-30 00:27:21"));
+```
+
+
+
 # 3 es数据源配置
 
 修改配置文件src\test\resources\application.properties
