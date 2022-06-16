@@ -71,6 +71,8 @@ importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] a
 
 https://esdoc.bbossgroups.com/#/db-es-datasyn
 
+2. 数据同步改进：完善作业监控输出日志信息，完善es 数据采集dsl扩展参数管理机制，提升到所有插件的参数配置
+
 # v6.6.0 功能改进
 1. 数据同步改造：ExcelFileOupputConfig增加flushRows属性，设置excel临时文件记录大小，达到flushRows时，将内存中的excel记录写入临时文件，默认5000条记录
 2. 数据同步改造：处理Excel poi包升级后的兼容性问题
