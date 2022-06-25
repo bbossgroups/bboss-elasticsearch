@@ -52,4 +52,13 @@ public class ElasticsearchBootResult {
 	public void setInitedElasticsearchs(List<String> initedElasticsearchs) {
 		this.initedElasticsearchs = initedElasticsearchs;
 	}
+
+	public void addInitedElasticsearchs(List<String> initedElasticsearchs) {
+		for(int i = 0; initedElasticsearchs != null && i < initedElasticsearchs.size(); i ++) {
+			String es = initedElasticsearchs.get(i);
+			if(!this.initedElasticsearchs.contains(es)) {
+				this.initedElasticsearchs .add(es);
+			}
+		}
+	}
 }

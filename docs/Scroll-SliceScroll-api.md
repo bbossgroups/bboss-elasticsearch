@@ -207,7 +207,18 @@ public void testSimleScrollParallelAPIHandler(){
 
 	}
 ```
+## 3.5 并行参数设置
+调整scroll并行查询线程数
 
+elasticsearch.scrollThreadCount=200
+
+elasticsearch.scrollThreadQueue=200
+
+spring boot项目配置
+
+spring.elasticsearch.bboss.elasticsearch.scrollThreadCount=200
+
+spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=200
 
 
 # 4.slice api使用
@@ -369,12 +380,6 @@ public void testSimleScrollParallelAPIHandler(){
 
 	}
 ```
-
-我们可以在application.properties文件中增加以下配置来设置slice scroll查询线程池线程数和等待队列长度：
-
-elasticsearch.sliceScrollThreadCount 默认值50
-
-elasticsearch.sliceScrollThreadQueue 默认值100
 
 ## 5.4 并行中断
 
@@ -576,6 +581,18 @@ public void testSimpleSliceScrollApiParralHandlerExportDsl() {
 
 }
 ```
+### 5.6 并行参数配置
+我们可以在application.properties文件中增加以下配置来设置slice scroll查询线程池线程数和等待队列长度：
+
+elasticsearch.sliceScrollThreadCount=100 默认值100
+
+elasticsearch.sliceScrollThreadQueue=100 默认值100
+
+spring boot项目配置
+
+spring.elasticsearch.bboss.elasticsearch.sliceScrollThreadCount=100
+
+spring.elasticsearch.bboss.elasticsearch.sliceScrollThreadQueue=100
 
 # 6 开发交流
 
