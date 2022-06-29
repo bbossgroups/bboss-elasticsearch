@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.6.0</version>
+            <version>6.7.0</version>
         </dependency>
 ```
 
@@ -44,10 +44,10 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.6.0</version>
+            <version>6.7.0</version>
         </dependency>
 ```
-# v6.6.1 功能改进
+# v6.7.0 功能改进
 1. 数据同步改造：DB导出插件改进，可以为sql语句额外指定同步条件进行全量或者定时增量导入
 
 定时按特定条件导入数据
@@ -72,6 +72,7 @@ importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] a
 https://esdoc.bbossgroups.com/#/db-es-datasyn
 
 2. 数据同步改进：完善作业监控输出日志信息，完善es 数据采集dsl扩展参数管理机制，提升到所有插件的参数配置
+3. 数据同步架构重构：去掉所有源到目标builder，统一使用ImportBuilder构建器+InputConfig+OutputConfig来构建数据同步作业
 
 # v6.6.0 功能改进
 1. 数据同步改造：ExcelFileOupputConfig增加flushRows属性，设置excel临时文件记录大小，达到flushRows时，将内存中的excel记录写入临时文件，默认5000条记录

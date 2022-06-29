@@ -14,7 +14,9 @@ Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据�
 
 ![](images\datasyn.png)
 
+采用标准的输入输出异步管道来处理数据
 
+![](images\datasyn-inout.png)
 
 1）数据导入的方式
 
