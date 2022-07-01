@@ -17,6 +17,7 @@ package org.frameworkset.elasticsearch.template;
 
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Pro;
 import org.frameworkset.spi.runtime.BaseStarter;
@@ -37,13 +38,16 @@ import java.util.Set;
 public class AOPTemplateContainerImpl implements TemplateContainer{
 	private BaseApplicationContext templatecontext;
 	private String baseDir;
-	public AOPTemplateContainerImpl( String baseDir,BaseApplicationContext templatecontext) {
+	private ConfigHolder configHolder;
+	public AOPTemplateContainerImpl(ConfigHolder configHolder, String baseDir, BaseApplicationContext templatecontext) {
 		this.templatecontext = templatecontext;
 		this.baseDir = baseDir;
+		this.configHolder = configHolder;
 	}
 
-	public AOPTemplateContainerImpl(BaseApplicationContext templatecontext) {
+	public AOPTemplateContainerImpl(ConfigHolder configHolder,BaseApplicationContext templatecontext) {
 		this.templatecontext = templatecontext;
+		this.configHolder = configHolder;
 	}
 
 	public String getNamespace(){
@@ -63,21 +67,22 @@ public class AOPTemplateContainerImpl implements TemplateContainer{
 	}
 
 	public int getPerKeyDSLStructionCacheSize(){
-		return templatecontext.getIntProperty(TemplateContainer.NAME_perKeyDSLStructionCacheSize,ESUtil.defaultPerKeyDSLStructionCacheSize);
+		return templatecontext.getIntProperty(TemplateContainer.NAME_perKeyDSLStructionCacheSize, ConfigDSLUtil.defaultPerKeyDSLStructionCacheSize);
 	}
 	public boolean isAlwaysCacheDslStruction(){
-		return templatecontext.getBooleanProperty(TemplateContainer.NAME_alwaysCacheDslStruction,ESUtil.defaultAlwaysCacheDslStruction);
+		return templatecontext.getBooleanProperty(TemplateContainer.NAME_alwaysCacheDslStruction, ConfigDSLUtil.defaultAlwaysCacheDslStruction);
 	}
-	public synchronized void reinit(ESUtil esUtil){
+	public synchronized void reinit(ConfigDSLUtil configDSLUtil){
 		String file = templatecontext.getConfigfile();
 		templatecontext.removeCacheContext();
-		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(baseDir,file);
+		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(configHolder,baseDir,file);
+		essoaFileApplicationContext.initProviderManager();
 		if(essoaFileApplicationContext.getParserError() == null) {
 //			esUtil.clearTemplateDatas();
 			templatecontext.destroy(false);
 			templatecontext = essoaFileApplicationContext;
 //			templatecontext = new ESSOAFileApplicationContext(file);
-			esUtil.buildTemplateDatas(this);
+			configDSLUtil.buildTemplateDatas(this);
 //			trimValues();
 //			destroyed = false;
 		}

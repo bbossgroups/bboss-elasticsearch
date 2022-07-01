@@ -25,7 +25,7 @@ import org.frameworkset.elasticsearch.scroll.thread.ScrollTask;
 import org.frameworkset.elasticsearch.serial.ESInnerHitSerialThreadLocal;
 import org.frameworkset.elasticsearch.serial.SerialContext;
 import org.frameworkset.elasticsearch.template.ESTemplateHelper;
-import org.frameworkset.elasticsearch.template.ESUtil;
+import org.frameworkset.elasticsearch.template.ConfigDSLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,7 +295,7 @@ public abstract class ExecuteRequestUtil {
 		tasks.clear();
 
 	}
-	public static  <T> ESDatas<T> _scrollSlice(ElasticSearchRestClient client,ESUtil esUtil,final String path, final String dslTemplate, final Map params ,
+	public static  <T> ESDatas<T> _scrollSlice(ElasticSearchRestClient client, ConfigDSLUtil configDSLUtil, final String path, final String dslTemplate, final Map params ,
 											   final String scroll  , final Class<T> type,
 											   ScrollHandler<T> scrollHandler) throws ElasticSearchException {
 		long starttime = System.currentTimeMillis();
@@ -320,7 +320,7 @@ public abstract class ExecuteRequestUtil {
 				params.put("sliceId", i);
 
 				_doSliceScroll(client, i, _path,
-						ESTemplateHelper.evalTemplate(esUtil,dslTemplate, params),
+						ESTemplateHelper.evalTemplate(configDSLUtil,dslTemplate, params),
 						scroll, type,
 						sliceScrollResult,false);
 
@@ -406,9 +406,9 @@ public abstract class ExecuteRequestUtil {
 		return sliceScrollResult.getSliceResponse();
 	}
 
-	public static <T> ESDatas<T> scrollSliceParallel(ClientInterface clientInterface,final ESUtil esUtil,String path,final String dslTemplate,final Map params ,
-											  final String scroll  ,final Class<T> type,
-											  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
+	public static <T> ESDatas<T> scrollSliceParallel(ClientInterface clientInterface, final ConfigDSLUtil configDSLUtil, String path, final String dslTemplate, final Map params ,
+													 final String scroll  , final Class<T> type,
+													 ScrollHandler<T> scrollHandler) throws ElasticSearchException{
 		Integer mx = (Integer) params.get("sliceMax");
 		if(mx == null)
 			throw new ElasticSearchException("Slice parameters exception: must set sliceMax in params!");
@@ -419,7 +419,7 @@ public abstract class ExecuteRequestUtil {
 				final Map _params = new HashMap();
 				_params.putAll(params);
 				_params.put("sliceId", sliceId);
-				String sliceDsl = ESTemplateHelper.evalTemplate(esUtil,dslTemplate, _params);
+				String sliceDsl = ESTemplateHelper.evalTemplate(configDSLUtil,dslTemplate, _params);
 				return sliceDsl;
 //				return buildSliceDsl(i,max, params, dslTemplate);
 			}
@@ -428,20 +428,20 @@ public abstract class ExecuteRequestUtil {
 
 	}
 
-	public static String _addDocuments(ElasticSearchRestClient client, ESUtil esUtil,String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+	public static String _addDocuments(ElasticSearchRestClient client, ConfigDSLUtil configDSLUtil, String indexName, String indexType, String addTemplate, List<?> beans, String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
-			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,addTemplate,bean,"index",client.isUpper7());
+			ESTemplateHelper.evalBuilkTemplate(configDSLUtil,builder,indexName,indexType,addTemplate,bean,"index",client.isUpper7());
 		}
 		if(refreshOption == null)
 			return client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		else
 			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
-	public static String _updateDocuments(ElasticSearchRestClient client, ESUtil esUtil,String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
+	public static String _updateDocuments(ElasticSearchRestClient client, ConfigDSLUtil configDSLUtil, String indexName, String indexType, String updateTemplate, List<?> beans, String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
 		for(Object bean:beans) {
-			ESTemplateHelper.evalBuilkTemplate(esUtil,builder,indexName,indexType,updateTemplate,bean,"update",client.isUpper7());
+			ESTemplateHelper.evalBuilkTemplate(configDSLUtil,builder,indexName,indexType,updateTemplate,bean,"update",client.isUpper7());
 		}
 		if(refreshOption != null && !refreshOption.equals(""))
 			return client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);

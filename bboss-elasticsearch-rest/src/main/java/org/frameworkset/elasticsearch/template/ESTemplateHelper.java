@@ -26,7 +26,7 @@ import java.io.Writer;
 import java.util.Map;
 
 public class ESTemplateHelper {
-	private static String evalNullParamsTemplate(ESUtil esUtil,String templateName,ESInfo esInfo){
+	private static String evalNullParamsTemplate(ConfigDSLUtil configDSLUtil, String templateName, ESInfo esInfo){
 		if(!esInfo.isTpl()) {
 			return esInfo.getTemplate();
 		}
@@ -34,7 +34,7 @@ public class ESTemplateHelper {
 			ESTemplate esTemplate = esInfo.getEstpl();
 			esTemplate.process();
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = esUtil.buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = configDSLUtil.buildVelocityContext();//一个context是否可以被同时用于多次运算呢？
 				BBossStringWriter sw = new BBossStringWriter();
 				esTemplate.merge(vcontext, sw);
 				return sw.toString();
@@ -46,14 +46,14 @@ public class ESTemplateHelper {
 		}
 	}
 
-	public static String evalTemplate(ESUtil esUtil,String templateName, Map params)  {
+	public static String evalTemplate(ConfigDSLUtil configDSLUtil, String templateName, Map params)  {
 
-		ESInfo esInfo = esUtil.getESInfo(templateName);
+		ESInfo esInfo = configDSLUtil.getESInfo(templateName);
 		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + configDSLUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null || params.size() == 0) {
 
-			return evalNullParamsTemplate(esUtil,templateName,esInfo);
+			return evalNullParamsTemplate(configDSLUtil,templateName,esInfo);
 
 		}
 		String template = null;
@@ -61,26 +61,26 @@ public class ESTemplateHelper {
 			ESTemplate esTemplate = esInfo.getEstpl();
 			esTemplate.process();//识别sql语句是不是真正的velocity sql模板
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？,已经被转义处理
+				VelocityContext vcontext = configDSLUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？,已经被转义处理
 
 				BBossStringWriter sw = new BBossStringWriter();
 				esTemplate.merge(vcontext, sw);
 //				template = sw.toString();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				template = evalDocumentStruction(    esUtil,builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(configDSLUtil,builder,  struction ,  params,  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				StringBuilder builder = new StringBuilder();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				template = evalDocumentStruction(  esUtil,  builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(configDSLUtil,  builder,  struction ,  params,  templateName,  null);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			StringBuilder builder = new StringBuilder();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			template = evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  null);
+			template = evalDocumentStruction(configDSLUtil, builder,  struction ,  params,  templateName,  null);
 		}
 
 		return template;
@@ -93,25 +93,25 @@ public class ESTemplateHelper {
 			return null;
 		return beanInfo.getPropertyValue(bean,pkProperty.getName());
 	}
-	public static String evalTemplate(ESUtil esUtil,String templateName) {
-		return evalTemplate(esUtil,templateName,(Object)null);
+	public static String evalTemplate(ConfigDSLUtil configDSLUtil, String templateName) {
+		return evalTemplate(configDSLUtil,templateName,(Object)null);
 	}
-	public static String evalTemplate(ESUtil esUtil,String templateName, Object params) {
+	public static String evalTemplate(ConfigDSLUtil configDSLUtil, String templateName, Object params) {
 		if(params != null && params instanceof Map){
-			return evalTemplate(  esUtil,  templateName, (Map) params);
+			return evalTemplate(configDSLUtil,  templateName, (Map) params);
 		}
-		ESInfo esInfo = esUtil.getESInfo(templateName);
+		ESInfo esInfo = configDSLUtil.getESInfo(templateName);
 		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + configDSLUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
 //			return esInfo.getTemplate();
-			return evalNullParamsTemplate(esUtil,templateName,esInfo);
+			return evalNullParamsTemplate(configDSLUtil,templateName,esInfo);
 		}
 		String template = null;
 		if (esInfo.isTpl()) {
 			esInfo.getEstpl().process();//识别sql语句是不是真正的velocity sql模板
 			if (esInfo.isTpl()) {
-				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = configDSLUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
@@ -119,19 +119,19 @@ public class ESTemplateHelper {
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				StringBuilder builder = new StringBuilder();
 //				template = evalDocumentStruction(   esUtil,builder,  struction ,  vcontext.getContext(),  templateName,  null,true);
-				template = evalDocumentStruction(   esUtil,builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(configDSLUtil,builder,  struction ,  params,  templateName,  null);
 			} else {
 //				template = esInfo.getTemplate();
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 				StringBuilder builder = new StringBuilder();
-				template = evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  null);
+				template = evalDocumentStruction(configDSLUtil, builder,  struction ,  params,  templateName,  null);
 			}
 
 		} else {
 //			template = esInfo.getTemplate();
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
 			StringBuilder builder = new StringBuilder();
-			template = evalDocumentStruction(  esUtil,  builder,  struction ,  params,  templateName,  null);
+			template = evalDocumentStruction(configDSLUtil,  builder,  struction ,  params,  templateName,  null);
 //			template = builder.toString();
 		}
 
@@ -200,14 +200,14 @@ public class ESTemplateHelper {
 		}
 
 	}
-	public static void evalBuilkTemplate(ESUtil esUtil,StringBuilder builder ,String indexName,String indexType,String templateName, Object params,String action,boolean upper7) {
+	public static void evalBuilkTemplate(ConfigDSLUtil configDSLUtil, StringBuilder builder , String indexName, String indexType, String templateName, Object params, String action, boolean upper7) {
 
-		ESInfo esInfo = esUtil.getESInfo(templateName);
+		ESInfo esInfo = configDSLUtil.getESInfo(templateName);
 		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + configDSLUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
 			buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
-			String template = ESTemplateHelper.evalNullParamsTemplate(esUtil,templateName,esInfo);
+			String template = ESTemplateHelper.evalNullParamsTemplate(configDSLUtil,templateName,esInfo);
 			if(!action.equals("update"))
 				builder.append(template).append("\n");
 			else
@@ -221,33 +221,33 @@ public class ESTemplateHelper {
 
 			if (esInfo.isTpl()) {
 				buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
-				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = configDSLUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 				BBossStringWriter sw = new BBossStringWriter();
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
-				evalStruction(  esUtil,  builder,  struction ,  params,  templateName,  action);
+				evalStruction(configDSLUtil,  builder,  struction ,  params,  templateName,  action);
 			} else {
 				buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				evalStruction(  esUtil,  builder,  struction ,  params,  templateName,  action);
+				evalStruction(configDSLUtil,  builder,  struction ,  params,  templateName,  action);
 			}
 
 		} else {
 			buildMeta(  builder ,  indexType,  indexName,   params,action,  upper7);
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			evalStruction(    esUtil,builder,  struction ,  params,  templateName,  action);
+			evalStruction(configDSLUtil,builder,  struction ,  params,  templateName,  action);
 		}
 
 		//return templateName;
 	}
 
-	public static String evalDocumentTemplate(ESUtil esUtil,StringBuilder builder ,String indexType,String indexName,String templateName, Object params,String action) {
+	public static String evalDocumentTemplate(ConfigDSLUtil configDSLUtil, StringBuilder builder , String indexType, String indexName, String templateName, Object params, String action) {
 
-		ESInfo esInfo = esUtil.getESInfo(templateName);
+		ESInfo esInfo = configDSLUtil.getESInfo(templateName);
 		if (esInfo == null)
-			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + esUtil.getRealTemplateFile() + " 未定义.");
+			throw new ElasticSearchException("ElasticSearch Template [" + templateName + "]@" + configDSLUtil.getRealTemplateFile() + " 未定义.");
 		if (params == null) {
-			String template = ESTemplateHelper.evalNullParamsTemplate(esUtil,templateName,esInfo);
+			String template = ESTemplateHelper.evalNullParamsTemplate(configDSLUtil,templateName,esInfo);
 			return template;
 		}
 		if (esInfo.isTpl()) {
@@ -255,27 +255,27 @@ public class ESTemplateHelper {
 
 			if (esInfo.isTpl()) {
 
-				VelocityContext vcontext = esUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
+				VelocityContext vcontext = configDSLUtil.buildVelocityContext(params);//一个context是否可以被同时用于多次运算呢？
 				BBossStringWriter sw = new BBossStringWriter(builder);
 				esInfo.getEstpl().merge(vcontext, sw);
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(sw.toString());
 				builder.setLength(0);
-				return evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  action);
+				return evalDocumentStruction(configDSLUtil, builder,  struction ,  params,  templateName,  action);
 			} else {
 
 				VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-				return evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  action);
+				return evalDocumentStruction(configDSLUtil, builder,  struction ,  params,  templateName,  action);
 			}
 
 		} else {
 			VariableHandler.URLStruction struction = esInfo.getTemplateStruction(esInfo.getTemplate());
-			return evalDocumentStruction(   esUtil, builder,  struction ,  params,  templateName,  action);
+			return evalDocumentStruction(configDSLUtil, builder,  struction ,  params,  templateName,  action);
 		}
 
 		//return templateName;
 	}
 
-	public static void evalStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
+	public static void evalStruction(ConfigDSLUtil configDSLUtil, StringBuilder builder, VariableHandler.URLStruction struction , Object params, String templateName, String action){
 		if(!struction.hasVars()) {
 			if(!action.equals("update"))
 				builder.append(struction.getUrl()).append("\n");
@@ -287,19 +287,19 @@ public class ESTemplateHelper {
 		else
 		{
 			if(!action.equals("update")) {
-				esUtil.evalStruction(builder,struction,params,templateName);
+				configDSLUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("\n");
 			}
 			else
 			{
 				builder.append("{\"doc\":");
-				esUtil.evalStruction(builder,struction,params,templateName);
+				configDSLUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("}\n");
 			}
 
 		}
 	}
-	public static void evalStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+	public static void evalStruction(ConfigDSLUtil configDSLUtil, StringBuilder builder, VariableHandler.URLStruction struction , Map params, String templateName, String action){
 		if(!struction.hasVars()) {
 			if(!action.equals("update"))
 				builder.append(struction.getUrl()).append("\n");
@@ -311,20 +311,20 @@ public class ESTemplateHelper {
 		else
 		{
 			if(!action.equals("update")) {
-				esUtil.evalStruction(builder,struction,params,templateName);
+				configDSLUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("\n");
 			}
 			else
 			{
 				builder.append("{\"doc\":");
-				esUtil.evalStruction(builder,struction,params,templateName);
+				configDSLUtil.evalStruction(builder,struction,params,templateName);
 				builder.append("}\n");
 			}
 
 		}
 	}
 
-	public static String evalDocumentStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Map params,String templateName,String action){
+	public static String evalDocumentStruction(ConfigDSLUtil configDSLUtil, StringBuilder builder, VariableHandler.URLStruction struction , Map params, String templateName, String action){
 		if(!struction.hasVars()) {
 
 			return struction.getUrl();
@@ -332,11 +332,11 @@ public class ESTemplateHelper {
 		}
 		else
 		{
-			esUtil.evalStruction(builder,struction,params,templateName);
+			configDSLUtil.evalStruction(builder,struction,params,templateName);
 			return builder.toString();
 		}
 	}
-	public static String evalDocumentStruction(ESUtil esUtil,StringBuilder builder,VariableHandler.URLStruction struction ,Object params,String templateName,String action){
+	public static String evalDocumentStruction(ConfigDSLUtil configDSLUtil, StringBuilder builder, VariableHandler.URLStruction struction , Object params, String templateName, String action){
 		if(!struction.hasVars()) {
 
 			return struction.getUrl();
@@ -344,7 +344,7 @@ public class ESTemplateHelper {
 		}
 		else
 		{
-			esUtil.evalStruction(builder,struction,params,templateName);
+			configDSLUtil.evalStruction(builder,struction,params,templateName);
 			return builder.toString();
 		}
 	}

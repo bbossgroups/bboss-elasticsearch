@@ -15,6 +15,7 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.LinkConfigFile;
 import org.frameworkset.spi.assemble.Pro;
@@ -32,12 +33,15 @@ import org.slf4j.LoggerFactory;
  */
 public class ESSOAProviderParser  extends ProviderParser {
 	private static Logger logger = LoggerFactory.getLogger(ESSOAProviderParser.class);
-	public ESSOAProviderParser(BaseApplicationContext applicationContext, String file, LinkConfigFile linkfile) {
+	private ConfigHolder configHolder;
+	public ESSOAProviderParser(ConfigHolder configHolder,BaseApplicationContext applicationContext, String file, LinkConfigFile linkfile) {
 		super(applicationContext, file, linkfile);
+		this.configHolder = configHolder;
 	}
 
-	public ESSOAProviderParser(BaseApplicationContext applicationContext) {
+	public ESSOAProviderParser(ConfigHolder configHolder,BaseApplicationContext applicationContext) {
 		super(applicationContext);
+		this.configHolder = configHolder;
 	}
 
 //	@Override
@@ -66,7 +70,7 @@ public class ESSOAProviderParser  extends ProviderParser {
 			}
 			else
 			{
-				ESUtil.ESRef ref = new ESUtil.ESRef(templateName,templateFile,pro.getName(),applicationContext.getBaseDir());
+				ConfigDSLUtil.ESRef ref = new ConfigDSLUtil.ESRef(configHolder,templateName,templateFile,pro.getName(),applicationContext.getBaseDir());
 				return ref.getTemplate();
 
 			}

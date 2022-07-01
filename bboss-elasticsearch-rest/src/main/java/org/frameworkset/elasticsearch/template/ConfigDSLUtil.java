@@ -20,13 +20,12 @@ import bboss.org.apache.velocity.VelocityContext;
 import com.frameworkset.util.*;
 import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.CustomCharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.soa.BBossStringWriter;
-import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Param;
 import org.frameworkset.util.ClassUtil;
 import org.frameworkset.util.annotations.DateFormateMeta;
@@ -57,10 +56,10 @@ import java.util.*;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESUtil {
+public class ConfigDSLUtil {
 	protected TemplateContainer templatecontext;
-	private static Logger log = LoggerFactory.getLogger(ESUtil.class);
-	protected static Map<String,ESUtil> esutils = new HashMap<String,ESUtil>(); 
+	private static Logger log = LoggerFactory.getLogger(ConfigDSLUtil.class);
+
 	protected static long refresh_interval = 5000;
 	public static final int defaultPerKeyDSLStructionCacheSize = 2000;
 	public static final boolean defaultAlwaysCacheDslStruction = false;
@@ -74,6 +73,8 @@ public class ESUtil {
 	protected String dslMappingDir;
 	protected String realTemplateFile;
 	protected boolean destroyed = false;
+//	protected  Map<String,ESUtil> esutils;
+	protected ConfigHolder configHolder;
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
@@ -610,14 +611,16 @@ public class ESUtil {
 	public static class ESRef
 	{
 		private String dslMappingDir;
-		public ESRef(String esname, String templatefile, String name,String dslMappingDir) {
+		private ConfigHolder configHolder;
+		public ESRef(ConfigHolder configHolder,String esname, String templatefile, String name,String dslMappingDir) {
 			super();
+			this.configHolder = configHolder;
 			this.esname = esname;
 			this.templatefile = templatefile;
 			this.name = name;
 			this. dslMappingDir = dslMappingDir;
 		}
-		private ESUtil esutil;
+		private ConfigDSLUtil configDSLUtil;
 		private String esname;
 		private String templatefile;
 		private String name;
@@ -632,32 +635,32 @@ public class ESUtil {
 		}
 		public ESInfo getESInfo()
 		{
-			if(esutil == null)
+			if(configDSLUtil == null)
 			{
 				init();
 			}
-			return this.esutil.getESInfo(esname);
+			return this.configDSLUtil.getESInfo(esname);
 		}
 		private synchronized void init()
 		{
-			if(esutil == null)
+			if(configDSLUtil == null)
 			{
-				this.esutil = ESUtil.getInstance(dslMappingDir,templatefile);
+				this.configDSLUtil = configHolder.getConfigDSLUtil(dslMappingDir,templatefile);
 			}
 		}
 		public String getTemplate() {
-			if(esutil == null)
+			if(configDSLUtil == null)
 			{
 				init();
 			}
-			return this.esutil.getTemplate(esname);
+			return this.configDSLUtil.getTemplate(esname);
 		}
 		public String getTemplate( Map variablevalues) {
-			if(esutil == null)
+			if(configDSLUtil == null)
 			{
 				init();
 			}
-			return this.esutil.getTemplate( esname, variablevalues);
+			return this.configDSLUtil.getTemplate( esname, variablevalues);
 		}
 		
 	}
@@ -674,7 +677,7 @@ public class ESUtil {
 //	private Map<String,SQLTemplate> sqlVelocityTemplates;
 //	
 	
-	static DaemonThread damon = null;
+//	static DaemonThread damon = null;
 
 	/**
 	 * Returns a string whose value is this string, with any leading and trailing
@@ -798,9 +801,9 @@ public class ESUtil {
 							boolean istpl = pro.getVtpl() != null? pro.getVtpl():true;//pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
 							boolean multiparser = pro.getMultiparser() != null? pro.getMultiparser():istpl;//pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
 							ESTemplate sqltpl = null;
-							value = ESUtil.ltrim(value);
+							value = ConfigDSLUtil.ltrim(value);
 							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro, cache);
-							sqlinfo.setEsUtil(this);
+							sqlinfo.setConfigDSLUtil(this);
 							if(istpl)
 							{
 								sqltpl = new ESTemplate(sqlinfo);
@@ -835,7 +838,7 @@ public class ESUtil {
 					}
 					else
 					{
-						esrefs.put(key, new ESRef(templateName,templateFile,key,dslMappingDir));
+						esrefs.put(key, new ESRef(configHolder,templateName,templateFile,key,dslMappingDir));
 						hasrefs = true;
 					}
 				}
@@ -850,7 +853,7 @@ public class ESUtil {
 		return this.hasrefs;
 	}
 	
-	void _destroy()
+	public void _destroy()
 	{
 		destroyed = true;
 		if(esInfos != null)
@@ -922,10 +925,10 @@ public class ESUtil {
 		
 	}
 	 
-	static class ResourceTempateRefresh implements ResourceInitial
+	public static class ResourceTempateRefresh implements ResourceInitial
 	{
-		private ESUtil sqlutil ;
-		public ResourceTempateRefresh(ESUtil sqlutil)
+		private ConfigDSLUtil sqlutil ;
+		public ResourceTempateRefresh(ConfigDSLUtil sqlutil)
 		{
 			this.sqlutil = sqlutil;
 		}
@@ -935,150 +938,155 @@ public class ESUtil {
 
 
 	}
-	
-	public static void stopmonitor()
-	{
-		try {
-			if(ESUtil.damon != null)
-			{
-				ESUtil.damon.stopped();
-				damon = null;
-			}
-		} catch (Throwable e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-		}
-	}
+//
+//	public static void stopmonitor()
+//	{
+//		try {
+//			if(ESUtil.damon != null)
+//			{
+//				ESUtil.damon.stopped();
+//				damon = null;
+//			}
+//		} catch (Throwable e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+//		}
+//	}
 	
 	public String getTemplateFile()
 	{
 		return this.templatecontext.getNamespace();
 		
 	}
-	static
-	{
-		BaseApplicationContext.addShutdownHook(new Runnable(){
-
-			public void run() {
-				ESUtil.stopmonitor();
-				destory();
-				 
-			}});
-	}
-	private static Object lock = new Object();
-	private void checkESUtil(){
-		
-		refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
-		if(refresh_interval > 0)
-		{
-			if(damon == null)
-			{
-				synchronized(lock)
-				{
-					if(damon == null)
-					{
-						damon = new DaemonThread(refresh_interval,"ElasticSearch DSL Template Refresh Worker");
-						damon.start();
-						
-					}
-				}
-			}
-			templatecontext.monitor(damon,new ResourceTempateRefresh(this));
-//			damon.addFile(fileUrl,templateNamespace, new ResourceTempateRefresh(sqlutil));
-		}
-		else{
-			log.debug("ElasticSearch DSL Template Refresh Interval:"+refresh_interval+",ignore hotload DSL Template["+templatecontext.getNamespace()+"]");
-		}
-		
-	}
-
-	private ESUtil(String dslMappingDir,String templatefile) {
+//	static
+//	{
+//		BaseApplicationContext.addShutdownHook(new Runnable(){
+//
+//			public void run() {
+//				ESUtil.stopmonitor();
+//				destory();
+//
+//			}});
+//	}
+//	private static Object lock = new Object();
+//	private void checkESUtil(){
+//
+//		refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
+//		if(refresh_interval > 0)
+//		{
+//			if(damon == null)
+//			{
+//				synchronized(lock)
+//				{
+//					if(damon == null)
+//					{
+//						damon = new DaemonThread(refresh_interval,"ElasticSearch DSL Template Refresh Worker");
+//						damon.start();
+//
+//					}
+//				}
+//			}
+//			templatecontext.monitor(damon,new ResourceTempateRefresh(this));
+////			damon.addFile(fileUrl,templateNamespace, new ResourceTempateRefresh(sqlutil));
+//		}
+//		else{
+//			log.debug("ElasticSearch DSL Template Refresh Interval:"+refresh_interval+",ignore hotload DSL Template["+templatecontext.getNamespace()+"]");
+//		}
+//
+//	}
+	public ConfigDSLUtil(ConfigHolder configHolder, String dslMappingDir, String templatefile) {
+		this.configHolder = configHolder;
+//		this.esutils = esutils;
 		this.templateFile = templatefile;
 		this.dslMappingDir = dslMappingDir;
-
-		this.templatecontext = new AOPTemplateContainerImpl(dslMappingDir,new ESSOAFileApplicationContext(dslMappingDir,templatefile));
+		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(configHolder,dslMappingDir,templatefile);
+		essoaFileApplicationContext.initProviderManager();
+		this.templatecontext = new AOPTemplateContainerImpl(configHolder,dslMappingDir,essoaFileApplicationContext);
 		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
 		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
 		this.realTemplateFile = this.templatecontext.getNamespace();//.getConfigfile();
 		this.trimValues();
-		checkESUtil();
+//		checkESUtil();
 		
  
 	}
 
-	private ESUtil(TemplateContainer templateContainer) {
+	public ConfigDSLUtil(ConfigHolder configHolder, TemplateContainer templateContainer) {
 //		this.templateFile = templatefile;
+//		this.esutils = esutils;
+		this.configHolder = configHolder;
 		this.templatecontext = templateContainer;//new AOPTemplateContainerImpl(this,new ESSOAFileApplicationContext(templatefile));
 		this.perKeyDSLStructionCacheSize = templatecontext.getPerKeyDSLStructionCacheSize();//("perKeyDSLStructionCacheSize",ESUtil.defaultPerKeyDSLStructionCacheSize);
 		this.alwaysCacheDslStruction  = templatecontext.isAlwaysCacheDslStruction();//getBooleanProperty("alwaysCacheDslStruction",ESUtil.defaultAlwaysCacheDslStruction);
 		templateCache = new ESTemplateCache(perKeyDSLStructionCacheSize,alwaysCacheDslStruction);
 		this.realTemplateFile = this.templatecontext.getNamespace();//.getConfigfile();
 		this.trimValues();
-		checkESUtil();
+//		checkESUtil();
 
 
 	}
 
 
-
-	public static ESUtil getInstance(TemplateContainer templateContainer) {
-		String namespace = templateContainer.getNamespace();
-		ESUtil sqlUtil = esutils.get(namespace);
-		if(sqlUtil != null)
-			return sqlUtil;
-		synchronized(esutils)
-		{
-			sqlUtil = esutils.get(namespace);
-			if(sqlUtil != null)
-				return sqlUtil;
-			sqlUtil = new ESUtil(templateContainer);
-
-			esutils.put(namespace, sqlUtil);
-
-		}
-
-		return sqlUtil;
-	}
-
-
-	public static ESUtil getInstance( String templateFile){
-		return getInstance(ElasticSearchHelper.getDslfileMappingDir(), templateFile);
-	}
-	public static ESUtil getInstance(String dslMappingDir, String templateFile) {
-		
-		ESUtil sqlUtil = esutils.get(templateFile);
-		if(sqlUtil != null)
-			return sqlUtil;
-		synchronized(esutils)
-		{
-			sqlUtil = esutils.get(templateFile);
-			if(sqlUtil != null)
-				return sqlUtil;
-			sqlUtil = new ESUtil(  dslMappingDir,templateFile);
-			
-			esutils.put(templateFile, sqlUtil);
-			
-		}
-		
-		return sqlUtil;
-	}
+//
+//	public static ESUtil getInstance(ConfigHolder configHolder,TemplateContainer templateContainer) {
+//		return configHolder.getESUtil(templateContainer);
+////		String namespace = templateContainer.getNamespace();
+////		ESUtil sqlUtil = esutils.get(namespace);
+////		if(sqlUtil != null)
+////			return sqlUtil;
+////		synchronized(esutils)
+////		{
+////			sqlUtil = esutils.get(namespace);
+////			if(sqlUtil != null)
+////				return sqlUtil;
+////			sqlUtil = new ESUtil(configHolder,templateContainer);
+////
+////			esutils.put(namespace, sqlUtil);
+////
+////		}
+////
+////		return sqlUtil;
+//	}
+//
+//
+//	public static ESUtil getInstance(ConfigHolder configHolder , String templateFile){
+//		return configHolder.getESUtil(ElasticSearchHelper.getDslfileMappingDir(), templateFile);
+//	}
+//	public static ESUtil getInstance(ConfigHolder configHolder , String dslMappingDir, String templateFile) {
+//		ESUtil sqlUtil = configHolder.getESUtil(dslMappingDir,templateFile);
+////		ESUtil sqlUtil = esutils.get(templateFile);
+////		if(sqlUtil != null)
+////			return sqlUtil;
+////		synchronized(esutils)
+////		{
+////			sqlUtil = esutils.get(templateFile);
+////			if(sqlUtil != null)
+////				return sqlUtil;
+////			sqlUtil = new ESUtil(  esutils,dslMappingDir,templateFile);
+////
+////			esutils.put(templateFile, sqlUtil);
+////
+////		}
+////
+//		return sqlUtil;
+//	}
 	
-	static void destory()
-	{
-		if(esutils != null)
-		{
-			Iterator<Map.Entry<String,ESUtil>> it = esutils.entrySet().iterator();
-			while(it.hasNext())
-			{
-				Map.Entry<String,ESUtil> entry = it.next();
-				entry.getValue()._destroy();
-			}
-			esutils.clear();
-			esutils = null;
-		}
-	}
-	
+//	static void destory()
+//	{
+//		if(esutils != null)
+//		{
+//			Iterator<Map.Entry<String,ESUtil>> it = esutils.entrySet().iterator();
+//			while(it.hasNext())
+//			{
+//				Map.Entry<String,ESUtil> entry = it.next();
+//				entry.getValue()._destroy();
+//			}
+//			esutils.clear();
+//			esutils = null;
+//		}
+//	}
+
 	private ESInfo getReferESInfo( String templateName)
 	{
 		if(assertDestoried())
@@ -1293,15 +1301,15 @@ public class ESUtil {
 	public long getRefresh_interval() {
 		return refresh_interval;
 	}
-	
-	public static List<String> getTemplateFiles()
-	{
-		Iterator<String> it = esutils.keySet().iterator();
-		List<String> files = new ArrayList<String>();
-		while(it.hasNext())
-			files.add(it.next());
-		return files;
-	}
+//
+//	public static List<String> getTemplateFiles()
+//	{
+//		Iterator<String> it = esutils.keySet().iterator();
+//		List<String> files = new ArrayList<String>();
+//		while(it.hasNext())
+//			files.add(it.next());
+//		return files;
+//	}
 
 
  

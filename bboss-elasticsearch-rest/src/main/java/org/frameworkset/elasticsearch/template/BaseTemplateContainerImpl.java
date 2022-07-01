@@ -18,6 +18,7 @@ package org.frameworkset.elasticsearch.template;
 import com.frameworkset.daemon.ResourceNameSpace;
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.assemble.AOPValueHandler;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.assemble.ValueContainer;
@@ -38,10 +39,15 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 	private static Logger logger = LoggerFactory.getLogger(BaseTemplateContainerImpl.class);
 	protected String namespace;
 	protected Map<String,TemplateMeta> templateMetas;
+	protected ConfigHolder configHolder;
 	public BaseTemplateContainerImpl(String namespace) {
 		this.namespace = namespace;
 	}
 
+	public synchronized void setConfigHolder(ConfigHolder configHolder) {
+		if(this.configHolder == null)
+			this.configHolder = configHolder;
+	}
 
 	public String getNamespace(){
 		return namespace;
@@ -86,7 +92,7 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 			//对dsl模板进行宏变量替换和特殊字符处理
 			Iterator<Map.Entry<String, TemplateMeta>> iterator = templateMetaMap.entrySet().iterator();
 			final PropertiesContainer configProperties = new PropertiesContainer();
-			final ESServiceProviderManager esServiceProviderManager = new ESServiceProviderManager();
+			final ESServiceProviderManager esServiceProviderManager = new ESServiceProviderManager(configHolder);
 			final ValueContainer valueContainer = new ValueContainer(){
 				@Override
 				public String getMacroVariableValue(List<String> parentLinks,String text) {
@@ -165,14 +171,14 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 	}
 
 	public int getPerKeyDSLStructionCacheSize(){
-		return ESUtil.defaultPerKeyDSLStructionCacheSize;
+		return ConfigDSLUtil.defaultPerKeyDSLStructionCacheSize;
 	}
 
 	public boolean isAlwaysCacheDslStruction(){
-		return ESUtil.defaultAlwaysCacheDslStruction;
+		return ConfigDSLUtil.defaultAlwaysCacheDslStruction;
 	}
 
-	public synchronized void reinit(ESUtil esUtil){
+	public synchronized void reinit(ConfigDSLUtil configDSLUtil){
 		try {
 			Map<String, TemplateMeta> temp = this._loadTemplateMetas(namespace);
 			if(temp != null){
@@ -182,7 +188,7 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 				templateMetas.clear();
 			}
 //			esUtil.clearTemplateDatas();
-			esUtil.buildTemplateDatas(this);
+			configDSLUtil.buildTemplateDatas(this);
 		}
 		catch (Exception e){
 			logger.warn("reinit namespace"+namespace+" failed:",e);

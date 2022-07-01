@@ -44,7 +44,7 @@ public interface TemplateContainer {
 
 	void destroy(boolean b);
 
-	void reinit(ESUtil esUtil);
+	void reinit(ConfigDSLUtil configDSLUtil);
 
 	/**
 	 * 命名空间对应的全局每一个template对应的dsl语法缓冲区大小

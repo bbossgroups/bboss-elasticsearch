@@ -15,6 +15,7 @@
  */
 package org.frameworkset.elasticsearch.template;
 
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;
@@ -35,19 +36,19 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 	 */
 	public static String escapeRNPre = "#\"\"\"";
 	public static String escapeRNEnd = "\"\"\"";
-
-	public ESServiceProviderManager(BaseApplicationContext applicationContext, String charset) {
+	private ConfigHolder configHolder;
+	public ESServiceProviderManager(ConfigHolder configHolder, BaseApplicationContext applicationContext, String charset) {
 		super(applicationContext, charset);
-		// TODO Auto-generated constructor stub
+		this.configHolder = configHolder;
 	}
-	public ESServiceProviderManager() {
+	public ESServiceProviderManager(ConfigHolder configHolder) {
 		super(null);
-		// TODO Auto-generated constructor stub
+		this.configHolder = configHolder;
 	}
 
-	public ESServiceProviderManager(BaseApplicationContext applicationContext) {
+	public ESServiceProviderManager(ConfigHolder configHolder,BaseApplicationContext applicationContext) {
 		super(applicationContext);
-		// TODO Auto-generated constructor stub
+		this.configHolder = configHolder;
 	}
 	@Override
 	public String getVarpre(){
@@ -96,12 +97,12 @@ public class ESServiceProviderManager extends ServiceProviderManager {
 
 	protected ProviderParser _buildProviderParser()
 	{
-		return new ESSOAProviderParser(this.getApplicationContext());
+		return new ESSOAProviderParser(configHolder,this.getApplicationContext());
 	}
 
 	protected ProviderParser _buildProviderParser(String url,LinkConfigFile linkconfigFile)
 	{
-		return new ESSOAProviderParser(this.getApplicationContext(),url, linkconfigFile);
+		return new ESSOAProviderParser(configHolder,this.getApplicationContext(),url, linkconfigFile);
 	}
 
 

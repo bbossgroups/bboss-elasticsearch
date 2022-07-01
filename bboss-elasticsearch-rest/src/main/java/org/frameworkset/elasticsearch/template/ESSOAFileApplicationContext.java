@@ -15,6 +15,7 @@
  */
 package org.frameworkset.elasticsearch.template;
 
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.SOAFileApplicationContext;
 import org.frameworkset.spi.assemble.ServiceProviderManager;
 
@@ -22,30 +23,31 @@ import java.net.URL;
 
 public class ESSOAFileApplicationContext extends SOAFileApplicationContext {
 
-	public ESSOAFileApplicationContext(String baseDir,String file) {
-		super(baseDir,file);
-		// TODO Auto-generated constructor stub
+	private ConfigHolder configHolder;
+	public ESSOAFileApplicationContext(ConfigHolder configHolder, String baseDir, String file) {
+		super(baseDir,file,false);
+		this.configHolder = configHolder;
 	}
 
-	public ESSOAFileApplicationContext(String baseDir,URL file, String path) {
+	public ESSOAFileApplicationContext(ConfigHolder configHolder,String baseDir,URL file, String path) {
 		super(baseDir,file, path);
-		// TODO Auto-generated constructor stub
+		this.configHolder = configHolder;
 	}
 
-	public ESSOAFileApplicationContext(String baseDir,String file, String charset) {
+	public ESSOAFileApplicationContext(ConfigHolder configHolder,String baseDir,String file, String charset) {
 		super(baseDir,file, charset);
-		// TODO Auto-generated constructor stub
+		this.configHolder = configHolder;
 	}
 	
 	@Override
 	protected ServiceProviderManager _getServiceProviderManager() {
 		// TODO Auto-generated method stub
-		return new ESServiceProviderManager(this);
+		return new ESServiceProviderManager(configHolder,this);
 	}
 	
 	protected ServiceProviderManager _getServiceProviderManagerWithCharset(String charset)
 	{
-		return new ESServiceProviderManager(this,charset); 
+		return new ESServiceProviderManager(configHolder,this,charset);
 	}
 
 }

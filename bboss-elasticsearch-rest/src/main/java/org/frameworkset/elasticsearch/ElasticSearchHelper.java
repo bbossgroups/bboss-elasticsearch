@@ -2,6 +2,7 @@ package org.frameworkset.elasticsearch;
 
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.template.AOPTemplateContainerImpl;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.elasticsearch.template.ESSOAFileApplicationContext;
@@ -28,6 +29,21 @@ public class ElasticSearchHelper {
 	private static long dslfileRefreshInterval = 5000;
 	private static String dslfileMappingDir;
 	private static Method bootMethod;
+	public final static ConfigHolder configHolder = new ConfigHolder("Elasticsearch");
+
+	static
+	{
+		ShutdownUtil.addShutdownHook(new Runnable(){
+
+			public void run() {
+//				ESUtil.stopmonitor();
+//				destory(esutils);
+				configHolder.stopmonitor();
+				configHolder.destory();
+
+			}});
+	}
+
 	static {
 		try {
 			Class booterClass = Class.forName("org.frameworkset.elasticsearch.boot.ElasticSearchConfigBoot");
@@ -604,8 +620,15 @@ public class ElasticSearchHelper {
 
 	public static AOPTemplateContainerImpl getAOPTemplateContainerImpl(String dslpath){
 		init();
-		AOPTemplateContainerImpl aopTemplateContainer = new AOPTemplateContainerImpl(dslfileMappingDir,new ESSOAFileApplicationContext(dslfileMappingDir,dslpath));
+		ESSOAFileApplicationContext essoaFileApplicationContext = new ESSOAFileApplicationContext(configHolder,dslfileMappingDir,dslpath);
+		essoaFileApplicationContext.initProviderManager();
+		AOPTemplateContainerImpl aopTemplateContainer = new AOPTemplateContainerImpl(configHolder,dslfileMappingDir,essoaFileApplicationContext);
 		return aopTemplateContainer;
+	}
+	public static List<String> getTemplateFiles()
+	{
+
+		return configHolder.getTemplateFiles();
 	}
 	/**
 	 * 加载templateContainer管理的query dsl配置，在默认的es服务器上执行所有操作
@@ -651,6 +674,9 @@ public class ElasticSearchHelper {
 	 */
 	public static void addHttpServer(List<String> hosts){
 
+	}
+	public static ConfigHolder getConfigHolder(){
+		return configHolder;
 	}
 
 }

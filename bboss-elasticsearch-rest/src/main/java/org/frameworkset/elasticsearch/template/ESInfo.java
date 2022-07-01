@@ -9,7 +9,7 @@ public class ESInfo {
 	private String templateName;
 	private String template;
 	private boolean multiparser;
-	private ESUtil esUtil;
+	private ConfigDSLUtil configDSLUtil;
 	private boolean cache;
 	public ESInfo(String templateName, String template, boolean istpl, boolean multiparser, TemplateMeta templatePro, boolean cache) {
 		this.template = template;
@@ -20,7 +20,7 @@ public class ESInfo {
 		this.cache = cache;
 	}
 	public String getDslFile(){
-		return this.esUtil.templateFile;
+		return this.configDSLUtil.templateFile;
 	}
 	public String getTemplate() {
 		return template;
@@ -58,11 +58,11 @@ public class ESInfo {
 	public void setMultiparser(boolean multiparser) {
 		this.multiparser = multiparser;
 	}
-	public ESUtil getEsUtil() {
-		return esUtil;
+	public ConfigDSLUtil getConfigDSLUtil() {
+		return configDSLUtil;
 	}
-	public void setEsUtil(ESUtil esUtil) {
-		this.esUtil = esUtil;
+	public void setConfigDSLUtil(ConfigDSLUtil configDSLUtil) {
+		this.configDSLUtil = configDSLUtil;
 	}
 	
 	public boolean equals(Object obj)
@@ -81,7 +81,7 @@ public class ESInfo {
 	}
 	public boolean fromConfig()
 	{
-		return this.esUtil != null && this.esUtil.fromConfig();
+		return this.configDSLUtil != null && this.configDSLUtil.fromConfig();
 	}
 	public int compareTo(ESInfo queryDSL)
 	{
@@ -90,16 +90,16 @@ public class ESInfo {
 	
 	public ESInfo getESInfo(String sqlname)
 	{
-		return this.esUtil.getESInfo( sqlname);
+		return this.configDSLUtil.getESInfo( sqlname);
 	}
 	
 	public String getPlainQueryDSL(String sqlname)
 	{
-		return this.esUtil.getPlainTemplate( sqlname);
+		return this.configDSLUtil.getPlainTemplate( sqlname);
 	}
 
 	public VariableHandler.URLStruction getTemplateStruction(String template){
-		return this.esUtil.getTempateStruction(this,template);
+		return this.configDSLUtil.getTempateStruction(this,template);
 	}
 
 	public int hashCode(){
