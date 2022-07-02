@@ -428,3 +428,17 @@ http服务端实现：一个简单的rest服务（http input插件支持post和p
 
 服务参数实体（接收http输入插件传入的增量条件、数据检索条件）：https://gitee.com/bboss/bboss-site/blob/master/src/org/frameworkset/web/api/ApiBean.java
 
+
+
+# 16 http/https输出插件案例
+
+定时增量同步案例
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/ES2HttpDemo.java
+
+
+
+http服务端实现：一个简单的rest服务（http input输出插件支持post和put两种模式的httpmethod）
+
+服务实现：https://gitee.com/bboss/bboss-site/blob/master/src/org/frameworkset/web/api/HttpApi.java
+
