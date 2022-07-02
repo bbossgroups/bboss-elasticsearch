@@ -399,3 +399,32 @@ https://gitee.com/bboss/springboot-elasticsearch/blob/master/src/main/java/com/e
 作业控制使用参考文档：
 
 https://esdoc.bbossgroups.com/#/bboss-datasyn-control
+
+# 15 http/https输入插件案例
+
+定时增量同步案例
+
+
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESDemo.java
+
+
+
+定时增量分页同步案例
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESPagineDemo.java
+
+
+
+http输入插件数据采集query dsl脚本文件
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/resources/httpdsl.xml
+
+
+
+http服务端实现：一个简单的rest服务（http input插件支持post和put两种模式的httpmethod）
+
+服务实现：https://gitee.com/bboss/bboss-site/blob/master/src/org/frameworkset/web/api/HttpApi.java
+
+服务参数实体（接收http输入插件传入的增量条件、数据检索条件）：https://gitee.com/bboss/bboss-site/blob/master/src/org/frameworkset/web/api/ApiBean.java
+
