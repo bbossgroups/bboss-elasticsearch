@@ -29,7 +29,7 @@ Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据�
 
 2）支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
 
-支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
+支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
 支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
 
@@ -73,13 +73,13 @@ https://gitee.com/bboss/db-elasticsearch-tool
 
 # 1.准备工作
 
-## 1.1 在工程中导入jdbc es maven坐标
+## 1.1 在工程中导入bboss maven坐标
 
 ```xml
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
-<artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-<version>6.6.0</version>
+<artifactId>bboss-datatran-jdbc</artifactId>
+<version>6.7.0</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
