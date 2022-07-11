@@ -1,4 +1,4 @@
-# http/https插件使用指南
+# Http/Https插件使用指南
 
 通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务：
 
@@ -8,7 +8,7 @@
 4. 支持post和put两种http method
 5. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
 
-bboss 输入/输出插件设计到三个主要的作业配置组件：
+bboss 输入/输出插件涉及三个作业配置组件
 
 1. ImportBuilder：数据同步作业构建器，用来进行作业基本配置，包括设置InputConfig、OutputConfig、数据转换处理配置、增量状态管理配置、定时器配置、任务监控配置、任务拦截器配置、并行处理线程池和队列配置、容错配置、提取数据条件配置等
 
@@ -75,6 +75,7 @@ http输入插件采用类似于Elasticsearch rest服务的dsl查询脚本语言�
 ```java
 //创建输入插件Config实例
 HttpInputConfig httpInputConfig = new HttpInputConfig();
+importBuilder.setInputConfig(httpInputConfig);
 ```
 
 
@@ -85,6 +86,7 @@ HttpInputConfig httpInputConfig = new HttpInputConfig();
 | addHttpInputConfig    | 方法    | 添加http服务参数、服务地址、监控检查机制,例如: httpInputConfig.setQueryUrl("/httpservice/getData.api") .addSourceHttpPoolName("http.poolNames","datatran") .addHttpInputConfig("datatran.http.health","/health") .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808") .addHttpInputConfig("datatran.http.timeoutConnection","5000") .addHttpInputConfig("datatran.http.timeoutSocket","50000") .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000") .addHttpInputConfig("datatran.http.maxTotal","200") .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100") .addHttpInputConfig("datatran.http.failAllContinue","true");                                参考文档：https://esdoc.bbossgroups.com/#/httpproxy |
 | addSourceHttpPoolName | 方法    | 添加http服务组属性参数：httpInputConfig.addSourceHttpPoolName("http.poolNames","datatran") |
 | showDsl               | boolean | 控制作业执行时，是否打印查询的dsl脚本，true 打印，false 不打印，默认值false |
+| QueryUrl              | String  | 获取数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpInputConfig.setQueryUrl("/httpservice/getData.api") |
 | dslFile               | String  | querydsl脚本配置文件路径，在classes路径下                    |
 | queryDslName          | String  | querydsl脚本名称，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 | queryDsl              | String  | 直接设置queryDsl脚本，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
@@ -108,14 +110,310 @@ HttpInputConfig httpInputConfig = new HttpInputConfig();
 
 # 3.http输出插件
 
+创建输出组件配置对象：
+
+```java
+HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
+importBuilder.setOutputConfig(httpOutputConfig);
+```
+
+| 属性名称              | 类型   | 说明                                                         |
+| --------------------- | ------ | ------------------------------------------------------------ |
+| targetHttpPool        | String | 目标http连接池服务组名称                                     |
+| serviceUrl            | String | 上报数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpOutputConfig.setServiceUrl("/httpservice/sendData.api") |
+| httpMethod            | String | http请求method，支持两种：put，post                          |
+| lineSeparator         | String | 设置数据记录分行符，默认为回车换行符                         |
+| addTargetHttpPoolName | 方法   | 添加目标http连接池服务组名称httpOutputConfig.addTargetHttpPoolName("http.poolNames","datatran") |
+| addHttpOutputConfig   | 方法   | 添加http服务连接池参数，httpOutputConfig    .addHttpOutputConfig("datatran.http.health","/health")       .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")       .addHttpOutputConfig("datatran.http.timeoutConnection","5000")       .addHttpOutputConfig("datatran.http.timeoutSocket","50000")       .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")       .addHttpOutputConfig("datatran.http.maxTotal","200")       .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")       .addHttpOutputConfig("datatran.http.failAllContinue","true"); |
+
+# 4.数据转换处理
+
+通过设置DataRefactor接口来实现记录级别的数据处理和转换，例如数据类型转换，从原始记录中获取HttpResponse对象，提取http请求头相关信息。 
+
+```java
+importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+				long logTime = context.getLongValue("logTime");
+				context.addFieldValue("logTime",new Date(logTime));
+				long oldLogTime = context.getLongValue("oldLogTime");
+				context.addFieldValue("oldLogTime",new Date(oldLogTime));
+				long oldLogTimeEndTime = context.getLongValue("oldLogTimeEndTime");
+				context.addFieldValue("oldLogTimeEndTime",new Date(oldLogTimeEndTime));
+//				Date date = context.getDateValue("LOG_OPERTIME");
+
+				HttpRecord record = (HttpRecord) context.getCurrentRecord();
+				HttpResponse response = record.getResponse();//可以从httpresponse中获取head之类的信息
+				context.addFieldValue("collecttime",new Date());//添加采集时间
+
+			}
+		});
+```
+
+# 5.案例
+
+## 5.1 http输入插件案例
+
+### 案例1 调用http服务获取数据，写入elasticsearch
+
+query dsl维护在配置文件httpdsl.xml中，QueryDslName为queryDsl
+
+```java
+ImportBuilder importBuilder = new ImportBuilder() ;
+      importBuilder.setFetchSize(50).setBatchSize(10);
+      HttpInputConfig httpInputConfig = new HttpInputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
 
 
-# 4.案例
+      httpInputConfig.setDslFile("httpdsl.xml")
+            .setQueryDslName("queryDsl")
+            .setQueryUrl("/httpservice/getData.api")
+            .addSourceHttpPoolName("http.poolNames","datatran")
+            .addHttpInputConfig("datatran.http.health","/health")
+            .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808")
+            .addHttpInputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpInputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpInputConfig("datatran.http.maxTotal","200")
+            .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpInputConfig("datatran.http.failAllContinue","true");
 
-## 4.1 http输入插件案例
-
-## 4.2 http输出插件案例
-
+      importBuilder.setInputConfig(httpInputConfig);
+      importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖");
 
 
-## 4.3 案例发布运行
+      ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig.setTargetElasticsearch("default")
+            .setIndex("https2es")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+     
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+     
+      /**
+       * 执行http服务数据导入es作业
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();//执行导入操作
+```
+
+完整的案例地址：
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESDemo.java
+
+### 案例2 调用分页http服务获取数据，写入elasticsearch
+
+query dsl维护在配置文件httpdsl.xml中，QueryDslName为queryPagineDsl
+
+```java
+ImportBuilder importBuilder = new ImportBuilder() ;
+      importBuilder.setFetchSize(50).setBatchSize(10);
+      HttpInputConfig httpInputConfig = new HttpInputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+
+
+      httpInputConfig.setDslFile("httpdsl.xml")
+            .setQueryDslName("queryPagineDsl")
+            .setQueryUrl("/httpservice/getPagineData.api")
+            .setPagine(true)
+            .addSourceHttpPoolName("http.poolNames","datatran")
+            .addHttpInputConfig("datatran.http.health","/health")
+            .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808")
+            .addHttpInputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpInputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpInputConfig("datatran.http.maxTotal","200")
+            .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpInputConfig("datatran.http.failAllContinue","true");
+
+      importBuilder.setInputConfig(httpInputConfig);
+
+      importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖");
+
+      ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig.setTargetElasticsearch("default")
+            .setIndex("httppagein2es")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+  
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+  
+      /**
+       * 执行作业
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();//执行导入操作
+```
+
+完整的案例地址
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESPagineDemo.java
+
+案例对应的query dsl脚本：
+
+```xml
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+   配置数据导入的http服务queryDsl
+ ]]>
+    </description>
+    <property name="queryPagineDsl">
+        <![CDATA[
+        {
+            "logTime":#[logTime],## 传递增量时间起始条件
+            "logTimeEndTime":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间
+            "from":#[httpPagineFrom], ## 如果服务支持分页获取增量或者全量数据，设置分页起始位置
+            "size":#[httpPagineSize],  ## 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值
+            "otherParam": #[otherParam] ## 其他服务参数
+        }
+        ]]></property>
+
+    <property name="queryDsl">
+        <![CDATA[
+        {
+            "logTime":#[logTime],## 传递增量时间起始条件
+            "logTimeEndTime":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间
+            "otherParam": #[otherParam] ## 其他服务参数
+        }
+        ]]></property>
+
+</properties>
+```
+
+### 案例3 基于query dsl脚本从http服务获取数据，写入elasticsearch
+
+```java
+ImportBuilder importBuilder = new ImportBuilder() ;
+      importBuilder.setFetchSize(50).setBatchSize(10);
+      HttpInputConfig httpInputConfig = new HttpInputConfig();
+      //指定导入数据的dsl语句
+     
+      String queryDsl = " {\n" +
+            "            \"logTime\":#[logTime],## 传递增量时间起始条件\n" +
+            "            \"logTimeEndTime\":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间\n" +
+            "            \"otherParam\": #[otherParam] ## 其他服务参数\n" +
+            "        }";
+
+      httpInputConfig.setQueryDsl(queryDsl)
+            .setQueryUrl("/httpservice/getData.api").setShowDsl(true)
+            .addSourceHttpPoolName("http.poolNames","datatran")
+            .addHttpInputConfig("datatran.http.health","/health")
+            .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808")
+            .addHttpInputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpInputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpInputConfig("datatran.http.maxTotal","200")
+            .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpInputConfig("datatran.http.failAllContinue","true");
+
+      importBuilder.setInputConfig(httpInputConfig);
+      importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖");
+
+
+      ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig.setTargetElasticsearch("default")
+            .setIndex("https2esdsl")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+     
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+     
+      /**
+       * 执行作业
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();//执行导入操作
+```
+
+完整的案例地址
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESQueryDslDemo.java
+
+## 5.2 http输出插件案例
+
+从elasticsearch获取数据，推送到http服务
+
+```java
+      ImportBuilder importBuilder = new ImportBuilder() ;
+      importBuilder.setFetchSize(50).setBatchSize(10);
+      ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig();
+      elasticsearchInputConfig.setDslFile("dsl2ndSqlFile.xml")//配置dsl和sql语句的配置文件
+            .setDslName("scrollQuery") //指定从es查询索引文档数据的dsl语句名称，配置在dsl2ndSqlFile.xml中
+            .setScrollLiveTime("10m") //scroll查询的scrollid有效期
+
+//              .setSliceQuery(true)
+//               .setSliceSize(5)
+            .setQueryUrl("https2es/_search") ;//查询索引表demo中的文档数据
+
+//          //添加dsl中需要用到的参数及参数值
+//          importBuilder.addParam("var1","v1")
+//          .addParam("var2","v2")
+//          .addParam("var3","v3");
+
+      importBuilder.setInputConfig(elasticsearchInputConfig);
+      HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+
+
+      httpOutputConfig
+            .setServiceUrl("/httpservice/sendData.api")
+            .setHttpMethod("post")
+            .addTargetHttpPoolName("http.poolNames","datatran")
+            .addHttpOutputConfig("datatran.http.health","/health")
+            .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")
+            .addHttpOutputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpOutputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("datatran.http.maxTotal","200")
+            .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("datatran.http.failAllContinue","true");
+
+      importBuilder.setOutputConfig(httpOutputConfig);
+
+
+      /**
+       * 执行数据库表数据导入es操作
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();//执行导入操作
+```
+
+完整的案例地址：
+
+https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/ES2HttpDemo.java
+
+## 5.3 案例发布运行
+
+案例工程下载：下载到本地目db-elasticsearch-tool
+
+https://gitee.com/bboss/db-elasticsearch-tool
+
+修改application.properties文件中的mainclass为要执行的作业类路径,例如
+
+```properties
+mainclass=org.frameworkset.elasticsearch.imp.http.Http2ESDemo
+```
+
+调整好作业后，执行db-elasticsearch-tool目录下指令，构建和发布作业
+
+windows环境
+
+release.bat
+
+linux环境
+
+release.sh
+
+完整的作业发布视频教程：
+
+https://www.bilibili.com/video/BV1xf4y1Z7xu
+

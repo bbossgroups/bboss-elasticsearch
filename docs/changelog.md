@@ -73,6 +73,8 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 
 2. 数据同步改进：完善作业监控输出日志信息，完善es 数据采集dsl扩展参数管理机制，提升到所有插件的参数配置
 3. 数据同步架构重构：去掉所有源到目标builder，统一使用ImportBuilder构建器+InputConfig+OutputConfig来构建数据同步作业
+4. 一次性作业支持延时时间配置和开始时间配置
+5. jdk timer作业支持设置作业运行截止时间，截止时间对quartz和xxl-job调度作业不起作用,对kafka作业、文件采集探针不起作用
 
 # v6.6.0 功能改进
 1. 数据同步改造：ExcelFileOupputConfig增加flushRows属性，设置excel临时文件记录大小，达到flushRows时，将内存中的excel记录写入临时文件，默认5000条记录

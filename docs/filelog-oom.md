@@ -19,7 +19,7 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
 ```java
 package org.frameworkset.elasticsearch.imp;
 
-import org.frameworkset.elasticsearch.util.PropertiesUtil;
+import org.frameworkset.spi.assemble.PropertiesUtil;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
 import org.frameworkset.tran.context.Context;

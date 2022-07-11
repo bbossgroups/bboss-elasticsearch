@@ -57,7 +57,7 @@ bboss kafka数据同步插件gradle依赖包
   
 ```java
        api(
-				[group: 'com.bbossgroups.plugins', name: 'bboss-elasticsearch-rest-kafka2x', version: "${bboss_es_version}", transitive: true],
+				[group: 'com.bbossgroups.plugins', name: 'bboss-datatran-kafka2x', version: "${bboss_es_version}", transitive: true],
 		)
 		api (
 				[group: 'org.apache.kafka', name: 'kafka_2.12', version: "${kafka2x}", transitive: true],

@@ -16,8 +16,6 @@ package org.frameworkset.elasticsearch.util;
  */
 
 import org.frameworkset.spi.assemble.PropertiesContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Description: 获取默认属性配置容器</p>
@@ -28,21 +26,9 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public class PropertiesUtil {
-	private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
-	private static PropertiesContainer propertiesContainer;
 	public static PropertiesContainer getPropertiesContainer(){
-		if(propertiesContainer != null){
-			return propertiesContainer;
-		}
-		synchronized (PropertiesUtil.class) {
-			if(propertiesContainer != null){
-				return propertiesContainer;
-			}
-			PropertiesContainer propertiesContainer = new PropertiesContainer();
-			propertiesContainer.addConfigPropertiesFile("application.properties");
-			PropertiesUtil.propertiesContainer =  propertiesContainer;
-		}
-		return propertiesContainer;
+
+		return org.frameworkset.spi.assemble.PropertiesUtil.getPropertiesContainer();
 	}
 
 }

@@ -71,6 +71,83 @@ https://github.com/bbossgroups/db-elasticsearch-tool
 
 https://gitee.com/bboss/db-elasticsearch-tool
 
+# 插件清单
+
+## 输入插件
+
+| 插件                                                         | 插码名称              | 说明                                                         |
+| ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |
+| [DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java) | DB数据库输入插件      | 配置DB数据源、查询sql、查询sql文件路径及文件名称,支持各种关系数据库，hive |
+| [ElasticsearchInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/input/ElasticsearchInputConfig.java) | elasticsearch输出插件 | 配置elasticsearch数据源、queryDsl、queryDsl配置文件路径等    |
+| [HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java) | Http输入插件          | 配置http服务参数、服务地址、服务查询参数、ssl证书等          |
+| [FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) | 文件输入插件          | 对应文本类数据文件数据采集配置，源文件目录、Ftp/sftp配置     |
+| [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java) | excel文件输入插件     | excel文件采集映射配置（忽略行数、excel列号与目标字段名称映射、列默认值配置），包括excel源文件目录、Ftp/sftp配置 |
+| [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件         | hbase连接配置、查询表配置、查询条件配置                      |
+| [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件       | mongodb连接配置、查询表配置、查询条件配置                    |
+| [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件         | kafka消费端参数配置、主题配置、客户端消费组配置等            |
+| [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件   | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等      |
+
+## 输出插件
+
+| 插件                                                         | 插码名称              | 说明                                                         |
+| ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |
+| [DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java) | 数据库输出插件        | 数据库地址配置、连接池配置、输出sql、更新sql、deletesql配置、sql文件路径配置 |
+| [ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java) | Elasticsearch输出插件 | elasticsearch地址配置、http连接池配置、账号口令配置、elasticsearch连接参数配置、Elasticsearch输出表配置 |
+| [HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java) | http/https输出插件    | http输出服务参数配置、连接参数配置、监控检查机制配置、ssl证书配置、输出服务地址配置 |
+| [FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java) | 文本文件输出插件      | 文本文件输出配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、记录标题行配置 |
+| [ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java) | excel文件输出插件     | Excel文件输出配置、列号与字段映射配置、标题配置、sheet配置、列标题配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置 |
+| [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件         | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
+| [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件   | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
+| [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件        | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
+| [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件             | 调试作业使用，将采集的数据直接输出到控制台                   |
+
+## 作业基础配置
+
+```java
+创建一个作业构建器
+ImportBuilder importBuilder = new ImportBuilder() ;
+```
+
+| 属性名称                | 类型                | 说明                                                         |
+| ----------------------- | ------------------- | ------------------------------------------------------------ |
+| FetchSize               | int                 | 按批获取数据记录数大小，importBuilder.setFetchSize(5000)     |
+| BatchSize               | int                 | 按批输出数据记录数待续，importBuilder.setBatchSize(1000)     |
+| InputConfig             | InputConfig         | 设置输入插件配置，importBuilder.setInputConfig(httpInputConfig); |
+| OutputConfig            | OutputConfig        | 设置输出插件配置，importBuilder.setOutputConfig(elasticsearchOutputConfig); |
+| addParam                | 方法                | 为查询类作业添加额外的查询条件参数importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖"); |
+| UseJavaName             | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
+| UseLowcase              | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
+| PrintTaskLog            | boolean             | 可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false |
+| FixedRate               | boolean             | 参考jdk timer task文档对fixedRate的说明                      |
+| DeyLay                  | long                | 任务延迟执行deylay毫秒后执行                                 |
+| Period                  | long                | 每隔period毫秒执行，如果不设置，只执行一次                   |
+| ScheduleDate            | date                | 指定任务开始执行时间：日期                                   |
+| addCallInterceptor      | CallInterceptor     | 设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器   |
+| LastValueColumn         | String              | 指定数字增量查询字段                                         |
+| FromFirst               | boolean             | false 如果作业停了，作业重启后从上次截止位置开始采集数据，true 如果作业停了，作业重启后，重新开始采集数据 |
+| StatusDbname            | String              | 设置增量状态数据源名称                                       |
+| LastValueStorePath      | String              | 记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样 |
+| LastValueStoreTableName | String              | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
+| LastValueType           | int                 | 指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型，ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型 |
+| IncreamentEndOffset     | int                 | 单位：秒，日期类型增量导入，可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。 |
+| addFieldMapping         | 方法                | 手动设置字段名称映射，将源字段名称映射为目标字段名称importBuilder.addFieldMapping("document_id","docId") |
+| addIgnoreFieldMapping   | 方法                | 添加忽略字段，importBuilder.addIgnoreFieldMapping("channel_id"); |
+| addFieldValue           | 方法                | 添加全局字段和值，为每条记录添加额外的字段和值，可以为基本数据类型，也可以是复杂的对象mportBuilder.addFieldValue("testF1","f1value"); |
+| DataRefactor            | DataRefactor        | 通过DataRefactor，对数据记录进行数据转换、清洗、加工操作，亦可以对数据进行记录级别的处理，比如添加字段、去除字段、忽略记录、类型转换等 |
+| Parallel                | boolean             | 设置为多线程并行批量导入,false串行 true并行                  |
+| Queue                   | int                 | 设置批量导入线程池等待队列长度                               |
+| ThreadCount             | int                 | 设置批量导入线程池工作线程数量                               |
+| ContinueOnError         | boolean             | 任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行 |
+| Asyn                    | boolean             | true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回 |
+| ExportResultHandler     | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
+| builder                 | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
+
+## 插件案例清单
+
+https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
+
+
+
 # 1.准备工作
 
 ## 1.1 在工程中导入bboss maven坐标
@@ -1925,7 +2002,7 @@ dropIndice=false
 在代码中获取参数dropIndice方法：
 
 ```java
-import org.frameworkset.elasticsearch.util.PropertiesUtil
+import org.frameworkset.spi.assemble.PropertiesUtil
 ```
 
 ```java
