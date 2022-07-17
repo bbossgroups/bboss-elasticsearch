@@ -35,16 +35,37 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 安装后gradle后，我们就可以利用gradle来构建Elasticsearch Bboss的源码了。
 
-首先从github下载两个Elasticsearch bboss的源码工程：
+从以下地址依次下载和构建bboss相关源码工程：
 
-https://github.com/bbossgroups/bboss-elasticsearch
+https://gitee.com/bboss/bboss
 
-https://github.com/bbossgroups/bboss-elastic-tran
+https://gitee.com/bboss/bboss-data
 
-然后分别按照下面的顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
+https://gitee.com/bboss/bboss-http
+
+https://gitee.com/bboss/bboss-plugins
+
+https://gitee.com/bboss/bboss-elastic
+
+https://gitee.com/bboss/bboss-elastic-tran  
+
+然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
 
 ```shell
-cd bboss-elasticsearch
+cd bboss
+gradle publishToMavenLocal
+
+cd bboss-data
+gradle publishToMavenLocal
+
+cd bboss-http
+gradle publishToMavenLocal
+
+cd bboss-plugins
+gradle publishToMavenLocal
+
+
+cd bboss-elastic
 gradle publishToMavenLocal
 
 cd bboss-elastic-tran

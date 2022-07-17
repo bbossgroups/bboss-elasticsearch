@@ -476,11 +476,13 @@ public class ElasticSearchHelper {
 		}
 		referElasticSearchMap.remove(esname);
 	}
-	public static synchronized void stopElasticsearchs(List<String> esnames){
+	public static synchronized void stopElasticsearchs(Map<String,Object> esnames){
 		if(esnames == null || esnames.size() == 0)
 			return;
-		for(String esname:esnames){
-			stopElasticsearch( esname);
+		Iterator<Map.Entry<String,Object>> iterator = esnames.entrySet().iterator();
+		while (iterator.hasNext()){
+			Map.Entry<String,Object> esname = iterator.next();
+			stopElasticsearch( esname.getKey());
 		}
 
 	}

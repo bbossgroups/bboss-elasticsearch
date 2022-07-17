@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.boot;
  */
 
 import org.frameworkset.spi.assemble.PropertiesContainer;
+import org.frameworkset.util.ResourceStartResult;
 
 import java.util.List;
 
@@ -27,15 +28,15 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ElasticsearchBootResult {
+public class ElasticsearchBootResult extends ResourceStartResult {
 	/**
 	 * 加载的属性配置container
 	 */
 	private PropertiesContainer propertiesContainer;
-	/**
-	 * 初始化的Elasticsearch数据源清单
-	 */
-	private List<String> initedElasticsearchs;
+//	/**
+//	 * 初始化的Elasticsearch数据源清单
+//	 */
+//	private List<String> initedElasticsearchs;
 
 	public PropertiesContainer getPropertiesContainer() {
 		return propertiesContainer;
@@ -45,20 +46,23 @@ public class ElasticsearchBootResult {
 		this.propertiesContainer = propertiesContainer;
 	}
 
-	public List<String> getInitedElasticsearchs() {
-		return initedElasticsearchs;
-	}
+//	public List<String> getInitedElasticsearchs() {
+//		Map<String,Object> rs = this.getResourceStartResult();
+//		if(rs != null && rs.size() > 0){
+//
+//		}
+//		return initedElasticsearchs;
+//	}
 
 	public void setInitedElasticsearchs(List<String> initedElasticsearchs) {
-		this.initedElasticsearchs = initedElasticsearchs;
+//		this.initedElasticsearchs = initedElasticsearchs;
+		this.addInitedElasticsearchs(initedElasticsearchs);
 	}
 
 	public void addInitedElasticsearchs(List<String> initedElasticsearchs) {
 		for(int i = 0; initedElasticsearchs != null && i < initedElasticsearchs.size(); i ++) {
 			String es = initedElasticsearchs.get(i);
-			if(!this.initedElasticsearchs.contains(es)) {
-				this.initedElasticsearchs .add(es);
-			}
+			this.addResourceStartResult(es);
 		}
 	}
 }
