@@ -255,37 +255,49 @@ db.jdbcFetchSize = 10000
 
 ```java
 	public void testSimpleImportBuilder(){
-		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-		try {
-			//清除测试表数据
-			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");
-		}
-		catch (Exception e){
+		ImportBuilder importBuilder = new ImportBuilder() ;
+		DBInputConfig dbInputConfig = new DBInputConfig();
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+		// 需要设置setLastValueColumn信息log_id，
+		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
-		}
-		//数据源相关配置，可选项，可以在外部启动数据源
-		importBuilder.setDbName("test")
-				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效  
-				.setDbUser("root")
-				.setDbPassword("123456")
-				.setValidateSQL("select 1")
-				.setUsePool(false);//是否使用连接池
+//		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+				.setDbName("test");
+		importBuilder.setInputConfig(dbInputConfig);
 
 
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑
-		importBuilder.setSql("select * from td_cms_document");
+//		importBuilder.addFieldMapping("LOG_CONTENT","message");
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default")
+				.setIndex("dbdemo")
+				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		/**
+		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+//				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 		/**
 		 * es相关配置
 		 */
-		importBuilder
-				.setIndex("dbclobdemo") //必填项
-				.setIndexType("dbclobdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
-				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
-				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-				.setJdbcFetchSize(10000);//设置数据库的查询fetchsize，同时在mysql url上设置useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，jdbcFetchSize必须和useCursorFetch参数配合使用，否则不会生效  
+//		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
 
+		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 
 		/**
 		 * 执行数据库表数据导入es操作
@@ -314,37 +326,49 @@ db.jdbcFetchSize = 10000
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
-		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-		try {
-			//清除测试表
-			ElasticSearchHelper.getRestClientUtil().dropIndice("dbdemo");
-		}
-		catch (Exception e){
+		ImportBuilder importBuilder = new ImportBuilder() ;
+		DBInputConfig dbInputConfig = new DBInputConfig();
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+		// 需要设置setLastValueColumn信息log_id，
+		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
-		}
-        //数据源相关配置，可选项，可以在外部启动数据源
-		importBuilder.setDbName("test")
-				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true")//通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效  
-				.setDbUser("root")
-				.setDbPassword("123456")
-				.setValidateSQL("select 1")
-				.setUsePool(false);//是否使用连接池
+//		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+				.setDbName("test");
+		importBuilder.setInputConfig(dbInputConfig);
 
 
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑
-		importBuilder.setSql("select * from td_sm_log");
+//		importBuilder.addFieldMapping("LOG_CONTENT","message");
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default")
+				.setIndex("dbdemo")
+				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		/**
+		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+//				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 		/**
 		 * es相关配置
 		 */
-		importBuilder
-				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
-				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
-				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-				.setJdbcFetchSize(10000);//设置数据库的查询fetchsize，同时在mysql url上设置useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，jdbcFetchSize必须和useCursorFetch参数配合使用，否则不会生效  
+//		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
 
+		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 		/**
 		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
 		 */
@@ -393,48 +417,49 @@ bboss会将采集数据先放入异步结果迭代器resultset缓冲队列，队
 
 ```java
 	public void testImportBuilder(){
-		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-		try {
-			//清除测试表
-			ElasticSearchHelper.getRestClientUtil().dropIndice("dbclobdemo");
-		}
-		catch (Exception e){
+		ImportBuilder importBuilder = new ImportBuilder() ;
+		DBInputConfig dbInputConfig = new DBInputConfig();
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+		// 需要设置setLastValueColumn信息log_id，
+		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
-		}
-		//数据源相关配置，可选项，可以在外部启动数据源
-		importBuilder.setDbName("test")
-				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true")//通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效  
-				.setDbUser("root")
-				.setDbPassword("123456")
-				.setValidateSQL("select 1")
-				.setUsePool(false);//是否使用连接池
+//		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+				.setDbName("test");
+		importBuilder.setInputConfig(dbInputConfig);
 
 
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑
-		importBuilder.setSql("select * from td_cms_document");
+//		importBuilder.addFieldMapping("LOG_CONTENT","message");
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default")
+				.setIndex("dbdemo")
+				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		/**
+		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+//				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 		/**
 		 * es相关配置
 		 */
-		importBuilder
-				.setIndex("dbclobdemo") //必填项
-				.setIndexType("dbclobdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-				.setRefreshOption(null)//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");
-				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
-				.setEsIdField("documentId")//可选项
-				.setEsParentIdField(null) //可选项,如果不指定，es自动为文档产生id
-				.setRoutingValue(null) //可选项		importBuilder.setRoutingField(null);
-				.setEsDocAsUpsert(true)//可选项
-				.setEsRetryOnConflict(3)//可选项
-				.setEsReturnSource(false)//可选项
-				.setEsVersionField(null)//可选项
-				.setEsVersionType(null)//可选项
-				.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") //可选项,默认日期格式
-				.setLocale("zh_CN")  //可选项,默认locale
-				.setTimeZone("Etc/UTC")  //可选项,默认时区
-				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-				.setJdbcFetchSize(10000);//设置数据库的查询fetchsize，同时在mysql url上设置useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，jdbcFetchSize必须和useCursorFetch参数配合使用，否则不会生效  
+//		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
 
+		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 		/**
 		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
 		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
@@ -501,7 +526,7 @@ bboss充分利用elasticsearch的文档id生成机制，同步数据的时候提
 3. 自定义文档id机制配置
 
 ```
-importBuilder.setEsIdGenerator(new EsIdGenerator() {
+elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
 			//如果指定EsIdGenerator，则根据下面的方法生成文档id，
 			// 否则根据setEsIdField方法设置的字段值作为文档id，
 			// 如果既没有配置EsIdField也没有指定EsIdGenerator，则由es自动生成文档id
@@ -682,34 +707,49 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
-		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-		//增量定时任务不要删表，但是可以通过删表来做初始化操作
-//		try {
-//			//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
-//			ElasticSearchHelper.getRestClientUtil().dropIndice("dbdemo");
-//		}
-//		catch (Exception e){
-//
-//		}
+		ImportBuilder importBuilder = new ImportBuilder() ;
+		DBInputConfig dbInputConfig = new DBInputConfig();
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+		// 需要设置setLastValueColumn信息log_id，
+		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
-		//数据源相关配置，可选项，可以在外部启动数据源
-		importBuilder.setDbName("test")
-				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true")//通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效  
-				.setDbUser("root")
-				.setDbPassword("123456")
-				.setValidateSQL("select 1")
-				.setUsePool(true);//是否使用连接池
+//		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+				.setDbName("test");
+		importBuilder.setInputConfig(dbInputConfig);
 
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，设置增量变量log_id
-		importBuilder.setSql("select * from td_sm_log where log_id > #[log_id]");
+
+//		importBuilder.addFieldMapping("LOG_CONTENT","message");
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default")
+				.setIndex("dbdemo")
+				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		/**
+		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+//				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 		/**
 		 * es相关配置
 		 */
-		importBuilder
-				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+//		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+
+		importBuilder.setOutputConfig(elasticsearchOutputConfig)
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
 				.setJdbcFetchSize(10000);//设置数据库的查询fetchsize，同时在mysql url上设置useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，jdbcFetchSize必须和useCursorFetch参数配合使用，否则不会生效  
@@ -735,9 +775,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-		importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
-		importBuilder.setDebugResponse(true);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在需要的时候才，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
+	
 		/**
 		 * 执行数据库表数据导入es操作
 		 */
@@ -767,27 +805,49 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 
 ```java
 	public void testSimpleLogImportBuilderFromExternalDBConfig(){
-		DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
-		
+		ImportBuilder importBuilder = new ImportBuilder() ;
+		DBInputConfig dbInputConfig = new DBInputConfig();
+		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+		// 需要设置setLastValueColumn信息log_id，
+		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
-		//数据源相关配置，可选项，可以在外部启动数据源
-		importBuilder.setDbName("test")
-				.setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true")//通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效  
-				.setDbUser("root")
-				.setDbPassword("123456")
-				.setValidateSQL("select 1")
-				.setUsePool(true);//是否使用连接池
+//		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+				.setDbName("test");
+		importBuilder.setInputConfig(dbInputConfig);
 
-		//指定导入数据的sql语句，必填项，定时全量导入不需要在sql中设置增量字段
-		importBuilder.setSql("select * from td_sm_log ");
+
+//		importBuilder.addFieldMapping("LOG_CONTENT","message");
+//		importBuilder.addIgnoreFieldMapping("remark1");
+//		importBuilder.setSql("select * from td_sm_log ");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default")
+				.setIndex("dbdemo")
+				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+		/**
+		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+		 @Override
+		 public Object genId(Context context) throws Exception {
+		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+		 }
+		 });
+		 */
+//				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
 		/**
 		 * es相关配置
 		 */
-		importBuilder
-				.setIndex("dbdemo") //必填项
-				.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+//		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+
+		importBuilder.setOutputConfig(elasticsearchOutputConfig)
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，例如:doc_id -> docId
 				.setBatchSize(5000)  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
 				.setJdbcFetchSize(10000);//设置数据库的查询fetchsize，同时在mysql url上设置useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，jdbcFetchSize必须和useCursorFetch参数配合使用，否则不会生效  
@@ -807,9 +867,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-		importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
-		importBuilder.setDebugResponse(true);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在需要的时候才，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
+	
 		/**
 		 * 执行数据库表数据导入es操作
 		 */
@@ -989,7 +1047,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE );//如果�
 对于修改增量的同步，一般用修改时间戳来作为增量同步字段，同时将数据库记录主键作为文档ID：
 
 ```java
-importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+elasticsearchOutputConfig.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
 ```
 
 指定定时timer
@@ -1481,7 +1539,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
 ```java
 org.frameworkset.tran.config.ClientOptions clientOptions = new org.frameworkset.tran.config.ClientOptions();
 clientOptions.setRoutingField(new ESField("parentid"));
-importBuilder.setClientOptions(clientOptions);
+elasticsearchOutputConfig.setClientOptions(clientOptions);
 ```
 
 ### 2.3.14 Mysql ResultSet Stream机制说明
@@ -1557,10 +1615,10 @@ importBuilder.setSqlFilepath("sql.xml")
 
 #### 2.3.16.1 全局设置Elasticsearch请求控制参数
 
-可以通过importBuilder直接提供的方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
+可以通过elasticsearchOutputConfig直接提供的方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
 
 ```java
-importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
+elasticsearchOutputConfig.setEsIdField("documentId")//可选项，es自动为文档产生id
 				.setEsParentIdField("documentParentid") //可选项,如果不指定，文档父子关系父id对应的字段
 				.setRoutingField("routingId") //可选项		importBuilder.setRoutingValue("1");
 				.setEsDocAsUpsert(true)//可选项
@@ -1574,7 +1632,7 @@ importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
 还可以通过ClientOptions对象来指定控制参数，使用示例：
 
 ```java
-		importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+		elasticsearchOutputConfig.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
 		ClientOptions clientOptions = new ClientOptions();
 //		clientOptions.setPipeline("1");
 		clientOptions.setRefresh("true");
@@ -1583,12 +1641,12 @@ importBuilder.setEsIdField("documentId")//可选项，es自动为文档产生id
 		clientOptions.setRouting("2");
 		clientOptions.setTimeout("50s");
 		clientOptions.setWaitForActiveShards(2);
-		importBuilder.setClientOptions(clientOptions);
+		elasticsearchOutputConfig.setClientOptions(clientOptions);
 ```
 
 #### 2.3.16.2 记录级别设置Elasticsearch请求控制参数
 
-基于Context接口，可以在记录级别设置Elasticsearch请求控制参数，记录级别会继承importBuilder设置的控制参数设置的控制参数,但是会覆盖通过importBuilder设置的同名控制参数，记录级别控制参数使用示例：
+基于Context接口，可以在记录级别设置Elasticsearch请求控制参数，记录级别会继承importBuilder设置的控制参数设置的控制参数,但是会覆盖通过elasticsearchOutputConfig设置的同名控制参数，记录级别控制参数使用示例：
 
 ```java
 final Random random = new Random();
@@ -1832,7 +1890,7 @@ bboss可以非常方便地将数据同步到多个ES集群，本小节介绍使�
 importBuilder组件指定多ES集群的方法如下：
 
 ```java
-importBuilder.setTargetElasticsearch("default,test");
+elasticsearchOutputConfig.setTargetElasticsearch("default,test");
 ```
 
 多个集群数据源名称用逗号分隔，多ES集群数据源配置参考文档：
@@ -1943,36 +2001,60 @@ importBuilder.setSplitFieldName("@message");
 通过自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可，例如：
 
 ```java
-FileLog2DummyExportBuilder importBuilder = new FileLog2DummyExportBuilder();
-//自己处理数据
-importBuilder.setCustomOutPut(new CustomOutPut() {
-   @Override
-   public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(10)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+		/**
+		 * es相关配置
+		 */
+		ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig();
+		elasticsearchInputConfig
+				.setDslFile("dsl2ndSqlFile.xml")
+				.setDslName("scrollQuery")
+				.setScrollLiveTime("10m")
+//				.setSliceQuery(true)
+//				.setSliceSize(5)
+				.setQueryUrl("dbdemo/_search");
+		importBuilder.setInputConfig(elasticsearchInputConfig)
+				.setIncreamentEndOffset(5);
 
-      //You can do any thing here for datas
-      for(CommonRecord record:datas){
-         Map<String,Object> data = record.getDatas();
-         logger.info(SimpleStringUtil.object2json(data));
-      }
-   }
-});
+		//自己处理数据
+		CustomOupputConfig customOupputConfig = new CustomOupputConfig();
+		customOupputConfig.setCustomOutPut(new CustomOutPut() {
+			@Override
+			public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+				//You can do any thing here for datas
+				//单笔记录处理
+				RedisHelper redisHelper = null;
+				RedisHelper redisHelper1 = null;
+				try {
+					redisHelper = RedisFactory.getRedisHelper();
+					redisHelper1 = RedisFactory.getRedisHelper("redis1");
+
+					for (CommonRecord record : datas) {
+						Map<String, Object> data = record.getDatas();
+						String LOG_ID =String.valueOf(data.get("LOG_ID"));
+//					logger.info(SimpleStringUtil.object2json(data));
+						String valuedata = SimpleStringUtil.object2json(data);
+						logger.debug("LOG_ID:{}",LOG_ID);
+//					logger.info(SimpleStringUtil.object2json(data));
+						redisHelper.hset("xingchenma", LOG_ID, valuedata);
+						redisHelper.hset("xingchenma", LOG_ID, valuedata);
+					}
+				}
+				finally {
+					if(redisHelper != null)
+						redisHelper.release();
+					if(redisHelper1 != null)
+						redisHelper1.release();
+				}
+			}
+		});
+		importBuilder.setOutputConfig(customOupputConfig);
 ```
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
-
-自定义处理作业根据不同的数据来源，可以选择不同的作业构建器：
-
-FileLog2DummyExportBuilder
-
-Mongodb2DummyExportBuilder
-
-HBase2DummyExportBuilder
-
-DB2DummyExportBuilder
-
-ES2DummyExportBuilder
-
-Kafka2DummyExportBuilder
 
 [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
@@ -2375,554 +2457,10 @@ https://github.com/bbossgroups/db-elasticsearch-tool
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-## 3.1 同步参数设置
+案例清单
 
-Elasticsearch-db数据同步使用方法和DB-Elasticsearch同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，Elasticsearch-db数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下Elasticsearch-DB同步特有的参数：
+https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_31-elasticsearch%e5%af%bc%e5%85%a5database%e6%a1%88%e4%be%8b
 
-```java
-                importBuilder.setBatchSize(2) //批量写入数据库的数据量
-                             .setFetchSize(10); //按批从elasticsearch拉取数据的大小
-
-                importBuilder.setDsl2ndSqlFile("dsl2ndSqlFile.xml")//配置从Elasticsearch检索数据的DSl语句和往数据库插入数据的insert sql语句
-    			.setDslName("scrollSliceQuery")//指定配置文件中dsl的名称
-    			.setScrollLiveTime("10m")//指定scroll上下文的有效时间
-    			.setSliceQuery(true) //指定是否是slicescroll查询
-    			.setSliceSize(5) //指定slice scroll查询的slice数量
-    			.setSqlName("insertSQLnew") //指定数据库插入数据的insert sql语句
-    			.setQueryUrl("dbdemo/_search") //设置需要检索的索引表和对应的操作
-//				//配置dsl中需要用到的参数及参数值
-				.addParam("var1","v1")
-				.addParam("var2","v2")
-				.addParam("var3","v3");
-```
-
-dsl2ndSqlFile.xml放置到工程resources目录下即可，示例内容如下：
-
-```xml
-<?xml version="1.0" encoding='UTF-8'?>
-<properties>
-    <description>
-        <![CDATA[
-            配置数据导入的dsl和sql
-         ]]>
-    </description>
-    <!--
-          条件片段
-     -->
-    <property name="queryCondition">
-        <![CDATA[
-         "query": {
-                "bool": {
-                    "filter": [
-                        ## 可以设置同步数据的过滤参数条件
-                        #*
-                        {
-                            "term": {
-                                "var1.keyword": #[var1]
-                            }
-                        },
-                        {
-                            "term": {
-                                "var2.keyword": #[var2]
-                            }
-                        },
-                        {
-                            "term": {
-                                "var3.keyword": #[var3]
-                            }
-                        },
-                        *#
-                        ## 根据fullImport参数控制是否设置增量检索条件，true 全量检索 false增量检索
-                        #if(!$fullImport)
-                        {   ## 增量检索范围，可以是时间范围，也可以是数字范围，这里采用的是数字增量字段
-                            "range": {
-                                #if($logId)
-                                "logId": {
-                                    "gt": #[logId] ## 数字增量检索字段
-                                }
-                                #end
-                                #if($logOpertime)
-                                "logOpertime": {
-                                    "gt": #[logOpertime] ## 时间增量检索字段
-                                }
-                                #end
-                            }
-                        }
-                        #end
-                    ]
-                }
-            }
-        ]]>
-    </property>
-
-    <!--
-       简单的scroll query案例，复杂的条件修改queryCondition即可
-       -->
-    <property name="scrollQuery">
-        <![CDATA[
-         {
-            "size":#[size],
-            @{queryCondition}
-        }
-        ]]>
-    </property>
-    <!--
-        简单的slice scroll query案例，复杂的条件修改queryCondition即可
-    -->
-    <property name="scrollSliceQuery">
-        <![CDATA[
-         {
-           "slice": {
-                "id": #[sliceId], ## 必须使用sliceId作为变量名称
-                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
-            },
-            "size":#[size],
-            @{queryCondition}
-        }
-        ]]>
-    </property>
-
-
-    <!--
-    插入数据sql
-    -->
-    <property name="insertSQLnew">
-        <![CDATA[INSERT INTO batchtest ( name, author, content, title, optime, oper, subtitle, collecttime,ipinfo)
-                VALUES ( #[operModule],  ## 来源dbdemo索引中的 operModule字段
-                         #[author], ## 通过datarefactor增加的字段
-                         #[logContent], ## 来源dbdemo索引中的 logContent字段
-                         #[title], ## 通过datarefactor增加的字段
-                         #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段
-                         #[logOperuser],  ## 来源dbdemo索引中的 logOperuser字段
-                         #[subtitle], ## 通过datarefactor增加的字段
-                         #[collecttime], ## 通过datarefactor增加的字段
-                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段
-]]>
-    </property>
-</properties>
-
-
-```
-
-### 基于时间戳增量同步-采用scroll机制
-
-从es中查询数据导入数据库案例,基于时间戳增量同步，采用slicescroll检索
-
-```java
-public class ES2DBScrollTimestampDemo {
-	public static void main(String[] args){
-		ES2DBScrollTimestampDemo esDemo = new ES2DBScrollTimestampDemo();
-		esDemo.scheduleScrollRefactorImportData();
-		System.out.println("complete.");
-	}
-
-
-
-	public void scheduleScrollRefactorImportData(){
-		ES2DBExportBuilder importBuilder = new ES2DBExportBuilder();
-		importBuilder.setBatchSize(2).setFetchSize(10);
-
-
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
-		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
-		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-		// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
-		// 但是需要设置setLastValueType告诉工具增量字段的类型
-	
-		/**
-		 * es相关配置
-		 */
-		importBuilder
-				.setDsl2ndSqlFile("dsl2ndSqlFile.xml")
-				.setDslName("scrollQuery")
-				.setScrollLiveTime("10m")
-//				.setSliceQuery(true)
-//				.setSliceSize(5)
-				.setSqlName("insertSQLnew")
-				.setQueryUrl("dbdemo/_search")
-
-//				//添加dsl中需要用到的参数及参数值
-				.addParam("var1","v1")
-				.addParam("var2","v2")
-				.addParam("var3","v3");
-
-		//定时任务配置，
-		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-//					 .setScheduleDate(date) //指定任务开始执行时间：日期
-				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-				.setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
-		//定时任务配置结束
-
-		//设置任务执行拦截器，可以添加多个
-		importBuilder.addCallInterceptor(new CallInterceptor() {
-			@Override
-			public void preCall(TaskContext taskContext) {
-				System.out.println("preCall");
-			}
-	
-			@Override
-			public void afterCall(TaskContext taskContext) {
-				System.out.println("afterCall");
-			}
-	
-			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
-				System.out.println("throwException");
-			}
-		}).addCallInterceptor(new CallInterceptor() {
-			@Override
-			public void preCall(TaskContext taskContext) {
-				System.out.println("preCall 1");
-			}
-	
-			@Override
-			public void afterCall(TaskContext taskContext) {
-				System.out.println("afterCall 1");
-			}
-	
-			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
-				System.out.println("throwException 1");
-			}
-		});
-//		//设置任务执行拦截器结束，可以添加多个
-		//增量配置开始
-		importBuilder.setLastValueColumn("logOpertime");//手动指定日期增量查询字段变量名称
-		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-//		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
-		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
-		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
-		importBuilder.setLastValue(new Date());
-		//增量配置结束
-
-		//映射和转换配置开始
-//		/**
-//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
-//		 */
-//		importBuilder.addFieldMapping("document_id","docId")
-//				.addFieldMapping("docwtime","docwTime")
-//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
-//
-//
-//		/**
-//		 * 为每条记录添加额外的字段和值
-//		 * 可以为基本数据类型，也可以是复杂的对象
-//		 */
-//		importBuilder.addFieldValue("testF1","f1value");
-//		importBuilder.addFieldValue("testInt",0);
-//		importBuilder.addFieldValue("testDate",new Date());
-//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
-//		TestObject testObject = new TestObject();
-//		testObject.setId("testid");
-//		testObject.setName("jackson");
-//		importBuilder.addFieldValue("testObject",testObject);
-		importBuilder.addFieldValue("author","作者");
-
-		/**
-		 * 重新设置es数据结构
-		 */
-		importBuilder.setDataRefactor(new DataRefactor() {
-			public void refactor(Context context) throws Exception  {
-				//可以根据条件定义是否丢弃当前记录
-				//context.setDrop(true);return;
-//				if(s.incrementAndGet() % 2 == 0) {
-//					context.setDrop(true);
-//					return;
-//				}
-
-
-				context.addFieldValue("author","duoduo");
-				context.addFieldValue("title","解放");
-				context.addFieldValue("subtitle","中国人民解放了");
-				context.addFieldValue("collecttime",new Date());//
-
-//				context.addIgnoreFieldMapping("title");
-				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//				context.addIgnoreFieldMapping("author");
-
-//				//修改字段名称title为新名称newTitle，并且修改字段的值
-//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
-				context.addIgnoreFieldMapping("subtitle");
-				/**
-				 * 获取ip对应的运营商和区域信息
-				 */
-				Map ipInfo = (Map)context.getValue("ipInfo");
-				if(ipInfo != null)
-					context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
-				else{
-					context.addFieldValue("ipinfo", "");
-				}
-				DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
-				Date optime = context.getDateValue("logOpertime",dateFormat);
-				context.addFieldValue("logOpertime",optime);
-				context.addFieldValue("collecttime",new Date());
-
-				/**
-				 //关联查询数据,单值查询
-				 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from head where billid = ? and othercondition= ?",
-				 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
-				 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("headdata",headdata);
-				 //关联查询数据,多值查询
-				 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from facedata where billid = ?",
-				 context.getIntegerValue("billid"));
-				 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("facedatas",facedatas);
-				 */
-			}
-		});
-		//映射和转换配置结束
-	
-		/**
-		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-		 */
-		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
-		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-		importBuilder.setPrintTaskLog(true);
-		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-
-		/**
-		 * 执行es数据导入数据库表操作
-		 */
-		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();//执行导入操作
-	}
-}
-```
-
-### 基于数字增量同步-采用slicescroll机制
-
-从es中查询数据导入数据库案例,基于数字类型增量同步，采用slicescroll检索
-
-```java
-public class ES2DBSliceScrollResultCallbackDemo {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public static void main(String[] args){
-		ES2DBSliceScrollResultCallbackDemo esDemo = new ES2DBSliceScrollResultCallbackDemo();
-		esDemo.scheduleSlieRefactorImportData();
-//		esDemo.directExport();
-//		esDemo.exportData();
-//		esDemo.exportSliceData();
-//		esDemo.exportSliceDataWithInnerhit();
-//		esDemo.exportDataUseSQL();
-//		esDemo.exportParallelData();
-		System.out.println("complete.");
-	}
-
-
-	public void scheduleSlieRefactorImportData(){
-		ES2DBExportBuilder importBuilder = new ES2DBExportBuilder();
-		importBuilder.setBatchSize(2).setFetchSize(10);
-
-
-		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
-		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
-		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
-		// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
-		// 但是需要设置setLastValueType告诉工具增量字段的类型
-	
-		/**
-		 * es相关配置
-		 */
-		importBuilder
-				.setDsl2ndSqlFile("dsl2ndSqlFile.xml")
-				.setDslName("scrollSliceQuery")
-				.setScrollLiveTime("10m")
-				.setSliceQuery(true)
-				.setSliceSize(5)
-				.setSqlName("insertSQLnew")
-				.setQueryUrl("dbdemo/_search")
-
-//				//添加dsl中需要用到的参数及参数值
-				.addParam("var1","v1")
-				.addParam("var2","v2")
-				.addParam("var3","v3");
-
-		//定时任务配置，
-		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-//					 .setScheduleDate(date) //指定任务开始执行时间：日期
-				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-				.setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
-		//定时任务配置结束
-
-		importBuilder.setExportResultHandler(new ExportResultHandler() {
-			@Override
-			public void success(TaskCommand taskCommand, Object result) {
-				System.out.println("success");
-				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));
-			}
-	
-			@Override
-			public void error(TaskCommand taskCommand, Object result) {
-				System.out.println("error");
-				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));
-			}
-	
-			@Override
-			public void exception(TaskCommand taskCommand, Exception exception) {
-				System.out.println("exception");
-				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-				logger.info(SimpleStringUtil.object2json(taskMetrics));
-			}
-	
-			@Override
-			public int getMaxRetry() {
-				return -1;
-			}
-		});
-//		//设置任务执行拦截器结束，可以添加多个
-		//增量配置开始
-		importBuilder.setLastValueColumn("logId");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("es2dbdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-//		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
-		importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
-		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
-		//增量配置结束
-
-		//映射和转换配置开始
-//		/**
-//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
-//		 */
-//		importBuilder.addFieldMapping("document_id","docId")
-//				.addFieldMapping("docwtime","docwTime")
-//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
-//
-//
-//		/**
-//		 * 为每条记录添加额外的字段和值
-//		 * 可以为基本数据类型，也可以是复杂的对象
-//		 */
-//		importBuilder.addFieldValue("testF1","f1value");
-//		importBuilder.addFieldValue("testInt",0);
-//		importBuilder.addFieldValue("testDate",new Date());
-//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
-//		TestObject testObject = new TestObject();
-//		testObject.setId("testid");
-//		testObject.setName("jackson");
-//		importBuilder.addFieldValue("testObject",testObject);
-		importBuilder.addFieldValue("author","作者");
-//		final AtomicInteger s = new AtomicInteger(0);
-		/**
-		 * 重新设置es数据结构
-		 */
-		importBuilder.setDataRefactor(new DataRefactor() {
-			public void refactor(Context context) throws Exception  {
-				//可以根据条件定义是否丢弃当前记录
-				//context.setDrop(true);return;
-//				if(s.incrementAndGet() % 2 == 0) {
-//					context.setDrop(true);
-//					return;
-//				}
-
-
-				context.addFieldValue("author","duoduo");
-				context.addFieldValue("title","解放");
-				context.addFieldValue("subtitle","中国人民解放了");
-				context.addFieldValue("collecttime",new Date());//
-
-//				context.addIgnoreFieldMapping("title");
-				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//				context.addIgnoreFieldMapping("author");
-
-//				//修改字段名称title为新名称newTitle，并且修改字段的值
-//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
-				context.addIgnoreFieldMapping("subtitle");
-				/**
-				 * 获取ip对应的运营商和区域信息
-				 */
-				IpInfo ipInfo = context.getIpInfoByIp("113.12.192.230");
-				if(ipInfo != null)
-					context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
-				else{
-					context.addFieldValue("ipinfo", "");
-				}
-				DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
-				Date optime = context.getDateValue("logOpertime",dateFormat);
-				context.addFieldValue("logOpertime",optime);
-				context.addFieldValue("collecttime",new Date());
-				/**
-				 //关联查询数据,单值查询
-				 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from head where billid = ? and othercondition= ?",
-				 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
-				 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("headdata",headdata);
-				 //关联查询数据,多值查询
-				 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from facedata where billid = ?",
-				 context.getIntegerValue("billid"));
-				 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("facedatas",facedatas);
-				 */
-			}
-		});
-		//映射和转换配置结束
-
-		/**
-		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-		 */
-		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
-		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-		importBuilder.setPrintTaskLog(true);
-		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-
-		/**
-		 * 执行es数据导入数据库表操作
-		 */
-		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();//执行导入操作
-	}
-
-}
-```
-
-
-
-## 3.2 jdk timer同步器demo
-
- https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollDemo.java 
-
- https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBScrollTimestampDemo.java 
-
- https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2DBSliceScrollResultCallbackDemo.java 
-
-## 3.3 quartz同步器demo
-
- https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/QuartzES2DBImportTask.java 
-
-参考文档：
-
-[基于quartz调度数据同步作业](datasyn-quartz.md)
-
-## 3.4 xxl-job同步器demo
-
- https://github.com/bbossgroups/db-elasticsearch-xxjob/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/jobhandler/XXJobES2DBImportTask.java 
-
-参考文档：
-
-[基于xxl-job数据同步作业调度](xxljobdatasyn.md)
 
 # 4 Mongodb-Elasticsearch数据同步使用方法
 
@@ -2934,289 +2472,9 @@ https://github.com/bbossgroups/mongodb-elasticsearch
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，这里介绍一下mongodb-elasticseach同步特有的参数：
+mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，参考文档
 
-```java
-        //mongodb的相关配置参数
-		importBuilder.setName("session")
-				.setDb("sessiondb")
-				.setDbCollection("sessionmonitor_sessions")
-				.setConnectTimeout(10000)
-				.setWriteConcern("JOURNAL_SAFE")
-				.setReadPreference("")
-				.setMaxWaitTime(10000)
-				.setSocketTimeout(1500).setSocketKeepAlive(true)
-				.setConnectionsPerHost(100)
-				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-				.setServerAddresses("127.0.0.1:27017\n127.0.0.1:27018")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
-				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
-				//String database,String userName,String password,String mechanism
-				//https://www.iteye.com/blog/yin-bp-2064662
-//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
-//				.setOption("")
-				.setAutoConnectRetry(true);
-        importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
-​```java
-
-一个完整的jdk timer同步器demo：根据session最后访问时间将保存在mongodb中的session数据，根据一定的时间间隔增量同步到Elasitcsearch中，如需调试同步功能，直接运行和调试main方法即可，elasticsearch的配置在resources/application.properties中进行配置：
-
- https://github.com/bbossgroups/mongodb-elasticsearch/blob/master/src/main/resources/application.properties 
-
-​```java
-public class Mongodb2ESdemo {
-	private static final Logger logger = LoggerFactory.getLogger(Mongodb2ESdemo.class);
-	public static void main(String[] args){
-		Mongodb2ESdemo dbdemo = new Mongodb2ESdemo();
-		boolean dropIndice = true;//CommonLauncher.getBooleanAttribute("dropIndice",false);//同时指定了默认值
-
-		dbdemo.scheduleTimestampImportData(dropIndice);
-	}
-
-
-
-	/**
-	 * elasticsearch地址和数据库地址都从外部配置文件application.properties中获取，加载数据源配置和es配置
-	 */
-	public void scheduleTimestampImportData(boolean dropIndice){
-		MongoDB2ESExportBuilder importBuilder = MongoDB2ESExportBuilder.newInstance();
-		//增量定时任务不要删表，但是可以通过删表来做初始化操作
-		if(dropIndice) {
-			try {
-				//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
-				String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("mongodbdemo");
-				System.out.println(repsonse);
-			} catch (Exception e) {
-			}
-		}
-
-
-		//mongodb的相关配置参数
-
-		importBuilder.setName("session") 
-				.setDb("sessiondb")
-				.setDbCollection("sessionmonitor_sessions")
-				.setConnectTimeout(10000)
-				.setWriteConcern("JOURNAL_SAFE")
-				.setReadPreference("")
-				.setMaxWaitTime(10000)
-				.setSocketTimeout(1500).setSocketKeepAlive(true)
-				.setConnectionsPerHost(100)
-				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-				.setServerAddresses("127.0.0.1:27017\n127.0.0.1:27018")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
-				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
-				//String database,String userName,String password,String mechanism
-				//https://www.iteye.com/blog/yin-bp-2064662
-//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
-//				.setOption("")
-				.setAutoConnectRetry(true);
-       importBuilder.setFetchSize(10); //按批从mongodb拉取数据的大小
-        
-		/**
-		 * es相关配置
-		 */
-		importBuilder
-				.setIndex("mongodbdemo") //必填项，索引名称
-				.setIndexType("mongodbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
-//				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
-				.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-				.setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-
-		//定时任务配置，
-		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-//					 .setScheduleDate(date) //指定任务开始执行时间：日期
-				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
-		//定时任务配置结束
-//
-//		//设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器
-//		importBuilder.addCallInterceptor(new CallInterceptor() {
-//			@Override
-//			public void preCall(TaskContext taskContext) {
-//				System.out.println("preCall");
-//			}
-//
-//			@Override
-//			public void afterCall(TaskContext taskContext) {
-//				System.out.println("afterCall");
-//			}
-//
-//			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
-//				System.out.println("throwException");
-//			}
-//		}).addCallInterceptor(new CallInterceptor() {
-//			@Override
-//			public void preCall(TaskContext taskContext) {
-//				System.out.println("preCall 1");
-//			}
-//
-//			@Override
-//			public void afterCall(TaskContext taskContext) {
-//				System.out.println("afterCall 1");
-//			}
-//
-//			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
-//				System.out.println("throwException 1");
-//			}
-//		});
-//		//设置任务执行拦截器结束，可以添加多个
-		//增量配置开始
-		importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
-		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-			//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-//		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
-//		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型,ImportIncreamentConfig.TIMESTAMP_TYPE为时间类型
-        //设置增量查询的起始值lastvalue
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Date date = format.parse("2000-01-01");
-			importBuilder.setLastValue(date.getTime());
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
-		//增量配置结束
-
-		//映射和转换配置开始
-//		/**
-//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//		 *
-//		 */
-//		importBuilder.addFieldMapping("document_id","docId")
-//				.addFieldMapping("docwtime","docwTime")
-//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
-//
-//
-//		/**
-//		 * 为每条记录添加额外的字段和值
-//		 * 可以为基本数据类型，也可以是复杂的对象
-//		 */
-//		importBuilder.addFieldValue("testF1","f1value");
-//		importBuilder.addFieldValue("testInt",0);
-//		importBuilder.addFieldValue("testDate",new Date());
-//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
-//		TestObject testObject = new TestObject();
-//		testObject.setId("testid");
-//		testObject.setName("jackson");
-//		importBuilder.addFieldValue("testObject",testObject);
-//
-//		/**
-//		 * 重新设置导入es数据结构,默认情况下，除了_id字段，其他所有的mongodb字段都会被同步到Elasticsearch中，可以通过DataRefactor来进行相关调整和处理数据，然后再导入es中。
-//		 */
-		importBuilder.setDataRefactor(new DataRefactor() {
-			public void refactor(Context context) throws Exception  {
-				String id = context.getStringValue("_id");
-				//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中
-				if(id.equals("5dcaa59e9832797f100c6806"))
-					context.setDrop(true);
-				//添加字段extfiled2到记录中，值为2
-				context.addFieldValue("extfiled2",2);
-				//添加字段extfiled到记录中，值为1
-				context.addFieldValue("extfiled",1);
-				boolean httpOnly = context.getBooleanValue("httpOnly");
-				boolean secure = context.getBooleanValue("secure");
-				//空值处理
-				String userAccount = context.getStringValue("userAccount");
-				if(userAccount == null)
-					context.addFieldValue("userAccount","");
-				//空值处理
-				String testVO = context.getStringValue("testVO");
-				if(testVO == null)
-					context.addFieldValue("testVO","");
-				//空值处理
-				String privateAttr = context.getStringValue("privateAttr");
-				if(privateAttr == null)
-					context.addFieldValue("privateAttr","");
-				//空值处理
-				String local = context.getStringValue("local");
-				if(local == null)
-					context.addFieldValue("local","");
-				//将long类型的lastAccessedTime字段转换为日期类型
-				long lastAccessedTime = context.getLongValue("lastAccessedTime");
-				context.addFieldValue("lastAccessedTime",new Date(lastAccessedTime));
-				//将long类型的creationTime字段转换为日期类型
-				long creationTime = context.getLongValue("creationTime");
-				context.addFieldValue("creationTime",new Date(creationTime));
-                //并将IpInfo添加到Elasticsearch文档中
-				String referip = context.getStringValue("referip");
-				if(referip != null){
-					IpInfo ipInfo = context.getIpInfoByIp(referip);
-					if(ipInfo != null)
-						context.addFieldValue("ipInfo",ipInfo);
-				}
-				 //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
-				DBObject record = (DBObject) context.getRecord();
-				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//				context.addIgnoreFieldMapping("author");
-//				context.addIgnoreFieldMapping("title");
-//				context.addIgnoreFieldMapping("subtitle");
-			}
-		});
-		//映射和转换配置结束
-
-		/**
-		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-		 */
-		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
-		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-		importBuilder.setEsIdField("_id");//设置文档主键，不设置，则自动产生文档id,直接将mongodb的ObjectId设置为Elasticsearch的文档_id
-//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-
-		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-		importBuilder.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-		//设置任务处理结果回调接口
-		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
-			@Override
-			public void success(TaskCommand<Object,String> taskCommand, String result) {
-				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
-			}
-
-			@Override
-			public void error(TaskCommand<Object,String> taskCommand, String result) {
-				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
-			}
-
-			@Override
-			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
-				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
-			}
-
-			@Override
-			public int getMaxRetry() {
-				return 0;
-			}
-		});
-		/**
-		 importBuilder.setEsIdGenerator(new EsIdGenerator() {
-		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
-		 // 否则根据setEsIdField方法设置的字段值作为文档id，
-		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
-
-		 @Override
-		 public Object genId(Context context) throws Exception {
-		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
-		 }
-		 });
-		 */
-		/**
-		 * 构建DataStream，执行mongodb数据到es的同步操作
-		 */
-		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();//执行同步操作
-
-		System.out.println();
-	}
-
-}
-```
-
+https://esdoc.bbossgroups.com/#/mongodb-elasticsearch
 # 5 Database-Database数据同步使用方法
 
  https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java 
@@ -3354,15 +2612,15 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 ```
 
 - 一次性执行
-  一次性执行只需要将上面的代码注释即可
+  一次性执行只需要将上面的代码setFixedRate和setPeriod去掉即可
 
 ```java
         /**   
         //定时任务配置，
-		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+		importBuilder
                //.setScheduleDate(date) //指定任务开始执行时间：日期
 				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+				
 		*/
         
 ```
@@ -3408,6 +2666,29 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 		importBuilder.setAsyn(false);//是否同步等待每批次任务执行完成后再返回调度程序，true 不等待所有导入作业任务结束，方法快速返回；false（默认值） 等待所有导入作业任务结束，所有作业结束后方法才返回
 		*/		
+```
+
+## 11.4 任务执行开始时间和结束时间设置
+
+一次性导入和周期性导入，都可以设置任务导出的开始时间、延时执行时间和任务结束时间（只对jdk timer有效）
+
+指定任务开始时间或者延迟时间
+
+```java
+    importBuilder.setScheduleDate(TimeUtil.addDateMinitues(new Date(),1)); //指定任务开始执行时间：日期，1分钟后开始
+//          .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+```
+
+同时指定任务开始时间和结束时间
+
+```java
+//定时任务配置，
+      importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+                .setScheduleDate(TimeUtil.addDateMinitues(new Date(),1)) //指定任务开始执行时间：日期，1分钟后开始
+//          .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+            .setScheduleEndDate(TimeUtil.addDateMinitues(new Date(),3))//3分钟后自动结束任务
+
+            .setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
 # 12 数据导出到文件并上传SFTP/FTP
