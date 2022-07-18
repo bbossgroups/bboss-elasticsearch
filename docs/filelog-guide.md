@@ -5,11 +5,11 @@
    1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
    3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.7.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.7.0/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.7.0/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
-   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.7.0/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
-      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/v6.7.0/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 
@@ -41,9 +41,9 @@ api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.7.0'
 https://esdoc.bbossgroups.com/#/quickstart
 # 1.日志采集插件属性说明
 
-importBuilder（FileLog2ESImportBuilder/FileLog2DBImportBuilder/FileLog2KafkaImportBuilder)用于采集作业基础属性配置
+ImportBuilder用于采集作业基础属性配置
 
-FileImportConfig用于指定日志采集插件全局配置
+FileInputConfig用于指定日志采集插件全局配置
 
 FileConfig用于指定文件级别配置
 
@@ -52,13 +52,13 @@ FileConfig用于指定文件级别配置
 | importBuilder.flushInterval              | long 设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制 | 8秒     |
 | importBuilder.fetchSize                  | int,设置按批读取文件行数                                     |         |
 | importBuilder.batchSize                  | int ，设置批量入库的记录数                                   |         |
-| FileImportConfig.jsondata                | 布尔类型，标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中 |         |
-| FileImportConfig.rootLevel               | jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message |         |
-| FileImportConfig.scanNewFileInterval | long 单位：毫秒，扫描新文件时间间隔                          | 5000L   |
-| FileImportConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理 | null    |
-| FileImportConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
-| FileImportConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
-| FileImportConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
+| FileInputConfig.jsondata                | 布尔类型，标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中 |         |
+| FileInputConfig.rootLevel               | jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message |         |
+| FileInputConfig.scanNewFileInterval | long 单位：毫秒，扫描新文件时间间隔                          | 5000L   |
+| FileInputConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理 | null    |
+| FileInputConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
+| FileInputConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
+| FileInputConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
 | FileConfig.sourcePath                    | String,数据文件存放目录，或者远程文件下载目录                           |         |
 | FileConfig.ftpConfig | FtpConfig,可选，封装ftp/sftp配置信息，[设置ftpConfig](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)，代表作业从ftp和sftp服务器下载数据文件并采集处理，否则就是本地数据文件采集处理 | |
@@ -83,13 +83,13 @@ FileConfig用于指定文件级别配置
 | FileConfig.closeOldedFileAssert          | CloseOldedFileAssert类型，如果指定了closeOlderTime，但是有些文件是特例不能不关闭，那么可以通过指定CloseOldedFileAssert来检查静默时间达到closeOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fieldBuilder                  | FieldBuilder类型，根据文件信息动态为不同的日志文件添加固定的字段，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.skipHeaderLines | 指定忽略前几行记录 |  |
-| FileImportConfig.backupSuccessFiles | 备份采集完成文件  true 备份  false 不备份 | false |
-| FileImportConfig.backupSuccessFileDir | 文件备份目录 |  |
-| FileImportConfig.backupSuccessFileInterval | 备份文件清理线程执行时间间隔，单位：毫秒  默认每隔10秒执行一次 | 10000ms |
-| FileImportConfig.backupSuccessFileLiveTime | 备份文件保留时长，单位：秒  默认保留7天 | 7天 |
-| FileImportConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
-| FileImportConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
-| FileImportConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
+| FileInputConfig.backupSuccessFiles | 备份采集完成文件  true 备份  false 不备份 | false |
+| FileInputConfig.backupSuccessFileDir | 文件备份目录 |  |
+| FileInputConfig.backupSuccessFileInterval | 备份文件清理线程执行时间间隔，单位：毫秒  默认每隔10秒执行一次 | 10000ms |
+| FileInputConfig.backupSuccessFileLiveTime | 备份文件保留时长，单位：秒  默认保留7天 | 7天 |
+| FileInputConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
+| FileInputConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
+| FileInputConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 
 添加采集配置示例
 
@@ -193,108 +193,197 @@ config.addConfig(new ExcelFileConfig()
 完整的案例
 
 ```java
-FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
-      importBuilder.setBatchSize(500)//设置批量入库的记录数
-            .setFetchSize(1000);//设置按批读取文件行数
-      //设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
-      importBuilder.setFlushInterval(10000l);
+ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(500)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+		importBuilder.setFlushInterval(10000l);
+//":null,"jdbcFetchSize":-2147483648,"dbDriver":"com.mysql.cj.jdbc.Driver","dbUrl":"jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false","dbUser":"root","dbPassword":"123456","initSize":100,"minIdleSize":100,"maxSize":100,"showSql":true,"usePool":true,"dbtype":null,"dbAdaptor":null,"columnLableUpperCase":false,"enableDBTransaction":false,"validateSQL":"select 1","dbName":"test"},"statusDbname":null,"statusTableDML":null,"fetchSize":10,"flushInterval":0,"ignoreNullValueField":false,"Elasticsearch":"default","sourceElasticsearch":"default","clientOptions":null,"geoipConfig":null,"sortLastValue":true,"useBatchContextIndexName":false,"discardBulkResponse":true,"debugResponse":false,"scheduleConfig":{"scheduleDate":null,"deyLay":1000,"period":10000,"fixedRate":false,"externalTimer":false},"importIncreamentConfig":{"lastValueColumn":"logOpertime","lastValue":null,"lastValueType":1,"lastValueStorePath":"es2dbdemo_import","lastValueStoreTableName":null,"lastValueDateType":true,"fromFirst":true,"statusTableId":null},"externalTimer":false,"printTaskLog":true,"applicationPropertiesFile":null,"configs":null,"batchSize":2,"parallel":true,"threadCount":50,"queue":10,"asyn":false,"continueOnError":true,"asynResultPollTimeOut":1000,"useLowcase":null,"scheduleBatchSize":null,"index":null,"indexType":null,"useJavaName":null,"exportResultHandlerClass":null,"locale":null,"timeZone":null,"esIdGeneratorClass":"org.frameworkset.tran.DefaultEsIdGenerator","dataRefactorClass":"org.frameworkset.elasticsearch.imp.ES2DBScrollTimestampDemo$3","pagine":false,"scrollLiveTime":"10m","queryUrl":"dbdemo/_search","dsl2ndSqlFile":"dsl2ndSqlFile.xml","dslName":"scrollQuery","sliceQuery":false,"sliceSize":0,"Index":null,"IndexType":null}
+		FileInputConfig config = new FileInputConfig();
+		//.*.txt.[0-9]+$
+		//[17:21:32:388]
+//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
+//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+////				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
+//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
+//				.addField("tag","error") //添加字段tag到记录中
+//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
 
-      ExcelFileImportConfig config = new ExcelFileImportConfig();
+		config.addConfig(new FileConfig().setSourcePath("D:\\logs")//指定目录
+						.setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+						.setFileFilter(new FileFilter() {
+							@Override
+							public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+								//判断是否采集文件数据，返回true标识采集，false 不采集
+								return fileInfo.getFileName().equals("metrics-report.log");
+							}
+						})//指定文件过滤器
+						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+						.addField("tag","elasticsearch")//添加字段tag到记录中
+						.setEnableInode(false)
+				//				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+		);
 
-      //shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
-      //配置excel文件列与导出字段名称映射关系
-      config.addConfig(new ExcelFileConfig()
-                  .addCellMapping(0,"shebao_org")
-                  .addCellMapping(1,"person_no")
-                  .addCellMapping(2,"name")
-                  .addCellMapping(3,"cert_type")
-
-                  .addCellMapping(4,"cert_no","")
-                  .addCellMapping(5,"zhs_item")
-
-                  .addCellMapping(6,"zhs_class")
-                  .addCellMapping(7,"zhs_sub_class")
-                  .addCellMapping(8,"zhs_year","2022")
-                  .addCellMapping(9,"zhs_level","1")
-                  .setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
-                  .setFileFilter(new FileFilter() {
-                     @Override
-                     public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
-                        //判断是否采集文件数据，返回true标识采集，false 不采集
-                        return fileInfo.getFileName().equals("cityperson.xlsx");
-                     }
-                  })//指定文件过滤器
-                    .setSkipHeaderLines(1)//忽略第一行
-      );
-
-
-      config.setEnableMeta(true);
-      importBuilder.setFileImportConfig(config);
-      //指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
+//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
+		/**
+		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
+		 * hostIp：主机ip
+		 * hostName：主机名称
+		 * filePath： 文件路径
+		 * timestamp：采集的时间戳
+		 * pointer：记录对应的截止文件指针,long类型
+		 * fileId：linux文件号，windows系统对应文件路径
+		 * 例如：
+		 * {
+		 *   "_index": "filelog",
+		 *   "_type": "_doc",
+		 *   "_id": "HKErgXgBivowv_nD0Jhn",
+		 *   "_version": 1,
+		 *   "_score": null,
+		 *   "_source": {
+		 *     "title": "解放",
+		 *     "subtitle": "小康",
+		 *     "ipinfo": "",
+		 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
+		 *     "author": "张无忌",
+		 *     "@filemeta": {
+		 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
+		 *       "hostname": "",
+		 *       "pointer": 3342583,
+		 *       "hostip": "",
+		 *       "timestamp": 1617074824542,
+		 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
+		 *     },
+		 *     "@message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
+		 *   }
+		 * }
+		 *
+		 * true 开启 false 关闭
+		 */
+		config.setEnableMeta(true);
+		importBuilder.setInputConfig(config);
+		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
 
 //导出到数据源配置
-      DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
-      dbConfigBuilder
-            .setSqlFilepath("sql-dbtran.xml")
+		DBOutputConfig dbOutputConfig = new DBOutputConfig();
+		dbOutputConfig
+				.setSqlFilepath("sql-dbtran.xml")
 
-            .setTargetDbName("test")//指定目标数据库，在application.properties文件中配置
-//          .setTargetDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-//          .setTargetDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
-//          .setTargetDbUser("root")
-//          .setTargetDbPassword("123456")
-//          .setTargetValidateSQL("select 1")
-//          .setTargetUsePool(true)//是否使用连接池
-            .setInsertSqlName("insertcityperson")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+				.setDbName("test")//指定目标数据库，在application.properties文件中配置
+//				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+//				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+//				.setDbUser("root")
+//				.setDbPassword("123456")
+//				.setValidateSQL("select 1")
+//				.setUsePool(true)//是否使用连接池
+				.setInsertSqlName("insertSql")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
 
-            /**
-             * 是否在批处理时，将insert、update、delete记录分组排序
-             * true：分组排序，先执行insert、在执行update、最后执行delete操作
-             * false：按照原始顺序执行db操作，默认值false
-             * @param optimize
-             * @return
-             */
-            .setOptimize(false);//指定查询源库的sql语句，在配置文件中配置：sql-dbtran.xml
-      importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
-      //增量配置开始
-      importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-      //setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-      importBuilder.setLastValueStorePath("excelfilelogdb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-      //增量配置结束
+				/**
+				 * 是否在批处理时，将insert、update、delete记录分组排序
+				 * true：分组排序，先执行insert、在执行update、最后执行delete操作
+				 * false：按照原始顺序执行db操作，默认值false
+				 * @param optimize
+				 * @return
+				 */
+				.setOptimize(true);//指定查询源库的sql语句，在配置文件中配置：sql-dbtran.xml
+		importBuilder.setOutputConfig(dbOutputConfig);
+		//增量配置开始
+		importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+		//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+		importBuilder.setLastValueStorePath("filelogdb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//增量配置结束
 
+		//映射和转换配置开始
+//		/**
+//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
+//		 */
 
-      final Count count = new Count();
-      /**
-       * 重新设置es数据结构
-       */
-      importBuilder.setDataRefactor(new DataRefactor() {
-         public void refactor(Context context) throws Exception  {
+		importBuilder.addFieldMapping("@message","message");
 
-            //shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+		importBuilder.addFieldMapping("@timestamp","optime");
 
-            context.addFieldValue("rowNo",count.getCount());
-            count.increament();
+		/**
+		 * 重新设置es数据结构
+		 */
+		importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+				//可以根据条件定义是否丢弃当前记录
+				//context.setDrop(true);return;
+//				if(s.incrementAndGet() % 2 == 0) {
+//					context.setDrop(true);
+//					return;
+//				}
+//				System.out.println(data);
+				if(context.getValue("id") == null){
+					context.addFieldValue("id", SimpleStringUtil.getUUID());
+				}
 
-//          logger.info(SimpleStringUtil.object2json(values));
-         }
-      });
-      //映射和转换配置结束
+//				context.addFieldValue("author","duoduo");//将会覆盖全局设置的author变量
+				context.addFieldValue("author","duoduo");
+				context.addFieldValue("title","解放");
+				context.addFieldValue("subtitle","小康");
 
-      /**
-       * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-       */
-      importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-      importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-      importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
-      importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-      importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-      importBuilder.setPrintTaskLog(true);
+				context.addFieldValue("collecttime",new Date());
 
-      /**
-       * 启动es数据导入文件并上传sftp/ftp作业
-       */
-      DataStream dataStream = importBuilder.builder();
-      dataStream.execute();//启动同步作业
-      logger.info("job started.");
+				
+//				//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
+//				String message = context.getStringValue("@message");
+//				String[] fvs = message.split(" ");//空格解析字段
+				/**
+				 * //解析示意代码
+				 * String[] fvs = message.split(" ");//空格解析字段
+				 * //将解析后的信息添加到记录中
+				 * context.addFieldValue("f1",fvs[0]);
+				 * context.addFieldValue("f2",fvs[1]);
+				 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
+				 */
+				//直接获取文件元信息
+//				Map fileMata = (Map)context.getValue("@filemeta");
+				/**
+				 * 文件插件支持的元信息字段如下：
+				 * hostIp：主机ip
+				 * hostName：主机名称
+				 * filePath： 文件路径
+				 * timestamp：采集的时间戳
+				 * pointer：记录对应的截止文件指针,long类型
+				 * fileId：linux文件号，windows系统对应文件路径
+				 */
+				String filePath = (String)context.getMetaValue("filePath");
+				String hostIp = (String)context.getMetaValue("hostIp");
+				String hostName = (String)context.getMetaValue("hostName");
+				String fileId = (String)context.getMetaValue("fileId");
+				long pointer = (long)context.getMetaValue("pointer");
+				context.addFieldValue("filePath",filePath);
+				context.addFieldValue("hostIp",hostIp);
+				context.addFieldValue("hostName",hostName);
+				context.addFieldValue("fileId",fileId);
+				context.addFieldValue("pointer",pointer);
+				context.addIgnoreFieldMapping("@filemeta");
+
+			}
+		});
+		//映射和转换配置结束
+
+		/**
+		 * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
+		 */
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+		importBuilder.setPrintTaskLog(true);
+
+		/**
+		 * 启动es数据导入文件并上传sftp/ftp作业
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.execute();//启动同步作业
+		logger.info("job started.");
 ```
 
 # 2.定时调度机制切换配置
@@ -302,12 +391,12 @@ FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
 内部扫描新文件调度配置
 
 ```java
-FileImportConfig config = new FileImportConfig();
+FileInputConfig config = new FileInputConfig();
 config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
 ```
 外部扫描新文件调度配置-以jdk timer为案例（还可以支持[quartz](https://esdoc.bbossgroups.com/#/datasyn-quartz)和[xxl-job](https://esdoc.bbossgroups.com/#/xxljobdatasyn)）
 ```java
-FileImportConfig config = new FileImportConfig();
+FileInputConfig config = new FileInputConfig();
       /**
        *  设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job
        *      true 采用，false 不采用，默认false
@@ -338,7 +427,7 @@ import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
 import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.input.file.FileConfig;
-import org.frameworkset.tran.input.file.FileImportConfig;
+import org.frameworkset.tran.input.file.FileInputConfig;
 import org.frameworkset.tran.output.es.FileLog2ESImportBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -362,7 +451,7 @@ public class FileLog2ESDemo {
 		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
 		importBuilder.setFlushInterval(10000l);
 
-		FileImportConfig config = new FileImportConfig();
+		FileInputConfig config = new FileInputConfig();
         /**
 		 * 备份采集完成文件
 		 * true 备份
@@ -439,7 +528,7 @@ public class FileLog2ESDemo {
 		 * true 开启 false 关闭
 		 */
 		config.setEnableMeta(true);
-		importBuilder.setFileImportConfig(config);
+		importBuilder.setFileInputConfig(config);
 		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
 		importBuilder.setTargetElasticsearch("default");
 		//指定索引名称，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
@@ -587,217 +676,8 @@ https://gitee.com/bboss/filelog-elasticsearch
 
 基于组件org.frameworkset.tran.output.db.FileLog2DBImportBuilder实现日志数据采集并写入数据库作业
 
-```java
-
-import org.frameworkset.tran.DataRefactor;
-import org.frameworkset.tran.DataStream;
-import org.frameworkset.tran.context.Context;
-import org.frameworkset.tran.db.DBConfigBuilder;
-import org.frameworkset.tran.input.file.FileConfig;
-import org.frameworkset.tran.input.file.FileImportConfig;
-import org.frameworkset.tran.output.db.FileLog2DBImportBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Date;
-
-/**
- * <p>Description: 从日志文件采集日志数据并保存到数据库</p>
- */
-public class FileLog2DBDemo {
-	private static Logger logger = LoggerFactory.getLogger(FileLog2DBDemo.class);
-	public static void main(String[] args){
-
-
-		FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
-		importBuilder.setBatchSize(500)//设置批量入库的记录数
-				.setFetchSize(1000);//设置按批读取文件行数
-		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
-		importBuilder.setFlushInterval(10000l);
-
-		FileImportConfig config = new FileImportConfig();
-		//.*.txt.[0-9]+$
-		//[17:21:32:388]
-//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
-//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
-//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-////				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
-//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
-//				.addField("tag","error") //添加字段tag到记录中
-//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
-
-		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
-				"es.log",//指定文件名称，可以是正则表达式
-				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-				.addField("tag","elasticsearch")//添加字段tag到记录中
-				/**
-				 * 是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）
-				 * linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制
-				 */
-				.setEnableInode(false)
-				.setExcludeLines(new String[]{".*endpoint.*"}));//采集不包含endpoint的日志
-
-//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
-		/**
-		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
-		 * hostIp：主机ip
-		 * hostName：主机名称
-		 * filePath： 文件路径
-		 * timestamp：采集的时间戳
-		 * pointer：记录对应的截止文件指针,long类型
-		 * fileId：linux文件号，windows系统对应文件路径
-		 * 例如：
-		 * {
-		 *   "_index": "filelog",
-		 *   "_type": "_doc",
-		 *   "_id": "HKErgXgBivowv_nD0Jhn",
-		 *   "_version": 1,
-		 *   "_score": null,
-		 *   "_source": {
-		 *     "title": "解放",
-		 *     "subtitle": "小康",
-		 *     "ipinfo": "",
-		 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
-		 *     "author": "张无忌",
-		 *     "@filemeta": {
-		 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
-		 *       "hostname": "",
-		 *       "pointer": 3342583,
-		 *       "hostip": "",
-		 *       "timestamp": 1617074824542,
-		 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
-		 *     },
-		 *     "@message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
-		 *   }
-		 * }
-		 *
-		 * true 开启 false 关闭
-		 */
-		config.setEnableMeta(true);
-		importBuilder.setFileImportConfig(config);
-		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
-
-//导出到数据源配置
-		DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
-		dbConfigBuilder
-				.setSqlFilepath("sql-dbtran.xml")
-
-				.setTargetDbName("test")//指定目标数据库，在application.properties文件中配置
-//				.setTargetDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-//				.setTargetDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
-//				.setTargetDbUser("root")
-//				.setTargetDbPassword("123456")
-//				.setTargetValidateSQL("select 1")
-//				.setTargetUsePool(true)//是否使用连接池
-				.setInsertSqlName("insertSql")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
-
-				/**
-				 * 是否在批处理时，将insert、update、delete记录分组排序
-				 * true：分组排序，先执行insert、在执行update、最后执行delete操作
-				 * false：按照原始顺序执行db操作，默认值false
-				 * @param optimize
-				 * @return
-				 */
-				.setOptimize(true);//指定查询源库的sql语句，在配置文件中配置：sql-dbtran.xml
-		importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
-		//增量配置开始
-		importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-		//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("filelogdb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-		//增量配置结束
-
-		//映射和转换配置开始
-//		/**
-//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
-//		 */
-
-		importBuilder.addFieldMapping("message","@message");
-//
-
-
-		/**
-		 * 重新设置es数据结构
-		 */
-		importBuilder.setDataRefactor(new DataRefactor() {
-			public void refactor(Context context) throws Exception  {
-				//可以根据条件定义是否丢弃当前记录
-				//context.setDrop(true);return;
-//				if(s.incrementAndGet() % 2 == 0) {
-//					context.setDrop(true);
-//					return;
-//				}
-//				System.out.println(data);
-
-//				context.addFieldValue("author","duoduo");//将会覆盖全局设置的author变量
-				context.addFieldValue("author","duoduo");
-				context.addFieldValue("title","解放");
-				context.addFieldValue("subtitle","小康");
-
-				context.addFieldValue("collecttime",new Date());
-
-				
-//				//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
-//				String message = context.getStringValue("@message");
-//				String[] fvs = message.split(" ");//空格解析字段
-				/**
-				 * //解析示意代码
-				 * String[] fvs = message.split(" ");//空格解析字段
-				 * //将解析后的信息添加到记录中
-				 * context.addFieldValue("f1",fvs[0]);
-				 * context.addFieldValue("f2",fvs[1]);
-				 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
-				 */
-				//直接获取文件元信息
-//				Map fileMata = (Map)context.getValue("@filemeta");
-				/**
-				 * 文件插件支持的元信息字段如下：
-				 * hostIp：主机ip
-				 * hostName：主机名称
-				 * filePath： 文件路径
-				 * timestamp：采集的时间戳
-				 * pointer：记录对应的截止文件指针,long类型
-				 * fileId：linux文件号，windows系统对应文件路径
-				 */
-				String filePath = (String)context.getMetaValue("filePath");
-				String hostIp = (String)context.getMetaValue("hostIp");
-				String hostName = (String)context.getMetaValue("hostName");
-				String fileId = (String)context.getMetaValue("fileId");
-				Date optime = (Date) context.getMetaValue("timestamp");
-				long pointer = (long)context.getMetaValue("pointer");
-				context.addFieldValue("optime",optime);
-				context.addFieldValue("filePath",filePath);
-				context.addFieldValue("hostIp",hostIp);
-				context.addFieldValue("hostName",hostName);
-				context.addFieldValue("fileId",fileId);
-				context.addFieldValue("pointer",pointer);
-				context.addIgnoreFieldMapping("@filemeta");
-
-			}
-		});
-		//映射和转换配置结束
-
-		/**
-		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
-		 */
-		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
-		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-		importBuilder.setPrintTaskLog(true);
-
-		/**
-		 * 启动日志数据采集并写入Elasticsearch作业
-		 */
-		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();//启动同步作业
-		logger.info("job started.");
-	}
-}
-```
+浏览完整的案例代码：
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java
 
 在工程中调试好作业后，修改application.properties文件中的mainclass配置，将作业类调整为新开发的作业程序FileLog2DBDemo
 
@@ -843,13 +723,7 @@ release.bat
 借助bboss可以非常方便地将ftp和本地文件目录下的文件数据导入到不同的数据库表中。在同时采集多个文件日志数据时，需要将每个文件的数据写入特定的表，通过在文件任务上下文指定不同的insertsql/updatesql/deletesql即可.
 
 ```java
-//导出到数据源配置
-		DBConfigBuilder dbConfigBuilder = new DBConfigBuilder();
-		dbConfigBuilder
-				.setSqlFilepath("sql-dbtran.xml")//指定sql配置文件地址
-				.setTargetDbName("test");//指定目标数据库，在application.properties文件中配置
 
-		importBuilder.setOutputDBConfig(dbConfigBuilder.buildDBImportConfig());
 		importBuilder.addCallInterceptor(new CallInterceptor() {
 			@Override
 			public void preCall(TaskContext taskContext) {
@@ -898,326 +772,9 @@ https://gitee.com/bboss/kafka2x-elasticsearch
 
 基于组件org.frameworkset.tran.kafka.output.filelog.FileLog2KafkaImportBuilder实现日志数据采集并发送到kafka作业
 
-```java
+浏览完整的案例源码
 
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.frameworkset.elasticsearch.serial.SerialUtil;
-import org.frameworkset.tran.CommonRecord;
-import org.frameworkset.tran.DataRefactor;
-import org.frameworkset.tran.DataStream;
-import org.frameworkset.tran.ExportResultHandler;
-import org.frameworkset.tran.context.Context;
-import org.frameworkset.tran.input.file.FileConfig;
-import org.frameworkset.tran.input.file.FileImportConfig;
-import org.frameworkset.tran.kafka.output.KafkaOutputConfig;
-import org.frameworkset.tran.kafka.output.filelog.FileLog2KafkaImportBuilder;
-import org.frameworkset.tran.metrics.TaskMetrics;
-import org.frameworkset.tran.task.TaskCommand;
-import org.frameworkset.tran.util.ReocordGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Writer;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Map;
-
-/**
- * <p>Description: 采集日志文件数据并发送kafka作业，如需调试同步功能，直接运行main方法</p>
- */
-public class Filelog2KafkaDemo {
-	private static Logger logger = LoggerFactory.getLogger(Filelog2KafkaDemo.class);
-	public static void main(String args[]){
-
-		Filelog2KafkaDemo dbdemo = new Filelog2KafkaDemo();
-
-		dbdemo.scheduleTimestampImportData();
-	}
-
-
-
-	/**
-	 * elasticsearch地址和数据库地址都从外部配置文件application.properties中获取，加载数据源配置和es配置
-	 */
-	public void scheduleTimestampImportData(){
-		FileLog2KafkaImportBuilder importBuilder = new FileLog2KafkaImportBuilder();
-		importBuilder.setFetchSize(300);
-		//kafka相关配置参数
-		/**
-		 *
-		 <property name="productorPropes">
-		 <propes>
-
-		 <property name="value.serializer" value="org.apache.kafka.common.serialization.StringSerializer">
-		 <description> <![CDATA[ 指定序列化处理类，默认为kafka.serializer.DefaultEncoder,即byte[] ]]></description>
-		 </property>
-		 <property name="key.serializer" value="org.apache.kafka.common.serialization.LongSerializer">
-		 <description> <![CDATA[ 指定序列化处理类，默认为kafka.serializer.DefaultEncoder,即byte[] ]]></description>
-		 </property>
-
-		 <property name="compression.type" value="gzip">
-		 <description> <![CDATA[ 是否压缩，默认0表示不压缩，1表示用gzip压缩，2表示用snappy压缩。压缩后消息中会有头来指明消息压缩类型，故在消费者端消息解压是透明的无需指定]]></description>
-		 </property>
-		 <property name="bootstrap.servers" value="192.168.137.133:9093">
-		 <description> <![CDATA[ 指定kafka节点列表，用于获取metadata(元数据)，不必全部指定]]></description>
-		 </property>
-		 <property name="batch.size" value="10000">
-		 <description> <![CDATA[ 批处理消息大小：
-		 the producer will attempt to batch records together into fewer requests whenever multiple records are being sent to the same partition. This helps performance on both the client and the server. This configuration controls the default batch size in bytes.
-		 No attempt will be made to batch records larger than this size.
-
-		 Requests sent to brokers will contain multiple batches, one for each partition with data available to be sent.
-
-		 A small batch size will make batching less common and may reduce throughput (a batch size of zero will disable batching entirely). A very large batch size may use memory a bit more wastefully as we will always allocate a buffer of the specified batch size in anticipation of additional records.
-		 ]]></description>
-		 </property>
-
-		 <property name="linger.ms" value="10000">
-		 <description> <![CDATA[
-		 <p>
-		 * The producer maintains buffers of unsent records for each partition. These buffers are of a size specified by
-		 * the <code>batch.size</code> config. Making this larger can result in more batching, but requires more memory (since we will
-		 * generally have one of these buffers for each active partition).
-		 * <p>
-		 * By default a buffer is available to send immediately even if there is additional unused space in the buffer. However if you
-		 * want to reduce the number of requests you can set <code>linger.ms</code> to something greater than 0. This will
-		 * instruct the producer to wait up to that number of milliseconds before sending a request in hope that more records will
-		 * arrive to fill up the same batch. This is analogous to Nagle's algorithm in TCP. For example, in the code snippet above,
-		 * likely all 100 records would be sent in a single request since we set our linger time to 1 millisecond. However this setting
-		 * would add 1 millisecond of latency to our request waiting for more records to arrive if we didn't fill up the buffer. Note that
-		 * records that arrive close together in time will generally batch together even with <code>linger.ms=0</code> so under heavy load
-		 * batching will occur regardless of the linger configuration; however setting this to something larger than 0 can lead to fewer, more
-		 * efficient requests when not under maximal load at the cost of a small amount of latency.
-		 * <p>
-		 * The <code>buffer.memory</code> controls the total amount of memory available to the producer for buffering. If records
-		 * are sent faster than they can be transmitted to the server then this buffer space will be exhausted. When the buffer space is
-		 * exhausted additional send calls will block. The threshold for time to block is determined by <code>max.block.ms</code> after which it throws
-		 * a TimeoutException.
-		 * <p>]]></description>
-		 </property>
-		 <property name="buffer.memory" value="10000">
-		 <description> <![CDATA[ 批处理消息大小：
-		 The <code>buffer.memory</code> controls the total amount of memory available to the producer for buffering. If records
-		 * are sent faster than they can be transmitted to the server then this buffer space will be exhausted. When the buffer space is
-		 * exhausted additional send calls will block. The threshold for time to block is determined by <code>max.block.ms</code> after which it throws
-		 * a TimeoutException.]]></description>
-		 </property>
-
-		 </propes>
-		 </property>
-		 */
-
-		// kafka服务器参数配置
-		// kafka 2x 客户端参数项及说明类：org.apache.kafka.clients.consumer.ConsumerConfig
-		KafkaOutputConfig kafkaOutputConfig = new KafkaOutputConfig();
-		kafkaOutputConfig.setTopic("es2kafka");//设置kafka主题名称
-		kafkaOutputConfig.addKafkaProperty("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
-		kafkaOutputConfig.addKafkaProperty("key.serializer","org.apache.kafka.common.serialization.LongSerializer");
-		kafkaOutputConfig.addKafkaProperty("compression.type","gzip");
-		kafkaOutputConfig.addKafkaProperty("bootstrap.servers","192.168.137.133:9092");
-		kafkaOutputConfig.addKafkaProperty("batch.size","10");
-//		kafkaOutputConfig.addKafkaProperty("linger.ms","10000");
-//		kafkaOutputConfig.addKafkaProperty("buffer.memory","10000");
-		kafkaOutputConfig.setKafkaAsynSend(true);
-//指定文件中每条记录格式，不指定默认为json格式输出
-		kafkaOutputConfig.setReocordGenerator(new ReocordGenerator() {
-			@Override
-			public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
-				//record.setRecordKey("xxxxxx"); //指定记录key
-				//直接将记录按照json格式输出到文本文件中
-				SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据并转换为json格式
-						builder);
-//          System.out.println(data);
-
-			}
-		});
-		importBuilder.setKafkaOutputConfig(kafkaOutputConfig);
-		//定时任务配置结束
-
-		FileImportConfig config = new FileImportConfig();
-		//.*.txt.[0-9]+$
-		//[17:21:32:388]
-//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
-//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
-//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-////				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
-//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
-//				.addField("tag","error") //添加字段tag到记录中
-//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
-
-		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
-						"es.log",//指定文件名称，可以是正则表达式
-						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-						.addField("tag","elasticsearch")//添加字段tag到记录中
-				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
-		);
-//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
-		/**
-		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
-		 * hostIp：主机ip
-		 * hostName：主机名称
-		 * filePath： 文件路径
-		 * timestamp：采集的时间戳
-		 * pointer：记录对应的截止文件指针,long类型
-		 * fileId：linux文件号，windows系统对应文件路径
-		 * 例如：
-		 * {
-		 *   "_index": "filelog",
-		 *   "_type": "_doc",
-		 *   "_id": "HKErgXgBivowv_nD0Jhn",
-		 *   "_version": 1,
-		 *   "_score": null,
-		 *   "_source": {
-		 *     "title": "解放",
-		 *     "subtitle": "小康",
-		 *     "ipinfo": "",
-		 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
-		 *     "author": "张无忌",
-		 *     "@filemeta": {
-		 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
-		 *       "hostname": "",
-		 *       "pointer": 3342583,
-		 *       "hostip": "",
-		 *       "timestamp": 1617074824542,
-		 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
-		 *     },
-		 *     "@message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
-		 *   }
-		 * }
-		 *
-		 * true 开启 false 关闭
-		 */
-		config.setEnableMeta(true);
-		importBuilder.setFileImportConfig(config);
-
-		importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-		//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("filelog2kafka");//记录上次采集的增量字段值的文件路
-
-
-		//设置ip地址信息库地址
-		importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
-		importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
-		importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
-
-		/**
-		 * 重新设置es数据结构
-		 */
-		importBuilder.setDataRefactor(new DataRefactor() {
-			public void refactor(Context context) throws Exception  {
-				//可以根据条件定义是否丢弃当前记录
-				//context.setDrop(true);return;
-//				if(s.incrementAndGet() % 2 == 0) {
-//					context.setDrop(true);
-//					return;
-//				}
-
-				context.addFieldValue("title","解放");
-				context.addFieldValue("subtitle","小康");
-
-				//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
-				String message = context.getStringValue("@message");
-				String[] fvs = message.split(" ");//空格解析字段
-				/**
-				 * //解析示意代码
-				 * String[] fvs = message.split(" ");//空格解析字段
-				 * //将解析后的信息添加到记录中
-				 * context.addFieldValue("f1",fvs[0]);
-				 * context.addFieldValue("f2",fvs[1]);
-				 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
-				 */
-				//直接获取文件元信息
-				Map fileMata = (Map)context.getValue("@filemeta");
-				/**
-				 * 文件插件支持的元信息字段如下：
-				 * hostIp：主机ip
-				 * hostName：主机名称
-				 * filePath： 文件路径
-				 * timestamp：采集的时间戳
-				 * pointer：记录对应的截止文件指针,long类型
-				 * fileId：linux文件号，windows系统对应文件路径
-				 */
-				String filePath = (String)context.getMetaValue("filePath");
-
-
-
-//				context.addIgnoreFieldMapping("title");
-				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//				context.addIgnoreFieldMapping("author");
-
-//				//修改字段名称title为新名称newTitle，并且修改字段的值
-//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
-				/**
-				 * 获取ip对应的运营商和区域信息
-				 */
-				/**
-				 IpInfo ipInfo = (IpInfo) context.getIpInfo(fvs[2]);
-				 if(ipInfo != null)
-				 context.addFieldValue("ipinfo", ipInfo);
-				 else{
-				 context.addFieldValue("ipinfo", "");
-				 }*/
-				DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
-//				Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
-//				context.addFieldValue("logOpertime",optime);
-				context.addFieldValue("newcollecttime",new Date());
-
-				/**
-				 //关联查询数据,单值查询
-				 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from head where billid = ? and othercondition= ?",
-				 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
-				 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("headdata",headdata);
-				 //关联查询数据,多值查询
-				 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-				 "select * from facedata where billid = ?",
-				 context.getIntegerValue("billid"));
-				 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-				 context.addFieldValue("facedatas",facedatas);
-				 */
-			}
-		});
-		//映射和转换配置结束
-		importBuilder.setExportResultHandler(new ExportResultHandler<Object, RecordMetadata>() {
-			@Override
-			public void success(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
-				TaskMetrics taskMetric = taskCommand.getTaskMetrics();
-				logger.debug("处理耗时："+taskCommand.getElapsed() +"毫秒");
-				logger.debug(taskCommand.getTaskMetrics().toString());
-			}
-
-			@Override
-			public void error(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
-				logger.warn(taskCommand.getTaskMetrics().toString());
-			}
-
-			@Override
-			public void exception(TaskCommand<Object,RecordMetadata> taskCommand, Exception exception) {
-				logger.warn(taskCommand.getTaskMetrics().toString(),exception);
-			}
-
-			@Override
-			public int getMaxRetry() {
-				return 0;
-			}
-		});
-
-		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-		importBuilder.setPrintTaskLog(true);
-
-		/**
-		 * 构建和启动日志数据采集并发送到kafka作业作业
-		 */
-		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();
-
-	}
-
-}
-```
+https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java
 
 在工程中调试好作业后，修改application.properties文件中的mainclass配置，将作业类调整为新开发的作业程序Filelog2KafkaDemo
 
@@ -1291,121 +848,112 @@ ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，�
 ftp配置案例
 
 ```java
-FileLog2DBImportBuilder importBuilder = new FileLog2DBImportBuilder();
-        importBuilder.setBatchSize(500)//设置批量入库的记录数
-                .setFetchSize(1000);//设置按批读取文件行数
-        //设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
-        importBuilder.setFlushInterval(10000l);
-        FileImportConfig config = new FileImportConfig();
+ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(5000)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+FileInputConfig config = new FileInputConfig();
+		config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
+		/**
+		 * 备份采集完成文件
+		 * true 备份
+		 * false 不备份
+		 */
+		config.setBackupSuccessFiles(true);
+		/**
+		 * 备份文件目录
+		 */
+		config.setBackupSuccessFileDir("d:/ftpbackup");
+		/**
+		 * 备份文件清理线程执行时间间隔，单位：毫秒
+		 * 默认每隔10秒执行一次
+		 */
+		config.setBackupSuccessFileInterval(20000l);
+		/**
+		 * 备份文件保留时长，单位：秒
+		 * 默认保留7天
+		 */
+		config.setBackupSuccessFileLiveTime( 10 * 60l);
+//		config.setCharsetEncode("GB2312");
+		//.*.txt.[0-9]+$
+		//[17:21:32:388]
+//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
+//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
+//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
+//				.addField("tag","error") //添加字段tag到记录中
+//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
 
-        config.setJsondata(true);//标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中
-        config.setRootLevel(true);//jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message
-
-        config.setScanNewFileInterval(1 * 60 * 1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
-        /**
-         * 备份采集完成文件
-         * true 备份
-         * false 不备份
-         */
-        config.setBackupSuccessFiles(true);
-        /**
-         * 备份文件目录
-         */
-        config.setBackupSuccessFileDir("d:/ftpbackup");
-        /**
-         * 备份文件清理线程执行时间间隔，单位：毫秒
-         * 默认每隔10秒执行一次
-         */
-        config.setBackupSuccessFileInterval(20000l);
-        /**
-         * 备份文件保留时长，单位：秒
-         * 默认保留7天
-         */
-        config.setBackupSuccessFileLiveTime(10 * 60l);
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        Date _startDate = null;
-        try {
-            _startDate = format.parse("20191211");//下载和采集2020年12月11日以后的数据文件
-        } catch (ParseException e) {
-            logger.error("", e);
-        }
-        final Date startDate = _startDate;
- 		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
-                .setFtpUser("test").setFtpPassword("123456").setDownloadWorkThreads(4)//设置并行下载文件线程个数，设置为4，代表允许最多4个文件同时下载
-            .setRemoteFileValidate(new RemoteFileValidate() {
-                 /**
-                  * 校验数据文件合法性和完整性接口
-
-                  * @param validateContext 封装校验数据文件信息
-                  *     dataFile 待校验零时数据文件，可以根据文件名称获取对应文件的md5签名文件名、数据量稽核文件名称等信息，
-                  *     remoteFile 通过数据文件对应的ftp/sftp文件路径，计算对应的目录获取md5签名文件、数据量稽核文件所在的目录地址
-                  *     ftpContext ftp配置上下文对象
-                  *     然后通过remoteFileAction下载md5签名文件、数据量稽核文件，再对数据文件进行校验即可
-                  *     redownload 标记校验来源是否是因校验失败重新下载文件导致的校验操作，true 为重下后 文件校验，false为第一次下载校验
-                  * @return int
-                  * 文件内容校验成功
-                  *     RemoteFileValidate.FILE_VALIDATE_OK = 1;
-                  *     校验失败不处理文件
-                  *     RemoteFileValidate.FILE_VALIDATE_FAILED = 2;
-                  *     文件内容校验失败并备份已下载文件
-                  *     RemoteFileValidate.FILE_VALIDATE_FAILED_BACKUP = 3;
-                  *     文件内容校验失败并删除已下载文件
-                  *     RemoteFileValidate.FILE_VALIDATE_FAILED_DELETE = 5;
-                  */
-                 public Result validateFile(ValidateContext validateContext) {
-//                        if(redownload)
-//                            return Result.default_ok;
-////                        return Result.default_ok;
-//                        Result result = new Result();
-//                        result.setValidateResult(RemoteFileValidate.FILE_VALIDATE_FAILED_REDOWNLOAD);
-//                        result.setRedownloadCounts(3);
-//                        result.setMessage("MD5校验"+remoteFile+"失败，重试3次");//设置校验失败原因信息
-//                        //根据remoteFile的信息计算md5文件路径地址，并下载，下载务必后进行签名校验
-//                        //remoteFileAction.downloadFile("remoteFile.md5","dataFile.md5");
-//                        return result;
-                     return Result.default_ok;
-                 }
-             })
-                .setRemoteFileDir("/").setDeleteRemoteFile(true)//
-                //.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP) //采用ftp协议
-                        .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP); //采用sftp协议
-        config.addConfig(new FileConfig().setFtpConfig(ftpConfig)
-        
-                        .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
-                            @Override
-                            public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识
-                                                  FileConfig fileConfig) {
-                                String name = filterFileInfo.getFileName();
-                                //判断是否采集文件数据，返回true标识采集，false 不采集
-                                boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
-                                if(nameMatch){
-                                    String day = name.substring("731_tmrt_user_login_day_".length());
-                                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-                                    try {
-                                        Date fileDate = format.parse(day);
-                                        if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
-                                            return true;
-                                    } catch (ParseException e) {
-                                        logger.error("",e);
-                                    }
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//				"es.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//				.addField("tag","elasticsearch")//添加字段tag到记录中
+//				.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//						new FileFilter() {
+//							@Override
+//							public boolean accept(File dir, String name, FileConfig fileConfig) {
+//								//判断是否采集文件数据，返回true标识采集，false 不采集
+//								return name.equals("es.log");
+//							}
+//						},//指定文件过滤器
+//						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//						.addField("tag","elasticsearch")//添加字段tag到记录中
+//						.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		Date _startDate = null;
+		try {
+			_startDate = format.parse("20201211");//下载和采集2020年12月11日以后的数据文件
+		} catch (ParseException e) {
+			logger.error("",e);
+		}
+		final Date startDate = _startDate;
+		FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
+				.setFtpUser("ecs").setFtpPassword("ecs@123")
+				.setRemoteFileDir("/home/ecs/failLog")
+				.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
+		config.addConfig(new FileConfig().setFtpConfig(ftpConfig)
+										.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
+											@Override
+											public boolean accept(FilterFileInfo fileInfo, //Ftp文件名称
+																  FileConfig fileConfig) {
+												String name = fileInfo.getFileName();
+												//判断是否采集文件数据，返回true标识采集，false 不采集
+												boolean nameMatch = name.startsWith("731_tmrt_user_login_day_");
+												if(nameMatch){
+													String day = name.substring("731_tmrt_user_login_day_".length());
+													SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+													try {
+														Date fileDate = format.parse(day);
+														if(fileDate.after(startDate))//下载和采集2020年12月11日以后的数据文件
+															return true;
+													} catch (ParseException e) {
+														logger.error("",e);
+													}
 
 
-                                }
-                                return false;
-                            }
-                        })
-                        .addScanNewFileTimeRange("10:00-18:30")
+												}
+												return false;
+											}
+										})
+										.addScanNewFileTimeRange("12:37-20:30")
 //										.addSkipScanNewFileTimeRange("11:30-13:00")
-                        .setSourcePath("D:\\ftplogs\\dbdemo")//指定目录
-                //.addField("tag", "elasticsearch")//添加字段tag到记录中
-                //.setCloseEOF(true)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-                //.setEnableInode(false)
-        );
+										.setSourcePath("D:/ftplogs")//指定目录
+										.addField("tag","elasticsearch")//添加字段tag到记录中
+						);
 
-
-        config.setEnableMeta(true);
-        importBuilder.setFileImportConfig(config);
+		config.setEnableMeta(true);
+//		config.setJsondata(true);
+		importBuilder.setInputConfig(config);
 ```
 
 # 8.采集子目录案例
