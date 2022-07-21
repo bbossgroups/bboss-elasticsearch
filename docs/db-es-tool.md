@@ -6,6 +6,10 @@
 
 *The best elasticsearch highlevel java rest api-----[bboss](https://www.bbossgroups.com)* 
 
+数据同步作业开发视频教程：[http服务数据采集作业发布和构建运行教程](https://www.bilibili.com/video/BV1xf4y1Z7xu?spm_id_from=333.999.0.0&vd_source=64c0c04fea8873df5fd107d442567cfd)
+
+数据同步作业开发调试工程源码地址：https://git.oschina.net/bboss/bboss-datatran-demo
+
 # 工具特性
 
 Elasticsearch-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。Elasticsearch-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用汇总运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。

@@ -10,16 +10,14 @@ https://esdoc.bbossgroups.com/#/quickstart
 
 # bboss兼容性
 
-与Elasticsearch、Spring boot兼容性
+Elasticsearch、Spring boot兼容性
 
 | bboss | Elasticsearch | spring boot |
 | ----- | ------------- | ----------- |
 | all   | 1.x           | 1.x,2.x     |
 | all   | 2.x           | 1.x,2.x     |
-| all   | 3.x           | 1.x,2.x     |
 | all   | 5.x           | 1.x,2.x     |
 | all   | 6.x           | 1.x,2.x     |
-| all   | 7.x           | 1.x,2.x     |
 | all   | 7.x           | 1.x,2.x     |
 | all   | 8.x           | 1.x,2.x     |
 
@@ -45,7 +43,7 @@ jdk兼容性：jdk 1.8+
 
 9. 提供高效的[BulkProcessor处理机制](https://esdoc.bbossgroups.com/#/bulkProcessor)
 
-10. 提供快速而高效的数据同步导入ES工具，**支持增、删、改数据同步**：支持[DB到Elasticsearch](https://esdoc.bbossgroups.com/#/db-es-tool)，[Elasticsearch到DB](https://esdoc.bbossgroups.com/#/db-es-tool?id=_3-elasticsearch-db%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95),[MongoDB到Elastisearch数据同步](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch)，[HBase到Elasticsearch数据同步](https://esdoc.bbossgroups.com/#/hbase-elasticsearch)，[Kafka到Elasticsearch数据同步](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)，[DB到DB之间数据同步](https://esdoc.bbossgroups.com/#/db-es-tool?id=_5-database-database数据同步使用方法)，后续将支持更多的数据源
+10. 提供快速而高效的数据同步导入ES工具，**支持增、删、改数据同步**,支持[DB到Elasticsearch](https://esdoc.bbossgroups.com/#/db-es-tool)，[Elasticsearch到DB](https://esdoc.bbossgroups.com/#/db-es-tool?id=_3-elasticsearch-db%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95),[MongoDB到Elastisearch数据同步](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch)，[HBase到Elasticsearch数据同步](https://esdoc.bbossgroups.com/#/hbase-elasticsearch)，[Kafka到Elasticsearch数据同步](https://esdoc.bbossgroups.com/#/db-es-tool?id=_7-kafka2x-elasticsearch%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95)，[DB到DB之间数据同步](https://esdoc.bbossgroups.com/#/db-es-tool?id=_5-database-database数据同步使用方法)，[http/https](https://esdoc.bbossgroups.com/#/datatran-http),[文本文件/Excel文件](https://esdoc.bbossgroups.com/#/filelog-guide)，[本地文件/Ftp/Sftp](https://esdoc.bbossgroups.com/#/elasticsearch-sftp)等多种数据源之间相互同步，可扩展支持更多的数据源
 
 11. 提供按时间日期[ES历史数据清理工具](https://esdoc.bbossgroups.com/#/elasticsearch-indexclean-task)
 

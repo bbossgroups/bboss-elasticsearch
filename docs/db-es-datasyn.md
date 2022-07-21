@@ -1,25 +1,25 @@
 # DB-ES数据同步工具使用方法
 
-bboss提供了一个数据库到Elasticsearch数据同步样板工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
+bboss提供了一个数据库到Elasticsearch数据同步样板工程:[bboss/bboss-datatran-demo](https://gitee.com/bboss/bboss-datatran-demo)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[bboss/bboss-datatran-demo](https://gitee.com/bboss/bboss-datatran-demo)提供了现成的运行指令和jvm配置文件。
 
 # 1 环境准备
 
 首先需要从Github或者gitee下载最新的工具源码：
 
-https://github.com/bbossgroups/db-elasticsearch-tool
+https://github.com/bbossgroups/bboss-datatran-demo
 
-https://gitee.com/bboss/db-elasticsearch-tool
+https://gitee.com/bboss/bboss-datatran-demo
 
 工具目录结构说明：
 
 ![](images/db-es.png)
 
 
-[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)是一个gradle工程，因此需要安装最新版本的gradle并配置好gradle环境变量，gradle安装和配置参考文档：
+[bboss/bboss-datatran-demo](https://gitee.com/bboss/bboss-datatran-demo)是一个gradle工程，因此需要安装最新版本的gradle并配置好gradle环境变量，gradle安装和配置参考文档：
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-安装和配置好gradle，就可以将db-elasticsearch-tool工程导入idea或者eclipse，然后进行数据同步逻辑的开发、调试以及构建打包工作。
+安装和配置好gradle，就可以将bboss/bboss-datatran-demo工程导入idea或者eclipse，然后进行数据同步逻辑的开发、调试以及构建打包工作。
 
 # 2 同步作业主程序定义
 
@@ -353,7 +353,7 @@ public class Dbdemo {
 
 Dbdemo完整的内容参考：
 
-<https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
+<https://gitee.com/bboss/bboss-datatran-demo/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
 
 开发过程中可以直接运行Dbdemo中的main方法来调试作业程序。
 
@@ -366,7 +366,7 @@ Dbdemo完整的内容参考：
 定时按特定条件导入数据
 
 ```java
-importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime]");
+dbInputConfig.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime]");
 
 		importBuilder.addParam("start_optime", TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2018-03-21 00:27:21"))
 				.addParam("end_optime",TimeUtil.parserDate("yyyy-MM-dd HH:mm:ss","2019-12-30 00:27:21"));
@@ -374,7 +374,7 @@ importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] a
 
 定时按特定条件增量导入数据
 ```java
-importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime] and collecttime > #[collecttime]");
+dbInputConfig.setSql("select * from batchtest1 where optime >= #[start_optime] and optime < #[end_optime] and collecttime > #[collecttime]");
 		importBuilder.setLastValueColumn("collecttime");
 		importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);
 
@@ -386,68 +386,79 @@ importBuilder.setSql("select * from batchtest1 where optime >= #[start_optime] a
 
 # 3 es数据源配置
 
-修改配置文件src\test\resources\application.properties
+通过ElasticsearchOutputConfig设置Elasticsearch输出数据源参数：elasticsearch集群地址和连接参数，输出索引、索引文档id字段等
 
-```properties
-# elasticsearch客户端配置
-##x-pack或者searchguard账号和口令
-elasticUser=elastic
-elasticPassword=changeme
-
-#elasticsearch.rest.hostNames=10.1.236.88:9200
-#elasticsearch.rest.hostNames=127.0.0.1:9200
-#elasticsearch.rest.hostNames=10.21.20.168:9200
-elasticsearch.rest.hostNames=192.168.137.1:9200
-#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
-elasticsearch.dateFormat=yyyy.MM.dd
-elasticsearch.timeZone=Asia/Shanghai
-elasticsearch.ttl=2d
-#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
-elasticsearch.showTemplate=false
-elasticsearch.discoverHost=false
-
-##elasticsearch客户端使用的http连接池配置
-http.timeoutConnection = 5000
-http.timeoutSocket = 50000
-http.connectionRequestTimeout=10000
-http.retryTime = 1
-http.maxLineLength = -1
-http.maxHeaderCount = 200
-http.maxTotal = 200
-http.defaultMaxPerRoute = 100
-http.soReuseAddress = false
-http.soKeepAlive = false
-http.timeToLive = 3600000
-http.keepAlive = 3600000
-http.keystore =
-http.keyPassword =
-# ssl 主机名称校验，是否采用default配置，
-# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
-http.hostnameVerifier =
-
-# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
-dslfile.refreshInterval = 3000
+```java
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+   		elasticsearchOutputConfig
+   				.addTargetElasticsearch("elasticsearch.serverNames","default")
+   				.addElasticsearchProperty("default.elasticsearch.rest.hostNames","192.168.137.1:9200")
+   				.addElasticsearchProperty("default.elasticsearch.showTemplate","true")
+   				.addElasticsearchProperty("default.elasticUser","elastic")
+   				.addElasticsearchProperty("default.elasticPassword","changeme")
+   				.addElasticsearchProperty("default.elasticsearch.failAllContinue","true")
+   				.addElasticsearchProperty("default.http.timeoutSocket","60000")
+   				.addElasticsearchProperty("default.http.timeoutConnection","40000")
+   				.addElasticsearchProperty("default.http.connectionRequestTimeout","70000")
+   				.addElasticsearchProperty("default.http.maxTotal","200")
+   				.addElasticsearchProperty("default.http.defaultMaxPerRoute","100")
+   				.setIndex("dbdemo")
+   				.setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+   				.setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+   				.setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+   		/**
+   		 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+   		 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+   		 // 否则根据setEsIdField方法设置的字段值作为文档id，
+   		 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+   
+   		 @Override
+   		 public Object genId(Context context) throws Exception {
+   		 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+   		 }
+   		 });
+   		 */
+   //				.setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+   //				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+   		/**
+   		 * es相关配置
+   		 */
+   //		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+   
+   		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 ```
 
 # 4 数据库数据源配置
 
-修改配置文件src\test\resources\application.properties，以mysql未来介绍数据源配置：
+通过DBInputConfig来配置输入DB数据源配置：数据库地址、连接池配置、查询sql及增量条件等
 
-```properties
-db.name = test  #数据源名称，持久层通过dbname引用定义的数据源
-db.user = root
-db.password = 123456
-db.driver = com.mysql.jdbc.Driver
-db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
-db.usePool = true
-db.validateSQL = select 1
-db.jdbcFetchSize = 10000
-db.showsql = true
-# 控制map中的列名采用小写，默认为大写
-db.columnLableUpperCase = false
+```java
+DBInputConfig dbInputConfig = new DBInputConfig();
+   		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+   		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+   		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+   		// 需要设置setLastValueColumn信息log_id，
+   		// 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
+   
+   //		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+   		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
+   				.setDbName("test")
+   				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+   				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+   				.setDbUser("root")
+   				.setDbPassword("123456")
+   				.setValidateSQL("select 1")
+   				.setUsePool(true)
+   				.setDbInitSize(5)
+   				.setDbMinIdleSize(5)
+   				.setDbMaxSize(10)
+   				.setShowSql(true);//是否使用连接池;
+   		importBuilder.setInputConfig(dbInputConfig);
 ```
 
 # 5 自定义适配器数据源配置
+
+不同的数据库需要指定特定的适配器，主流的数据库oracle、mysql、db2、sqlserver、hive、postgresql、达梦等都内置了适配器，如果是一个新的数据库，可以通过自定义适配器进行适配，以达梦数据库为例说明
 
 定义达梦数据库的适配器： 
 
@@ -471,45 +482,19 @@ public class DMAdaptor extends DBOracle {
 }
 ```
 
-在配置文件src\test\resources\application.properties中指定自定义数据源适配器
-
-```properties
-# 国产数据库达梦数据源配置，展示额外定制的达梦dbAdaptor，
-# 通过定制自己的dbAdaptor可以非常方便地实现bboss本身不支持的数据库的数据同步工作
-#   /**
-#   * dbtype专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-#   * 可选字段，设置了dbAdaptor可以不设置dbtype，默认为数据库driver类路径
-#   */
-#  private String dbtype ;
-#  /**
-#   * dbAdaptor专用于设置不支持的数据库类型名称和数据库适配器，方便用户扩展不支持的数据库的数据导入
-#   * dbAdaptor必须继承自com.frameworkset.orm.adapter.DB或者其继承DB的类
-#   */
-db.name = test
-db.user = username
-db.password = password
-db.driver = dm.jdbc.driver.DmDriver
-db.url = jdbc:dm://localhost:12345/dbname
-db.usePool = true
-db.validateSQL = select 1
-db.jdbcFetchSize = 10000
-db.showsql = true
-db.dbtype = dm
-#指定dm数据库适配器
-db.dbAdaptor = org.frameworkset.elasticsearch.imp.DMAdaptor
-# 控制map中的列名采用小写，默认为大写
-db.columnLableUpperCase = false
-```
-
-api方式配置自定义适配器：
+在dbInputConfig指定自定义数据源适配器
 
 ```java
-importBuilder.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor");
+dbInputConfig.setDbAdaptor("org.frameworkset.elasticsearch.imp.DMAdaptor")
 ```
+
+
 
 # 6 保存增量状态的数据源配置
 
-采用分布式作业调度引擎时，定时增量导入需要指定保存增量状态的数据源：
+如果不想采用默认的sqlite保存增量状态或者采用分布式作业调度引擎时，可以指定其他数据库来保存增量状态，可以通过配置文件指定增量状态数据源，也可以通过代码指定增量数据源
+
+通过配置文件指定
 
 修改配置文件src\main\resources\application.properties
 
@@ -534,6 +519,84 @@ config.db.name=test
 ### mysql
 #config.db.statusTableDML = CREATE TABLE $statusTableName ( ID bigint(10) NOT NULL AUTO_INCREMENT, lasttime bigint(10) NOT NULL, lastvalue bigint(10) NOT NULL, lastvaluetype int(1) NOT NULL, PRIMARY KEY(ID)) ENGINE=InnoDB
 ```
+
+通过代码指定增量数据源名称：importBuilder.setStatusDbname("test")
+
+```java
+importBuilder.setStatusDbname("test");//设置增量状态数据源名称
+```
+
+名称为test数据源与输入数据源的名称一样，已经通过DBInputConfig进行定义，如果是一个未定义的数据源，则可以通过设置ImportStartAction来定义状态数据源testStatus，通过来在作业停止时释放数据源：
+
+```java
+ //在任务数据抽取之前做一些初始化处理，例如：通过删表来做初始化操作
+
+		importBuilder.setImportStartAction(new ImportStartAction() {
+			/**
+			 * 初始化之前执行的处理操作，比如后续初始化操作、数据处理过程中依赖的资源初始化
+			 * @param importContext
+			 */
+			@Override
+			public void startAction(ImportContext importContext) {
+
+
+				importContext.addResourceStart(new ResourceStart() {
+					@Override
+					public ResourceStartResult startResource() {
+						DBConf tempConf = new DBConf();
+						tempConf.setPoolname("testStatus");
+						tempConf.setDriver("com.mysql.cj.jdbc.Driver");
+						tempConf.setJdbcurl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true");
+
+						tempConf.setUsername("root");
+						tempConf.setPassword("123456");
+						tempConf.setValidationQuery("select 1");
+
+						tempConf.setInitialConnections(5);
+						tempConf.setMinimumSize(10);
+						tempConf.setMaximumSize(10);
+						tempConf.setUsepool(true);
+						tempConf.setShowsql(true);
+						tempConf.setJndiName("testStatus-jndi");
+						//# 控制map中的列名采用小写，默认为大写
+						tempConf.setColumnLableUpperCase(false);
+						//启动数据源
+						boolean result = SQLManager.startPool(tempConf);
+						ResourceStartResult resourceStartResult = null;
+						//记录启动的数据源信息，用户作业停止时释放数据源
+						if(result){
+							resourceStartResult = new DBStartResult();
+							resourceStartResult.addResourceStartResult("testStatus");
+						}
+						return resourceStartResult;
+					}
+				});
+
+			}
+
+			/**
+			 * 所有初始化操作完成后，导出数据之前执行的操作
+			 * @param importContext
+			 */
+			@Override
+			public void afterStartAction(ImportContext importContext) {
+				if(dropIndice) {
+					try {
+						//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+						ElasticSearchHelper.getRestClientUtil().dropIndice("dbdemo");
+					} catch (Exception e) {
+						logger.error("Drop indice dbdemo failed:",e);
+					}
+				}
+			}
+		});
+```
+设置定义好的数据源名称testStatus即可：
+```java
+importBuilder.setStatusDbname("testStatus");//设置增量状态数据源名称
+```
+
+
 
 # 7 同步作业主程序配置
 
@@ -686,7 +749,7 @@ Xms和Xmx保持一样，NewSize和MaxNewSize保持一样，Xmx和MaxNewSize大�
 
 # 12 发布版本
 
-代码写好并经过调试后，就可以执行gradle指令构建发布db-elasticsearch-tool运行包，需要安装最新版本的gradle并配置好gradle环境变量。
+代码写好并经过调试后，就可以执行gradle指令构建发布bboss/bboss-datatran-demo运行包，需要安装最新版本的gradle并配置好gradle环境变量。
 
 gradle安装和配置参考文档：https://esdoc.bbossgroups.com/#/bboss-build
 
@@ -694,13 +757,13 @@ gradle安装和配置参考文档：https://esdoc.bbossgroups.com/#/bboss-build
 
 ```gradle
 先切换到工程的根目录
-cd D:\workspace\bbossesdemo\db-elasticsearch-tool
+cd D:\workspace\bbossesdemo\bboss/bboss-datatran-demo
 release.bat
 ```
 
 构建成功后，将会在工程目录下面生成可部署的二进制包：
 
-build/distributions/db-elasticsearch-tool-1.0.0-released.zip
+build/distributions/bboss/bboss-datatran-demo-1.0.0-released.zip
 
 包的目录结构如下：
 
