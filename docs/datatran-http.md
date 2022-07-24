@@ -85,6 +85,8 @@ importBuilder.setInputConfig(httpInputConfig);
 | sourceHttpPool        | String  | 源http连接池服务组名称                                       |
 | addHttpInputConfig    | 方法    | 添加http服务参数、服务地址、监控检查机制,例如: httpInputConfig.setQueryUrl("/httpservice/getData.api") .addSourceHttpPoolName("http.poolNames","datatran") .addHttpInputConfig("datatran.http.health","/health") .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808") .addHttpInputConfig("datatran.http.timeoutConnection","5000") .addHttpInputConfig("datatran.http.timeoutSocket","50000") .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000") .addHttpInputConfig("datatran.http.maxTotal","200") .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100") .addHttpInputConfig("datatran.http.failAllContinue","true");                                参考文档：https://esdoc.bbossgroups.com/#/httpproxy |
 | addSourceHttpPoolName | 方法    | 添加http服务组属性参数：httpInputConfig.addSourceHttpPoolName("http.poolNames","datatran") |
+| addHttpHeader | 方法    | 添加http头属性，可用于设置基于jwt等认证机制的头部token |
+| addHttpHeaders | 方法    | 批量添加http头属性，可用于设置基于jwt等认证机制的头部token |
 | showDsl               | boolean | 控制作业执行时，是否打印查询的dsl脚本，true 打印，false 不打印，默认值false |
 | QueryUrl              | String  | 获取数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpInputConfig.setQueryUrl("/httpservice/getData.api") |
 | dslFile               | String  | querydsl脚本配置文件路径，在classes路径下                    |
@@ -92,9 +94,10 @@ importBuilder.setInputConfig(httpInputConfig);
 | queryDsl              | String  | 直接设置queryDsl脚本，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 | httpMethod            | String  | http请求method，支持两种：put，post                          |
 | pageSize              | int     | 无需显示指定，按批获取数据记录数大小，通过importBuilder.setFetchSize(5000)设置 |
-| httpPagineFrom        | int     | 分页查询起始位置，默认从0开始，如果服务支持分页获取增量或者全量数据，设置分页起始位置 |
 | pagine                | boolean | 分页查询控制变量，false 不分页，true 分页，默认值false，     |
-| httpPagineSize        | int     | 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值 |
+| pagineFromKey        | String     | 设置分页查询起始位置key名称，默认值httpPagineFrom，其值保存了分页起始位置，在查询dsl中使用，pagineFrom默认从0开始，如果服务支持分页获取增量或者全量数据，设置分页起始位置,httpInputConfig.setPagineFromKey("httpPagineFrom") |
+| pagineSizeKey        | String     | 设置分页查询每页记录数key名称，默认值httpPagineSize，其值保存了分页记录数，在查询dsl中使用，如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值,httpInputConfig.setPagineFromKey("httpPagineSize") |
+| httpResultParser        | HttpResultParser     | 接口类型，用来自定义解析返回报文 |
 
 带分页的querydsl脚本案例：
 
@@ -106,6 +109,25 @@ importBuilder.setInputConfig(httpInputConfig);
     "size":#[httpPagineSize],  ## 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值
     "otherParam": #[otherParam] ## 其他服务参数
 }
+```
+httpResultParsers使用案例
+
+```java
+httpInputConfig.setHttpResultParser(new HttpResultParser<Map>() {
+					@Override
+                    					public void parserHttpResult(HttpResult<Map> httpResult, HttpResultParserContext httpResultParserContext) throws Exception{
+                    						HttpResponse httpResponse = httpResult.getResponse();
+                    						HttpEntity entity = httpResponse.getEntity();
+                    						if(entity == null)
+                    							return;
+                    						String datas = EntityUtils.toString(entity);
+                    						//可以自行对返回值进行处理，比如解密，或者签名校验，但是最终需要将包含在datas里面的采集的数据集合转换为List<Map>结构，便于后续对数据进行加工处理
+                    						//这里由于数据本身就是List<Map>结构，所以只需要做简单的序列化处理操作即可，这个也是默认的操作
+                    						List<Map> _datas = SimpleStringUtil.json2ListObject(datas, Map.class);
+                    						httpResult.setDatas(_datas);//必须将得到的集合设置到httpResult中，否则无法对数据进行后续处理
+                    						httpResult.setParseredObject(datas);//设置原始数据
+                    					}
+				})
 ```
 
 # 3.http输出插件
