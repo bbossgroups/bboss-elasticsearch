@@ -18,8 +18,8 @@ package org.frameworkset.elasticsearch.bulk;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientOptions;
-import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.util.concurrent.ThreadPoolFactory;
+import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public class BulkProcessor {
 			flush = new Flush("Elasticsearch["+(bulkConfig.getElasticsearch()!=null?bulkConfig.getElasticsearch():"default") + "]-"+bulkConfig.getBulkProcessorName() + "-flush-thread");
 			flush.start();
 		}
-		BaseApplicationContext.addShutdownHook(new Runnable() {
+		ShutdownUtil.addShutdownHook(new Runnable() {
 			@Override
 			public void run() {
 				shutDown();

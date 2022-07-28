@@ -2,8 +2,8 @@ package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
-import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +142,7 @@ public class HealthCheck implements Runnable{
 			t.start();
 			checkThreads.add(t);
 		}
-		BaseApplicationContext.addShutdownHook(new Runnable() {
+		ShutdownUtil.addShutdownHook(new Runnable() {
 			@Override
 			public void run() {
 				stopCheck();
