@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.0</version>
+            <version>6.7.1</version>
         </dependency>
 ```
 
@@ -44,9 +44,13 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.7.0</version>
+            <version>6.7.1</version>
         </dependency>
 ```
+# v6.7.1 功能改进
+1. 数据同步改进：作业配置增加[输入输出参数配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae)（动态和静态）
+2. 数据同步改进：http输入输出插件增加http header设置功能（静态header和动态header），支持各种认证机制（basic ，jwt）以及数据签名
+
 # v6.7.0 功能改进
 1. 数据同步改造：DB导出插件改进，可以为sql语句额外指定同步条件进行全量或者定时增量导入
 
@@ -80,7 +84,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.7.0版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.7.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -255,7 +259,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.0</version>
+            <version>6.7.1</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -263,7 +267,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.7.0</version>
+            <version>6.7.1</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -356,7 +360,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.7.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.7.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -408,7 +412,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.9.5",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.9.6",transitive: true 
   ```
 
   **maven坐标**
@@ -419,7 +423,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>5.9.5</version>  
+      <version>5.9.6</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -902,7 +906,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.7.0</version>
+    <version>6.7.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1315,11 +1319,11 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 # v6.0.2 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
-# v6.0.1 功能改进 
+# v6.0.2 功能改进 
 
 1.spring boot starter组件bbossEsstarter增加非配置文件管理dsl加载方法
 
-# v6.0.0 功能改进
+# v6.0.1 功能改进
 1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
 
 2.数据同步工具：importbuilder组件增加Elasticsearch数据源代码配置功能，对应API
@@ -1712,7 +1716,7 @@ importBuilder.setIgnoreNullValueField(true);
 3.解决mongodb-elasticsearch增量数据同步增量状态记录主键没有正确生成的问题
 
 # v5.9.5 功能改进
-1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.6！
+1.修改bug：slice scroll parral和scroll parrel查询有个bug，变量名称写错了，手误导致，但是问题很严重，会导致数据重复，请升级版本到5.9.7！
 
 2.数据同步模块扩展：增加数据库到数据库的数据同步功能
 

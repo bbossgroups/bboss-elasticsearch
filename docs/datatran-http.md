@@ -1,12 +1,43 @@
 # Http/Https插件使用指南
 
-通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务：
+Http/Https输入输出插件案例工程下载地址：
+
+https://gitee.com/bboss/bboss-datatran-demo
+
+输入插件案例：
+
+[Http2ESFullQueryDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java)
+
+输出插件案例：
+
+1. [ES2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2HttpDemo.java)
+2. [LocalLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java)
+3. [SFtpLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java)
+4. [SFtpLog2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2HttpDemo.java)
+5. [其他案例](https://gitee.com/bboss/db-elasticsearch-tool/tree/master/src/main/java/org/frameworkset/elasticsearch/imp/http)
+
+通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务，插件特性如下：
 
 1. 支持增量、全量数据采集同步，
+
 2. 支持分页模式采集数据
+
 3. 支持http服务高可用负载及容错机制，可以配置服务健康检查机制
+
 4. 支持post和put两种http method
-5. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
+
+5. 支持添加静态值的http head和动态值的http head
+
+6. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
+
+7. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
+
+8. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
+
+9. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
+
+10. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，支持对发送数据签名以及接收数据签名解析
+
 
 bboss 输入/输出插件涉及三个作业配置组件
 
@@ -31,46 +62,21 @@ http数据同步作业包含作业配置态和作业运行态，具体看如下�
 创建一个作业构建器
 ImportBuilder importBuilder = new ImportBuilder() ;
 ```
-
-| 属性名称                | 类型                | 说明                                                         |
-| ----------------------- | ------------------- | ------------------------------------------------------------ |
-| FetchSize               | int                 | 按批获取数据记录数大小，importBuilder.setFetchSize(5000)     |
-| BatchSize               | int                 | 按批输出数据记录数待续，importBuilder.setBatchSize(1000)     |
-| InputConfig             | InputConfig         | 设置输入插件配置，importBuilder.setInputConfig(httpInputConfig); |
-| OutputConfig            | OutputConfig        | 设置输出插件配置，importBuilder.setOutputConfig(elasticsearchOutputConfig); |
-| addParam                | 方法                | 为查询类作业添加额外的查询条件参数importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖"); |
-| UseJavaName             | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
-| UseLowcase              | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
-| PrintTaskLog            | boolean             | 可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false |
-| FixedRate               | boolean             | 参考jdk timer task文档对fixedRate的说明                      |
-| DeyLay                  | long                | 任务延迟执行deylay毫秒后执行                                 |
-| Period                  | long                | 每隔period毫秒执行，如果不设置，只执行一次                   |
-| ScheduleDate            | date                | 指定任务开始执行时间：日期                                   |
-| addCallInterceptor      | CallInterceptor     | 设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器   |
-| LastValueColumn         | String              | 指定数字增量查询字段                                         |
-| FromFirst               | boolean             | false 如果作业停了，作业重启后从上次截止位置开始采集数据，true 如果作业停了，作业重启后，重新开始采集数据 |
-| StatusDbname            | String              | 设置增量状态数据源名称                                       |
-| LastValueStorePath      | String              | 记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样 |
-| LastValueStoreTableName | String              | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
-| LastValueType           | int                 | 指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型，ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型 |
-| IncreamentEndOffset     | int                 | 单位：秒，日期类型增量导入，可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。 |
-| addFieldMapping         | 方法                | 手动设置字段名称映射，将源字段名称映射为目标字段名称importBuilder.addFieldMapping("document_id","docId") |
-| addIgnoreFieldMapping   | 方法                | 添加忽略字段，importBuilder.addIgnoreFieldMapping("channel_id"); |
-| addFieldValue           | 方法                | 添加全局字段和值，为每条记录添加额外的字段和值，可以为基本数据类型，也可以是复杂的对象mportBuilder.addFieldValue("testF1","f1value"); |
-| DataRefactor            | DataRefactor        | 通过DataRefactor，对数据记录进行数据转换、清洗、加工操作，亦可以对数据进行记录级别的处理，比如添加字段、去除字段、忽略记录、类型转换等 |
-| Parallel                | boolean             | 设置为多线程并行批量导入,false串行 true并行                  |
-| Queue                   | int                 | 设置批量导入线程池等待队列长度                               |
-| ThreadCount             | int                 | 设置批量导入线程池工作线程数量                               |
-| ContinueOnError         | boolean             | 任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行 |
-| Asyn                    | boolean             | true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回 |
-| ExportResultHandler     | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
-| builder                 | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
-
+可以通过importBuilder设置作业基础参数，输入插件配置、输出插件配置，具体的基础参数说明，参考文档：[作业基础配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%E4%BD%9C%E4%B8%9A%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE)
 
 
 # 2.http输入插件
 
-http输入插件采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件，属性说明如下：
+http输入插件采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询所需的参数、增量条件、分页条件;插件可以接收以下两种数据格式，参考后面的案例介绍：
+
+- 基本集合结构List\\<Map\\>
+- 包含List\\<Map\\>数据的复杂结构（需要通过HttpResultParser接口提取数据）
+
+接收的数据如果经过数据加密或者数据签名，亦可以通过HttpResultParser进行解密或者签名校验。
+
+
+
+插件初始化：
 
 ```java
 //创建输入插件Config实例
@@ -78,16 +84,17 @@ HttpInputConfig httpInputConfig = new HttpInputConfig();
 importBuilder.setInputConfig(httpInputConfig);
 ```
 
-
+插件属性说明如下
 
 | 属性名称              | 类型    | 说明                                                         |
 | --------------------- | ------- | ------------------------------------------------------------ |
 | sourceHttpPool        | String  | 源http连接池服务组名称                                       |
 | addHttpInputConfig    | 方法    | 添加http服务参数、服务地址、监控检查机制,例如: httpInputConfig.setQueryUrl("/httpservice/getData.api") .addSourceHttpPoolName("http.poolNames","datatran") .addHttpInputConfig("datatran.http.health","/health") .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808") .addHttpInputConfig("datatran.http.timeoutConnection","5000") .addHttpInputConfig("datatran.http.timeoutSocket","50000") .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000") .addHttpInputConfig("datatran.http.maxTotal","200") .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100") .addHttpInputConfig("datatran.http.failAllContinue","true");                                参考文档：https://esdoc.bbossgroups.com/#/httpproxy |
 | addSourceHttpPoolName | 方法    | 添加http服务组属性参数：httpInputConfig.addSourceHttpPoolName("http.poolNames","datatran") |
-| addHttpHeader | 方法    | 添加http头属性，可用于设置基于jwt等认证机制的头部token |
+| addHttpHeader | 方法    | 添加http头属性 |
 | addHttpHeaders | 方法    | 批量添加http头属性，可用于设置基于jwt等认证机制的头部token |
-| showDsl               | boolean | 控制作业执行时，是否打印查询的dsl脚本，true 打印，false 不打印，默认值false |
+| addDynamicHeader | 方法 | 添加动态http头属性，可用于设置基于jwt等认证机制的头部token（具备生命周期，失效后重新申请） |
+| showDsl               | boolean | 控制作业执行时，是否打印查询的dsl脚本，true 打印，false 不打印，默认值false，控制是否将dsl打印到日志文件或者控制台，要求log级别为info级别 |
 | QueryUrl              | String  | 获取数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpInputConfig.setQueryUrl("/httpservice/getData.api") |
 | dslFile               | String  | querydsl脚本配置文件路径，在classes路径下                    |
 | queryDslName          | String  | querydsl脚本名称，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
@@ -110,7 +117,7 @@ importBuilder.setInputConfig(httpInputConfig);
     "otherParam": #[otherParam] ## 其他服务参数
 }
 ```
-httpResultParsers使用案例
+httpResultParsers使用案例：可以自定义返回报文解析机制，从报文中提取数据和签名识别校验等操作
 
 ```java
 httpInputConfig.setHttpResultParser(new HttpResultParser<Map>() {
@@ -132,6 +139,8 @@ httpInputConfig.setHttpResultParser(new HttpResultParser<Map>() {
 
 # 3.http输出插件
 
+bboss可以直接将不同插件从数据源采集的数据推送到http服务，也可以通过dsl脚本语言，重新组装需发送数据报文结构，非常灵活方便，可以通过后面的[案例](https://esdoc.bbossgroups.com/#/datatran-http?id=%e6%a1%88%e4%be%8b2-%e5%8a%a8%e6%80%81header%e5%92%8c%e5%8a%a8%e6%80%81%e5%8f%82%e6%95%b0%e6%a1%88%e4%be%8b)来了解。
+
 创建输出组件配置对象：
 
 ```java
@@ -139,14 +148,24 @@ HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
 importBuilder.setOutputConfig(httpOutputConfig);
 ```
 
-| 属性名称              | 类型   | 说明                                                         |
-| --------------------- | ------ | ------------------------------------------------------------ |
-| targetHttpPool        | String | 目标http连接池服务组名称                                     |
-| serviceUrl            | String | 上报数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpOutputConfig.setServiceUrl("/httpservice/sendData.api") |
-| httpMethod            | String | http请求method，支持两种：put，post                          |
-| lineSeparator         | String | 设置数据记录分行符，默认为回车换行符                         |
-| addTargetHttpPoolName | 方法   | 添加目标http连接池服务组名称httpOutputConfig.addTargetHttpPoolName("http.poolNames","datatran") |
-| addHttpOutputConfig   | 方法   | 添加http服务连接池参数，httpOutputConfig    .addHttpOutputConfig("datatran.http.health","/health")       .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")       .addHttpOutputConfig("datatran.http.timeoutConnection","5000")       .addHttpOutputConfig("datatran.http.timeoutSocket","50000")       .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")       .addHttpOutputConfig("datatran.http.maxTotal","200")       .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")       .addHttpOutputConfig("datatran.http.failAllContinue","true"); |
+| 属性名称              | 类型            | 说明                                                         |
+| --------------------- | --------------- | ------------------------------------------------------------ |
+| targetHttpPool        | String          | 目标http连接池服务组名称                                     |
+| serviceUrl            | String          | 上报数据的http服务地址，相对路径，对应的服务器对应清单有属性datatran.http.hosts指定，多个地址逗号分隔，示例：httpOutputConfig.setServiceUrl("/httpservice/sendData.api") |
+| httpMethod            | String          | http请求method，支持两种：put，post                          |
+| lineSeparator         | String          | 设置数据记录分行符，默认为回车换行符                         |
+| recordGenerator       | RecordGenerator | 自定义每条记录的数据格式，默认为json格式输出每条记录         |
+| addTargetHttpPoolName | 方法            | 添加目标http连接池服务组名称httpOutputConfig.addTargetHttpPoolName("http.poolNames","datatran") |
+| addHttpOutputConfig   | 方法            | 添加http服务连接池参数，httpOutputConfig    .addHttpOutputConfig("datatran.http.health","/health")       .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")       .addHttpOutputConfig("datatran.http.timeoutConnection","5000")       .addHttpOutputConfig("datatran.http.timeoutSocket","50000")       .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")       .addHttpOutputConfig("datatran.http.maxTotal","200")       .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")       .addHttpOutputConfig("datatran.http.failAllContinue","true"); |
+| addDynamicHeader      | 方法            | 添加动态http头属性，可用于设置基于jwt等认证机制的头部token（具备生命周期，失效后重新申请） |
+| addHttpHeader         | 方法            | 添加http头属性                                               |
+| addHttpHeaders        | 方法            | 批量添加http头属性，可用于设置基于jwt等认证机制的头部token   |
+| showDsl               | boolean         | 控制作业执行时，是否打印查询的dsl脚本，true 打印，false 不打印，默认值false，控制是否将dsl打印到日志文件或者控制台，要求log级别为info级别 |
+| json                  | boolean         | 控制输出数据是否采用标准的json集合格式输出，true 使用，false不使用，默认值true |
+| dataKey               | String          | 设置输出数据到dsl的变量名称，用来保持输出数据：httpOutputConfig.setDataKey("httpDatas")                                                         在dsl中应用变量："datas":  #[httpDatas,quoted=false,escape=false], ## datas,发送的数据源 |
+| DslFile               | String          | dsl脚本配置文件路径，在classes路径下                         |
+| DataDslName           | String          | dsl脚本名称，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
+| dataDsl               | String          | 直接设置输出数据的Dsl脚本，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 
 # 4.数据转换处理
 
@@ -359,9 +378,93 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/Http2ESQueryDslDemo.java
 
+### 案例4 动态参数和动态header案例
+
+```java
+HttpInputConfig httpInputConfig = new HttpInputConfig();
+
+
+httpInputConfig.setDslFile("httpdsl.xml")
+      .setQueryDslName("queryPagineDsl")
+      .setQueryUrl("/httpservice/getPagineData.api")
+      .setPagine(true)
+      .setShowDsl(true)
+      .setPagineFromKey("httpPagineFrom")
+      .setPagineSizeKey("httpPagineSize")
+      .addHttpHeader("testHeader","xxxxx")
+      .addDynamicHeader("Authorization", new DynamicHeader() {
+         @Override
+         public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+            //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+            String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+            return token;
+         }
+      })
+      .setHttpResultParser(new HttpResultParser<Map>() {
+         @Override
+         public void parserHttpResult(HttpResult<Map> httpResult, HttpResultParserContext httpResultParserContext) throws Exception{
+            HttpResponse httpResponse = httpResult.getResponse();
+            HttpEntity entity = httpResponse.getEntity();
+            if(entity == null)
+               return;
+            String datas = EntityUtils.toString(entity);
+            //可以自行对返回值进行处理，比如解密，或者签名校验，但是最终需要将包含在datas里面的采集的数据集合转换为List<Map>结构，便于后续对数据进行加工处理
+            //这里由于数据本身就是List<Map>结构，所以只需要做简单的序列化处理操作即可，这个也是默认的操作
+            List<Map> _datas = SimpleStringUtil.json2ListObject(datas, Map.class);
+            httpResult.setDatas(_datas);//必须将得到的集合设置到httpResult中，否则无法对数据进行后续处理
+            httpResult.setParseredObject(datas);//设置原始数据
+         }
+      })
+      .addSourceHttpPoolName("http.poolNames","datatran")
+      .addHttpInputConfig("datatran.http.health","/health")
+      .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808")
+      .addHttpInputConfig("datatran.http.timeoutConnection","5000")
+      .addHttpInputConfig("datatran.http.timeoutSocket","50000")
+      .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000")
+      .addHttpInputConfig("datatran.http.maxTotal","200")
+      .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100")
+      .addHttpInputConfig("datatran.http.failAllContinue","true");
+
+
+importBuilder.setInputConfig(httpInputConfig);
+importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖")
+          .addJobInputParam("device_id","app03001")
+           .addJobInputParam("app_id","app03")
+.addJobDynamicInputParam("signature", new DynamicParam() {//根据数据动态生成签名参数
+   @Override
+   public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {
+
+      //可以根据自己的算法对数据进行签名
+      String signature = "1b3bb71f6ebae2f52b7a238c589f3ff9";//signature =md5(datas)
+      return signature;
+   }
+});
+```
+
+完整的案例地址
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java
+
+dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/resources/httpdsl.xml
+
+```xml
+<property name="queryPagineDsl">
+    <![CDATA[
+    {
+        "device_id": #[device_id], ## device_id,通过addJobInputParam赋值
+        "app_id": #[app_id], ## app_id,通过addJobInputParam赋值
+        "logTime":#[logTime],## 传递增量时间起始条件
+        "logTimeEndTime":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间
+        "from":#[httpPagineFrom], ## 如果服务支持分页获取增量或者全量数据，设置分页起始位置
+        "size":#[httpPagineSize],  ## 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值
+        "otherParam": #[otherParam] ## 其他服务参数otherParam,通过addJobInputParam赋值
+    }
+    ]]></property>
+```
+
 ## 5.2 http输出插件案例
 
-从elasticsearch获取数据，推送到http服务
+### 案例1 从elasticsearch获取数据，直接将数据推送到http服务
 
 ```java
       ImportBuilder importBuilder = new ImportBuilder() ;
@@ -412,6 +515,97 @@ https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/fram
 完整的案例地址：
 
 https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/ES2HttpDemo.java
+
+### 案例2 动态header和动态参数案例
+
+通过动态header 参数设置jwt token认证Authorization Bearer ,判断服务token是否过期，如果过期则需要重新调用token服务申请token
+
+通过动态job output参数设置数据签名signature，根据数据动态生成签名参数。
+
+```java
+//http输出插件配置
+      HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑
+
+
+      httpOutputConfig
+            .setJson(true)
+            .setShowDsl(true)
+            .setDslFile("httpdsl.xml")
+            .setDataDslName("sendData")
+            .setDataKey("httpDatas")
+            .setServiceUrl("/httpservice/sendData.api")
+            .setHttpMethod("post")
+            .addHttpHeader("testHeader","xxxxx")
+            .addDynamicHeader("Authorization", new DynamicHeader() {
+               @Override
+               public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+                  //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+                  TokenInfo tokenInfo = tokenManager.getTokenInfo();
+                  String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+                  return token;
+               }
+            })
+//          .addTargetHttpPoolName("http.poolNames","datatran,jwtservice")//初始化多个http服务集群时，就不要用addTargetHttpPoolName方法，使用以下方法即可
+            .setTargetHttpPool("datatran")
+            .addHttpOutputConfig("http.poolNames","datatran,jwtservice")
+//          .addHttpOutputConfig("datatran.http.health","/health")//服务监控检查地址
+            .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")//服务地址清单，多个用逗号分隔
+            .addHttpOutputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpOutputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("datatran.http.maxTotal","200")
+            .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("datatran.http.failAllContinue","true")
+            //设置token申请和更新服务配置jwtservice，在TokenManager中使用jwtservice申请和更新token
+//          .addHttpOutputConfig("jwtservice.http.health","/health") //服务监控检查地址
+            .addHttpOutputConfig("jwtservice.http.hosts","192.168.137.1:808") //服务地址清单，多个用逗号分隔，192.168.0.100:9501
+            .addHttpOutputConfig("jwtservice.http.timeoutConnection","5000")
+            .addHttpOutputConfig("jwtservice.http.timeoutSocket","50000")
+            .addHttpOutputConfig("jwtservice.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("jwtservice.http.maxTotal","200")
+            .addHttpOutputConfig("jwtservice.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("jwtservice.http.failAllContinue","true")
+
+      ;
+
+      importBuilder.addJobOutputParam("device_id","app03001")
+                .addJobOutputParam("app_id","app03")
+                .addJobDynamicOutputParam("signature", new DynamicParam() {//根据数据动态生成签名参数
+                   @Override
+                   public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {
+                       String datas = (String) dynamicParamContext.getDatas();
+                       //可以根据自己的算法对数据进行签名
+                       String signature = "1b3bb71f6ebae2f52b7a238c589f3ff9";//signature =md5(datas)
+                      return signature;
+                   }
+                });
+      importBuilder.setOutputConfig(httpOutputConfig);
+```
+
+完整的案例地址：
+
+采集本地文件数据推送到http服务   
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java
+
+采集ftp文件数据推送到http服务
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java
+
+dsl配置：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/resources/httpdsl.xml
+
+```xml
+<property name="sendData">
+    <![CDATA[
+    {
+        "device_id": #[device_id], ## device_id,通过addJobInputParam赋值
+        "app_id": #[app_id], ## app_id,通过addJobInputParam赋值
+        "datas":  #[httpDatas,quoted=false,escape=false], ## datas,发送的数据源，关闭自动加双引号和自动对数据特殊字符转义功能，因为httpDatas是一个标准的json集合，如果不是则去掉控制参数，直接设置#[httpDatas]即可，具体看config的json变量值，json=false时，需要去掉相关控制参数
+        "signature": #[signature]
+    }
+    ]]></property>
+```
 
 ## 5.3 案例发布运行
 

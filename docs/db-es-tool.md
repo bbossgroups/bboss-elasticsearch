@@ -112,39 +112,43 @@ https://gitee.com/bboss/db-elasticsearch-tool
 ImportBuilder importBuilder = new ImportBuilder() ;
 ```
 
-| 属性名称                | 类型                | 说明                                                         |
-| ----------------------- | ------------------- | ------------------------------------------------------------ |
-| FetchSize               | int                 | 按批获取数据记录数大小，importBuilder.setFetchSize(5000)     |
-| BatchSize               | int                 | 按批输出数据记录数待续，importBuilder.setBatchSize(1000)     |
-| InputConfig             | InputConfig         | 设置输入插件配置，importBuilder.setInputConfig(httpInputConfig); |
-| OutputConfig            | OutputConfig        | 设置输出插件配置，importBuilder.setOutputConfig(elasticsearchOutputConfig); |
-| addParam                | 方法                | 为查询类作业添加额外的查询条件参数importBuilder.addParam("otherParam","陈雨菲2:0战胜戴资颖"); |
-| UseJavaName             | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
-| UseLowcase              | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
-| PrintTaskLog            | boolean             | 可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false |
-| FixedRate               | boolean             | 参考jdk timer task文档对fixedRate的说明                      |
-| DeyLay                  | long                | 任务延迟执行deylay毫秒后执行                                 |
-| Period                  | long                | 每隔period毫秒执行，如果不设置，只执行一次                   |
-| ScheduleDate            | date                | 指定任务开始执行时间：日期                                   |
-| addCallInterceptor      | CallInterceptor     | 设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器   |
-| LastValueColumn         | String              | 指定数字增量查询字段                                         |
-| FromFirst               | boolean             | false 如果作业停了，作业重启后从上次截止位置开始采集数据，true 如果作业停了，作业重启后，重新开始采集数据 |
-| StatusDbname            | String              | 设置增量状态数据源名称                                       |
-| LastValueStorePath      | String              | 记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样 |
-| LastValueStoreTableName | String              | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
-| LastValueType           | int                 | 指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型，ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型 |
-| IncreamentEndOffset     | int                 | 单位：秒，日期类型增量导入，可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。 |
-| addFieldMapping         | 方法                | 手动设置字段名称映射，将源字段名称映射为目标字段名称importBuilder.addFieldMapping("document_id","docId") |
-| addIgnoreFieldMapping   | 方法                | 添加忽略字段，importBuilder.addIgnoreFieldMapping("channel_id"); |
-| addFieldValue           | 方法                | 添加全局字段和值，为每条记录添加额外的字段和值，可以为基本数据类型，也可以是复杂的对象mportBuilder.addFieldValue("testF1","f1value"); |
-| DataRefactor            | DataRefactor        | 通过DataRefactor，对数据记录进行数据转换、清洗、加工操作，亦可以对数据进行记录级别的处理，比如添加字段、去除字段、忽略记录、类型转换等 |
-| Parallel                | boolean             | 设置为多线程并行批量导入,false串行 true并行                  |
-| Queue                   | int                 | 设置批量导入线程池等待队列长度                               |
-| ThreadCount             | int                 | 设置批量导入线程池工作线程数量                               |
-| ContinueOnError         | boolean             | 任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行 |
-| Asyn                    | boolean             | true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回 |
-| ExportResultHandler     | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
-| builder                 | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
+| 属性名称                 | 类型                | 说明                                                         |
+| ------------------------ | ------------------- | ------------------------------------------------------------ |
+| FetchSize                | int                 | 按批获取数据记录数大小，importBuilder.setFetchSize(5000)     |
+| BatchSize                | int                 | 按批输出数据记录数待续，importBuilder.setBatchSize(1000)     |
+| InputConfig              | InputConfig         | 设置输入插件配置，importBuilder.setInputConfig(httpInputConfig); |
+| OutputConfig             | OutputConfig        | 设置输出插件配置，importBuilder.setOutputConfig(elasticsearchOutputConfig); |
+| addJobInputParam         | 方法                | 为查询类作业添加额外的查询条件参数importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖"); |
+| addJobDynamicInputParam  | 方法                | 为查询类作业添加额外的动态查询条件参数importBuilder.addJobDynamicInputParam("signature", new DynamicParam() {//根据数据动态生成签名参数    @Override    public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {        //可以根据自己的算法对数据进行签名       String signature =md5(datas)       return signature;    } }); |
+| addJobOutputParam        | 方法                | 为输出插件作业dsl脚本或者sql添加额外的变量参数importBuilder.addJobOutputParam("otherParam","陈雨菲2:0战胜戴资颖"); |
+| addJobDynamicOutputParam | 方法                | 为输出插件作业dsl脚本或者sql添加额外的动态变量参数importBuilder.addJobDynamicOutputParam("signature", new DynamicParam() {//根据数据动态生成签名参数    @Override    public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {        //可以根据自己的算法对数据进行签名       String signature =md5(datas)       return signature;    } }); |
+| UseJavaName              | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
+| UseLowcase               | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
+| PrintTaskLog             | boolean             | 可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false |
+| FixedRate                | boolean             | 参考jdk timer task文档对fixedRate的说明                      |
+| DeyLay                   | long                | 任务延迟执行deylay毫秒后执行                                 |
+| Period                   | long                | 每隔period毫秒执行，如果不设置，只执行一次                   |
+| ScheduleDate             | date                | 指定任务开始执行时间：日期                                   |
+| addCallInterceptor       | CallInterceptor     | 设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器   |
+| LastValueColumn          | String              | 指定数字增量查询字段                                         |
+| FromFirst                | boolean             | false 如果作业停了，作业重启后从上次截止位置开始采集数据，true 如果作业停了，作业重启后，重新开始采集数据 |
+| StatusDbname             | String              | 设置增量状态数据源名称                                       |
+| LastValueStorePath       | String              | 记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样 |
+| LastValueStoreTableName  | String              | 记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab |
+| LastValueType            | int                 | 指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型，ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型 |
+| IncreamentEndOffset      | int                 | 单位：秒，日期类型增量导入，可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。 |
+| addFieldMapping          | 方法                | 手动设置字段名称映射，将源字段名称映射为目标字段名称importBuilder.addFieldMapping("document_id","docId") |
+| addIgnoreFieldMapping    | 方法                | 添加忽略字段，importBuilder.addIgnoreFieldMapping("channel_id"); |
+| addFieldValue            | 方法                | 添加全局字段和值，为每条记录添加额外的字段和值，可以为基本数据类型，也可以是复杂的对象mportBuilder.addFieldValue("testF1","f1value"); |
+| DataRefactor             | DataRefactor        | 通过DataRefactor，对数据记录进行数据转换、清洗、加工操作，亦可以对数据进行记录级别的处理，比如添加字段、去除字段、忽略记录、类型转换等 |
+| Parallel                 | boolean             | 设置为多线程并行批量导入,false串行 true并行                  |
+| Queue                    | int                 | 设置批量导入线程池等待队列长度                               |
+| ThreadCount              | int                 | 设置批量导入线程池工作线程数量                               |
+| ContinueOnError          | boolean             | 任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行 |
+| Asyn                     | boolean             | true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回 |
+| ExportResultHandler      | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
+| builder                  | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
+
 
 ## 插件案例清单
 
@@ -160,7 +164,7 @@ https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.7.0</version>
+<version>6.7.1</version>
 </dependency>
 ```
 如果需要增量导入，还需要导入sqlite驱动：
