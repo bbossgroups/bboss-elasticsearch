@@ -1,6 +1,6 @@
 # Http/Https插件使用指南
 
-Http/Https输入输出插件案例工程下载地址：
+本文中涉及的Http/Https输入输出插件案例工程下载地址：
 
 https://gitee.com/bboss/bboss-datatran-demo
 
@@ -10,33 +10,25 @@ https://gitee.com/bboss/bboss-datatran-demo
 
 输出插件案例：
 
-1. [ES2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2HttpDemo.java)
-2. [LocalLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java)
-3. [SFtpLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java)
-4. [SFtpLog2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2HttpDemo.java)
+1. [ES2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2HttpDemo.java) 从Elasticsearch采集数据直接推送http服务
+2. [LocalLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java)  从本地日志文件采集数据基于dsl脚本推送http服务
+3. [SFtpLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java)  从ftp服务器采集日志文件基于dsl脚本推送http服务
+4. [SFtpLog2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2HttpDemo.java) 从ftp服务器采集日志文件直接推送http服务
 5. [其他案例](https://gitee.com/bboss/db-elasticsearch-tool/tree/master/src/main/java/org/frameworkset/elasticsearch/imp/http)
 
 通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务，插件特性如下：
 
 1. 支持增量、全量数据采集同步，
-
 2. 支持分页模式采集数据
-
 3. 支持http服务高可用负载及容错机制，可以配置服务健康检查机制
-
 4. 支持post和put两种http method
-
 5. 支持添加静态值的http head和动态值的http head
-
 6. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
-
 7. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
-
 8. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
-
 9. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
-
-10. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，支持对发送数据签名以及接收数据签名解析
+10. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，通过动态header实现jwt token认证功能、可以基于http服务组件直接实现[basic认证](https://esdoc.bbossgroups.com/#/httpproxy?id=_8%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81)以及[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)。
+11. 支持对发送数据签名以及接收数据签名解析
 
 
 bboss 输入/输出插件涉及三个作业配置组件
@@ -108,7 +100,9 @@ importBuilder.setInputConfig(httpInputConfig);
 
 带分页的querydsl脚本案例：
 
-```json
+```xml
+<property name="queryPagineDsl">
+        <![CDATA[
 {
     "logTime":#[logTime],## 传递增量时间起始条件
     "logTimeEndTime":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间
@@ -116,7 +110,20 @@ importBuilder.setInputConfig(httpInputConfig);
     "size":#[httpPagineSize],  ## 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值
     "otherParam": #[otherParam] ## 其他服务参数
 }
+              ]]></property>
 ```
+加载query dsl：
+
+将上面的dsl放入xml文件httpdsl.xml，将文件地址以及dsl脚本名称设置到httpInputConfig即可
+
+```java
+  httpInputConfig.setDslFile("httpdsl.xml")
+        .setQueryDslName("queryPagineDsl")
+        .setQueryUrl("/httpservice/getPagineData.api")
+        .setPagine(true)
+```
+也可以直接将query dsl设置到httpInputConfig，无需xml配置文件，参考后面的[案例3-基于query-dsl脚本从http服务获取数据，写入elasticsearch](https://esdoc.bbossgroups.com/#/datatran-http?id=%e6%a1%88%e4%be%8b3-%e5%9f%ba%e4%ba%8equery-dsl%e8%84%9a%e6%9c%ac%e4%bb%8ehttp%e6%9c%8d%e5%8a%a1%e8%8e%b7%e5%8f%96%e6%95%b0%e6%8d%ae%ef%bc%8c%e5%86%99%e5%85%a5elasticsearch)
+
 httpResultParsers使用案例：可以自定义返回报文解析机制，从报文中提取数据和签名识别校验等操作
 
 ```java
@@ -136,6 +143,7 @@ httpInputConfig.setHttpResultParser(new HttpResultParser<Map>() {
                     					}
 				})
 ```
+
 
 # 3.http输出插件
 
@@ -167,6 +175,8 @@ importBuilder.setOutputConfig(httpOutputConfig);
 | DataDslName           | String          | dsl脚本名称，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 | dataDsl               | String          | 直接设置输出数据的Dsl脚本，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 
+
+
 # 4.数据转换处理
 
 通过设置DataRefactor接口来实现记录级别的数据处理和转换，例如数据类型转换，从原始记录中获取HttpResponse对象，提取http请求头相关信息。 
@@ -190,9 +200,166 @@ importBuilder.setDataRefactor(new DataRefactor() {
 		});
 ```
 
-# 5.案例
+# 5.jwt token认证设置
 
-## 5.1 http输入插件案例
+通过动态header设置jwt 认证token
+
+```java
+httpInputConfig.addDynamicHeader("Authorization", new DynamicHeader() {
+   @Override
+   public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+      //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+      TokenInfo tokenInfo = tokenManager.getTokenInfo();
+      String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+      return token;
+   }
+})
+```
+
+# 6.自定义数据记录输出格式
+
+http输出插件输出的数据记录默认采用json格式输出，采用换行符分割多条记录：
+
+```json
+{"id":"1","name":"duoduo","sex":"F","class":"师大附中初一班"}
+{"id":"2","name":"xiaoli","sex":"M","class":"师大附中初二班"}
+```
+
+bboss同时也可以自定义http输出插件输出的数据记录格式，示例如下：
+
+首先可以通过设置分割多条记录规则（默认采用换行符）：
+
+```java
+httpOutputConfig.setLineSeparator("^");
+```
+
+自定义记录输出格式：使用^作为行分隔符，|作为记录字段值分隔符，由于不是json格式，所以设置json为false
+
+```java
+httpOutputConfig.setJson(false)
+      .setLineSeparator("^")
+      .setRecordGenerator(new RecordGenerator() {
+         @Override
+         public void buildRecord(Context taskContext, CommonRecord record, Writer builder) throws Exception {
+            Map<String, Object> datas = record.getDatas();
+            try {
+               Map<String,String> chanMap = (Map<String,String>)taskContext.getTaskContext().getTaskData("chanMap");
+
+               String phoneNumber = (String) datas.get("phoneNumber");//手机号码
+               if(phoneNumber==null){
+                  phoneNumber="";
+               }
+               builder.write(phoneNumber);
+               builder.write("|");
+
+               String chanId = (String) datas.get("chanId");//办理渠道名称 通过Id获取名称
+               String chanName = null;
+               if(chanId==null){
+                  chanName="";
+               }else{
+                  chanName=chanMap.get(chanId);
+                  if(chanName == null){
+                     chanName = chanId;
+                  }
+               }
+               builder.write(chanName);
+               builder.write("|");
+
+               String startTime = "";//办理开始时间(时间戳)
+               if( datas.get("startTime")!=null){
+                  startTime=datas.get("startTime")+"";
+               }
+               builder.write(startTime);
+               builder.write("|");
+
+               String endTime = "";//办理结束时间(时间戳)
+               if( datas.get("endTime")!=null){
+                  endTime=datas.get("endTime")+"";
+               }
+               builder.write(endTime);
+               builder.write("|");
+
+               String ydCodeLv1 = (String) datas.get("ydCodeLv1");//业务一级分类编码（取目前的业务大类编码）
+               if(ydCodeLv1==null){
+                  ydCodeLv1="";
+               }
+               builder.write(ydCodeLv1);
+               builder.write("|");
+
+               String ydNameLv1 = (String) datas.get("ydNameLv1");//业务一级分类名称（取目前的业务大类名称）
+               if(ydNameLv1==null){
+                  ydNameLv1="";
+               }
+               builder.write(ydNameLv1);
+               builder.write("|");
+
+               String ydCodeLv2 = (String) datas.get("ydCodeLv2");//业务二级分类编码（取目前的业务小类编码）
+               if(ydCodeLv2==null){
+                  ydCodeLv2="";
+               }
+               builder.write(ydCodeLv2);
+               builder.write("|");
+
+               String ydNameLv2 = (String) datas.get("ydNameLv2");//、业务二级分类名称（取目前的业务小类名称）
+               if(ydNameLv2==null){
+                  ydNameLv2="";
+               }
+               builder.write(ydNameLv2);
+               builder.write("|");
+
+               String ydCodeLv3 = (String) datas.get("ydCodeLv3");//业务三级分类编码（取目前的产品编码）
+               if(ydCodeLv3==null){
+                  ydCodeLv3="";
+               }
+               builder.write(ydCodeLv3);
+               builder.write("|");
+
+               String ydNameLv3 = (String) datas.get("ydNameLv3");//业务三级分类名称（取目前的产品名称）
+               if(ydNameLv3==null){
+                  ydNameLv3="";
+               }
+               builder.write(ydNameLv3);
+               builder.write("|");
+
+               String goodsName = (String) datas.get("goodsName");//资费档次名称
+               if(goodsName==null){
+                  goodsName="";
+               }
+               builder.write(goodsName);
+               builder.write("|");
+
+               String goodsCode = (String) datas.get("goodsCode");//资费档次编码
+               if(goodsCode==null){
+                  goodsCode="";
+               }
+               builder.write(goodsCode);
+               builder.write("|");
+
+               String bossErrorCode = (String) datas.get("bossErrorCode");//BOSS错误码
+               if(bossErrorCode==null){
+                  bossErrorCode="";
+               }
+               builder.write(bossErrorCode);
+               builder.write("|");
+
+               String bossErrorDesc = (String) datas.get("bossErrorDesc");//BOSS错误码描述
+               if(bossErrorDesc==null){
+                  bossErrorDesc="";
+               }else{
+                  bossErrorDesc = bossErrorDesc.replace("|","__").replace("\r\n","");
+               }
+               builder.write(bossErrorDesc);
+
+            } catch (IOException e) {
+               throw new DataImportException("RecordGenerator failed:",e);
+            }
+         }
+      })
+```
+
+# 7.案例
+
+## 7.1 http输入插件案例
 
 ### 案例1 调用http服务获取数据，写入elasticsearch
 
@@ -462,7 +629,7 @@ dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/reso
     ]]></property>
 ```
 
-## 5.2 http输出插件案例
+## 7.2 http输出插件案例
 
 ### 案例1 从elasticsearch获取数据，直接将数据推送到http服务
 
@@ -516,9 +683,10 @@ dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/reso
 
 https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/http/ES2HttpDemo.java
 
-### 案例2 动态header和动态参数案例
+### 案例2 动态header和动态参数jwt认证和数据签名案例
 
-通过动态header 参数设置jwt token认证Authorization Bearer ,判断服务token是否过期，如果过期则需要重新调用token服务申请token
+ 动态header和动态参数jwt认证和数据签名必须通过http输出插件的dsl脚本来实现
+ 本例通过动态header 参数设置jwt token认证Authorization Bearer ,判断服务token是否过期，如果过期则需要重新调用token服务申请token
 
 通过动态job output参数设置数据签名signature，根据数据动态生成签名参数。
 
@@ -540,7 +708,7 @@ https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/fram
             .addDynamicHeader("Authorization", new DynamicHeader() {
                @Override
                public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
-                  //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+                  //判断服务token是否存在或者过期，如果token不存在或者已经过期则需要重新调用token服务申请token
                   TokenInfo tokenInfo = tokenManager.getTokenInfo();
                   String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
                   return token;
@@ -583,17 +751,73 @@ https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/fram
       importBuilder.setOutputConfig(httpOutputConfig);
 ```
 
-完整的案例地址：
+TokenManager是一个简单jwt token管理的组件：
 
-采集本地文件数据推送到http服务   
+```java
+package org.frameworkset.elasticsearch.imp;
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java
 
-采集ftp文件数据推送到http服务
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
+import org.frameworkset.tran.DataImportException;
+import org.frameworkset.util.TimeUtil;
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-dsl配置：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/resources/httpdsl.xml
+
+public class TokenManager {
+	private TokenInfo tokenInfo;
+
+	/**
+	 * 如果token不存在或者token过期，则调用jwtservice /api/auth/v1.0/getToken申请token
+	 * @return
+	 */
+	public synchronized TokenInfo getTokenInfo(){
+		if(tokenInfo == null || expired()){//没有token或者token过期
+			Map params = new LinkedHashMap();
+			/**
+			 *  "device_id": "app03001",
+			 *     "app_id": "app03",
+			 *     "signature": "1b3bb71f6ebae2f52b7a238c589f3ff9",
+			 *     "uuid": "adfdafadfadsfe34132fdsadsfadsf"
+			 */
+			params.put("device_id","app03001");
+			params.put("app_id","app03");
+			params.put("signature","1b3bb71f6ebae2f52b7a238c589f3ff9");
+			params.put("uuid","adfdafadfadsfe34132fdsadsfadsf");
+			Map datas = HttpRequestProxy.sendJsonBody("jwtservice",params,"/api/auth/v1.0/getToken.api", Map.class);//调用jwtservice对应的jwt token服务，获取jwt token信息
+			if(datas != null){
+				int code = (int)datas.get("code");
+				if(code == 200) {
+					Map<String, Object> tokens = (Map<String, Object>) datas.get("data");
+					TokenInfo tokenInfo = new TokenInfo();//将获取jwt token信息转换为对象
+					tokenInfo.setTokenTimestamp(new Date());//直接将当前时间作为token的生产时间戳，实际情况需从jwt token中提取对应的时间
+					tokenInfo.setAccess_token((String)tokens.get("access_toke"));
+					tokenInfo.setExpires_time((int)tokens.get("expires_time"));
+					tokenInfo.setExpiredTimestamp(TimeUtil.addDateSeconds(tokenInfo.getTokenTimestamp(),tokenInfo.getExpires_time()));
+					this.tokenInfo = tokenInfo;
+				}
+
+
+			}
+			if(tokenInfo == null){
+				throw new DataImportException("get token failed: token info is null");
+			}
+			return tokenInfo;
+		}
+		else{
+			return tokenInfo;
+		}
+	}
+
+	private boolean expired(){
+		return tokenInfo.getExpiredTimestamp().before(new Date());
+	}
+}
+
+```
+发送数据的dsl脚本：
 
 ```xml
 <property name="sendData">
@@ -606,8 +830,23 @@ dsl配置：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.1/src/main/reso
     }
     ]]></property>
 ```
+对应的dsl配置文件
 
-## 5.3 案例发布运行
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/resources/httpdsl.xml
+
+完整的案例地址：
+
+采集本地文件数据推送到http服务   
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java
+
+采集ftp文件数据推送到http服务
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java
+
+
+
+## 7.3 案例发布运行
 
 案例工程下载：下载到本地目db-elasticsearch-tool
 
@@ -633,3 +872,12 @@ release.sh
 
 https://www.bilibili.com/video/BV1xf4y1Z7xu
 
+# 8.参考文档
+
+本插件底层基于bboss httpproxy组件实现，参考文档：
+
+https://esdoc.bbossgroups.com/#/development?id=_26-http%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae
+
+
+
+https://esdoc.bbossgroups.com/#/httpproxy

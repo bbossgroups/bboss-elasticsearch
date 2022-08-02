@@ -1267,7 +1267,35 @@ http.health=/health.html
 
 **bboss以get方式发送http.health对应的健康检查服务请求，健康检查服务只需要响应状态码为200-300即认为服务节点健康可用**。
 
-# 8.开发交流
+# 8.安全认证
+
+bboss支持http basic认证机制，亦可以通过添加header参数实现jwt token认证机制。
+
+http basic认证机制设置
+
+```properties
+# 服务全认证账号配置
+schedule.http.authAccount=elastic
+schedule.http.authPassword=changeme
+```
+
+jwt token认证设置，直接申请jwt token，并经token设置到http header中，模拟token有效期管理的组件(可以根据实际场景调整)：[TokenManger](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/TokenManager.java)
+
+```java
+//判断服务token是否过期，如果过期则需要重新调用token服务申请token
+			TokenInfo tokenInfo = tokenManager.getTokenInfo();
+			String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+			Map<String,String> headers = new LinkedHashMap<>();
+			
+			headers.put("Authorization",token);
+			Map datas = HttpRequestProxy.sendJsonBody("jwtservice",params,"/api/queryUsers.api", headers,Map.class);
+```
+
+ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
+
+
+
+# 9.开发交流
 
 
 

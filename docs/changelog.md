@@ -48,8 +48,10 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.7.1 功能改进
-1. 数据同步改进：作业配置增加[输入输出参数配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae)（动态和静态）
-2. 数据同步改进：http输入输出插件增加http header设置功能（静态header和动态header），支持各种认证机制（basic ，jwt）以及数据签名
+1. 作业配置增加[输入输出参数配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae)（动态和静态） 
+2. [http输入输出插件](https://esdoc.bbossgroups.com/#/datatran-http)增加http header设置功能（静态header和动态header），
+3. http输入输出插件增加jwt服务认证以及对数据签名功能
+4. http输出插件 增加对dsl脚本的支持
 
 # v6.7.0 功能改进
 1. 数据同步改造：DB导出插件改进，可以为sql语句额外指定同步条件进行全量或者定时增量导入
@@ -279,6 +281,8 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
+              
               
               
               
