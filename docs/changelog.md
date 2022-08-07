@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.0.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.2 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -34,7 +34,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.1</version>
+            <version>6.7.2</version>
         </dependency>
 ```
 
@@ -44,9 +44,15 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.7.1</version>
+            <version>6.7.2</version>
         </dependency>
 ```
+# v6.7.2 功能改进
+1. 数据同步bug修复： 执行destroy方法销毁作业时空指针异常问题修复
+2. 数据同步改进：优化作业销毁机制
+3. 数据同步改进：优化filelog插件日志采集多行识别处理增量采集机制和未结束多行记录回滚机制
+4. 数据同步改进：优化kafka输入插件并行消息处理机制
+
 # v6.7.1 功能改进
 1. 作业配置增加[输入输出参数配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae)（动态和静态） 
 2. [http输入输出插件](https://esdoc.bbossgroups.com/#/datatran-http)增加http header设置功能（静态header和动态header），
