@@ -10,11 +10,19 @@
 
 数据同步作业开发调试工程源码地址：https://git.oschina.net/bboss/bboss-datatran-demo
 
+数据同步案例大全：[bboss数据采集ETL案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=bboss数据采集etl案例大全)
+
 # 工具特性
 
 bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。bboss-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
 
-如果您还在苦于logstash、flume、filebeat之类的开源工具无法满足复杂的、海量的数据处理加工场景，那么bboss-datatran将是一个不错的选择。
+如果您还在：
+
+- 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
+- 苦于无法调用企业现有服务和库来处理加工数据；
+- 苦于因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
+
+那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
 
 ![](images\datasyn.png)
 
@@ -149,10 +157,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 | ExportResultHandler      | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
 | builder                  | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
 
-
-## 插件案例清单
-
-https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
+本文主要以关系数据库表同步到Elasticsearch为案例介绍bboss datatran的功能.
 
 
 

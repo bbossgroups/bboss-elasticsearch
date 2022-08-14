@@ -1,14 +1,16 @@
 # bboss数据采集ETL案例大全
 
+bboss datatran使用参考文档：
+
+https://esdoc.bbossgroups.com/#/db-es-tool
+
 # 1.bboss数据采集ETL工具功能架构	
 
 ​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
 ![img](images/datasyn.png)
 
-​		通过bboss，可以非常方便地采集database/mongodb/Elasticsearch/kafka/hbase/日志文件源数据，经过数据转换处理后，再推送到目标库elasticsearch/database/file/ftp/kafka/dummy/logger。
-
-​		bboss另一个显著的特色就是直接基于java语言来编写数据同步作业程序，基于强大的java语言和第三方工具包，能够非常方便地加工和处理需要同步的源数据，然后将最终的数据保存到目标库（Elasticsearch或者数据库）；同时也可以非常方便地在idea或者eclipse中调试和运行同步作业程序，调试无误后，通过bboss提供的gradle脚本，即可构建和发布出可部署到生产环境的同步作业包。因此，对广大的java程序员来说，bboss无疑是一个轻易快速上手的数据同步利器。
+​	
 
 ​		bboss同步功能非常丰富，为了方便快速使用上手bboss，本文将各种数据同步案例呈现给大家，可以根据实际情况选用合适的案例。
 
