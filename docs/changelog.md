@@ -53,7 +53,7 @@ https://esdoc.bbossgroups.com/#/development
 3. 数据同步改进：优化filelog插件日志采集多行识别处理增量采集机制和未结束多行记录回滚机制
 4. 数据同步改进：优化kafka输入插件并行消息处理机制
 
-# v6.7.2 功能改进
+# v6.7.1 功能改进
 1. 作业配置增加[输入输出参数配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae)（动态和静态） 
 2. [http输入输出插件](https://esdoc.bbossgroups.com/#/datatran-http)增加http header设置功能（静态header和动态header），
 3. http输入输出插件增加jwt服务认证以及对数据签名功能
