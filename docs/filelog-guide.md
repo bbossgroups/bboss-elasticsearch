@@ -28,12 +28,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-file2ftp</artifactId>
-  <version>6.7.1</version>
+  <version>6.7.2</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.7.1'
+api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.7.2'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：

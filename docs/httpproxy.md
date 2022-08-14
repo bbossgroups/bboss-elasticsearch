@@ -55,7 +55,7 @@ ip:port（默认http协议）
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:6.0.2'
+implementation 'com.bbossgroups:bboss-http:6.0.3'
 ```
 
 # 3.负载均衡组件
@@ -453,7 +453,7 @@ http.routing=#[area]
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>5.9.7</version>
+  <version>5.9.8</version>
 </dependency>
 ```
 
