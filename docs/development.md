@@ -3885,169 +3885,13 @@ ds配置文件中xml节点property元素增加cacheDsl属性=指示框架是否�
 							"orderId.keyword":  #[orderId]
 						}
 					},
-				#end
-				#if($startCreateDatetime || $endCreateDatetime)
-				{
-					"range": {
-					  "createDatetime": {
-						#if($startCreateDatetime)
-						 "gte":  #[startCreateDatetime]
-						#end
-						#if($startCreateDatetime && $endCreateDatetime)
-						 ,
-						#end
-						#if($endCreateDatetime)
-						 "lte": #[endCreateDatetime]
-						#end
-					  }
-					}
-				},
-				#end
-				#if($machineId)
-				{
-					"term": {
-						"machineId":  #[machineId]
-					}
-				},
-				#end
-				#if($status)
-				{
-					"term": {
-						"status.keyword":  #[status]
-					}
-				},
-				#end
-				#if($payCategoryName)
-				{
-					"term": {
-						"payCategoryName.keyword":  #[payCategoryName]
-					}
-				},
-				#end
-				#if($payMode)
-				{
-					"term": {
-						"payMode.keyword":  #[payMode]
-					}
-				},
-				#end
-				#if($couponId)
-				{
-					"term": {
-						"couponId.keyword":  #[couponId]
-					}
-				},
-				#end
-				#if($payAccount)
-				{
-					"term": {
-						"payAccount.keyword":  #[payAccount]
-					}
-				},
-				#end
-				#if($startPayDatetime || $endPayDatetime)
-				{
-					"range": {
-					  "payDatetime": {
-						#if($startPayDatetime)
-						 "gte":  #[startPayDatetime]
-						#end
-						#if($startPayDatetime && $endPayDatetime)
-						 ,
-						#end
-						#if($endPayDatetime)
-						 "lte": #[endPayDatetime]
-						#end
-					  }
-					}
-				},
-				#end
-					#if($tradeNo)
-				{
-					"term": {
-						"tradeNo.keyword":  #[tradeNo]
-					}
-				},
-				#end
-				#if($operatorId)
-				{
-					"term": {
-						"operatorId.keyword":  #[operatorId]
-					}
-				},
-				#end
-				#if($officeId)
-				{
-					"term": {
-						"officeId.keyword":  #[officeId]
-					}
-				},
-				#end
-				#if($netId)
-				{
-					"term": {
-						"netId.keyword":  #[netId]
-					}
-				},
-				#end
-				#if($pointId)
-				{
-					"term": {
-						"pointId.keyword":  #[pointId]
-					}
-				},
-				#end
-				#if($isContrast)
-				{
-					"term": {
-						"isContrast.keyword":  #[isContrast]
-					}
-				},
-				#end
-				#if($startUpdateDatetime || $endUpdateDatetime)
-				{
-					"range": {
-					  "updateDatetime": {
-						#if($startUpdateDatetime)
-						 "gte":  #[startUpdateDatetime]
-						#end
-						#if($startUpdateDatetime && $endUpdateDatetime)
-						 ,
-						#end
-						#if($endUpdateDatetime)
-						 "lte": #[endUpdateDatetime]
-						#end
-					  }
-					}
-				},
-				#end
-				#if($contrastStatus)
-				{
-					"term": {
-						"contrastStatus.keyword":  #[contrastStatus]
-					}
-				},
-				#end
-				#if($oprOrgId)
-				{
-					"term": {
-						"oprOrgId.keyword":  #[oprOrgId]
-					}
-				},
-				#end
-				#if($isClearing)
-				{
-					"term": {
-						"isClearing.keyword":  #[isClearing]
-					}
-				},
-				#end
-				#if($machineType)
-				{
-					"term": {
-						"machineType.keyword":  #[machineType]
-					}
-				},
+				#end		
+			   #if($key)
+					{
+						"term": {
+							"key.keyword":  #[key]
+						}
+					},
 				#end
 				#if($orderId)
 					{
@@ -4084,58 +3928,23 @@ ds配置文件中xml节点property元素增加cacheDsl属性=指示框架是否�
 					}
 					#set( $needComma = true )
 				#end
-				
-				#if($startCreateDatetime || $endCreateDatetime)
-				#if($needComma),#else #set( $needComma = true ) #end	
-				{					 				
-					"range": {
-					  "createDatetime": {
-						#if($startCreateDatetime)
-						 "gte":  #[startCreateDatetime]
-						#end
-						#if($startCreateDatetime && $endCreateDatetime)
-						 ,
-						#end
-						#if($endCreateDatetime)
-						 "lte": #[endCreateDatetime]
-						#end
-					  }
-					}
-				}
+				 #if($key)
+				  	#if($needComma),#else #set( $needComma = true ) #end	
+					{
+						"term": {
+							"key.keyword":  #[key]
+						}
+					},
 				#end
-				#if($machineId)
-				#if($needComma),#else #set( $needComma = true ) #end	
-				{					 
-					"term": {
-						"machineId":  #[machineId]
+				#if($name)
+					#if($needComma), #end	
+					{
+						"term": {
+							"name.keyword":  #[name]
+						}
 					}
-				}
-				#end
-				#if($status)
-				#if($needComma),#else #set( $needComma = true ) #end	
-				{					
-					"term": {
-						"status.keyword":  #[status]
-					}
-				}
 				#end
 				
-				#if($machineType)
-				#if($needComma),#else #set( $needComma = true ) #end	
-				{					
-					"term": {
-						"machineType.keyword":  #[machineType]
-					}
-				}
-				#end
-				#if($orderId)
-				#if($needComma),#end	
-				{
-					"term": {
-						"orderId.keyword":  #[orderId]
-					}
-				}
-				#end
 			]
 		}
 	}
