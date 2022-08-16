@@ -14,7 +14,7 @@
 
 # 工具特性
 
-bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。bboss-datatran 的独特之处，其数据同步作业采用java语言开发，小巧而精致，可以用采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
+​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。	bboss-datatran 数据同步作业直接采用java语言开发，小巧而精致，同时又可以采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
 
 如果您还在：
 
@@ -266,11 +266,44 @@ mysql 8.x驱动依赖包(mysql 8必须采用相应版本的驱动，否则不能
 
 Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
 
-## 2.3 定义作业导出配置
+## 2.3 定义作业配置
+
+作业需要通过ImportBuilder来进行配置和构建，大致的流程如下：
 
 ```java
+//创建作业构建器
 ImportBuilder importBuilder = new ImportBuilder() ;
+
+//输入插件配置
+importBuilder.setInputConfig(dbInputConfig);
+
+//输出插件配置
+importBuilder.setOutputConfig(elasticsearchOutputConfig);
+
+//作业基础配置
+importBuilder.setBatchSize(5000);
+......
+    
+//作业执行
+/**
+ * 创建执行数据库表数据导入es作业DataStream对象
+ */
+DataStream dataStream = importBuilder.builder();
+dataStream.execute();//启动运行作业
+
+//停止作业
+dataStream.destroy();
+
+//暂停作业
+dataStream.pauseSchedule();
+
+//继续作业
+dataStream.resumeSchedule();
 ```
+
+针对数据库和Elasticsearch插件的配置，bboss支持可以在application.properties文件中配置相关数据源，亦可以在插件上面直接配置数据源，下面文档中都有介绍。
+
+更多的作业调度控制说明，可以参考文档：https://esdoc.bbossgroups.com/#/bboss-datasyn-control
 
 ## 2.4.配置DBInput输入参数
 
