@@ -160,12 +160,26 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * 是否高于或者等于es 7
 	 */
 	private boolean upper7 ;
+	private int version;
+
+	/**
+	 * 是否高于或者等于es 8
+	 */
+	private boolean upper8 ;
 	private String clusterVersionInfo;
 
 	private String clusterVarcharInfo;
 
 	public Map<String, ESAddress> getAddressMap() {
 		return addressMap;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public boolean isUpper8() {
+		return upper8;
 	}
 
 	private final Map<String,ESAddress> addressMap = new HashMap<String,ESAddress>();
@@ -289,17 +303,28 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			logger.warn("Init Elasticsearch Cluster Version Information failed:",e);
 		}
 		if (esVersion != null) {
-			if (esVersion.startsWith("1.")) {
-				v1 = true;
-			}
+
 			int idx = esVersion.indexOf(".");
 			if (idx > 0) {
 				String max = esVersion.substring(0, idx);
 				try {
+
 					int v = Integer.parseInt(max);
+
+					version = v;
+					if(v == 1){
+//						if (esVersion.startsWith("1.")) {
+//							v1 = true;
+//						}
+						v1 = true;
+					}
+					if(v >= 8){
+						upper8 = true;
+					}
 					if (v >= 7) {
 						upper7 = true;
 					}
+
 					if (v < 5) {
 						lower5 = true;
 					}

@@ -1,10 +1,10 @@
 # 日志采集插件使用指南
 
-基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器，支持多线程并行下载和处理远程数据文件，支持本地/ftp/sftp子目录下文件数据采集；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
+基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器，支持多线程并行下载和处理远程数据文件，支持本地/ftp/sftp子目录下文件数据采集；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
 
-   1. [采集本地日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-   2. [采集本地日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
-   3. [采集本地日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+   1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+   2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+   3. [采集本地日志数据并发送到Kafka](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
    4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
    5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
    6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
@@ -13,7 +13,7 @@
 
 ![](images\datasyn.png)
 
-直接通过java开发数据采集作业的业界也就只有bboss能够做到，下面具体介绍kafka/elasticsearch/database三个案例。
+
 
 filelog插件工作原理图
 
@@ -27,18 +27,23 @@ maven坐标
 ```xml
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
-  <artifactId>bboss-elasticsearch-rest-file2ftp</artifactId>
+  <artifactId>bboss-datatran-fileftp</artifactId>
   <version>6.7.2</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-elasticsearch-rest-file2ftp:6.7.2'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:6.7.2'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
 
 https://esdoc.bbossgroups.com/#/quickstart
+
+
+
+下面具体介绍kafka/elasticsearch/database三个案例。
+
 # 1.日志采集插件属性说明
 
 ImportBuilder用于采集作业基础属性配置

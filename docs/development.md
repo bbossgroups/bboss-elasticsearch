@@ -568,7 +568,14 @@ elasticsearch.useHttps=true
 elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
-Elasticsearch 启用https协议后，如果不想再客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下三种方式配置ssl证书
+spring boot对应的配置：
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.useHttps=true
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
+```
+
+Elasticsearch 启用https协议后，如果不想再客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下三种方式配置ssl证书(如果是spring boot项目，可以统一加前缀spring.elasticsearch.bboss.)
 
 1 Using PEM certificates：
 
@@ -1856,9 +1863,13 @@ spring boot项目通过bbossESStarter组件来创建加载配置文件demo.xml�
 		long totalSize = esDatas.getTotalSize();
 ```
 
+## 4.13  索引增删改查详解
+
+https://esdoc.bbossgroups.com/#/document-crud
 
 
-# **5 进阶**
+
+# 5 进阶
 
 
 
@@ -4252,7 +4263,7 @@ public void testQueryDocMapping(){
 
 ## 6.11 一个聚合查询的案例
 
-<http://yin-bp.iteye.com/blog/2408321>
+<https://esdoc.bbossgroups.com/#/agg>
 
 
 

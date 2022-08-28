@@ -418,7 +418,7 @@ Spring boot项目使用BBossESStarter获取 elasticsearch rest client api实例:
 ```java
 @Autowired
 private BBossESStarter bbossESStarter;//Create a client tool to load configuration files, single instance multithreaded security
-ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
+ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo.xml");
     //Build a create/modify/get/delete document client object, single instance multi-thread security
     ClientInterface clientUtil = bbossESStarter.getRestClient();    
 ```

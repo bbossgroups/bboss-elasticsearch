@@ -48,7 +48,7 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>6.0.2</version>
+   <version>6.0.3</version>
 </dependency>
 ```
 

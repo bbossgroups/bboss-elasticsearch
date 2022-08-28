@@ -2797,4 +2797,6 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	public ElasticSearchRestClient getClient() ;
 
 	IndexNameBuilder getIndexNameBuilder();
+	public boolean isVersionUpper8();
+	public int getVersion();
 }

@@ -4618,7 +4618,12 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return this.updateClusterSetting(clusterSetting);
 	}
 	public String flushSynced(){
-		return this.client.executeHttp("_flush/synced",ClientInterface.HTTP_POST);
+		if(client.isUpper8()) {
+			return this.client.executeHttp("_flush", ClientInterface.HTTP_POST);
+		}
+		else{
+			return this.client.executeHttp("_flush/synced", ClientInterface.HTTP_POST);
+		}
 	}
 	/**
 	 *
@@ -4627,7 +4632,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String flushSynced(String indice){
-		return this.client.executeHttp(new StringBuilder().append(indice).append("/_flush/synced").toString(),ClientInterface.HTTP_POST);
+		if(client.isUpper8()) {
+			return this.client.executeHttp(new StringBuilder().append(indice).append("/_flush").toString(),ClientInterface.HTTP_POST);
+		}
+		else{
+			return this.client.executeHttp(new StringBuilder().append(indice).append("/_flush/synced").toString(),ClientInterface.HTTP_POST);
+		}
+
 	}
 
 
@@ -5754,8 +5765,17 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		 return updateDocument( index, (String) null,params, updateOptions);
 
 	}
+	@Override
 	public boolean isVersionUpper7(){
 		return this.client.isUpper7();
+	}
+	@Override
+	public boolean isVersionUpper8(){
+		return this.client.isUpper8();
+	}
+	@Override
+	public int getVersion(){
+		return this.client.getVersion();
 	}
 
 	/**
