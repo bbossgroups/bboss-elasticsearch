@@ -34,6 +34,8 @@ public class MetaMap extends LinkedHashMap {
 	private String  type;
 	/**文档对应索引字段信息*/
 	private Map<String, List<Object>> fields;
+
+	private String[] matchedQueries;//["",""],
 /**文档对应版本信息*/
 	private long version;
  /**文档对应的索引名称*/
@@ -206,5 +208,13 @@ public class MetaMap extends LinkedHashMap {
 
 	public void setPrimaryTerm(long primaryTerm) {
 		this.primaryTerm = primaryTerm;
+	}
+
+	public void setMatchedQueries(String[] matchedQueries) {
+		this.matchedQueries = matchedQueries;
+	}
+
+	public String[] getMatchedQueries() {
+		return matchedQueries;
 	}
 }

@@ -11,6 +11,7 @@ public abstract class ESBaseData implements Serializable{
 	private String  type;
 	private String  id;
 	private Map<String,List<Object>> fields;
+	private String[] matchedQueries;//["",""],
 	private long version;
 	private String index;//"_index": "trace-2017.09.01",
 	private Map<String,List<Object>> highlight;
@@ -170,5 +171,13 @@ public abstract class ESBaseData implements Serializable{
 
 	public void setPrimaryTerm(long primaryTerm) {
 		this.primaryTerm = primaryTerm;
+	}
+
+	public void setMatchedQueries(String[] matchedQueries) {
+		this.matchedQueries = matchedQueries;
+	}
+
+	public String[] getMatchedQueries() {
+		return matchedQueries;
 	}
 }

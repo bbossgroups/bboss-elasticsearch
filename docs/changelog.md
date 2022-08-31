@@ -47,7 +47,15 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.7.2</version>
         </dependency>
 ```
+# v6.7.3 功能改进
+
+1. Elasticsearch客户端改进：处理flushsync方法在Elasticsearch8的兼容性问题 ，增加获取elasticsearch版本号方法
+2. 框架改进：处理处理jdk 17兼容性问题
+3. 框架改进：改进ioc注入机制，避免使用mangerimport嵌套导入其他ioc配置文件存在的死循环问题
+4. Elasticsearch客户端改进：增加ESMatchedQueries注解，用于绑定返回_name指定的命名匹配条件数组String[]
+
 # v6.7.2 功能改进
+
 1. 数据同步bug修复： 执行destroy方法销毁作业时空指针异常问题修复
 2. 数据同步改进：优化作业销毁机制
 3. 数据同步改进：优化filelog插件日志采集多行识别处理增量采集机制和未结束多行记录回滚机制
@@ -287,6 +295,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
               
               

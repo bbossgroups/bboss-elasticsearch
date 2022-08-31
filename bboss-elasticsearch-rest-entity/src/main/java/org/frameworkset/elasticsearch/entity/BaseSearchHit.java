@@ -40,6 +40,9 @@ public class BaseSearchHit implements Serializable {
 	private long seqNo;//"_index": "trace-2017.09.01",
 	@JsonProperty("_primary_term")
 	private long primaryTerm;//"_index": "trace-2017.09.01",
+	@JsonProperty("matched_queries")
+	private String[] matchedQueries;//["",""],
+
 	public Map<String, Map<String,InnerSearchHits>> getInnerHits() {
 		return innerHits;
 	}
@@ -200,5 +203,13 @@ public class BaseSearchHit implements Serializable {
 
 	public void setPrimaryTerm(long primaryTerm) {
 		this.primaryTerm = primaryTerm;
+	}
+
+	public void setMatchedQueries(String[] matchedQueries) {
+		this.matchedQueries = matchedQueries;
+	}
+
+	public String[] getMatchedQueries() {
+		return matchedQueries;
 	}
 }

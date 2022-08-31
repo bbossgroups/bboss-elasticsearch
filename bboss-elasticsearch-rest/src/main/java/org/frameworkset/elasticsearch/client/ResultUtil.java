@@ -849,6 +849,7 @@ public abstract class ResultUtil {
 
 	public static  void buildESBaseData(BaseSearchHit hit,ESBaseData esBaseData){
 		esBaseData.setFields(hit.getFields());
+		esBaseData.setMatchedQueries(hit.getMatchedQueries());
 		esBaseData.setHighlight( hit.getHighlight());
 		esBaseData.setId(hit.getId());
 		esBaseData.setScore(hit.getScore());
@@ -876,6 +877,7 @@ public abstract class ResultUtil {
 
 	public static  void buildESMetaMapData(BaseSearchHit hit,MetaMap esBaseData){
 		esBaseData.setFields(hit.getFields());
+		esBaseData.setMatchedQueries(hit.getMatchedQueries());
 		esBaseData.setHighlight( hit.getHighlight());
 		esBaseData.setId(hit.getId());
 		esBaseData.setScore(hit.getScore());
@@ -1117,6 +1119,11 @@ public abstract class ResultUtil {
 			_injectAnnotationES( propertieDescription,  data ,  hit,id );
 		}
 
+		propertieDescription = esPropertyDescripts.getEsMatchedQueriesProperty();
+		if(propertieDescription != null && propertieDescription.isESReadSet()){
+			Object id = hit.getMatchedQueries();
+			_injectAnnotationES( propertieDescription,  data ,  hit,id );
+		}
 
 		 
 
