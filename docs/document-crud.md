@@ -935,6 +935,8 @@ public class Demo extends ESId {
             System.out.println("getRouting:"+newDemo.getRouting());
             System.out.println("getSort:"+newDemo.getSort());
             System.out.println("isFound:"+newDemo.isFound());
+            System.out.println("matchedQueries:"+newDemo.getMatchedQueries());
+
        
 ```
 
@@ -978,6 +980,7 @@ public class Demo extends ESId {
             System.out.println("getRouting:"+newDemo.getRouting());
             System.out.println("getSort:"+newDemo.getSort());
             System.out.println("isFound:"+newDemo.isFound());
+             System.out.println("matchedQueries:"+newDemo.getMatchedQueries());
         }
 ```
 

@@ -67,7 +67,7 @@ persistent 布尔值属性，用于控制被本注解标注的字段属性是否
 private Integer sqlEndElapsed;
 ```
 
-
+@ESMatchedQueries 返回_name指定的命名匹配条件数组String[]
 
 ## 1.2 @JsonProperty注解使用
 
@@ -101,6 +101,8 @@ protected String routing;
 protected boolean docAsUpsert;
 @ESSource
 protected boolean returnSource;
+	@ESMatchedQueries //返回_name指定的命名匹配条件数组String[]
+	private String[] matchedQueries;
 ```
 
 
@@ -214,9 +216,11 @@ public class Order {
 	private String node;
 	@ESMetaExplanation //文档对应的打分规则信息
 	private Explanation explanation;
+	@ESMatchedQueries //返回_name指定的命名匹配条件数组String[]
+	private String[] matchedQueries;
 ```
 
-## 2.2 一个完成的PO对象
+## 2.2 一个完整的PO对象
 
 ```java
 package org.bboss.elasticsearchtest.crud;/*
