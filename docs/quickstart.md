@@ -33,10 +33,12 @@ Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elastics
     </dependency>
 ```
 
-快速配置，在 application.properties 文件中增加 Elasticsearch 服务器地址配置即可
+快速配置，在 application.properties 文件中增加 Elasticsearch 服务器地址和认证口令(可选)配置即可
 
 ```properties
-#elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200 elasticsearch.rest.hostNames=10.21.20.168:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200 
+
+elasticsearch.rest.hostNames=10.21.20.168:9200
 
 #x-pack or searchguard security authentication and password configuration
 
@@ -47,7 +49,7 @@ elasticPassword=changeme
 spring boot 配置
 
 ```properties
-spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=10.180.211.27:9200
 #spring.elasticsearch.bboss.elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200 
 
 ##support x-pack and searchguard
