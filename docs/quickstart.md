@@ -3,42 +3,172 @@
 
 Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
 
+**主要特点：代码简洁，性能高效，客户端负载容灾，兼容性好，易于集成**
+
 1. A highlevel rest client.
-
 2. A high performence o/r mapping rest client.
-
 3. A dsl and sql rest client.
-
 4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
-
 5. Support Spring boot 1.x,2.x
 
+# 1.快速集成和应用Bboss
 
-# 1.Bboss集成
-
-导入BBoss maven坐标:
+快速集成，导入 BBoss maven 坐标:
 
 ```xml
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-        <version>6.7.2</version>
+        <version>6.7.3</version>
     </dependency>
 ```
-如果是spring boot项目，还需导入以下maven坐标:
+
+如果是 spring boot 项目，还需导入以下 maven 坐标:
 
 ```xml
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>6.7.2</version>
+        <version>6.7.3</version>
     </dependency>
 ```
-# 2.Bboss配置和使用
+
+快速配置，在 application.properties 文件中增加 Elasticsearch 服务器地址配置即可
+
+```properties
+#elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200 elasticsearch.rest.hostNames=10.21.20.168:9200
+
+#x-pack or searchguard security authentication and password configuration
+
+elasticUser=elastic
+elasticPassword=changeme
+```
+
+spring boot 配置
+
+```properties
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
+#spring.elasticsearch.bboss.elasticsearch.rest.hostNames=10.180.211.27:9200,10.180.211.28:9200,10.180.211.29:9200 
+
+##support x-pack and searchguard
+
+spring.elasticsearch.bboss.elasticUser=elastic
+
+spring.elasticsearch.bboss.elasticPassword=changeme
+```
+
+**一行代码插入 / 修改**
+
+// 添加 / 修改文档，如果文档 id 存在则修改，不存在则插入
+
+```java
+clientUtil.addDocument("agentinfo",//索引名称
+				agentInfo);//需添加/修改的索引数据对象
+```
+
+**一行代码分页 / 高亮检索**
+
+```java
+ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的当前查询的List<TAgentInfo>结果集和符合条件的总记录数totalSize
+            = clientUtil.searchList("trace-*/_search",//查询操作，查询indices trace-*中符合条件的数据
+                                "queryServiceByCondition",//通过名称引用配置文件中的query dsl语句
+                                traceExtraCriteria,//查询条件封装对象
+                                TAgentInfo.class);//指定返回的po对象类型，po对象中的属性与indices表中的文档filed名称保持一致
+//获取当前页结果对象列表
+        List<TAgentInfo> demos = data.getDatas();
+        //获取总记录数
+        long totalSize = data.getTotalSize();
+```
+
+**根据文档 id 获取文档**
+
+```java
+Demo demo = clientUtil.getDocument("demo",//索引表
+      "2",//文档id
+      Demo.class);//指定返回对象类型
+```
+
+ **根据字段直接获取文档**
+
+```java
+String document = clientInterface.getDocumentByField("demo",//索引名称
+                  "applicationName.keyword",//字段名称
+                  "blackcatdemo2");//字段值
+```
+
+**一行代码根据字段值进行分页查找**
+
+```java
+ESDatas<Map> documents = clientInterface.searchListByField("demo",//索引名名称
+                                          "applicationName.keyword", //检索字段名称
+                                          "blackcatdemo2",//检索值
+                                           Map.class,  //返回结果类型，可以是po对象类型也可以是map类型
+                                           0,  //分页起始位置
+                                           10); //分页每页记录数
+//获取当前页结果对象列表
+        List<Map> demos = data.getDatas();
+        //获取匹配的总记录数
+        long totalSize = data.getTotalSize();
+```
+
+**一行代码删除文档**
+
+```java
+clientUtil.deleteDocument("demo",//索引表
+          "2");//文档id
+```
+
+**一行代码批量删除文档**
+
+```java
+//批量删除文档
+        clientUtil.deleteDocuments("demo",//索引表
+                new String[]{"2","3"});//批量删除文档ids
+```
+
+**api指定Elasticsearch 集群**
+
+所有 api 可以直接指定 数据源操作，指哪打哪：
+
+```java
+ESDatas<Demo> esDatas = 
+            clientUtil.searchListWithCluster(datasourceName,//指定操作的Elasticsearch集群数据源名称
+                  "demo/_search",//demo为索引表，_search为检索操作action
+            "searchDatas",//esmapper/demo7.xml中定义的dsl语句
+            params,//变量参数
+            Demo.class);//返回的文档封装对象类型
+```
+
+# 2.客户端组件ClientInterface实例获取
+
+一般项目通过ElasticSearchHelper获取 elasticsearch rest client api 实例：
+
+```java
+//创建加载配置文件的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
+//创建直接操作dsl的客户端实例，单实例多线程安全
+ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
+```
+
+Spring boot项目使用BBossESStarter获取 elasticsearch rest client api实例:
+
+```java
+@Autowired
+private BBossESStarter bbossESStarter;//Create a client tool to load configuration files, single instance multithreaded security
+ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo.xml");
+    //Build a create/modify/get/delete document client object, single instance multi-thread security
+    ClientInterface clientUtil = bbossESStarter.getRestClient();    
+```
+
+Elasticsearch bboss 开发指南:
+
+https://esdoc.bbossgroups.com/#/development
+
+# 3.配置和使用-进阶
 
 在项目resources目录下修改application.properties文件（如果不存在则新建application.properties文件），根据项目类型做添加相应配置:
 
-## 2.1 普通maven 项目配置
+## 3.1 普通maven 项目配置
 
 ```properties
 #Cluster addresses are separated by commas
@@ -152,7 +282,7 @@ https://gitee.com/bboss/eshelloword-booter
 
 https://esdoc.bbossgroups.com/#/common-project-with-bboss
 
-## 2.2 spring boot maven 项目配置
+## 3.2 spring boot maven 项目配置
 
 ```properties
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
@@ -402,29 +532,7 @@ Springboot集成bboss Elasticsearch和Apollo:
 
 https://esdoc.bbossgroups.com/#/springboot-bbosses-apollo
 
-# 3.获取Elasticsearch客户端组件实例方法
 
-一般项目通过ElasticSearchHelper获取 elasticsearch rest client api 实例：
-
-```java
-//创建加载配置文件的客户端实例，单实例多线程安全
-ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo.xml");
-//创建直接操作dsl的客户端实例，单实例多线程安全
-ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil() ;
-```
-
-Spring boot项目使用BBossESStarter获取 elasticsearch rest client api实例:
-
-```java
-@Autowired
-private BBossESStarter bbossESStarter;//Create a client tool to load configuration files, single instance multithreaded security
-ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo.xml");
-    //Build a create/modify/get/delete document client object, single instance multi-thread security
-    ClientInterface clientUtil = bbossESStarter.getRestClient();    
-```
-Elasticsearch bboss 开发指南:
-
-https://esdoc.bbossgroups.com/#/development
 
 # 4.从源码构建Elasticsearch BBoss
 

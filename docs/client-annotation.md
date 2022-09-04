@@ -301,6 +301,8 @@ public class MetaDemo  {
 	private String node;//"_index": "trace-2017.09.01",
 	@ESMetaExplanation
 	private Explanation explanation;//"_index": "trace-2017.09.01",
+    @ESMatchedQueries //返回_name指定的命名匹配条件数组String[]
+	private String[] matchedQueries;
 	public String getName() {
 		return name;
 	}
