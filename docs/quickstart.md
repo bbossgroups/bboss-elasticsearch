@@ -96,6 +96,8 @@ Demo demo = clientUtil.getDocument("demo",//索引表
 String document = clientInterface.getDocumentByField("demo",//索引名称
                   "applicationName.keyword",//字段名称
                   "blackcatdemo2");//字段值
+ Map document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",Map.class);
+ DemoPo document = clientInterface.getDocumentByField("demo","applicationName.keyword","blackcatdemo2",DemoPo.class);
 ```
 
 **一行代码根据字段值进行分页查找**

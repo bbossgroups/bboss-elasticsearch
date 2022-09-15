@@ -14,6 +14,7 @@ package org.frameworkset.elasticsearch.client;/*
  *  limitations under the License.
  */
 
+import com.frameworkset.common.poolman.handle.ValueExchange;
 import com.frameworkset.util.*;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.*;
@@ -34,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -212,6 +216,24 @@ public abstract class ResultUtil {
 		if(num instanceof String)
 		{
 			return (String)num;
+		}
+		else if(num instanceof Clob){
+			String dataStr = null;
+			try {
+				dataStr = ValueExchange.getStringFromClob((Clob)num);
+			} catch (SQLException throwables) {
+				throw new IllegalArgumentException("Clob value to stringValue failed:",throwables);
+			}
+			return dataStr;
+		}
+		else if(num instanceof Blob){
+			String dataStr = null;
+			try {
+				dataStr = ValueExchange.getStringFromBlob((Blob)num);
+			} catch (SQLException throwables) {
+				throw new IllegalArgumentException("Blob value to stringValue failed:",throwables);
+			}
+			return dataStr;
 		}
 		else
 		{
