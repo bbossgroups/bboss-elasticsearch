@@ -14,20 +14,28 @@ Spring boot整合ElasticSearch HighLevel Rest Client案例分享，本文涉及�
 
 本文内容适合于:
 
-- spring boot 1.x,2.x
-- elasticsearch 1.x,2.x,5.x,6.x,7.x,+
+- spring boot 1.x,2.x,3.x
+- elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+
+本文案例涉及源码下载地址：
+
+- 普通spring boot案例
+
+https://git.oschina.net/bboss/eshelloword-spring-boot-starter
+
+- web服务spring boot案例
+
+https://git.oschina.net/bboss/springboot-elasticsearch
+
+- 更多bboss案例可以浏览：
+
+https://esdoc.bbossgroups.com/#/Elasticsearch-demo
 
 # 从源码构建Elasticsearch BBoss
 
-First Get source code from https://github.com/bbossgroups/bboss-elasticsearch
+参考文档
 
-Then change to cmd window under directory bboss-elasticsearch and run gradle build command：
-
-```properties
-gradle=install
-```
-
-Gradle environmenet install and config document: https://esdoc.bbossgroups.com/#/bboss-build
+ https://esdoc.bbossgroups.com/#/bboss-build
 
 # 1.集成bboss es starter 
 
@@ -943,18 +951,7 @@ BBossESStarter bbossESStarterDefault：实现由bboss提供，在直接在代码
 MultiESDocumentCRUD:各种增删改查操作实例，在demo工程中提供
 ```
 
-
-
-# 5.完整的demo工程
-
-
-<https://github.com/bbossgroups/es_bboss_web>
-
-<https://github.com/bbossgroups/eshelloword-spring-boot-starter>
-
-
-
-# 6 开发交流
+# 5 开发交流
 
 
 

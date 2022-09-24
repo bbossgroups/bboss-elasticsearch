@@ -14,12 +14,12 @@ Elasticsearch、Spring boot兼容性
 
 | bboss | Elasticsearch | spring boot |
 | ----- | ------------- | ----------- |
-| all   | 1.x           | 1.x,2.x     |
-| all   | 2.x           | 1.x,2.x     |
-| all   | 5.x           | 1.x,2.x     |
-| all   | 6.x           | 1.x,2.x     |
-| all   | 7.x           | 1.x,2.x     |
-| all   | 8.x           | 1.x,2.x     |
+| all   | 1.x           | 1.x,2.x,3.x |
+| all   | 2.x           | 1.x,2.x,3.x |
+| all   | 5.x           | 1.x,2.x,3.x |
+| all   | 6.x           | 1.x,2.x,3.x |
+| all   | 7.x           | 1.x,2.x,3.x |
+| all   | 8.x           | 1.x,2.x,3.x |
 
 jdk兼容性：jdk 1.8+
 

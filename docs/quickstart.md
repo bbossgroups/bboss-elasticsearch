@@ -9,7 +9,7 @@ Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elastics
 2. A high performence o/r mapping rest client.
 3. A dsl and sql rest client.
 4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
-5. Support Spring boot 1.x,2.x
+5. Support Spring boot 1.x,2.x,3.x
 
 # 1.快速集成和应用Bboss
 
@@ -130,18 +130,27 @@ clientUtil.deleteDocument("demo",//索引表
                 new String[]{"2","3"});//批量删除文档ids
 ```
 
-**api指定Elasticsearch 集群**
+**api方法可以指定[特定的Elasticsearch 集群进行操作](https://esdoc.bbossgroups.com/#/development?id=_52-%e5%a4%9aelasticsearch%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%9b%86%e7%be%a4%e6%94%af%e6%8c%81)**
 
-所有 api 可以直接指定 数据源操作，指哪打哪：
+所有 api 可以直接指定 数据源操作，指哪打哪，下面展示了在一段代码里面同时操作两个Elasticsearch集群功能：datasourceName1和datasourceName2 
 
 ```java
-ESDatas<Demo> esDatas = 
-            clientUtil.searchListWithCluster(datasourceName,//指定操作的Elasticsearch集群数据源名称
-                  "demo/_search",//demo为索引表，_search为检索操作action
+ESDatas<Demo> esDatas1 = 
+            clientUtil.searchListWithCluster(datasourceName1,//指定操作的Elasticsearch集群数据源名称
+                  "demo1/_search",//demo为索引表，_search为检索操作action
+            "searchDatas",//esmapper/demo7.xml中定义的dsl语句
+            params,//变量参数
+            Demo.class);//返回的文档封装对象类型
+
+ESDatas<Demo> esDatas2 = 
+            clientUtil.searchListWithCluster(datasourceName2,//指定操作的Elasticsearch集群数据源名称
+                  "demo2/_search",//demo为索引表，_search为检索操作action
             "searchDatas",//esmapper/demo7.xml中定义的dsl语句
             params,//变量参数
             Demo.class);//返回的文档封装对象类型
 ```
+
+datasourceName1和datasourceName2 可是两个相同版本的Elasticsearch，亦可以是两个不同版本的Elasticsearch，bboss在兼容性方面是毋庸置疑的。
 
 # 2.客户端组件ClientInterface实例获取
 

@@ -136,6 +136,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	protected HostDiscover hostDiscover;
 	private Map clusterInfo ;
 	private String esVersion;
+	private String distribution;
 	private boolean v1 ;
 
 	public boolean isLower5() {
@@ -283,7 +284,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						clusterInfo = SimpleStringUtil.json2Object(clusterVarcharInfo, Map.class);
 						Object version = clusterInfo.get("version");
 						if (version instanceof Map) {
-							String _esVersion = String.valueOf(((Map) version).get("number"));
+							Map vinfo = (Map) version;
+							String _esVersion = String.valueOf(vinfo.get("number"));
+							if(vinfo.get("distribution") != null) {
+								String _distribution = String.valueOf(vinfo.get("distribution"));
+
+								distribution = _distribution;
+							}
 							if(_esVersion != null && !_esVersion.equals(""))
 								esVersion = _esVersion;
 							
@@ -304,32 +311,38 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		if (esVersion != null) {
 
-			int idx = esVersion.indexOf(".");
-			if (idx > 0) {
-				String max = esVersion.substring(0, idx);
-				try {
+			if(distribution != null && 	distribution.toLowerCase().indexOf("opensearch") >= 0){
+				version = 7;
+				upper7 = true;
+			}
+			else {
+				int idx = esVersion.indexOf(".");
+				if (idx > 0) {
+					String max = esVersion.substring(0, idx);
+					try {
 
-					int v = Integer.parseInt(max);
+						int v = Integer.parseInt(max);
 
-					version = v;
-					if(v == 1){
+						version = v;
+						if (v == 1) {
 //						if (esVersion.startsWith("1.")) {
 //							v1 = true;
 //						}
-						v1 = true;
-					}
-					if(v >= 8){
-						upper8 = true;
-					}
-					if (v >= 7) {
-						upper7 = true;
-					}
+							v1 = true;
+						}
+						if (v >= 8) {
+							upper8 = true;
+						}
+						if (v >= 7) {
+							upper7 = true;
+						}
 
-					if (v < 5) {
-						lower5 = true;
+						if (v < 5) {
+							lower5 = true;
+						}
+					} catch (Exception e) {
+
 					}
-				} catch (Exception e) {
-				
 				}
 			}
 		}
@@ -1458,6 +1471,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		return response;*/
 	}
+
+	public String getDistribution() {
+		return distribution;
+	}
+
 	private interface ExecuteRequest{
 		Object execute(ESAddress host, String url, int triesCount) throws Exception;
 	}
