@@ -2,7 +2,7 @@
 
 **The best elasticsearch highlevel java rest api-----bboss** 
 
- bboss是一套基于query dsl语法操作和访问分布式搜索引擎elasticsearch/opensearch的o/r mapping高性能开发库，底层基于es restful api。基于bboss，可以快速编写出访问和操作elasticsearch/opensearch的程序代码，简单、高效、可靠、安全。
+ bboss是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Opensearch的o/r mapping高性能开发库，底层直接基于 http 协议操作和访问Elasticsearch、Opensearch。基于bboss，可以快速编写出访问和操作Elasticsearch/Opensearch的程序代码，简单、高效、可靠、安全。
 
 # 快速开始bboss
 

@@ -1,13 +1,14 @@
 ![logo](images/logo.png)
 
-# Elasticsearch BBoss <small>6.7.3</small>
+# Elasticsearch BBoss <small>6.7.5</small>
 
-> The best elasticsearch highlevel java rest api
+> The best Elasticsearch/Opensearch highlevel java rest api
 
 - 基于Apache License 2.0开源
 - A high performence o/r mapping rest client.
 - A dsl and sql rest client.
-- Support elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+- Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+- Support Opensearch 1.x,2.x,+
 - 本网站中所有文档和Demo案例皆适用于Elasticsearch各个版本
 
 [GitHub](https://github.com/bbossgroups/bboss-elasticsearch)

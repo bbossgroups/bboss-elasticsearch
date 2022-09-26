@@ -1,7 +1,7 @@
 # Quick Start
 ![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
 
-Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
+Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
 
 **主要特点：代码简洁，性能高效，客户端负载容灾，兼容性好，易于集成**
 
@@ -9,7 +9,8 @@ Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elastics
 2. A high performence o/r mapping rest client.
 3. A dsl and sql rest client.
 4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
-5. Support Spring boot 1.x,2.x,3.x
+5. Support Opensearch 1.x,2.x,+
+6. Support Spring boot 1.x,2.x,3.x
 
 # 1.快速集成和应用Bboss
 
@@ -19,7 +20,7 @@ Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elastics
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-        <version>6.7.3</version>
+        <version>6.7.5</version>
     </dependency>
 ```
 
@@ -29,7 +30,7 @@ Elasticsearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elastics
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>6.7.3</version>
+        <version>6.7.5</version>
     </dependency>
 ```
 

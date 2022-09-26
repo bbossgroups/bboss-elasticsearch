@@ -48,14 +48,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>6.0.5</version>
+   <version>6.0.6</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:6.0.5'
+implementation 'com.bbossgroups:bboss-http:6.0.6'
 ```
 
 # 3.负载均衡组件
@@ -453,7 +453,7 @@ http.routing=#[area]
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>6.0.3</version>
+  <version>6.0.5</version>
 </dependency>
 ```
 
