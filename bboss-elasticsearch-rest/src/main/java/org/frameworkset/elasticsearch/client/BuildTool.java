@@ -2274,12 +2274,22 @@ public abstract class BuildTool {
 	}
 	 */
 
+	private static void string2Writer(Writer writer,String data) throws IOException {
+		writer.write(data);
+	}
 	public static void evalBuilk( Writer writer,BulkData bulkData,boolean upper7) throws IOException {
 			Object param = bulkData.getData();
 			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(param.getClass());
 			buildMeta(  writer ,  bulkData,  upper7,beanClassInfo);
+
 			if(bulkData.isInsert()) {
-				SerialUtil.object2json(bulkData.getData(),writer);
+				if(!(param instanceof String)) {
+					SerialUtil.object2json(param, writer);
+
+				}
+				else{
+					string2Writer(writer,(String)param );
+				}
 				writer.write("\n");
 			}
 			else if(bulkData.isUpdate())
@@ -2307,7 +2317,14 @@ public abstract class BuildTool {
 
 
 				writer.write("{\"doc\":");
-				SerialUtil.object2json(param,writer);
+				if(!(param instanceof String)) {
+					SerialUtil.object2json(param,writer);
+
+				}
+				else{
+					string2Writer(writer,(String)param );
+				}
+
 				if(detect_noop != null){
 					writer.write(",\"detect_noop\":");
 					writer.write(detect_noop.toString());
@@ -2446,6 +2463,8 @@ public abstract class BuildTool {
 		indexField.setTermVector((String)fieldInfo.get("term_vector"));	//
 		fields.add(indexField);
 		handleFields(indexField.getFields(), fieldName,fields);
+		handleFields(indexField.getProperties(), fieldName,fields);
+
 		return indexField;
 	}
 
