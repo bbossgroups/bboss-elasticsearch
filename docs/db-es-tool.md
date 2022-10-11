@@ -996,6 +996,35 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 	}
 ```
 
+#### 2.8.5.6 设置增量同步增量字段起始值
+
+可以指定增量字段的起始值，不指定的情况下数字默认起始值0,日期默认起始值:1970-01-01
+
+指定日期字段增量同步起始值：
+
+```java
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date = format.parse("2000-01-01");
+			importBuilder.setLastValue(date);//增量起始值配置
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
+指定数字字段增量同步起始值：
+```java
+		 
+		try {
+			 
+			importBuilder.setLastValue(100);//增量起始值配置
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+```
+
 
 
 ### 2.8.6 定时全量导入
@@ -1284,7 +1313,7 @@ bboss 5.9.3及之前的版本需要注意：如果增量字段默认自带排序
 importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
 ```
 
-bboss 5.9.3及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能。
+bboss 5.9.3及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能(但是如果作业重启后，续接采集时，可能会存在部分数据丢失问题，这种情况下就需要进行排序)。
 
 #### 2.8.9.2 增量状态存储数据库
 
@@ -1315,35 +1344,6 @@ sqlite作为一个本地单线程文件数据库，可能在一些场景下无�
 bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
 
 [保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
-
-#### 2.8.9.3 设置增量同步增量字段起始值
-
-可以指定增量字段的起始值，不指定的情况下数字默认起始值0,日期默认起始值:1970-01-01
-
-指定日期字段增量同步起始值：
-
-```java
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Date date = format.parse("2000-01-01");
-			importBuilder.setLastValue(date);//增量起始值配置
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-```
-
-指定数字字段增量同步起始值：
-```java
-		 
-		try {
-			 
-			importBuilder.setLastValue(100);//增量起始值配置
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-```
 
 ### 2.8.10 灵活控制文档数据结构
 
@@ -2828,7 +2828,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 		importBuilder
                //.setScheduleDate(date) //指定任务开始执行时间：日期
 				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-				
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
 		*/
         
 ```
