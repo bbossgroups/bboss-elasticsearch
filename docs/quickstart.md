@@ -192,9 +192,10 @@ https://esdoc.bbossgroups.com/#/development
 elasticsearch.rest.hostNames=10.21.20.168:9200
 ```
 
-如需启用HTTPS协议, 则在elasticsearch地址前面添加https协议头:
+如需启用[HTTPS协议](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae), 则在elasticsearch地址前面添加https协议头，并设置useHttps属性为true:
 
 ```properties
+elasticsearch.useHttps=true
 elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
@@ -303,9 +304,10 @@ spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
 ```
 
 
-如需启用HTTPS协议, 则在elasticsearch地址前面添加https协议头:
+如需启用[HTTPS协议](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae), 则在elasticsearch地址前面添加https协议头，并设置useHttps属性为true:
 
 ```properties
+spring.elasticsearch.bboss.elasticsearch.useHttps=true
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 

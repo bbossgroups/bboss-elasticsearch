@@ -575,9 +575,11 @@ spring.elasticsearch.bboss.elasticsearch.useHttps=true
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
-Elasticsearch 启用https协议后，如果不想再客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下三种方式配置ssl证书(如果是spring boot项目，可以统一加前缀spring.elasticsearch.bboss.)
+Elasticsearch 启用https协议后，如果不想在客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下六种方式配置ssl证书参数。
 
-1 Using PEM certificates：
+如果是spring boot项目，在对应的参数名称添加前缀即可：spring.elasticsearch.bboss.
+
+#### 1 Using PEM certificates
 
 | 参数名称                | 说明                                               |
 | ----------------------- | -------------------------------------------------- |
@@ -597,7 +599,7 @@ http.pemKey = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sga
 http.pemkeyPassword = 7240a0366eb6a764103e
 ```
 
-2 Using the keystore and truststore file：
+#### 2 Using the keystore and truststore file（JKS）
 
 | 参数名称                | 说明                                                     |
 | ----------------------- | -------------------------------------------------------- |
@@ -619,7 +621,7 @@ http.pemkeyPassword = 7240a0366eb6a764103e
  http.trustPassword = 6aa4bd79096852203a5b
 ```
 
-3 Using the keystore :
+#### 3 Using the keystore 
 
 | 参数名称                | 说明                                                     |
 | ----------------------- | -------------------------------------------------------- |
@@ -634,6 +636,64 @@ http.pemkeyPassword = 7240a0366eb6a764103e
 # Using the keystore file
  http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
  http.keyPassword = 7240a0366eb6a764103e
+ 
+```
+
+#### 4 Using the crt文件
+
+| 参数名称     | 说明                |
+| ------------ | ------------------- |
+| http.pemCert | pem证书路径，String |
+
+配置示例：
+
+
+```properties
+# Using the crt file
+ http.pemCert = /path/to/ca.crt
+ 
+```
+
+#### 5 Using the truststore文件
+
+| 参数名称           | 说明                                            |
+| ------------------ | ----------------------------------------------- |
+| http.truststore    | truststore证书文件路径，证书类型为pkcs12或者JKS |
+| http.trustPassword | truststore证书口令，可选项                      |
+
+配置示例：
+
+
+```properties
+# Using the crt file
+ http.truststore = /path/to/truststore.p12
+ # 可选项
+ http.trustPassword = 6aa4bd79096852203a5b
+ 
+```
+
+#### 6 Using the keystore and truststore file（pkcs12）
+
+| 参数名称           | 说明                                     |
+| ------------------ | ---------------------------------------- |
+| http.truststore    | truststore证书文件路径，证书类型为pkcs12 |
+| http.trustPassword | truststore证书口令，可选项               |
+| http.keystore      | keystore证书路径，证书类型为pkcs12       |
+| http.keyPassword   | keystore证书口令                         |
+
+配置示例：
+
+
+```properties
+# Using the truststore file
+ http.truststore = /path/to/your/truststore.p12
+ # 可选项
+ http.trustPassword = 6aa4bd79096852203a5b
+ 
+ # Using the crt file
+ http.keystore = /path/to/your/keystore.p12
+ # 可选项
+ http.keyPassword = 6aa4bd79096852203a5b
  
 ```
 
