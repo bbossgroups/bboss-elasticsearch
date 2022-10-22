@@ -72,6 +72,13 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	private Object id;
 	/**单文档操作：文档id*/
 	private Object parentId;
+	/**
+	 * 设置script脚本对应的字段名称（bean属性，map为key）
+	 * 批处理时采用，其他操作不起作用
+	 */
+	private String scriptField;
+
+
 	public String getRefreshOption() {
 		return refreshOption;
 	}
@@ -342,5 +349,13 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 
 	public void setParentId(Object parentId) {
 		this.parentId = parentId;
+	}
+
+	public String getScriptField() {
+		return scriptField;
+	}
+
+	public void setScriptField(String scriptField) {
+		this.scriptField = scriptField;
 	}
 }

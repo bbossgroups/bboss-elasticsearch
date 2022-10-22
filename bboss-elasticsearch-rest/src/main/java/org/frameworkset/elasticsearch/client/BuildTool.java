@@ -17,9 +17,11 @@ package org.frameworkset.elasticsearch.client;/*
 import com.frameworkset.orm.annotation.BatchContext;
 import com.frameworkset.orm.annotation.ESIndexWrapper;
 import com.frameworkset.orm.annotation.NameParserException;
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.bulk.BulkActionConfig;
 import org.frameworkset.elasticsearch.bulk.BulkData;
+import org.frameworkset.elasticsearch.bulk.BulkProcessorException;
 import org.frameworkset.elasticsearch.entity.ESIndice;
 import org.frameworkset.elasticsearch.entity.IndexField;
 import org.frameworkset.elasticsearch.entity.IndiceHeader;
@@ -2277,18 +2279,39 @@ public abstract class BuildTool {
 	private static void string2Writer(Writer writer,String data) throws IOException {
 		writer.write(data);
 	}
+	private static void scriptFieldValue(Writer writer,Object data,String scriptField,ClassUtil.ClassInfo beanClassInfo) throws IOException {
+		Object fieldValue = null;
+		if(data instanceof Map){
+			fieldValue = ((Map) data).get(scriptField);
+		}
+		else{
+			fieldValue = beanClassInfo.getPropertyValue(data,scriptField);
+		}
+		if(fieldValue != null){
+			if(fieldValue instanceof String){
+				string2Writer(writer,(String)fieldValue );
+			}
+			else{
+				SerialUtil.object2json(fieldValue, writer);
+			}
+		}
+		else {
+			throw new BulkProcessorException("批处理异常：未设置scriptField[" + scriptField + "]@" + beanClassInfo.getName() + "值!");
+		}
+	}
 	public static void evalBuilk( Writer writer,BulkData bulkData,boolean upper7) throws IOException {
 			Object param = bulkData.getData();
 			ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(param.getClass());
 			buildMeta(  writer ,  bulkData,  upper7,beanClassInfo);
-
+			ClientOptions clientOptions = bulkData.getClientOptions();
 			if(bulkData.isInsert()) {
-				if(!(param instanceof String)) {
+				if(clientOptions == null || SimpleStringUtil.isEmpty(clientOptions.getScriptField())) {
 					SerialUtil.object2json(param, writer);
 
 				}
 				else{
-					string2Writer(writer,(String)param );
+					String scriptField = clientOptions.getScriptField();
+					scriptFieldValue(  writer,  param,  scriptField,  beanClassInfo);
 				}
 				writer.write("\n");
 			}
@@ -2297,7 +2320,6 @@ public abstract class BuildTool {
 
 				Object detect_noop = null;
 				Object doc_as_upsert = null;
-				ClientOptions clientOptions = bulkData.getClientOptions();
 
 				if(clientOptions != null) {
 					if (clientOptions.getDetectNoop() != null) {
@@ -2317,13 +2339,15 @@ public abstract class BuildTool {
 
 
 				writer.write("{\"doc\":");
-				if(!(param instanceof String)) {
+				if(clientOptions == null || SimpleStringUtil.isEmpty(clientOptions.getScriptField())) {
 					SerialUtil.object2json(param,writer);
 
 				}
 				else{
-					string2Writer(writer,(String)param );
+					String scriptField = clientOptions.getScriptField();
+					scriptFieldValue(  writer,  param,  scriptField,  beanClassInfo);
 				}
+
 
 				if(detect_noop != null){
 					writer.write(",\"detect_noop\":");
@@ -2342,14 +2366,7 @@ public abstract class BuildTool {
 				List<String> sourceUpdateExcludes  = clientOptions!= null?clientOptions.getSourceUpdateExcludes():null;
 
 				if (sourceUpdateExcludes != null) {
-					/**
-					 if(!upper7) {
-					 writer.write(",\"_source_excludes\":");
-					 }
-					 else{
-					 writer.write(",\"source_excludes\":");
-					 }
-					 */
+
 					if(!upper7) {
 						writer.write(",\"_source_excludes\":");
 						SerialUtil.object2json(sourceUpdateExcludes,writer);
@@ -2359,14 +2376,7 @@ public abstract class BuildTool {
 				List<String> sourceUpdateIncludes  = clientOptions!= null?clientOptions.getSourceUpdateIncludes():null;
 
 				if (sourceUpdateIncludes != null) {
-					/**
-					 if(!upper7) {
-					 writer.write(",\"_source_includes\":");
-					 }
-					 else{
-					 writer.write(",\"source_includes\":");
-					 }
-					 */
+
 					if(!upper7) {
 						writer.write(",\"_source_includes\":");
 						SerialUtil.object2json(sourceUpdateIncludes,writer);
@@ -2379,26 +2389,7 @@ public abstract class BuildTool {
 
 
 	}
-	/**
-	public static void evalBuilk( Writer writer,String indexName, String indexType, Object param, String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
 
-		if (param != null) {
-			buildMetaWithDocIdField(  writer ,  indexType,  indexName,   param,action,docIdField,parentIdField,  upper7);
-			if(!action.equals("update")) {
-				SerialUtil.object2json(param,writer);
-				writer.write("\n");
-			}
-			else
-			{
-				writer.write("{\"doc\":");
-				SerialUtil.object2json(param,writer);
-				writer.write("}\n");
-			}
-		}
-
-	}
-
-*/
 
 	public static void handleFields(Map<String,Object> subFileds,String fieldName,List<IndexField> fields){
 		if(subFileds == null || subFileds.size() == 0)

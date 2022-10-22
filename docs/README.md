@@ -47,11 +47,8 @@ jdk兼容性：jdk 1.8+
 
 11. 提供按时间日期[ES历史数据清理工具](https://esdoc.bbossgroups.com/#/elasticsearch-indexclean-task)
 
-12. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址：
-https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
     
-    
-    
+
 
 # 源码地址：
 

@@ -4,9 +4,9 @@
 
 BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。通过BulkProcessor，可以将不同索引的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，BulkProcessor提供三类api来支撑异步批处理功能：
 
-1. insertData（每次加入一条记录到bulk队列中)
+1. insertData（每次加入一条记录到bulk队列中)，数据类型支持：PO，Map,String
 2. insertDatas(每次可以加入待新增的多条记录到bulk队列中)
-3. updateData（每次加入一条记录到bulk队列中)
+3. updateData（每次加入一条记录到bulk队列中)，数据类型支持：PO，Map,String
 4. updateDatas(每次可以加入待修改的多条记录到bulk队列中)
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
@@ -235,5 +235,15 @@ public class TestBulkProcessor {
 
 }
 
+```
+
+# 3.Datastream bulk插入数据设置
+
+如果需要通过bulkprocessor批量写入Datastream 管理的索引表，则需要明确指定op_type属性为create，示例如下：
+
+```java
+ClientOptions clientOptions = new ClientOptions();
+clientOptions.setOpType("create");
+detailBulkProcessor.insertData(index,  data,clientOptions);
 ```
 

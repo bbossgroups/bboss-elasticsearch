@@ -1145,47 +1145,11 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		try {
 			for (BulkData bulkData : bulkDatas) {
-//			if(bulkData.isInsert() || bulkData.isUpdate()){
-//				if(!bulkData.isCollection()){
 				try {
 					BuildTool.evalBuilk(writer, bulkData, this.client.isUpper7());
 				} catch (IOException e) {
 					throw new ElasticSearchException(e);
 				}
-//				}
-//				else{
-//					List<Object> innerDatas = bulkData.getDatas();
-//					if(innerDatas != null && innerDatas.size() > 0) {
-//						for(Object idata:innerDatas) {
-//							try {
-//								BuildTool.evalBuilk(writer,idata,this.client.isUpper7());
-//							} catch (IOException e) {
-//								throw new ElasticSearchException(e);
-//							}
-//						}
-//					}
-//
-//				}
-//			}
-//
-//			else if(bulkData.isDelete()){
-//				if(!bulkData.isCollection()){
-//					BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData);
-//				}
-//				else{
-//					List<Object> innerDatas = bulkData.getDatas();
-//					if(innerDatas != null && innerDatas.size() > 0) {
-//						for(Object idata:innerDatas) {
-//							BuildTool.evalDeleteBuilk(  writer,this.client.isUpper7(),  bulkData);
-//						}
-//					}
-//
-//				}
-//			}
-//			else{
-//				throw new BulkProcessorException(new StringBuilder().append("unknown bulk operation type:")
-//						.append(bulkData.getType()).append(", bulk operation type support: 0(insert),1(update),2(delete)").toString());
-//			}
 			}
 			writer.flush();
 
@@ -1198,14 +1162,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			builder = null;
 			writer = null;
 		}
-//		if(bulkCommand.getRefreshOption() != null) {
-//			return this.client.executeHttp(new StringBuilder().append("_bulk?")
-//							                                  .append( bulkCommand.getRefreshOption()).toString(),
-//					                                           builder.toString(), ClientUtil.HTTP_POST);
-//		}
-//		else {
-//			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-//		}
 
 	}
 	public String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
@@ -1214,25 +1170,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		clientOptions.setParentIdField(parentIdKey);
 		clientOptions.setRefreshOption(refreshOption);
 		return updateDocuments(  indexName,   indexType,   beans,clientOptions);
-/**
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		for(Map bean:beans) {
-			try {
-//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update");
-				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",docIdKey,parentIdKey,this.client.isUpper7());
-			} catch (IOException e) {
-				throw new ElasticSearchException(e);
-			}
-		}
-		writer.flush();
-		if(refreshOption != null) {
-			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
-		}
-		else {
-			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-		}
- */
+
 	}
 
 
