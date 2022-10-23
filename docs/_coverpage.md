@@ -1,6 +1,6 @@
 ![logo](images/logo.png)
 
-# Elasticsearch BBoss <small>6.7.5</small>
+# Elasticsearch BBoss <small>6.7.6</small>
 
 > The best Elasticsearch/Opensearch highlevel java rest api
 

@@ -837,6 +837,22 @@ FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
+### 3.11.3 获取生成的文件信息
+
+将生成的文件信息（本地文件路径、ftp文件路径）添加到作业jobmetrics中，获取方法：
+
+```java
+/**
+ * 文件导出时特定的文件类型任务上下文，包含了导出文件清单信息
+ */
+public void afterCall(TaskContext taskContext) {
+	JobTaskMetrics taskMetrics = taskContext.getJobTaskMetrics();
+	List<GenFileInfo> genFileInfos = (List<GenFileInfo>)taskMetrics.readJobExecutorData(FileOutputConfig.JobExecutorDatas_genFileInfos);
+}
+```
+
+
+
 ## 3.12 设置IP地址信息库地址
 
 我们通过以下代码设置IP地址信息库地址：

@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.5 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.6 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -36,7 +36,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.5</version>
+            <version>6.7.6</version>
         </dependency>
 ```
 
@@ -46,9 +46,44 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.7.5</version>
+            <version>6.7.6</version>
         </dependency>
 ```
+# v6.7.6 功能改进
+1. 异步批处理增加scriptField功能，通过其指定操作的dsl脚本，使用案例：
+```java
+   		data = new HashMap<String,Object>();
+   		data.put("id",1000);
+   		data.put("script","{\"name\":\"duoduo104\",\"goodsid\":104}");
+   		clientOptions = new ClientOptions();
+   		clientOptions.setIdField("id");
+   		clientOptions.setScriptField("script");
+   		bulkProcessor.insertData("bulkdemo",data,clientOptions);
+   
+   		data = new HashMap<String,Object>();
+   		data.put("id",1000);
+   		data.put("script","{\"name\":\"updateduoduo104\",\"goodsid\":1104}");
+   		clientOptions = new ClientOptions();
+   		clientOptions.setIdField("id");
+   		clientOptions.setScriptField("script");
+   		bulkProcessor.updateData("bulkdemo",data,clientOptions);
+```
+2. https协议支持Elasticsearch官方的三种ssl证书，参考文档：[https协议配置](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
+3. 优化客户端工具类索引字段管理方法，将内置嵌套结构也增加到字段清单中
+4. 调整JobTaskMetrics中作业开始时间、作业id、作业名称的设置机制，避免作业执行异常时未正确设置作业信息
+5. 修复Elasticsearch输入插件createBaseDataTran方法被重复调用两次问题
+6. 文件输入输出插件改进：ftp发送失败文件重试扫描机制、备份文件清理扫描机制改进
+7. 文件输入输出插件改进：将生成的文件信息（本地文件路径、ftp文件路径）添加到作业jobmetrics中，获取方法：
+```java
+   /**
+    * 文件导出时特定的文件类型任务上下文，包含了导出文件清单信息
+    */
+ public void afterCall(TaskContext taskContext) {
+   JobTaskMetrics taskMetrics = taskContext.getJobTaskMetrics();
+   List<GenFileInfo> genFileInfos = (List<GenFileInfo>) taskMetrics.readJobExecutorData(FileOutputConfig.JobExecutorDatas_genFileInfos);
+ }
+```  
+  		
 # v6.7.5 功能改进
 1. 修复opensearch兼容性 bug
 2. 处理文件输入插件，taskContext设置参数不起作用，以及获取不到fileinfo信息问题
@@ -108,7 +143,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.7.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.7.6版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -283,7 +318,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.5</version>
+            <version>6.7.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -291,7 +326,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.7.5</version>
+            <version>6.7.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -388,7 +423,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.7.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.7.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -934,7 +969,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.7.5</version>
+    <version>6.7.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1322,7 +1357,7 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 
 2.调整异常信息：去掉异常信息中的url地址拼接操作，并以debug级别输出异常对应的url地址到日志文件中
 
-# v6.0.6 功能改进 
+# v6.0.5 功能改进 
 
 1.修复bug：
 动态通过ESIndex设置索引名称和索引type不起作用bug
@@ -1337,14 +1372,14 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 @ESIndex(name="demowithesindex-{dateformat=yyyy.MM.dd}",useBatchContextIndexName = true)
 ```
 
-# v6.0.6 功能改进 
+# v6.0.2 功能改进 
 1.http组件改进: 在异常信息中包含服务请求完整url地址信息
 
 2.http proxy组件改进：如果http服务池没有配置health状态检查地址，启用被动的服务健康检查机制，在没有正常节点的情况下，返回异常节点，如果操作成功则将异常节点标注为正常节点
 
 3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-# v6.0.3 功能改进 
+# v6.0.1 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
 # v6.0.2 功能改进 

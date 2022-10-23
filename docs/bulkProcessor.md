@@ -214,6 +214,24 @@ public class TestBulkProcessor {
 		data.put("id","5");
         //es 7 api,添加修改bulkdemo索引表中id为5的数据到BulkProcessor中，BulkProcessor将异步执行bulk更新update操作
 		bulkProcessor.updateData("bulkdemo",data,clientOptions);
+        
+        //script field使用案例：通过ScriptField指定批处理数据信息
+        data = new HashMap<String,Object>();
+		data.put("id",1000);
+		data.put("script","{\"name\":\"duoduo104\",\"goodsid\":104}");
+		clientOptions = new ClientOptions();
+		clientOptions.setIdField("id");
+		clientOptions.setScriptField("script");
+		bulkProcessor.insertData("bulkdemo",data,clientOptions);
+
+		data = new HashMap<String,Object>();
+		data.put("id",1000);
+		data.put("script","{\"name\":\"updateduoduo104\",\"goodsid\":1104}");
+		clientOptions = new ClientOptions();
+		clientOptions.setIdField("id");
+		clientOptions.setScriptField("script");
+		bulkProcessor.updateData("bulkdemo",data,clientOptions);
+
 
 	}
     
