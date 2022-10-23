@@ -839,7 +839,13 @@ FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
 
 ### 3.11.3 获取生成的文件信息
 
-将生成的文件信息（本地文件路径、ftp文件路径）添加到作业jobmetrics中，获取方法：
+通过开启：
+
+```java
+fileOutputConfig.setEnableGenFileInfoMetric(true);
+```
+
+可以将生成的文件信息（本地文件路径、ftp文件路径）添加到作业jobmetrics中，这样就可以在任务执行拦截器方法中获取任务生成的文件信息：
 
 ```java
 /**
