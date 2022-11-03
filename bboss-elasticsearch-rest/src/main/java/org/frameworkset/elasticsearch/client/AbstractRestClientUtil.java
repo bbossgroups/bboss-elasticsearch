@@ -4370,25 +4370,102 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String updateClusterSetting(ClusterSetting clusterSetting){
-		StringBuilder updateDsl = new StringBuilder();
-		if(clusterSetting.isPersistent()) {
-			updateDsl.append("{").append("\"persistent\":{");
-		}
-		else {
-			updateDsl.append("{").append("\"transient\":{");
-		}
 
-		updateDsl.append("\"").append(clusterSetting.getKey()).append("\":");
-		if(clusterSetting.getValue() == null){
-			updateDsl.append("null");
-		}
-		else if(clusterSetting.getValue() instanceof String) {
-			updateDsl.append("\"").append(clusterSetting.getValue()).append("\"");
+		StringBuilder updateDsl = new StringBuilder();
+		if(!clusterSetting.containPersistentSettings() && !clusterSetting.containTransientSettings()) {
+			if(clusterSetting.isPersistent()) {
+				updateDsl.append("{").append("\"persistent\":{");
+			}
+			else {
+				updateDsl.append("{").append("\"transient\":{");
+			}
+
+			updateDsl.append("\"").append(clusterSetting.getKey()).append("\":");
+			if(clusterSetting.getValue() == null){
+				updateDsl.append("null");
+			}
+			else if(clusterSetting.getValue() instanceof String) {
+				updateDsl.append("\"").append(clusterSetting.getValue()).append("\"");
+			}
+			else{
+				updateDsl.append(clusterSetting.getValue());
+			}
+			updateDsl.append("}}");
 		}
 		else{
-			updateDsl.append(clusterSetting.getValue());
+
+
+			StringBuilder persistentDsl = new StringBuilder();
+			StringBuilder transientDsl = new StringBuilder();
+			boolean persistentSet = false;
+			boolean transientSet = false;
+
+			updateDsl.append("{");
+			Map<String,Object> persistentSettings = clusterSetting.getPersistentSettings();
+			if( persistentSettings != null &&  persistentSettings.size() > 0) {
+				Iterator<Map.Entry<String, Object>> psets = persistentSettings.entrySet().iterator();
+				while(psets.hasNext()){
+					Map.Entry<String, Object> entry = psets.next();
+					if(!persistentSet) {
+						persistentSet = true;
+						persistentDsl.append("\"persistent\":{");
+					}
+					else{
+						persistentDsl.append(",");
+					}
+
+					persistentDsl.append("\"").append(entry.getKey()).append("\":");
+					if(entry.getValue() == null){
+						persistentDsl.append("null");
+					}
+					else if (entry.getValue() instanceof String) {
+						persistentDsl.append("\"").append(entry.getValue()).append("\"");
+					} else {
+						persistentDsl.append(entry.getValue());
+					}
+				}
+
+			}
+			Map<String,Object> transientSettings = clusterSetting.getTransientSettings();
+			if( transientSettings != null &&  transientSettings.size() > 0) {
+				Iterator<Map.Entry<String, Object>> psets = transientSettings.entrySet().iterator();
+				while(psets.hasNext()){
+					Map.Entry<String, Object> entry = psets.next();
+					if(!transientSet) {
+						transientSet = true;
+						transientDsl.append("\"transient\":{");
+					}
+					else{
+						transientDsl.append(",");
+					}
+					transientDsl.append("\"").append(entry.getKey()).append("\":");
+					if(entry.getValue() == null){
+						transientDsl.append("null");
+					}
+					else if (entry.getValue() instanceof String) {
+						transientDsl.append("\"").append(entry.getValue()).append("\"");
+					} else {
+						transientDsl.append(entry.getValue());
+					}
+				}
+
+			}
+			if(persistentDsl.length() > 0){
+				persistentDsl.append("}");
+				updateDsl.append(persistentDsl.toString());
+			}
+			if(transientDsl.length() > 0 && persistentDsl.length() > 0)
+			{
+				updateDsl.append(",");
+			}
+			if(transientDsl.length() > 0)
+			{
+				transientDsl.append("}");
+				updateDsl.append(transientDsl.toString());
+			}
+			updateDsl.append("}");
 		}
-		updateDsl.append("}}");
+
 		return this.client.executeHttp("_cluster/settings",updateDsl.toString(),ClientInterface.HTTP_PUT);
 	}
 
@@ -4563,6 +4640,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			return this.client.executeHttp("_flush/synced", ClientInterface.HTTP_POST);
 		}
 	}
+
+
+
 	/**
 	 *
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/6.3/indices-synced-flush.html

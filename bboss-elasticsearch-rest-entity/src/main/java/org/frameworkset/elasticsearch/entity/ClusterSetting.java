@@ -16,6 +16,8 @@ package org.frameworkset.elasticsearch.entity;
  */
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -26,9 +28,47 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class ClusterSetting implements Serializable {
+	/**
+	 * 场景1
+	 */
 	private boolean persistent;
 	private String key;
 	private Object value;
+	/**
+	 * 场景2
+	 */
+	private Map<String,Object> transientSettings;
+	private Map<String,Object> persistentSettings;
+
+	public boolean containTransientSettings(){
+		return transientSettings != null && transientSettings.size() > 0;
+	}
+	public boolean containPersistentSettings(){
+		return persistentSettings != null && persistentSettings.size() > 0;
+	}
+	public ClusterSetting addTransientSetting(String name,Object value){
+		if(transientSettings == null){
+			transientSettings = new LinkedHashMap<>();
+		}
+		transientSettings.put(name,value);
+		return this;
+	}
+
+	public ClusterSetting addPersistentSetting(String name,Object value){
+		if(persistentSettings == null){
+			persistentSettings = new LinkedHashMap<>();
+		}
+		persistentSettings.put(name,value);
+		return this;
+	}
+
+	public Map<String, Object> getPersistentSettings() {
+		return persistentSettings;
+	}
+
+	public Map<String, Object> getTransientSettings() {
+		return transientSettings;
+	}
 
 	public boolean isPersistent() {
 		return persistent;
