@@ -3352,9 +3352,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 				SimpleDateFormat yearDateFormat = new SimpleDateFormat(client.getYearDateFormat());
 				DateFormats dateFormats = new DateFormats();
-				dateFormats.setDayDateFormat(dayDateFormat);
-				dateFormats.setMonthDateFormat(monthDateFormat);
-				dateFormats.setYearDateFormat(yearDateFormat);
+				dateFormats.setDayDateFormat(dayDateFormat,client.getDayDateFormat().length());
+				dateFormats.setMonthDateFormat(monthDateFormat,client.getMonthDateFormat().length());
+				dateFormats.setYearDateFormat(yearDateFormat,client.getYearDateFormat().length());
 				List<IndiceHeader> indiceHeaderList = null;
 		        while(true){
 		            String line = br.readLine();

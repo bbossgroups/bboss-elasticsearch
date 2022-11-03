@@ -33,6 +33,12 @@ public class DateFormats {
 	private SimpleDateFormat monthDateFormat;
 
 	private SimpleDateFormat yearDateFormat ;
+
+	private int dayDateFormatLen ;
+
+	private int monthDateFormatLen;
+
+	private int yearDateFormatLen ;
 	public static final int indiceSplitPolicy_unKnown = -1;
 	public static final int indiceSplitPolicy_splitByDay = 1;
 	public static final int indiceSplitPolicy_splitByMonth = 2;
@@ -51,6 +57,7 @@ public class DateFormats {
 	 */
 	public void resetIndiceSplitPolicy(){
 		indiceSplitPolicy = null;
+
 	}
 
 	public Date parserDate(String dateStr){
@@ -60,23 +67,24 @@ public class DateFormats {
 		}
 		Date date = null;
 		try{
-			date = dayDateFormat.parse(dateStr);
-			this.indiceSplitPolicy = indiceSplitPolicy_splitByDay;
-		}
-		catch (Exception e){
-			try {
+			if(dateStr.length() == dayDateFormatLen) {
+				date = dayDateFormat.parse(dateStr);
+				this.indiceSplitPolicy = indiceSplitPolicy_splitByDay;
+			}
+			else if(dateStr.length() == monthDateFormatLen) {
 				date = monthDateFormat.parse(dateStr);
 				this.indiceSplitPolicy = indiceSplitPolicy_splitByMonth;
 			}
-			catch (Exception e1){
-				try {
-					date = yearDateFormat.parse(dateStr);
-					this.indiceSplitPolicy = indiceSplitPolicy_splitByYear;
-				}
-				catch (Exception e2){
-					this.indiceSplitPolicy = indiceSplitPolicy_unKnown;
-				}
+			else if(dateStr.length() == yearDateFormatLen) {
+				date = yearDateFormat.parse(dateStr);
+				this.indiceSplitPolicy = indiceSplitPolicy_splitByYear;
 			}
+			else{
+				this.indiceSplitPolicy = indiceSplitPolicy_unKnown;
+			}
+		}
+		catch (Exception e){
+			this.indiceSplitPolicy = indiceSplitPolicy_unKnown;
 		}
 		return date;
 	}
@@ -84,26 +92,29 @@ public class DateFormats {
 		return dayDateFormat;
 	}
 
-	public void setDayDateFormat(SimpleDateFormat dayDateFormat) {
+	public void setDayDateFormat(SimpleDateFormat dayDateFormat,int dayDateFormatLen ) {
 		this.dayDateFormat = dayDateFormat;
+
+		this.dayDateFormatLen = dayDateFormatLen;
 	}
 
 	public SimpleDateFormat getMonthDateFormat() {
 		return monthDateFormat;
 	}
 
-	public void setMonthDateFormat(SimpleDateFormat monthDateFormat) {
+	public void setMonthDateFormat(SimpleDateFormat monthDateFormat,int monthDateFormatLen) {
 		this.monthDateFormat = monthDateFormat;
+		this.monthDateFormatLen = monthDateFormatLen;
 	}
 
 	public SimpleDateFormat getYearDateFormat() {
 		return yearDateFormat;
 	}
 
-	public void setYearDateFormat(SimpleDateFormat yearDateFormat) {
+	public void setYearDateFormat(SimpleDateFormat yearDateFormat, int yearDateFormatLen ) {
 		this.yearDateFormat = yearDateFormat;
+		this.yearDateFormatLen = yearDateFormatLen;
 	}
-
 	public Integer getIndiceSplitPolicy() {
 		return indiceSplitPolicy;
 	}
