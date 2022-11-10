@@ -1695,7 +1695,7 @@ final Random random = new Random();
 		});
 ```
 
-#### 2.8.13.3 index和type可以有以下几种动态生成方法
+#### 2.8.13.3 动态设置index和type
 
 ```properties
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成=

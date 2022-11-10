@@ -78,6 +78,9 @@ com.fasterxml.jackson.annotation.JsonProperty
 ```java
 @JsonProperty("max_score")
 private Double maxScore;
+
+@JsonProperty("@timestamp")
+private Date timstamp;
 ```
 
 
