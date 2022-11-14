@@ -80,8 +80,9 @@ public class BulkProcessor {
 	}
 
 	public synchronized void increamentTotalsize(int totalSize){
+		r.lock();
 		try {
-			r.lock();
+
 			this.totalSize = this.totalSize + totalSize;
 		}
 		finally {
@@ -126,8 +127,9 @@ public class BulkProcessor {
 		return lastAppendDataTime;
 	}
 	private void appendBulkData(BulkData bulkData){
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -155,8 +157,9 @@ public class BulkProcessor {
 	}
 
 	private void forceFlush(long flushInterval){
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -173,8 +176,9 @@ public class BulkProcessor {
 	}
 
 	private void forceExecute(){
+		w.lock();
 		try {
-			w.lock();
+
 
 			if (bulkCommand !=null && bulkCommand.getBulkDataSize() > 0) {
 				execute(false);
@@ -380,8 +384,9 @@ public class BulkProcessor {
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -410,8 +415,9 @@ public class BulkProcessor {
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -461,9 +467,9 @@ public class BulkProcessor {
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
-
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -491,9 +497,9 @@ public class BulkProcessor {
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
-
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -550,8 +556,9 @@ public class BulkProcessor {
 			return ;
 		}
 		assertShutdown();
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -580,8 +587,9 @@ public class BulkProcessor {
 			return ;
 		}
 		assertShutdown();
+		w.lock();
 		try {
-			w.lock();
+
 			if(bulkCommand == null){
 				return;
 			}
@@ -629,8 +637,9 @@ public class BulkProcessor {
 		return totalSize;
 	}
 	public   void increamentFailedSize(int failedSize){
+		r.lock();
 		try {
-			r.lock();
+
 			this.failedSize = this.failedSize + failedSize;
 		}
 		finally {

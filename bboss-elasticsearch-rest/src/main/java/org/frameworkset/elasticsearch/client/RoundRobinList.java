@@ -59,8 +59,9 @@ public class RoundRobinList {
 //
 //	}
 	public void addAddresses(List<ESAddress> address){
+		lock.lock();
 		try{
-			lock.lock();
+
 			this.elements.addAll(address);
 			message = new StringBuilder().append("All elasticsearch server ").append(elements.toString()).append(" can't been connected.").toString();
 			this.iterator = elements.iterator();
@@ -71,8 +72,9 @@ public class RoundRobinList {
 	}
 	private final Lock lock = new ReentrantLock();
 	private ESAddress _get(){
+		lock.lock();
 		try {
-			lock.lock();
+
 			ESAddress address = null;
 			ESAddress temp = null;
 			while (iterator.hasNext()) {
@@ -105,8 +107,9 @@ public class RoundRobinList {
 	}
 
 	private ESAddress _getOkOrFailed(){
+		lock.lock();
 		try {
-			lock.lock();
+
 			ESAddress address = null;
 			ESAddress temp = null;
 			while (iterator.hasNext()) {

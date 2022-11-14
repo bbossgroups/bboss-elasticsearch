@@ -39,8 +39,9 @@ public class ParallelSliceScrollHandler<T> extends DefualtSliceScrollHandler<T> 
 
 		List<T> datas = firstResponse.getDatas();
 		if(datas != null) {
+			lockSetSliceResponse.lock();
 			try {
-				lockSetSliceResponse.lock();
+
 				datas.addAll(response.getDatas());
 			} finally {
 				lockSetSliceResponse.unlock();

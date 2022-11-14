@@ -42,8 +42,9 @@ public class ParallelSliceScrollResult<T> extends BreakableSliceScrollResult  im
 
 	//辅助方法，用来累计每次scroll获取到的记录数
 	public void incrementSize(int size){
+		lockIncrementSize.lock();
 		try {
-			lockIncrementSize.lock();
+
 			this.realTotalSize = this.realTotalSize + size;
 		}
 		finally {
@@ -66,8 +67,9 @@ public class ParallelSliceScrollResult<T> extends BreakableSliceScrollResult  im
 	public void setSliceResponse(ESDatas<T> sliceResponse) {
 		if(this.sliceResponse != null)
 			return;
+		lockSetSliceResponse.lock();
 		try {
-			lockSetSliceResponse.lock();
+
 			if(this.sliceResponse != null)
 				return;
 			this.sliceResponse = sliceResponse;
@@ -103,8 +105,9 @@ public class ParallelSliceScrollResult<T> extends BreakableSliceScrollResult  im
 			return this.scrollHandler;
 		}
 		boolean inited = false;
+		lockSetSliceResponse.lock();
 		try {
-			lockSetSliceResponse.lock();
+
 			if (this.scrollHandler != null) {
 				inited = true;
 			}

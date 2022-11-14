@@ -271,9 +271,10 @@ public class ESTemplateCache {
 		VariableHandler.URLStruction sqlstruction =  parserTempateStructions.get(key);
 		if(sqlstruction == null)
 		{
+			lock.lock();
 			try
 			{
-				lock.lock();
+
 				sqlstruction =  parserTempateStructions.get(key);
 				if(sqlstruction == null)
 				{
@@ -303,8 +304,9 @@ public class ESTemplateCache {
 			String okey = dslinfo.getTemplateName();
 			MissingStaticCache<String, VariableHandler.URLStruction> sqlstructionMap = this.parserVTPLTempateStructionsMissingCache.get(okey);
 			if (sqlstructionMap == null) {
+				this.vtplLock.lock();
 				try {
-					this.vtplLock.lock();
+
 					sqlstructionMap = this.parserVTPLTempateStructionsMissingCache.get(okey);
 					if (sqlstructionMap == null) {
 						sqlstructionMap = new MissingStaticCache<String, VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
@@ -323,8 +325,9 @@ public class ESTemplateCache {
 			}
 			urlStruction = sqlstructionMap.get(ikey);
 			if (urlStruction == null) {
+				this.vtplLock.lock();
 				try {
-					this.vtplLock.lock();
+
 					urlStruction = sqlstructionMap.get(ikey);
 					if (urlStruction == null) {
 						long missing = sqlstructionMap.increamentMissing();
@@ -364,8 +367,9 @@ public class ESTemplateCache {
 			String okey = dslinfo.getTemplateName();
 			EdenConcurrentCache<String, VariableHandler.URLStruction> sqlstructionMap = this.parserVTPLTempateStructions.get(okey);
 			if (sqlstructionMap == null) {
+				this.vtplLock.lock();
 				try {
-					this.vtplLock.lock();
+
 					sqlstructionMap = this.parserVTPLTempateStructions.get(okey);
 					if (sqlstructionMap == null) {
 						sqlstructionMap = new EdenConcurrentCache<String, VariableHandler.URLStruction>(perKeyDSLStructionCacheSize);
@@ -380,8 +384,9 @@ public class ESTemplateCache {
 			boolean outOfSize = false;
 			long missing = 0l;
 			if (urlStruction == null) {
+				this.vtplLock.lock();
 				try {
-					this.vtplLock.lock();
+
 					urlStruction = sqlstructionMap.get(ikey);
 					if (urlStruction == null) {
 						missing = sqlstructionMap.increamentMissing();

@@ -37,8 +37,9 @@ public abstract class ParralBreakableScrollHandler<T> implements BreakableScroll
 	 * @return
 	 */
 	public boolean isBreaked(){
+		r.lock();
 		try {
-			r.lock();
+
 			return breaked;
 		}
 		finally {
@@ -47,8 +48,9 @@ public abstract class ParralBreakableScrollHandler<T> implements BreakableScroll
 
 	}
 	public void setBreaked(boolean breaked){
+		w.lock();
 		try {
-			w.lock();
+
 			this.breaked = breaked;
 		}
 		finally {
