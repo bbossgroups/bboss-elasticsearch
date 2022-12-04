@@ -64,6 +64,8 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
 | FileInputConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
 | FileInputConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
+| FileInputConfig.cleanCompleteFiles | boolean,清理采集完毕文件,backupSuccessFiles为false时，配置后起作用 | false |
+| FileInputConfig.fileLiveTime | long,cleanCompleteFiles为true时且fileLiveTime大于0时，对于采集完毕的文件如果超过有效期后进行清理 | 0 |
 | FileConfig.enableInode                   | boolean,是否启用inode文件标识符机制来识别文件重命名操作，linux环境下起作用，windows环境下不起作用（enableInode强制为false）  linux环境下，在不存在重命名的场景下可以关闭inode文件标识符机制，windows环境下强制关闭inode文件标识符机制 | true    |
 | FileConfig.sourcePath                    | String,数据文件存放目录，或者远程文件下载目录                           |         |
 | FileConfig.ftpConfig | FtpConfig,可选，封装ftp/sftp配置信息，[设置ftpConfig](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)，代表作业从ftp和sftp服务器下载数据文件并采集处理，否则就是本地数据文件采集处理 | |
