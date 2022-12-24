@@ -51,7 +51,7 @@
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-core-entity</artifactId>
-  <version>5.9.9</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 用一个简单的demo来介绍通用BulkProcessor功能：

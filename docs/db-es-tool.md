@@ -170,7 +170,7 @@ Elasticsearch/Database/Http/Custom(自定义处理器)/Dummy插件坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.7.6</version>
+<version>6.7.7</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -178,7 +178,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.7.6</version>
+<version>6.7.7</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -186,7 +186,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.7.6</version>
+<version>6.7.7</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -194,7 +194,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.7.6</version>
+<version>6.7.7</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -202,7 +202,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.7.6</version>
+<version>6.7.7</version>
 </dependency>
 ```
 
@@ -1263,7 +1263,13 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-## 
+#### 2.8.7.2 kafka输入插件拦截器设置说明
+
+kafka输入插件拦截器收集作业metrics信息时，定时记录统计插件消费kafka数据记录情况，并调用任务拦截器的aftercall方法输出统计jobMetrics信息，可以指定统计时间间隔：
+
+```java
+kafka2InputConfig.setMetricsInterval(300 * 1000L);//300秒做一次任务拦截调用，默认值
+```
 
 ### 2.8.8 定时任务调度说明
 
@@ -1553,6 +1559,72 @@ if(ftpConfig != null){
 }
 ```
 
+#### 2.8.10.5 默认的字段映射配置
+
+字段映射功能，对于文本记录按照特定的字符切割成一个数组结构，然后通过设置索引位置对于的字段名称、默认值、字段类型、字段格式，从而快速实现非结构化数据到结构化数据转换映射处理。
+
+涉及插件：日志采集插件、excel采集插件、生成日志/excel文件插件、kafka输入插件
+
+文件采集插件字段映射配置示例：
+
+```java
+FileInputConfig fileInputConfig = new FileInputConfig();
+
+FileConfig fileConfig = new FileConfig();
+    fileConfig.setFieldSplit(";");//指定日志记录字段分割符
+  //指定字段映射配置
+    fileConfig.addDateCellMapping(0, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+               
+    fileConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+    fileConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+           
+```
+
+kafka映射配置示例：
+
+```java
+Kafka2InputConfig kafka2InputConfig = new Kafka2InputConfig();
+ 
+    kafka2InputConfig.setFieldSplit(";");//指定kafka记录字段分割符
+  //指定字段映射配置
+    kafka2InputConfig.addDateCellMapping(0, //记录切割得到的字段列表位置索引，从0开始
+    			excelCellMapping.getFieldName(), //映射的字段名称
+                                          cellType, //字段值类型
+                                          excelCellMapping.getDefaultValue(), //字段默认值
+                                         excelCellMapping.getDataFormat());//字段格式：日期格式或者数字格式
+               
+    kafka2InputConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+    kafka2InputConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+```
+
+excel字段映射配置
+
+```java
+FileInputConfig fileInputConfig = new FileInputConfig();
+
+ExcelFileConfig fileConfig = new ExcelFileConfig();
+    fileConfig.setFieldSplit(";");//指定日志记录字段分割符
+  //指定字段映射配置
+    fileConfig.addDateCellMapping(0, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+               
+    fileConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+    fileConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+```
+
+cellType取值范围：
+
+```java
+public static final int CELL_BOOLEAN = 5;
+public static final int CELL_DATE = 3;
+
+public static final int CELL_NUMBER = 2;
+public static final int CELL_NUMBER_INTEGER = 6;
+public static final int CELL_NUMBER_LONG = 7;
+public static final int CELL_NUMBER_FLOAT = 8;
+public static final int CELL_NUMBER_SHORT = 9;
+public static final int CELL_STRING = 1;
+```
+
 ### 2.8.11 IP-地区运营商经纬度坐标转换
 
 与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：
@@ -1651,6 +1723,15 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
       return -1;
    }
 });
+```
+
+#### 2.8.12.1 kafka输出插件任务状态记录说明
+
+kafka输出插件任务状态记录管理功能，可以采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能，避免频繁采集每条记录任务的metrics信息。
+
+```java
+kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
+kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
 ```
 
 ### 2.8.13 灵活指定索引名称和索引类型

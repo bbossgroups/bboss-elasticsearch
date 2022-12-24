@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.6 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.7 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -36,7 +36,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.6</version>
+            <version>6.7.7</version>
         </dependency>
 ```
 
@@ -46,10 +46,105 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.7.6</version>
+            <version>6.7.7</version>
         </dependency>
 ```
+# v6.7.7 功能改进
+1. 增加轻量级但功能强大的大数据指标分析计算模块：
+
+可以非常方便地实现基于时间窗口维度的实时指标计算和离线指标计算功能
+
+适用于有限维度指标key和无限维度指标key，同时可以非常方便地将指标分析计算结果存储到各种数据库
+
+2. 增量采集状态表increament_tab结构调整，增加以下字段：
+
+   jobType varchar(500)，用于保存输入插件类型，不同的插件类型对应的值见下面的表格说明，避免不同类型作业加载增量状态时，互相干扰
+
+   
+
+   jobId varchar(500)，用于保存外部设置的作业id，相同的进程内启动多个同类型的输入插件的作业时，必须指定每个作业的jobId,避免各个作业加载增量状态时，互相干扰
+
+   | 插件类型                         | jobType                          | jobId |
+   | -------------------------------- | -------------------------------- | ----- |
+   | HttpInputDataTranPlugin          | HttpInputDataTranPlugin          | 空    |
+   | DBInputDataTranPlugin            | DBInputDataTranPlugin            | 空    |
+   | ElasticsearchInputDataTranPlugin | ElasticsearchInputDataTranPlugin | 空    |
+   | FileInputDataTranPlugin          | FileInputDataTranPlugin          | 空    |
+   | HBaseInputDatatranPlugin         | HBaseInputDatatranPlugin         | 空    |
+   | Kafka2InputDatatranPlugin        | Kafka2InputDatatranPlugin        | 空    |
+   | MongoDBInputDatatranPlugin       | MongoDBInputDatatranPlugin       | 空    |
+
+   **升级注意事项：**升级前，需要手动修改increament_tab表中的状态记录，根据作业输入插件类型，填写正确的jobType，然后再启动作业，否则作业无法正常工作
+
+3. 优化增量状态管理机制
+4. [增加全局JobContext，用于存放在作业中使用的初始化数据](https://gitee.com/bboss/bboss-elastic-tran/commit/54a28c36c56c63d4d164ef2163e5344c9b717eef)
+5. 优化kafka输出插件任务状态记录管理功能，采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能
+
+```java
+kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
+kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
+```
+
+6. 优化kafka输入插件拦截器功能：定时记录统计插件消费kafka数据记录情况，并调用任务拦截器的aftercall方法输出统计jobMetrics信息，可以指定统计时间间隔：
+
+```java
+kafka2InputConfig.setMetricsInterval(300 * 1000L);//300秒做一次任务拦截调用，默认值
+```
+
+7. 增加字段映射功能，涉及插件：日志采集插件、excel采集插件、生成日志/excel文件插件、kafka输入插件
+
+文件采集插件字段映射配置示例：
+
+```java
+FileInputConfig fileInputConfig = new FileInputConfig();
+_fileInputConfig = fileInputConfig;
+FileConfig fileConfig = new FileConfig();
+    fileConfig.setFieldSplit(";");//指定日志记录字段分割符
+  //指定字段映射配置
+    fileConfig.addDateCellMapping(0, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+               
+    fileConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+    fileConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+           
+```
+
+kafka映射配置示例：
+
+```java
+Kafka2InputConfig kafka2InputConfig = new Kafka2InputConfig();
+ 
+    kafka2InputConfig.setFieldSplit(";");//指定kafka记录字段分割符
+  //指定字段映射配置
+    kafka2InputConfig.addDateCellMapping(0, //记录切割得到的字段列表位置索引，从0开始
+    			excelCellMapping.getFieldName(), //映射的字段名称
+                                          cellType, //字段值类型
+                                          excelCellMapping.getDefaultValue(), //字段默认值
+                                         excelCellMapping.getDataFormat());//字段格式：日期格式或者数字格式
+               
+    kafka2InputConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
+    kafka2InputConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+```
+
+cellType取值范围：
+
+```java
+public static final int CELL_BOOLEAN = 5;
+public static final int CELL_DATE = 3;
+
+public static final int CELL_NUMBER = 2;
+public static final int CELL_NUMBER_INTEGER = 6;
+public static final int CELL_NUMBER_LONG = 7;
+public static final int CELL_NUMBER_FLOAT = 8;
+public static final int CELL_NUMBER_SHORT = 9;
+public static final int CELL_STRING = 1;
+```
+
+8. [增加全局JobContext，用于存放在作业中使用的初始化数据](https://gitee.com/bboss/bboss-elastic-tran/commit/54a28c36c56c63d4d164ef2163e5344c9b717eef)
+
+更多变更，参考提交记录：https://gitee.com/bboss/bboss-elastic-tran/commits/master
+
 # v6.7.6 功能改进
+
 1. 异步批处理增加scriptField功能，通过其指定操作的dsl脚本，使用案例：
 ```java
    		data = new HashMap<String,Object>();
@@ -82,8 +177,8 @@ https://esdoc.bbossgroups.com/#/development
    JobTaskMetrics taskMetrics = taskContext.getJobTaskMetrics();
    List<GenFileInfo> genFileInfos = (List<GenFileInfo>) taskMetrics.readJobExecutorData(FileOutputConfig.JobExecutorDatas_genFileInfos);
  }
-```  
-  		
+```
+
 # v6.7.5 功能改进
 1. 修复opensearch兼容性 bug
 2. 处理文件输入插件，taskContext设置参数不起作用，以及获取不到fileinfo信息问题
@@ -143,7 +238,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.7.6版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.7.7版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -318,7 +413,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.7.6</version>
+            <version>6.7.7</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -326,7 +421,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.7.6</version>
+            <version>6.7.7</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -338,6 +433,9 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
+              
+              
               
               
               
@@ -423,7 +521,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.7.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.7.7时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -475,7 +573,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "5.9.7",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.0",transitive: true 
   ```
 
   **maven坐标**
@@ -486,7 +584,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>5.9.9</version>  
+      <version>6.0.0</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -969,7 +1067,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.7.6</version>
+    <version>6.7.7</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1288,13 +1386,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.0.0</version>
+      <version>6.0.7</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.0.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.0.7", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
