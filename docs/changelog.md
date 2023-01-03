@@ -22,12 +22,6 @@ https://esdoc.bbossgroups.com/#/development
 
 6. 提供快速而高效的数据导入ES工具
 
-7. APM开源产品pinpoint官方Elasticsearch bboss 客户端性能监控插件，插件地址： 
-
-   https://github.com/naver/pinpoint/tree/master/plugins/elasticsearch-bboss
-
-
-
 # 导入bboss
 
 一般项目导入下面的maven坐标即可：
@@ -52,9 +46,11 @@ https://esdoc.bbossgroups.com/#/development
 # v6.7.7 功能改进
 1. 增加轻量级但功能强大的大数据指标分析计算模块：
 
-可以非常方便地实现基于时间窗口维度的实时指标计算和离线指标计算功能
+可以非常方便地实现基于时间窗口维度的实时指标计算和离线指标计算功能，适用于有限维度指标key和无限维度指标key，同时可以非常方便地将指标分析计算结果存储到各种数据库，以极低成本快速构建企业级大数据分析作业
 
-适用于有限维度指标key和无限维度指标key，同时可以非常方便地将指标分析计算结果存储到各种数据库
+使用案例
+
+https://gitee.com/bboss/bboss-elastic-tran/tree/master/bboss-datatran-core/src/test/java/org/frameworkset/tran/metrics
 
 2. 增量采集状态表increament_tab结构调整，增加以下字段：
 
@@ -140,6 +136,7 @@ public static final int CELL_STRING = 1;
 ```
 
 8. [增加全局JobContext，用于存放在作业中使用的初始化数据](https://gitee.com/bboss/bboss-elastic-tran/commit/54a28c36c56c63d4d164ef2163e5344c9b717eef)
+9. 作业拦截器异常方法参数Exception类型调整为Throwable类型，任务拦截器异常方法参数Exception类型调整为Throwable类型
 
 更多变更，参考提交记录：https://gitee.com/bboss/bboss-elastic-tran/commits/master
 
@@ -433,6 +430,7 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
               
               
               
