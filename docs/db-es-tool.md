@@ -170,7 +170,7 @@ Elasticsearch/Database/Http/Custom(自定义处理器)/Dummy插件坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.7.7</version>
+<version>6.7.8</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -178,7 +178,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.7.7</version>
+<version>6.7.8</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -186,7 +186,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.7.7</version>
+<version>6.7.8</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -194,7 +194,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.7.7</version>
+<version>6.7.8</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -202,7 +202,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.7.7</version>
+<version>6.7.8</version>
 </dependency>
 ```
 
