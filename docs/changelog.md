@@ -47,8 +47,13 @@ https://esdoc.bbossgroups.com/#/development
 
 1.增加hbase和MongoDB输出插件，使用案例：
 [Elasticsearch-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2HBaseDemo.java)
+
 [Database-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2HbaseDemo.java)
+
+[Database-HBase自定义列簇映射同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2HbaseWithFamilyColumnDemo.java)
+
 [Elasticsearch-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2MongodbDemo.java)
+
 [Database-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2MongodbDemo.java)
 2.数据库数据源增加enableShutdownHook属性，控制是否在jvm退出时自动关闭数据源，默认为false 不关闭 true关闭
 
