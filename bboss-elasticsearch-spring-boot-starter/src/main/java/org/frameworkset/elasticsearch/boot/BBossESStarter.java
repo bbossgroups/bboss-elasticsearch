@@ -16,7 +16,6 @@ package org.frameworkset.elasticsearch.boot;/*
 
 import com.frameworkset.common.poolman.util.DBConf;
 import com.frameworkset.common.poolman.util.SQLManager;
-import com.frameworkset.common.poolman.util.SQLUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
@@ -154,25 +153,14 @@ public class BBossESStarter  extends BaseESProperties{
 		temConf.setDbAdaptor(db.getDbAdaptor());
 		temConf.setDbtype(db.getDbtype());
 		boolean ff = db.getColumnLableUpperCase() == null ? true:db.getColumnLableUpperCase().equals("true");
+
+
 		temConf.setColumnLableUpperCase(ff);
+
+		ff = db.getEnableShutdownHook() == null ? true:db.getEnableShutdownHook().equals("true");
+		temConf.setEnableShutdownHook(ff);
 		SQLManager.startPool(temConf);
-		SQLUtil.startPool(db.getName(),//数据源名称
-				db.getDriver(),//jdbc驱动
-				db.getUrl(),//mysql链接串
-				db.getUser(), db.getPassword(),//数据库账号和口令
-				null,//"false",
-				null,// "READ_UNCOMMITTED",
-				db.getValidateSQL(),//数据库连接校验sql
-				db.getName()+"_jndi",
-				db.getInitSize() != null?Integer.parseInt(db.getInitSize()):10,
-				db.getMinIdleSize() != null?Integer.parseInt(db.getMinIdleSize()):10,
-				db.getMaxSize() != null?Integer.parseInt(db.getMaxSize()):50,
-				db.getUsePool() != null?Boolean.parseBoolean(db.getUsePool()):true,
-				false,
-				null, db.getShowSql()!= null?Boolean.parseBoolean(db.getShowSql()):true, false,
-				db.getJdbcFetchSize() != null?Integer.parseInt(db.getJdbcFetchSize()):0,
-				db.getDbtype(),db.getDbAdaptor()
-		);
+
 	}
 
 	private ClientInterface restClient;

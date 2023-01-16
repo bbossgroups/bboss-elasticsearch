@@ -183,6 +183,16 @@ public abstract class BaseESProperties {
 		private String dbAdaptor;
 		private String jdbcFetchSize;
 		private String datasources;
+		private String enableShutdownHook;
+		public String getEnableShutdownHook() {
+			return enableShutdownHook;
+		}
+
+		public void setEnableShutdownHook(String enableShutdownHook) {
+			this.enableShutdownHook = enableShutdownHook;
+		}
+
+
 		public String getColumnLableUpperCase() {
 			return columnLableUpperCase;
 		}
