@@ -57,6 +57,8 @@ https://esdoc.bbossgroups.com/#/development
 
 [Database-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2MongodbDemo.java)
 2. 数据库数据源增加enableShutdownHook属性，控制是否在jvm退出时自动关闭数据源，默认为false 不关闭 true关闭
+3. 修复数据库数据源在jvm退出时的空指针问题
+4. 处理增量状态类型值为bigdecimal时的兼容性问题
 
 # v6.7.8 功能改进
 
