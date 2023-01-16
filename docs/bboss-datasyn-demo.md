@@ -12,9 +12,7 @@ https://git.oschina.net/bboss/bboss-datatran-demo
 
 ​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
-![img](images/datasyn.png)
-
-​	
+![img](images/datasyn.png)​	
 
 ​		bboss同步功能非常丰富，为了方便快速使用上手bboss，本文将各种数据同步案例呈现给大家，可以根据实际情况选用合适的案例。
 
@@ -448,3 +446,16 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 服务实现：https://gitee.com/bboss/bboss-site/blob/master/src/org/frameworkset/web/api/HttpApi.java
 
+# 17 HBase输出插件案例
+
+[Elasticsearch-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2HBaseDemo.java)
+
+[Database-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2HbaseDemo.java)
+
+[Database-HBase自定义列簇映射同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2HbaseWithFamilyColumnDemo.java)
+
+# 18 MongoDB输出插件案例
+
+[Elasticsearch-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2MongodbDemo.java)
+
+[Database-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2MongodbDemo.java)

@@ -43,7 +43,7 @@
 
 支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
-支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，mongodb、HBase等
+支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，clickhouse，mongodb、HBase等
 
 支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
@@ -111,6 +111,8 @@ https://gitee.com/bboss/db-elasticsearch-tool
 | [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件         | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
 | [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件   | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
 | [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件        | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
+| [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件       | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
+| [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件         | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
 | [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件             | 调试作业使用，将采集的数据直接输出到控制台                   |
 
 ## 作业基础配置
@@ -156,6 +158,8 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 | Asyn                     | boolean             | true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回 |
 | ExportResultHandler      | ExportResultHandler | 设置任务执行结果以及异常回调处理函数，函数实现接口即可       |
 | builder                  | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
+| jobId                    | String              | 可选，设置作业唯一标识                                       |
+| jobName                  | String              | 可选，设置作业名称                                           |
 
 本文主要以关系数据库表同步到Elasticsearch为案例介绍bboss datatran的功能.
 
@@ -170,7 +174,7 @@ Elasticsearch/Database/Http/Custom(自定义处理器)/Dummy插件坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.7.8</version>
+<version>6.7.9</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -178,7 +182,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.7.8</version>
+<version>6.7.9</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -186,7 +190,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.7.8</version>
+<version>6.7.9</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -194,7 +198,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.7.8</version>
+<version>6.7.9</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -202,7 +206,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.7.8</version>
+<version>6.7.9</version>
 </dependency>
 ```
 
