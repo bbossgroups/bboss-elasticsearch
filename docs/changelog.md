@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.8 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.7.9 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -45,7 +45,8 @@ https://esdoc.bbossgroups.com/#/development
 ```
 # v6.7.9 功能改进
 
-1.增加hbase和MongoDB输出插件，使用案例：
+1. 增加hbase和MongoDB输出插件，使用案例：
+
 [Elasticsearch-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2HBaseDemo.java)
 
 [Database-HBase同步案例](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2HbaseDemo.java)
@@ -55,7 +56,7 @@ https://esdoc.bbossgroups.com/#/development
 [Elasticsearch-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2MongodbDemo.java)
 
 [Database-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2MongodbDemo.java)
-2.数据库数据源增加enableShutdownHook属性，控制是否在jvm退出时自动关闭数据源，默认为false 不关闭 true关闭
+2. 数据库数据源增加enableShutdownHook属性，控制是否在jvm退出时自动关闭数据源，默认为false 不关闭 true关闭
 
 # v6.7.8 功能改进
 
