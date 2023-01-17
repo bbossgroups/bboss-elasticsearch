@@ -610,9 +610,9 @@ importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖")
 
 完整的案例地址
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.8/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.9/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java
 
-dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.8/src/main/resources/httpdsl.xml
+dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.7.9/src/main/resources/httpdsl.xml
 
 ```xml
 <property name="queryPagineDsl">
