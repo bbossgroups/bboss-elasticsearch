@@ -27,5 +27,6 @@ public class ESScrollThread extends Thread {
 	public ESScrollThread(Runnable run, int num){
 		super(run);
 		this.setName("ESScrollThread-"+num);
+		this.setDaemon(true);
 	}
 }

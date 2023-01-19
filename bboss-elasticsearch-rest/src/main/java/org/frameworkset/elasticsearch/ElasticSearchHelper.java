@@ -317,12 +317,12 @@ public class ElasticSearchHelper {
 				Map.Entry<String, ElasticSearch> entry = entries.next();
 				final ElasticSearch elasticSearch = entry.getValue();
 				elasticSearch.start();
-				ShutdownUtil.addShutdownHook(new Runnable() {
-					@Override
-					public void run() {
-						elasticSearch.stop();
-					}
-				});
+//				ShutdownUtil.addShutdownHook(new Runnable() {
+//					@Override
+//					public void run() {
+//						elasticSearch.stop();
+//					}
+//				});
 			}
 			synchronized (ElasticSearchHelper.elasticSearchMap) {
 				ElasticSearchHelper.elasticSearchMap.putAll(elasticSearchMap);

@@ -60,7 +60,7 @@ https://esdoc.bbossgroups.com/#/development
 3. 修复数据库数据源在jvm退出时的空指针问题
 4. 处理增量状态类型值为bigdecimal时的兼容性问题
 
-# v6.7.9 功能改进
+# v6.7.8 功能改进
 
 1.http输入输出插件改进：修复动态请求头空指针问题
 

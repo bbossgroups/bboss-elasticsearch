@@ -27,5 +27,6 @@ public class ESSliceScrollThread extends Thread {
 	public ESSliceScrollThread(Runnable run,int num){
 		super(run);
 		this.setName("ESSliceScrollThread-"+num);
+		this.setDaemon(true);
 	}
 }

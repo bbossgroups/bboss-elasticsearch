@@ -9,7 +9,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearch;
-import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +38,12 @@ public class HostDiscover extends Thread{
 		this.elasticSearch = elasticSearchRestClient.getElasticSearch();
 		this.clientInterface = elasticSearch.getRestClientUtil();
 		this.scheme =  !elasticSearchRestClient.isUseHttps()? Scheme.HTTP:Scheme.HTTPS;
-		ShutdownUtil.addShutdownHook(new Runnable() {
-			@Override
-			public void run() {
-				stopCheck();
-			}
-		});
+//		ShutdownUtil.addShutdownHook(new Runnable() {
+//			@Override
+//			public void run() {
+//				stopCheck();
+//			}
+//		});
 		this.setDaemon(true);
 	}
 	boolean stop = false;

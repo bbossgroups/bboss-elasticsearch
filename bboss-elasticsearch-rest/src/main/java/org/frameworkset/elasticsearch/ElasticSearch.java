@@ -29,7 +29,6 @@ import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.support.ApplicationObjectSupport;
 import org.frameworkset.util.FastDateFormat;
-import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -452,12 +451,12 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				restClient.configure(elasticsearchPropes);
 				restClient.init();
 				logger.info("ElasticSearch rest client started.");
-				ShutdownUtil.addShutdownHook(new Runnable() {
-					@Override
-					public void run() {
-						stop();
-					}
-				});
+//				ShutdownUtil.addShutdownHook(new Runnable() {
+//					@Override
+//					public void run() {
+//						stop();
+//					}
+//				});
 			}
 		} catch (Exception ex) {
 			logger.error("ElasticSearch Rest Client started failed", ex);
