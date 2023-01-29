@@ -56,14 +56,14 @@ Spring booter 1.x,2.x,+
 
 hbase 1.x,hbase 2.x
 
-bboss 6.7.9
+bboss 6.8.0
 ## 2.2.maven坐标
 
 ```xml
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-elasticsearch-rest-hbase</artifactId>
-  <version>6.7.9</version>
+  <version>6.8.0</version>
   <scope>compile</scope>
 </dependency>
 <!--
