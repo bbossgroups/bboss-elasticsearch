@@ -6,41 +6,41 @@ https://gitee.com/bboss
 
 spring boot必看demo1：
 
-[spring booter web服务demo](https://github.com/bbossgroups/es_bboss_web)（maven）
+[spring booter web服务demo](https://gitee.com/bboss/springboot-elasticsearch)（maven）
 
 spring boot必看demo2：
 
-[eshelloword-spring-boot-starter](https://github.com/bbossgroups/elasticsearch-springboot-example) （maven）
+[eshelloword-spring-boot-starter](https://gitee.com/bboss/eshelloword-spring-boot-starter) （maven）
 
 spring boot必看demo3：
 
-[spring boot多个Elasticsearch集群环境案例web demo](https://github.com/bbossgroups/es_bboss_web/tree/multiesdatasource)（maven）
+[spring boot多个Elasticsearch集群环境案例web demo](https://gitee.com/bboss/springboot-elasticsearch/tree/multiesdatasource)（maven）
 
 maven项目参考demo1：
 
-[eshelloworld-example](https://github.com/bbossgroups/elasticsearch-example) （maven）
+[eshelloworld-example](https://git.oschina.net/bboss/eshelloword-booter) （maven）
 
 gradle项目参考demo2：
 
-[elasticsearch-gradle-demo](https://github.com/bbossgroups/elasticsearch-gradle-example)  （gradle）
+[elasticsearch-gradle-demo](https://git.oschina.net/bboss/elasticsearchdemo)  （gradle）
 
 # 2.基于apollo配置中心案例
 
 maven工程-elasticsearch java client案例
 
-https://github.com/bbossgroups/elasticsearch-example-apollo 
+https://gitee.com/bboss/elasticsearch-example-apollo
 
 gradle工程-数据同步案例
 
-https://github.com/bbossgroups/db-elasticsearch-tool-apollo 
+https://gitee.com/bboss/db-elasticsearch-tool-apollo
 
 maven工程-http proxy案例
 
-https://github.com/bbossgroups/httpproxy-apollo 
+https://git.oschina.net/bboss/httpproxy-apollo
 
 gradle工程-基于xxl-job调度的数据同步案例
 
-https://github.com/bbossgroups/db-elasticsearch-xxjob-apollo
+https://git.oschina.net/bboss/db-elasticsearch-xxjob-apollo
 # 3.bboss数据采集ETL案例大全
 https://esdoc.bbossgroups.com/#/bboss-datasyn-demo 
 
