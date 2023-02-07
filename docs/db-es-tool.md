@@ -118,8 +118,10 @@ https://gitee.com/bboss/db-elasticsearch-tool
 ## 作业基础配置
 
 ```java
-创建一个作业构建器
+//创建一个作业构建器
 ImportBuilder importBuilder = new ImportBuilder() ;
+importBuilder.setJobId("job-123");
+importBuilder.setJobName("流失数据挖掘");
 ```
 
 | 属性名称                 | 类型                | 说明                                                         |

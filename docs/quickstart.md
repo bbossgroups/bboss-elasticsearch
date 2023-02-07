@@ -176,6 +176,8 @@ ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo.x
 
 Elasticsearch bboss 开发指南:
 
+https://esdoc.bbossgroups.com/#/document-crud
+
 https://esdoc.bbossgroups.com/#/development
 
 # 3.配置和使用-进阶

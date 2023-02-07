@@ -8,6 +8,8 @@
 
 https://esdoc.bbossgroups.com/#/quickstart
 
+https://esdoc.bbossgroups.com/#/document-crud
+
 # bboss兼容性
 
 Elasticsearch、Spring boot兼容性
