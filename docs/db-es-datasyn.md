@@ -424,6 +424,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
    		 * es相关配置
    		 */
    //		elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+	elasticsearchOutputConfig.setFilterPath(BulkConfig.ERROR_FILTER_PATH_ONLY);//指定响应报文只返回错误信息
    
    		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 ```
