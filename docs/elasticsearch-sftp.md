@@ -318,7 +318,7 @@ public class ES2FileFtpBatchSplitFileDemo {
 
 ## 3.4 SFTP/FTP配置
 
-通过FileOutputConfig类来设置sftp和ftp上传的的相关配置：
+通过FileOutputConfig和FtpOutConfig两个类配合来设置sftp和ftp上传的的相关配置：
 
 | 参数名称                  | 描述                                                         | 默认值               | 对应协议 |
 | ------------------------- | ------------------------------------------------------------ | -------------------- | -------- |
@@ -336,8 +336,10 @@ public class ES2FileFtpBatchSplitFileDemo {
 | fileLiveTime              | 必填，int类型，上传成功文件保留时间，单位：秒                | 2天                  | ftp/sftp |
 | maxFileRecordSize         | 必填，int类型，切割文件时，指定每个文件保存的记录条数，>0时启用文件切割机制；按记录条数切割文件机制对并行导出数据不起作用 | -1                   | ftp/sftp |
 | filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
-| hostKeyVerifier           | 必填，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
+| hostKeyVerifier           | 可选，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
 | reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |
+| sendFileAsyn              | 可选，boolean类型,设置是否异步发送文件， true 异步发送 false同步发送,默认同步发送 | false                | ftp/sftp |
+| sendFileAsynWorkThreads   | 可选，int类型,设置异步发送文件线程数                         | 10                   | ftp/sftp |
 
 示例代码如下：
 
@@ -361,9 +363,13 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
 
       FileOutputConfig.setSuccessFilesCleanInterval(5000);//定期扫描清理过期备份文件时间间隔，单位：毫秒
       ftpOutConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天
+		//设置是否异步发送文件，true 异步发送 false同步发送,默认同步发送
+		ftpOutConfig.setSendFileAsyn(true);
+		//设置异步发送文件线程数
+		ftpOutConfig.setSendFileAsynWorkThreads(5);
 
       FileOutputConfig.setFileDir("D:\\workdir");
-      FileOutputConfig.setMaxFileRecordSize(1000);//每千条记录生成一个文件
+      FileOutputConfig.setMaxFileRecordSize(1000);//设置切割文件记录数，每千条记录生成一个文件
 		
       //自定义文件名称
       FileOutputConfig.setFilenameGenerator(new FilenameGenerator() {
