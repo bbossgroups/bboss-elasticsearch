@@ -338,7 +338,7 @@ public class ES2FileFtpBatchSplitFileDemo {
 | filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
 | hostKeyVerifier           | 可选，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
 | reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |
-| sendFileAsyn              | 可选，boolean类型,设置是否异步发送文件， true 异步发送 false同步发送,默认同步发送 | false                | ftp/sftp |
+| sendFileAsyn              | 可选，boolean类型,设置是否异步发送文件， true 异步发送 false同步发送,默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能 | false                | ftp/sftp |
 | sendFileAsynWorkThreads   | 可选，int类型,设置异步发送文件线程数                         | 10                   | ftp/sftp |
 
 示例代码如下：
