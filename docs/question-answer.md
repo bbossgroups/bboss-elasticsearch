@@ -275,10 +275,15 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 - 升级bboss到6.8.0
 
-# 问题7 spring boot工程构建问题
+# 问题7 mysql大表数据同步慢
 
-![](images/spring-boot-build-q.png)
+经常碰到同步mysql大表数据慢，半天没反应的情况
 
 ## 问题分析
 
+没有正确启用mysql jdbc 流处理查询机制
+
 ## 问题处理
+
+参考文档解决：[启用mysql 流处理机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2814-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)
+

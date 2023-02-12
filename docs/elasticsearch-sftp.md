@@ -328,7 +328,9 @@ public class ES2FileFtpBatchSplitFileDemo {
 | ftpPassword               | 必填，String类型，ftp/sftp服务器用户口令                     | 空                   | ftp/sftp |
 | remoteFileDir             | 必填，String类型，指定ftp/sftp服务器目录地址，用户存放上传的文件 | 空                   | ftp/sftp |
 | fileDir                   | 必填，String类型，指定导出数据生成的文件存放的本地目录、上传成功文件备份目录、上传失败文件存放目录（便于定时重传） | 空                   | ftp/sftp |
-| keepAliveTimeout          | 必填，long类型，单位毫秒，ftp/sftp通讯协议连接存活超时时间   | 0                    | ftp/sftp |
+| keepAliveTimeout          | 可选，long类型，单位毫秒，ftp/sftp通讯协议连接存活超时时间   | 0                    | ftp/sftp |
+| socketTimeout             | 可选，long类型，单位毫秒，ftp/sftp数据读取超时时间，避免socketTimeout异常 | 0                    | ftp/sftp |
+| connectTimeout            | 可选，long类型，单位毫秒，sftp数据连接建立超时时间           | 0                    | sftp     |
 | transferEmptyFiles        | 必填，boolean类型，是否上传空文件，true上传，false不上传     | true                 | ftp/sftp |
 | backupSuccessFiles        | 必填，boolean类型，是备份上传成功文件，true备份，false不备份 | false                | ftp/sftp |
 | failedFileResendInterval  | 必填，long类型，失败文件重传时间间隔，-1或者0不重传，单位：毫秒 | 5000                 | ftp/sftp |
