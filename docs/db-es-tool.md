@@ -14,13 +14,34 @@
 
 # 工具特性
 
-​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库功能。	bboss-datatran 数据同步作业直接采用java语言开发，小巧而精致，同时又可以采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
+​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能。	
+
+​	bboss-datatran 数据同步作业直接采用java语言开发，小巧而精致，同时又可以采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量存量数据、实时增量数据，实现流批一体数据处理功能；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
+
+工具可以灵活定制具备各种功能的数据采集统计作业
+
+1) 只采集和处理数据作业
+
+2) 采集和处理数据、指标统计计算混合作业
+
+3) 采集数据只做指标统计计算作业
+
+指标计算特点
+
+1) 支持时间维度和非时间维度指标计算
+
+2) 时间维度指标计算：支持指定统计时间窗口，单位到分钟级别
+
+3) 一个指标支持多个维度和多个度量字段计算，多个维度字段值构造成指标的唯一指标key，支持有限基数key和无限基数key指标计算   
+
+4) 一个作业可以支持多种类型的指标，每种类型指标支持多个指标计算
 
 如果您还在：
 
 - 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
 - 苦于无法调用企业现有服务和库来处理加工数据；
 - 苦于因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
+- 苦于寻求数据采集和流批一体数据处理和指标统计计算于一体的数据处理计算框架
 
 那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
 
@@ -113,6 +134,7 @@ https://gitee.com/bboss/db-elasticsearch-tool
 | [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件        | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
 | [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件       | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
 | [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件         | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
+| [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件          | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等         |
 | [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件             | 调试作业使用，将采集的数据直接输出到控制台                   |
 
 ## 作业基础配置
@@ -134,8 +156,8 @@ importBuilder.setJobName("流失数据挖掘");
 | addJobDynamicInputParam  | 方法                | 为查询类作业添加额外的动态查询条件参数importBuilder.addJobDynamicInputParam("signature", new DynamicParam() {//根据数据动态生成签名参数    @Override    public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {        //可以根据自己的算法对数据进行签名       String signature =md5(datas)       return signature;    } }); |
 | addJobOutputParam        | 方法                | 为输出插件作业dsl脚本或者sql添加额外的变量参数importBuilder.addJobOutputParam("otherParam","陈雨菲2:0战胜戴资颖"); |
 | addJobDynamicOutputParam | 方法                | 为输出插件作业dsl脚本或者sql添加额外的动态变量参数importBuilder.addJobDynamicOutputParam("signature", new DynamicParam() {//根据数据动态生成签名参数    @Override    public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {        //可以根据自己的算法对数据进行签名       String signature =md5(datas)       return signature;    } }); |
-| UseJavaName              | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
-| UseLowcase               | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
+| useJavaName              | boolean             | 可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId |
+| useLowcase               | boolean             | 可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用 |
 | PrintTaskLog             | boolean             | 可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false |
 | FixedRate                | boolean             | 参考jdk timer task文档对fixedRate的说明                      |
 | DeyLay                   | long                | 任务延迟执行deylay毫秒后执行                                 |
@@ -162,6 +184,16 @@ importBuilder.setJobName("流失数据挖掘");
 | builder                  | 方法                | 构建DataStream 执行数据库表数据导入es操作  ： DataStream dataStream = importBuilder.builder(); dataStream.execute();//执行导入操作 |
 | jobId                    | String              | 可选，设置作业唯一标识                                       |
 | jobName                  | String              | 可选，设置作业名称                                           |
+
+## 关键对象说明
+
+Context --数据处理接口，存放源表字段和对应的值，中间临时变量和值，可以通过源表字段名称获取对应的字段数据。增量字段名称、sql或者dsl中的增量字段变量名称，都需与源表字段名称一致。context接口还提供了丢弃记录、添加字段、去除字段、字段名称映射规则配置功能、获取记录元数据功能
+
+CommonRecord - 封装处理后的结果记录，字段名称是经过规范化处理后的字段名称，字段名称的转换和处理主要受作业控制参数useJavaName和useLowcase控制，同时也受字段名称映射规则配置影响:
+
+importbuilder.addFieldMapping方法和context.addFieldMapping
+
+
 
 本文主要以关系数据库表同步到Elasticsearch为案例介绍bboss datatran的功能.
 
