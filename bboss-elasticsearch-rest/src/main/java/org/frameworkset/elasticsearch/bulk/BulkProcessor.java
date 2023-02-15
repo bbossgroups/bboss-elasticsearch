@@ -19,7 +19,6 @@ import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientOptions;
 import org.frameworkset.util.concurrent.ThreadPoolFactory;
-import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,24 +92,29 @@ public class BulkProcessor {
 	public void init(){
 		if(inited)
 			return;
-		this.inited = true;
-		clientInterface = ElasticSearchHelper.getRestClientUtil(bulkConfig.getElasticsearch());
-		this.bulkCommand = buildBulkCommand();
-		executor = ThreadPoolFactory.buildThreadPool(bulkConfig.getBulkProcessorName(),bulkConfig.getBulkRejectMessage(),
-													this.bulkConfig.getWorkThreads(),this.bulkConfig.getWorkThreadQueue(),
-													this.bulkConfig.getBlockedWaitTimeout()
-													,this.bulkConfig.getWarnMultsRejects());
+        synchronized (this) {
+            if(inited)
+                return;
+
+            clientInterface = ElasticSearchHelper.getRestClientUtil(bulkConfig.getElasticsearch());
+            this.bulkCommand = buildBulkCommand();
+            executor = ThreadPoolFactory.buildThreadPool(bulkConfig.getBulkProcessorName(), bulkConfig.getBulkRejectMessage(),
+                    this.bulkConfig.getWorkThreads(), this.bulkConfig.getWorkThreadQueue(),
+                    this.bulkConfig.getBlockedWaitTimeout()
+                    , this.bulkConfig.getWarnMultsRejects());
 //		dataQueue =  new ArrayBlockingQueue<BulkData>(bulkConfig.getBulkQueue());
-		if(bulkConfig.getFlushInterval() > 0) {
-			flush = new Flush("Elasticsearch["+(bulkConfig.getElasticsearch()!=null?bulkConfig.getElasticsearch():"default") + "]-"+bulkConfig.getBulkProcessorName() + "-flush-thread");
-			flush.start();
-		}
-		ShutdownUtil.addShutdownHook(new Runnable() {
-			@Override
-			public void run() {
-				shutDown();
-			}
-		});
+            if (bulkConfig.getFlushInterval() > 0) {
+                flush = new Flush("Elasticsearch[" + (bulkConfig.getElasticsearch() != null ? bulkConfig.getElasticsearch() : "default") + "]-" + bulkConfig.getBulkProcessorName() + "-flush-thread");
+                flush.start();
+            }
+//            ShutdownUtil.addShutdownHook(new Runnable() {
+//                @Override
+//                public void run() {
+//                    shutDown();
+//                }
+//            });
+            this.inited = true;
+        }
 	}
 
 	private boolean touchBatchSize(){
@@ -197,7 +201,7 @@ public class BulkProcessor {
 	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertData(String index,String indexType,Object data,ClientOptions clientOptions){
-
+            init();
 			assertShutdown();
 			BulkData bulkData = new BulkData(BulkData.INSERT,data);
 			bulkData.setIndex(index);
@@ -213,7 +217,7 @@ public class BulkProcessor {
 	 * @param data Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertData(String index,String indexType,Object data){
-
+        init();
 		assertShutdown();
 		BulkData bulkData = new BulkData(BulkData.INSERT,data);
 		bulkData.setIndex(index);
@@ -249,13 +253,14 @@ public class BulkProcessor {
 	 */
 	public void updateData(String index, String indexType, Object data, ClientOptions updateOptions){
 //		try {
-			assertShutdown();
-			BulkData bulkData = new BulkData(BulkData.UPDATE,data);
-			bulkData.setIndex(index);
-			bulkData.setIndexType(indexType);
-			bulkData.setClientOptions(updateOptions);
+        init();
+        assertShutdown();
+        BulkData bulkData = new BulkData(BulkData.UPDATE,data);
+        bulkData.setIndex(index);
+        bulkData.setIndexType(indexType);
+        bulkData.setClientOptions(updateOptions);
 //			this.dataQueue.put(bulkData);
-			appendBulkData( bulkData);
+        appendBulkData( bulkData);
 //		} catch (InterruptedException e) {
 //			logger.info("InterruptedException");
 //		}
@@ -269,6 +274,7 @@ public class BulkProcessor {
 	 */
 	public void updateData(String index, String indexType, Object data){
 //		try {
+        init();
 		assertShutdown();
 		BulkData bulkData = new BulkData(BulkData.UPDATE,data);
 		bulkData.setIndex(index);
@@ -312,12 +318,13 @@ public class BulkProcessor {
 	 */
 	public void deleteData(String index,String indexType,Object data, ClientOptions updateOptions){
 //		try {
-			assertShutdown();
-			BulkData bulkData = new BulkData(BulkData.DELETE,data);
-			bulkData.setIndex(index);
-			bulkData.setIndexType(indexType);
-			bulkData.setClientOptions(updateOptions);
-			appendBulkData( bulkData);
+        init();
+        assertShutdown();
+        BulkData bulkData = new BulkData(BulkData.DELETE,data);
+        bulkData.setIndex(index);
+        bulkData.setIndexType(indexType);
+        bulkData.setClientOptions(updateOptions);
+        appendBulkData( bulkData);
 //			bulkCommand.addBulkData(bulkData);
 //			this.dataQueue.put(bulkData);
 //		} catch (InterruptedException e) {
@@ -333,6 +340,7 @@ public class BulkProcessor {
 	 */
 	public void deleteData(String index,String indexType,Object data){
 //		try {
+        init();
 		assertShutdown();
 		BulkData bulkData = new BulkData(BulkData.DELETE,data);
 		bulkData.setIndex(index);
@@ -381,6 +389,7 @@ public class BulkProcessor {
 	 * @param clientOptions Object中有@ESId指定的文档id字段或者clientOptions设置了esidfield,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertDatas(String index,String indexType,List<?> datas,ClientOptions clientOptions){
+        init();
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -412,6 +421,7 @@ public class BulkProcessor {
 	 * @param datas Object中有@ESId指定的文档id字段,则根据id字段值设置docid,否则自动生成文档id
 	 */
 	public void insertDatas(String index,String indexType,List<?> datas){
+        init();
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -464,6 +474,7 @@ public class BulkProcessor {
 	 * @param updateOptions Object中有@ESId指定的文档id字段或者updateOptions设置了esidfield
 	 */
 	public void updateDatas(String index, String indexType, List<?> datas, ClientOptions updateOptions){
+        init();
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -494,6 +505,7 @@ public class BulkProcessor {
 	 * @param datas  Object中必须要有@ESId注解设置的文档id信息
 	 */
 	public void updateDatas(String index, String indexType, List<?> datas){
+        init();
 		if(datas == null || datas.size() == 0)
 			return;
 		assertShutdown();
@@ -552,6 +564,7 @@ public class BulkProcessor {
 	 * @param updateOptions
 	 */
 	public void deleteDatas(String index,String indexType,List<?> datas, ClientOptions updateOptions){
+        init();
 		if(datas == null || datas.size() == 0){
 			return ;
 		}
@@ -583,6 +596,7 @@ public class BulkProcessor {
 	 * @param datas 待删除的文档_id集合
 	 */
 	public void deleteDatas(String index,String indexType,List<?> datas){
+        init();
 		if(datas == null || datas.size() == 0){
 			return ;
 		}
@@ -756,11 +770,22 @@ public class BulkProcessor {
 			}
 		}
 	}
-
+    private boolean shutdown;
 	/**
 	 * 调用shutDown停止方法后，BulkProcessor不会接收新的请求，但是会处理完所有已经进入bulk队列的数据
 	 */
-	public void shutDown(){
+	public  void shutDown(){
+        if(shutdown)
+            return;
+        synchronized(this) {
+            if(shutdown)
+                return;
+            shutdown = true;
+            if (!inited) {
+                return;
+            }
+        }
+
 		if(logger.isInfoEnabled())
 			logger.info("ShutDown BulkProcessor[{}] begin.....",this.bulkConfig.getBulkProcessorName());
 		stop();
@@ -796,7 +821,6 @@ public class BulkProcessor {
 		}
 		if(logger.isInfoEnabled())
 			logger.info("ShutDown BulkProcessor[{}] complete.",this.bulkConfig.getBulkProcessorName());
-
 	}
 
 }

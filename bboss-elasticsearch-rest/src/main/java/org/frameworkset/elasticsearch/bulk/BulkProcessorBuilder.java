@@ -104,7 +104,7 @@ public class BulkProcessorBuilder {
 			logger.info("Build Elasticsearch client BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] start.....");
 		}
 		BulkProcessor bulkProcessor = new BulkProcessor(this.bulkConfig);
-		bulkProcessor.init();
+//		bulkProcessor.init();
 		if(logger.isInfoEnabled()){
 			logger.info("Build  Elasticsearch client BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] completed.");
 		}
