@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.0 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.1 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -30,7 +30,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.0</version>
+            <version>6.8.1</version>
         </dependency>
 ```
 
@@ -40,9 +40,26 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.0</version>
+            <version>6.8.1</version>
         </dependency>
 ```
+# v6.8.1 功能改进
+1. FTP文件[输入](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)/[输出](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)插件改进：ftp/sftp协议增加socketTimeout配置，sftp协议增加connectionTimeout配置
+2. FTP输出插件改进：增加生成文件[异常上传FTP机制](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)，默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能
+3. 数据采集重大功能扩展：增加指标计算输出插件，提供指标统计分析功能，在采集和处理数据时，同时对数据进行大数据指标统计聚合计算，可以将聚合计算结果保存的各种指标数据库：Eleasticsearch/Mongodb/HBase/Clickhouse/Doris/DB(Oracle、Mysql、postgresql、sqlserver等主流关系数据库)
+   
+   可以灵活定制具备各种功能的数据采集统计作业
+   1) 只采集和处理数据作业
+   2) 采集和处理数据、指标统计计算混合作业
+   3) 采集数据只做指标统计计算作业
+   
+   指标计算特点
+   1) 支持时间维度和非时间维度指标计算
+   2) 时间维度指标计算：支持指定统计时间窗口，单位到分钟级别
+   3) 一个指标支持多个维度和多个度量字段计算，多个维度字段值构造成指标的唯一指标key，支持有限基数key和无限基数key指标计算   
+   4) 一个作业可以支持多种类型的指标，每种类型指标支持多个指标计算
+   
+
 # v6.8.0 功能改进
 1. 去除Elasticsearch和http数据源jvm退出机制，避免因jvm退出时，数据源获取空指针问题
 2. 将Elasticsearch和http数据源状态监控和服务发现线程调整为daemon线程
