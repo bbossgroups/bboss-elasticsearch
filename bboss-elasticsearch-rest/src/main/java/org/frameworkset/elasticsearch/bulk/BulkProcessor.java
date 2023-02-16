@@ -19,7 +19,6 @@ import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientOptions;
 import org.frameworkset.util.concurrent.ThreadPoolFactory;
-import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +68,13 @@ public class BulkProcessor {
 	private  void stop(){
 		this.status = 1;
 		synchronized (flush) {
-			flush.notify();
-		}
+			flush.interrupt();
+            try {
+                flush.join();
+            } catch (InterruptedException e) {
+
+            }
+        }
 	}
 	public String getRefreshOption() {
 		return bulkConfig.getRefreshOption();
@@ -108,12 +112,12 @@ public class BulkProcessor {
                 flush = new Flush("Elasticsearch[" + (bulkConfig.getElasticsearch() != null ? bulkConfig.getElasticsearch() : "default") + "]-" + bulkConfig.getBulkProcessorName() + "-flush-thread");
                 flush.start();
             }
-            ShutdownUtil.addShutdownHook(new Runnable() {
-                @Override
-                public void run() {
-                    shutDown();
-                }
-            });
+//            ShutdownUtil.addShutdownHook(new Runnable() {
+//                @Override
+//                public void run() {
+//                    shutDown();
+//                }
+//            });
             this.inited = true;
         }
 	}

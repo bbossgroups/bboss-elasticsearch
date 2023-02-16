@@ -10,9 +10,7 @@ org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasti
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.executeHttp(ElasticSearchRestClient.java:722)
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.executeHttp(ElasticSearchRestClient.java:533)
 	at org.frameworkset.elasticsearch.client.RestClientUtil.getTempate(RestClientUtil.java:1010)
-	at com.ai.terminal.init.ESInit.init(ESInit.java:131)
-	at com.ai.terminal.init.ESInit.reset(ESInit.java:124)
-	at com.ai.terminal.init.ESInit.main(ESInit.java:157)
+	
 ```
 
 ​	
