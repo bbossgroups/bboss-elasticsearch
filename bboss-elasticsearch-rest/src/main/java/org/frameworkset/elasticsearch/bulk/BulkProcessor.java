@@ -792,7 +792,7 @@ public class BulkProcessor {
         }
 
 		if(logger.isInfoEnabled())
-			logger.info("ShutDown BulkProcessor[{}] begin.....",this.bulkConfig.getBulkProcessorName());
+			logger.info("BulkProcessor[{}] ShutDown begin.....",this.bulkConfig.getBulkProcessorName());
 		stop();
 //		try{
 //			if(flush != null){
@@ -811,21 +811,21 @@ public class BulkProcessor {
 		if(executor != null){
 			try {
 				if(logger.isInfoEnabled())
-					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool  begin......");
+					logger.info("BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool ShutDown begin......");
 				executor.shutdown();
 //				if(logger.isInfoEnabled()){
 //					logger.info("BulkProcessor process total success records {} failed records {}.",totalSize,failedSize);
 //				}
 				if(logger.isInfoEnabled())
-					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool complete.");
+					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool ShutDown  complete.");
 			}
 			catch(Exception e){
 				if(logger.isErrorEnabled())
-					logger.error("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool failed:",e);
+					logger.error("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool ShutDown failed:",e);
 			}
 		}
 		if(logger.isInfoEnabled())
-			logger.info("ShutDown BulkProcessor[{}] complete.",this.bulkConfig.getBulkProcessorName());
+			logger.info("BulkProcessor[{}] ShutDown complete.",this.bulkConfig.getBulkProcessorName());
 	}
 
 }
