@@ -54,17 +54,29 @@ public class HealthCheck implements Runnable{
 		ESAddress address;
 		boolean stop = false;
 		public HCRunable(ESAddress address){
-			super("Elasticsearch["+elasticsearch+"] server["+address.toString()+"] health check");
+			super("Elasticsearch["+elasticsearch+"]-Server["+address.toString()+"]-HealthCheck");
 			address.setHealthCheck(this);
 			this.address = address;
 			this.setDaemon(true);
 		}
-		public synchronized void stopRun(){
+        private Object stopLock = new Object();
+		public void stopRun(){
 			if(stop)
 				return;
-			this.stop = true;
-			this.interrupt();
-		}
+            synchronized (stopLock) {
+                if(stop)
+                    return;
+                this.stop = true;
+
+
+            }
+            this.interrupt();
+            try {
+                this.join();
+            } catch (InterruptedException e) {
+
+            }
+        }
 		@Override
 		public void run() {
 			 while (true){
