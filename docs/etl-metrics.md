@@ -34,7 +34,13 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 # 3.关键对象和参数
 
-下面说明数据采集&流批一体化处理中涉及的常用对象，并介绍关键的属性和重要方法，其中和指标统计计算最关键的两个方法分别是**ETLMetrics对象的persistent方法**和**TimeMetric的incr方法**，下面分别进行介绍说明。
+下面说明数据采集&流批一体化处理中涉及的常用对象，并介绍属性和重要方法，其中和指标统计计算最关键的两个方法分别是：
+
+**ETLMetrics和Metrics对象的persistent方法**：实现指标计算结果存储到关系数据库或者其他分布式数据库
+
+**TimeMetric的incr方法**：实现具体的指标统计计算逻辑
+
+下面分别进行介绍说明。
 
 ## **ImportBuidler** 
 
@@ -59,10 +65,24 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 | useDefaultMapData | boolean类型,控制ETLMetrics是否构建默认MapData对象<br/>      true 如果ETLMetrics没有设置dataTimeField，没有提供自定义的MapdataBuilder，则使用默认构建MapData对象<br/>      false 不构建默认MapData对象 |
 | addMetrics        | 方法类型，添加ETLMetrics到ImportBuilder方法，可以用于添加1到多个ETLMetrics对象 |
 
+## Metrics
+
+通用流批一体化数据处理指标计算器，
+
+| 属性           | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| builderMetrics | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型）、SegmentBoundSize |
+| metricsType    | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs; |
+| **persistent** | 方法类型，**非常关键的方法**，实现指标统计结果持久化，一般采用异步批处理机制持久化指标统计结果，Elasticsearch存储指标时，可以使用[BulkProcessor进行处理](https://esdoc.bbossgroups.com/#/bulkProcessor)，其他数据源可以使用[通用BulkProcessor异步批处理组件](https://esdoc.bbossgroups.com/#/bulkProcessor-common)处理 |
+| timeWindowType | int类型，包含以下几种类型，见下文说明                        |
+| map            | 方法类型，可选实现，内部提供默认实现，可以重载实现自定义的map逻辑 |
+| metric         | 方法类型，无需自行实现，直接接收String类型指标key、MapData以及KeyMetricBuilder类型参数，内部根据具体的指标类型，根据需要通过KeyMetricBuilder创建KeyMetric对象，通过指标key缓存KeyMetric对象，后续通过指标key检索KeyMetric对象（如果没有则创建），通过检索到KeyMetric对象对MapData中包含的数据进行具体指标统计计算 |
+
+
 
 ## **ETLMetrics** 
 
-指标计算器，用于指标统计计算逻辑、指标维度字段、指标时间维度字段、指标key生成规则、指标对象构建器、指标数据校验、指标计算结果持久化、设置时间窗口大小、时间窗口类型、指标存储内存区S0、S1交换区大小
+专用于ETL数据采集协同实现流批一体化数据处理指标计算器，Metrics的子类，用于指标统计计算逻辑、指标维度字段、指标时间维度字段、指标key生成规则、指标对象构建器、指标数据校验、指标计算结果持久化、设置时间窗口大小、时间窗口类型、指标存储内存区S0、S1交换区大小
 
 | 属性           | 描述                                                         |
 | -------------- | ------------------------------------------------------------ |
@@ -1367,11 +1387,172 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 ## 独立指标计算统计案例
 
-同时我们也可以在应用中直接使用Metrics组件实现更加灵活的指标统计计算功能，篇幅关系，相关案例直接访问git源码托管地址下载：
+同时我们也可以在应用中直接使用Metrics组件实现更加灵活的指标统计计算功能
+
+一个典型的通用指标计算案例：
+
+```java
+//1. 定义Elasticsearch数据入库BulkProcessor批处理组件构建器
+BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
+
+      .setBulkSizes(200)//按批处理数据记录数
+      .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
+
+      .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
+      .setWorkThreads(10)//bulk处理工作线程数
+      .setWorkThreadQueue(50)//bulk处理工作线程池缓冲队列大小
+      .setBulkProcessorName("detail_bulkprocessor")//工作线程名称，实际名称为BulkProcessorName-+线程编号
+      .setBulkRejectMessage("detail bulkprocessor")//bulk处理操作被每被拒绝WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息提示前缀
+      .setElasticsearch("default")//指定明细Elasticsearch集群数据源名称，bboss可以支持多数据源
+      .setFilterPath(BulkConfig.ERROR_FILTER_PATH)
+      .addBulkInterceptor(new BulkInterceptor() {
+         public void beforeBulk(BulkCommand bulkCommand) {
+
+         }
+
+         public void afterBulk(BulkCommand bulkCommand, String result) {
+            if(logger.isDebugEnabled()){
+               logger.debug(result);
+            }
+         }
+
+         public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
+            if(logger.isErrorEnabled()){
+               logger.error("exceptionBulk",exception);
+            }
+         }
+         public void errorBulk(BulkCommand bulkCommand, String result) {
+            if(logger.isWarnEnabled()){
+               logger.warn(result);
+            }
+         }
+      })//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
+;
+/**
+ * 2. 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
+ */
+BulkProcessor bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
+      //3. 定义KeyTimeMetircs类型指标计算器Metrics
+Metrics keyMetrics = new Metrics(Metrics.MetricsType_KeyTimeMetircs){
+
+          //4. 添加具体的指标对象及对应的指标key到Metrics
+   @Override
+   public void builderMetrics(){
+      addMetricBuilder(new MetricBuilder() {
+         @Override
+         public String buildMetricKey(MapData mapData){
+            Map data = (Map) mapData.getData();
+            String name = (String) data.get("name");
+            return name;
+         }
+         @Override
+         public KeyMetricBuilder metricBuilder(){
+            return new KeyMetricBuilder() {
+               @Override
+               public KeyMetric build() {
+                  return new TestTimeMetric();
+               }
+            };
+         }
+      });
+      // 5. key metrics中包含两个segment(S0,S1)，设置每个分区的大小（元素个数）
+      setSegmentBoundSize(5000000);
+              // 6. 定义时间窗口
+      setTimeWindows(60);
+   }
+
+          /**
+           * 6. 定义指标持久化机制，将计算好的指标结果通过异步批处理组件存储到Elasticsearch中的指标表
+           * @param metrics
+           */
+   @Override
+   public void persistent(Collection< KeyMetric> metrics) {
+      metrics.forEach(keyMetric->{
+         TestTimeMetric testKeyMetric = (TestTimeMetric)keyMetric;
+         Map esData = new HashMap();//封装指标统计结果
+         esData.put("dataTime", testKeyMetric.getDataTime());//指标统计计算时间
+         esData.put("hour", testKeyMetric.getDayHour());//指标小时字段，例如2023-02-19 16
+         esData.put("minute", testKeyMetric.getMinute());//指标日期字段，例如2023-02-19 16:53
+         esData.put("day", testKeyMetric.getDay());//指标日期字段，例如2023-02-19
+         esData.put("metric", testKeyMetric.getMetric());//指标key
+         esData.put("name", testKeyMetric.getName());//维度字段
+         esData.put("count", testKeyMetric.getCount());//统计指标
+         bulkProcessor.insertData("vops-testkeytimemetrics",esData);//将指标结果保存到Elasticsearch指标表vops-testkeytimemetrics
+
+      });
+
+   }
+};
+      // 7. 初始化指标计算器
+keyMetrics.init();
+
+      // 8. 模拟并发（10线程）产生数据，并持续运行10分钟
+long startTime = System.currentTimeMillis();
+long times = 10l * 60l * 1000l;
+
+Runnable runnable = new Runnable() {
+   @Override
+   public void run() {
+      DateFormat yearFormat = MetricsConfig.getYearFormat();
+      DateFormat monthFormat = MetricsConfig.getMonthFormat();
+      DateFormat weekFormat = MetricsConfig.getWeekFormat();
+      DateFormat dayFormat = MetricsConfig.getDayFormat();
+      DateFormat hourFormat = MetricsConfig.getHourFormat();
+      DateFormat minuteFormat = MetricsConfig.getMinuteFormat();
+      while(true) {
+         for (int i = 0; i < 1590; i++) {
+                      // 9. 通过MapData封装待统计的原始数据（一个Map类型的对象）、时间维度值、各种时间格式化对象
+            MapData<Map> mapData = new MapData<>();
+            mapData.setDataTime(new Date());
+            Map<String, String> data = new LinkedHashMap<>();
+            data.put("name", "Jack_" + i);
+            mapData.setData(data);
+            mapData.setDayFormat(dayFormat);
+            mapData.setHourFormat(hourFormat);
+            mapData.setMinuteFormat(minuteFormat);
+            mapData.setYearFormat(yearFormat);
+            mapData.setMonthFormat(monthFormat);
+            mapData.setWeekFormat(weekFormat);
+                      // 10. 将mapData交给keyMetrics，进行指标统计计算
+            keyMetrics.map(mapData);
+         }
+         try {
+            sleep(1000l);
+         } catch (InterruptedException e) {
+            e.printStackTrace();
+         }
+         long now = System.currentTimeMillis();
+         long eTime = now - startTime;
+         if(eTime >= times)//达到10分钟，终止生产数据
+            break;
+      }
+   }
+};
+List<Thread> ts = new ArrayList<>();
+for(int i = 0; i < 10; i ++){
+   Thread thread = new Thread(runnable,"run-"+i);
+   thread.start();
+   ts.add(thread);
+}
+//等待所有线程运行结束
+ts.forEach(t -> {
+   try {
+      t.join();
+   } catch (InterruptedException e) {
+      e.printStackTrace();
+   }
+});
+
+//强制刷指标数据
+keyMetrics.forceFlush(true,//清楚指标key
+                            true );//等待数据处理完成后再返回
+```
+
+篇幅关系，相关案例直接访问git源码托管地址下载：
 
 https://gitee.com/bboss/bboss-datatran-demo
 
 对应的案例目录
 
 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/tran/metrics
-
