@@ -2,6 +2,8 @@
 
 bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同步ETL工具](db-es-tool.md)，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能。本文介绍数据采集&流批一体化处理使用指南。	
 
+![img](images/datasyn-inout.png)
+
 # 1.流批一体化作业类型
 
 通过bboss可以灵活定制具备各种功能的数据采集统计作业
@@ -34,11 +36,13 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 # 3.关键对象和参数
 
-下面说明数据采集&流批一体化处理中涉及的常用对象，并介绍属性和重要方法，其中和指标统计计算最关键的两个方法分别是：
+下面说明数据采集&流批一体化处理中涉及的常用对象，并介绍其中的属性和重要方法。
+
+流批一体化处理涉及的两个关键对象和相应方法：
 
 **ETLMetrics和Metrics对象的persistent方法**：实现指标计算结果存储到关系数据库或者其他分布式数据库
 
-**TimeMetric的incr方法**：实现具体的指标统计计算逻辑
+**TimeMetric对象的incr方法**：实现具体的指标统计计算逻辑，可以实现简单的计数、求总量、平均值，亦可以实现非常复杂的指标计算（譬如：用户访问深度、不同深度用户分布、用户留存、用户活跃、用户引流转化漏斗指标等复杂指标计算）
 
 下面分别进行介绍说明。
 
@@ -84,13 +88,14 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 专用于ETL数据采集协同实现流批一体化数据处理指标计算器，Metrics的子类，用于指标统计计算逻辑、指标维度字段、指标时间维度字段、指标key生成规则、指标对象构建器、指标数据校验、指标计算结果持久化、设置时间窗口大小、时间窗口类型、指标存储内存区S0、S1交换区大小
 
-| 属性           | 描述                                                         |
-| -------------- | ------------------------------------------------------------ |
-| dataTimeField  | String类型,设置指标时间维度字段，不是设置默认采用当前时间，否则采用字段对应的时间值 |
-| metricsType    | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs; |
-| builderMetrics | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型）、SegmentBoundSize |
-| **persistent** | 方法类型，**非常关键的方法**，实现指标统计结果持久化，一般采用异步批处理机制持久化指标统计结果，Elasticsearch存储指标时，可以使用[BulkProcessor进行处理](https://esdoc.bbossgroups.com/#/bulkProcessor)，其他数据源可以使用[通用BulkProcessor异步批处理组件](https://esdoc.bbossgroups.com/#/bulkProcessor-common)处理 |
-| timeWindowType | int类型，包含以下几种类型，见下文说明                        |
+| 属性             | 描述                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| dataTimeField    | String类型,设置指标时间维度字段，不是设置默认采用当前时间，否则采用字段对应的时间值 |
+| metricsType      | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs; |
+| builderMetrics   | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型）、SegmentBoundSize |
+| **persistent**   | 方法类型，**非常关键的方法**，实现指标统计结果持久化，一般采用异步批处理机制持久化指标统计结果，Elasticsearch存储指标时，可以使用[BulkProcessor进行处理](https://esdoc.bbossgroups.com/#/bulkProcessor)，其他数据源可以使用[通用BulkProcessor异步批处理组件](https://esdoc.bbossgroups.com/#/bulkProcessor-common)处理 |
+| timeWindowType   | int类型，包含以下几种类型，见下文说明                        |
+| addMetricBuilder | 方法类型，为ETLMetrics对象添加多个指标对象构建器MetricBuilder，每个MetricBuilder创建特定的指标对象和对应的指标key |
 
 指标类型metricsType的使用方法，通过以下Metrics对象的4个常量指定：
 	
@@ -119,7 +124,256 @@ public final static int TIME_WINDOW_TYPE_WEEK = 5;//周时间窗口
 public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
 ```
 
+提供了两种定义ETLMetrics的方法，一般来说方法1 更加直观，推荐使用方法1创建ETLMetrics
 
+### 方法 1 实现map和persistent
+
+通过实现map和persistent方法，定义一个ETLMetrics
+
+```java
+ // 直接实现map和persistent方法，定义一个ETLMetrics
+        ETLMetrics keyMetrics1 = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
+            @Override
+            public void map(MapData mapData) {
+                CommonRecord data = (CommonRecord) mapData.getData();
+                //可以添加多个指标
+
+                //指标1 按操作模块统计模块操作次数
+                String operModule = (String) data.getData("operModule");
+                if(operModule == null || operModule.equals("")){
+                    operModule = "未知模块";
+                }
+                String metricKey = operModule;
+                metric(metricKey, mapData, new KeyMetricBuilder() {
+                    @Override
+                    public KeyMetric build() {
+                        return new LoginModuleMetric();
+                    }
+
+                });
+
+                //指标2 按照用户统计操作次数
+                String logUser = (String) data.getData("logOperuser");
+                metricKey = logUser;
+                metric(metricKey, mapData, new KeyMetricBuilder() {
+                    @Override
+                    public KeyMetric build() {
+                        return new LoginUserMetric();
+                    }
+
+                });
+
+
+            }
+
+            @Override
+            public void persistent(Collection< KeyMetric> metrics) {
+                metrics.forEach(keyMetric->{
+                    if(keyMetric instanceof LoginModuleMetric) {
+                        LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("operModule", testKeyMetric.getOperModule());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+                    }
+                    else if(keyMetric instanceof LoginUserMetric) {
+                        LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("logUser", testKeyMetric.getLogUser());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginusermetrics", esData);
+                    }
+
+                });
+
+            }
+        };
+        // key metrics中包含两个segment(S0,S1)
+        keyMetrics1.setSegmentBoundSize(5000000);
+        keyMetrics1.setTimeWindows(10);
+        keyMetrics1.init();
+		metricsOutputConfig.addMetrics(keyMetrics);//指标计算作业
+		//importBuilder.addMetrics(keyMetrics1); 采集作业和指标计算混合作业模式
+```
+
+#### 自定义MapData
+
+如果要自定义创建MapData,设置BuildMapData即可
+
+```java
+//如果要自定义创建MapData,设置BuildMapData即可
+        keyMetrics1.setBuildMapData(new BuildMapData() {
+            @Override
+            public MapData buildMapData(MetricsData metricsData) {
+                BuildMapDataContext buildMapDataContext = metricsData.getBuildMapDataContext();
+                MapData mapData = new MapData(){
+                    /**
+                     * 根据指标标识，获取指标的时间统计维度字段，默认返回dataTime字段值，不同的指标需要指定不同的时间维度统计字段
+                     * 分析处理作业可以覆盖本方法，自定义获取时间维度字段值
+                     * @param metricsKey
+                     * @return
+                     */
+                    public Date metricsDataTime(String metricsKey) {
+//                if(metricsKey.equals("xxxx") ) {
+//                   Date time = (Date)data.get("collectime");
+//                   return time;
+//                }
+                        return getDataTime();
+                    }
+
+                };
+                Date dateTime = (Date) metricsData.getCommonRecord().getData("logOpertime");
+                mapData.setDataTime(dateTime);//默认按照操作时间作为指标时间维度字段，上面复写了metricsDataTime方法，可以根据指标key指定不同的时间维度值
+                mapData.setData(metricsData.getCommonRecord());
+                mapData.setDayFormat(buildMapDataContext.getDayFormat());
+                mapData.setHourFormat(buildMapDataContext.getHourFormat());
+                mapData.setMinuteFormat(buildMapDataContext.getMinuteFormat());
+                mapData.setYearFormat(buildMapDataContext.getYearFormat());
+                mapData.setMonthFormat(buildMapDataContext.getMonthFormat());
+                mapData.setWeekFormat(buildMapDataContext.getWeekFormat());
+                return mapData;
+            }
+        });
+```
+
+### 方法2  实现builderMetrics和persistent方法
+
+通过实现builderMetrics和persistent方法，定义一个ETLMetrics
+
+```java
+ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
+         @Override
+         public void builderMetrics(){
+                //自定义MapData，只能设置一个BuildMapData
+                setBuildMapData(new BuildMapData() {
+                    @Override
+                    public MapData buildMapData(MetricsData metricsData) {
+                        BuildMapDataContext buildMapDataContext = metricsData.getBuildMapDataContext();
+                        MapData mapData = new MapData(){
+                            /**
+                             * 根据指标标识，获取指标的时间统计维度字段，默认返回dataTime字段值，不同的指标需要指定不同的时间维度统计字段
+                             * 分析处理作业可以覆盖本方法，自定义获取时间维度字段值
+                             * @param metricsKey
+                             * @return
+                             */
+                            public Date metricsDataTime(String metricsKey) {
+//                if(metricsKey.equals("xxxx") ) {
+//                   Date time = (Date)data.get("collectime");
+//                   return time;
+//                }
+                                return getDataTime();
+                            }
+
+                        };
+                        Date dateTime = (Date) metricsData.getCommonRecord().getData("logOpertime");
+                        mapData.setDataTime(dateTime);//默认按照操作时间作为指标时间维度字段，上面复写了metricsDataTime方法，可以根据指标key指定不同的时间维度值
+                        mapData.setData(metricsData.getCommonRecord());
+                        mapData.setDayFormat(buildMapDataContext.getDayFormat());
+                        mapData.setHourFormat(buildMapDataContext.getHourFormat());
+                        mapData.setMinuteFormat(buildMapDataContext.getMinuteFormat());
+                        mapData.setYearFormat(buildMapDataContext.getYearFormat());
+                        mapData.setMonthFormat(buildMapDataContext.getMonthFormat());
+                        mapData.setWeekFormat(buildMapDataContext.getWeekFormat());
+                        return mapData;
+                    }
+                });
+                //可以添加多个指标构建器
+            //指标1 按操作模块统计模块操作次数
+            addMetricBuilder(new MetricBuilder() {
+               @Override
+               public String buildMetricKey(MapData mapData){ //生成指标key
+                        CommonRecord data = (CommonRecord) mapData.getData();
+                        String operModule = (String) data.getData("operModule");
+                        if(operModule == null || operModule.equals("")){
+                            operModule = "未知模块";
+                        }
+                  return operModule;
+               }
+               @Override
+               public KeyMetricBuilder metricBuilder(){
+                  return new KeyMetricBuilder() {
+                     @Override
+                     public KeyMetric build() {//生成指标对象
+                        return new LoginModuleMetric();
+                     }
+                  };
+               }
+            });
+
+            //指标2 按照用户统计操作次数
+            addMetricBuilder(new MetricBuilder() {
+               @Override
+               public String buildMetricKey(MapData mapData){
+                        CommonRecord data = (CommonRecord) mapData.getData();
+                        String logUser = (String) data.getData("logOperuser");//
+                        if(logUser == null || logUser.equals("")){
+                            logUser = "未知用户";
+                        }
+                  return logUser;
+               }
+               @Override
+               public KeyMetricBuilder metricBuilder(){
+                  return new KeyMetricBuilder() {
+                     @Override
+                     public KeyMetric build() {
+                        return new LoginUserMetric();
+                     }
+                  };
+               }
+            });
+            // key metrics中包含两个segment(S0,S1)
+            setSegmentBoundSize(5000000);
+            setTimeWindows(60 );//统计时间窗口
+                this.setTimeWindowType(MetricsConfig.TIME_WINDOW_TYPE_MINUTE);//统计时间窗口类型
+         }
+
+            /**
+             * 存储指标计算结果
+             * @param metrics
+             */
+         @Override
+         public void persistent(Collection< KeyMetric> metrics) {
+            metrics.forEach(keyMetric->{
+               if(keyMetric instanceof LoginModuleMetric) {
+                        LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
+                  Map esData = new HashMap();
+                  esData.put("dataTime", testKeyMetric.getDataTime());
+                  esData.put("hour", testKeyMetric.getDayHour());
+                  esData.put("minute", testKeyMetric.getMinute());
+                  esData.put("day", testKeyMetric.getDay());
+                  esData.put("metric", testKeyMetric.getMetric());
+                  esData.put("operModule", testKeyMetric.getOperModule());
+                  esData.put("count", testKeyMetric.getCount());
+                  bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+               }
+               else if(keyMetric instanceof LoginUserMetric) {
+                        LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
+                  Map esData = new HashMap();
+                  esData.put("dataTime", testKeyMetric.getDataTime());
+                  esData.put("hour", testKeyMetric.getDayHour());
+                  esData.put("minute", testKeyMetric.getMinute());
+                  esData.put("day", testKeyMetric.getDay());
+                  esData.put("metric", testKeyMetric.getMetric());
+                  esData.put("logUser", testKeyMetric.getLogUser());
+                  esData.put("count", testKeyMetric.getCount());
+                  bulkProcessor.insertData("vops-loginusermetrics", esData);
+               }
+
+            });
+
+         }
+      };
+```
 
 ## **TimeMetric**  
 
@@ -135,20 +389,20 @@ public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
 
  指标对象构建器，用于构建指标对象，同时提供数据校验逻辑，校验符合条件的数据才会提交给指标对象进行计算
 
-| 属性          | 描述                                                         |
-| ------------- | ------------------------------------------------------------ |
-| dataTimeField | String类型,设置指标时间维度字段，不是设置默认采用当前时间，否则采用字段对应的时间值 |
-| addMetrics    | 方法类型，添加ETLMetrics到ImportBuilder方法，可以用于添加1到多个ETLMetrics对象 |
+| 属性         | 描述                                                         |
+| ------------ | ------------------------------------------------------------ |
+| build        | 方法类型,构建一个TimeKey对象                                 |
+| validateData | 返回boolean的方法类型，校验mapdata中的原始数据是否需要采用build方法返回的指标对象进行计算处理，默认返回true，可以自行覆盖方法实现 |
 
 
 ## **MetricBuilder** 
 
- 用户构建指标key和KeyMetricBuilder ，ETLMetrics中可以添加多个MetricBuilder 用户统计多个指标
+ 用户构建指标key和KeyMetricBuilder ，ETLMetrics中可以通过addMetricBuilder添加多个MetricBuilder 用户统计多个指标
 
-| 属性          | 描述                                                         |
-| ------------- | ------------------------------------------------------------ |
-| dataTimeField | String类型,设置指标时间维度字段，不是设置默认采用当前时间，否则采用字段对应的时间值 |
-| addMetrics    | 方法类型，添加ETLMetrics到ImportBuilder方法，可以用于添加1到多个ETLMetrics对象 |
+| 属性           | 描述                                                  |
+| -------------- | ----------------------------------------------------- |
+| buildMetricKey | 返回String的方法类型,根据mapdata中的数据，构建指标key |
+| metricBuilder  | 方法类型，构建KeyMetricBuilder对象                    |
 
 ## MapData
 
@@ -217,7 +471,7 @@ public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
 
 https://gitee.com/bboss/bboss-datatran-demo
 
-## 用户操作次数指标统计案例
+## 4.1 用户操作次数指标统计
 
 
 
@@ -566,7 +820,7 @@ public void scheduleTimestampImportData(boolean dropIndice){
    }
 ```
 
-两个指标对象
+### 4.1.1 两个指标对象
 
 指标1 按操作模块统计模块操作次数
 
@@ -612,6 +866,8 @@ public class LoginUserMetric extends TimeMetric {
 }
 ```
 
+### 4.1.2持久化指标结果
+
 通过BulkProcessor异步批处理组件持久化指标计算结果到Elasticsearch：
 
 ```java
@@ -647,6 +903,33 @@ public void persistent(Collection< KeyMetric> metrics) {
 }
 ```
 
+### 4.1.3 定时采集数据策略配置
+
+采用jdk timer执行数据采集调度策略，设置增量采集字段log_id,通过setFromFirst（true）控制作业重启是否重新采集数据，通过setLastValueStorePath设置增量状态保存文件路径（默认采用sqlite保存，可以切换其他数据库存储增量状态），通过setLastValueType设置增量状态字段类型（时间或者数字）
+
+```java
+  //定时任务配置，
+      importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//              .setScheduleDate(date) //指定任务开始执行时间：日期
+            .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+            .setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
+      //定时任务配置结束
+
+
+        //增量配置开始
+//    importBuilder.setStatusDbname("test");//设置增量状态数据源名称
+        importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+        importBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+//    setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+        importBuilder.setLastValueStorePath("db2metrics_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+//    importBuilder.setLastValueStoreTableName("logstable");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
+        importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
+```
+
+另外还可以设置第一次增量起始值，更多资料，参考文档：[定时增量导入](https://esdoc.bbossgroups.com/#/db-es-tool?id=_285-%e5%ae%9a%e6%97%b6%e5%a2%9e%e9%87%8f%e5%af%bc%e5%85%a5)
+
+### 4.1.4 案例运行数据样本
+
 运行指标输出的Elasticsearch 指标dsl数据样本：
 
 ```json
@@ -670,9 +953,11 @@ public void persistent(Collection< KeyMetric> metrics) {
 {"hour":"2018050611","dataTime":"2018-05-06T03:30:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180506","minute":"201805061130"}
 ```
 
-## 一次性离线用户操作数据统计案例
+## 4.2 一次性离线用户操作数据统计
 
-本案例比较简单，一次性统计用户操作表全量操作日志，统计用户操作次数指标和模块被操作次数指标，并将统计结果写入Elasticsearch指标库。
+本案例比较简单，通过去除定时策略，一次性统计用户操作表全量操作日志，统计用户操作次数指标和模块被操作次数指标，并将统计结果写入Elasticsearch指标库。
+
+数据采集作业一次性或定期采集控制策略参考文档：[数据同步模式控制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-数据同步模式控制)
 
 通过MetricsOutputConfig插件设置ETLMetrics和时间维度字段
 
@@ -990,7 +1275,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 {"logUser":"|admin","dataTime":"2016-11-02T12:57:04.000Z","metric":"|admin","count":26}
 ```
 
-## 采集用户操作数据并对用户操作数据进行统计案例
+## 4.3 增量采集用户操作数据并对用户操作数据进行统计
 
 基于数字类型db-es增量同步及指标统计计算案例，如需调试功能，直接运行main方法即可。本案例实时按照一定的时间间隔，从数据库用户操作日志表中增量采集用户操作日志数据，并对用户IP地址信息数据进行加工处理后写入Elasticsearch数据库，同时将采集的数据交给指标插件，统计不同的用户每分钟操作系统次数，以及不同模块每分钟操作次数，将统计结果写入Elasticsearch数据库。数据采集频率每10秒采集一次，统计实际窗口为1分钟，时间维度字段为logOpertime（操作时间）。
 
@@ -1385,11 +1670,305 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       dataStream.execute();
 ```
 
-## 独立指标计算统计案例
+定时统计用户操作次数
+
+## 4.4 定时采集统计指标并flush指标统计结果
+
+定时增量采集统计指标并flush指标统计结果案例，构建KeyMetric类型的指标，没有为指标表定义时间维度相关字段。
+
+### 4.4.1 任务调度后强制flush计算结果
+
+通过以下代码控制每次任务调度完成后，强制flush指标计算结果存储到Elasticsearch指标数据库：
+
+```java
+ importBuilder.setFlushMetricsOnScheduleTaskCompleted(true);//强制flush指标计算结果存储到Elasticsearch指标数据库
+        importBuilder.setWaitCompleteWhenflushMetricsOnScheduleTaskCompleted(true);//等待flush处理完毕后才返回
+        importBuilder.setCleanKeysWhenflushMetricsOnScheduleTaskCompleted(true);//flush完成后清理掉缓存区中的所有指标key对象
+
+```
+
+案例代码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/Db2KeyMetricsScheduleDemo.java
+
+```java
+ImportBuilder importBuilder = new ImportBuilder() ;
+      //在任务数据抽取之前做一些初始化处理，例如：通过删表来做初始化操作
+
+
+        importBuilder.setImportStartAction(new ImportStartAction() {
+            /**
+             * 初始化之前执行的处理操作，比如后续初始化操作、数据处理过程中依赖的资源初始化
+             * @param importContext
+             */
+            @Override
+            public void startAction(ImportContext importContext) {
+            }
+
+            /**
+             * 所有初始化操作完成后，导出数据之前执行的操作
+             * @param importContext
+             */
+            @Override
+            public void afterStartAction(ImportContext importContext) {
+                try {
+                    //清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+                    ElasticSearchHelper.getRestClientUtil().dropIndice("vops-loginmodulemetrics");
+                } catch (Exception e) {
+                    logger.error("Drop indice  vops-loginmodulemetrics failed:",e);
+                }
+                try {
+                    //清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+                    ElasticSearchHelper.getRestClientUtil().dropIndice("vops-loginusermetrics");
+                } catch (Exception e) {
+                    logger.error("Drop indice  vops-loginusermetrics failed:",e);
+                }
+
+            }
+        });
+
+      DBInputConfig dbInputConfig = new DBInputConfig();
+      //指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+      // select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
+      // 需要设置setLastValueColumn信息log_id，
+      // 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
+
+//    importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+      dbInputConfig.setSql("select * from td_sm_log  where log_id > #[log_id]")
+            .setDbName("test")
+            .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+            .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+            .setDbUser("root")
+            .setDbPassword("123456")
+            .setValidateSQL("select 1")
+            .setUsePool(true)
+            .setDbInitSize(5)
+            .setDbMinIdleSize(5)
+            .setDbMaxSize(10)
+            .setShowSql(true);//是否使用连接池;
+      importBuilder.setInputConfig(dbInputConfig);
+
+
+        //定义bulkprocessor依赖的Elasticsearch数据源
+        Map properties = new HashMap();
+
+       //default为默认的Elasitcsearch数据源名称
+        properties.put("elasticsearch.serverNames","default");
+
+        /**
+         * 默认的default数据源配置，每个配置项可以加default.前缀，也可以不加
+         */
+
+
+        properties.put("default.elasticsearch.rest.hostNames","192.168.137.1:9200");
+        properties.put("default.elasticsearch.showTemplate","true");
+        properties.put("default.elasticUser","elastic");
+        properties.put("default.elasticPassword","changeme");
+        properties.put("default.elasticsearch.failAllContinue","true");
+        properties.put("default.http.timeoutSocket","60000");
+        properties.put("default.http.timeoutConnection","40000");
+        properties.put("default.http.connectionRequestTimeout","70000");
+        properties.put("default.http.maxTotal","200");
+        properties.put("default.http.defaultMaxPerRoute","100");
+        ElasticSearchBoot.boot(properties);
+
+      BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+      bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
+
+            .setBulkSizes(200)//按批处理数据记录数
+            .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
+
+            .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
+            .setWorkThreads(10)//bulk处理工作线程数
+            .setWorkThreadQueue(50)//bulk处理工作线程池缓冲队列大小
+            .setBulkProcessorName("detail_bulkprocessor")//工作线程名称，实际名称为BulkProcessorName-+线程编号
+            .setBulkRejectMessage("detail bulkprocessor")//bulk处理操作被每被拒绝WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息提示前缀
+            .setElasticsearch("default")//指定明细Elasticsearch集群数据源名称，bboss可以支持多数据源
+            .setFilterPath(BulkConfig.ERROR_FILTER_PATH)
+            .addBulkInterceptor(new BulkInterceptor() {
+               public void beforeBulk(BulkCommand bulkCommand) {
+
+               }
+
+               public void afterBulk(BulkCommand bulkCommand, String result) {
+                  if(logger.isDebugEnabled()){
+                     logger.debug(result);
+                  }
+               }
+
+               public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
+                  if(logger.isErrorEnabled()){
+                     logger.error("exceptionBulk",exception);
+                  }
+               }
+               public void errorBulk(BulkCommand bulkCommand, String result) {
+                  if(logger.isWarnEnabled()){
+                     logger.warn(result);
+                  }
+               }
+            })//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
+      ;
+      /**
+       * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
+       */
+      BulkProcessor bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
+      ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyMetircs){
+            @Override
+            public void map(MapData mapData) {
+                CommonRecord data = (CommonRecord) mapData.getData();
+                //可以添加多个指标
+
+                //指标1 按操作模块统计模块操作次数
+                String operModule = (String) data.getData("operModule");
+                if(operModule == null || operModule.equals("")){
+                    operModule = "未知模块";
+                }
+                String metricKey = operModule;
+                metric(metricKey, mapData, new KeyMetricBuilder() {
+                    @Override
+                    public KeyMetric build() {
+                        return new LoginModuleMetric();
+                    }
+
+                });
+
+                //指标2 按照用户统计操作次数
+                String logUser = (String) data.getData("logOperuser");
+                metricKey = logUser;
+                metric(metricKey, mapData, new KeyMetricBuilder() {
+                    @Override
+                    public KeyMetric build() {
+                        return new LoginUserMetric();
+                    }
+
+                });
+
+
+            }
+
+            @Override
+            public void persistent(Collection< KeyMetric> metrics) {
+                metrics.forEach(keyMetric->{
+                    if(keyMetric instanceof LoginModuleMetric) {
+                        LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("operModule", testKeyMetric.getOperModule());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+                    }
+                    else if(keyMetric instanceof LoginUserMetric) {
+                        LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("logUser", testKeyMetric.getLogUser());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginusermetrics", esData);
+                    }
+
+                });
+
+            }
+      };
+        //作业结束后销毁初始化阶段自定义的http数据源
+        importBuilder.setImportEndAction(new ImportEndAction() {
+            @Override
+            public void endAction(ImportContext importContext, Exception e) {
+
+                bulkProcessor.shutDown();
+
+            }
+        });
+        MetricsOutputConfig metricsOutputConfig = new MetricsOutputConfig();
+
+        metricsOutputConfig.setDataTimeField("logOpertime");
+        metricsOutputConfig.addMetrics(keyMetrics);
+
+        importBuilder.setFlushMetricsOnScheduleTaskCompleted(true);
+        importBuilder.setWaitCompleteWhenflushMetricsOnScheduleTaskCompleted(true);
+        importBuilder.setCleanKeysWhenflushMetricsOnScheduleTaskCompleted(true);
+
+      importBuilder.setOutputConfig(metricsOutputConfig);
+
+
+      importBuilder
+//
+            .setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
+            .setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
+            .setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+
+//定时任务配置，
+        importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//              .setScheduleDate(date) //指定任务开始执行时间：日期
+                .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+                .setPeriod(30000L); //每隔period毫秒执行，如果不设置，只执行一次
+        //定时任务配置结束
+
+
+
+        //增量配置开始
+//
+
+        importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
+        importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+//    setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+      importBuilder.setLastValueStorePath("logtablemetrics_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+        importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
+
+
+        /**
+         * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
+         */
+      importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+      importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+      importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+      importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+      importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+
+      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+         @Override
+         public void success(TaskCommand<String,String> taskCommand, String result) {
+            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+            logger.info(taskMetrics.toString());
+            logger.debug(result);
+         }
+
+         @Override
+         public void error(TaskCommand<String,String> taskCommand, String result) {
+            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+            logger.info(taskMetrics.toString());
+            logger.debug(result);
+         }
+
+         @Override
+         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+            logger.debug(taskMetrics.toString());
+         }
+
+
+      });
+
+
+      /**
+       * 构建和执行数据库表数据导入es和指标统计作业
+       */
+      DataStream dataStream = importBuilder.builder();
+      dataStream.execute();
+```
+
+## 4.5 独立指标计算统计案例
 
 同时我们也可以在应用中直接使用Metrics组件实现更加灵活的指标统计计算功能
 
-一个典型的通用指标计算案例：
+一个典型的通用指标计算案例：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/tran/metrics/TestKeyTimeMetrics.java
 
 ```java
 //1. 定义Elasticsearch数据入库BulkProcessor批处理组件构建器
