@@ -10,9 +10,32 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 1) 只采集和处理数据作业
 
-2) 采集和处理数据、指标统计计算混合作业
+2) 采集和处理数据、指标统计计算混合作业--通过ImportBuilder注册ETLMetrics+其他数据源Output插件结合实现
 
-3) 采集数据只做指标统计计算作业
+```java
+importBuilder.setDataTimeField("logOpertime");
+importBuilder.addMetrics(keyMetrics);//通过importBuilder注册指标计算器，对采集数据进行指标计算并保存指标计算结果到各种数据库
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig
+                .setTargetElasticsearch("default")
+            .setIndex("dbdemo")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false    
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);//设置Elasticsearch输出插件，保存加工后的原始数据
+```
+
+3) 采集数据只做指标统计计算作业--通过指标插件MetricsOutputConfig实现
+
+```java
+ MetricsOutputConfig metricsOutputConfig = new MetricsOutputConfig();
+
+        metricsOutputConfig.setDataTimeField("logOpertime");
+        metricsOutputConfig.addMetrics(keyMetrics);//通过Metrics输出插件注册指标计算器，对采集数据进行指标计算并保存指标计算结果到各种数据库
+
+      importBuilder.setOutputConfig(metricsOutputConfig);//设置Metrics输出插件
+```
 
 4）在应用中单独集成和使用指标统计功能
 
@@ -1693,8 +1716,17 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 ```java
 importBuilder.setDataTimeField("logOpertime");
-      importBuilder.setUseDefaultMapData(false);
 importBuilder.addMetrics(keyMetrics);
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig
+                .setTargetElasticsearch("default")
+            .setIndex("dbdemo")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false    
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+
 ```
 
 同时结合ElasticsearchOutputConfig输出加工后的原始数据到Elasticsearch

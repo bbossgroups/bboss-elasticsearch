@@ -702,7 +702,9 @@ public abstract class BuildTool {
 
 		}
 		else{
-			builder.append(id);
+//			builder.append(id);
+            builder.append("\"")
+                    .append(id).append("\"");
 		}
 	}
 	public static void buildId(Object id,Writer writer,boolean escape) throws IOException {
@@ -719,7 +721,10 @@ public abstract class BuildTool {
 
 		}
 		else{
-			writer.write(String.valueOf(id));
+//			writer.write(String.valueOf(id));
+            writer.write("\"");
+            writer.write(String.valueOf(id));
+            writer.write("\"");
 		}
 	}
 
