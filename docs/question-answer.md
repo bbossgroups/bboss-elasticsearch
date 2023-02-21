@@ -251,7 +251,7 @@ perKeyDSLStructionCacheSize参数含义，参考文档：
 
 [dsl动态语法](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)
 
-最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到6.8.0或以上版本，从而解决该问题，从以下地址获取最新版本信息：
+最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到6.8.1或以上版本，从而解决该问题，从以下地址获取最新版本信息：
 
 https://esdoc.bbossgroups.com/#/changelog
 
@@ -271,7 +271,7 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 ![img](images\jacson.png)
 
-- 升级bboss到6.8.0
+- 升级bboss到6.8.1
 
 # 问题7 mysql大表数据同步慢
 

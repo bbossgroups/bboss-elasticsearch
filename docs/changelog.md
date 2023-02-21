@@ -48,29 +48,27 @@ https://esdoc.bbossgroups.com/#/development
 
 2. FTP输出插件改进：增加生成文件[异常上传FTP机制](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)，默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能
 
-3. 数据采集重大功能扩展：增加指标计算输出插件，提供指标统计分析功能，在采集和处理数据时，同时对数据进行大数据指标统计聚合计算，可以将聚合计算结果保存的各种指标数据库：Eleasticsearch/Mongodb/HBase/Clickhouse/Doris/DB(Oracle、Mysql、postgresql、sqlserver等主流关系数据库)
+3. 数据采集重大功能扩展：增加[指标计算输出插件](https://esdoc.bbossgroups.com/#/etl-metrics)，提供指标统计分析功能，支持两种模式的指标计算：
    
    
    
-   可以灵活定制具备各种功能的数据采集统计作业
-   
-   1) 只采集和处理数据作业
-   
-   2) 采集和处理数据、指标统计计算混合作业
-   
-   3) 采集数据只做指标统计计算作业
+   1)  在采集和处理数据时，同时对数据进行大数据指标统计聚合计算，最终将加工后的数据和指标计算结果进行持久化处理
    
    
    
-   指标计算特点
+   2）只对采集的数据进行指标计算，最终将指标计算结果进行持久化处理
    
-   1) 支持时间维度和非时间维度指标计算
    
-   2) 时间维度指标计算：支持指定统计时间窗口，单位到分钟级别
    
-   3) 一个指标支持多个维度和多个度量字段计算，多个维度字段值构造成指标的唯一指标key，支持有限基数key和无限基数key指标计算   
+   可以将聚合计算结果保存的各种指标数据库：Eleasticsearch/Mongodb/HBase/Clickhouse/Doris/DB(Oracle、Mysql、postgresql、sqlserver等主流关系数据库)
    
-   4) 一个作业可以支持多种类型的指标，每种类型指标支持多个指标计算
+4. Elasticsearch客户端改进：将文档_id、parentId为非String类型数字时，转换为String模式处理，避免可能存在的类型误差问题
+   
+   
+   
+   
+   
+   
 
 # v6.8.0 功能改进
 1. 去除Elasticsearch和http数据源jvm退出机制，避免因jvm退出时，数据源获取空指针问题
@@ -289,7 +287,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.0版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.8.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -464,7 +462,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.0</version>
+            <version>6.8.1</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -472,7 +470,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.0</version>
+            <version>6.8.1</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -484,6 +482,9 @@ xxl job 2x案例工程
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
 4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
                   
+              
+              
+              
               
               
               
@@ -575,7 +576,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.8.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1121,7 +1122,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.0</version>
+    <version>6.8.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
