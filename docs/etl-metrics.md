@@ -46,7 +46,7 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 下面分别进行介绍说明。
 
-## **ImportBuidler** 
+## **3.1 ImportBuidler** 
 
  采集作业配置，如果是数据采集和指标计算一体化的作业，则通过ImportBuilder配置ETLMetrics和数据采集输入/输出插件
 
@@ -59,7 +59,7 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 | cleanKeysWhenflushMetricsOnScheduleTaskCompleted    | boolean类型,控制flush metrics时是否清空指标key内存缓存区  true 清空  false 不清空，默认值 |
 | waitCompleteWhenflushMetricsOnScheduleTaskCompleted | boolean类型,控制是否等待flush metric持久化操作完成再返回，还是不等待直接返回（异步flush） true 等待，默认值  false 不等待 |
 
-## **MetricsOutputConfig** 
+## **3.2 MetricsOutputConfig** 
 
  指标插件配置，提供指标计算规则配置：ETLMetrics、时间维度字段配置等，可以添加多个ETLMetrics
 
@@ -69,7 +69,7 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 | useDefaultMapData | boolean类型,控制ETLMetrics是否构建默认MapData对象<br/>      true 如果ETLMetrics没有设置dataTimeField，没有提供自定义的MapdataBuilder，则使用默认构建MapData对象<br/>      false 不构建默认MapData对象 |
 | addMetrics        | 方法类型，添加ETLMetrics到ImportBuilder方法，可以用于添加1到多个ETLMetrics对象 |
 
-## Metrics
+## 3.3 Metrics
 
 通用流批一体化数据处理指标计算器，
 
@@ -84,7 +84,7 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 
 
-## **ETLMetrics** 
+## **3.4 ETLMetrics** 
 
 专用于ETL数据采集协同实现流批一体化数据处理指标计算器，Metrics的子类，用于指标统计计算逻辑、指标维度字段、指标时间维度字段、指标key生成规则、指标对象构建器、指标数据校验、指标计算结果持久化、设置时间窗口大小、时间窗口类型、指标存储内存区S0、S1交换区大小
 
@@ -126,7 +126,7 @@ public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
 
 提供了两种定义ETLMetrics的方法，一般来说方法1 更加直观，推荐使用方法1创建ETLMetrics
 
-### 方法 1 实现map和persistent
+### 3.4.1 方法 1 实现map和persistent
 
 通过实现map和persistent方法，定义一个ETLMetrics
 
@@ -246,7 +246,7 @@ public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
         });
 ```
 
-### 方法2  实现builderMetrics和persistent方法
+### 3.4.2 方法2  实现builderMetrics和persistent方法
 
 通过实现builderMetrics和persistent方法，定义一个ETLMetrics
 
@@ -375,17 +375,419 @@ ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
       };
 ```
 
-## **TimeMetric**  
+## **3.5 TimeMetric**  
 
-非常关键的一个对象，指标对象抽象类，所有的指标都需要被定义为TimeMetric的子类，封装指标维度字段信息、指标计算逻辑
+非常关键的一个对象，指标对象抽象类，所有的指标都需要被定义为TimeMetric的子类，封装指标维度字段信息、指标计算逻辑，TimeMetric内置了时间相关的维度字段，用来标记指标对应的year、month、week、day、hour、minitue信息，来源于时间维度字段值，通过这些时间维度字段值可以非常方便地实现性能优异的年报、月报、周报、日报、小时、分钟级别的统计报表。dataTime代表了指定对应的Date时间，可以用户时间范围统计。
 
-| 属性     | 描述                                                         |
-| -------- | ------------------------------------------------------------ |
-| init     | 抽象方法类型,接收MapData类型参数，初始化指标对象对应的指标维度字段以及其他指标计算依赖的信息或者第三方组件 |
-| **incr** | 方法类型，**非常关键的方法**，接收MapData类型参数，实现指标度量字段的计算，可以实现简单的计数、求总量、平均值，亦可以实现非常复杂的指标计算（譬如：用户访问深度、不同深度用户分布、用户留存、用户活跃、用户引流转化漏斗指标等复杂指标计算） |
+### 3.5.1 属性和方法说明
+
+具体属性和方法说明如下
+
+| 属性         | 描述                                                         |
+| ------------ | ------------------------------------------------------------ |
+| init         | 抽象方法类型,接收MapData类型参数，初始化指标对象对应的指标维度字段以及其他指标计算依赖的信息或者第三方组件 |
+| **incr**     | 方法类型，**非常关键的方法**，接收MapData类型参数，实现指标度量字段的计算，可以实现简单的计数、求总量、平均值，亦可以实现非常复杂的指标计算（譬如：用户访问深度、不同深度用户分布、用户留存、用户活跃、用户引流转化漏斗指标等复杂指标计算） |
+| metric       | String类型，指标key，框架自动维护，不需人工干预              |
+| dataTime     | Date类型，指标对应的时间维度值，框架自动维护，不需人工干预   |
+| count        | long类型,内置的count计数器变量，无需自己定义计数器变量，在incr方法里面进行计算 |
+| min          | Object类型，保存最小值指标，在incr方法里面进行计算           |
+| max          | Object类型，保存最大值指标，在incr方法里面进行计算           |
+| avg          | Object类型，保存平均值指标，在incr方法里面进行计算           |
+| success      | long类型，保存成功量指标，在incr方法里面进行计算             |
+| failed       | long类型，保存失败量指标，在incr方法里面进行计算             |
+| totalElapsed | float类型，保存总耗时指标，在incr方法里面进行计算            |
+| ips          | long类型，保存ip数指标，在incr方法里面进行计算               |
+| pv           | long类型，保存pv指标，在incr方法里面进行计算                 |
+| year         | String类型，保存指标对应的年份值，框架自动维护，不需人工干预，例如：2023 |
+| month        | String类型，保存指标对应的月份值，框架自动维护，不需人工干预，例如：2023-02 |
+| week         | String类型，保存指标月份对应的第几周，框架自动维护，不需人工干预，例如：2023-02-1T |
+| day          | String类型，保存指标对应的日期值，框架自动维护，不需人工干预，例如：2023-02-19 |
+| dayHour      | String类型，保存指标对应的小时值，框架自动维护，不需人工干预，例如：2023-02-19 16 |
+| minute       | String类型，保存指标对应的分钟值，框架自动维护，不需人工干预，例如：2023-02-19 16:53 |
+
+### 3.5.2 简单示例
+
+TimeMetric的一个简单实现如下：按操作模块统计模块操作次数LoginModuleMetric
+
+```java
+public class LoginModuleMetric extends TimeMetric {
+    private String operModule ;//维度字段，操作模块
+    @Override
+    public void init(MapData firstData) {//接收MapData类型参数，初始化指标对象对应的指标维度字段以及其他指标计算依赖的信息或者第三方组件
+        CommonRecord data = (CommonRecord) firstData.getData();//CommonRecord对象，封装了作业采集处理后的数据记录，可以通过getData(fieldName)获取数据字段值,通过数据的加工处理，对数据进行转换、打标处理操作
+        operModule = (String) data.getData("operModule");//初始化操作模块维度字段值
+    }
+
+    @Override
+    public void incr(MapData data) {
+         CommonRecord data = (CommonRecord) data.getData();//CommonRecord对象，封装了作业采集处理后的数据记录，可以通过getData(fieldName)获取数据字段值,通过数据的加工处理，对数据进行转换、打标处理操作，根据数据的标签，进行相关指标的统计计算，例如代表用户行为的PV、UV指标等，这里可以实现非常复杂的指标统计计算
+        count ++;//一个简单的计数统计
+    }
+//返回维度字段，用于在persistent指标计算结果时调用获取指标的对应操作模块
+    public String getOperModule() {
+        return operModule;
+    }
+}
+```
+
+### 3.5.3 自定义指标值示例
+
+我们可以根据实际需要为指标对象添加新的指标度量值字段，根据实际的情况实现incr方法,通过下面的示例进行了解：
+
+```java
+/**
+ * 网页访问统计、重点页面统计指标
+ */
+public class WebpageMetric  extends BaseWebPageMetric  {
 
 
-## **KeyMetricBuilder**  
+    protected String postionId;
+
+    private String postionChanCode; //触点渠道
+
+    /**
+     * 访问量独立访客次数uv
+     */
+    private long uv;
+
+    /**
+     * url对应的独立访客统计
+     */
+    private long urlUv;
+
+    /**
+     * url对应的手机号码独立访客统计
+     */
+    private long urlPhoneUv;
+
+    /**
+     * 访问量新独立访客数uv
+     */
+    private long newUv;
+
+
+    /**
+     * 访问量新独立访客数uv
+     */
+    private long newPhoneUv;
+
+    /**
+     * 访问量独立访客数uv
+     */
+    private long phoneUv;
+
+
+
+
+    /**
+     * 访客数浏览量
+     */
+//    private long visitorViews;
+    /**
+     * 新访客数浏览量
+     */
+    private long newVisitorViews;
+
+    /**
+     * 手机号码维度访客数浏览量
+     */
+//    private long phoneVisitorViews;
+    /**
+     * 手机号码维度新访客数浏览量
+     */
+    private long phoneNewVisitorViews;
+
+
+    /**
+     * 登录用户数
+     */
+    private long loginUser;
+
+    /**
+     * 未登录用户数
+     */
+    private long unoginUser;
+    /**
+     * 回头客数
+     */
+    private int rv;
+
+    /**
+     * session个数
+     */
+    private int sessions;
+
+    /**
+     * 新访客浏览量
+     */
+    private long newPv;
+
+    /**
+     * 老访客浏览量
+     */
+    private long oldPv;
+
+    /**
+     * 跳出用户数
+     */
+    private long jumpOutUser;
+
+    private long normal;
+
+    private long abnormal;
+
+    private String urlConfigId;
+
+    public WebpageMetric() {
+    }
+
+    public long getPhoneUv() {
+        return phoneUv;
+    }
+    public String getRegion() {
+        return region;
+    }
+
+
+    @Override
+    public void init(MapData firstData) {
+        super.init(firstData);
+        TerminalMessages data = (TerminalMessages) firstData.getData();
+        postionId = data.getPostionId();
+        postionChanCode = data.getPostionChanCode();
+        urlConfigId = data.getUrlConfigId();
+    }
+
+    @Override
+    public void incr(MapData data) {
+        //statics from Map data
+        super.incr(data);
+        this.ips++;
+        this.pv++;
+
+        TerminalMessages message = (TerminalMessages) data.getData();
+        long reqt = message.getPerformance().getReqt();
+        this.totalElapsed += reqt;
+        this.failed += message.getErrorFlag() == 0 ? 0 : 1;
+        this.success += message.getErrorFlag() == 0 ? 1 : 0;
+        this.abnormal += message.getFailFlag() == 0 ? 0 : 1;
+        this.normal += message.getFailFlag() == 0 ? 1 : 0;
+
+
+        int newUvTag = message.getNewUvTag();
+        if(newUvTag == 1){
+            this.newUv++;
+
+        }
+
+        int newPhoneUvTag = message.getNewPhoneUvTag();
+        if(newPhoneUvTag == 1){
+            this.newPhoneUv++;
+
+        }
+
+        int phoneUvTag = message.getPhoneUvTag();
+        if(phoneUvTag == 1){
+            this.phoneUv++;
+
+        }
+        int uvTag = message.getUvTag();
+        if(uvTag == 1){
+            this.uv++;
+
+        }
+
+        if(message.getUrlUvTag() == 1){
+            urlUv ++;
+        }
+
+        if(message.getUrlPhoneUvTag() == 1){
+            urlPhoneUv ++;
+        }
+
+        int loginTag = message.getLoginTag();
+
+        if(loginTag == 1){
+            this.loginUser++;
+        }else {
+            this.unoginUser++;
+        }
+        int rvTag = message.getRvTag();
+        if(rvTag == 1){
+            rv ++;
+        }
+        if(message.getNewSessionTag() == 1){
+            sessions ++;
+        }
+
+
+
+            /**
+             * 新访客数浏览量
+             */
+            int newUvSidTag = message.getNewUvSidTag();
+            if(newUvSidTag == 1){
+                newVisitorViews++;
+
+            }
+
+
+            /**
+             * 手机号码维度新访客数浏览量
+             */
+            int newPhoneUvSidTag = message.getNewPhoneUvSidTag();
+            if(newPhoneUvSidTag == 1){
+                phoneNewVisitorViews++;
+
+            }
+
+
+    }
+
+    public int getSessions() {
+        return sessions;
+    }
+
+    public int getRv() {
+        return rv;
+    }
+
+    public long getUv() {
+        return uv;
+    }
+
+    public void setUv(long uv) {
+        this.uv = uv;
+    }
+
+    public long getNewUv() {
+        return newUv;
+    }
+
+    public void setNewUv(long newUv) {
+        this.newUv = newUv;
+    }
+
+    public long getNewPhoneUv() {
+        return newPhoneUv;
+    }
+
+    public void setNewPhoneUv(long newPhoneUv) {
+        this.newPhoneUv = newPhoneUv;
+    }
+
+    public long getLoginUser() {
+        return loginUser;
+    }
+
+    public void setLoginUser(long loginUser) {
+        this.loginUser = loginUser;
+    }
+
+    public long getUnoginUser() {
+        return unoginUser;
+    }
+
+    public void setUnoginUser(long unoginUser) {
+        this.unoginUser = unoginUser;
+    }
+
+
+
+
+    public long getNewPv() {
+        return newPv;
+    }
+
+    public void setNewPv(long newPv) {
+        this.newPv = newPv;
+    }
+
+    public long getOldPv() {
+        return oldPv;
+    }
+
+    public void setOldPv(long oldPv) {
+        this.oldPv = oldPv;
+    }
+
+
+
+    public long getNewVisitorViews() {
+        return newVisitorViews;
+    }
+
+    public void setNewVisitorViews(long newVisitorViews) {
+        this.newVisitorViews = newVisitorViews;
+    }
+
+
+
+    public long getPhoneNewVisitorViews() {
+        return phoneNewVisitorViews;
+    }
+
+    public void setPhoneNewVisitorViews(long phoneNewVisitorViews) {
+        this.phoneNewVisitorViews = phoneNewVisitorViews;
+    }
+
+    public long getUrlUv() {
+        return urlUv;
+    }
+
+    public long getNormal() {
+        return normal;
+    }
+
+    public void setNormal(long normal) {
+        this.normal = normal;
+    }
+
+    public long getAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(long abnormal) {
+        this.abnormal = abnormal;
+    }
+
+    public long getUrlPhoneUv() {
+        return urlPhoneUv;
+    }
+
+    public void setUrlPhoneUv(long urlPhoneUv) {
+        this.urlPhoneUv = urlPhoneUv;
+    }
+
+    public String getPostionId() {
+        return postionId;
+    }
+
+    public void setPostionId(String postionId) {
+        this.postionId = postionId;
+    }
+
+    public String getPostionChanCode() {
+        return postionChanCode;
+    }
+
+    public void setPostionChanCode(String postionChanCode) {
+        this.postionChanCode = postionChanCode;
+    }
+
+    public String getUrlConfigId() {
+        return urlConfigId;
+    }
+
+    public void setUrlConfigId(String urlConfigId) {
+        this.urlConfigId = urlConfigId;
+    }
+}
+```
+
+
+
+## **3.6 KeyMetricBuilder**  
 
  指标对象构建器，用于构建指标对象，同时提供数据校验逻辑，校验符合条件的数据才会提交给指标对象进行计算
 
@@ -395,7 +797,7 @@ ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
 | validateData | 返回boolean的方法类型，校验mapdata中的原始数据是否需要采用build方法返回的指标对象进行计算处理，默认返回true，可以自行覆盖方法实现 |
 
 
-## **MetricBuilder** 
+## **3.7 MetricBuilder** 
 
  用户构建指标key和KeyMetricBuilder ，ETLMetrics中可以通过addMetricBuilder添加多个MetricBuilder 用户统计多个指标
 
@@ -404,9 +806,11 @@ ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
 | buildMetricKey | 返回String的方法类型,根据mapdata中的数据，构建指标key |
 | metricBuilder  | 方法类型，构建KeyMetricBuilder对象                    |
 
-## MapData
+## 3.8 MapData
 
-在数据采集作业中，MapData默认封装了原始统计数据CommonRecord记录，指标对象从CommonRecord中获取指标维度字段，并根据维度字段生成指标key。可以通过BuildMapData接口自定义特定类型的MapData，示例如下：
+在数据采集作业中，MapData默认封装了：
+
+data属性：原始统计数据CommonRecord记录，指标对象从CommonRecord中获取指标维度字段，并根据维度字段生成指标key。可以通过BuildMapData接口自定义特定类型的MapData，示例如下：
 
 ```java
 //自定义MapData，只能设置一个BuildMapData
@@ -464,6 +868,8 @@ ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
 
                         };
 ```
+
+mapdata对象中还封装了dataTime时间维度值、各种时间格式，用来处理格式化时间维度相关的字段。
 
 # 4.案例介绍
 
@@ -1674,11 +2080,11 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 ## 4.4 定时采集统计指标并flush指标统计结果
 
-定时增量采集统计指标并flush指标统计结果案例，构建KeyMetric类型的指标，没有为指标表定义时间维度相关字段。
+定时增量采集统计指标并flush指标统计结果案例，构建KeyMetrics类型的指标计算器，不设置指标时间维度相关字段。
 
-### 4.4.1 任务调度后强制flush计算结果
+### 4.4.1 任务调度后强制flush指标计算结果
 
-通过以下代码控制每次任务调度完成后，强制flush指标计算结果存储到Elasticsearch指标数据库：
+在采用KeyMetrics类型，实现定时统计计算场景下，没有按照时间滑动窗口自动flush指标计算结果功能，因此需要在每次定时调度完毕时强制flush指标计算结果到指标数据库，通过以下代码控制每次任务调度完成后，强制flush指标计算结果存储到Elasticsearch指标数据库：
 
 ```java
  importBuilder.setFlushMetricsOnScheduleTaskCompleted(true);//强制flush指标计算结果存储到Elasticsearch指标数据库
