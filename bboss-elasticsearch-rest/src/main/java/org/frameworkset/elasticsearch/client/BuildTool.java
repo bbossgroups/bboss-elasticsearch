@@ -702,97 +702,71 @@ public abstract class BuildTool {
 
 		}
 		else{
-//			builder.append(id);
-            builder.append("\"")
-                    .append(id).append("\"");
+			builder.append(id);
+//            builder.append("\"")
+//                    .append(id).append("\"");
 		}
 	}
-	public static void buildId(Object id,Writer writer,boolean escape) throws IOException {
-		if (id instanceof String) {
-			writer.write("\"");
-			if(!escape) {
-				writer.write((String) id);
-			}
-			else{
-				CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
-				charEscapeUtil.writeString((String) id, true);
-			}
-			writer.write("\"");
-
-		}
-		else{
-//			writer.write(String.valueOf(id));
+    public static void buildId(Object id,Writer writer,boolean escape) throws IOException {
+        if (id instanceof String) {
             writer.write("\"");
+            if(!escape) {
+                writer.write((String) id);
+            }
+            else{
+                CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
+                charEscapeUtil.writeString((String) id, true);
+            }
+            writer.write("\"");
+
+        }
+        else{
             writer.write(String.valueOf(id));
+//            writer.write("\"");
+//            writer.write(String.valueOf(id));
+//            writer.write("\"");
+        }
+    }
+    public static void buildRouting(Object id,StringBuilder builder,boolean escape){
+        if (id instanceof String) {
+            if(!escape) {
+                builder.append("\"")
+                        .append(id).append("\"");
+            }
+            else{
+                builder.append("\"");
+                CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(new BBossStringWriter(builder),false);
+                charEscapeUtil.writeString((String) id, true);
+                builder.append("\"");
+            }
+
+        }
+        else{
+			builder.append(id);
+        }
+    }
+
+
+    public static void buildRouting(Object id,Writer writer,boolean escape) throws IOException {
+        if (id instanceof String) {
             writer.write("\"");
-		}
-	}
+            if(!escape) {
+                writer.write((String) id);
+            }
+            else{
+                CharEscapeUtil charEscapeUtil = new CustomCharEscapeUtil(writer,false);
+                charEscapeUtil.writeString((String) id, true);
+            }
+            writer.write("\"");
 
-	/**
-	public static void buildMeta(ClassUtil.ClassInfo beanInfo,Writer writer ,String indexType,String indexName, Object params,String action,boolean upper7) throws IOException {
-//		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
-		Object id = getId(params,beanInfo);
-		Object parentId = getParentId(params,beanInfo);
-		Object routing = getRouting(params,beanInfo);
-		Object esRetryOnConflict = getEsRetryOnConflict(params,beanInfo);
+        }
+        else{
+			writer.write(String.valueOf(id));
 
-		buildMeta( beanInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
-	}
-*/
+        }
+    }
 
-	/**
-	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,boolean upper7) throws IOException {
-//		Object id = docIdKey != null ?params.get(docIdKey):null;
-//		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-//		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
-		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null,  upper7);
-	}*/
 
-	/**
-	public static void buildMetaWithDocIdField(Writer writer ,String indexType,String indexName, Object params,String action,String docIdField,String parentIdField,boolean upper7) throws IOException {
-//		Object id = docIdKey != null ?params.get(docIdKey):null;
-//		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-//		buildMeta(  writer ,  indexType,  indexName,   params,  action,  id,  parentId,null);
-//		buildMetaWithDocIdKey(writer ,indexType,indexName, params,action,docIdKey,parentIdKey,null);
-		ClientOptions clientOption = new ClientOptions();
-		clientOption.setIdField(docIdField);
-		clientOption.setParentIdField(parentIdField);
-		buildMeta(  writer ,  indexType,  indexName,   params,  action,  clientOption,  upper7);
-	}
-	 */
-	/**
-	public static void buildMetaWithDocIdKey(Writer writer ,String indexType,String indexName, Map params,String action,String docIdKey,String parentIdKey,String routingKey,boolean upper7) throws IOException {
-		Object id = docIdKey != null ?params.get(docIdKey):null;
-		Object parentId = parentIdKey != null ?params.get(parentIdKey):null;
-		Object routing = routingKey != null ?params.get(routingKey):null;
-
-		buildMeta( null, writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,  upper7);
-	}*/
-/**
-	public static void buildMapMeta(Writer writer ,String indexType,String indexName, Map params,String action,ClientOptions clientOptions,boolean upper7) throws IOException {
-		Object id = null;
-		Object parentId = null;
-		Object routing = null;
-		Object esRetryOnConflict = null;
-		if(clientOptions != null) {
-			id = clientOptions.getIdField() != null ? params.get(clientOptions.getIdField()) : null;
-			parentId = clientOptions.getParentIdField() != null ? params.get(clientOptions.getParentIdField()) : null;
-			if(clientOptions.getRouting() == null) {
-				routing = clientOptions.getRoutingField() != null ? params.get(clientOptions.getRoutingField()) : null;
-			}
-			else{
-				routing = clientOptions.getRouting();
-			}
-			if(clientOptions.getEsRetryOnConflict() == null) {
-				esRetryOnConflict = clientOptions.getEsRetryOnConflictField() != null ? params.get(clientOptions.getEsRetryOnConflictField()) : null;
-			}
-			else{
-				esRetryOnConflict = clientOptions.getEsRetryOnConflict();
-			}
-		}
-		buildMeta(null,  writer ,  indexType,  indexName,   params,  action,  id,  parentId,routing,esRetryOnConflict,  upper7);
-	}
- */
 	public static String buildActionUrl(BulkActionConfig bulkConfig){
 		return buildActionUrl( bulkConfig,(String)null);
 	}
@@ -1624,7 +1598,7 @@ public abstract class BuildTool {
 			else{
 				writer.write(", \"routing\" : ");
 			}
-			buildId(routing,writer,true);
+            buildRouting(routing,writer,true);
 		}
 
 		if (esRetryOnConflict != null) {

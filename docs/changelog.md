@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.1 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.2 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -30,7 +30,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.1</version>
+            <version>6.8.2</version>
         </dependency>
 ```
 
@@ -40,10 +40,10 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.1</version>
+            <version>6.8.2</version>
         </dependency>
 ```
-# v6.8.1 功能改进
+# v6.8.2 功能改进
 1. FTP文件[输入](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)/[输出](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)插件改进：ftp/sftp协议增加socketTimeout配置，sftp协议增加connectionTimeout配置
 
 2. FTP输出插件改进：增加生成文件[异常上传FTP机制](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)，默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能
@@ -62,14 +62,6 @@ https://esdoc.bbossgroups.com/#/development
    
    可以将聚合计算结果保存的各种指标数据库：Eleasticsearch/Mongodb/HBase/Clickhouse/Doris/DB(Oracle、Mysql、postgresql、sqlserver等主流关系数据库)
    
-4. Elasticsearch客户端改进：将文档_id、parentId为非String类型数字时，转换为String模式处理，避免可能存在的类型误差问题
-   
-   
-   
-   
-   
-   
-
 # v6.8.0 功能改进
 1. 去除Elasticsearch和http数据源jvm退出机制，避免因jvm退出时，数据源获取空指针问题
 2. 将Elasticsearch和http数据源状态监控和服务发现线程调整为daemon线程
@@ -287,7 +279,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.8.2版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -462,7 +454,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.1</version>
+            <version>6.8.2</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -470,7 +462,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.1</version>
+            <version>6.8.2</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -576,7 +568,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.8.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1122,7 +1114,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.1</version>
+    <version>6.8.2</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
