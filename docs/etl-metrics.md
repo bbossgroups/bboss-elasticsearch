@@ -4,6 +4,10 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同
 
 ![img](images/datasyn-inout.png)
 
+# 在项目中集成
+
+在项目中集成使用数据采集&流批一体化处理功能，可以参考文档：[在工程中导入bboss-maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
+
 # 1.流批一体化作业类型
 
 通过bboss可以灵活定制具备各种功能的数据采集统计作业
