@@ -47,9 +47,9 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 1) 支持时间维度和非时间维度指标计算
 
-2) 时间维度指标计算：支持指定统计滑动时间窗口
+2) 时间维度指标计算：支持指定统计滑动时间窗口，支持设定时间统计窗口类型，在流处理或者离线处理过程中，对于数据到来的先后顺序没有严格要求，乱序数据不影响最终指标计算结果
 
-3) 一个指标支持多个维度和多个度量字段计算，多个维度字段值构造成指标的唯一指标key，支持有限基数key和无限基数key指标计算   
+3) 一个指标支持多个维度和多个度量字段计算，多个维度字段值构造成指标的唯一指标key，支持有限基数key和无限基数key指标计算（维度字段组合形成的唯一指标key的个数是有限的就是有限基数，个数是无限的就是无限基数）   
 
 4) 一个作业可以支持多种类型的指标，每种类型指标支持多个指标计算
 
@@ -410,27 +410,28 @@ ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
 
 具体属性和方法说明如下
 
-| 属性         | 描述                                                         |
-| ------------ | ------------------------------------------------------------ |
-| init         | 抽象方法类型,接收MapData类型参数，初始化指标对象对应的指标维度字段以及其他指标计算依赖的信息或者第三方组件 |
-| **incr**     | 方法类型，**非常关键的方法**，接收MapData类型参数，实现指标度量字段的计算，可以实现简单的计数、求总量、平均值，亦可以实现非常复杂的指标计算（譬如：用户访问深度、不同深度用户分布、用户留存、用户活跃、用户引流转化漏斗指标等复杂指标计算） |
-| metric       | String类型，指标key，框架自动维护，不需人工干预              |
-| dataTime     | Date类型，指标对应的时间维度值，框架自动维护，不需人工干预   |
-| count        | long类型,内置的count计数器变量，无需自己定义计数器变量，在incr方法里面进行计算 |
-| min          | Object类型，保存最小值指标，在incr方法里面进行计算           |
-| max          | Object类型，保存最大值指标，在incr方法里面进行计算           |
-| avg          | Object类型，保存平均值指标，在incr方法里面进行计算           |
-| success      | long类型，保存成功量指标，在incr方法里面进行计算             |
-| failed       | long类型，保存失败量指标，在incr方法里面进行计算             |
-| totalElapsed | float类型，保存总耗时指标，在incr方法里面进行计算            |
-| ips          | long类型，保存ip数指标，在incr方法里面进行计算               |
-| pv           | long类型，保存pv指标，在incr方法里面进行计算                 |
-| year         | String类型，保存指标对应的年份值，框架自动维护，不需人工干预，例如：2023 |
-| month        | String类型，保存指标对应的月份值，框架自动维护，不需人工干预，例如：2023-02 |
-| week         | String类型，保存指标月份对应的第几周，框架自动维护，不需人工干预，例如：2023-02-1T |
-| day          | String类型，保存指标对应的日期值，框架自动维护，不需人工干预，例如：2023-02-19 |
-| dayHour      | String类型，保存指标对应的小时值，框架自动维护，不需人工干预，例如：2023-02-19 16 |
-| minute       | String类型，保存指标对应的分钟值，框架自动维护，不需人工干预，例如：2023-02-19 16:53 |
+| 属性          | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| init          | 抽象方法类型,接收MapData类型参数，初始化指标对象对应的指标维度字段以及其他指标计算依赖的信息或者第三方组件 |
+| **incr**      | 方法类型，**非常关键的方法**，接收MapData类型参数，实现指标度量字段的计算，可以实现简单的计数、求总量、平均值，亦可以实现非常复杂的指标计算（譬如：用户访问深度、不同深度用户分布、用户留存、用户活跃、用户引流转化漏斗指标等复杂指标计算） |
+| metric        | String类型，指标key，框架自动维护，不需人工干预              |
+| dataTime      | Date类型，指标对应的时间维度值，框架自动维护，不需人工干预   |
+| count         | long类型,内置的count计数器变量，无需自己定义计数器变量，在incr方法里面进行计算 |
+| min           | Object类型，保存最小值指标，在incr方法里面进行计算           |
+| max           | Object类型，保存最大值指标，在incr方法里面进行计算           |
+| avg           | Object类型，保存平均值指标，在incr方法里面进行计算           |
+| success       | long类型，保存成功量指标，在incr方法里面进行计算             |
+| failed        | long类型，保存失败量指标，在incr方法里面进行计算             |
+| totalElapsed  | float类型，保存总耗时指标，在incr方法里面进行计算            |
+| ips           | long类型，保存ip数指标，在incr方法里面进行计算               |
+| pv            | long类型，保存pv指标，在incr方法里面进行计算                 |
+| year          | String类型，保存指标对应的年份值，框架自动维护，不需人工干预，例如：2023 |
+| month         | String类型，保存指标对应的月份值，框架自动维护，不需人工干预，例如：202302 |
+| week          | String类型，保存指标月份对应的第几周，框架自动维护，不需人工干预，例如：2023021 |
+| day           | String类型，保存指标对应的日期值，框架自动维护，不需人工干预，例如：20230219 |
+| dayHour       | String类型，保存指标对应的小时值，框架自动维护，不需人工干预，例如：2023021916 |
+| minute        | String类型，保存指标对应的分钟值，框架自动维护，不需人工干预，例如：202302191653 |
+| timeMetricKey | String类型，保存时间窗口粒度的时间维度字符串值，譬如时间窗类型为TIME_WINDOW_TYPE_DAY时，对应的值为20230219 |
 
 ### 3.5.2 简单示例
 
@@ -1310,6 +1311,10 @@ public void persistent(Collection< KeyMetric> metrics) {
                      LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
          Map esData = new HashMap();
          esData.put("dataTime", testKeyMetric.getDataTime());
+           esData.put("year", testKeyMetric.getYear());//2018
+                        esData.put("month", testKeyMetric.getMonth());//201804
+                        esData.put("week", testKeyMetric.getWeek());//2018042
+           esData.put("timeMetricKey", testKeyMetric.getMetricTimeKey());//时间窗口维度key，例如，时间窗口类型为Day时，对应的值为：20230219
          esData.put("hour", testKeyMetric.getDayHour());
          esData.put("minute", testKeyMetric.getMinute());
          esData.put("day", testKeyMetric.getDay());
@@ -1322,9 +1327,13 @@ public void persistent(Collection< KeyMetric> metrics) {
                      LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
          Map esData = new HashMap();
          esData.put("dataTime", testKeyMetric.getDataTime());//指标统计计算时间
-         esData.put("hour", testKeyMetric.getDayHour());//指标小时字段，例如2023-02-19 16
-         esData.put("minute", testKeyMetric.getMinute());//指标日期字段，例如2023-02-19 16:53
-         esData.put("day", testKeyMetric.getDay());//指标日期字段，例如2023-02-19
+           esData.put("year", testKeyMetric.getYear());//2018
+                        esData.put("month", testKeyMetric.getMonth());//201804
+                        esData.put("week", testKeyMetric.getWeek());//2018042
+           esData.put("timeMetricKey", testKeyMetric.getMetricTimeKey());//时间窗口维度key，例如，时间窗口类型为Day时，对应的值为：20230219
+         esData.put("hour", testKeyMetric.getDayHour());//指标小时字段，例如2023021916
+         esData.put("minute", testKeyMetric.getMinute());//指标日期字段，例如202302191653
+         esData.put("day", testKeyMetric.getDay());//指标日期字段，例如20230219
          esData.put("metric", testKeyMetric.getMetric());//指标key
          esData.put("logUser", testKeyMetric.getLogUser());//登录用户
          esData.put("count", testKeyMetric.getCount());//用户操作次数
@@ -1370,24 +1379,20 @@ public void persistent(Collection< KeyMetric> metrics) {
 运行指标输出的Elasticsearch 指标dsl数据样本：
 
 ```json
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018032100","dataTime":"2018-03-20T16:21:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180321","minute":"201803210021"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018032100","dataTime":"2018-03-20T16:22:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180321","minute":"201803210022"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018032121","dataTime":"2018-03-21T13:48:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180321","minute":"201803212148"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018032100","dataTime":"2018-03-20T16:27:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180321","minute":"201803210027"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018032100","dataTime":"2018-03-20T16:30:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180321","minute":"201803210030"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018041222","dataTime":"2018-04-12T14:16:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180412","minute":"201804122216"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018050522","dataTime":"2018-05-05T14:11:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180505","minute":"201805052211"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018050522","dataTime":"2018-05-05T14:15:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180505","minute":"201805052215"}
-{ "index" : { "_index" : "vops-loginmodulemetrics" } }
-{"hour":"2018050611","dataTime":"2018-05-06T03:30:00.000Z","metric":"文档管理","count":1,"operModule":"文档管理","day":"20180506","minute":"201805061130"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20161217","week":"2016123","month":"201612","hour":"2016121713","dataTime":"2016-12-16T16:00:00.000Z","year":"2016","metric":"认证管理","count":2,"operModule":"认证管理","day":"20161217","minute":"201612171327"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20161218","week":"2016124","month":"201612","hour":"2016121816","dataTime":"2016-12-17T16:00:00.000Z","year":"2016","metric":"认证管理","count":1,"operModule":"认证管理","day":"20161218","minute":"201612181604"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20191221","week":"2019123","month":"201912","hour":"2019122123","dataTime":"2019-12-20T16:00:00.000Z","year":"2019","metric":"认证管理","count":2,"operModule":"认证管理","day":"20191221","minute":"201912212348"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20180609","week":"2018062","month":"201806","hour":"2018060900","dataTime":"2018-06-08T16:00:00.000Z","year":"2018","metric":"认证管理","count":1,"operModule":"认证管理","day":"20180609","minute":"201806090030"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20190728","week":"2019075","month":"201907","hour":"2019072821","dataTime":"2019-07-27T16:00:00.000Z","year":"2019","metric":"认证管理","count":3,"operModule":"认证管理","day":"20190728","minute":"201907282146"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20180327","week":"2018035","month":"201803","hour":"2018032723","dataTime":"2018-03-26T16:00:00.000Z","year":"2018","metric":"认证管理","count":3,"operModule":"认证管理","day":"20180327","minute":"201803272312"}
+{ "index" : { "_index" : "vops-loginmodulekeymetrics" } }
+{"timeMetricKey":"20180412","week":"2018042","month":"201804","hour":"2018041216","dataTime":"2018-04-11T16:00:00.000Z","year":"2018","metric":"认证管理","count":2,"operModule":"认证管理","day":"20180412","minute":"201804121640"}
 ```
 
 ## 4.2 一次性离线用户操作数据统计

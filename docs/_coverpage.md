@@ -3,6 +3,8 @@
 # Elasticsearch BBoss <small>6.8.2</small>
 
 > The best Elasticsearch/Opensearch highlevel java rest api
+> 数据采集ETL
+> 流批一体化大数据分析处理
 
 - 基于Apache License 2.0开源
 - A high performence o/r mapping rest client.
