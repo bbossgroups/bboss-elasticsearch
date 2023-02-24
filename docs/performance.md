@@ -11,7 +11,7 @@
 
 # 测试环境
 
-elasticsearch： 6.8.2 单机，内存配置1G
+elasticsearch： 6.8.3 单机，内存配置1G
 
 jdk 1.8
 

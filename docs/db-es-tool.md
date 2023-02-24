@@ -232,7 +232,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.8.2</version>
+<version>6.8.3</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -240,7 +240,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.8.2</version>
+<version>6.8.3</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -248,7 +248,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.8.2</version>
+<version>6.8.3</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -256,7 +256,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.8.2</version>
+<version>6.8.3</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -264,7 +264,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.8.2</version>
+<version>6.8.3</version>
 </dependency>
 ```
 
@@ -1099,6 +1099,46 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 
 
 
+#### 2.8.5.7 排序设置
+
+bboss 5.9.3及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
+
+```java
+importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
+```
+
+bboss 5.9.3及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能(但是如果作业重启后，续接采集时，可能会存在部分数据丢失问题，这种情况下就需要进行排序)。
+
+#### 2.8.5.8 增量状态存储数据库
+
+bboss默认采用sqlite保存增量状态，通过setLastValueStorePath方法设置sqlite数据库文件路径
+
+```java
+importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+/app/data/testdb代表/app/data/目录下的sqlite数据库文件testdb，如果在同一个进程中运行多个数据采集作业，并且采用sqlite作为增量状态管理，由于sqlite的单线程数据库限制，必须每个作业一个独立的sqlite数据库，因此除了设置不同的sqlite数据库文件路径，还需指定不同的statusDBname，例如：
+
+作业1
+
+```java
+importBuilder.setStatusDbname("job1");
+importBuilder.setLastValueStorePath("/app/data/job1");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+作业2
+
+```java
+importBuilder.setStatusDbname("job2");
+importBuilder.setLastValueStorePath("/app/data/job2");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+sqlite作为一个本地单线程文件数据库，可能在一些场景下无法满足要求，譬如要做监控界面实时查看作业数据采集状态，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定mysql等关系型增量状态存储数据库。
+
+bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
+
+[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+
 ### 2.8.6 定时全量导入
 
 定时机制配置
@@ -1383,45 +1423,9 @@ importBuilder.setExternalTimer(true);
 
 ### 2.8.9 增量导入注意事项
 
-#### 2.8.9.1 排序设置
+参考[定时增量导入](https://esdoc.bbossgroups.com/#/db-es-tool?id=_285-%e5%ae%9a%e6%97%b6%e5%a2%9e%e9%87%8f%e5%af%bc%e5%85%a5)
 
-bboss 5.9.3及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
 
-```java
-importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] order by update_date asc");
-```
-
-bboss 5.9.3及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能(但是如果作业重启后，续接采集时，可能会存在部分数据丢失问题，这种情况下就需要进行排序)。
-
-#### 2.8.9.2 增量状态存储数据库
-
-bboss默认采用sqlite保存增量状态，通过setLastValueStorePath方法设置sqlite数据库文件路径
-
-```java
-importBuilder.setLastValueStorePath("/app/data/testdb");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
-```
-
-/app/data/testdb代表/app/data/目录下的sqlite数据库文件testdb，如果在同一个进程中运行多个数据采集作业，并且采用sqlite作为增量状态管理，由于sqlite的单线程数据库限制，必须每个作业一个独立的sqlite数据库，因此除了设置不同的sqlite数据库文件路径，还需指定不同的statusDBname，例如：
-
-作业1
-
-```java
-importBuilder.setStatusDbname("job1");
-importBuilder.setLastValueStorePath("/app/data/job1");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
-```
-
-作业2
-
-```java
-importBuilder.setStatusDbname("job2");
-importBuilder.setLastValueStorePath("/app/data/job2");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
-```
-
-sqlite作为一个本地单线程文件数据库，可能在一些场景下无法满足要求，譬如要做监控界面实时查看作业数据采集状态，尤其是在采用分布式作业调度引擎时，定时增量导入需要指定mysql等关系型增量状态存储数据库。
-
-bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
-
-[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
 ### 2.8.10 灵活控制文档数据结构
 

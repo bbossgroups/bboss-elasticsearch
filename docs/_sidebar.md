@@ -48,7 +48,7 @@
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
   - [数据同步ETL工具介绍](db-es-tool.md)
-  - [数据采集&流批一体化处理介绍](etl-metrics.md)
+  - [数据采集&流批一体化处理](etl-metrics.md)
   - 数据同步案例 
     - [bboss数据采集ETL案例大全](bboss-datasyn-demo.md)   
     - [日志文件采集使用指南](filelog-guide.md)
