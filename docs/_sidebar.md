@@ -1,6 +1,6 @@
-- [**Elasticsearch bboss介绍**](README.md)
+- [**BBOSS介绍**](README.md)
 
-- Getting started
+- **Getting started**
 
   - [Elasticsearch Quick start](quickstart.md)
 
@@ -30,9 +30,11 @@
 
     
 
-- Guide
+- **Guide**
 
   - [Elasticsearch开发指南](development.md)
+  - [数据同步ETL工具介绍](db-es-tool.md)
+  - [数据采集&流批一体化处理](etl-metrics.md)
   - [基于数据库管理dsl介绍](db-dsl.md)
   - [Elasticsearch索引文档增删改查](document-crud.md)
   - Elasticsearch分页查询
@@ -47,9 +49,7 @@
   - [通用BulkProcessor异步批处理](bulkProcessor-common.md)
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
-  - [数据同步ETL工具介绍](db-es-tool.md)
-  - [数据采集&流批一体化处理](etl-metrics.md)
-  - 数据同步案例 
+  - **数据同步案例** 
     - [bboss数据采集ETL案例大全](bboss-datasyn-demo.md)   
     - [日志文件采集使用指南](filelog-guide.md)
     - [作业调度控制](bboss-datasyn-control.md)
@@ -85,7 +85,7 @@
   - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
   - [Elasticsearch实现同段同语句搜索](SpanQuery.md)
   - [Elasticsearch：TF-IDF，BM25和相关度控制](DocRelevancy.md)
-- [Http负载均衡器使用介绍](httpproxy.md) 
+- [**Http负载均衡器使用介绍**](httpproxy.md) 
   
 
   

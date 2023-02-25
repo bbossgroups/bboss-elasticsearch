@@ -3025,3 +3025,11 @@ https://gitee.com/bboss/bboss-datatran-demo
 对应的案例目录
 
 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/tran/metrics
+
+
+
+##  4.7 典型应用案例---互联网用户行为分析监控
+
+互联网电子渠道用户行为分析监控系统：采用bboss流批一体化计算框架，构建起一整套用户行为监控指标体系，完美地实现互联网用户行为实时分析和监控功能。
+
+![](images/pagecode.png)
