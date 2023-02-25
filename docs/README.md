@@ -34,7 +34,7 @@ bboss Elasticsearch Highlevel Java Restclient是一套基于query dsl语法操�
 
 ### 1.1.2 典型应用场景
 
-    ![](images/client.png)
+![](images/client.png)
 
 ## 1.2 数据采集同步ETL以及流批一体化计算框架
 

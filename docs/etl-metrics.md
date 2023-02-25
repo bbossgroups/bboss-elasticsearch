@@ -1177,7 +1177,7 @@ public void scheduleTimestampImportData(boolean dropIndice){
         importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
 
         /**
-         * 重新设置es数据结构
+         * 通过DataRefactor接口，实现数据加工、清洗、转换、记录丢弃、打标等操作，将处理后的数据交给输出插件进行输出或者指标计算器进行指标统计计算
          */
         importBuilder.setDataRefactor(new DataRefactor() {
             public void refactor(Context context) throws Exception  {
@@ -1219,7 +1219,8 @@ public void scheduleTimestampImportData(boolean dropIndice){
       });
         //    //设置任务执行拦截器结束，可以添加多个
 
-      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
+        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
          @Override
          public void success(TaskCommand<String,String> taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
@@ -1652,7 +1653,8 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
-      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
+        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
          @Override
          public void success(TaskCommand<String,String> taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
@@ -2067,7 +2069,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 //
       /**
-       * 重新设置es数据结构
+       * 通过DataRefactor接口，实现数据加工、清洗、转换、记录丢弃、打标等操作，将处理后的数据交给输出插件进行输出或者指标计算器进行指标统计计算
        */
       importBuilder.setDataRefactor(new DataRefactor() {
          public void refactor(Context context) throws Exception  {
@@ -2089,7 +2091,8 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
-      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
+        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
          @Override
          public void success(TaskCommand<String,String> taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
@@ -2383,6 +2386,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
+        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
       importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
          @Override
          public void success(TaskCommand<String,String> taskCommand, String result) {
@@ -2800,7 +2804,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
 
       /**
-       * 重新设置es数据结构
+       * 通过DataRefactor接口，实现数据加工、清洗、转换、记录丢弃、打标等操作，将处理后的数据交给输出插件进行输出或者指标计算器进行指标统计计算
        */
       importBuilder.setDataRefactor(new DataRefactor() {
          public void refactor(Context context) throws Exception  {
@@ -2821,7 +2825,8 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
       importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-
+      
+        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等  
       importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
          @Override
          public void success(TaskCommand<String,String> taskCommand, String result) {
