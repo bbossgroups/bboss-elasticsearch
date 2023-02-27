@@ -14,5 +14,5 @@
 - 本网站中所有文档和Demo案例皆适用于Elasticsearch各个版本
 
 [GitHub](https://github.com/bbossgroups/bboss-elasticsearch)
-[Getting Started](#搜索引擎的-orm-库-elasticsearch-bboss)
+[Getting Started](README.md)
 
