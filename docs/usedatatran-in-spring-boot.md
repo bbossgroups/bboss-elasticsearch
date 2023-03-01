@@ -22,17 +22,17 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot-starter</artifactId>
-    <version>6.0.9</version> 			
+    <version>6.1.0</version> 			
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>6.8.3</version>
+    <version>6.8.5</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>6.8.3</version>
+    <version>6.8.5</version>
 </dependency>
 ```
 

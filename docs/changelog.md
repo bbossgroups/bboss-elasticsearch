@@ -1,6 +1,6 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.3 发布。
+**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.5 发布。
 
 https://esdoc.bbossgroups.com/#/quickstart
 
@@ -30,7 +30,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.3</version>
+            <version>6.8.5</version>
         </dependency>
 ```
 
@@ -40,7 +40,7 @@ https://esdoc.bbossgroups.com/#/development
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.3</version>
+            <version>6.8.5</version>
         </dependency>
 ```
 # v6.8.5 功能改进
@@ -286,7 +286,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.3版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.8.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -461,7 +461,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.3</version>
+            <version>6.8.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -469,7 +469,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.3</version>
+            <version>6.8.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -576,7 +576,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.8.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -628,7 +628,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.1",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.2",transitive: true 
   ```
 
   **maven坐标**
@@ -639,7 +639,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.0.1</version>  
+      <version>6.0.2</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1122,7 +1122,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.3</version>
+    <version>6.8.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1410,7 +1410,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 
 ```
 
-# v6.1.0 功能改进
+# v6.1.1 功能改进
 1. 数据同步工具改进
 
   如果在程序里面配置的增量字段类型发生改变，要把增量状态表对应的类型调整为最新的字段类型
@@ -1421,7 +1421,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 2. DB-DB数据同步工具：增加在作业中直接指定sql语句的功能
 3. 修复数据同步bug：数据库到数据库跨库同步无效
 
-# v6.0.9 功能改进
+# v6.1.0 功能改进
 1.升级jackson版本号为2.9.10
 
 2.持久层支持将sql配置文件存放位置设置为外部目录
@@ -1441,13 +1441,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.0.9</version>
+      <version>6.1.0</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.0.9", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.0", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -1525,21 +1525,21 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 @ESIndex(name="demowithesindex-{dateformat=yyyy.MM.dd}",useBatchContextIndexName = true)
 ```
 
-# v6.0.2 功能改进 
+# v6.0.3 功能改进 
 1.http组件改进: 在异常信息中包含服务请求完整url地址信息
 
 2.http proxy组件改进：如果http服务池没有配置health状态检查地址，启用被动的服务健康检查机制，在没有正常节点的情况下，返回异常节点，如果操作成功则将异常节点标注为正常节点
 
 3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-# v6.0.1 功能改进 
+# v6.0.2 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
-# v6.0.2 功能改进 
+# v6.0.3 功能改进 
 
 1.spring boot starter组件bbossEsstarter增加非配置文件管理dsl加载方法
 
-# v6.0.1 功能改进
+# v6.0.2 功能改进
 1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
 
 2.数据同步工具：importbuilder组件增加Elasticsearch数据源代码配置功能，对应API

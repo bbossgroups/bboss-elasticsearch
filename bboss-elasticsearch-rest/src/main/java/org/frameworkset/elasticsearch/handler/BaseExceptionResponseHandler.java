@@ -48,8 +48,8 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 		return handleException(url, entity ,status, null);
 	}
     private void trucateData(StringBuilder builder){
-        if(isTruncateLogBody() && requestBody != null && requestBody.length() > 10240){
-            builder.append(requestBody.substring(0,10239)).append("......");
+        if(isTruncateLogBody() && requestBody != null && requestBody.length() > 4096){
+            builder.append(requestBody.substring(0,4095)).append("......");
         }
         else {
             builder.append(requestBody);
