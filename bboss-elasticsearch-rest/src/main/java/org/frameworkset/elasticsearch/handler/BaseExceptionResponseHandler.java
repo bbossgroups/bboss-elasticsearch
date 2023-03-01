@@ -47,6 +47,14 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 
 		return handleException(url, entity ,status, null);
 	}
+    private void trucateData(StringBuilder builder){
+        if(isTruncateLogBody() && requestBody != null && requestBody.length() > 10240){
+            builder.append(requestBody.substring(0,10239)).append("......");
+        }
+        else {
+            builder.append(requestBody);
+        }
+    }
 	protected Object handleException(String url,HttpEntity entity ,int status,String charSet) throws IOException {
 
 		if(status == 404){//在有些场景下面，404不能作为异常抛出，这里作一次桥接，避免不必要的exception被apm性能监控工具探测到
@@ -92,14 +100,20 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
                         _logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
                     }
                     if (charSet == null) {
-                        msg.append("RequestBody:").append(requestBody).append("\r\nResponseBody:").append(EntityUtils.toString(entity));
+                        msg.append("RequestBody:");
+                        trucateData(msg);
+                        msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity));
 
                     } else {
-                        msg.append("RequestBody:").append(requestBody).append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
+                        msg.append("RequestBody:");
+                        trucateData(msg);
+                        msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
 
                     }
                 } else {
-                    msg.append("RequestBody:").append(requestBody).append("\r\nRequest url:").append(url)
+                    msg.append("RequestBody:");
+                    trucateData(msg);
+                    msg.append("\r\nRequest url:").append(url)
                             .append(",Unexpected response status: ").append(status);
 
                 }
