@@ -1251,13 +1251,13 @@ public class DemoHttpHostDiscover extends HttpHostDiscover {
 - 设置默认集群组健康服务
 
 ```java
-configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机
+configs.put("http.health","/health.html");//health监控检查地址，不配置将不会启动健康检查机
 ```
 
 - 设置特定集群组健康服务
 
 ```java
-configs.put("report.http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机
+configs.put("report.http.health","/health.html");//health监控检查地址不配置将不会启动健康检查机
 ```
 - 健康检查服务开启条件
 http.healthCheckInterval必须大于0，单位毫秒，默认值-1,设置示例：
@@ -1266,6 +1266,8 @@ http.healthCheckInterval=1000
 http.health=/health.html
 
 **bboss以get方式发送http.health对应的健康检查服务请求，健康检查服务只需要响应状态码为200-300即认为服务节点健康可用**。
+
+health参数配置服务故障节点健康检查服务地址，在节点不可用的情况下，不会将后续请求交给故障节点处理，同时通过健康检查服务定时探测服务故障节点是否可用，如果可用就可以继续接收请求，否则只会把请求交给其他可用节点处理，如果没有一个可用节点，则根据[failAllContinue配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_326-failallcontinue%e9%85%8d%e7%bd%ae)来决定是否继续将请求发往故障节点，还是熔断服务，[failAllContinue为true继续发请求，false熔断请求，直到有可用节点。
 
 # 8.安全认证
 

@@ -69,20 +69,42 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 			return null;
 		}
 		else {
-			if (entity != null) {
-				if (_logger.isDebugEnabled()) {
-					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
-				}
-				if(charSet == null ) {
-					throw new ElasticSearchException(EntityUtils.toString(entity), status);
-				}
-				else{
-					throw new ElasticSearchException(EntityUtils.toString(entity,charSet), status);
-				}
-			}
-			else
-				throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url)
-						.append(",Unexpected response status: ").append( status).toString(), status);
+            if(!isEnableSetRequestBody()) {
+                if (entity != null) {
+                    if (_logger.isDebugEnabled()) {
+                        _logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
+                    }
+                    if (charSet == null) {
+                        throw new ElasticSearchException(EntityUtils.toString(entity), status);
+                    } else {
+                        throw new ElasticSearchException(EntityUtils.toString(entity, charSet), status);
+                    }
+                } else {
+
+                    throw new ElasticSearchException(new StringBuilder().append("Request url:").append(url)
+                            .append(",Unexpected response status: ").append(status).toString(), status);
+                }
+            }
+            else{
+                StringBuilder msg = new StringBuilder();
+                if (entity != null) {
+                    if (_logger.isDebugEnabled()) {
+                        _logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
+                    }
+                    if (charSet == null) {
+                        msg.append("RequestBody:").append(requestBody).append("\r\nResponseBody:").append(EntityUtils.toString(entity));
+
+                    } else {
+                        msg.append("RequestBody:").append(requestBody).append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
+
+                    }
+                } else {
+                    msg.append("RequestBody:").append(requestBody).append("\r\nRequest url:").append(url)
+                            .append(",Unexpected response status: ").append(status);
+
+                }
+                throw new ElasticSearchException(msg.toString(), status);
+            }
 		}
 	}
 

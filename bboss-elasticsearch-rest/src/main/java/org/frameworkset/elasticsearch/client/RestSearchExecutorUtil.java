@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.client;
  */
 
 import org.apache.http.client.ResponseHandler;
+import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 
 import java.util.Map;
@@ -63,6 +64,11 @@ public abstract class RestSearchExecutorUtil {
 			else
 				throw new IllegalArgumentException("not support http action:" + action+",url:"+url);
 		} else {
+            if(responseHandler instanceof BaseResponseHandler){
+                BaseResponseHandler baseResponseHandler = (BaseResponseHandler)responseHandler;
+                baseResponseHandler.setRequestBody(entity);
+                baseResponseHandler.setEnableSetRequestBody(true);
+            }
 			if (action == ClientUtil.HTTP_POST)
 				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_PUT) {
@@ -99,6 +105,11 @@ public abstract class RestSearchExecutorUtil {
 		}
 		else
 		{
+            if(responseHandler instanceof BaseResponseHandler){
+                BaseResponseHandler baseResponseHandler = (BaseResponseHandler)responseHandler;
+                baseResponseHandler.setRequestBody(entity);
+                baseResponseHandler.setEnableSetRequestBody(true);
+            }
 			if(action == ClientUtil.HTTP_POST )
 				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
 			else if( action == ClientUtil.HTTP_PUT)

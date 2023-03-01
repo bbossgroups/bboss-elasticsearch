@@ -43,6 +43,10 @@ https://esdoc.bbossgroups.com/#/development
             <version>6.8.3</version>
         </dependency>
 ```
+# v6.8.5 功能改进
+1. http输入插件改进：增加get请求支持，post、put增加请求参数模式支持（非dsl模式）
+2. 完善http输入插件、Elasticsearch客户端、数据库客户端异常信息，在异常信息中包含http dsl、Elasticsearch dsl、db sql信息
+
 # v6.8.3 功能改进
 bug修复版本：一次性执行timekey类型指标统计作业forceflush metrics时抛出空指针问题修复
 
