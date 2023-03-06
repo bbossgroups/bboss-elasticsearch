@@ -97,6 +97,7 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.useETLScheduleForScanNewFile | 设置是否采用外部新文件扫描调度机制：jdk timer,quartz,xxl-job ,      true 采用，false 不采用，默认false | false |
 | FileInputConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 | FileInputConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
+| FileInputConfig.disableScanNewFiles | boolean类型，一次性扫描导入文件功能（导入完毕后作业不会自行关闭，可以手动执行datastream.destory(true)进行关闭，通过属性disableScanNewFiles进行控制：true 一次性扫描导入目录下的文件，false 持续监听新文件（默认值false） | false |
 
 添加采集配置示例
 
