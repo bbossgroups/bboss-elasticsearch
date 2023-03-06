@@ -1,28 +1,16 @@
 
 
-**The best Elasticsearch Highlevel Rest  Client API-----[bboss](https://esdoc.bbossgroups.com/#/README)**   v6.8.5 发布。
+# BBOSS版本变更记录-v6.8.5 发布
 
-https://esdoc.bbossgroups.com/#/quickstart
+[bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
-https://esdoc.bbossgroups.com/#/development
+- Elasticsearch Highlevel Java Restclient
+- 数据采集同步ETL
+- 流批一体化计算框架
 
-# **主要功能特色**
+详细介绍参考：[bboss是什么](https://esdoc.bbossgroups.com/#/README)
 
-1. ElasticSearch兼容性:1.x,2.x,5.x,6.x,7.x,8.x,+
-
-2. Opensearch兼容性：1.x,2.x
-
-2. JDK兼容性： jdk 1.8+
-
-3. Spring boot兼容性:1.x,2.x
-
-4. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,
-
-5. 支持[SQL](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)和[JDBC](https://esdoc.bbossgroups.com/#/Elasticsearch-JDBC)
-
-6. 提供快速而高效的数据导入ES工具
-
-# 导入bboss
+# 快速导入bboss
 
 一般项目导入下面的maven坐标即可：
 
@@ -44,8 +32,8 @@ https://esdoc.bbossgroups.com/#/development
         </dependency>
 ```
 # v6.8.5 功能改进
-1. http输入插件改进：增加get请求支持，post、put增加请求参数模式支持（非dsl模式）
-2. 完善http输入插件、Elasticsearch客户端、数据库客户端异常信息，在异常信息中包含http dsl、Elasticsearch dsl、db sql信息
+1. http输入插件改进：增加对http get请求的支持，http post、http put请求增加对request参数模式的支持（非请求体dsl报文模式）
+2. http输入插件、Elasticsearch输入插件、数据库输入插件改进：分别在httpproxy访问异常、在Elasticsearch客户端访问异常、数据库客户端访问异常信息中包含http dsl、Elasticsearch dsl、db sql信息，以便快速发现和定位问题，提升排错效率
 
 # v6.8.3 功能改进
 bug修复版本：一次性执行timekey类型指标统计作业forceflush metrics时抛出空指针问题修复
@@ -479,30 +467,10 @@ https://github.com/bbossgroups/db-elasticsearch-xxjob
 xxl job 2x案例工程
 
 https://github.com/bbossgroups/db-elasticsearch-xxjob2x
-4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用
-                  
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-                  private int skipHeaderLines;
-              
+4. 文件采集插件改进：FileConfig/FtpFileConfig增加忽略文件开始行数设置,0或者小于0不起作用                        
+   
+       private int skipHeaderLines;
+   
 5. 写入文件插件支持添加标题行功能：在生成csv文件或者其他需要头部行的文件可以使用，参考案例：
 
       

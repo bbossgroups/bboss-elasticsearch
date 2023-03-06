@@ -21,14 +21,15 @@ https://gitee.com/bboss/bboss-datatran-demo
 1. 支持增量、全量数据采集同步，
 2. 支持分页模式采集数据
 3. 支持http服务高可用负载及容错机制，可以配置服务健康检查机制
-4. 支持post和put两种http method
-5. 支持添加静态值的http head和动态值的http head
-6. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
-7. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
-8. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
-9. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
-10. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，通过动态header实现jwt token认证功能、可以基于http服务组件直接实现[basic认证](https://esdoc.bbossgroups.com/#/httpproxy?id=_8%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81)以及[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)。
-11. 支持对发送数据签名以及接收数据签名解析
+4. 输入插件http method支持：get、post和put
+5. 输出插件http method支持：post和put
+6. 支持添加静态值的http head和动态值的http head
+7. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
+8. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
+9. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
+10. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
+11. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，通过动态header实现jwt token认证功能、可以基于http服务组件直接实现[basic认证](https://esdoc.bbossgroups.com/#/httpproxy?id=_8%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81)以及[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)。
+12. 支持对发送数据签名以及接收数据签名解析
 
 
 bboss 输入/输出插件涉及三个作业配置组件
@@ -91,7 +92,7 @@ importBuilder.setInputConfig(httpInputConfig);
 | dslFile               | String  | querydsl脚本配置文件路径，在classes路径下                    |
 | queryDslName          | String  | querydsl脚本名称，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
 | queryDsl              | String  | 直接设置queryDsl脚本，脚本配置规范，可以参考文档：https://esdoc.bbossgroups.com/#/development  章节【[5.3 dsl配置规范](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)】 |
-| httpMethod            | String  | http请求method，支持两种：put，post                          |
+| httpMethod            | String  | http请求method，支持三种：get，put，post                 |
 | pageSize              | int     | 无需显示指定，按批获取数据记录数大小，通过importBuilder.setFetchSize(5000)设置 |
 | pagine                | boolean | 分页查询控制变量，false 不分页，true 分页，默认值false，     |
 | pagineFromKey        | String     | 设置分页查询起始位置key名称，默认值httpPagineFrom，其值保存了分页起始位置，在查询dsl中使用，pagineFrom默认从0开始，如果服务支持分页获取增量或者全量数据，设置分页起始位置,httpInputConfig.setPagineFromKey("httpPagineFrom") |

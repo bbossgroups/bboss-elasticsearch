@@ -459,3 +459,8 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 [Elasticsearch-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2MongodbDemo.java)
 
 [Database-MongoDB同步案例](https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2MongodbDemo.java)
+
+# 19 数据采集流批一体化计算案例
+
+[数据采集流批一体化计算案例](https://esdoc.bbossgroups.com/#/etl-metrics?id=_4%e6%a1%88%e4%be%8b%e4%bb%8b%e7%bb%8d)
+
