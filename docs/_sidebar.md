@@ -49,8 +49,8 @@
   - [通用BulkProcessor异步批处理](bulkProcessor-common.md)
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
-  - **数据同步案例** 
-    - [bboss数据采集ETL案例大全](bboss-datasyn-demo.md)   
+  - **数据同步及流批一体化计算** 
+    - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md)   
     - [日志文件采集使用指南](filelog-guide.md)
     - [作业调度控制](bboss-datasyn-control.md)
     - [基于Filelog插件采集日志jvm溢出踩坑记](filelog-oom.md)

@@ -4,7 +4,7 @@
 
  
 
-*The best elasticsearch highlevel java rest api-----[bboss](https://www.bbossgroups.com)* 
+*The best elasticsearch highlevel java rest api and ETL and Data batch and Stream Processor -----[bboss](https://www.bbossgroups.com)* 
 
 数据同步作业开发视频教程：[http服务数据采集作业发布和构建运行教程](https://www.bilibili.com/video/BV1xf4y1Z7xu?spm_id_from=333.999.0.0&vd_source=64c0c04fea8873df5fd107d442567cfd)
 
@@ -217,11 +217,7 @@ CommonRecord - 封装处理后的结果记录，字段名称是经过规范化�
 
 importbuilder.addFieldMapping方法和context.addFieldMapping
 
-
-
-本文主要以关系数据库表同步到Elasticsearch为案例介绍bboss datatran的功能.
-
-
+接下来结合实际案例介绍bboss datatran的功能.
 
 # 1.准备工作
 
@@ -232,7 +228,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.8.5</version>
+<version>6.8.6</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -240,7 +236,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.8.5</version>
+<version>6.8.6</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -248,7 +244,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.8.5</version>
+<version>6.8.6</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -256,7 +252,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.8.5</version>
+<version>6.8.6</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -264,7 +260,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.8.5</version>
+<version>6.8.6</version>
 </dependency>
 ```
 
@@ -289,32 +285,6 @@ mongodb插件maven坐标
       <scope>compile</scope>
  </dependency>
 ```
-
-本文从mysql数据库表td_cms_document导入数据到es中，除了导入上述maven坐标，还需要额外导入mysql驱动坐标(其他数据库驱动程序自行导入)：
-mysql 5.x驱动依赖包
-
-```xml
-<dependency>
-<groupId>mysql</groupId>
-<artifactId>mysql-connector-java</artifactId>
-<version>5.1.40</version>
-</dependency>
-```
-mysql 8.x驱动依赖包(mysql 8必须采用相应版本的驱动，否则不能正确运行)
-```xml
-<dependency>
-<groupId>mysql</groupId>
-<artifactId>mysql-connector-java</artifactId>
-<version>8.0.16</version>
-</dependency>
-```
-
-
-## 1.2 提前创建索引结构
-
-一般情况下elasticsearch会根据bboss导入数据的类型自动创建索引mapping结构，但是默认创建的索引mapping往往不能满足实际要求，这时就需提前建立好自定义的索引mapping结构或者与索引名称匹配的索引mapping模板，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
-
-
 
 # 2.数据库表数据导入到Elasticsearch
 
@@ -2918,7 +2888,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 ## 11.1 全量/增量导入
 
-根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，以session数据同步案例作业来讲解具体的控制方法
+根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，具体的控制方法如下：
 
 - 增量同步时加上下面的代码
 
@@ -2962,7 +2932,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 ## 11.2 一次性执行和周期定时执行
 
-根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，以session数据同步案例作业来讲解具体的控制方法
+根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，具体的控制方法如下：
 
 - 定时执行
 
@@ -2977,7 +2947,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 ```
 
 - 一次性执行
-  一次性执行只需要将上面的代码setFixedRate和setPeriod去掉即可
+  一次性执行只需要将上面的代码setFixedRate、setDeyLay和setPeriod去掉即可
 
 ```java
         /**   
@@ -2990,7 +2960,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
         
 ```
 
-然后执行完毕后调用destroy方法，例如：
+然后执行方法，例如：
 
 ```java
 /**
@@ -2998,14 +2968,30 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
          */
         DataStream dataStream = importBuilder.builder();
         dataStream.execute();
-        dataStream.destroy();//执行完毕后释放资源
+       
 ```
 
+- 一次性文件数据采集设置
 
+文件数据采集默认会定时监听目录或者文件内容的变化，进行增量文件数据采集，如果只需要做一次性采集，在一次性配置的基础上，则通过FileInputConfig.disableScanNewFiles做以下设置即可：
+
+通过属性disableScanNewFiles进行控制：true 一次性扫描导入目录下的文件，false 持续监听新文件（默认值false）
+
+```java
+ /**   
+        //定时任务配置，
+		importBuilder
+               //.setScheduleDate(date) //指定任务开始执行时间：日期
+				.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+				.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+		*/
+FileInputConfig config = new FileInputConfig();
+config.setDisableScanNewFiles(true);
+```
 
 ## 11.3 串行执行和并行执行
 
-根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，以session数据同步案例作业来讲解具体的控制方法
+根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，具体的控制方法如下：
 
 - 并行执行
 

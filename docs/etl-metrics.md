@@ -1,12 +1,24 @@
+
+
+[^]: bboss-datatran是由 [bboss ](https://www.bbossgroups.com)开源的轻量级[数据采集ETL和流批处理工具](db-es-tool.md)，具备数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能。
+
+
+
 # 数据采集&流批一体化处理使用指南
 
-bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的[数据采集同步ETL工具](db-es-tool.md)，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能。本文介绍数据采集&流批一体化处理使用指南。	
+本文介绍如何通过bboss-datatran来实现数据采集&流批一体化处理功能，实现数据采集、数据清洗转换处理和数据入库以及数据指标流批一体化计算处理功能。	
 
 ![img](images/datasyn-inout.png)
 
-# 在项目中集成
+通过bboss-datatran，无需依赖第三方大数据中间件即可轻松完成数据采集、数据清洗转换处理和数据入库以及数据指标流批一体化计算处理功能，简单、便捷、高效。
 
-在项目中集成使用数据采集&流批一体化处理功能，可以参考文档：[在工程中导入bboss-maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
+# 在项目中集成bboss-datatran
+
+可以下载[案例](https://gitee.com/bboss/bboss-datatran-demo)独立使用bboss-datatran，亦可以将bboss-datatran集成到自己的项目中使用，只需在项目中导入bboss-datatran的maven坐标，具体参考下面的文档：
+
+[在工程中导入bboss-maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
+
+集成好bboss-datatran，继续后续的章节和案例了解和使用bboss-datatran。
 
 # 1.流批一体化作业类型
 

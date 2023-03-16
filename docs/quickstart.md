@@ -20,7 +20,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-        <version>6.8.5</version>
+        <version>6.8.6</version>
     </dependency>
 ```
 
@@ -30,7 +30,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>6.8.5</version>
+        <version>6.8.6</version>
     </dependency>
 ```
 

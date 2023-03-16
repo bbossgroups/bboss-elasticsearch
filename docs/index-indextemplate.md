@@ -501,14 +501,30 @@ ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
 
 修改max_result_window后，如果没有生效，则需要重启Elasticsearch。
 
+# 18.修改集群节点最大分片数量
 
-# 18 案例源码工程下载
+```java
+ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil();
+List<ClusterSetting> clusterSettingList = new ArrayList<ClusterSetting>();
+
+ClusterSetting clusterSetting = new ClusterSetting();
+
+clusterSetting.setKey("cluster.max_shards_per_node");
+clusterSetting.setValue(20000);
+clusterSetting.setPersistent(true);
+clusterSettingList.add(clusterSetting);
+
+clientInterface.updateClusterSettings(clusterSettingList);
+```
+
+
+# 19 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
 
 
 
-# 19 开发交流
+# 12 开发交流
 
 开发指南：https://esdoc.bbossgroups.com/#/README
 

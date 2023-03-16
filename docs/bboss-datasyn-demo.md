@@ -1,14 +1,18 @@
-# bboss数据采集ETL案例大全
+# 数据采集&流批一体化计算案例大全
 
 bboss datatran使用参考文档：
 
 https://esdoc.bbossgroups.com/#/db-es-tool
 
-数据同步作业开发/调试/构建发布模板工程源码地址：
+数据采集&流批一体化计算作业开发/调试/构建发布模板工程源码地址：
 
 https://git.oschina.net/bboss/bboss-datatran-demo
 
-# 1.bboss数据采集ETL工具功能架构	
+可以从以下网站找到并下载其他数据采集案例对应的源码工程
+
+https://www.bbossgroups.com/sources-demos.html
+
+# 1.功能架构	
 
 ​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
