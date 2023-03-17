@@ -69,13 +69,15 @@ http输入插件采用类似于Elasticsearch rest服务的dsl查询脚本语言�
 
 
 
-插件初始化：
+## 2.1 插件初始化
 
 ```java
 //创建输入插件Config实例
 HttpInputConfig httpInputConfig = new HttpInputConfig();
 importBuilder.setInputConfig(httpInputConfig);
 ```
+
+## 2.2 插件属性
 
 插件属性说明如下
 
@@ -99,6 +101,8 @@ importBuilder.setInputConfig(httpInputConfig);
 | pagineSizeKey        | String     | 设置分页查询每页记录数key名称，默认值httpPagineSize，其值保存了分页记录数，在查询dsl中使用，如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值,httpInputConfig.setPagineFromKey("httpPagineSize") |
 | httpResultParser        | HttpResultParser     | 接口类型，用来自定义解析返回报文 |
 
+## 2.3 分页配置
+
 带分页的querydsl脚本案例：
 
 ```xml
@@ -113,6 +117,8 @@ importBuilder.setInputConfig(httpInputConfig);
 }
               ]]></property>
 ```
+## 2.4 query dsl配置
+
 加载query dsl：
 
 将上面的dsl放入xml文件httpdsl.xml，将文件地址以及dsl脚本名称设置到httpInputConfig即可
@@ -145,6 +151,24 @@ httpInputConfig.setHttpResultParser(new HttpResultParser<Map>() {
 				})
 ```
 
+## 2.5 参数分组并行查询
+
+可以根据需要划分多个参数组，实现http服务数据的并行查询功能，从而获得更好的数据采集同步性能。参数组中的参数可以是静态参数，也可以是动态参数，指定参数组示例如下：
+
+```java
+importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖");
+      importBuilder.makeParamGroup();
+      importBuilder.addJobInputParam("otherParam","安塞龙1:2惜败黄智勇");
+      importBuilder.makeParamGroup();
+      importBuilder.addJobInputParam("otherParam","桃田0:2惨败昆拉武特");
+      importBuilder.makeParamGroup();
+      importBuilder.addJobInputParam("otherParam","石宇奇2:1胜黄智勇");
+      importBuilder.makeParamGroup();
+      importBuilder.addJobInputParam("otherParam","翁弘扬2:0横扫乔纳坦");
+      importBuilder.makeParamGroup();
+```
+
+添加完一组参数后，调用  importBuilder.makeParamGroup();方法创建对应的参数组。
 
 # 3.http输出插件
 

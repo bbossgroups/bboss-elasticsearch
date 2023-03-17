@@ -31,6 +31,8 @@
             <version>6.8.6</version>
         </dependency>
 ```
+# v6.8.7 功能改进
+1. 扩展http输入插件：增加http并行查询功能，设置多组查询条件，并行调用http服务获取数据
 # v6.8.6 功能改进
 1. 完善[文件采集插件](https://esdoc.bbossgroups.com/#/filelog-guide)：增加一次性扫描导入本地文件/FTP文件功能，通过属性disableScanNewFiles进行控制：true 一次性扫描导入本地/FTP目录下的文件，false 持续监听本地/FTP目录下的新文件（默认值false）
 
