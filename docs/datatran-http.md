@@ -18,18 +18,19 @@ https://gitee.com/bboss/bboss-datatran-demo
 
 通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务，插件特性如下：
 
-1. 支持增量、全量数据采集同步，
-2. 支持分页模式采集数据
-3. 支持http服务高可用负载及容错机制，可以配置服务健康检查机制
-4. 输入插件http method支持：get、post和put
-5. 输出插件http method支持：post和put
-6. 支持添加静态值的http head和动态值的http head
-7. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
-8. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
-9. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
-10. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
-11. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，通过动态header实现jwt token认证功能、可以基于http服务组件直接实现[basic认证](https://esdoc.bbossgroups.com/#/httpproxy?id=_8%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81)以及[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)。
-12. 支持对发送数据签名以及接收数据签名解析
+1. 支持增量、全量数据采集同步
+2. http输入插件支持并行调用服务采集数据
+3. 支持分页模式采集数据
+4. 支持http服务高可用负载及容错机制，可以配置服务健康检查机制
+5. 输入插件http method支持：get、post和put
+6. 输出插件http method支持：post和put
+7. 支持添加静态值的http head和动态值的http head
+8. http输入插件，采用类似于Elasticsearch rest服务的dsl查询脚本语言，来传递http数据查询服务所需的参数、增量条件、分页条件
+9. http输出插件，可以直接推送数据集合，亦可以采用基于dsl脚本语言动态组装数据后再推送到服务端
+10. http输入插件：支持为dsl脚本语言设置静态值输入参数和动态值输入参数
+11. http输出插件：支持为dsl脚本语言设置静态值输出参数和动态值输出参数
+12. http服务安全：支持http服务 basic认证以及基于jwt  token安全认证，通过动态header实现jwt token认证功能、可以基于http服务组件直接实现[basic认证](https://esdoc.bbossgroups.com/#/httpproxy?id=_8%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81)以及[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)。
+13. 支持对发送数据签名以及接收数据签名解析
 
 
 bboss 输入/输出插件涉及三个作业配置组件
@@ -169,6 +170,15 @@ importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖");
 ```
 
 添加完一组参数后，调用  importBuilder.makeParamGroup();方法创建对应的参数组。
+
+设置并行查询线程数和等待队长度、结果异步处理队列长度
+
+```java
+//设置并行查询线程数和等待队长度、结果异步处理队列长度
+httpInputConfig.setQueryThread(10);
+httpInputConfig.setQueryThreadQueue(20);
+httpInputConfig.setQueryResultQueue(20);
+```
 
 # 3.http输出插件
 
@@ -635,9 +645,9 @@ importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖")
 
 完整的案例地址
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/6.8.6/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/6.8.7/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java
 
-dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.8.6/src/main/resources/httpdsl.xml
+dsl语句：https://gitee.com/bboss/bboss-datatran-demo/blob/6.8.7/src/main/resources/httpdsl.xml
 
 ```xml
 <property name="queryPagineDsl">
