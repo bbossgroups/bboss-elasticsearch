@@ -1,6 +1,7 @@
 # Elasticsearch Bboss
 
 Bboss is a good elasticsearch Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
+![](https://esdoc.bbossgroups.com/images/client-Elasticsearch.png)
 
 <https://esdoc.bbossgroups.com/#/README>
 

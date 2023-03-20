@@ -10,6 +10,8 @@ bboss由以下三部分构成：
 
 bboss Elasticsearch Highlevel Java Restclient是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Opensearch的o/r mapping高性能开发库
 
+![](images\client-Elasticsearch.png)
+
 ### 1.1.1 主要功能特色
 
 1. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,提供丰富的开发[API](https://esdoc.bbossgroups.com/#/document-crud)和[开发Demo](https://esdoc.bbossgroups.com/#/Elasticsearch-demo)
@@ -127,7 +129,7 @@ https://esdoc.bbossgroups.com/#/etl-metrics
 
 # 3. bboss兼容性
 
-Elasticsearch、Spring boot兼容性
+作为Elasticsearch兼容性最好的java客户端和数据采集&流批一体化计算工具，bboss各版本对Elasticsearch、Spring boot兼容性说明如下：
 
 | bboss | Elasticsearch | spring boot |
 | ----- | ------------- | ----------- |

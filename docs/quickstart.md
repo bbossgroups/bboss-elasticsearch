@@ -3,6 +3,8 @@
 
 Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
 
+![](images\client-Elasticsearch.png)
+
 **主要特点：代码简洁，性能高效，客户端负载容灾，兼容性好，易于集成**
 
 1. A highlevel rest client.
@@ -60,7 +62,7 @@ spring.elasticsearch.bboss.elasticUser=elastic
 spring.elasticsearch.bboss.elasticPassword=changeme
 ```
 
-**一行代码插入 / 修改**
+**一行代码插入/修改**
 
 // 添加 / 修改文档，如果文档 id 存在则修改，不存在则插入
 
@@ -69,6 +71,15 @@ clientUtil.addDocument("agentinfo",//索引名称
 				agentInfo);//需添加/修改的索引数据对象
 ```
 
+**一行代码批量插入/修改文档**
+
+// 添加 / 修改文档，如果文档 id 存在则修改，不存在则插入
+
+```java
+List<AgentInfo> agentInfos = ....;
+clientUtil.addDocuments("agentinfo",//索引名称
+				agentInfos);//需批量添加/修改的索引数据对象集合
+```
 **一行代码分页 / 高亮检索**
 
 ```java
@@ -151,7 +162,13 @@ ESDatas<Demo> esDatas2 =
             Demo.class);//返回的文档封装对象类型
 ```
 
-datasourceName1和datasourceName2 可是两个相同版本的Elasticsearch，亦可以是两个不同版本的Elasticsearch，bboss在兼容性方面是毋庸置疑的。
+datasourceName1和datasourceName2 可是两个相同版本的Elasticsearch，亦可以是两个不同版本的Elasticsearch，对Elasticsearch兼容性非常棒。
+
+**简单实用的异步批处理器**
+
+通过简单实用的异步批处理器，可以大大提升Elasticsearch数据写入处理的性能和吞吐量
+
+参考文档：https://esdoc.bbossgroups.com/#/bulkProcessor
 
 # 2.客户端组件ClientInterface实例获取
 
