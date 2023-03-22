@@ -1,20 +1,39 @@
 # Quick Start
-![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
-
 Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
 
 ![](images\client-Elasticsearch.png)
 
-**主要特点：代码简洁，性能高效，客户端负载容灾，兼容性好，易于集成**
+**主要特点：学习成本低，上手快，代码简洁，安全高效，客户端负载容灾，兼容性好，易于集成**
 
-1. A highlevel rest client.
+1. A highlevel http rest client.
+
 2. A high performence o/r mapping rest client.
+
 3. A dsl and sql rest client.
+
 4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+
 5. Support Opensearch 1.x,2.x,+
+
 6. Support Spring boot 1.x,2.x,3.x
 
+7. 可在普通maven项目和其他java工程中集成bboss
+
+8. 操作返回的结果可以是原始json报文、PO对象、List集合、Map对象以及分页查询、聚合查询、高亮检索封装对象，可以方便的从结果中获取索引文档id、score等元数据信息
+
+9. 学习成本低
+
+   1）无需任何配置即可完成增删改、简单查询操作，复杂的查询才需编写和配置dsl；
+
+   2）通过bboss ClientInterface接口即可完成所有的Elasticsearch操作，只需学习Elasticsearch官方dsl语言，免除额外工具api学习成本，无需引入其他充血、ActiveRecord概念模型；
+
+   3）可以借助kibana devtool调试dsl，调试通过后直接放入bboss dsl配置文件，调整放置检索变量参数即可完成各种复杂的Elasticsearch查询检索操作
+
+   4）bboss完全支持和兼容Elasticsearch各个版本的dsl语法，基于bboss对接各个版本的Elasticsearch，不会对Elasticsearch造成任何的功能损耗，可以说Elasticsearch的既是bboss的，免除Elasticsearch版本升级的后顾之忧。
+
 # 1.快速集成和应用Bboss
+
+## 1.1 maven项目集成
 
 快速集成，导入 BBoss maven 坐标:
 
@@ -35,6 +54,15 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
         <version>6.8.7</version>
     </dependency>
 ```
+
+## 1.2 一般java项目集成
+
+一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
+
+链接：[bboss 6.8.7](https://pan.baidu.com/s/1Ix9zO0vXEP6JazWcuHZ5UA?pwd=nw76 )
+提取码：nw76
+
+## 1.3 快速配置
 
 快速配置，在 application.properties 文件中增加 Elasticsearch 服务器地址和认证口令(可选)配置即可
 
@@ -61,6 +89,8 @@ spring.elasticsearch.bboss.elasticUser=elastic
 
 spring.elasticsearch.bboss.elasticPassword=changeme
 ```
+
+## 1.4 快速操作和访问Elasticsearch
 
 **一行代码插入/修改**
 
@@ -201,7 +231,7 @@ https://esdoc.bbossgroups.com/#/development
 
 在项目resources目录下修改application.properties文件（如果不存在则新建application.properties文件），根据项目类型做添加相应配置:
 
-## 3.1 普通maven 项目配置
+## 3.1 普通java和maven 项目配置
 
 ```properties
 #Cluster addresses are separated by commas
@@ -579,7 +609,10 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 然后通过gradle依次按顺序构建bboss-elasticsearch和bboss-elastic-tran：
 
+```shell
 gradle clean publishToMavenLocal
+```
+
 Gradle环境搭建和配置教程 
 
 https://esdoc.bbossgroups.com/#/bboss-build
