@@ -2,6 +2,8 @@
 
 [^]: bboss-datatran是由 [bboss ](https://www.bbossgroups.com)开源的轻量级[数据采集ETL和流批处理工具](db-es-tool.md)，具备数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能。
 
+**[bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) --- 简化版Flink**
+
 
 
 # 数据采集&流批一体化处理使用指南

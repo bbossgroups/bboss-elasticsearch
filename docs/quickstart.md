@@ -508,11 +508,6 @@ public class DocumentCRUD7 {
 
 
 
-
-      logger.debug("Print the modified result：getDocument-------------------------");
-      logger.debug(response);
-
-
    }
 
    public void deleteDocuments(){
