@@ -67,7 +67,7 @@
 
 采用标准的输入输出异步管道来处理数据
 
-![](images\datasyn-inout.png)
+![](images\datasyn-inout-now.png)
 
 1）数据导入的方式
 

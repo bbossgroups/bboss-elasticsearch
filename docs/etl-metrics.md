@@ -10,7 +10,7 @@
 
 本文介绍如何通过bboss-datatran来实现数据采集&流批一体化处理功能，实现数据采集、数据清洗转换处理和数据入库以及数据指标流批一体化计算处理功能。	
 
-![img](images/datasyn-inout.png)
+![img](images/datasyn-inout-now.png)
 
 通过bboss-datatran，无需依赖第三方大数据中间件即可轻松完成数据采集、数据清洗转换处理和数据入库以及数据指标流批一体化计算处理功能，简单、便捷、高效。
 
