@@ -42,8 +42,26 @@ BulkProcessor提供了失败重试机制，可以方便地设置重试次数，�
    				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
    
    ```
+关键参数说明：
+
+bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
+
+maxMemSize 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作， 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+
+flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+
+workThreads bulk处理工作线程数
+
+workThreadQueue bulk处理工作线程池缓冲队列大小
+
+blockedWaitTimeout 指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
+
+elasticsearch 指定Elasticsearch集群数据源名称，bboss可以支持多数据源，默认值default
+
+filterPath 为了提升性能，并没有把所有响应数据都返回，过滤掉了部分数据，可以自行设置FilterPath进行控制，例如可以设置为：took,errors,items.*.error
 
 使用BulkProcessor api处理索引文档时，如果是Elasticsearch 7以上的版本就无需传递indexType参数，Elasticsearch7以前的版本带上indexType参数，bulk中的每个操作都可以通过ClientOptions来指定文档添加、修改删除的控制参数，ClientOptions控制参数设置方法可以参考文档：
+
 
 [基于ClientOption指定添加修改文档控制参数](https://esdoc.bbossgroups.com/#/development?id=_482-基于clientoptionupdateoption指定添加修改文档控制参数)
 
