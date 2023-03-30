@@ -46,6 +46,14 @@ public class BulkConfig implements BulkActionConfig{
 	 */
 	private int bulkSizes;
 
+
+    /**
+     * 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
+     * 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+     * maxMemSize参数默认值为0，不起作用，只有>0才起作用
+     */
+    private int maxMemSize;
+
 	/**
 	 * 失败重试次数
 	 */
@@ -302,4 +310,23 @@ public class BulkConfig implements BulkActionConfig{
 	public void setFilterPath(String filterPath) {
 		this.filterPath = filterPath;
 	}
+
+    /**
+
+     * 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
+     * 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+     * maxMemSize参数默认值为0，不起作用，只有>0才起作用
+     */
+    public int getMaxMemSize() {
+        return maxMemSize;
+    }
+    /**
+
+     * 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
+     * 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+     * maxMemSize参数默认值为0，不起作用，只有>0才起作用
+     */
+    public void setMaxMemSize(int maxMemSize) {
+        this.maxMemSize = maxMemSize;
+    }
 }

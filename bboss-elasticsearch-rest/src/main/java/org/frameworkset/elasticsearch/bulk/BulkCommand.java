@@ -15,11 +15,15 @@ package org.frameworkset.elasticsearch.bulk;
  * limitations under the License.
  */
 
+import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.client.BuildTool;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ResultUtil;
+import org.frameworkset.soa.BBossStringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,9 +43,9 @@ public class BulkCommand implements Runnable{
 	private ClientInterface clientInterface;
 	private Date bulkCommandStartTime;
 	private Date bulkCommandCompleteTime;
+    private BBossStringWriter writer ;
 
-
-	public Date getBulkCommandStartTime() {
+    public Date getBulkCommandStartTime() {
 		return bulkCommandStartTime;
 	}
 
@@ -66,6 +70,8 @@ public class BulkCommand implements Runnable{
 		this.batchBulkDatas = new ArrayList<BulkData>(bulkProcessor.getBulkSizes());
 		this.bulkProcessor = bulkProcessor;
 		this.clientInterface = bulkProcessor.getClientInterface();
+        StringBuilder builder = new StringBuilder();
+        writer = new BBossStringWriter(builder);
 	}
 
 	public String getRefreshOption() {
@@ -78,7 +84,7 @@ public class BulkCommand implements Runnable{
 
 	private void directRun(List<BulkInterceptor> bulkInterceptors ){
 		String result = clientInterface.executeBulk(this);
-		bulkProcessor.increamentTotalsize(this.getBulkDataSize());
+		bulkProcessor.increamentTotalsize(this.getBulkDataRecords());
 
 
 		boolean hasError = ResultUtil.bulkResponseError(result);
@@ -132,7 +138,7 @@ public class BulkCommand implements Runnable{
 			}
 			catch (Throwable throwable){
 				this.setBulkCommandCompleteTime(new Date());
-				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
+				this.bulkProcessor.increamentFailedSize(this.getBulkDataRecords());
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 					try {
@@ -149,6 +155,14 @@ public class BulkCommand implements Runnable{
 					this.batchBulkDatas.clear();
 					batchBulkDatas = null;
 				}
+                if(this.writer != null){
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+
+                    }
+                    writer = null;
+                }
 			}
 		}
 		else{
@@ -198,7 +212,7 @@ public class BulkCommand implements Runnable{
 			}
 			catch (Throwable throwable){
 				this.setBulkCommandCompleteTime(new Date());
-				this.bulkProcessor.increamentFailedSize(this.getBulkDataSize());
+				this.bulkProcessor.increamentFailedSize(this.getBulkDataRecords());
 				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
 					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
 					try {
@@ -215,6 +229,14 @@ public class BulkCommand implements Runnable{
 					this.batchBulkDatas.clear();
 					batchBulkDatas = null;
 				}
+                if(this.writer != null){
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+
+                    }
+                    writer = null;
+                }
 			}
 		}
 
@@ -235,15 +257,38 @@ public class BulkCommand implements Runnable{
 		return batchBulkDatas;
 	}
 
+    public String getDataString(){
+        return writer != null? writer.toString():null;
+    }
+
 	public void addBulkData(BulkData bulkData){
 		this.batchBulkDatas.add(bulkData);
-
+        try {
+            BuildTool.evalBuilk(writer, bulkData, this.clientInterface.isUpper7());
+        } catch (IOException e) {
+            throw new ElasticSearchException(e);
+        }
 	}
 
-	public int getBulkDataSize(){
+    /**
+     * 获取记录数
+     * @return
+     */
+	public int getBulkDataRecords(){
 		if(batchBulkDatas != null)
 			return this.batchBulkDatas.size();
 		else
 			return 0;
 	}
+
+    /**
+     * 获取记录占用内存大小
+     * @return
+     */
+    public int getBulkDataMemSize(){
+        if(writer != null && this.writer.getBuffer() != null)
+            return this.writer.getBuffer().length();
+        else
+            return 0;
+    }
 }

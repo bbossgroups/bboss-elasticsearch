@@ -1136,7 +1136,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @param bulkCommand
 	 * @return
 	 */
-	public String executeBulk(BulkCommand bulkCommand){
+	/**public String executeBulk(BulkCommand bulkCommand){
 		List<BulkData> bulkDatas = bulkCommand.getBatchBulkDatas();
 		if(bulkDatas == null || bulkDatas.size() == 0){
 			return null;
@@ -1163,7 +1163,21 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			writer = null;
 		}
 
-	}
+	}*/
+
+    public String executeBulk(BulkCommand bulkCommand){
+        if(bulkCommand.getBulkDataRecords() == 0){
+            return null;
+        }
+
+        String data = bulkCommand.getDataString();
+        return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig(), BulkConfig.FILTER_PATH_EMPTY),
+                                    data, ClientUtil.HTTP_POST);
+
+
+
+
+    }
 	public String updateDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String parentIdKey,String refreshOption) throws ElasticSearchException{
 		ClientOptions clientOptions = new ClientOptions();
 		clientOptions.setIdField(docIdKey);
@@ -5787,10 +5801,23 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public boolean isVersionUpper7(){
 		return this.client.isUpper7();
 	}
+
+    @Override
+    public boolean isUpper7(){
+        return isVersionUpper7();
+    }
 	@Override
 	public boolean isVersionUpper8(){
 		return this.client.isUpper8();
 	}
+    @Override
+    public boolean isUpper8(){
+        return this.client.isUpper8();
+    }
+    @Override
+    public boolean isLower5(){
+        return this.client.isLower5();
+    }
 	@Override
 	public int getVersion(){
 		return this.client.getVersion();

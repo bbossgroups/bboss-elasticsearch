@@ -2798,5 +2798,8 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 
 	IndexNameBuilder getIndexNameBuilder();
 	public boolean isVersionUpper8();
-	public int getVersion();
+    public boolean isUpper8();
+    public boolean isLower5();
+    public boolean isUpper7();
+    public int getVersion();
 }

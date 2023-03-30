@@ -109,7 +109,7 @@ public class BulkProcessor {
                     , this.bulkConfig.getWarnMultsRejects());
 //		dataQueue =  new ArrayBlockingQueue<BulkData>(bulkConfig.getBulkQueue());
             if (bulkConfig.getFlushInterval() > 0) {
-                flush = new Flush("Elasticsearch[" + (bulkConfig.getElasticsearch() != null ? bulkConfig.getElasticsearch() : "default") + "]-" + bulkConfig.getBulkProcessorName() + "-flush-thread");
+                flush = new Flush("ElasticsearchBulk[" + (bulkConfig.getElasticsearch() != null ? bulkConfig.getElasticsearch() : "default") + "]-" + bulkConfig.getBulkProcessorName() + "-flush-thread");
                 flush.start();
             }
 //            ShutdownUtil.addShutdownHook(new Runnable() {
@@ -122,14 +122,21 @@ public class BulkProcessor {
         }
 	}
 
-	private boolean touchBatchSize(){
+    /**
+     * 达到最大批处理记录数或者记录占用内存达到最大允许内存大小，则返回true，false返回false
+     * @return
+     */
+	private boolean touchBatchSize() {
 
-		if(this.bulkCommand != null && this.bulkCommand.getBulkDataSize() >= bulkConfig.getBulkSizes()){
-			return true;
-		}
-		else{
-			return false;
-		}
+        if (this.bulkCommand != null) {
+            if (this.bulkCommand.getBulkDataRecords() >= bulkConfig.getBulkSizes()
+                || (bulkConfig.getMaxMemSize() > 0 && this.bulkCommand.getBulkDataMemSize() >= bulkConfig.getMaxMemSize())) {
+                return true;
+            }
+
+        }
+        return false;
+
 	}
 
 	public long getLastAppendDataTime(){
@@ -174,7 +181,7 @@ public class BulkProcessor {
 			}
 
 			long interval = System.currentTimeMillis() - lastAppendDataTime;
-			if (interval > flushInterval && bulkCommand.getBulkDataSize() > 0) {
+			if (interval > flushInterval && bulkCommand.getBulkDataRecords() > 0) {
 				execute(true);
 			}
 
@@ -189,7 +196,7 @@ public class BulkProcessor {
 		try {
 
 
-			if (bulkCommand !=null && bulkCommand.getBulkDataSize() > 0) {
+			if (bulkCommand !=null && bulkCommand.getBulkDataRecords() > 0) {
 				execute(false);
 			}
 
