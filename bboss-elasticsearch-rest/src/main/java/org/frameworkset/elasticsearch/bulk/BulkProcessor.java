@@ -47,7 +47,10 @@ public class BulkProcessor {
 
 	private BulkCommand buildBulkCommand(){
 
-		return new BulkCommand(this);
+        if(bulkConfig.getMaxMemSize() > 0)
+		    return new MaxMemBulkCommandImpl(this);
+        else
+            return new BulkCommandImpl(this);
 	}
 
 	private BulkConfig bulkConfig;
@@ -129,11 +132,7 @@ public class BulkProcessor {
 	private boolean touchBatchSize() {
 
         if (this.bulkCommand != null) {
-            if (this.bulkCommand.getBulkDataRecords() >= bulkConfig.getBulkSizes()
-                || (bulkConfig.getMaxMemSize() > 0 && this.bulkCommand.getBulkDataMemSize() >= bulkConfig.getMaxMemSize())) {
-                return true;
-            }
-
+            return bulkCommand.touchBatchSize(bulkConfig);
         }
         return false;
 
@@ -801,14 +800,7 @@ public class BulkProcessor {
 		if(logger.isInfoEnabled())
 			logger.info("BulkProcessor[{}] ShutDown begin.....",this.bulkConfig.getBulkProcessorName());
 		stop();
-//		try{
-//			if(flush != null){
-//				flush.interrupt();
-//			}
-//		}
-//		catch (Exception e){
-//
-//		}
+
 		try {
 			this.forceExecute();
 		}

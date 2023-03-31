@@ -15,18 +15,7 @@ package org.frameworkset.elasticsearch.bulk;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.client.BuildTool;
-import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.ResultUtil;
-import org.frameworkset.soa.BBossStringWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -36,259 +25,37 @@ import java.util.List;
  * @author biaoping.yin
  * @version 1.0
  */
-public class BulkCommand implements Runnable{
-	private static Logger logger = LoggerFactory.getLogger(BulkCommand.class);
-	private List<BulkData> batchBulkDatas;
-	private BulkProcessor bulkProcessor;
-	private ClientInterface clientInterface;
-	private Date bulkCommandStartTime;
-	private Date bulkCommandCompleteTime;
-    private BBossStringWriter writer ;
+public interface BulkCommand extends Runnable{
+    public boolean touchBatchSize(BulkConfig bulkConfig);
+    public Date getBulkCommandStartTime();
 
-    public Date getBulkCommandStartTime() {
-		return bulkCommandStartTime;
-	}
+	public void setBulkCommandStartTime(Date bulkCommandStartTime);
 
-	public void setBulkCommandStartTime(Date bulkCommandStartTime) {
-		this.bulkCommandStartTime = bulkCommandStartTime;
-	}
+	public Date getBulkCommandCompleteTime() ;
+	public long getElapsed();
 
-	public Date getBulkCommandCompleteTime() {
-		return bulkCommandCompleteTime;
-	}
-	public long getElapsed(){
-		if(bulkCommandCompleteTime != null && bulkCommandStartTime != null){
-			return bulkCommandCompleteTime.getTime() - bulkCommandStartTime.getTime();
-		}
-		return 0;
-	}
-
-	public void setBulkCommandCompleteTime(Date bulkCommandCompleteTime) {
-		this.bulkCommandCompleteTime = bulkCommandCompleteTime;
-	}
-	public BulkCommand(BulkProcessor bulkProcessor) {
-		this.batchBulkDatas = new ArrayList<BulkData>(bulkProcessor.getBulkSizes());
-		this.bulkProcessor = bulkProcessor;
-		this.clientInterface = bulkProcessor.getClientInterface();
-        StringBuilder builder = new StringBuilder();
-        writer = new BBossStringWriter(builder);
-	}
-
-	public String getRefreshOption() {
-		return bulkProcessor.getRefreshOption();
-	}
-
-	public String getFilterPath(){
-		return bulkProcessor.getBulkConfig().getFilterPath();
-	}
-
-	private void directRun(List<BulkInterceptor> bulkInterceptors ){
-		String result = clientInterface.executeBulk(this);
-		bulkProcessor.increamentTotalsize(this.getBulkDataRecords());
+	public void setBulkCommandCompleteTime(Date bulkCommandCompleteTime) ;
 
 
-		boolean hasError = ResultUtil.bulkResponseError(result);
-		if (!hasError) {
-			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-				try {
+	public String getRefreshOption() ;
 
-					bulkInterceptor.afterBulk(this, result);
-				} catch (Exception e) {
-					if (logger.isErrorEnabled())
-						logger.error("bulkInterceptor.afterBulk", e);
-				}
-			}
-		} else {
-			for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-				BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-				try {
+	public String getFilterPath();
 
-					bulkInterceptor.errorBulk(this, result);
-				} catch (Exception e) {
-					if (logger.isErrorEnabled())
-						logger.error("bulkInterceptor.errorBulk", e);
-				}
-			}
-		}
-		result = null;
-	}
-	@Override
-	public void run() {
-		BulkConfig bulkConfig = bulkProcessor.getBulkConfig();
-		List<BulkInterceptor> bulkInterceptors = bulkConfig.getBulkInterceptors();
 
-		for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-			BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-			try {
-				bulkInterceptor.beforeBulk(this);
-			}
-			catch(Exception e){
-				if(logger.isErrorEnabled())
-					logger.error("bulkInterceptor.beforeBulk",e);
-			}
-		}
-		BulkRetryHandler bulkRetryHandler = bulkConfig.getBulkRetryHandler();
-		int retryTimes = bulkConfig.getRetryTimes();
-		if(bulkRetryHandler == null || retryTimes <= 0){//当有异常发生时，不需要重试
-			try {
-				this.setBulkCommandStartTime(new Date());
-				directRun( bulkInterceptors );
-				this.setBulkCommandCompleteTime(new Date());
-			}
-			catch (Throwable throwable){
-				this.setBulkCommandCompleteTime(new Date());
-				this.bulkProcessor.increamentFailedSize(this.getBulkDataRecords());
-				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-					try {
-						bulkInterceptor.exceptionBulk(this,throwable);
-					}
-					catch(Exception e){
-						logger.error("bulkInterceptor.errorBulk",e);
-					}
-				}
-			}
-			finally {
+	public long getTotalSize();
+	public long getTotalFailedSize();
 
-				if(batchBulkDatas != null) {
-					this.batchBulkDatas.clear();
-					batchBulkDatas = null;
-				}
-                if(this.writer != null){
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
+	public BulkProcessor getBulkProcessor();
 
-                    }
-                    writer = null;
-                }
-			}
-		}
-		else{
-			try {
-				this.setBulkCommandStartTime(new Date());
-				Exception exception = null;
-				int count = 0;
-				long retryInterval = bulkConfig.getRetryInterval();
-				do {
-					if(count > 0){
-						if(logger.isInfoEnabled()){
-							logger.info("Retry bulkprocess {} times.",count);
-						}
-					}
-					try {
-						directRun(bulkInterceptors);
-						exception = null;
-						break;
-					}
-					catch (Exception e){
-						exception = e;
-						if(!bulkRetryHandler.neadRetry(e,this) || count == retryTimes){//异常不需要重试或者达到最大重试次数，中断重试
-							break;
-						}
-						else {
-							if(logger.isErrorEnabled()){
-								logger.error("Exception occur and  Retry process will be take.",e);
-							}
-							count ++;
-							if(retryInterval > 0l){
-								try {
-									Thread.sleep(retryInterval);
-								}
-								catch (Exception interupt){
-									break;
-								}
-							}
-							continue;
-						}
-					}
-				}while(true);
-				this.setBulkCommandCompleteTime(new Date());
-				if(exception != null){
-					throw exception;
-				}
 
-			}
-			catch (Throwable throwable){
-				this.setBulkCommandCompleteTime(new Date());
-				this.bulkProcessor.increamentFailedSize(this.getBulkDataRecords());
-				for (int i = 0; bulkInterceptors != null && i < bulkInterceptors.size(); i++) {
-					BulkInterceptor bulkInterceptor = bulkInterceptors.get(i);
-					try {
-						bulkInterceptor.exceptionBulk(this,throwable);
-					}
-					catch(Exception e){
-						logger.error("bulkInterceptor.errorBulk",e);
-					}
-				}
-			}
-			finally {
+    public String getDataString();
 
-				if(batchBulkDatas != null) {
-					this.batchBulkDatas.clear();
-					batchBulkDatas = null;
-				}
-                if(this.writer != null){
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-
-                    }
-                    writer = null;
-                }
-			}
-		}
-
-	}
-
-	public long getTotalSize(){
-		return bulkProcessor.getTotalSize();
-	}
-	public long getTotalFailedSize(){
-		return bulkProcessor.getFailedSize();
-	}
-
-	public BulkProcessor getBulkProcessor() {
-		return bulkProcessor;
-	}
-
-	public List<BulkData> getBatchBulkDatas() {
-		return batchBulkDatas;
-	}
-
-    public String getDataString(){
-        return writer != null? writer.toString():null;
-    }
-
-	public void addBulkData(BulkData bulkData){
-		this.batchBulkDatas.add(bulkData);
-        try {
-            BuildTool.evalBuilk(writer, bulkData, this.clientInterface.isUpper7());
-        } catch (IOException e) {
-            throw new ElasticSearchException(e);
-        }
-	}
+	public void addBulkData(BulkData bulkData);
 
     /**
      * 获取记录数
      * @return
      */
-	public int getBulkDataRecords(){
-		if(batchBulkDatas != null)
-			return this.batchBulkDatas.size();
-		else
-			return 0;
-	}
+	public int getBulkDataRecords();
 
-    /**
-     * 获取记录占用内存大小
-     * @return
-     */
-    public int getBulkDataMemSize(){
-        if(writer != null && this.writer.getBuffer() != null)
-            return this.writer.getBuffer().length();
-        else
-            return 0;
-    }
 }
