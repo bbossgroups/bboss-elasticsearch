@@ -214,6 +214,14 @@ public abstract class BaseBulkCommand implements BulkCommand{
 	public long getTotalSize(){
 		return bulkProcessor.getTotalSize();
 	}
+
+    /**
+     * 获取已追加总记录数据
+     * @return
+     */
+    public long getAppendRecords() {
+        return bulkProcessor.getAppendRecords();
+    }
 	public long getTotalFailedSize(){
 		return bulkProcessor.getFailedSize();
 	}

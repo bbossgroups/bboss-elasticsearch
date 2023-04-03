@@ -38,7 +38,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BulkProcessor {
 	private Logger logger = LoggerFactory.getLogger(BulkProcessor.class);
 	private BulkCommand bulkCommand ;
-	private long lastAppendDataTime = -1;
+    /**
+     * 已追加总记录数据
+     */
+    private long appendRecords;
+
+    private long lastAppendDataTime = -1;
 	private Lock r = new ReentrantLock();
 	private Lock w = new ReentrantLock();
 	public BulkConfig getBulkConfig() {
@@ -163,7 +168,12 @@ public class BulkProcessor {
 		}
 	}
 
-	private void _appendBulkData(BulkData bulkData){
+    public long getAppendRecords() {
+        return appendRecords;
+    }
+
+    private void _appendBulkData(BulkData bulkData){
+        appendRecords ++;
 		lastAppendDataTime = System.currentTimeMillis();
 		this.bulkCommand.addBulkData(bulkData);
 		if(this.touchBatchSize()){
@@ -656,8 +666,8 @@ public class BulkProcessor {
 	}
 
 
-	private long totalSize = 0;
-	private long failedSize = 0;
+	private long totalSize = 0L;
+	private long failedSize = 0L;
 	public long getTotalSize() {
 		return totalSize;
 	}

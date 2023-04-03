@@ -26,6 +26,11 @@ import java.util.Date;
  * @version 1.0
  */
 public interface BulkCommand extends Runnable{
+    /**
+     * 获取已追加总记录数据
+     * @return
+     */
+    public long getAppendRecords();
     public boolean touchBatchSize(BulkConfig bulkConfig);
     public Date getBulkCommandStartTime();
 
@@ -42,7 +47,16 @@ public interface BulkCommand extends Runnable{
 	public String getFilterPath();
 
 
+    /**
+     * 获取已处理成功总记录数据
+     * @return
+     */
 	public long getTotalSize();
+
+    /**
+     * 获取处理失败总记录数据
+     * @return
+     */
 	public long getTotalFailedSize();
 
 	public BulkProcessor getBulkProcessor();
