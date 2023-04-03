@@ -8,7 +8,7 @@ bboss由以下三部分构成：
 
 ## 1.1 高性能 Elasticsearch Highlevel Java Restclient
 
-bboss Elasticsearch Highlevel Java Restclient是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Opensearch的o/r mapping高性能开发库
+[bboss Elasticsearch Highlevel Java Restclient](https://esdoc.bbossgroups.com/#/quickstart)是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Opensearch的o/r mapping高性能开发库
 
 ![](images\client-Elasticsearch.png)
 
@@ -40,13 +40,13 @@ bboss Elasticsearch Highlevel Java Restclient是一套基于query dsl语法操�
 
 ## 1.2 数据采集同步ETL以及流批一体化计算框架
 
-数据采集同步ETL以及流批一体化计算框架，基于灵活的插件体系结构，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能，提供丰富的数据源和输出数据源类型，同时可以基于插件规范轻松扩展新的输入源和输出源：
+[数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)框架，基于灵活的插件体系结构，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能，提供丰富的数据源和输出数据源类型，同时可以基于插件规范轻松扩展新的输入源和输出源：
 
 ![](images/datasyn.png)
 
 ### 1.2.1 数据采集ETL
 
-数据采集同步ETL以及流批一体化计算作业分为作业配置态和运行态，作业可以独立调度运行，亦可以嵌入到应用中运行，同时也可以和各种主流的调度引擎（quartz、xxl-job等）结合运行：
+[数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)作业分为作业配置态和运行态，作业可以独立调度运行，亦可以嵌入到应用中运行，同时也可以和各种主流的调度引擎（quartz、xxl-job等）结合运行：
 
 ![](images/datasyn-inout-now.png)
 

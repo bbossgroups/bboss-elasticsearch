@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v6.8.7 发布
+# BBOSS版本变更记录-v6.8.8 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.7</version>
+            <version>6.8.8</version>
         </dependency>
 ```
 
@@ -28,9 +28,23 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.7</version>
+            <version>6.8.8</version>
         </dependency>
 ```
+# v6.8.8 功能改进
+1. Elasticsearch客户端改进：改进[ElasticsearchBulkProcessor](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/TestBulkProcessor7x.java)，增加maxMemSize参数，设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
+
+      可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+	  
+      maxMemSize参数默认值为0，不起作用，只有>0才起作用
+	  
+	  使用参考文档：[Eleasticsearch BulkProcessor异步批处理](https://esdoc.bbossgroups.com/#/bulkProcessor)
+	  
+2. 数据同步工具改进：DB数据源链接超时时间、获取连接池链接等待超时不起作用问题修复
+3. kafka插件改进：增加启动消费端方法和手动消费消费端方法，启动ioc配置对应的容器中管理的kafka消费程序，通过addShutdownHook控制是否注册消费程序销毁hook，以便在jvm退出时自动关闭消费程序 true 注册，false不注册
+
+    false 情况下需要手动调用shutdownConsumers(String applicationContextIOC)方法或者shutdownAllConsumers()方法销毁对应的消费程序 	  
+	
 # v6.8.7 功能改进
 1. 扩展http输入插件：增加[http并行查询](https://esdoc.bbossgroups.com/#/datatran-http?id=_25-%e5%8f%82%e6%95%b0%e5%88%86%e7%bb%84%e5%b9%b6%e8%a1%8c%e6%9f%a5%e8%af%a2)功能，可以根据需要划分多个参数组，实现http服务数据的并行查询功能，从而获得更好的数据采集同步性能
 # v6.8.6 功能改进
@@ -282,7 +296,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.7版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.8.8版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -457,7 +471,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.7</version>
+            <version>6.8.8</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -465,7 +479,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.7</version>
+            <version>6.8.8</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -552,7 +566,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.7时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.8.8时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1098,7 +1112,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.7</version>
+    <version>6.8.8</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

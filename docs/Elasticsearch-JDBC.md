@@ -31,7 +31,7 @@ Elasticsearch  6.3以后的版本可以通过jdbc操作es，该功能还在不�
 <dependency>
   <groupId>org.elasticsearch.plugin</groupId>
   <artifactId>jdbc</artifactId>
-  <version>6.8.7</version>
+  <version>6.8.8</version>
 </dependency>
 ```
 

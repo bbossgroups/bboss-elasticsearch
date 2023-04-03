@@ -1,8 +1,10 @@
-# BulkProcessor异步批处理组件使用
+# Elasticsearch BulkProcessor异步批处理
 
-# 1.BulkProcessor介绍
+# 1.Elasticsearch BulkProcessor介绍
 
-BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。通过BulkProcessor，可以将不同索引的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，BulkProcessor提供三类api来支撑异步批处理功能：
+![](images\bulkprocessor.png)
+
+Elasticsearch BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk异步批处理操作。通过BulkProcessor，可以将不同索引的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，BulkProcessor提供三类api来支撑异步批处理功能：
 
 1. insertData（每次加入一条记录到bulk队列中)，数据类型支持：PO，Map,String
 2. insertDatas(每次可以加入待新增的多条记录到bulk队列中)
@@ -10,6 +12,12 @@ BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk操作。�
 4. updateDatas(每次可以加入待修改的多条记录到bulk队列中)
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
+
+Elasticsearch BulkProcessor异步批处理组件提供了三种触发批处理机制：
+
+1. bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
+2. maxMemSize 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作， 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
+3. flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
 
 BulkProcessor提供了失败重试机制，可以方便地设置重试次数，重试时间间隔，是否需要重试的异常类型判断：
 
@@ -42,7 +50,7 @@ BulkProcessor提供了失败重试机制，可以方便地设置重试次数，�
    				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
    
    ```
-关键参数说明：
+Elasticsearch BulkProcessor组件关键参数说明：
 
 bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
 
@@ -66,7 +74,14 @@ filterPath 为了提升性能，并没有把所有响应数据都返回，过滤
 [基于ClientOption指定添加修改文档控制参数](https://esdoc.bbossgroups.com/#/development?id=_482-基于clientoptionupdateoption指定添加修改文档控制参数)
 
 # 2.BulkProcessor案例
-用一个简单的demo来介绍上述功能：
+
+用一个简单的demo来介绍Elasticsearch BulkProcessor异步批处理
+
+参考以下文档在项目中快速导入Elasticsearch BulkProcessor
+
+https://esdoc.bbossgroups.com/#/quickstart
+
+
 
 普遍项目案例源码
 
@@ -80,7 +95,7 @@ https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/
 
 https://github.com/bbossgroups/elasticsearch-springboot-example/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/BulkProcessorTest.java
 
-
+通过BulkProcessorBuilder来构建bulkProcessor实例
 
 ```java
 package org.bboss.elasticsearchtest.bulkprocessor;
