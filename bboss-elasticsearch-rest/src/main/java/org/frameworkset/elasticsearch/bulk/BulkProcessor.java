@@ -74,14 +74,28 @@ public class BulkProcessor {
 	 */
 	private int status;
 	private  void stop(){
-		this.status = 1;
-		synchronized (flush) {
-			flush.interrupt();
-            try {
-                flush.join();
-            } catch (InterruptedException e) {
+        if(status == 1)
+            return;
+        w.lock();
+        try {
+            if (status == 1)
+                return;
+            this.status = 1;
+        }
+        finally {
+            w.unlock();
+        }
 
-            }
+        try {
+            flush.interrupt();
+        }
+        catch (Exception e){
+            logger.warn("flush.interrupt() failed:",e);
+        }
+        try {
+            flush.join();
+        } catch (InterruptedException e) {
+
         }
 	}
 	public String getRefreshOption() {
@@ -153,12 +167,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
-//			lastAppendDataTime = System.currentTimeMillis();
-//			this.bulkCommand.addBulkData(bulkData);
-//			if(this.touchBatchSize()){
-//				this.execute(true);
-//			}
-
+            assertShutdown();
 			_appendBulkData( bulkData);
 
 
@@ -420,6 +429,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.INSERT, data);
 				bulkData.setIndex(index);
@@ -452,6 +462,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.INSERT, data);
 				bulkData.setIndex(index);
@@ -505,6 +516,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.UPDATE, data);
 				bulkData.setIndex(index);
@@ -536,6 +548,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data:datas) {
 				BulkData bulkData = new BulkData(BulkData.UPDATE, data);
 				bulkData.setIndex(index);
@@ -596,6 +609,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data :datas) {
 				BulkData bulkData = new BulkData(BulkData.DELETE, data);
 				bulkData.setIndex(index);
@@ -628,6 +642,7 @@ public class BulkProcessor {
 			if(bulkCommand == null){
 				return;
 			}
+            assertShutdown();
 			for(Object data :datas) {
 				BulkData bulkData = new BulkData(BulkData.DELETE, data);
 				bulkData.setIndex(index);
