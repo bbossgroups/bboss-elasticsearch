@@ -836,10 +836,7 @@ public class BulkProcessor {
 			try {
 				if(logger.isInfoEnabled())
 					logger.info("BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool ShutDown begin......");
-				executor.shutdown();
-//				if(logger.isInfoEnabled()){
-//					logger.info("BulkProcessor process total success records {} failed records {}.",totalSize,failedSize);
-//				}
+                ThreadPoolFactory.shutdownExecutor(executor);
 				if(logger.isInfoEnabled())
 					logger.info("ShutDown BulkProcessor["+this.bulkConfig.getBulkProcessorName()+"] thread executor pool ShutDown  complete.");
 			}
