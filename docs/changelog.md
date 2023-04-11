@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v6.8.8 发布
+# BBOSS版本变更记录-v6.8.9 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.8</version>
+            <version>6.8.9</version>
         </dependency>
 ```
 
@@ -28,20 +28,27 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.8</version>
+            <version>6.8.9</version>
         </dependency>
 ```
+# v6.8.9 功能改进
+1. 文件采集插件改进：大量文件采集场景下的[流控处理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_12%e5%b9%b6%e8%a1%8c%e9%87%87%e9%9b%86%e6%96%87%e4%bb%b6%e6%95%b0%e9%87%8f%e6%8e%a7%e5%88%b6-%e6%b5%81%e6%8e%a7)，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件
+2. 改进[ftp/sftp文件下载采集机制](ftp/sftp文件下载采集机制)：采集/定时调度采集时sftp/ftp文件时，等待所有的文件采集都加入采集通道后再返回，继续下一次调度采集（定时调度）/或者再继续后续的处理（一次性采集）
+3. bulkprocessor改进：线程池关闭后等待所有任务处理完成再退出
+4. 改进[通用bulk批处理器](https://esdoc.bbossgroups.com/#/bulkProcessor-common)和[Elasticsearch bulk批处理器](https://esdoc.bbossgroups.com/#/bulkProcessor)：优化flush线程及锁管理和shutdown机制
+5. 改进kafka消费组件：将工作线程改为daemon=false
+
 # v6.8.8 功能改进
 1. Elasticsearch客户端改进：改进[ElasticsearchBulkProcessor](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/bulkprocessor/TestBulkProcessor7x.java)，增加maxMemSize参数，设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
 
       可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
-	  
+	
       maxMemSize参数默认值为0，不起作用，只有>0才起作用
-	  
+	
 	  使用参考文档：[Eleasticsearch BulkProcessor异步批处理](https://esdoc.bbossgroups.com/#/bulkProcessor)
-	  
+	
 2. 数据同步工具改进：DB数据源链接超时时间、获取连接池链接等待超时不起作用问题修复
-3. kafka插件改进：增加启动消费端方法和手动消费消费端方法，启动ioc配置对应的容器中管理的kafka消费程序，通过addShutdownHook控制是否注册消费程序销毁hook，以便在jvm退出时自动关闭消费程序 true 注册，false不注册
+3. kafka插件改进：增加[启动消费端方法和手动消费消费端方法](https://doc.bbossgroups.com/#/kafka)，启动ioc配置对应的容器中管理的kafka消费程序，通过addShutdownHook控制是否注册消费程序销毁hook，以便在jvm退出时自动关闭消费程序 true 注册，false不注册
 
     false 情况下需要手动调用shutdownConsumers(String applicationContextIOC)方法或者shutdownAllConsumers()方法销毁对应的消费程序 	  
 	
@@ -296,7 +303,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.8版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.8.9版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -471,7 +478,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.8</version>
+            <version>6.8.9</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -479,7 +486,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.8</version>
+            <version>6.8.9</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -566,7 +573,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.8时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.8.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -618,7 +625,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.2",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.3",transitive: true 
   ```
 
   **maven坐标**
@@ -629,7 +636,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.0.2</version>  
+      <version>6.0.3</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1112,7 +1119,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.8</version>
+    <version>6.8.9</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1515,21 +1522,21 @@ public String updateDocument(Object documentId,Object params) throws ElasticSear
 @ESIndex(name="demowithesindex-{dateformat=yyyy.MM.dd}",useBatchContextIndexName = true)
 ```
 
-# v6.0.3 功能改进 
+# v6.0.4 功能改进 
 1.http组件改进: 在异常信息中包含服务请求完整url地址信息
 
 2.http proxy组件改进：如果http服务池没有配置health状态检查地址，启用被动的服务健康检查机制，在没有正常节点的情况下，返回异常节点，如果操作成功则将异常节点标注为正常节点
 
 3.http组件改造：增加automaticRetriesDisabled开关，没有指定重试机制的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
 
-# v6.0.2 功能改进 
+# v6.0.3 功能改进 
 kafka2x-elasticsearch数据同步改进：kafka2x改进，提升同步性能
 
-# v6.0.3 功能改进 
+# v6.0.2 功能改进 
 
 1.spring boot starter组件bbossEsstarter增加非配置文件管理dsl加载方法
 
-# v6.0.2 功能改进
+# v6.0.1 功能改进
 1.修复低版本jackson兼容性问题：Conflicting property name definitions: '_source'
 
 2.数据同步工具：importbuilder组件增加Elasticsearch数据源代码配置功能，对应API

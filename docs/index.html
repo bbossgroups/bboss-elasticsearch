@@ -83,19 +83,13 @@ var _hmt = _hmt || [];
           } else {
             url = 'https://github.com/bbossgroups/bboss-elasticsearch/tree/master/docs/' + vm.route.file
           }
-          var editHtml = '[:memo: Edit Document](' + url + ')\n';
+          //var editHtml = '[:memo: Edit Document](' + url + ')\n';
+		   var editHtml = '\n';
 
           return editHtml
                   + html
-                  + '\n\n----\n\n'
-                  // + '<script type="text/javascript">'
-                  // + 'var cnzz_protocol = (("https:" == document.location.protocol) ? " https://"'
-                  // + ': " http://");'
-                  // + 'document'
-                  // + '.write(unescape("%3Cspan id=\'cnzz_stat_icon_1254131450\'%3E%3C/span%3E%3Cscript src=\'"'
-                  // + '        + cnzz_protocol'
-                  // + '        + "s11.cnzz.com/z_stat.php%3Fid%3D1254131450%26show%3Dpic2\' type=\'text/javascript\'%3E%3C/script%3E"));'
-                  // + '<\/script><a href="http://www.miitbeian.gov.cn" target="_blank">湘ICP备16000994号</a>'
+            //return html +
+                  + '\n\n----\n\n'                 
                   + '<a href="https://beian.miit.gov.cn" target="_blank">湘ICP备16000994号-1</a>&nbsp;<a href="https://www.bbossgroups.com" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by bbossgroups</a>';
         })
       },

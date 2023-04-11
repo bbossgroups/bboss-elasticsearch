@@ -4,6 +4,8 @@
 
 ![](images\bulkprocessor.png)
 
+## 1.1 API说明
+
 Elasticsearch BulkProcessor异步批处理组件支持Elasticsearch各版本的Bulk异步批处理操作。通过BulkProcessor，可以将不同索引的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，BulkProcessor提供三类api来支撑异步批处理功能：
 
 1. insertData（每次加入一条记录到bulk队列中)，数据类型支持：PO，Map,String
@@ -13,11 +15,15 @@ Elasticsearch BulkProcessor异步批处理组件支持Elasticsearch各版本的B
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
 
+## 1.2 触发批处理机制
+
 Elasticsearch BulkProcessor异步批处理组件提供了三种触发批处理机制：
 
 1. bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
 2. maxMemSize 设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作， 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
 3. flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+
+## 1.3 失败重试
 
 BulkProcessor提供了失败重试机制，可以方便地设置重试次数，重试时间间隔，是否需要重试的异常类型判断：
 
@@ -50,6 +56,8 @@ BulkProcessor提供了失败重试机制，可以方便地设置重试次数，�
    				.setRetryInterval(1000l) // 可选，默认为0，不等待直接进行重试，否则等待给定的时间再重试
    
    ```
+## 1.4 关键参数说明
+
 Elasticsearch BulkProcessor组件关键参数说明：
 
 bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
@@ -70,8 +78,23 @@ filterPath 为了提升性能，并没有把所有响应数据都返回，过滤
 
 使用BulkProcessor api处理索引文档时，如果是Elasticsearch 7以上的版本就无需传递indexType参数，Elasticsearch7以前的版本带上indexType参数，bulk中的每个操作都可以通过ClientOptions来指定文档添加、修改删除的控制参数，ClientOptions控制参数设置方法可以参考文档：
 
-
 [基于ClientOption指定添加修改文档控制参数](https://esdoc.bbossgroups.com/#/development?id=_482-基于clientoptionupdateoption指定添加修改文档控制参数)
+
+## 1.5 批处理记录处理监测
+
+可以通过以下api在批处理调用拦截器中获取批处理记录情况：
+
+查看队列中追加的总记录数
+
+CommonBulkCommand.getAppendRecords()
+
+查看已经被处理成功的总记录数
+
+CommonBulkCommand.getTotalSize()
+
+查看处理失败的记录数
+
+CommonBulkCommand.getTotalFailedSize()
 
 # 2.BulkProcessor案例
 
@@ -147,19 +170,40 @@ public class TestBulkProcessor {
                 .setFilterPath("took,errors,items.*.error")
                 .addBulkInterceptor(new BulkInterceptor() {
 					public void beforeBulk(BulkCommand bulkCommand) {
-						System.out.println("beforeBulk");
+						//查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
 					}
 
 					public void afterBulk(BulkCommand bulkCommand, String result) {
-						System.out.println("afterBulk："+result);
+						//查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
 					}
 
 					public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
-						System.out.println("exceptionBulk：");
+						//查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
 						exception.printStackTrace();
 					}
 					public void errorBulk(BulkCommand bulkCommand, String result) {
 						System.out.println("errorBulk："+result);
+                        //查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
 					}
 				})//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
 				// https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html

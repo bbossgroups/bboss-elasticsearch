@@ -1,6 +1,6 @@
 ![logo](images/logo.png)
 
-# BBoss <small>6.8.8</small>
+# BBoss <small>6.8.9</small>
 
 > The best Elasticsearch/Opensearch highlevel java rest api
 > 数据采集ETL

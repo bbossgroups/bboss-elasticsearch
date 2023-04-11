@@ -1,6 +1,6 @@
 # Elasticsearch/DB到SFTP/FTP数据同步
 
-通过bboss数据同步工具，可以非常高效快速方便地将Elasticsearch和Database中的数据实时导出（增量/全量）到文件并上传到SFTP/FTP服务器，本文通过案例来详细介绍。
+通过bboss数据同步工具文件输出插件，可以非常高效快速方便地将Elasticsearch和Database中的数据实时导出（增量/全量）到文件并上传到SFTP/FTP服务器，本文通过案例来详细介绍。
 
 ![](https://esdoc.bbossgroups.com/images/datasyn.png)
 
@@ -29,17 +29,17 @@ https://github.com/bbossgroups/elasticsearch-file2ftp
 
 本文只介绍elasticsearch数据同步上传到sftp案例
 
-https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchSplitFileDemo.java
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileFtpBatchSplitFileDemo.java
 
 其他案例直接查看源码：
 
 elasticsearch数据同步上传到ftp案例代码地址
 
-https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ftp/ES2FileFtpBatchDemo.java
 
 数据库同步上传到sftp案例代码地址
 
-https://github.com/bbossgroups/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/db/DB2FileFtpDemo.java
 
 # 3.案例讲解
 
@@ -316,7 +316,9 @@ public class ES2FileFtpBatchSplitFileDemo {
 
  importBuilder.setBatchSize(500).setFetchSize(1000);
 
-## 3.4 SFTP/FTP配置
+## 3.4 文件上传SFTP/FTP
+
+### 3.4.1 SFTP/FTP配置
 
 通过FileOutputConfig和FtpOutConfig两个类配合来设置sftp和ftp上传的的相关配置：
 
@@ -408,6 +410,47 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","10.13.6.127");//同时指定�
       });
       importBuilder.setOutputConfig(fileFtpOupputConfig);
 ```
+
+### 3.4.2 FTP异步发送文件
+
+数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能。
+
+设置sendFileAsyn是否异步发送文件， true 异步发送 false同步发送,默认同步发送。
+
+通过sendFileAsynWorkThreads设置异步发送文件线程数
+
+配置示例如下：
+
+```java
+	//设置是否异步发送文件，true 异步发送 false同步发送,默认同步发送
+	ftpOutConfig.setSendFileAsyn(true);
+	//设置异步发送文件线程数
+	ftpOutConfig.setSendFileAsynWorkThreads(5);
+```
+
+### 3.4.3 备份清理发送完毕文件
+
+生成的文件发送ftp后，可以控制是否备份发送成功文件，同时可以设置备份文件有效期和过期文件清理时间间隔，超过有效期的文件将被删除清理掉：
+
+```java
+ftpOutConfig.setBackupSuccessFiles(true); //设置备份发送成功文件             
+
+ftpOutConfig.setSuccessFilesCleanInterval(5000);  //设置过期文件清理时间间隔，单位：毫秒         
+
+ftpOutConfig.setFileLiveTime(86400);//设置上传成功文件备份保留时间，默认2天，单位：毫秒       
+```
+
+
+
+### 3.4.4 发送ftp失败重传设置
+
+通过FailedFileResendInterval设置失败文件重传时间间隔，-1或者0不重传，默认值5秒，单位：毫秒  
+
+```java
+ftpOutConfig.setFailedFileResendInterval(10000L);    
+```
+
+
 
 ## 3.5 文件名称生成机制配置
 
@@ -1231,7 +1274,48 @@ dataStream.execute();//启动同步作业
          logger.info("job started.");
 ```
 
-## 3.19 同步作业调试、发布和部署运行
+## 3.19 文件切割配置
+
+如果单次调度采集的数据量非常大，可以按照记录数（每个文件最多保存的记录数量）切割成生成多个文件，文件切割非常简单，通过FileOutputConfig.setMaxFileRecordSize方法设置每个文件最多保存的记录数量即可，示例代码如下：
+
+```java
+  fileOutputConfig.setMaxFileRecordSize(1000);//设置切割文件记录数，每千条记录生成一个文件
+```
+
+除了设置文件最多保存的记录数量，还需要设置切割生成的文件的文件名称规则，一般采用规则：
+
+```
+“文件名”+“_时间戳”+“_切割序号”
+```
+
+可以通过FileOutputConfig对象的setFilenameGenerator方法设置文件名称生成接口FilenameGenerator，示例代码如下：
+
+```java
+ //自定义文件名称
+      FileOutputConfig.setFilenameGenerator(new FilenameGenerator() {
+         @Override
+         public String genName( TaskContext taskContext,int fileSeq) {
+                //HN_BOSS_TRADE_YYYYMMDDHHMM_1.txt
+              String formate = "yyyyMMddHHmmss";
+
+   			SimpleDateFormat dateFormat = new SimpleDateFormat(formate);	
+             //获取本次任务执行时间戳
+             String time = dateFormat.format(taskContext.getJobTaskMetrics().getJobStartTime());
+		    //fileSeq为切割文件时的文件递增序号
+            return "HN_BOSS_TRADE_"+time +"_" + _fileSeq+".txt";
+         }
+      });
+```
+
+接口方法genName带有两个参数：
+
+**TaskContext taskContext**, 任务上下文对象，包含任务执行过程中需要的上下文数据，比如任务执行时间戳、其他任务执行过程中需要用到的数据
+
+**int fileSeq**   文件序号，从1开始，自动递增，如果指定了每个文件保存的最大记录数，fileSeq就会被用到文件名称中，用来区分各种文件
+
+
+
+## 3.20 同步作业调试、发布和部署运行
 
 下载elasticsearcch/database-sftp/ftp同步作业[样板工程](https://github.com/bbossgroups/elasticsearch-file2ftp)，定义好自己的作业后，可以按照以下文档调试、发布和部署运行同步作业
 
@@ -1243,7 +1327,7 @@ dataStream.execute();//启动同步作业
 
 作业发布和部署：[参考文档](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_12-%e5%8f%91%e5%b8%83%e7%89%88%e6%9c%ac)
 
-## 3.20 开发交流
+## 3.21 开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 

@@ -12,12 +12,12 @@
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.8</version>
+    <version>6.8.9</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>6.8.8</version>
+    <version>6.8.9</version>
 </dependency>
 ```
 

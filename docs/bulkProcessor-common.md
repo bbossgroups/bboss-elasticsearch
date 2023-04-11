@@ -2,6 +2,10 @@
 
 # 1.通用BulkProcessor介绍
 
+![](images\commonbulkprocessor.png)
+
+## **1.1 API说明**
+
 通用BulkProcessor异步批处理组件支持各种场景的异步处理Bulk操作。通过通用BulkProcessor，可以将不同数据的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，通用BulkProcessor提供三类api来支撑异步批处理功能：
 
 1. insertData（每次加入一条记录到bulk队列中)
@@ -10,6 +14,17 @@
 4. updateDatas(每次可以加入待修改的多条记录到bulk队列中)
 5. deleteData（每次加入一条记录到bulk队列中）
 6. deleteDatas(每次可以加入待删除的多条记录到bulk队列中)
+7. appendData（每次加入一条自定义类型记录到bulk队列中）
+8. appendDatas(每次可以加入自定义多条记录到bulk队列中)
+
+## 1.2 触发批处理机制
+
+通用BulkProcessor异步批处理组件提供了两种触发批处理机制：
+
+1. bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
+2. flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+
+## **1.3 失败重试**
 
 
 通用BulkProcessor提供了失败重试机制，可以方便地设置重试次数，重试时间间隔，是否需要重试的异常类型判断：
@@ -44,16 +59,65 @@
    
    ```
 
+## **1.4 关键参数说明**
+
+bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
+
+flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+
+workThreads bulk处理工作线程数
+
+workThreadQueue bulk处理工作线程池缓冲队列大小
+
+blockedWaitTimeout 指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
+
+bulkAction 设置执行数据批处理接口，实现对数据的异步批处理功能逻辑，可以根据需要将数据批量写入各种关系数据库、分布式数据库、kafka、nosql数据库等
+
+## 1.5 数据批处理接口
+
+执行数据批处理接口，实现对数据的异步批处理功能逻辑，可以根据需要将数据批量写入各种关系数据库、分布式数据库、kafka、nosql数据库等
+
+org.frameworkset.bulk.BulkAction
+
+```java
+public interface BulkAction {
+   public BulkResult execute(CommonBulkCommand command);
+}
+```
+
+可以通过后面的案例了解接口的设置和实现。
+
+## 1.6 批处理记录处理监测
+
+**可以通过以下api在批处理调用拦截器中获取批处理记录情况**
+
+查看队列中追加的总记录数
+
+CommonBulkCommand.getAppendRecords()
+
+查看已经被处理成功的总记录数
+
+CommonBulkCommand.getTotalSize()
+
+查看处理失败的记录数
+
+CommonBulkCommand.getTotalFailedSize()
+
 # 2.通用BulkProcessor案例
+
+## 2.1 导入通用BulkProcessor
+
 通过以下maven坐标导入通用BulkProcessor即可：
 
 ```xml
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-core-entity</artifactId>
-  <version>6.0.2</version>
+  <version>6.0.3</version>
 </dependency>
 ```
+## 2.2 案例代码
+
 用一个简单的demo来介绍通用BulkProcessor功能：
 
 
@@ -117,7 +181,12 @@ public class PersistentBulkProcessor {
 					 * @param bulkCommand
 					 */
 					public void beforeBulk(CommonBulkCommand bulkCommand) {
-
+ //查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
                     }
 
 					/**
@@ -129,6 +198,12 @@ public class PersistentBulkProcessor {
                        if(logger.isDebugEnabled()){
 //                           logger.debug(result.getResult());
                        }
+                         //查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
                     }
 
 					/**
@@ -140,6 +215,12 @@ public class PersistentBulkProcessor {
                         if(logger.isErrorEnabled()){
                             logger.error("exceptionBulk",exception);
                         }
+                         //查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
                     }
 
 					/**
@@ -151,6 +232,12 @@ public class PersistentBulkProcessor {
                         if(logger.isWarnEnabled()){
 //                            logger.warn(result);
                         }
+                         //查看队列中追加的总记录数
+                        logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
+                        logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
+                        logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
                     }
                 })//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
 				/**

@@ -1,6 +1,18 @@
 # 日志采集插件使用指南
 
-基于java语言的日志文件采集插件，支持全量和增量采集两种模式；实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器，支持多线程并行下载和处理远程数据文件，支持本地/ftp/sftp子目录下文件数据采集；支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件；支持自动清理下载完毕后ftp服务器上的文件;使用案例：
+基于java语言的日志文件采集插件,主要特色如下:
+
+1. 支持全量和增量采集两种模式；
+2. 实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器
+3. 支持多线程并行下载和处理远程数据文件
+4. 支持本地/ftp/sftp子目录下文件数据采集；
+5. 支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件；
+6. 支持自动清理下载完毕后ftp服务器上的文件;
+7. 支持大量文件采集场景下的流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件。
+
+使用案例：
+
+源码工程 https://gitee.com/bboss/filelog-elasticsearch
 
    1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
@@ -28,12 +40,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-fileftp</artifactId>
-  <version>6.8.8</version>
+  <version>6.8.9</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-datatran-fileftp:6.8.8'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:6.8.9'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
@@ -98,6 +110,7 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 | FileInputConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 | FileInputConfig.disableScanNewFiles | boolean类型，一次性扫描导入文件功能（导入完毕后作业不会自行关闭，可以手动执行datastream.destory(true)进行关闭，通过属性disableScanNewFiles进行控制：true 一次性扫描导入目录下的文件，false 持续监听新文件（默认值false） | false |
+| FileInputConfig.maxFilesThreshold | int,设置最多允许同时采集的文件数量，> 0起作用，应用场景：ftp或者本地一次性采集大量文件时需要进行控制，默认值 -1（不控制） |  |
 
 添加采集配置示例
 
@@ -1062,7 +1075,104 @@ importBuilder.addCallInterceptor(new CallInterceptor() {
 
 [数据同步任务执行统计信息获取](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2317-%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%9f%e8%ae%a1%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96)
 
-# 10.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 10.一次性采集控制策略
+
+文件采集插件支持实时增量持续采集文件数据，也可以一次性采集文件数据，采集完毕即刻关闭文件采集通道，本节介绍一次性采集文件的几种控制策略,其他情况归纳为持续实时增量持续采集。
+
+## 策略一 disableScanNewFiles
+
+disableScanNewFiles--一次性采集目录下的所有文件，不监听新文件，文件采集完毕后，是否关闭对应文件采集通道参考策略二和策略三，
+
+作业配置举例如下：
+
+```java
+一次性采集完目录下的excel文件：
+ExcelFileInputConfig config = new ExcelFileInputConfig();
+      config.setDisableScanNewFiles(true);
+```
+
+完整案例：[ExcelFile2DBDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo1.java)
+
+## 策略二 closeOlderTime/ignoreOlderTime
+
+文件采集达到末尾后，文件内容超过closeOlderTime/ignoreOlderTime指定的时间没有变化，则关闭文件采集通道
+
+```java
+FileConfig fileConfig = new FileConfig();
+fileConfig.setCloseOlderTime(10000L);//setIgnoreOlderTime
+
+```
+
+完整案例：[SFtpLog2ESClearComplete2ndCloseOlderTimeDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java)
+
+## 策略三 closeEOF
+
+采集文件达到结尾后，立马结束关闭文件采集通道
+
+```java
+FileConfig fileConfig = new FileConfig();
+fileConfig.setCloseEOF(true);//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+```
+
+完整案例：[FileSubDirLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileSubDirLog2ESDemo.java)
+
+# 11.文件备份和清理
+
+提供了采集完毕文件备份清理策略和有效期后清理策略
+
+备份清理策略优先级高于直接清理策略
+
+## 策略一 备份清理策略
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndBackupDemo.java
+
+```java
+FileInputConfig config = new FileInputConfig();
+     
+        config.setMaxFilesThreshold(2);//允许同时采集2个文件
+/**
+ * 备份采集完成文件
+ * true 备份
+ * false 不备份
+ */
+        config.setBackupSuccessFiles(true);
+        /**
+         * 备份文件目录
+         */
+        config.setBackupSuccessFileDir("d:/ftpbackup");
+        /**
+         * 备份文件清理线程执行时间间隔，单位：毫秒
+         * 默认每隔10秒执行一次
+         */
+        config.setBackupSuccessFileInterval(20000l);
+        /**
+         * 备份文件保留时长，单位：秒
+         * 默认保留7天
+         */
+        config.setBackupSuccessFileLiveTime( 10 * 60l);
+```
+
+## 策略二 有效期后清理策略
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java
+
+```java
+FileInputConfig config = new FileInputConfig();
+config.setCleanCompleteFiles(true);//清理采集完成的文件
+config.setFileLiveTime(1000000L);//文件存活有效期，过期文件才会被清理，单位：微秒
+```
+
+# 12.并行采集文件数量控制-流控
+
+大量文件采集场景下需要用到流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件
+
+```java
+FileInputConfig config = new FileInputConfig();
+config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下是否有最新ftp文件信息，采集完成或已经下载过的文件不会再下载采集
+      config.setMaxFilesThreshold(2);//允许同时采集2个文件
+```
+
+# 13.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
