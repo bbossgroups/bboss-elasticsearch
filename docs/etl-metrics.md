@@ -3045,165 +3045,249 @@ https://gitee.com/bboss/bboss-datatran-demo
 
 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/tran/metrics
 
-## 4.8 采集文件数据并进行统计处理
+## 4.7 采集文件数据并进行统计处理
 
 ```java
-ImportBuilder importBuilder = new ImportBuilder() ;
-     
-      importBuilder.setInputConfig(dbInputConfig);
+ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(40)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+		importBuilder.setFlushInterval(10000l);
+//		importBuilder.setSplitFieldName("@message");
+//		importBuilder.setSplitHandler(new SplitHandler() {
+//			@Override
+//			public List<KeyMap<String, Object>> splitField(TaskContext taskContext,
+//														   Record record, Object splitValue) {
+//				Map<String,Object > data = (Map<String, Object>) record.getData();
+//				List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
+//				//模拟将数据切割为10条记录
+//				for(int i = 0 ; i < 10; i ++){
+//					KeyMap<String, Object> d = new KeyMap<String, Object>();
+//					d.put("message",i+"-"+(String)data.get("@message"));
+////					d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+//					splitDatas.add(d);
+//				}
+//				return splitDatas;
+//			}
+//		});
+		importBuilder.addFieldMapping("@message","message");
+		FileInputConfig config = new FileInputConfig();
+		config.setCharsetEncode("GB2312");
+		//.*.txt.[0-9]+$
+		//[17:21:32:388]
+//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
+//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
+//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
+//				.addField("tag","error") //添加字段tag到记录中
+//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
+
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//				"es.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//				.addField("tag","elasticsearch")//添加字段tag到记录中
+//				.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//						new FileFilter() {
+//							@Override
+//							public boolean accept(File dir, String name, FileConfig fileConfig) {
+//								//判断是否采集文件数据，返回true标识采集，false 不采集
+//								return name.equals("es.log");
+//							}
+//						},//指定文件过滤器
+//						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//						.addField("tag","elasticsearch")//添加字段tag到记录中
+//						.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
 
 
-        //bulkprocessor和Elasticsearch输出插件共用Elasticsearch数据源，因此额外进行数据源初始化定义
-        Map properties = new HashMap();
+		config.addConfig(new FileConfig().setSourcePath("D:\\logs")//指定目录
+										.setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+										.setFileFilter(new FileFilter() {
+											@Override
+											public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+												//判断是否采集文件数据，返回true标识采集，false 不采集
+												return fileInfo.getFileName().equals("metrics-report.log");
+											}
+										})//指定文件过滤器
+										.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+										.addField("tag","elasticsearch")//添加字段tag到记录中
+										.setEnableInode(false)
+				//				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+								//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+						);
 
-//default为默认的Elasitcsearch数据源名称
-        properties.put("elasticsearch.serverNames","default");
+//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
+		/**
+		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
+		 * hostIp：主机ip
+		 * hostName：主机名称
+		 * filePath： 文件路径
+		 * timestamp：采集的时间戳
+		 * pointer：记录对应的截止文件指针,long类型
+		 * fileId：linux文件号，windows系统对应文件路径
+		 * 例如：
+		 * {
+		 *   "_index": "filelog",
+		 *   "_type": "_doc",
+		 *   "_id": "HKErgXgBivowv_nD0Jhn",
+		 *   "_version": 1,
+		 *   "_score": null,
+		 *   "_source": {
+		 *     "title": "解放",
+		 *     "subtitle": "小康",
+		 *     "ipinfo": "",
+		 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
+		 *     "author": "张无忌",
+		 *     "@filemeta": {
+		 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
+		 *       "hostname": "",
+		 *       "pointer": 3342583,
+		 *       "hostip": "",
+		 *       "timestamp": 1617074824542,
+		 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
+		 *     },
+		 *     "message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
+		 *   }
+		 * }
+		 *
+		 * true 开启 false 关闭
+		 */
+		config.setEnableMeta(true);
+		importBuilder.setInputConfig(config);
+		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default");
+		//指定索引名称，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
+		elasticsearchOutputConfig.setIndex("metrics-report");
+		//指定索引类型，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
+		//elasticsearchOutputConfig.setIndexType("idxtype");
+		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 
+
+        //流处理配置开始
         /**
-         * 默认的default数据源配置，每个配置项可以加default.前缀，也可以不加
+         * 构建一个指标数据写入Elasticsearch批处理器
          */
+        BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
+        bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
 
+                .setBulkSizes(200)//按批处理数据记录数
+                .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
 
-        properties.put("default.elasticsearch.rest.hostNames","192.168.137.1:9200");
-        properties.put("default.elasticsearch.showTemplate","true");
-        properties.put("default.elasticUser","elastic");
-        properties.put("default.elasticPassword","changeme");
-        properties.put("default.elasticsearch.failAllContinue","true");
-        properties.put("default.http.timeoutSocket","60000");
-        properties.put("default.http.timeoutConnection","40000");
-        properties.put("default.http.connectionRequestTimeout","70000");
-        properties.put("default.http.maxTotal","200");
-        properties.put("default.http.defaultMaxPerRoute","100");
-        ElasticSearchBoot.boot(properties);
+                .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
+                .setWorkThreads(10)//bulk处理工作线程数
+                .setWorkThreadQueue(50)//bulk处理工作线程池缓冲队列大小
+                .setBulkProcessorName("detail_bulkprocessor")//工作线程名称，实际名称为BulkProcessorName-+线程编号
+                .setBulkRejectMessage("detail bulkprocessor")//bulk处理操作被每被拒绝WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息提示前缀
+                .setElasticsearch("default")//指定明细Elasticsearch集群数据源名称，bboss可以支持多数据源
+                .setFilterPath(BulkConfig.ERROR_FILTER_PATH)
+                .addBulkInterceptor(new BulkInterceptor() {
+                    public void beforeBulk(BulkCommand bulkCommand) {
 
-      BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
-      bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
+                    }
 
-            .setBulkSizes(200)//按批处理数据记录数
-            .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
-
-            .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
-            .setWorkThreads(10)//bulk处理工作线程数
-            .setWorkThreadQueue(50)//bulk处理工作线程池缓冲队列大小
-            .setBulkProcessorName("detail_bulkprocessor")//工作线程名称，实际名称为BulkProcessorName-+线程编号
-            .setBulkRejectMessage("detail bulkprocessor")//bulk处理操作被每被拒绝WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息提示前缀
-            .setElasticsearch("default")//指定明细Elasticsearch集群数据源名称，bboss可以支持多数据源
-            .setFilterPath(BulkConfig.ERROR_FILTER_PATH)
-            .addBulkInterceptor(new BulkInterceptor() {
-               public void beforeBulk(BulkCommand bulkCommand) {
-
-               }
-
-               public void afterBulk(BulkCommand bulkCommand, String result) {
-                  if(logger.isDebugEnabled()){
-                     logger.debug(result);
-                  }
-               }
-
-               public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
-                  if(logger.isErrorEnabled()){
-                     logger.error("exceptionBulk",exception);
-                  }
-               }
-               public void errorBulk(BulkCommand bulkCommand, String result) {
-                  if(logger.isWarnEnabled()){
-                     logger.warn(result);
-                  }
-               }
-            })//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
-      ;
-      /**
-       * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
-       */
-      BulkProcessor bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
-      ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
-         @Override
-         public void builderMetrics(){
-            //指标1 按操作模块统计模块操作次数
-            addMetricBuilder(new MetricBuilder() {
-               @Override
-               public String buildMetricKey(MapData mapData){
-                        CommonRecord data = (CommonRecord) mapData.getData();
-                        String operModule = (String) data.getData("operModule");
-                        if(operModule == null || operModule.equals("")){
-                            operModule = "未知模块";
+                    public void afterBulk(BulkCommand bulkCommand, String result) {
+                        if(logger.isDebugEnabled()){
+                            logger.debug(result);
                         }
-                  return operModule;
-               }
-               @Override
-               public KeyMetricBuilder metricBuilder(){
-                  return new KeyMetricBuilder() {
-                     @Override
-                     public KeyMetric build() {
-                        return new LoginModuleMetric();
-                     }
-                  };
-               }
-            });
+                    }
 
-            //指标2 按照用户统计操作次数
-            addMetricBuilder(new MetricBuilder() {
-               @Override
-               public String buildMetricKey(MapData mapData){
-                        CommonRecord data = (CommonRecord) mapData.getData();
-                        String logUser = (String) data.getData("logOperuser");//
-                        if(logUser == null || logUser.equals("")){
-                            logUser = "未知用户";
+                    public void exceptionBulk(BulkCommand bulkCommand, Throwable exception) {
+                        if(logger.isErrorEnabled()){
+                            logger.error("exceptionBulk",exception);
                         }
-                  return logUser;
-               }
-               @Override
-               public KeyMetricBuilder metricBuilder(){
-                  return new KeyMetricBuilder() {
-                     @Override
-                     public KeyMetric build() {
-                        return new LoginUserMetric();
-                     }
-                  };
-               }
-            });
-            // key metrics中包含两个segment(S0,S1)
-            setSegmentBoundSize(5000000);
-            setTimeWindows(60 );//统计时间窗口
-                this.setTimeWindowType(MetricsConfig.TIME_WINDOW_TYPE_MINUTE);
-         }
+                    }
+                    public void errorBulk(BulkCommand bulkCommand, String result) {
+                        if(logger.isWarnEnabled()){
+                            logger.warn(result);
+                        }
+                    }
+                })//添加批量处理执行拦截器，可以通过addBulkInterceptor方法添加多个拦截器
+        ;
+        /**
+         * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
+         */
+        BulkProcessor bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
+        ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
+                @Override
+                public void map(MapData mapData) {
+                    CommonRecord data = (CommonRecord) mapData.getData();
+                    //可以添加多个指标
+
+                    //指标1 按操作模块统计模块操作次数
+                    String operModule = (String) data.getData("operModule");
+                    if(operModule == null || operModule.equals("")){
+                        operModule = "未知模块";
+                    }
+                    String metricKey = operModule;
+                    metric(metricKey, mapData, new KeyMetricBuilder() {
+                        @Override
+                        public KeyMetric build() {
+                            return new LoginModuleMetric();
+                        }
+
+                    });
+
+                    //指标2 按照用户统计操作次数
+                    String logUser = (String) data.getData("logOperuser");
+                    metricKey = logUser;
+                    metric(metricKey, mapData, new KeyMetricBuilder() {
+                        @Override
+                        public KeyMetric build() {
+                            return new LoginUserMetric();
+                        }
+
+                    });
+
+
+                }
 
             /**
              * 存储指标计算结果
              * @param metrics
              */
-         @Override
-         public void persistent(Collection< KeyMetric> metrics) {
-            metrics.forEach(keyMetric->{
-               if(keyMetric instanceof LoginModuleMetric) {
+            @Override
+            public void persistent(Collection< KeyMetric> metrics) {
+                metrics.forEach(keyMetric->{
+                    if(keyMetric instanceof LoginModuleMetric) {
                         LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
-                  Map esData = new HashMap();
-                  esData.put("dataTime", testKeyMetric.getDataTime());
-                  esData.put("hour", testKeyMetric.getDayHour());
-                  esData.put("minute", testKeyMetric.getMinute());
-                  esData.put("day", testKeyMetric.getDay());
-                  esData.put("metric", testKeyMetric.getMetric());
-                  esData.put("operModule", testKeyMetric.getOperModule());
-                  esData.put("count", testKeyMetric.getCount());
-                  bulkProcessor.insertData("vops-loginmodulemetrics", esData);
-               }
-               else if(keyMetric instanceof LoginUserMetric) {
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());//logOpertime字段值
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("operModule", testKeyMetric.getOperModule());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+                    }
+                    else if(keyMetric instanceof LoginUserMetric) {
                         LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
-                  Map esData = new HashMap();
-                  esData.put("dataTime", testKeyMetric.getDataTime());
-                  esData.put("hour", testKeyMetric.getDayHour());
-                  esData.put("minute", testKeyMetric.getMinute());
-                  esData.put("day", testKeyMetric.getDay());
-                  esData.put("metric", testKeyMetric.getMetric());
-                  esData.put("logUser", testKeyMetric.getLogUser());
-                  esData.put("count", testKeyMetric.getCount());
-                  bulkProcessor.insertData("vops-loginusermetrics", esData);
-               }
+                        Map esData = new HashMap();
+                        esData.put("dataTime", testKeyMetric.getDataTime());//logOpertime字段值
+                        esData.put("hour", testKeyMetric.getDayHour());
+                        esData.put("minute", testKeyMetric.getMinute());
+                        esData.put("day", testKeyMetric.getDay());
+                        esData.put("metric", testKeyMetric.getMetric());
+                        esData.put("logUser", testKeyMetric.getLogUser());
+                        esData.put("count", testKeyMetric.getCount());
+                        bulkProcessor.insertData("vops-loginusermetrics", esData);
+                    }
 
-            });
+                });
 
-         }
-      };
+            }
+        };
         //作业结束后销毁初始化阶段自定义的http数据源
         importBuilder.setImportEndAction(new ImportEndAction() {
             @Override
@@ -3222,129 +3306,191 @@ ImportBuilder importBuilder = new ImportBuilder() ;
             }
         });
 
-      importBuilder.setDataTimeField("logOpertime");
-        importBuilder.setUseDefaultMapData(false);
-      importBuilder.addMetrics(keyMetrics);
+        importBuilder.setDataTimeField("logOpertime");//设置指标统计时间维度字段
+        importBuilder.addMetrics(keyMetrics);
+        //流处理配置结束
 
-      ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
-      elasticsearchOutputConfig
-                .setTargetElasticsearch("default")
-            .setIndex("dbdemo")
-            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
-            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
-            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
-      
+		//增量配置开始
+		importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+		//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+		importBuilder.setLastValueStorePath("fileloges_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		//增量配置结束
 
-      importBuilder.setOutputConfig(elasticsearchOutputConfig);
-
-      /**
-       * 设置IP地址信息库
-       */
-      importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
-      importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
-      importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
-
-      importBuilder
+		//映射和转换配置开始
+//		/**
+//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
+//		 */
+//		importBuilder.addFieldMapping("document_id","docId")
+//				.addFieldMapping("docwtime","docwTime")
+//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
 //
-            .setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
-            .setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-            .setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
-
-      //定时任务配置，
-      importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-//              .setScheduleDate(date) //指定任务开始执行时间：日期
-            .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-            .setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
-      //定时任务配置结束
 //
-//    //设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器
-      importBuilder.addCallInterceptor(new CallInterceptor() {
-         @Override
-         public void preCall(TaskContext taskContext) {
-            System.out.println("preCall");
-         }
-
-         @Override
-         public void afterCall(TaskContext taskContext) {
-            System.out.println("afterCall");
-         }
-
-         @Override
-         public void throwException(TaskContext taskContext, Throwable e) {
-            System.out.println("throwException");
-         }
-      });
-//    //设置任务执行拦截器结束，可以添加多个
-      //增量配置开始
-//    importBuilder.setStatusDbname("test");//设置增量状态数据源名称
-      importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
-      importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
-//    setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-      importBuilder.setStatusDbname("testStatus");//指定增量状态数据源名称
-//    importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
-      importBuilder.setLastValueStoreTableName("logstable");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
-      importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
-
-//
-      /**
-       * 通过DataRefactor接口，实现数据加工、清洗、转换、记录丢弃、打标等操作，将处理后的数据交给输出插件进行输出或者指标计算器进行指标统计计算
-       */
-      importBuilder.setDataRefactor(new DataRefactor() {
-         public void refactor(Context context) throws Exception  {
-//          Date date = context.getDateValue("LOG_OPERTIME");
-            context.addFieldValue("collecttime",new Date());
-            IpInfo ipInfo = context.getIpInfoByIp("219.133.80.136");
-            if(ipInfo != null)
-               context.addFieldValue("ipInfo", SimpleStringUtil.object2json(ipInfo));
-         }
-      });
-      //映射和转换配置结束
-
-      /**
-       * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
-       */
-      importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
-      importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-      importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
-      importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-      importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-
-        //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
-        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
-         @Override
-         public void success(TaskCommand<String,String> taskCommand, String result) {
-            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-            logger.info(taskMetrics.toString());
-            logger.debug(result);
-         }
-
-         @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
-            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-            logger.info(taskMetrics.toString());
-            logger.debug(result);
-         }
-
-         @Override
-         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
-            TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
-            logger.debug(taskMetrics.toString());
-         }
+//		/**
+//		 * 为每条记录添加额外的字段和值
+//		 * 可以为基本数据类型，也可以是复杂的对象
+//		 */
+//		importBuilder.addFieldValue("testF1","f1value");
+//		importBuilder.addFieldValue("testInt",0);
+//		importBuilder.addFieldValue("testDate",new Date());
+//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
+//		TestObject testObject = new TestObject();
+//		testObject.setId("testid");
+//		testObject.setName("jackson");
+//		importBuilder.addFieldValue("testObject",testObject);
+		importBuilder.addFieldValue("author","张无忌");
+//		importBuilder.addFieldMapping("operModule","OPER_MODULE");
+//		importBuilder.addFieldMapping("logContent","LOG_CONTENT");
 
 
-      });
+		/**
+		 * 重新设置es数据结构
+		 */
+		importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+				//可以根据条件定义是否丢弃当前记录
+				//context.setDrop(true);return;
+//				if(s.incrementAndGet() % 2 == 0) {
+//					context.setDrop(true);
+//					return;
+//				}
+//				System.out.println(data);
+
+//				context.addFieldValue("author","duoduo");//将会覆盖全局设置的author变量
+				context.addFieldValue("title","解放");
+				context.addFieldValue("subtitle","小康");
+				
+				//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
+				String message = context.getStringValue("@message");
+				String[] fvs = message.split(" ");//空格解析字段
+				/**
+				 * //解析示意代码
+				 * String[] fvs = message.split(" ");//空格解析字段
+				 * //将解析后的信息添加到记录中
+				 * context.addFieldValue("f1",fvs[0]);
+				 * context.addFieldValue("f2",fvs[1]);
+				 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
+				 */
+				//直接获取文件元信息
+				Map fileMata = (Map)context.getValue("@filemeta");
+				/**
+				 * 文件插件支持的元信息字段如下：
+				 * hostIp：主机ip
+				 * hostName：主机名称
+				 * filePath： 文件路径
+				 * timestamp：采集的时间戳
+				 * pointer：记录对应的截止文件指针,long类型
+				 * fileId：linux文件号，windows系统对应文件路径
+				 */
+				String filePath = (String)context.getMetaValue("filePath");
+				//可以根据文件路径信息设置不同的索引
+//				if(filePath.endsWith("metrics-report.log")) {
+//					context.setIndex("metrics-report");
+//				}
+//				else if(filePath.endsWith("es.log")){
+//					 context.setIndex("eslog");
+//				}
 
 
-      /**
-       * 构建和执行数据库表数据导入es和指标统计作业
-       */
-      DataStream dataStream = importBuilder.builder();
-      dataStream.execute();
+//				context.addIgnoreFieldMapping("title");
+				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+//				context.addIgnoreFieldMapping("author");
+
+//				//修改字段名称title为新名称newTitle，并且修改字段的值
+//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+				/**
+				 * 获取ip对应的运营商和区域信息
+				 */
+				/**
+				IpInfo ipInfo = (IpInfo) context.getIpInfo(fvs[2]);
+				if(ipInfo != null)
+					context.addFieldValue("ipinfo", ipInfo);
+				else{
+					context.addFieldValue("ipinfo", "");
+				}*/
+				DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
+//				Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
+//				context.addFieldValue("logOpertime",optime);
+				context.addFieldValue("newcollecttime",new Date());
+
+				/**
+				 //关联查询数据,单值查询
+				 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+				 "select * from head where billid = ? and othercondition= ?",
+				 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+				 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+				 context.addFieldValue("headdata",headdata);
+				 //关联查询数据,多值查询
+				 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+				 "select * from facedata where billid = ?",
+				 context.getIntegerValue("billid"));
+				 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+				 context.addFieldValue("facedatas",facedatas);
+				 */
+			}
+		});
+		//映射和转换配置结束
+		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+			@Override
+			public void success(TaskCommand<String,String> taskCommand, String o) {
+				logger.info("result:"+o);
+			}
+
+			@Override
+			public void error(TaskCommand<String,String> taskCommand, String o) {
+				logger.warn("error:"+o);
+			}
+
+			@Override
+			public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+				logger.warn("error:",exception);
+			}
+
+
+		});
+		/**
+		 * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
+		 */
+		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+		importBuilder.setPrintTaskLog(true);
+
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+				if(taskContext != null) {
+					FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+					logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+				}
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Throwable e) {
+				if(taskContext != null) {
+					FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+					logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+				}
+			}
+		});
+		/**
+		 * 构建作业
+		 */
+		DataStream dataStream = importBuilder.builder();
+		dataStream.execute();//启动同步作业
+		logger.info("job started.");
 ```
 
 
 
-##  4.7 典型应用案例---互联网用户行为分析监控
+##  4.8 典型应用案例---互联网用户行为分析监控
 
 互联网电子渠道用户行为分析监控系统：采用bboss流批一体化计算框架，构建起一整套用户行为监控指标体系，完美地实现互联网用户行为实时分析和监控功能。
 
