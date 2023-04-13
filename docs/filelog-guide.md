@@ -1,8 +1,8 @@
-# 日志采集插件使用指南
+# 超级棒！文件&日志采集插件使用指南
 
-基于java语言的日志文件采集插件,主要特色如下:
+本文介绍基于java语言的文件&日志数据采集插件,插件主要特色如下:
 
-1. 支持全量和增量采集两种模式；
+1. 支持全量和增量采集两种模式；采集-转换-清洗-[流计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理
 2. 实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器
 3. 支持多线程并行下载和处理远程数据文件
 4. 支持本地/ftp/sftp子目录下文件数据采集；
@@ -439,17 +439,25 @@ https://github.com/bbossgroups/filelog-elasticsearch
 
 https://gitee.com/bboss/filelog-elasticsearch
 
-基于组件org.frameworkset.tran.output.es.FileLog2ESImportBuilder实现日志数据采集并写入Elasticsearch作业
+基于组件ImportBuilder、FileInputConfig、ElasticsearchOutputConfig实现日志数据采集并写入Elasticsearch作业
 
 ```java
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
+import org.frameworkset.tran.ExportResultHandler;
+import org.frameworkset.tran.config.ImportBuilder;
 import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.input.file.FileConfig;
-import org.frameworkset.tran.input.file.FileInputConfig;
-import org.frameworkset.tran.output.es.FileLog2ESImportBuilder;
+import org.frameworkset.tran.input.file.FileFilter;
+import org.frameworkset.tran.input.file.FileTaskContext;
+import org.frameworkset.tran.input.file.FilterFileInfo;
+import org.frameworkset.tran.plugin.es.output.ElasticsearchOutputConfig;
+import org.frameworkset.tran.plugin.file.input.FileInputConfig;
+import org.frameworkset.tran.schedule.CallInterceptor;
+import org.frameworkset.tran.schedule.TaskContext;
+import org.frameworkset.tran.task.TaskCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -458,41 +466,53 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * <p>Description: 从日志文件采集日志数据并保存到Elasticsearch</p>
-
+ * <p>Description: 从日志文件采集日志数据并保存到elasticsearch</p>
+ * <p></p>
+ * <p>Copyright (c) 2020</p>
+ * @Date 2021/2/1 14:39
+ * @author biaoping.yin
+ * @version 1.0
  */
 public class FileLog2ESDemo {
 	private static Logger logger = LoggerFactory.getLogger(FileLog2ESDemo.class);
 	public static void main(String[] args){
 
-
-		FileLog2ESImportBuilder importBuilder = new FileLog2ESImportBuilder();
-		importBuilder.setBatchSize(500)//设置批量入库的记录数
+//		Pattern pattern = Pattern.compile("(?!.*(endpoint)).*");
+//		logger.info(""+pattern.matcher("xxxxsssssssss").find());
+//		logger.info(""+pattern.matcher("xxxxsssendpointssssss").find());
+		try {
+//			ElasticSearchHelper.getRestClientUtil().getDocumentByField("xxxx-*","requestId","xxxx");
+			//清除测试表,导入的时候回重建表，测试的时候加上为了看测试效果，实际线上环境不要删表
+//			String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("errorlog");
+			String repsonse = ElasticSearchHelper.getRestClientUtil().dropIndice("metrics-report");
+			logger.info(repsonse);
+		} catch (Exception e) {
+		}
+		ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(40)//设置批量入库的记录数
 				.setFetchSize(1000);//设置按批读取文件行数
 		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
 		importBuilder.setFlushInterval(10000l);
-
+//		importBuilder.setSplitFieldName("@message");
+//		importBuilder.setSplitHandler(new SplitHandler() {
+//			@Override
+//			public List<KeyMap<String, Object>> splitField(TaskContext taskContext,
+//														   Record record, Object splitValue) {
+//				Map<String,Object > data = (Map<String, Object>) record.getData();
+//				List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
+//				//模拟将数据切割为10条记录
+//				for(int i = 0 ; i < 10; i ++){
+//					KeyMap<String, Object> d = new KeyMap<String, Object>();
+//					d.put("message",i+"-"+(String)data.get("@message"));
+////					d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+//					splitDatas.add(d);
+//				}
+//				return splitDatas;
+//			}
+//		});
+		importBuilder.addFieldMapping("@message","message");
 		FileInputConfig config = new FileInputConfig();
-        /**
-		 * 备份采集完成文件
-		 * true 备份
-		 * false 不备份
-		 */
-		config.setBackupSuccessFiles(true);
-		/**
-		 * 备份文件目录
-		 */
-		config.setBackupSuccessFileDir("d:/ftpbackup");
-		/**
-		 * 备份文件清理线程执行时间间隔，单位：毫秒
-		 * 默认每隔10秒执行一次
-		 */
-		config.setBackupSuccessFileInterval(20000l);
-		/**
-		 * 备份文件保留时长，单位：秒
-		 * 默认保留7天
-		 */
-		config.setBackupSuccessFileLiveTime( 10 * 60l);
+		config.setCharsetEncode("GB2312");
 		//.*.txt.[0-9]+$
 		//[17:21:32:388]
 //		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
@@ -504,15 +524,49 @@ public class FileLog2ESDemo {
 //				.addField("tag","error") //添加字段tag到记录中
 //				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
 
-		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
-				"es.log",//指定文件名称，可以是正则表达式
-				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-				.addField("tag","elasticsearch")//添加字段tag到记录中
-				.setEnableInode(false)
-				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
-		);
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//				"es.log",//指定文件名称，可以是正则表达式
+//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//				.addField("tag","elasticsearch")//添加字段tag到记录中
+//				.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
+//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+//						new FileFilter() {
+//							@Override
+//							public boolean accept(File dir, String name, FileConfig fileConfig) {
+//								//判断是否采集文件数据，返回true标识采集，false 不采集
+//								return name.equals("es.log");
+//							}
+//						},//指定文件过滤器
+//						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+//						.addField("tag","elasticsearch")//添加字段tag到记录中
+//						.setEnableInode(false)
+////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+//		);
 
+
+		config.addConfig(new FileConfig().setSourcePath("D:\\logs")//指定目录
+										.setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+										.setFileFilter(new FileFilter() {
+											@Override
+											public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+												//判断是否采集文件数据，返回true标识采集，false 不采集
+												return fileInfo.getFileName().equals("metrics-report.log");
+											}
+										})//指定文件过滤器
+										.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+										.addField("tag","elasticsearch")//添加字段tag到记录中
+										.setEnableInode(false)
+				//				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+								//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+						);
+
+//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
 		/**
 		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
 		 * hostIp：主机ip
@@ -549,23 +603,47 @@ public class FileLog2ESDemo {
 		 * true 开启 false 关闭
 		 */
 		config.setEnableMeta(true);
-		importBuilder.setFileInputConfig(config);
+		importBuilder.setInputConfig(config);
 		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
-		importBuilder.setTargetElasticsearch("default");
+		ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+		elasticsearchOutputConfig.setTargetElasticsearch("default");
 		//指定索引名称，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
-		importBuilder.setIndex("filelog");
+		elasticsearchOutputConfig.setIndex("metrics-report");
 		//指定索引类型，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
-		//importBuilder.setIndexType("idxtype");
-
+		//elasticsearchOutputConfig.setIndexType("idxtype");
+		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 		//增量配置开始
 		importBuilder.setFromFirst(false);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
 		//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
-		importBuilder.setLastValueStorePath("filelog_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+		importBuilder.setLastValueStorePath("fileloges_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 		//增量配置结束
 
 		//映射和转换配置开始
-
+//		/**
+//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
+//		 */
+//		importBuilder.addFieldMapping("document_id","docId")
+//				.addFieldMapping("docwtime","docwTime")
+//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
+//
+//
+//		/**
+//		 * 为每条记录添加额外的字段和值
+//		 * 可以为基本数据类型，也可以是复杂的对象
+//		 */
+//		importBuilder.addFieldValue("testF1","f1value");
+//		importBuilder.addFieldValue("testInt",0);
+//		importBuilder.addFieldValue("testDate",new Date());
+//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
+//		TestObject testObject = new TestObject();
+//		testObject.setId("testid");
+//		testObject.setName("jackson");
+//		importBuilder.addFieldValue("testObject",testObject);
 		importBuilder.addFieldValue("author","张无忌");
+//		importBuilder.addFieldMapping("operModule","OPER_MODULE");
+//		importBuilder.addFieldMapping("logContent","LOG_CONTENT");
+
 
 		/**
 		 * 重新设置es数据结构
@@ -608,12 +686,12 @@ public class FileLog2ESDemo {
 				 */
 				String filePath = (String)context.getMetaValue("filePath");
 				//可以根据文件路径信息设置不同的索引
-				if(filePath.endsWith("error-2021-03-27-1.log")) {
-					context.setIndex("errorlog");
-				}
-				else if(filePath.endsWith("es.log")){
-					 context.setIndex("eslog");
-				}
+//				if(filePath.endsWith("metrics-report.log")) {
+//					context.setIndex("metrics-report");
+//				}
+//				else if(filePath.endsWith("es.log")){
+//					 context.setIndex("eslog");
+//				}
 
 
 //				context.addIgnoreFieldMapping("title");
@@ -637,13 +715,43 @@ public class FileLog2ESDemo {
 //				context.addFieldValue("logOpertime",optime);
 				context.addFieldValue("newcollecttime",new Date());
 
-				
+				/**
+				 //关联查询数据,单值查询
+				 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+				 "select * from head where billid = ? and othercondition= ?",
+				 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+				 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+				 context.addFieldValue("headdata",headdata);
+				 //关联查询数据,多值查询
+				 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+				 "select * from facedata where billid = ?",
+				 context.getIntegerValue("billid"));
+				 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+				 context.addFieldValue("facedatas",facedatas);
+				 */
 			}
 		});
 		//映射和转换配置结束
+		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+			@Override
+			public void success(TaskCommand<String,String> taskCommand, String o) {
+				logger.info("result:"+o);
+			}
 
+			@Override
+			public void error(TaskCommand<String,String> taskCommand, String o) {
+				logger.warn("error:"+o);
+			}
+
+			@Override
+			public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+				logger.warn("error:",exception);
+			}
+
+
+		});
 		/**
-		 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+		 * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
 		 */
 		importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
 		importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
@@ -652,11 +760,33 @@ public class FileLog2ESDemo {
 		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 		importBuilder.setPrintTaskLog(true);
 
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+				if(taskContext != null) {
+					FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+					logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+				}
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Throwable e) {
+				if(taskContext != null) {
+					FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+					logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+				}
+			}
+		});
 		/**
-		 * 启动日志数据采集并写入Elasticsearch作业
+		 * 构建作业
 		 */
 		DataStream dataStream = importBuilder.builder();
-		dataStream.execute();//启动同步作业
+		dataStream.execute();//启动采集作业
 		logger.info("job started.");
 	}
 }
@@ -695,7 +825,7 @@ https://github.com/bbossgroups/filelog-elasticsearch
 
 https://gitee.com/bboss/filelog-elasticsearch
 
-基于组件org.frameworkset.tran.output.db.FileLog2DBImportBuilder实现日志数据采集并写入数据库作业
+基于组件ImportBuilder、FileInputConfig、DBOutputConfig实现日志数据采集并写入数据库作业
 
 浏览完整的案例代码：
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java
@@ -791,7 +921,7 @@ https://github.com/bbossgroups/kafka2x-elasticsearch
 
 https://gitee.com/bboss/kafka2x-elasticsearch
 
-基于组件org.frameworkset.tran.kafka.output.filelog.FileLog2KafkaImportBuilder实现日志数据采集并发送到kafka作业
+基于组件ImportBuilder、FileInputConfig、**Kafka2OutputConfig** 实现日志数据采集并发送到kafka作业
 
 浏览完整的案例源码
 
@@ -1172,8 +1302,14 @@ config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下�
       config.setMaxFilesThreshold(2);//允许同时采集2个文件
 ```
 
-# 13.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 13.流计算融合处理
+
+文件&日志数据采集插件除了支持传统的采集-转换-清洗-入库处理，还提供了强大的采集-转换-清洗-[流计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理能力，详见案例介绍：
+
+https://esdoc.bbossgroups.com/#/etl-metrics?id=_4%e6%a1%88%e4%be%8b%e4%bb%8b%e7%bb%8d
+
+# 14.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
-https://my.oschina.net/bboss/blog/5207723
+https://esdoc.bbossgroups.com/#/filelog-oom
