@@ -1306,7 +1306,7 @@ config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下�
 
 文件&日志数据采集插件除了支持传统的采集-转换-清洗-入库处理，还提供了强大的采集-转换-清洗-[流计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理能力，详见案例介绍：
 
-https://esdoc.bbossgroups.com/#/etl-metrics?id=_4%e6%a1%88%e4%be%8b%e4%bb%8b%e7%bb%8d
+[采集文件数据并进行统计处理](https://esdoc.bbossgroups.com/#/etl-metrics?id=_47-采集文件数据并进行统计处理)
 
 # 14.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 

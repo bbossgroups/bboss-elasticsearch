@@ -3047,6 +3047,10 @@ https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/framewor
 
 ## 4.7 采集文件数据并进行统计处理
 
+下面是一个实时监听采集文件数据写入Elasticsearch，同时进行流计算并将计算结果也异步批量写入Elasticsearch的案例：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/FileLog2ESWithMetricsDemo.java
+
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
 		importBuilder.setBatchSize(40)//设置批量入库的记录数
@@ -3072,45 +3076,18 @@ ImportBuilder importBuilder = new ImportBuilder();
 //		});
 		importBuilder.addFieldMapping("@message","message");
 		FileInputConfig config = new FileInputConfig();
-		config.setCharsetEncode("GB2312");
-		//.*.txt.[0-9]+$
-		//[17:21:32:388]
-//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
-//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
-//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-//				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
-//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
-//				.addField("tag","error") //添加字段tag到记录中
-//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
+		config.setCharsetEncode("UTF-8");
+	
+ 		FileConfig fileConfig = new FileConfig();
+        fileConfig.setFieldSplit(";");//指定日志记录字段分割符
+        //指定字段映射配置
+        fileConfig.addCellMapping(0, "logOperTime");
 
-//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
-//				"es.log",//指定文件名称，可以是正则表达式
-//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-//				.addField("tag","elasticsearch")//添加字段tag到记录中
-//				.setEnableInode(false)
-////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
-//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
-//		);
-//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
-//						new FileFilter() {
-//							@Override
-//							public boolean accept(File dir, String name, FileConfig fileConfig) {
-//								//判断是否采集文件数据，返回true标识采集，false 不采集
-//								return name.equals("es.log");
-//							}
-//						},//指定文件过滤器
-//						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
-//						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
-//						.addField("tag","elasticsearch")//添加字段tag到记录中
-//						.setEnableInode(false)
-////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
-//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
-//		);
+        fileConfig.addCellMapping(1, "operModule");
+        fileConfig.addCellMapping(2, "logOperuser");
 
 
-		config.addConfig(new FileConfig().setSourcePath("D:\\logs")//指定目录
+		config.addConfig(fileConfig.setSourcePath("D:\\logs")//指定目录
 										.setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
 										.setFileFilter(new FileFilter() {
 											@Override
@@ -3119,49 +3096,13 @@ ImportBuilder importBuilder = new ImportBuilder();
 												return fileInfo.getFileName().equals("metrics-report.log");
 											}
 										})//指定文件过滤器
-										.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+										
 										.addField("tag","elasticsearch")//添加字段tag到记录中
 										.setEnableInode(false)
 				//				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
 								//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
 						);
 
-//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
-		/**
-		 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
-		 * hostIp：主机ip
-		 * hostName：主机名称
-		 * filePath： 文件路径
-		 * timestamp：采集的时间戳
-		 * pointer：记录对应的截止文件指针,long类型
-		 * fileId：linux文件号，windows系统对应文件路径
-		 * 例如：
-		 * {
-		 *   "_index": "filelog",
-		 *   "_type": "_doc",
-		 *   "_id": "HKErgXgBivowv_nD0Jhn",
-		 *   "_version": 1,
-		 *   "_score": null,
-		 *   "_source": {
-		 *     "title": "解放",
-		 *     "subtitle": "小康",
-		 *     "ipinfo": "",
-		 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
-		 *     "author": "张无忌",
-		 *     "@filemeta": {
-		 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
-		 *       "hostname": "",
-		 *       "pointer": 3342583,
-		 *       "hostip": "",
-		 *       "timestamp": 1617074824542,
-		 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
-		 *     },
-		 *     "message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
-		 *   }
-		 * }
-		 *
-		 * true 开启 false 关闭
-		 */
 		config.setEnableMeta(true);
 		importBuilder.setInputConfig(config);
 		//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
@@ -3269,7 +3210,7 @@ ImportBuilder importBuilder = new ImportBuilder();
                         esData.put("metric", testKeyMetric.getMetric());
                         esData.put("operModule", testKeyMetric.getOperModule());
                         esData.put("count", testKeyMetric.getCount());
-                        bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+                        bulkProcessor.insertData("vops-loginmodulemetrics", esData);//将指标计算结果异步批量写入Elasticsearch表vops-loginmodulemetrics
                     }
                     else if(keyMetric instanceof LoginUserMetric) {
                         LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
@@ -3281,7 +3222,7 @@ ImportBuilder importBuilder = new ImportBuilder();
                         esData.put("metric", testKeyMetric.getMetric());
                         esData.put("logUser", testKeyMetric.getLogUser());
                         esData.put("count", testKeyMetric.getCount());
-                        bulkProcessor.insertData("vops-loginusermetrics", esData);
+                        bulkProcessor.insertData("vops-loginusermetrics", esData);//将指标计算结果异步批量写入Elasticsearch表vops-loginusermetrics
                     }
 
                 });
@@ -3292,16 +3233,8 @@ ImportBuilder importBuilder = new ImportBuilder();
         importBuilder.setImportEndAction(new ImportEndAction() {
             @Override
             public void endAction(ImportContext importContext, Exception e) {
-                //销毁初始化阶段自定义的数据源
-                importContext.destroyResources(new ResourceEnd() {
-                    @Override
-                    public void endResource(ResourceStartResult resourceStartResult) {
-                        if(resourceStartResult instanceof DBStartResult) { //作业停止时，释放db数据源
-                            DataTranPluginImpl.stopDatasources((DBStartResult) resourceStartResult);
-                        }
-                    }
-                });
-                bulkProcessor.shutDown();
+               
+                bulkProcessor.shutDown();//作业结束时关闭批处理器
 
             }
         });
@@ -3317,30 +3250,9 @@ ImportBuilder importBuilder = new ImportBuilder();
 		//增量配置结束
 
 		//映射和转换配置开始
-//		/**
-//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
-//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
-//		 */
-//		importBuilder.addFieldMapping("document_id","docId")
-//				.addFieldMapping("docwtime","docwTime")
-//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
-//
-//
-//		/**
-//		 * 为每条记录添加额外的字段和值
-//		 * 可以为基本数据类型，也可以是复杂的对象
-//		 */
-//		importBuilder.addFieldValue("testF1","f1value");
-//		importBuilder.addFieldValue("testInt",0);
-//		importBuilder.addFieldValue("testDate",new Date());
-//		importBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
-//		TestObject testObject = new TestObject();
-//		testObject.setId("testid");
-//		testObject.setName("jackson");
-//		importBuilder.addFieldValue("testObject",testObject);
+
 		importBuilder.addFieldValue("author","张无忌");
-//		importBuilder.addFieldMapping("operModule","OPER_MODULE");
-//		importBuilder.addFieldMapping("logContent","LOG_CONTENT");
+
 
 
 		/**
@@ -3360,17 +3272,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 				context.addFieldValue("title","解放");
 				context.addFieldValue("subtitle","小康");
 				
-				//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
-				String message = context.getStringValue("@message");
-				String[] fvs = message.split(" ");//空格解析字段
-				/**
-				 * //解析示意代码
-				 * String[] fvs = message.split(" ");//空格解析字段
-				 * //将解析后的信息添加到记录中
-				 * context.addFieldValue("f1",fvs[0]);
-				 * context.addFieldValue("f2",fvs[1]);
-				 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
-				 */
+			
 				//直接获取文件元信息
 				Map fileMata = (Map)context.getValue("@filemeta");
 				/**
