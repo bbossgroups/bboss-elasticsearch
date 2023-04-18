@@ -24,12 +24,13 @@ public class ESAddress {
 		this.healthPath = healthPath;
 	}
 
-	public ESAddress(String address){
+	public ESAddress(String address,String healthPath){
 		if (!address.contains("http://") && !address.contains("https://")) {
 			address = "http://" + address;
 		}
 		this.address = address;
-		this.healthPath = this.getPath(address,"/");
+
+		this.healthPath = this.getPath(address,healthPath);
 	}
 	private String getPath(String host,String path){
 		String url = path.equals("") || path.startsWith("/")?

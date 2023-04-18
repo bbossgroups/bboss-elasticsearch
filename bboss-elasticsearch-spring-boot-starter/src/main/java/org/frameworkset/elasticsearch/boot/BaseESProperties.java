@@ -621,8 +621,17 @@ public abstract class BaseESProperties {
 		private String failAllContinue;
 		private String slowDslThreshold;
 		private String useHttps;
+        private String healthPath;
 
-		public String getReferExternal() {
+        public void setHealthPath(String healthPath) {
+            this.healthPath = healthPath;
+        }
+
+        public String getHealthPath() {
+            return healthPath;
+        }
+
+        public String getReferExternal() {
 			return referExternal;
 		}
 
@@ -911,8 +920,11 @@ public abstract class BaseESProperties {
 				if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getRest().getHostNames()))
 					properties.put(_name+"elasticsearch.rest.hostNames",this.getElasticsearch().getRest().getHostNames());
 			}
-			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDateFormat()))
-				properties.put(_name+"elasticsearch.dateFormat",this.getElasticsearch().getDateFormat());
+
+
+
+            if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDateFormat()))
+                properties.put(_name+"elasticsearch.dateFormat",this.getElasticsearch().getDateFormat());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getTimeZone()))
 				properties.put(_name+"elasticsearch.timeZone",this.getElasticsearch().getTimeZone());
 
@@ -923,7 +935,8 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getShowTemplate()))
 				properties.put(_name+"elasticsearch.showTemplate",this.getElasticsearch().getShowTemplate());
-
+            if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getHealthPath()))
+                properties.put(_name+"elasticsearch.healthPath",this.getElasticsearch().getHealthPath());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getDiscoverHost()))
 				properties.put(_name+"elasticsearch.discoverHost",this.getElasticsearch().getDiscoverHost());
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getVersion()))

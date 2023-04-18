@@ -90,7 +90,9 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	protected String dslMappingDir;
 	protected String elasticUser = "";
 	protected String elasticPassword = "";
-	protected Matcher matcher = pattern.matcher("");
+    protected String healthPath = "/";
+
+    protected Matcher matcher = pattern.matcher("");
 
 	protected String[] restServerAddresses = null;
 
@@ -400,6 +402,10 @@ public class ElasticSearch extends ApplicationObjectSupport {
 		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty("elasticPassword"))) {
 			elasticPassword = elasticsearchPropes.getProperty("elasticPassword");
 		}
+
+        if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty("elasticsearch.healthPath"))) {
+            healthPath = elasticsearchPropes.getProperty("elasticsearch.healthPath");
+        }
 		String indexNameBuilderClass = getIndexNameBuilderClass();
 
 		try {
@@ -428,8 +434,12 @@ public class ElasticSearch extends ApplicationObjectSupport {
 //		Preconditions.checkState(batchSize >= 1, BATCH_SIZE
 //				+ " must be greater than 0");
 	}
-	
-	protected String getIndexNameBuilderClass(){
+
+    public String getHealthPath() {
+        return healthPath;
+    }
+
+    protected String getIndexNameBuilderClass(){
 		String indexNameBuilderClass = DEFAULT_INDEX_NAME_BUILDER_CLASS;
 		if (SimpleStringUtil.isNotEmpty(elasticsearchPropes.getProperty(INDEX_NAME_BUILDER))) {
 			indexNameBuilderClass = elasticsearchPropes.getProperty(INDEX_NAME_BUILDER);

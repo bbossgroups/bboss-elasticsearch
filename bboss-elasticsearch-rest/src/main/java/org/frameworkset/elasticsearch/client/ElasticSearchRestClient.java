@@ -190,7 +190,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		this.elasticSearch = elasticSearch;
 		addressList = new ArrayList<ESAddress>();
 		for(String host:hostNames){
-			ESAddress esAddress = new ESAddress(host);
+			ESAddress esAddress = new ESAddress(host,elasticSearch.getHealthPath());
 			addressList.add(esAddress);
 			addressMap.put(esAddress.getAddress(),esAddress);
 		}

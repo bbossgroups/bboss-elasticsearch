@@ -29,14 +29,15 @@ public class HostDiscoverUtil{
 		if(elasticsearch == null ){
 			throw new IllegalArgumentException("elasticsearch can not be null.");
 		}
-		List<ESAddress> addressList = new ArrayList<ESAddress>();
+        ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSink(elasticsearch);
+        if(elasticSearch == null ){
+            throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
+        }
+
+        List<ESAddress> addressList = new ArrayList<ESAddress>();
 		for(String host:hosts){
-			ESAddress esAddress = new ESAddress(host.trim());
+			ESAddress esAddress = new ESAddress(host.trim(),elasticSearch.getHealthPath());
 			addressList.add(esAddress);
-		}
-		ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSink(elasticsearch);
-		if(elasticSearch == null ){
-			throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
 		}
 
 		ElasticSearchClient elasticSearchRestClient = elasticSearch.getRestClient();

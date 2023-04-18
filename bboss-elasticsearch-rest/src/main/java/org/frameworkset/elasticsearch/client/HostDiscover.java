@@ -58,7 +58,7 @@ public class HostDiscover extends Thread{
 	private void handleDiscoverHosts(List<HttpHost> httpHosts){
 		List<ESAddress> hosts = new ArrayList<ESAddress>();
 		for(HttpHost host:httpHosts){
-			ESAddress esAddress = new ESAddress(host.toString());
+			ESAddress esAddress = new ESAddress(host.toString(),elasticSearch.getHealthPath());
 			hosts.add(esAddress);
 		}
 		List<ESAddress> newAddress = new ArrayList<ESAddress>();
@@ -66,7 +66,7 @@ public class HostDiscover extends Thread{
 		elasticSearchRestClient.recoverRemovedNodes(hosts);
 		//识别新增节点
 		for(int i = 0; i < hosts.size();i ++){
-			ESAddress address = new ESAddress(hosts.get(i).toString());
+			ESAddress address = new ESAddress(hosts.get(i).toString(),elasticSearch.getHealthPath());
 			if(!elasticSearchRestClient.containAddress(address)){
 				newAddress.add(address);
 			}

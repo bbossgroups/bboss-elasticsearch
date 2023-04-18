@@ -72,7 +72,7 @@ bug修复版本：一次性执行timekey类型指标统计作业forceflush metri
 
 2. FTP输出插件改进：增加生成文件[异步上传FTP机制](https://esdoc.bbossgroups.com/#/elasticsearch-sftp?id=_34-sftpftp%e9%85%8d%e7%bd%ae)，默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能
 
-3. 数据采集重大功能扩展：增加[指标计算输出插件](https://esdoc.bbossgroups.com/#/etl-metrics)，提供指标统计分析功能，支持两种模式的指标计算：
+3. 数据采集重大功能扩展：增加[指标计算输出插件](https://esdoc.bbossgroups.com/#/etl-metrics)，在采集-清洗-转换处理的同时，提供数据流处理统计分析功能，支持两种模式的数据流处理指标计算：
    
    
    

@@ -185,6 +185,8 @@ public class ElasticSearchHelper {
 						ElasticSearchHelper._getStringValue(serverName, "elasticUser", configContext, ""));
 				elasticsearchPropes.put("elasticPassword",
 						ElasticSearchHelper._getStringValue(serverName, "elasticPassword", configContext, ""));
+
+
 				elasticsearchPropes.put("elasticsearch.rest.hostNames",
 						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.rest.hostNames", configContext, "127.0.0.1:9200"));
 				elasticsearchPropes.put("elasticsearch.dateFormat",
@@ -195,6 +197,9 @@ public class ElasticSearchHelper {
 						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.ttl", configContext, "2d"));
 				elasticsearchPropes.put("elasticsearch.showTemplate",
 						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.showTemplate", configContext, "false"));
+
+                elasticsearchPropes.put("elasticsearch.healthPath",
+                        ElasticSearchHelper._getStringValue(serverName, "elasticsearch.healthPath", configContext, "/"));
 				elasticsearchPropes.put("elasticsearch.httpPool",
 						ElasticSearchHelper._getStringValue(serverName, "elasticsearch.httpPool", configContext, serverName));
 				elasticsearchPropes.put("elasticsearch.discoverHost",

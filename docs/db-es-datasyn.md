@@ -758,20 +758,37 @@ gradle安装和配置参考文档：https://esdoc.bbossgroups.com/#/bboss-build
 
 ```gradle
 先切换到工程的根目录
-cd D:\workspace\bbossesdemo\bboss/bboss-datatran-demo
+cd D:\workspace\bbossesdemo\bboss-datatran-demo
 release.bat
 ```
 
-构建成功后，将会在工程目录下面生成可部署的二进制包：
+构建成功后，将会在工程目录下面生成可部署的二进制包（其中x.x.x为bboss最新版本号）：
 
-build/distributions/bboss/bboss-datatran-demo-1.0.0-released.zip
+build/distributions/bboss-datatran-demo-x.x.x-released.zip
 
-包的目录结构如下：
+发布的zip包的目录结构如下：
 
 ![img](_images/db-es-dist.png)
 
-运行里面的即可启动作业：
+解压bboss-datatran-demo-x.x.x-released.zip，运行对应的作业启动或者重启脚本，即可启动作业：
+
+作业重启
 
 windows: restart.bat 
 
 linux: restart.sh
+
+作业启动
+
+windows: start.bat 
+
+linux: start.sh
+
+作业停止
+
+windows: stop.bat 
+
+linux: stop.sh
+
+
+
