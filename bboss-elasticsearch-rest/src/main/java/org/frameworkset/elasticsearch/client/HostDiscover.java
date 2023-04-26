@@ -53,7 +53,11 @@ public class HostDiscover extends Thread{
 			return;
 		this.stop = true;
 		this.interrupt();
-	}
+        try {
+            this.join();
+        } catch (InterruptedException e) {
+        }
+    }
 
 	private void handleDiscoverHosts(List<HttpHost> httpHosts){
 		List<ESAddress> hosts = new ArrayList<ESAddress>();

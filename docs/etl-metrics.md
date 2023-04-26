@@ -4,7 +4,7 @@
 
 **[bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) --- 简化版Flink**
 
-
+bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 # 数据采集&流批一体化处理使用指南
 

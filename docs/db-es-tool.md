@@ -16,6 +16,8 @@
 
 [数据指标统计计算流批一体化使用指南](https://esdoc.bbossgroups.com/#/etl-metrics)
 
+bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
+
 # 工具特性
 
 ​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。	
