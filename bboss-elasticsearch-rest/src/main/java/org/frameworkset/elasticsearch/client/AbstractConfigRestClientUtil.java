@@ -556,6 +556,9 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public   <T> T  sqlObject(Class<T> beanType , String templateName,Object bean) throws ElasticSearchException {
+        if(bean instanceof Map){
+            return sqlObject( beanType ,  templateName,(Map) bean);
+        }
 		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}

@@ -650,7 +650,9 @@ importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截
 | sliceQuery          | 可选，boolean 类型，标记查询是否是slicescroll 查询           | false  |
 | sliceSize           | 可选，int类型，设置slice scroll并行查询的slicesize           |        |
 
-配置代码示例：
+### 3.9.1 使用配置文件中的Elasticsearch数据源
+
+使用application.properties中配置的Elasticsearch数据源default
 
 ```java
 ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig();
@@ -681,6 +683,41 @@ ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig
 				.addParam("var2","v2")
 				.addParam("var3","v3");
 ```
+
+### 3.9.2 直接配置Elasticsearch数据源
+
+可以通过ElasticsearchInputConfig直接配置Elasticsearch数据源
+
+```java
+ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig();
+      elasticsearchInputConfig.setDslFile("dsl2ndSqlFile.xml")//配置dsl和sql语句的配置文件
+            .setDslName("scrollQuery") //指定从es查询索引文档数据的dsl语句名称，配置在dsl2ndSqlFile.xml中
+            .setScrollLiveTime("10m") //scroll查询的scrollid有效期
+
+//              .setSliceQuery(true)
+//               .setSliceSize(5)
+            .setQueryUrl("https2es/_search")
+            .addSourceElasticsearch("elasticsearch.serverNames","default")
+            .addElasticsearchProperty("default.elasticsearch.rest.hostNames","192.168.137.1:9200")
+            .addElasticsearchProperty("default.elasticsearch.showTemplate","true")
+            .addElasticsearchProperty("default.elasticUser","elastic")
+            .addElasticsearchProperty("default.elasticPassword","changeme")
+            .addElasticsearchProperty("default.elasticsearch.failAllContinue","true")
+            .addElasticsearchProperty("default.http.timeoutSocket","60000")
+            .addElasticsearchProperty("default.http.timeoutConnection","40000")
+            .addElasticsearchProperty("default.http.connectionRequestTimeout","70000")
+            .addElasticsearchProperty("default.http.maxTotal","200")
+            .addElasticsearchProperty("default.http.defaultMaxPerRoute","100");//查询索引表demo中的文档数据
+
+//          //添加dsl中需要用到的参数及参数值
+//          exportBuilder.addParam("var1","v1")
+//          .addParam("var2","v2")
+//          .addParam("var3","v3");
+
+      importBuilder.setInputConfig(elasticsearchInputConfig);
+```
+
+### 3.9.3 配置Elasticsearch检索dsl语句
 
 dsl配置文件dsl2ndSqlFile.xml和对应的dsl语句名称案例：
 
