@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v6.8.9 发布
+# BBOSS版本变更记录-v6.9.1 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.9</version>
+            <version>6.9.1</version>
         </dependency>
 ```
 
@@ -28,16 +28,16 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.8.9</version>
+            <version>6.9.1</version>
         </dependency>
 ```
-# v6.9.0 功能改进
+# v6.9.1 功能改进
 1. 调整状态管理sqlite状态数据库的口令为复杂口令，支持设置sqlite状态数据库口令
 2. Elasticsearch客户端增加elasticsearch.healthPath配置，用来配置故障节点健康检查服务地址，默认为/,可以自行调整为其他可用的服务地址
 3. 一次性任务结束时，结束和释放作业资源
 4. 优化任务结束状态检查管理机制
 
-# v6.8.9 功能改进
+# v6.9.1 功能改进
 1. 文件采集插件改进：大量文件采集场景下的[流控处理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_12%e5%b9%b6%e8%a1%8c%e9%87%87%e9%9b%86%e6%96%87%e4%bb%b6%e6%95%b0%e9%87%8f%e6%8e%a7%e5%88%b6-%e6%b5%81%e6%8e%a7)，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件
 2. 改进[ftp/sftp文件下载采集机制](ftp/sftp文件下载采集机制)：采集/定时调度采集时sftp/ftp文件时，等待所有的文件采集都加入采集通道后再返回，继续下一次调度采集（定时调度）/或者再继续后续的处理（一次性采集）
 3. bulkprocessor改进：线程池关闭后等待所有任务处理完成再退出
@@ -309,7 +309,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.8.9版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.9.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -484,7 +484,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.8.9</version>
+            <version>6.9.1</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -492,7 +492,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.8.9</version>
+            <version>6.9.1</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -579,7 +579,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.8.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.9.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -621,7 +621,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
 # v6.3.9 功能改进
 1. 修复db-es数据同步时，指定了任务拦截器，但是处理任务上下文中没有指定任务级别的sql语句时空指针问题
 2. bboss安全过滤器改造：增加xss攻击和敏感词攻击策略配置
-3. 运行容器工具改进：完善运行容器工具，增加启动bootrap类，负责运行、停止、重启mainclass，并将mainclass运行、停止、重启过程中的日志、异常输出到log日志文件
+3. 运行容器工具改进：完善[运行容器工具](https://my.oschina.net/bboss/blog/469411)，增加启动bootrap类，负责运行、停止、重启mainclass，并将mainclass运行、停止、重启过程中的日志、异常输出到log日志文件
 
 
   导入微服务容器组件包：由bboss-rt调整为bboss-bootstrap-rt
@@ -631,7 +631,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.3",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.5",transitive: true 
   ```
 
   **maven坐标**
@@ -642,7 +642,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.0.3</version>  
+      <version>6.0.5</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1125,7 +1125,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.8.9</version>
+    <version>6.9.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1413,7 +1413,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 
 ```
 
-# v6.1.1 功能改进
+# v6.1.0 功能改进
 1. 数据同步工具改进
 
   如果在程序里面配置的增量字段类型发生改变，要把增量状态表对应的类型调整为最新的字段类型
