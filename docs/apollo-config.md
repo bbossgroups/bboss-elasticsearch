@@ -138,7 +138,18 @@ apolloNamespace 指定apollo namespace，多个用逗号分隔
 
 changeReload   指定是否热加载修改后的属性，true 加载， false不加载，热加载时IOC中的属性和组件都会重新初始化
 
-configChangeListener 指定自己的apollo值变化监听器
+configChangeListener 指定自己的apollo值变化监听器，可以实现下述接口
+
+```java
+com.ctrip.framework.apollo.ConfigChangeListener;
+```
+
+或者继承父类：
+
+org.frameworkset.apollo.PropertiesChangeListener
+
+
+
 ## 2.2 在代码中直接加载apollo中的配置
 
 ```java
