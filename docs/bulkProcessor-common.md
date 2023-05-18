@@ -287,7 +287,7 @@ public class PersistentBulkProcessor {
          */
 		final CommonBulkProcessor bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
 		
-		//构建一个线程，向bulkProcessor中添加要处理的记录
+		//构建一个线程，模拟添向bulkProcessor中添加要处理的记录
 		final Count count = new Count();
 		Thread dataproducer = new Thread(new Runnable() {
 			public void run() {
