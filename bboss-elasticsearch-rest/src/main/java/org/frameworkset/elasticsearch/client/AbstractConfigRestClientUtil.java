@@ -630,7 +630,61 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 		return super.searchList(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),type);
 	}
 
-	public <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param type
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public <T> List<ESDatas<T>> msearchList(String path, String dslName,Class<T> type) throws ElasticSearchException{
+        return super.msearchList(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,dslName, null),type);
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public <T> List<ESDatas<T>> msearchList(String path, String dslName, Map params,Class<T> type) throws ElasticSearchException{
+        return super.msearchList(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,dslName, params),type);
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param entity
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public  List<RestResponse> msearch(String path, String entity,Class<?> type) throws ElasticSearchException{
+        return super.msearch(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,entity, null),type);
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public  List<RestResponse> msearch(String path, String dslName, Map params,Class<?> type) throws ElasticSearchException{
+        return super.msearch(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,dslName, params),type);
+    }
+
+
+
+    public <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException {
 //		SearchResult result = this.client.executeRequest(path, ESTemplateHelper.evalTemplate(esUtil,templateName, params), new ElasticSearchResponseHandler(type));
 //		return buildESDatas(result, type);
 		return super.searchList(  path,   ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),type);

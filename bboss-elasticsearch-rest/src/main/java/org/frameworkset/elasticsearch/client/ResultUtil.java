@@ -1729,6 +1729,23 @@ public abstract class ResultUtil {
 		return datas;
 	}
 
+    public static <T> List<ESDatas<T>> buildESDatas(List<RestResponse> results,Class<T> type){
+//		if(result instanceof ErrorResponse){
+//			throw new ElasticSearchException(SimpleStringUtil.object2json(result));
+//		}
+        if(results == null)
+            return null;
+        List<ESDatas<T>> ret = new ArrayList<>();
+        for(RestResponse result:results){
+
+
+
+            ESDatas<T> datas = buildESDatas(result,type);
+            ret.add( datas);
+        }
+        return ret;
+    }
+
 	/**
 	 *
 	 * @param e

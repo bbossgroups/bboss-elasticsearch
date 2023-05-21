@@ -2546,6 +2546,76 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return ResultUtil.buildESDatas(result,type);
 	}
 
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param entity
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public <T> List<ESDatas<T>> msearchList(String path, String entity,Class<T> type) throws ElasticSearchException{
+        if(entity != null && !entity.endsWith("\n")){
+            StringBuilder builder = new StringBuilder(entity.length() + 1);
+            builder.append(entity).append("\n");
+            entity = builder.toString();
+        }
+        MSearchRestResponse mSearchRestResponse = this.client.executeRequest(path,entity,   new ElasticMSearchResponseHandler( type));
+        if(mSearchRestResponse != null ) {
+            return ResultUtil.buildESDatas(mSearchRestResponse.getResponses(), type);
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public <T> List<ESDatas<T>> msearchList(String path, String dslName, Map params,Class<T> type) throws ElasticSearchException{
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param entity
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public  List<RestResponse> msearch(String path, String entity,Class<?> type) throws ElasticSearchException{
+        if(entity != null && !entity.endsWith("\n")){
+            StringBuilder builder = new StringBuilder(entity.length() + 1);
+            builder.append(entity).append("\n");
+            entity = builder.toString();
+        }
+        MSearchRestResponse mSearchRestResponse = this.client.executeRequest(path,entity,   new ElasticMSearchResponseHandler( type));
+        if(mSearchRestResponse != null )
+            return mSearchRestResponse.getResponses();
+        return null;
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public  List<RestResponse> msearch(String path, String dslName, Map params,Class<?> type) throws ElasticSearchException{
+        throw new UnsupportedOperationException();
+    }
+
 
 	@Override
 	public <T> ESDatas<T> searchList(String path, Class<T> type) throws ElasticSearchException {
@@ -6015,5 +6085,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_deletePitId);
 		}
 	}
+
+
+
 
 }

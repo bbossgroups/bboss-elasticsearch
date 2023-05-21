@@ -1461,7 +1461,98 @@ ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
                 	}          
     
 ```
-# 16. 开发交流
+# 16.msearch检索
+
+通过msearch检索可以在一次http请求中执行多个检索请求，将每个请求的结果封装到List返回。
+
+## 16.1 msearch dsl定义
+
+```xml
+<property name="msearchList" escapeQuoted="false"><![CDATA[
+{ }
+#"""{
+  "size": #[size],
+  "query": {
+    "match" : {
+        "logOperuser.keyword":#[user]
+    }
+  },
+  "sort": [
+    {"collecttime": "asc"}
+  ]
+}"""
+{"index": "dbdemofull"}
+{"query" : {"match_all" : {}}}
+ ]]>
+</property>
+```
+
+如果一个请求对应的dsl有多行，可以使用#"""query dsl"""进行封装，例如：
+
+```json
+#"""{
+  "size": #[size],
+  "query": {
+    "match" : {
+        "logOperuser.keyword":#[user]
+    }
+  },
+  "sort": [
+    {"collecttime": "asc"}
+  ]
+}"""
+```
+
+同时在xml元素property增加escapeQuoted="false"属性配置，避免解析后在单个dsl两边自动添加双引号
+
+## 16.1 执行msearch 
+
+返回ESDatas<MetaMap\>列表
+
+```java
+public void testMSearch(){
+    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo7.xml");
+
+    Map params = new HashMap();
+    params.put("size",100);
+    params.put("user","admin");
+    List<ESDatas<MetaMap>> esDatas = clientUtil.msearchList("dbdemofull/_msearch","msearchList",params,MetaMap.class);
+    for(int i = 0; esDatas != null && i < esDatas.size(); i ++){
+        ESDatas<MetaMap> esData = esDatas.get(i);
+        List<MetaMap> metaMaps = esData.getDatas();//msearch 中每个search的记录集合
+        logger.info(String.valueOf(metaMaps.size()));
+    }
+
+
+}
+```
+
+返回RestResponse列表
+
+```java
+public void testMSearchRestResponse(){
+    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/demo7.xml");
+
+    Map params = new HashMap();
+    params.put("size",100);
+    params.put("user","admin");
+    List<RestResponse> esDatas = clientUtil.msearch("dbdemofull/_msearch","msearchList",params,MetaMap.class);
+    for(int i = 0; esDatas != null && i < esDatas.size(); i ++){
+        RestResponse esData = esDatas.get(i);
+        logger.info(SimpleStringUtil.object2json(esData));
+    }
+
+
+}
+```
+
+参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html
+
+
+
+# 17. 开发交流
 
 
 

@@ -6,7 +6,7 @@
 
 Elasticsearch search after分页查询案例分享
 
-
+ Just like regular searches, you can [use `from` and `size` to page through search results](https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html), up to the first 10,000 hits. If you want to retrieve more hits, use PIT with [`search_after`](https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after).
 
 # 1.准备工作
 
@@ -139,7 +139,119 @@ public void initIndiceAndData(){
 	}
 ```
 
+# 6.基于pit机制的search after
 
+基于point in time机制的search after，参考文档：
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+
+Elasticsearch官方search after dsl案例：
+
+```console
+{
+  "size": 10000,
+  "query": {
+    "match" : {
+      "user.id" : "elkbee"
+    }
+  },
+  "pit": {
+    "id":  "46ToAwMDaWR5BXV1aWQyKwZub2RlXzMAAAAAAAAAACoBYwADaWR4BXV1aWQxAgZub2RlXzEAAAAAAAAAAAEBYQADaWR5BXV1aWQyKgZub2RlXzIAAAAAAAAAAAwBYgACBXV1aWQyAAAFdXVpZDEAAQltYXRjaF9hbGw_gAAAAA==", 
+    "keep_alive": "1m"
+  },
+  "sort": [
+    {"@timestamp": {"order": "asc", "format": "strict_date_optional_time_nanos"}}
+     {"_shard_doc": "desc"}
+  ],
+  "search_after": [                                
+    "2021-05-20T05:30:04.832Z",
+    4294967298
+  ],
+  "track_total_hits": false                        
+}
+```
+
+在bboss中配置动态执行的pit search after dsl脚本
+
+```xml
+<property name="queryPidSearchAfter"><![CDATA[{
+              "size": #[size],
+              "query": {
+                "match" : {
+                    "logOperuser.keyword":#[user]
+                }
+              },
+              "pit": {
+                    "id":  #[pid],
+                    "keep_alive": "1m"
+              },
+              #if($_shard_doc)
+              "search_after": [
+                #[timestamp],
+                 #[_shard_doc]
+              ]
+              ,
+              #end
+              "sort": [
+                {"collecttime": "asc"},
+                {"_shard_doc": "desc"}
+              ]
+            }
+     ]]>
+    </property>
+```
+
+通过bboss执行pit search after操作：
+
+```java
+ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo7.xml");
+        //申请pitid
+        PitId pitId = clientUtil.requestPitId("dbdemofull","1m");
+        logger.info("pitId.getId() {}",pitId.getId());
+        Map params = new HashMap();
+        params.put("size",100);
+        params.put("user","admin");
+        String pid = pitId.getId();
+
+        String prePid = null;
+        List<String> pids = new ArrayList<>();
+        pids.add(pid);
+        do {
+
+            params.put("pid",pid);
+            prePid = pid;
+            ESDatas<MetaMap> datas = clientUtil.searchList("/_search", "queryPidSearchAfter", params, MetaMap.class);
+            pid = datas.getPitId();
+            pids.add(pid);
+            //当前页的记录集
+            List<MetaMap> metaMaps = datas.getDatas();
+            if(metaMaps != null && metaMaps.size() > 0 ){
+                MetaMap metaMap = metaMaps.get(metaMaps.size() - 1);
+                Object[] sort = metaMap.getSort();
+                //search after 排序字段值和shard_doc信息
+                params.put("timestamp",sort[0]);
+                params.put("_shard_doc",sort[1]);
+            }
+
+            if(metaMaps.size() < 100){
+                //达到最后一页，分页查询结束
+                break;
+            }
+            logger.info("datas.getPitId() {}", pid);
+           // logger.info(clientUtil.deletePitId(prePid));
+
+        }while (true);
+        String pre = null;
+        for(int i =0 ; i < pids.size(); i ++){
+            if(pre == null)
+                pre = pids.get(i);
+            else{
+                System.out.println("pre:"+pre + "\r\n" + "now:"+pids.get(i)  + "\r\n" + "now equals pre:"+pre.equals(pids.get(i)) );
+                pre = pids.get(i);
+            }
+            logger.info(clientUtil.deletePitId(pids.get(i)));//删除pid信息
+        }
+```
 
 # 6.参考文档
 

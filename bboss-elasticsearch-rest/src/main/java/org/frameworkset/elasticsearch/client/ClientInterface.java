@@ -1681,6 +1681,26 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 
 	public abstract RestResponse search(String path, String entity, Class<?> type) throws ElasticSearchException;
 
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param entity
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public abstract  List<RestResponse> msearch(String path, String entity,Class<?> type) throws ElasticSearchException;
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @throws ElasticSearchException
+     */
+    public abstract  List<RestResponse> msearch(String path, String dslName, Map params,Class<?> type) throws ElasticSearchException;
 
 	public abstract RestResponse search(String path, String templateName, Map params, ESTypeReferences type) throws ElasticSearchException;
 
@@ -1999,6 +2019,29 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	public abstract <T> ESDatas<T> searchList(String path, String templateName, Object params, Class<T> type) throws ElasticSearchException;
 
 	public abstract <T> ESDatas<T> searchList(String path, String entity, Class<T> type) throws ElasticSearchException;
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param entity
+     * @param type
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public abstract <T> List<ESDatas<T>> msearchList(String path, String entity,Class<T> type) throws ElasticSearchException;
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html#msearch-cancellation
+     * @param path
+     * @param dslName
+     * @param params
+     * @param type
+     * @return
+     * @param <T>
+     * @throws ElasticSearchException
+     */
+    public abstract <T> List<ESDatas<T>> msearchList(String path, String dslName, Map params,Class<T> type) throws ElasticSearchException;
 
 	public abstract <T> T searchObject(String path, String templateName, Map params, Class<T> type) throws ElasticSearchException;
 
