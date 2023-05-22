@@ -1070,7 +1070,7 @@ dataStream.execute();//启动同步作业
 ```java
      //配置excel列与来源字段映射关系、列对应的中文标题（如果没有设置，默认采用字段名称作为excel列标题）
        ExcelFileOutputConfig fileFtpOupputConfig = new ExcelFileOutputConfig();
-             fileFtpOupputConfig.setTitle("湖南师大2021年新生医保（2021年）申报名单");
+             fileFtpOupputConfig.setTitle("师大2021年新生医保（2021年）申报名单");
              fileFtpOupputConfig.setSheetName("2021年新生医保申报单");
              fileFtpOupputConfig.setFlushRows(10000);
              fileFtpOupputConfig
@@ -1093,7 +1093,7 @@ dataStream.execute();//启动同步作业
                  public String genName(TaskContext taskContext, int fileSeq) {
      
      
-                     return "湖南师大2021年新生医保（2021年）申报名单-合并.xlsx";
+                     return "师大2021年新生医保（2021年）申报名单-合并.xlsx";
                  }
              });
      
@@ -1111,7 +1111,7 @@ dataStream.execute();//启动同步作业
 
 
         ExcelFileOutputConfig fileFtpOupputConfig = new ExcelFileOutputConfig();
-        fileFtpOupputConfig.setTitle("湖南师大2021年新生医保（2021年）申报名单");
+        fileFtpOupputConfig.setTitle("师大2021年新生医保（2021年）申报名单");
         fileFtpOupputConfig.setSheetName("2021年新生医保申报单");
 
         fileFtpOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
@@ -1133,7 +1133,7 @@ dataStream.execute();//启动同步作业
             public String genName(TaskContext taskContext, int fileSeq) {
 
 
-                return "湖南师大2021年新生医保（2021年）申报名单-合并.xlsx";
+                return "师大2021年新生医保（2021年）申报名单-合并.xlsx";
             }
         });
 
@@ -1223,7 +1223,7 @@ dataStream.execute();//启动同步作业
          ftpOutConfig.setKeepAliveTimeout(100000);
          ftpOutConfig.setFailedFileResendInterval(300000);
  
-         fileFtpOupputConfig.setTitle("湖南师大2021年新生医保（2021年）申报名单");
+         fileFtpOupputConfig.setTitle("师大2021年新生医保（2021年）申报名单");
          fileFtpOupputConfig.setSheetName("2021年新生医保申报单");
          //配置excel列与来源字段映射关系、列对应的中文标题（如果没有设置，默认采用字段名称作为excel列标题）
          fileFtpOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
@@ -1246,7 +1246,7 @@ dataStream.execute();//启动同步作业
              public String genName(TaskContext taskContext, int fileSeq) {
  
  
-                 return "湖南师大2021年新生医保（2021年）申报名单-合并"+fileSeq+".xlsx";
+                 return "师大2021年新生医保（2021年）申报名单-合并"+fileSeq+".xlsx";
              }
          });
  
