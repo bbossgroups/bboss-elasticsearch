@@ -12,7 +12,7 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
-本案例以Elasticsearch6.9.2版本，bboss6.1.8单元测试时，建议版本选择不要太低
+本案例以Elasticsearch6.9.3版本，bboss6.1.8单元测试时，建议版本选择不要太低
 
 DSL的配置文件[resources/esmapper/function_score.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/function_score.xml)，本文涉及到的DSL都会放到该配置文件，本案例测试代码[FunctionScore](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/FunctionScore.java)。
 

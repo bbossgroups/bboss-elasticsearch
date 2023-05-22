@@ -50,6 +50,7 @@
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md) 
   - **数据同步及流批一体化计算** 
+    - [插件清单](datatran-plugins.md)   
     - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md)   
     - [日志文件采集使用指南](filelog-guide.md)
     - [作业调度控制](bboss-datasyn-control.md)

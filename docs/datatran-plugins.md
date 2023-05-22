@@ -370,8 +370,106 @@ scrollQuery为本案例对应的dsl，scrollSliceQuery为slice导出需要用到
 
 https://esdoc.bbossgroups.com/#/development
 
+## 1.3 Mysql binlog输入插件
 
+Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-binlog/src/main/java/org/frameworkset/tran/plugin/mysqlbinlog/input/MySQLBinlogConfig.java)
 
+配置Mysql binlog对应的mysql master slave ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等，本插件支持直接监听mysql master slave ip和端口和读取binlog文件两种模式采集mysql增删改数据
+
+下面介绍Mysql binlog输入插件配置参数和配置实例
+
+### 1.1.1 插件配置案例
+
+```java
+MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
+mySQLBinlogConfig.setHost("192.168.137.1");
+mySQLBinlogConfig.setPort(3306);
+mySQLBinlogConfig.setDbUser("root");
+mySQLBinlogConfig.setDbPassword("123456");
+//直接监听binlog文件，多个用逗号分隔
+mySQLBinlogConfig.setFileNames("F:\\6_environment\\mysql\\binlog.000107,F:\\6_environment\\mysql\\binlog.000127");
+//监听的表清单，多个逗号分割
+mySQLBinlogConfig.setTables("cityperson,batchtest");
+//监听的数据库
+mySQLBinlogConfig.setDatabase("bboss");
+importBuilder.setInputConfig(mySQLBinlogConfig);
+```
+
+自定义输出插件结合案例：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+        importBuilder.setBatchSize(500);//设置批量入库的记录数
+
+        MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
+        mySQLBinlogConfig.setHost("192.168.137.1");
+        mySQLBinlogConfig.setPort(3306);
+        mySQLBinlogConfig.setDbUser("root");
+        mySQLBinlogConfig.setDbPassword("123456");
+        mySQLBinlogConfig.setFileNames("F:\\6_environment\\mysql\\binlog.000107,F:\\6_environment\\mysql\\binlog.000127");
+        mySQLBinlogConfig.setTables("cityperson,batchtest");//
+        mySQLBinlogConfig.setDatabase("bboss");
+        importBuilder.setInputConfig(mySQLBinlogConfig);
+        importBuilder.setPrintTaskLog(true);
+
+        //自己处理数据
+        CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+        customOutputConfig.setCustomOutPut(new CustomOutPut() {
+            @Override
+            public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+                //You can do any thing here for datas
+                for(CommonRecord record:datas){
+                    Map<String,Object> data = record.getDatas();
+                    int action = (int)record.getMetaValue("action");
+                    logger.info("action:{},record action type:insert={},update={},delete={}",action,record.isInsert(),record.isUpdate(),record.isDelete());
+
+                    logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
+                    if(record.isDelete()){
+                        logger.info("record.isDelete");
+                    }
+
+                    if(record.isUpdate()){
+                        logger.info("record.isUpate");
+                        Map<String,Object> oldDatas = record.getUpdateFromDatas();
+                    }
+//                    logger.info(SimpleStringUtil.object2json(data));
+                }
+            }
+        });
+        importBuilder.setDataRefactor(new DataRefactor() {
+            @Override
+            public void refactor(Context context) throws Exception {
+                int action = (int)context.getMetaValue("action");
+//                int action1 = (int)context.getMetaValue("action1");
+            }
+        });
+        importBuilder.setOutputConfig(customOutputConfig);
+        DataStream dataStream = importBuilder.builder();
+        dataStream.execute();
+```
+
+record.getMetaDatas()包含了记录对应的表及相关的元数据信息：
+
+position,table,database,host,fileName,fileNames,port,action
+
+可以通过以下方法获取每个元数据：
+
+int action = (int)record.getMetaValue("action");
+
+以下方法分别返回当前记录对应的数据库操作：
+
+record.isInsert() 插入操作
+
+record.isUpdate() 修改操作
+
+record.isDelete() 删除操作
+
+以下方法返回数据库操作对应的字段以及值
+
+record.getDatas()  key/value  key为字段名称，value为字段值
+
+record.getUpdateFromDatas() 返回修改之前的字段值和字段名称 key/value ，key为字段名称，value为字段值
 
 # 2.输出插件
 

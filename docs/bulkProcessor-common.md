@@ -113,7 +113,7 @@ CommonBulkCommand.getTotalFailedSize()
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-core-entity</artifactId>
-  <version>6.0.5</version>
+  <version>6.0.6</version>
 </dependency>
 ```
 ## 2.2 案例代码
