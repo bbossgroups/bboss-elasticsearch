@@ -1072,7 +1072,7 @@ FileInputConfig config = new FileInputConfig();
 		}
 		final Date startDate = _startDate;
 		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
-				.setFtpUser("ecs").setFtpPassword("ecs@123")
+				.setFtpUser("1111").setFtpPassword("111@123")
 				.setRemoteFileDir("/home/ecs/failLog")
 				.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
 		config.addConfig(new FileConfig().setFtpConfig(ftpConfig)

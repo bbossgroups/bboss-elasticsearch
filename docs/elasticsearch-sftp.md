@@ -86,8 +86,8 @@ public class ES2FileFtpBatchSplitFileDemo {
       		ftpOutConfig.setFtpIP(ftpIp);
       
       		ftpOutConfig.setFtpPort(5322);
-      		ftpOutConfig.setFtpUser("ecs");
-      		ftpOutConfig.setFtpPassword("ecs@123");
+      		ftpOutConfig.setFtpUser("1111");
+      		ftpOutConfig.setFtpPassword("1111@123");
       		ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
       		ftpOutConfig.setKeepAliveTimeout(100000);
       		ftpOutConfig.setTransferEmptyFiles(true);
@@ -357,8 +357,8 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","192.168.137.1");//同时指�
      
       ftpOutConfig.setFtpPort(5322);
 
-      ftpOutConfig.setFtpUser("ecs");
-      ftpOutConfig.setFtpPassword("ecs@123");
+      ftpOutConfig.setFtpUser("2222");
+      ftpOutConfig.setFtpPassword("2222@123");
       ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
       ftpOutConfig.setKeepAliveTimeout(100000);
       ftpOutConfig.setTransferEmptyFiles(true); //true 上传空文件，false 不上传
@@ -1217,8 +1217,8 @@ dataStream.execute();//启动同步作业
          ftpOutConfig.setFtpIP(ftpIp);
  
          ftpOutConfig.setFtpPort(5322);
-         ftpOutConfig.setFtpUser("ecs");
-         ftpOutConfig.setFtpPassword("ecs@123");
+         ftpOutConfig.setFtpUser("1111");
+         ftpOutConfig.setFtpPassword("1111@123");
          ftpOutConfig.setRemoteFileDir("/home/ecs/failLog");
          ftpOutConfig.setKeepAliveTimeout(100000);
          ftpOutConfig.setFailedFileResendInterval(300000);
