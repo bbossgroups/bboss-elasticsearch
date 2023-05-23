@@ -382,7 +382,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
 ```java
-FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(21)
+FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(21)
 				.setFtpUser("ecsftp").setFtpPassword("ecsftp").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
 				.setRemoteFileDir("xcm").setRemoteFileValidate(new RemoteFileValidate() {
 					/**
@@ -1154,7 +1154,7 @@ spring boot配置项
 # apollo应用id
 app.id=visualops
 # apollo应用地址
-apollo.meta=http://10.13.11.7:8080
+apollo.meta=http://127.0.0.1:8080
 ```
 
 在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：

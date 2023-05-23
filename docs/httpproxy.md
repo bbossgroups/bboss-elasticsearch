@@ -641,7 +641,7 @@ spring.bboss.default.http.authAccount=elastic
 spring.bboss.default.http.authPassword=changeme
 # ha proxy 集群负载均衡地址配置
 #spring.bboss.default.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
-spring.bboss.default.http.hosts=10.13.11.117:8082
+spring.bboss.default.http.hosts=127.0.0.1:8082
 # 健康检查服务
 spring.bboss.default.http.health=/
 spring.bboss.default.http.healthCheckInterval=1000
@@ -660,7 +660,7 @@ spring.bboss.default.db.name = firstds
 spring.bboss.default.db.user = root
 spring.bboss.default.db.password = 123456
 spring.bboss.default.db.driver = com.mysql.jdbc.Driver
-spring.bboss.default.db.url = jdbc:mysql://10.13.11.117:3306/mysql
+spring.bboss.default.db.url = jdbc:mysql://192.168.137.1:3306/mysql
 spring.bboss.default.db.usePool = true
 spring.bboss.default.db.validateSQL = select 1
 
@@ -707,7 +707,7 @@ spring.bboss.second.http.authAccount=elastic
 spring.bboss.second.http.authPassword=changeme
 # ha proxy 集群负载均衡地址配置
 #spring.bboss.second.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
-spring.bboss.second.http.hosts=10.13.11.117:8082
+spring.bboss.second.http.hosts=127.0.0.1:8082
 # 健康检查服务
 spring.bboss.second.http.health=/
 spring.bboss.second.http.healthCheckInterval=1000
@@ -726,7 +726,7 @@ spring.bboss.second.db.name = secondds
 spring.bboss.second.db.user = root
 spring.bboss.second.db.password = 123456
 spring.bboss.second.db.driver = com.mysql.jdbc.Driver
-spring.bboss.second.db.url = jdbc:mysql://10.13.11.117:3306/mysql
+spring.bboss.second.db.url = jdbc:mysql://101.13.11.117:3306/mysql
 spring.bboss.second.db.usePool = true
 spring.bboss.second.db.validateSQL = select 1
 

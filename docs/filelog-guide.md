@@ -1071,7 +1071,7 @@ FileInputConfig config = new FileInputConfig();
 			logger.error("",e);
 		}
 		final Date startDate = _startDate;
-		FtpConfig ftpConfig = new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
+		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
 				.setFtpUser("ecs").setFtpPassword("ecs@123")
 				.setRemoteFileDir("/home/ecs/failLog")
 				.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
@@ -1122,7 +1122,7 @@ if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以�
 以sftp为案例进行说明，本地目录和ftp设置方式类似：
 
 ```java
-config.addConfig(new FtpConfig().setFtpIP("10.13.6.127").setFtpPort(5322)
+config.addConfig(new FtpConfig().setFtpIP("192.168.137.1").setFtpPort(5322)
                          .setFtpUser("ecs").setFtpPassword("ecs@123")
                         .setRemoteFileDir("/home/ecs/ftp")//指定sftp根目录
                         .setDeleteRemoteFile(true)//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除

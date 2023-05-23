@@ -3,6 +3,7 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同�
 bboss-datatran采用标准的输入输出异步管道来处理数据
 
 ![](images\datasyn-inout-now.png)
+通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
 
 本文介绍bboss-datatran提供各种输入输出插件以及配置说明。
 

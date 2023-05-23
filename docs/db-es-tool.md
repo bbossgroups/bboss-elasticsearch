@@ -88,35 +88,37 @@ bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
-3）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
+3) 支持mysql binlog，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
 
-4）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
+4）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
 
-5）支持将单条记录切割为多条记录；
+5）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
 
-6）可以将加工后的数据写入File并上传到ftp/sftp服务器；
+6）支持将单条记录切割为多条记录；
 
-7）支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
+7）可以将加工后的数据写入File并上传到ftp/sftp服务器；
 
-8）支持自动清理下载完毕后ftp服务器上的文件;
+8）支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
 
-9）支持excel、csv文件采集（本地和ftp/sftp）
+9）支持自动清理下载完毕后ftp服务器上的文件;
 
-10）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
+10）支持excel、csv文件采集（本地和ftp/sftp）
 
-11）支持海量PB级数据同步导入功能
+11）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
 
-12）支持将ip转换为对应的运营商和城市地理坐标位置信息
+12）支持海量PB级数据同步导入功能
 
-13）**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+13）支持将ip转换为对应的运营商和城市地理坐标位置信息
 
-14）支持以下三种作业调度机制：
+14）**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+
+15）支持以下三种作业调度机制：
 
 - jdk timer （内置）
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
-15) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
+16) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
 
 ​	下面通过案例来介绍ETL工具的使用方法，本文案例工程地址
 
@@ -266,6 +268,16 @@ mongodb插件maven坐标
 <version>6.9.3</version>
 </dependency>
 ```
+
+mysqlbinlog插件maven坐标
+```xml
+<dependency>
+<groupId>com.bbossgroups.plugins</groupId>
+<artifactId>bboss-datatran-binlog</artifactId>
+<version>6.9.3</version>
+</dependency>
+```
+
 
 如果需要增量导入，还需要导入sqlite驱动：
 

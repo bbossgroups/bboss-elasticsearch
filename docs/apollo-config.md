@@ -35,7 +35,7 @@ maven项目pom.xml添加Apollo和bbossEs相关依赖
 # apollo应用id
 app.id=visualops
 # apollo应用地址
-apollo.meta=http://10.13.11.7:8080
+apollo.meta=http://127.0.0.1:8080
 ```
 
 ## 1.3 增加elasticsearch-boot-config.xml
@@ -166,7 +166,6 @@ public class ApolloPropertiesFilePluginTest{
    public void test(){
       // 打印从apollo获取的配置信息
       dbinfo("");
-      dbinfo("ecop.");
       //每隔两秒获取最新的配置信息，可以验证热加载apollo中发生改变的配置
       while(true){
          try {
@@ -174,7 +173,6 @@ public class ApolloPropertiesFilePluginTest{
                Thread.currentThread().wait(2000l);
             }
             dbinfo("");
-            dbinfo("ecop.");
          }
          catch (Exception e){
 
