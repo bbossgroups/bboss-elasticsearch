@@ -379,7 +379,7 @@ Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/
 
 下面介绍Mysql binlog输入插件配置参数和配置实例
 
-### 1.1.1 插件配置案例
+### 1.3.1 插件配置案例
 
 ```java
 MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
@@ -396,7 +396,9 @@ mySQLBinlogConfig.setDatabase("bboss");
 importBuilder.setInputConfig(mySQLBinlogConfig);
 ```
 
-自定义输出插件结合案例：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java
+### 1.3.2 自定义输出插件结合案例
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
@@ -473,6 +475,151 @@ record.getDatas()  key/value  key为字段名称，value为字段值
 record.getUpdateFromDatas() 返回修改之前的字段值和字段名称 key/value ，key为字段名称，value为字段值
 
 # 2.输出插件
+
+## 2.1 DB输出插件
+
+db输出插件配置类：[DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java)
+
+
+
+### 2.1.1 插件配置案例
+
+直接设置数据库连接串
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+		dbOutputConfig
+				.setDbName("test")
+				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+				.setDbUser("root")
+				.setDbPassword("123456")
+				.setValidateSQL("select 1")
+				.setUsePool(true)
+				.setDbInitSize(5)
+				.setDbMinIdleSize(5)
+				.setDbMaxSize(10)
+				.setShowSql(true)//是否使用连接池;
+
+				.setSqlFilepath("dsl2ndSqlFile.xml")
+				.setInsertSqlName("insertSQLnew")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
+//				.setUpdateSqlName("updateSql")//指定修改的sql语句名称，在配置文件中配置：sql-dbtran.xml
+//				.setDeleteSqlName("deleteSql")//指定删除的sql语句名称，在配置文件中配置：sql-dbtran.xml
+		/**
+		 * 是否在批处理时，将insert、update、delete记录分组排序
+		 * true：分组排序，先执行insert、在执行update、最后执行delete操作
+		 * false：按照原始顺序执行db操作，默认值false
+		 * @param optimize
+		 * @return
+		 */
+//				.setOptimize(true);//指定查询源库的sql语句，在配置文件中配置：sql-dbtran.xml
+		;
+		importBuilder.setOutputConfig(dbOutputConfig);
+```
+
+配置说明：
+
+1. 设置目标数据库参数：dbname、dburl、dbuser、dbPassword、是否使用连接池（usePool）、连接池参数设置、是否打印sql语句。如果使用外部数据源，则只需要设置dbname即可。
+2. 基于配置文件输出sql语句配置：sql语句配置文件路径（xml文件）、新增语句名称（InsertSqlName）、修改语句名称（updateSqlName，可选）、修改语句名称（deleteSqlName，可选）
+3. 可以直接设置增删改sql语句：新增语句（InsertSql）、修改语句（updateSql，可选）、修改语句（deleteSql，可选）
+
+### 2.1.1 sql语句设置的补充说明
+
+正常情况下，我们只需要设置一组sql语句即可（增删改），但是在与mysql binlog输入插件或者其他多类型输入插件（比如文件输入插件）对接时，需要根据不同表，或者不同的文件路径，设置各自对应的一组sql语句（增删改），因此采用以下方法来应对各种情况。
+
+### 2.1.2 mysql binlog监听多表场景
+
+ mySQLBinlogConfig.setTables("cityperson,batchtest");//这里指定了要监听两张表
+
+那么通过以下方式设置cityperson,batchtest表各自的sql语句
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+        dbOutputConfig
+                .setDbName("test")
+                .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setDbUser("root")
+                .setDbPassword("123456")
+                .setValidateSQL("select 1")
+                .setUsePool(true)
+                .setDbInitSize(5)
+                .setDbMinIdleSize(5)
+                .setDbMaxSize(10)
+                .setShowSql(true)//是否使用连接池;
+                .setSqlFilepath("dsl2ndSqlFile.xml");//sql语句配置文件路径
+        
+        //设置不同表对应的增删改sql语句
+        SQLConf sqlConf = new SQLConf();
+        sqlConf.setInsertSqlName("insertcitypersonSQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertcitypersonSQL
+//        sqlConf.setUpdateSqlName("insertcitypersonUpdateSQL");//可选
+//        sqlConf.setDeleteSqlName("insertcitypersonDeleteSQL");//可选
+        dbOutputConfig.addSQLConf("cityperson",sqlConf);
+
+        sqlConf = new SQLConf();
+        sqlConf.setInsertSqlName("insertbatchtestSQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertbatchtestSQL
+//        sqlConf.setUpdateSqlName("insertbatchtestUpdateSQL");//可选
+//        sqlConf.setDeleteSqlName("insertbatchtestDeleteSQL");//可选
+        dbOutputConfig.addSQLConf("batchtest",sqlConf);
+        importBuilder.setOutputConfig(dbOutputConfig);
+```
+
+### 2.1.3 监听多个不同结构文件场景
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+        dbOutputConfig
+                .setDbName("test")
+                .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setDbUser("root")
+                .setDbPassword("123456")
+                .setValidateSQL("select 1")
+                .setUsePool(true)
+                .setDbInitSize(5)
+                .setDbMinIdleSize(5)
+                .setDbMaxSize(10)
+                .setShowSql(true)//是否使用连接池;
+                .setSqlFilepath("dsl2ndSqlFile.xml");//sql语句配置文件路径
+        
+        //设置不同表对应的增删改sql语句
+        SQLConf sqlConf = new SQLConf();
+        sqlConf.setInsertSqlName("insertcitypersonSQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertcitypersonSQL
+//        sqlConf.setUpdateSqlName("insertcitypersonUpdateSQL");//可选
+//        sqlConf.setDeleteSqlName("insertcitypersonDeleteSQL");//可选
+        dbOutputConfig.addSQLConf("cityperson.txt",sqlConf);//用文件名映射该文件对应的sql语句
+
+        sqlConf = new SQLConf();
+        sqlConf.setInsertSqlName("insertbatchtestSQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertbatchtestSQL
+//        sqlConf.setUpdateSqlName("insertbatchtestUpdateSQL");//可选
+//        sqlConf.setDeleteSqlName("insertbatchtestDeleteSQL");//可选
+        dbOutputConfig.addSQLConf("batchtest.txt",sqlConf);//用文件名映射该文件对应的sql语句
+     // mysql binlog输入插件对接时，默认使用表名称映射对应的sqlconf配置
+     // 其他场景需要通过SQLConfResolver接口从当前记录中获取对应的字段值作为sqlconf配置对应的映射名称
+        dbOutputConfig.setSqlConfResolver(new SQLConfResolver() {
+            @Override
+            public String resolver(TaskContext taskContext, CommonRecord record) {
+                String filePath = (String)record.getData("filePath");
+                if(filePath.endsWith("batchtest.txt"))
+                    return "batchtest.txt";
+                else if(filePath.endsWith("cityperson.txt"))
+                    return "cityperson.txt";
+                return "cityperson.txt";
+            }
+        });
+        importBuilder.setOutputConfig(dbOutputConfig);
+```
+
+我们需要将filePath元数据放入到当前记录中：
+
+```java
+importBuilder.setDataRefactor(new DataRefactor() {
+    public void refactor(Context context) throws Exception {
+        String filePath = (String)context.getMetaValue("filePath");
+        context.addFieldValue("filePath",filePath);
+```
+
+多组sql语句场景下，optimize参数将不起作用
 
 # 8.参考文档
 
