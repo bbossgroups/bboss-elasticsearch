@@ -56,6 +56,8 @@ bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 4)  基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
 
+5) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集
+
 如果您还在：
 
 - 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
@@ -88,7 +90,7 @@ bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
-3) 支持mysql binlog，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
+3) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
 
 4）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
 

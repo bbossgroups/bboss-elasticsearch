@@ -14,6 +14,8 @@ package org.frameworkset.elasticsearch.serial;/*
  *  limitations under the License.
  */
 
+import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
+import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import org.frameworkset.util.ClassUtil;
 
 public class DefaultEntityCustomSerializationFactory extends EntityCustomSerializationFactory{
@@ -21,4 +23,25 @@ public class DefaultEntityCustomSerializationFactory extends EntityCustomSeriali
 	protected String[] getFilterFields(ClassUtil.ClassInfo classInfo) {
 		return null;
 	}
+    public DefaultEntityCustomSerializationFactory() {
+        super();
+    }
+    public DefaultEntityCustomSerializationFactory(SerializerFactoryConfig config) {
+        super(config);
+    }
+    /**
+     * Method used by module registration functionality, to attach additional
+     * serializer providers into this serializer factory. This is typically
+     * handled by constructing a new instance with additional serializers,
+     * to ensure thread-safe access.
+     */
+    @Override
+    public SerializerFactory withConfig(SerializerFactoryConfig config)
+    {
+        if (_factoryConfig == config) {
+            return this;
+        }
+
+        return new DefaultEntityCustomSerializationFactory(config);
+    }
 }

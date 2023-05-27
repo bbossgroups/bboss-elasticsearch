@@ -20,7 +20,7 @@ public abstract class EntityCustomSerializationFactory extends BeanSerializerFac
 	public EntityCustomSerializationFactory() {
 		this(null);
 	}
-	protected EntityCustomSerializationFactory(SerializerFactoryConfig config) {
+    public EntityCustomSerializationFactory(SerializerFactoryConfig config) {
 		super(config);
 	}
 	private String[] _getFilterFields(ClassUtil.ClassInfo classInfo){

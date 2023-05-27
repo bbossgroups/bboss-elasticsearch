@@ -32,7 +32,8 @@ dependencies {
     api([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])
    	 api([group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonversion}",transitive: false],
 			 [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksondatabaindversion}",transitive: false],
-			 [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonversion}",transitive: false]
+			 [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonversion}",transitive: false],
+			 [group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "${jacksonversion}",transitive: false]
 	 )
 
     testImplementation(
