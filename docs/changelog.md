@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v6.9.3 发布
+# BBOSS版本变更记录-v6.9.5 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.9.3</version>
+            <version>6.9.5</version>
         </dependency>
 ```
 
@@ -28,10 +28,44 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.9.3</version>
+            <version>6.9.5</version>
         </dependency>
 ```
+# v6.9.5 功能改进
+
+1. [mysql binlog插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)改进完善
+
+2. [数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_21-db%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)改进，支持根据规则设置不同的增删改sql语句
+
+3. CommonRecord支持元数据api getMetaDatas，参考案例如下：
+
+   ```java
+   CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+   customOutputConfig.setCustomOutPut(new CustomOutPut() {
+       @Override
+       public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+   
+           //You can do any thing here for datas
+           for(CommonRecord record:datas){
+               Map<String,Object> data = record.getDatas();
+   
+               logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
+   
+           }
+       }
+   });
+   ```
+
+4. Elasticsearch Client LocalDateTime/LocalDate/LocalTime json序列化支持
+
+5. Elasticsearch输入插件增量采集支持LocalDateTime兼容性支持，支持纳秒级时间增量粒度：
+
+   ```java
+   importBuilder.setLastValueType(ImportIncreamentConfig.LOCALDATETIME_TYPE);//NUMBER_TYPE TIMESTAMP_TYPE LOCALDATETIME_TYPE
+   ```
+
 # v6.9.3 功能改进
+
 1. 优化kafka组件：增加[弹性动态调整kafka消费线程](https://doc.bbossgroups.com/#/kafka?id=_4-%e5%bc%b9%e6%80%a7%e6%89%a9%e5%b1%95%e5%92%8c%e7%bc%a9%e5%87%8fkafka-consumer%e6%b6%88%e8%b4%b9%e7%ba%bf%e7%a8%8b)功能
 2. 增加[mysql binlog输入采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，支持两种模式：监听master-slave模式和直接采集binlog日志文件模式
 3. Elasticsearch client增加[msearch api](https://esdoc.bbossgroups.com/#/document-crud?id=_16msearch%e6%a3%80%e7%b4%a2)
@@ -315,7 +349,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.9.3版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss6.9.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -490,7 +524,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.9.3</version>
+            <version>6.9.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -498,7 +532,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.9.3</version>
+            <version>6.9.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -585,7 +619,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.9.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到6.9.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -637,7 +671,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.6",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.7",transitive: true 
   ```
 
   **maven坐标**
@@ -648,7 +682,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.0.6</version>  
+      <version>6.0.7</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1131,7 +1165,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.9.3</version>
+    <version>6.9.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

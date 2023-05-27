@@ -235,7 +235,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -243,7 +243,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -251,7 +251,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -259,7 +259,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -267,7 +267,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 
@@ -276,7 +276,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>6.9.3</version>
+<version>6.9.5</version>
 </dependency>
 ```
 
@@ -287,7 +287,7 @@ mysqlbinlog插件maven坐标
 <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
-      <version>3.36.0.6</version>
+      <version>3.36.0.3</version>
       <scope>compile</scope>
  </dependency>
 ```
@@ -809,6 +809,8 @@ bboss的增量数据采集，默认基于sqlite数据库管理增量采集状态
 
 基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
 
+支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集
+
 #### 2.8.5.1 定时机制配置
 
 ```java
@@ -844,6 +846,12 @@ importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字�
 
 #### 2.8.5.2 日期时间戳增量同步
 
+两种类型日期时间戳增量
+
+精度毫秒级：ImportIncreamentConfig.TIMESTAMP_TYPE
+
+[精度纳秒级（Elasticsearch同步有用）](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2CustomDemo.java)：ImportIncreamentConfig.LOCALDATETIME_TYPE
+
 sql语句格式：
 
 ```sql
@@ -855,7 +863,9 @@ select * from td_sm_log where collecttime > #[collecttime]
 ```java
 importBuilder.setLastValueColumn("collecttime");//手动指定日期增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 
-importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE数字类型
+importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//字段类型：ImportIncreamentConfig.TIMESTAMP_TYPE时间戳类型
+
+importBuilder.setLastValueType(ImportIncreamentConfig.LOCALDATETIME_TYPE);//指定字段类型：ImportIncreamentConfig.LOCALDATETIME_TYPE 支持纳秒时间精度,只对从elasticsearch增量采集数据起作用
 ```
 
 #### 2.8.5.3 日期类型增量字段日期格式配置
@@ -875,7 +885,15 @@ yyyy-MM-dd HH:mm:ss
   importBuilder.setLastValueDateformat("yyyy-MM-dd HH:mm:ss");
 ```
 
-   lastValueDateformat只对从elasticsearch增量采集数据起作用，因为elasticsearch返回非UTC格式日期字符串时，需要通过指定对应的日期格式，才能将字符串形式的日期转换为增量字段状态管理需要的Date类型。
+ lastValueDateformat只对从elasticsearch增量采集数据起作用，因为elasticsearch返回非UTC格式日期字符串时，需要通过指定对应的日期格式，才能将字符串形式的日期转换为增量字段状态管理需要的Date类型。
+
+LOCALDATETIME_TYPE类型(只对从elasticsearch增量采集数据起作用)时，默认的时间格式：
+
+```java
+yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'
+```
+
+
 
 #### 2.8.5.4 时间戳增量导出截止时间偏移量配置
 
