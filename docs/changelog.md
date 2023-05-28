@@ -69,7 +69,7 @@
 1. 优化kafka组件：增加[弹性动态调整kafka消费线程](https://doc.bbossgroups.com/#/kafka?id=_4-%e5%bc%b9%e6%80%a7%e6%89%a9%e5%b1%95%e5%92%8c%e7%bc%a9%e5%87%8fkafka-consumer%e6%b6%88%e8%b4%b9%e7%ba%bf%e7%a8%8b)功能
 2. 增加[mysql binlog输入采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，支持两种模式：监听master-slave模式和直接采集binlog日志文件模式
 3. Elasticsearch client增加[msearch api](https://esdoc.bbossgroups.com/#/document-crud?id=_16msearch%e6%a3%80%e7%b4%a2)
-4. 处理持久层框架postgresql兼容性查询条件设置问题：可能得死循环设置预编译参数值问题
+4. 处理持久层框架postgresql兼容性问题：设置预编译参数值可能导致的死循环问题
 
 # v6.9.2 功能改进
 1. 调整增量状态管理数据库sqlite默认口令为复杂口令，同时支持设置sqlite状态数据库口令
