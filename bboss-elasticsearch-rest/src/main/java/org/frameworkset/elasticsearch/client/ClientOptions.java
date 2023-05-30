@@ -79,7 +79,13 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	private String scriptField;
 
 
-	public String getRefreshOption() {
+    /**
+     * 脚本中已经涵盖了doc部分内容，无需自动添加doc部分内容
+     */
+    private boolean haveScriptDoc;
+
+
+    public String getRefreshOption() {
 		return refreshOption;
 	}
 
@@ -358,4 +364,11 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	public void setScriptField(String scriptField) {
 		this.scriptField = scriptField;
 	}
+    public boolean isHaveScriptDoc() {
+        return haveScriptDoc;
+    }
+
+    public void setHaveScriptDoc(boolean haveScriptDoc) {
+        this.haveScriptDoc = haveScriptDoc;
+    }
 }

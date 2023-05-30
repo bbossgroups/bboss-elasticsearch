@@ -2317,7 +2317,10 @@ public abstract class BuildTool {
 				}
 
 
-				writer.write("{\"doc\":");
+                boolean isHaveScriptDoc = clientOptions != null && clientOptions.isHaveScriptDoc();
+                if(!isHaveScriptDoc) {
+                    writer.write("{\"doc\":");
+                }
 				if(clientOptions == null || SimpleStringUtil.isEmpty(clientOptions.getScriptField())) {
 					SerialUtil.object2json(param,writer);
 
@@ -2327,43 +2330,45 @@ public abstract class BuildTool {
 					scriptFieldValue(  writer,  param,  scriptField,  beanClassInfo);
 				}
 
-
-				if(detect_noop != null){
-					writer.write(",\"detect_noop\":");
-					writer.write(detect_noop.toString());
-				}
-				if(doc_as_upsert != null){
+                if(!isHaveScriptDoc) {
+                    if (detect_noop != null) {
+                        writer.write(",\"detect_noop\":");
+                        writer.write(detect_noop.toString());
+                    }
+                    if (doc_as_upsert != null) {
 //					builder.append(",\"doc_as_upsert\":").append(doc_as_upsert);
-					writer.write(",\"doc_as_upsert\":");
-					writer.write(doc_as_upsert.toString());
-				}
-				Boolean returnSource = clientOptions != null?clientOptions.getReturnSource():null;
-				if(returnSource != null){
-					writer.write(",\"_source\":");
-					writer.write(String.valueOf(returnSource));
-				}
-				List<String> sourceUpdateExcludes  = clientOptions!= null?clientOptions.getSourceUpdateExcludes():null;
+                        writer.write(",\"doc_as_upsert\":");
+                        writer.write(doc_as_upsert.toString());
+                    }
+                    Boolean returnSource = clientOptions != null ? clientOptions.getReturnSource() : null;
+                    if (returnSource != null) {
+                        writer.write(",\"_source\":");
+                        writer.write(String.valueOf(returnSource));
+                    }
+                    List<String> sourceUpdateExcludes = clientOptions != null ? clientOptions.getSourceUpdateExcludes() : null;
 
-				if (sourceUpdateExcludes != null) {
+                    if (sourceUpdateExcludes != null) {
 
-					if(!upper7) {
-						writer.write(",\"_source_excludes\":");
-						SerialUtil.object2json(sourceUpdateExcludes,writer);
-					}
+                        if (!upper7) {
+                            writer.write(",\"_source_excludes\":");
+                            SerialUtil.object2json(sourceUpdateExcludes, writer);
+                        }
 
-				}
-				List<String> sourceUpdateIncludes  = clientOptions!= null?clientOptions.getSourceUpdateIncludes():null;
+                    }
+                    List<String> sourceUpdateIncludes = clientOptions != null ? clientOptions.getSourceUpdateIncludes() : null;
 
-				if (sourceUpdateIncludes != null) {
+                    if (sourceUpdateIncludes != null) {
 
-					if(!upper7) {
-						writer.write(",\"_source_includes\":");
-						SerialUtil.object2json(sourceUpdateIncludes,writer);
-					}
+                        if (!upper7) {
+                            writer.write(",\"_source_includes\":");
+                            SerialUtil.object2json(sourceUpdateIncludes, writer);
+                        }
 
 
-				}
-				writer.write("}\n");
+                    }
+                    writer.write("}");
+                }
+                writer.write("\n");
 			}
 
 

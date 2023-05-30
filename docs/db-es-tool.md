@@ -492,21 +492,7 @@ dataStream.execute();//执行导入操作
 
 importBuilder.setBatchSize(5000)
 
-数据库jdbcFetchSize设置
-mysql提供两种处理机制支持海量数据的导入，一种机制是在application.properties文件配置连接串和指定fetch相关的useCursorFetch和jdbcFetchSize参数：
-
-```properties
-db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
-
-##mysql 8 url配置样例
-#db.url = jdbc:mysql://192.168.0.188:3308/braineex?useCursorFetch=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
-db.jdbcFetchSize = 10000
-
-```
-
-另外一种机制可以参考文档章节：
-
-[2.8.14 Mysql ResultSet Stream机制说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2814-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)
+数据库jdbcFetchSize设置，参考文档：[fetch机制配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2814-%e6%95%b0%e6%8d%ae%e5%ba%93resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)
 
 根据设置的SQL语句，同步批量一次性导入数据到Elasticsearch中，非定时执行。
 
@@ -1914,11 +1900,17 @@ elasticsearchOutputConfig.setClientOptions(clientOptions);
 
 ### 2.8.14 数据库ResultSet Stream机制说明
 
+利用数据库ResultSet Stream机制可以查询大表数据，设置方式如下：
 
+```java
+DBInputConfig dbInputConfig = new DBInputConfig();
+//通过设置JdbcFetchSize来控制预fetch记录数
+dbInputConfig.setJdbcFetchSize(2000);
+```
 
 同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
-**机制一** mysql 5以后的版本采用jdbc url串参数useCursorFetch=true以及配置fetchsize属性来实现，bboss在application.properties中做如下配置即可：
+**机制一** mysql 5以后的版本采用jdbc url串参数useCursorFetch=true以及配置fetchsize属性来实现，数据库url做如下配置即可：
 
 ```properties
 db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
