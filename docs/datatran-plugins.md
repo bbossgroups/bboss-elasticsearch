@@ -1,6 +1,8 @@
+# bboss-datatran插件清单
+
 bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。
 
-bboss-datatran采用标准的输入输出异步管道来处理数据
+bboss-datatran采用标准的输入输出异步管道来处理数据，输入插件和输出插件可以自由组合，输入插件从数据源采集数据，经过数据异步并行流批一体化处理后，输出插件将处理后的数据、指标数据输出到目标地。
 
 ![](images\datasyn-inout-now.png)
 通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
@@ -369,9 +371,49 @@ record.getDatas()  key/value  key为字段名称，value为字段值
 
 record.getUpdateFromDatas() 返回修改之前的字段值和字段名称 key/value ，key为字段名称，value为字段值
 
+扫码免费观看mysql binlog插件使用视频教程：介绍采集作业开发、调测、构建配置部署实际操作过程
+
+<img src="images\mysql-binlog-vidio.png" style="zoom:50%;" />
+
 ### 1.3.3 输出到数据库案例
 
 详见章节：[输出到数据库案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-mysql-binlog%e7%9b%91%e5%90%ac%e5%a4%9a%e8%a1%a8%e5%9c%ba%e6%99%af)
+
+## 1.4 文件采集插件
+
+[FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java)
+
+内容补充中。。。。。。
+
+## 1.5 Excel文件采集插件
+
+[ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java)
+
+内容补充中。。。。。。
+
+## 1.6 HBase采集插件
+
+[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)
+
+内容补充中....
+
+## 1.7 MongoDB采集插件
+
+[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)
+
+内容补充中。。。。。。
+
+## 1.8 Kafka输入插件
+
+[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)
+
+内容补充中。。。。。。
+
+## 1.9 Http输入插件
+
+[HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java)
+
+内容补充中。。。。。。
 
 # 2.输出插件
 
@@ -526,12 +568,68 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 多组sql语句场景下，optimize参数将不起作用
 
-# 8.参考文档
+## 2.2 Elasticsearch输出插件
 
-本插件底层基于bboss httpproxy组件实现，参考文档：
+[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)
 
-https://esdoc.bbossgroups.com/#/development?id=_26-http%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae
+内容补充中......
+
+## 2.3 文件输出插件
+
+[FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java)
+
+## 2.4 Excel文件输出插件
+
+[ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.5 Kafka输出插件
+
+[Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.6 Http输出插件
+
+[HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.7 自定义输出插件
+
+[CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.8 MongoDB输出插件
+
+[MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.9 HBase输出插件
+
+[HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.10 指标结果输出插件
+
+[MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java)
+
+内容补充中。。。。。。
+
+## 2.11 日志调试输出插件
+
+[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java)
+
+内容补充中。。。。。。
 
 
 
-https://esdoc.bbossgroups.com/#/httpproxy
+# 3.参考文档
+
+[bboss数据采集ETL工具使用指南](https://esdoc.bbossgroups.com/#/db-es-tool?id=bboss数据采集etl工具使用指南)
+
+[数据采集&流批一体化处理使用指南](https://esdoc.bbossgroups.com/#/etl-metrics?id=数据采集amp流批一体化处理使用指南)

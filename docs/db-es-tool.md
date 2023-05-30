@@ -235,7 +235,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -243,7 +243,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -251,7 +251,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -259,7 +259,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -267,7 +267,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 
@@ -276,7 +276,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>6.9.5</version>
+<version>6.9.6</version>
 </dependency>
 ```
 
@@ -1912,7 +1912,9 @@ clientOptions.setRoutingField(new ESField("parentid"));
 elasticsearchOutputConfig.setClientOptions(clientOptions);
 ```
 
-### 2.8.14 Mysql ResultSet Stream机制说明
+### 2.8.14 数据库ResultSet Stream机制说明
+
+
 
 同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
@@ -1936,7 +1938,7 @@ db.jdbcFetchSize = -2147483648
 
 ```java
         //数据源相关配置，可选项，可以在外部启动数据源
-        importBuilder.setDbName("test")
+        dbInputConfig.setDbName("test")
                 .setDbDriver("com.mysql.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
                 .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false")//没有带useCursorFetch=true参数，jdbcFetchSize参数配置为-2147483648，否则不会生效  
                  .setJdbcFetchSize(-2147483648);
@@ -1946,7 +1948,7 @@ db.jdbcFetchSize = -2147483648
                 .setUsePool(true);//是否使用连接池
 ```
 
-机制二需要bboss elasticsearch [5.7.2](https://esdoc.bbossgroups.com/#/changelog?id=v572-%E5%8A%9F%E8%83%BD%E6%94%B9%E8%BF%9B)以后的版本才支持。
+
 
 ### 2.8.15 用配置文件来管理同步sql
 

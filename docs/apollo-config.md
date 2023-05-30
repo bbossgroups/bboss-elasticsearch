@@ -10,7 +10,7 @@ maven项目pom.xml添加Apollo和bbossEs相关依赖
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.9.5</version>
+    <version>6.9.6</version>
      <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
