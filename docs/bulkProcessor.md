@@ -298,6 +298,7 @@ public class TestBulkProcessor {
         //script field使用案例：通过ScriptField指定批处理数据信息
         data = new HashMap<String,Object>();
 		data.put("id",1000);
+        //直接制定文档需要新增的字段json串
 		data.put("script","{\"name\":\"duoduo104\",\"goodsid\":104}");
 		clientOptions = new ClientOptions();
 		clientOptions.setIdField("id");
@@ -306,10 +307,21 @@ public class TestBulkProcessor {
 
 		data = new HashMap<String,Object>();
 		data.put("id",1000);
+        //直接制定文档需要修改的字段json串，填充位置，替换其中的script内容   {"doc":script,......}
 		data.put("script","{\"name\":\"updateduoduo104\",\"goodsid\":1104}");
 		clientOptions = new ClientOptions();
 		clientOptions.setIdField("id");
 		clientOptions.setScriptField("script");
+		bulkProcessor.updateData("bulkdemo",data,clientOptions);
+        
+        data = new HashMap<String,Object>();
+		data.put("id",1000);
+        //直接制定文档需要修改的字段json串，填充位置，替换其中的script内容   {"doc":script,......}
+		data.put("script","{\"name\":\"updateduoduo104\",\"goodsid\":1104}");
+		clientOptions = new ClientOptions();
+		clientOptions.setIdField("id");
+		clientOptions.setScriptField("script");
+        clientOptions.setHaveScriptDoc(true);//如果script中已经包含了完整的修改json报文，无需框架自动补全doc和其他控制参数，则设置为true，默认值false
 		bulkProcessor.updateData("bulkdemo",data,clientOptions);
 
 
