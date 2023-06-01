@@ -1812,8 +1812,8 @@ kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：
 #### 2.8.13.1 importBuilder组件全局设置索引类型和索引名称
 
 ```java
-importBuilder
-				.setIndex("dbclobdemo") //必填项
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+        elasticsearchOutputConfig.setIndex("dbclobdemo") //必填项
 				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
@@ -1863,15 +1863,16 @@ demowithesindex-{field=agentStarttime,dateformat=yyyy.MM.dd}
 示例如下：
 
 ```java
-importBuilder
-				.setIndex("demo-{dateformat=yyyy.MM.dd}") //必填项
-				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
+
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+        elasticsearchOutputConfig.setIndex("demo-{dateformat=yyyy.MM.dd}"); //必填项
+				//.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
 ```java
-importBuilder
-				.setIndex("demo-{agentStarttime,yyyy.MM.dd}") //必填项
-				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+        elasticsearchOutputConfig.setIndex("demo-{agentStarttime,yyyy.MM.dd}"); //必填项
+				//.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
 #### 2.8.13.4 设置routing的方法
