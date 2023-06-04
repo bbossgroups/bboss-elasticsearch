@@ -12,7 +12,7 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
-本案例以Elasticsearch6.9.6版本，bboss6.1.8单元测试时，建议版本选择不要太低
+本案例以Elasticsearch6.9.7版本，bboss6.1.8单元测试时，建议版本选择不要太低
 
 DSL的配置文件[resources/esmapper/span_query.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/span_query.xml)，本文涉及到的DSL都会放到该配置文件，测试代码[SpanQuery](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/SpanQuery.java)。
 
