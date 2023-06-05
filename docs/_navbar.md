@@ -10,3 +10,6 @@
 * 相关链接
     * [官网首页](https://www.bbossgroups.com)
     * [bboss基础框架文档](https://doc.bbossgroups.com)
+* 视频教程
+    * [Elasticsearch Bboss Stream ETL介绍](https://www.bilibili.com/video/BV1Rs4y1i7EK)
+    * [实时采集Mysql binlog增删改数据教程](https://www.bilibili.com/video/BV1ko4y1M7My)

@@ -274,6 +274,8 @@ Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/
 
 配置Mysql binlog对应的mysql master slave ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等，本插件支持直接监听mysql master slave ip和端口和读取binlog文件两种模式采集mysql增删改数据
 
+<img src="images\mysql-binlog-arch.png" style="zoom:50%;" />
+
 下面介绍Mysql binlog输入插件配置参数和配置实例
 
 ### 1.3.1 插件配置案例
