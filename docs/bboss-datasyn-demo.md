@@ -468,3 +468,22 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 [数据采集流批一体化计算案例](https://esdoc.bbossgroups.com/#/etl-metrics?id=_4%e6%a1%88%e4%be%8b%e4%bb%8b%e7%bb%8d)
 
+# 20 mysql binlog数据采集案例
+
+[采集binlog数据到自定义输出插件案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java)
+
+[采集binlog数据输出到DB案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2DBOutput.java)
+
+[基于Master-Slave机制监听采集binlog数据-故障容灾案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2DBOutput.java)
+
+[基于Master-Slave机制监听binlog数据-重启直接从最新位置采集案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2DBOutputUnIncre.java)
+
+[[基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java)
+
+# 开发交流
+
+**Elasticsearch技术交流群：21220580,166471282**
+
+**Elasticsearch微信公众号：**
+
+![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
