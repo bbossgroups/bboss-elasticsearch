@@ -22,9 +22,11 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
 
 **模式1** 直接读取binlog文件,采集文件中的增删改数据
 
-**模式2** 监听mysql master slave ip和端口，作业重启从binlog最新位置采集删改数据
+**模式2** 监听mysql master slave ip和端口，作业重启从binlog最新位置采集数据
 
 **模式3** 监听mysql master slave ip和端口，启用故障容灾配置，每次重启作业从上次采集结束的位置开始采集数据
+
+模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。
 
 本文介绍mysql binlog插件的使用方法，以实时同步Mysql Binlog增删改数据到Elasticsearch作为案例来讲解。
 
@@ -203,6 +205,10 @@ dataStream.execute();
 案例作业代码文件：
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java
+
+更多案例，可以参考文档：
+
+[mysql binlog数据采集案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_20-mysql-binlog%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86%e6%a1%88%e4%be%8b)
 
 ## 2.6 视频教程
 

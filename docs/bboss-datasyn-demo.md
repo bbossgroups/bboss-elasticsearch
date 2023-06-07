@@ -478,7 +478,7 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 [基于Master-Slave机制监听binlog数据-重启直接从最新位置采集案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2DBOutputUnIncre.java)
 
-[[基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java)
+[基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java)
 
 # 开发交流
 

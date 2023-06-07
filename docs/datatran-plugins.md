@@ -272,7 +272,15 @@ importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字�
 
 Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-binlog/src/main/java/org/frameworkset/tran/plugin/mysqlbinlog/input/MySQLBinlogConfig.java)
 
-配置Mysql binlog对应的mysql master slave ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等，本插件支持直接监听mysql master slave ip和端口和读取binlog文件两种模式采集mysql增删改数据
+Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等信息，实时采集mysql增删改数据，支持以下三种数据采集模式：
+
+**模式1** 直接读取binlog文件,采集文件中的增删改数据
+
+**模式2** 监听mysql master slave ip和端口，作业重启从binlog最新位置采集数据
+
+**模式3** 监听mysql master slave ip和端口，启用故障容灾配置，每次重启作业从上次采集结束的位置开始采集数据
+
+模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。
 
 <img src="images\mysql-binlog-arch.png" style="zoom:50%;" />
 
@@ -322,7 +330,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 
                 //You can do any thing here for datas
                 for(CommonRecord record:datas){
-                    Map<String,Object> data = record.getDatas();
+                    Map<String,Object> data = record.getDatas();//获取记录数据，column/value结构
                     int action = (int)record.getMetaValue("action");
                     logger.info("action:{},record action type:insert={},update={},delete={}",action,record.isInsert(),record.isUpdate(),record.isDelete());
 
@@ -373,9 +381,9 @@ record.getDatas()  key/value  key为字段名称，value为字段值
 
 record.getUpdateFromDatas() 返回修改之前的字段值和字段名称 key/value ，key为字段名称，value为字段值
 
-扫码免费观看mysql binlog插件使用视频教程：介绍采集作业开发、调测、构建配置部署实际操作过程
+**mysql binlog数据采集作业开发调测发布部署视频教程：**介绍采集作业开发、调测、构建配置部署实际操作过程
 
-<img src="images\mysql-binlog-vidio.png" style="zoom:50%;" />
+https://www.bilibili.com/video/BV1ko4y1M7My/
 
 ### 1.3.3 输出到数据库案例
 
@@ -383,21 +391,252 @@ record.getUpdateFromDatas() 返回修改之前的字段值和字段名称 key/va
 
 ## 1.4 文件采集插件
 
-[FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java)
+文件采集插件：[FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java)
 
-内容补充中。。。。。。
+插件主要特色如下:
+
+1. 支持全量和增量采集两种模式；采集-转换-清洗-[流计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理
+2. 实时采集本地/FTP日志文件、excel文件数据到kafka/elasticsearch/database/自定义处理器
+3. 支持多线程并行下载和处理远程数据文件
+4. 支持本地/ftp/sftp子目录下文件数据采集；
+5. 支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件；
+6. 支持自动清理下载完毕后ftp服务器上的文件;
+7. 支持大量文件采集场景下的流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件。
+
+### 1.4.1 配置案例
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+      importBuilder.setBatchSize(500)//设置批量入库的记录数
+            .setFetchSize(1000);//设置按批读取文件行数
+      //设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+      importBuilder.setFlushInterval(10000l);
+      importBuilder.setSplitFieldName("@message");
+      importBuilder.setSplitHandler(new SplitHandler() {
+         /**
+          * 将记录字段值splitValue切割为多条记录，如果方法返回null，则继续将原记录写入目标库
+          * @param taskContext
+          * @param record
+          * @param splitValue
+          * @return List<KeyMap> KeyMap是LinkedHashMap的子类，添加key字段，如果是往kafka推送数据，可以设置推送的key
+          */
+         @Override
+         public List<KeyMap> splitField(TaskContext taskContext,//调度任务上下文
+                                             Record record,//原始记录对象
+                                             Object splitValue) {//待切割的字段值
+//          Map<String,Object > data = (Map<String, Object>) record.getData();//获取原始记录中包含的数据对象
+            List<KeyMap> splitDatas = new ArrayList<>();
+            //模拟将数据切割为10条记录
+            for(int i = 0 ; i < 10; i ++){
+               KeyMap d = new KeyMap();//创建新记录对象
+               d.put("id", SimpleStringUtil.getUUID());//用新的id值覆盖原来的唯一标识id字段的值
+               d.put("message",i+"-"+splitValue);//我们只切割splitValue到message字段，继承原始记录中的其他字段
+//             d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+               splitDatas.add(d);
+            }
+            return splitDatas;
+         }
+      });
+      importBuilder.addFieldMapping("@message","message");
+      importBuilder.addFieldMapping("@timestamp","optime");
+      FileInputConfig config = new FileInputConfig();
+      //.*.txt.[0-9]+$
+      //[17:21:32:388]
+//    config.addConfig(new FileConfig("D:\\ecslog",//指定目录
+//          "error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
+//          "^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+//          .setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+////            .setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
+//          //.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
+//          .addField("tag","error") //添加字段tag到记录中
+//          .setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
+
+      config.addConfig(new FileConfig()
+                  .setSourcePath("D:\\logs")//指定目录
+                  .setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+                  .setFileFilter(new FileFilter() {
+                     @Override
+                     public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+                        //判断是否采集文件数据，返回true标识采集，false 不采集
+                        return fileInfo.getFileName().equals("metrics-report.log");
+                     }
+                  })//指定文件过滤器
+                  .setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+                  .addField("tag","elasticsearch")//添加字段tag到记录中
+                  .setEnableInode(false)
+            //          .setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+            //.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+      );
+//启用元数据，将元数据信息附带到记录中
+      config.setEnableMeta(true);
+      importBuilder.setInputConfig(config);
+```
+
+更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide
+
+插件元数据说明：
+
+```java
+@filemeta  文件详细信息，map结构，包含以下信息
+hostIp
+hostName
+filePath
+pointer
+fileId
+ftpDir
+ftpIp
+ftpPort
+ftpUser
+ftpProtocol
+
+@timestamp  记录采集时间
+```
+
+### 1.4.2 使用案例
+
+源码工程 https://gitee.com/bboss/filelog-elasticsearch
+
+1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)
+3. [采集本地日志数据并发送到Kafka](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
+4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+7. 采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制
+   1. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
 ## 1.5 Excel文件采集插件
 
-[ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java)
+插件配置 [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java)和ExcelFileConfig结合
 
-内容补充中。。。。。。
+通过ExcelFileConfig设置excel列与字段的映射关系，excel忽略行配置等
+
+### 1.5.1 配置案例
+
+```java
+ExcelFileInputConfig config = new ExcelFileInputConfig();
+		FileConfig excelFileConfig = new ExcelFileConfig();
+		excelFileConfig
+				.addCellMapping(0,"shebao_org")
+				.addCellMapping(1,"person_no")
+				.addCellMapping(2,"name")
+				.addCellMapping(3,"cert_type")
+
+				.addCellMapping(4,"cert_no","")
+				.addCellMapping(5,"zhs_item")
+
+				.addCellMapping(6,"zhs_class")
+				.addCellMapping(7,"zhs_sub_class")
+				.addCellMapping(8,"zhs_year","2022")
+				.addCellMapping(9,"zhs_level","1");
+		excelFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
+				.setFileFilter(new FileFilter() {
+					@Override
+					public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+						//判断是否采集文件数据，返回true标识采集，false 不采集
+						return fileInfo.getFileName().equals("cityperson.xlsx");
+					}
+				})//指定文件过滤器
+				.setSkipHeaderLines(1);//忽略第一行
+		//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+		//配置excel文件列与导出字段名称映射关系
+		config.addConfig(excelFileConfig		);
+
+		//将文件元数据信息附带到记录
+		config.setEnableMeta(true);
+		importBuilder.setInputConfig(config);
+```
+
+元数据信息和文件插件一致
 
 ## 1.6 HBase采集插件
 
-[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)
+插件配置类：[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)
 
-内容补充中....
+### 1.6.1 配置案例
+
+基本配置
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+      importBuilder.setBatchSize(1000) //设置批量写入目标Elasticsearch记录数
+            .setFetchSize(10000); //设置批量从源Hbase中拉取的记录数,HBase-0.98 默认值为为 100，HBase-1.2 默认值为 2147483647，即 Integer.MAX_VALUE。Scan.next() 的一次 RPC 请求 fetch 的记录条数。配置建议：这个参数与下面的setMaxResultSize配合使用，在网络状况良好的情况下，自定义设置不宜太小， 可以直接采用默认值，不配置。
+
+//    importBuilder.setHbaseBatch(100) //配置获取的列数，假如表有两个列簇 cf，info，每个列簇5个列。这样每行可能有10列了，setBatch() 可以控制每次获取的最大列数，进一步从列级别控制流量。配置建议：当列数很多，数据量大时考虑配置此参数，例如100列每次只获取50列。一般情况可以默认值（-1 不受限），如果设置了scan filter也不需要设置
+//          .setMaxResultSize(10000l);//客户端缓存的最大字节数，HBase-0.98 无该项配置，HBase-1.2 默认值为 210241024，即 2M。Scan.next() 的一次 RPC 请求 fetch 的数据量大小，目前 HBase-1.2 在 Caching 为默认值(Integer Max)的时候，实际使用这个参数控制 RPC 次数和流量。配置建议：如果网络状况较好（万兆网卡），scan 的数据量非常大，可以将这个值配置高一点。如果配置过高：则可能 loadCache 速度比较慢，导致 scan timeout 异常
+      // 参考文档：https://blog.csdn.net/kangkangwanwan/article/details/89332536
+
+
+      /**
+       * hbase参数配置
+       */
+      HBaseInputConfig hBaseInputConfig = new HBaseInputConfig();
+//    hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+//          .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
+
+      hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","localhost:7001")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+            .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2185")
+            .addHbaseClientProperty("zookeeper.znode.parent","/hbase")
+            .addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
+            .addHbaseClientProperty("hbase.rpc.timeout","10000")
+            .addHbaseClientProperty("hbase.client.operation.timeout","10000")
+            .addHbaseClientProperty("hbase.ipc.client.socket.timeout.read","20000")
+            .addHbaseClientProperty("hbase.ipc.client.socket.timeout.write","30000")
+
+            .setHbaseClientThreadCount(100)  //hbase客户端连接线程池参数设置
+            .setHbaseClientThreadQueue(100)
+            .setHbaseClientKeepAliveTime(10000l)
+            .setHbaseClientBlockedWaitTimeout(10000l)
+            .setHbaseClientWarnMultsRejects(1000)
+            .setHbaseClientPreStartAllCoreThreads(true)
+            .setHbaseClientThreadDaemon(true)
+
+            .setHbaseTable("AgentInfo") //指定需要同步数据的hbase表名称
+            ;
+```
+
+hbase过滤条件配置
+
+```java
+//FilterList和filter二选一，只需要设置一种
+      /**
+       * 设置hbase检索filter
+       */
+      SingleColumnValueFilter scvf= new SingleColumnValueFilter(Bytes.toBytes("Info"), Bytes.toBytes("i"),
+
+            CompareOperator.EQUAL,"wap".getBytes());
+
+      scvf.setFilterIfMissing(true); //默认为false， 没有此列的数据也会返回 ，为true则只返回name=lisi的数据
+
+      hBaseInputConfig.setFilter(scvf);
+
+      /**
+       * 设置hbase组合条件FilterList
+       * FilterList 代表一个过滤器链，它可以包含一组即将应用于目标数据集的过滤器，过滤器间具有“与” FilterList.Operator.MUST_PASS_ALL 和“或” FilterList.Operator.MUST_PASS_ONE 关系
+       */
+
+      FilterList list = new FilterList(FilterList.Operator.MUST_PASS_ONE); //数据只要满足一组过滤器中的一个就可以
+
+      SingleColumnValueFilter filter1 = new SingleColumnValueFilter(Bytes.toBytes("Info"), Bytes.toBytes("i"),
+
+            CompareOperator.EQUAL,"wap".getBytes());
+
+      list.addFilter(filter1);
+
+      SingleColumnValueFilter filter2 = new SingleColumnValueFilter(Bytes.toBytes("Info"), Bytes.toBytes("i"),
+
+            CompareOperator.EQUAL,Bytes.toBytes("my other value"));
+
+      list.addFilter(filter2);
+      hBaseInputConfig.setFilterList(list);
+
+//    //设置同步起始行和终止行key条件
+      hBaseInputConfig.setStartRow(startRow);
+      hBaseInputConfig.setEndRow(endRow);
+      //设置记录起始时间搓（>=）和截止时间搓(<),如果是基于时间范围的增量同步，则不需要指定下面两个参数
+      hBaseInputConfig.setStartTimestamp(startTimestam);
+      hBaseInputConfig.setEndTimestamp(endTimestamp);
+```
 
 ## 1.7 MongoDB采集插件
 

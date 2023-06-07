@@ -6,6 +6,7 @@
   * [索引结构管理](index-indextemplate.md)
   * [ElasticsearchDemo](Elasticsearch-demo.md)
   * [Elasticsearch SQL案例](Elasticsearch-SQL-ORM.md)
+  * [属性配置管理参考](https://doc.bbossgroups.com/#/aop/IntroduceIoc)
 * [支持和Star bboss](supportus.md)🚀   
 * 相关链接
     * [官网首页](https://www.bbossgroups.com)
