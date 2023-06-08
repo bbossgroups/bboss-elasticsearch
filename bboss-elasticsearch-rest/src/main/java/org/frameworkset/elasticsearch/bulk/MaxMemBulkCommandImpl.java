@@ -52,6 +52,7 @@ public class MaxMemBulkCommandImpl extends BaseBulkCommand{
             }
             writer = null;
         }
+        super.clearDatas();
     }
 
     /**
@@ -78,6 +79,7 @@ public class MaxMemBulkCommandImpl extends BaseBulkCommand{
 	public void addBulkData(BulkData bulkData){
         records ++;
         try {
+            super.addBulkData(bulkData);
             BuildTool.evalBuilk(writer, bulkData, this.clientInterface.isUpper7());
         } catch (IOException e) {
             throw new ElasticSearchException(e);

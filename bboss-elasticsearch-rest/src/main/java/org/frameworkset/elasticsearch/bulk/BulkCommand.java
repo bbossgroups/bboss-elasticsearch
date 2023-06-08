@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.bulk;
  */
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -31,6 +32,7 @@ public interface BulkCommand extends Runnable{
      * @return
      */
     public long getAppendRecords();
+    public List<BulkData> getBatchBulkDatas();
     public boolean touchBatchSize(BulkConfig bulkConfig);
     public Date getBulkCommandStartTime();
 

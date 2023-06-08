@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>Description: </p>
@@ -35,18 +33,18 @@ import java.util.List;
  */
 public class BulkCommandImpl extends BaseBulkCommand{
 	private static Logger logger = LoggerFactory.getLogger(BulkCommandImpl.class);
-	private List<BulkData> batchBulkDatas;
+
 	public BulkCommandImpl(BulkProcessor bulkProcessor) {
         super(bulkProcessor);
-		this.batchBulkDatas = new ArrayList<BulkData>(bulkProcessor.getBulkSizes());
+
 
 	}
+
+
+
     @Override
     protected void clear(){
-        if(batchBulkDatas != null) {
-            this.batchBulkDatas.clear();
-            batchBulkDatas = null;
-        }
+        super.clearDatas();
     }
 
     @Override
@@ -77,11 +75,7 @@ public class BulkCommandImpl extends BaseBulkCommand{
             writer = null;
         }
     }
-    @Override
-	public void addBulkData(BulkData bulkData){
-		this.batchBulkDatas.add(bulkData);
 
-	}
 
     /**
      * 获取记录数

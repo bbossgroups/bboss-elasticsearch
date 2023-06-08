@@ -20,6 +20,7 @@ import org.frameworkset.elasticsearch.client.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,10 +38,14 @@ public abstract class BaseBulkCommand implements BulkCommand{
 	protected ClientInterface clientInterface;
     protected Date bulkCommandStartTime;
     protected Date bulkCommandCompleteTime;
-
+    protected List<BulkData> batchBulkDatas;
     public Date getBulkCommandStartTime() {
 		return bulkCommandStartTime;
 	}
+    public List<BulkData> getBatchBulkDatas() {
+        return batchBulkDatas;
+    }
+
 
 	public void setBulkCommandStartTime(Date bulkCommandStartTime) {
 		this.bulkCommandStartTime = bulkCommandStartTime;
@@ -62,6 +67,7 @@ public abstract class BaseBulkCommand implements BulkCommand{
 	public BaseBulkCommand(BulkProcessor bulkProcessor) {
 		this.bulkProcessor = bulkProcessor;
 		this.clientInterface = bulkProcessor.getClientInterface();
+        this.batchBulkDatas = new ArrayList<BulkData>(bulkProcessor.getBulkSizes());
 	}
 
 	public String getRefreshOption() {
@@ -209,8 +215,18 @@ public abstract class BaseBulkCommand implements BulkCommand{
 		}
 
 	}
-    protected abstract void clear();
+    @Override
+    public void addBulkData(BulkData bulkData){
+        this.batchBulkDatas.add(bulkData);
 
+    }
+    protected abstract void clear();
+    protected void clearDatas(){
+        if(batchBulkDatas != null) {
+            this.batchBulkDatas.clear();
+            batchBulkDatas = null;
+        }
+    }
 	public long getTotalSize(){
 		return bulkProcessor.getTotalSize();
 	}
