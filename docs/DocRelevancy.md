@@ -18,7 +18,7 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
-本案例以Elasticsearch6.9.7版本，bboss6.1.8单元测试时，建议版本选择不要太低
+本案例以Elasticsearch6.9.8版本，bboss6.1.8单元测试时，建议版本选择不要太低
 
 DSL的配置文件[resources/esmapper/doc_relevancy.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/doc_relevancy.xml)，本文涉及到的DSL都会放到该配置文件，本案例测试代码[DocRelevancy](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/DocRelevancy.java)。
 
