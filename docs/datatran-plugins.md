@@ -391,7 +391,9 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 
 ## 1.4 文件采集插件
 
-文件采集插件：[FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java)
+文件采集插件
+
+[FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) 配置文件数据采集基本参数、Ftp服务器参数配置、文件过滤器配置等
 
 插件主要特色如下:
 
@@ -404,6 +406,8 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 7. 支持大量文件采集场景下的流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件。
 
 ### 1.4.1 配置案例
+
+本地文件采集：提供记录切割设置，如果不需要可以去掉
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
@@ -472,7 +476,43 @@ ImportBuilder importBuilder = new ImportBuilder();
       importBuilder.setInputConfig(config);
 ```
 
-更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide
+如需从Ftp采集数据，增加FtpConfig即可：
+
+```java
+ FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
+                .setFtpUser("1111").setFtpPassword("111@123")
+                .setRemoteFileDir("/home/ecs/failLog")
+                .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
+ config.addConfig(new FileConfig().setFtpConfig(ftpConfig) 
+                  。。。。。。。
+```
+
+文件过滤筛选配置：采集子目录文件
+
+```java
+config.addConfig(new FileConfig()
+                .setSourcePath(data_dir)//指定目录
+                .setFileHeadLineRegular("")//指定多行记录的开头识别标记，正则表达式
+                .setFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+
+                        if (fileInfo.isDirectory())//由于要采集子目录下的文件，所以如果是目录则直接返回true，当然也可以根据目录名称决定哪些子目录要采集
+                            return true;
+                        String fileName = fileInfo.getFileName();//获取文件名称
+                        //判断是否采集文件数据，返回true标识采集，false 不采集
+						if(fileName.equals("nginx.log"))
+                    		return true;
+                        return false;
+                    }
+                })//指定文件过滤器
+                .setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+                //.addField("tag","elasticsearch")//添加字段tag到记录中
+                .setEnableInode(false)
+        //          .setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+        //.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+);
+```
 
 插件元数据说明：
 
@@ -492,6 +532,8 @@ ftpProtocol
 @timestamp  记录采集时间
 ```
 
+子目录文件采集、清理本地/远程文件、备份本地文件配置等更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide
+
 ### 1.4.2 使用案例
 
 源码工程 https://gitee.com/bboss/filelog-elasticsearch
@@ -507,9 +549,9 @@ ftpProtocol
 
 ## 1.5 Excel文件采集插件
 
-插件配置 [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java)和ExcelFileConfig结合
+插件配置 [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java)(FileInputConfig子类)和ExcelFileConfig（FileConfig子类）结合
 
-通过ExcelFileConfig设置excel列与字段的映射关系，excel忽略行配置等
+通过ExcelFileConfig设置excel列与字段的映射关系，excel忽略行配置等，除了excel需要的配置，其他配置和文件采集插件配置一致
 
 ### 1.5.1 配置案例
 

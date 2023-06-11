@@ -1122,10 +1122,12 @@ if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以�
 以sftp为案例进行说明，本地目录和ftp设置方式类似：
 
 ```java
-config.addConfig(new FtpConfig().setFtpIP("192.168.137.1").setFtpPort(5322)
-                         .setFtpUser("ecs").setFtpPassword("ecs@123")
-                        .setRemoteFileDir("/home/ecs/ftp")//指定sftp根目录
-                        .setDeleteRemoteFile(true)//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除
+		FtpConfig ftpConfig = new  FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
+				.setFtpUser("test").setFtpPassword("123456")
+				.setRemoteFileDir("/").setDeleteRemoteFile(false)//
+				//.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP); //采用ftp协议
+				.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
+		config.addConfig(new FileConfig().setFtpConfig(ftpConfig)
                         .setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                            @Override
                            public boolean accept(FilterFileInfo filterFileInfo, //包含Ftp文件名称，文件父路径、是否为目录标识

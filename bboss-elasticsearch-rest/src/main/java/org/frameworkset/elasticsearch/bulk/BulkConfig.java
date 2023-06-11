@@ -55,10 +55,6 @@ public class BulkConfig implements BulkActionConfig{
     private int maxMemSize;
 
 	/**
-	 * 失败重试次数
-	 */
-	private int bulkFailRetry;
-	/**
 	 * 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足
 	 */
 	private long flushInterval;
@@ -107,18 +103,11 @@ public class BulkConfig implements BulkActionConfig{
 		return this;
 	}
 
-	public int getBulkFailRetry() {
-		return bulkFailRetry;
-	}
 
 	public List<BulkInterceptor> getBulkInterceptors() {
 		return bulkInterceptors;
 	}
 
-	public BulkConfig setBulkFailRetry(int bulkFailRetry) {
-		this.bulkFailRetry = bulkFailRetry;
-		return this;
-	}
 
 	public long getFlushInterval() {
 		return flushInterval;
