@@ -279,7 +279,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 				logger.info("Start Elasticsearch Datasource[{}] from springboot[{}]:{}", this.getElasticSearchName(), this.isFromspringboot(), SimpleStringUtil.object2json(copy()));
 				if(!this.isFromspringboot()){
 					if(logger.isDebugEnabled()){
-						Exception exception = new Exception("Debug Elasticsearch Datasource["+this.getElasticSearchName()+"] start trace:if use spring boot and unload spring boot config right,please get the reason from question-answer document:https://esdoc.bbossgroups.com/#/question-answer ,if not ignore this message.");
+						Exception exception = new Exception("Debug Elasticsearch Datasource["+this.getElasticSearchName()+"] start trace:if use spring boot and do not load spring boot config right,please get the reason from question-answer document:https://esdoc.bbossgroups.com/#/question-answer ,if not or do not care. please ignore this message. ");
 						logger.debug("",exception);
 					}
 				}

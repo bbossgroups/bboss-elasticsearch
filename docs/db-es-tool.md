@@ -8,7 +8,7 @@
 
 **[bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) --- 简化版Flink**
 
-数据同步作业开发视频教程：[http服务数据采集作业发布和构建运行教程](https://www.bilibili.com/video/BV1xf4y1Z7xu?spm_id_from=333.999.0.0&vd_source=64c0c04fea8873df5fd107d442567cfd)
+数据同步作业开发视频教程：[实时采集Mysql binlog增删改数据视频教程](https://mp.weixin.qq.com/s?__biz=MzA3MzE0MDUyNw==&mid=2247484095&idx=1&sn=daeb4da3e635f248dcfc38eef0848c30&chksm=9f12d2ffa8655be95e15bbd1fb5dcacc24c0c6132844b3da7a47b45ae2d57d38eee541d27229#rd)
 
 数据同步作业开发调试工程源码地址：https://git.oschina.net/bboss/bboss-datatran-demo
 
@@ -331,6 +331,8 @@ importBuilder.setOutputConfig(elasticsearchOutputConfig);
 
 //作业基础配置
 importBuilder.setBatchSize(5000);
+
+importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 ......
     
 //作业执行
@@ -353,6 +355,8 @@ dataStream.resumeSchedule();
 针对数据库和Elasticsearch插件的配置，bboss支持可以在application.properties文件中配置相关数据源，亦可以在插件上面直接配置数据源，下面文档中都有介绍。
 
 更多的作业调度控制说明，可以参考文档：https://esdoc.bbossgroups.com/#/bboss-datasyn-control
+
+
 
 ## 2.4.配置DBInput输入参数
 
@@ -2422,13 +2426,17 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
+## 2.9 作业异常处理
+
+作业在运行过程中出现异常，一般会自动退出作业执行，有些异常情况，不会自动退出，可以通过ContinueOnError标识进行控制：任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+
+```java
+importBuilder.setContinueOnError(true);//任务出现异常，继续执行作业
+importBuilder.setContinueOnError(false);//任务出现异常，停止执行作业
+
+```
 
 
-## 2.9 DB-ES数据同步工具使用方法
-
-上面介绍了数据库数据同步到数据库的各种用法，bboss还提供了一个样板demo工程:[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)，用来将写好的同步代码打包发布成可以运行的二进制包上传到服务器运行，[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)提供了现成的运行指令和jvm配置文件。
-
-工具详细的使用文档参考：[DB-ES数据同步工具使用方法](db-es-datasyn.md)
 
 ## 2.10 作业参数配置
 
@@ -2811,67 +2819,13 @@ List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"visualops",
 
 https://doc.bbossgroups.com/#/persistent/tutorial
 
-# 3 Elasticsearch-db数据同步使用方法
-
-完整的示例工程：
-
-https://github.com/bbossgroups/db-elasticsearch-tool
-
-工程基于gradle管理，可以参考文档配置gradle环境：
-
-https://esdoc.bbossgroups.com/#/bboss-build
-
-案例清单
-
-https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_31-elasticsearch%e5%af%bc%e5%85%a5database%e6%a1%88%e4%be%8b
 
 
-# 4 Mongodb-Elasticsearch数据同步使用方法
-
-Mongodb-Elasticsearch数据同步案例工程
-
-https://github.com/bbossgroups/mongodb-elasticsearch
-
-工程基于gradle管理，可以参考文档配置gradle环境：
-
-https://esdoc.bbossgroups.com/#/bboss-build
-
-mongodb-elasticseach数据同步使用方法和DB-Elasticsearch、Elasticsearch-DB数据同步的使用方法类似，支持全量、增量定时同步功能， 内置jdk timer同步器，支持quartz、xxl-job任务调度引擎 ，这里就不具体举例说明，大家可以下载demo研究即可，mongodb-elasticseach数据同步基本和DB-Elasticsearch同步的参数配置差不多，参考文档
-
-https://esdoc.bbossgroups.com/#/mongodb-elasticsearch
-# 5 Database-Database数据同步使用方法
-
- https://github.com/bbossgroups/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Db2DBdemo.java 
-
-spring boot db-db同步案例：
-
-https://github.com/bbossgroups/db-db-job
-
-# 6 Kafka1x-Elasticsearch数据同步使用方法（不推荐）
-
-https://github.com/bbossgroups/kafka1x-elasticsearch
-
-适用于old kafka client包，不推荐使用
-
-# 7 Kafka2x-Elasticsearch数据同步使用方法（推荐）
-
-https://github.com/bbossgroups/kafka2x-elasticsearch
-
-适用于新版本kafka client，推荐使用
-
-# 8 Elasticsearch-Elasticsearch数据同步使用方法
-
-https://github.com/bbossgroups/elasticsearch-elasticsearch
-
-# 9 HBase-Elasticsearch数据同步使用方法
-
-https://github.com/bbossgroups/hbase-elasticsearch
-
-# 10 数据同步调优
+# 3 数据同步调优
 
 数据同步是一个非常耗资源（内存、cpu、io）的事情，所以如何充分利用系统资源，确保高效的数据同步作业长时间稳定运行，同时又不让同步服务器、Elasticsearch/数据库负荷过高，是一件很有挑战意义的事情，这里结合bboss的实践给出一些建议：
 
-## 10.1 内存调优
+## 3.1 内存调优
 
 内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -2905,7 +2859,7 @@ $$
 
 这些参数设置得越大，占用的内存越大，处理的速度就越快，典型的空间换时间的场景，所以需要根据同步服务器的主机内存来进行合理配置，避免由于资源不足出现jvm内存溢出的问题，影响同步的稳定性。
 
-##   10.2 采用分布式作业调度引擎
+##   3.2 采用分布式作业调度引擎
 
 需要同步的数据量很大，单机的处理能力有限，可以基于分布式作业调度引擎来实现数据分布式分片数据同步处理，参考文档：
 
@@ -2913,9 +2867,9 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
   
 
-# 11 数据同步模式控制
+# 4 数据同步模式控制
 
-## 11.1 全量/增量导入
+## 4.1 全量/增量导入
 
 根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，具体的控制方法如下：
 
@@ -2959,7 +2913,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 
 
-## 11.2 一次性执行和周期定时执行
+## 4.2 一次性执行和周期定时执行
 
 根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，具体的控制方法如下：
 
@@ -3018,7 +2972,7 @@ FileInputConfig config = new FileInputConfig();
 config.setDisableScanNewFiles(true);
 ```
 
-## 11.3 串行执行和并行执行
+## 4.3 串行执行和并行执行
 
 根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，具体的控制方法如下：
 
@@ -3046,7 +3000,7 @@ config.setDisableScanNewFiles(true);
 		*/		
 ```
 
-## 11.4 任务执行开始时间和结束时间设置
+## 4.4 任务执行开始时间和结束时间设置
 
 一次性导入和周期性导入，都可以设置任务导出的开始时间、延时执行时间和任务结束时间（只对jdk timer有效）
 
@@ -3069,40 +3023,11 @@ config.setDisableScanNewFiles(true);
             .setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
-# 12 数据导出到文件并上传SFTP/FTP
-
-支持将elasticsearch和关系数据库中的数据导出到文件并上传到sftp和ftp服务器，支持自定义数据记录格式，使用案例和参考文档：
-
-https://esdoc.bbossgroups.com/#/elasticsearch-sftp
-
-# 13 数据导出发送到Kafka
-
-支持将elasticsearch和关系数据库中的数据导出并发送到kafka服务器，支持自定义数据记录格式，使用案例
-
-1. elasticsearch数据导出发送到kafka模块，使用案例：
-   https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/ES2KafkaDemo.java
-2. 关系数据库数据导出发送到kafka模块，使用案例：
-   https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/DB2KafkaDemo.java
-
-# 14 日志文件数据采集插件使用案例
-
-支持全量和增量采集两种模式，实时采集本地/ftp日志文件数据到kafka/elasticsearch/database/
-
-日志文件采集插件使用文档：
-
-https://esdoc.bbossgroups.com/#/filelog-guide
-
-使用案例：
-
-1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
-3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-
-# 15 作业调度控制
+# 5 作业调度控制
 
 参考文档：[作业调度控制](bboss-datasyn-control.md)
 
-# 16 开发交流
+# 6 开发交流
 
 完整的数据导入demo工程
 
