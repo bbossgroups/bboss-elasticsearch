@@ -7,7 +7,7 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 ![](images\datasyn-inout-now.png)
 通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
 
-本文介绍bboss-datatran提供各种输入输出插件以及配置说明。
+本文介绍bboss-datatran提供各种输入输出插件以及配置说明，使用过程中，可以根据实际情况和应用场景自由组合输入和输出插件。
 
 # 1.输入插件
 
@@ -192,6 +192,8 @@ scrollQuery为本案例对应的dsl，scrollSliceQuery为slice导出需要用到
 
 https://esdoc.bbossgroups.com/#/development
 
+增量采集，可以设置增量截止时间偏移量，参考文档：[偏移量配置方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2854-%e6%97%b6%e9%97%b4%e6%88%b3%e5%a2%9e%e9%87%8f%e5%af%bc%e5%87%ba%e6%88%aa%e6%ad%a2%e6%97%b6%e9%97%b4%e5%81%8f%e7%a7%bb%e9%87%8f%e9%85%8d%e7%bd%ae)
+
 ## 1.2 Database输入插件
 
 Database输入插件配置类：[DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java)
@@ -266,7 +268,11 @@ importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字�
       importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
 ```
 
+### 1.2.3 全量采集
 
+全量采集：sql中不需要设置增量字段
+
+ dbInputConfig.setSql("select * from td_sm_log")
 
 ## 1.3 Mysql binlog输入插件
 
@@ -284,7 +290,13 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
 
 <img src="images\mysql-binlog-arch.png" style="zoom:50%;" />
 
-下面介绍Mysql binlog输入插件配置参数和配置实例
+源表本来就有数据需要同步+实时同步,原来的数据可以基于模式1采集binlog文件，如果没有binlog文件，可以直接用数据库输入插件，直接一次性采集全表数据，然后再用模式3实现增量采集
+
+mysql binlog插件使用文档：
+
+https://esdoc.bbossgroups.com/#/mysql-binlog
+
+下面介绍Mysql binlog输入插件配置参数和配置实例。
 
 ### 1.3.1 插件配置案例
 
@@ -559,7 +571,7 @@ ftpProtocol
 ExcelFileInputConfig config = new ExcelFileInputConfig();
 		FileConfig excelFileConfig = new ExcelFileConfig();
 		excelFileConfig
-				.addCellMapping(0,"shebao_org")
+				.addCellMapping(0,"shebao_org")//0 代表第一个单元格，shebao_org 映射字段名称
 				.addCellMapping(1,"person_no")
 				.addCellMapping(2,"name")
 				.addCellMapping(3,"cert_type")
@@ -572,7 +584,7 @@ ExcelFileInputConfig config = new ExcelFileInputConfig();
 				.addCellMapping(8,"zhs_year","2022")
 				.addCellMapping(9,"zhs_level","1");
 		excelFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
-				.setFileFilter(new FileFilter() {
+				.setFileFilter(new FileFilter() { //设置过滤器
 					@Override
 					public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
 						//判断是否采集文件数据，返回true标识采集，false 不采集
@@ -593,7 +605,7 @@ ExcelFileInputConfig config = new ExcelFileInputConfig();
 
 ## 1.6 HBase采集插件
 
-插件配置类：[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)
+插件配置类：[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)，配置hbase服务器连接参数和数据检索条件等
 
 ### 1.6.1 配置案例
 
@@ -682,9 +694,197 @@ hbase过滤条件配置
 
 ## 1.7 MongoDB采集插件
 
-[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)
+MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)
 
-内容补充中。。。。。。
+### 1.7.1 配置案例
+
+全量同步配置
+
+```java
+		ImportBuilder importBuilder = new ImportBuilder();
+		// 5.2.4.1 设置mongodb参数
+		MongoDBInputConfig mongoDBInputConfig = new MongoDBInputConfig();
+		mongoDBInputConfig.setName("session")
+				.setDb("sessiondb")
+				.setDbCollection("sessionmonitor_sessions")
+				.setConnectTimeout(10000)
+				.setWriteConcern("JOURNAL_SAFE")
+				.setReadPreference("")
+				.setMaxWaitTime(10000)
+				.setSocketTimeout(1500).setSocketKeepAlive(true)
+				.setConnectionsPerHost(100)
+				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+				//String database,String userName,String password,String mechanism
+				//https://www.iteye.com/blog/yin-bp-2064662
+//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//				.setOption("")
+				.setAutoConnectRetry(true);
+
+		importBuilder.setInputConfig(mongoDBInputConfig);
+```
+
+带条件并指定返回字段同步配置
+
+```java
+//定义Mongodb到Elasticsearch数据同步组件
+      ImportBuilder importBuilder = new ImportBuilder();
+
+      // 5.2.4.1 设置mongodb参数
+      MongoDBInputConfig mongoDBInputConfig = new MongoDBInputConfig();
+      mongoDBInputConfig.setName("session")
+            .setDb("sessiondb")
+            .setDbCollection("sessionmonitor_sessions")
+            .setConnectTimeout(10000)
+            .setWriteConcern("JOURNAL_SAFE")
+            .setReadPreference("")
+            .setMaxWaitTime(10000)
+            .setSocketTimeout(1500).setSocketKeepAlive(true)
+            .setConnectionsPerHost(100)
+            .setThreadsAllowedToBlockForConnectionMultiplier(6)
+            .setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+            // mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+            //String database,String userName,String password,String mechanism
+            //https://www.iteye.com/blog/yin-bp-2064662
+//          .buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//          .setOption("")
+            .setAutoConnectRetry(true);
+
+      //定义mongodb数据查询条件对象（可选步骤，全量同步可以不需要做条件配置）
+      BasicDBObject query = new BasicDBObject();
+      // 设定检索mongdodb session数据时间范围条件
+      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+      try {
+         Date start_date = format.parse("1099-01-01");
+         Date end_date = format.parse("2999-01-01");
+         query.append("creationTime",
+               new BasicDBObject("$gte", start_date.getTime()).append(
+                     "$lte", end_date.getTime()));
+      }
+      catch (Exception e){
+         e.printStackTrace();
+      }
+      /**
+      // 设置按照host字段值进行正则匹配查找session数据条件（可选步骤，全量同步可以不需要做条件配置）
+      String host = "169.254.252.194-DESKTOP-U3V5C85";
+      Pattern hosts = Pattern.compile("^" + host + ".*$",
+            Pattern.CASE_INSENSITIVE);
+      query.append("host", new BasicDBObject("$regex",hosts));*/
+      mongoDBInputConfig.setQuery(query);
+
+      //设定需要返回的session数据字段信息（可选步骤，同步全部字段时可以不需要做下面配置）
+      BasicDBObject fetchFields = new BasicDBObject();
+      fetchFields.put("appKey", 1);
+      fetchFields.put("sessionid", 1);
+      fetchFields.put("creationTime", 1);
+      fetchFields.put("lastAccessedTime", 1);
+      fetchFields.put("maxInactiveInterval", 1);
+      fetchFields.put("referip", 1);
+      fetchFields.put("_validate", 1);
+      fetchFields.put("host", 1);
+      fetchFields.put("requesturi", 1);
+      fetchFields.put("lastAccessedUrl", 1);
+      fetchFields.put("secure",1);
+      fetchFields.put("httpOnly", 1);
+      fetchFields.put("lastAccessedHostIP", 1);
+
+      fetchFields.put("userAccount",1);
+      fetchFields.put("testVO", 1);
+      fetchFields.put("privateAttr", 1);
+      fetchFields.put("local", 1);
+      fetchFields.put("shardNo", 1);
+
+      mongoDBInputConfig.setFetchFields(fetchFields);
+      importBuilder.setInputConfig(mongoDBInputConfig);
+```
+
+### 1.7.2 增量采集配置
+
+指定时间戳增量字段，并设置增量查询起始值
+
+```java
+// 5.2.4.9 设置增量字段信息（可选步骤，全量同步不需要做以下配置）
+//增量配置开始
+importBuilder.setLastValueColumn("lastAccessedTime");//手动指定数字增量查询字段
+importBuilder.setFromFirst(false);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
+importBuilder.setLastValueStorePath("mongodb_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+//设置增量查询的起始值lastvalue
+try {
+   Date date = format.parse("2000-01-01");
+   importBuilder.setLastValue(date.getTime());
+}
+catch (Exception e){
+   e.printStackTrace();
+}
+```
+
+增量采集，可以设置增量截止时间偏移量，参考文档：[偏移量配置方法](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2854-%e6%97%b6%e9%97%b4%e6%88%b3%e5%a2%9e%e9%87%8f%e5%af%bc%e5%87%ba%e6%88%aa%e6%ad%a2%e6%97%b6%e9%97%b4%e5%81%8f%e7%a7%bb%e9%87%8f%e9%85%8d%e7%bd%ae)
+
+
+
+### 1.7.3 加工和处理数据
+
+通过DataRefactor接口，可以非常方便地加工和处理数据
+
+```java
+importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+            String id = context.getStringValue("_id");
+            //根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中
+            if(id.equals("5dcaa59e9832797f100c6806"))
+               context.setDrop(true);
+            //添加字段extfiled2到记录中，值为2
+            context.addFieldValue("extfiled2",2);
+            //添加字段extfiled到记录中，值为1
+            context.addFieldValue("extfiled",1);
+            boolean httpOnly = context.getBooleanValue("httpOnly");
+            boolean secure = context.getBooleanValue("secure");
+            //空值处理
+            String userAccount = context.getStringValue("userAccount");
+            if(userAccount == null)
+               context.addFieldValue("userAccount","");
+            //空值处理
+            String testVO = context.getStringValue("testVO");
+            if(testVO == null)
+               context.addFieldValue("testVO","");
+            //空值处理
+            String privateAttr = context.getStringValue("privateAttr");
+            if(privateAttr == null)
+               context.addFieldValue("privateAttr","");
+            //空值处理
+            String local = context.getStringValue("local");
+            if(local == null)
+               context.addFieldValue("local","");
+            //将long类型的lastAccessedTime字段转换为日期类型
+            long lastAccessedTime = context.getLongValue("lastAccessedTime");
+            context.addFieldValue("lastAccessedTime",new Date(lastAccessedTime));
+            //将long类型的creationTime字段转换为日期类型
+            long creationTime = context.getLongValue("creationTime");
+            context.addFieldValue("creationTime",new Date(creationTime));
+            //根据session访问客户端ip，获取对应的客户地理位置经纬度信息、运营商信息、省地市信息IpInfo对象
+            //并将IpInfo添加到Elasticsearch文档中
+            String referip = context.getStringValue("referip");
+            if(referip != null){
+               IpInfo ipInfo = context.getIpInfoByIp(referip);
+               if(ipInfo != null)
+                  context.addFieldValue("ipInfo",ipInfo);
+            }
+            /**
+            String oldValue = context.getStringValue("axx");
+            String newvalue = oldValue+" new value";
+            context.newName2ndData("axx","newname",newvalue);
+             */
+             //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
+            DBObject record = (DBObject) context.getRecord();
+            //不需要输出的字段，可以忽略掉这些属性
+//          context.addIgnoreFieldMapping("author");
+//          context.addIgnoreFieldMapping("title");
+//          context.addIgnoreFieldMapping("subtitle");
+
+         }
+      });
+```
 
 ## 1.8 Kafka输入插件
 

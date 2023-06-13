@@ -26,7 +26,7 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
 
 **模式3** 监听mysql master slave ip和端口，启用故障容灾配置，每次重启作业从上次采集结束的位置开始采集数据
 
-模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。
+模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。源表本来就有数据需要同步+实时同步,原来的数据可以基于模式1采集binlog文件，如果没有binlog文件，可以直接用数据库输入插件，直接一次性采集全表数据，然后再用模式3实现增量采集。
 
 本文介绍mysql binlog插件的使用方法，以实时同步Mysql Binlog增删改数据到Elasticsearch作为案例来讲解。
 
@@ -100,7 +100,11 @@ importBuilder.setInputConfig(mySQLBinlogConfig);
         importBuilder.setLastValueStoreTableName("binlog");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 ```
 
-## **2.2 Elasticsearch输出插件配置**
+通过setEnableIncrement方法启用模式3：
+
+mySQLBinlogConfig.setEnableIncrement(true);//启用模式3
+
+## 2.2 Elasticsearch输出插件配置**
 
 通过ElasticsearchOutputConfig 配置Elasticsearch服务器地址及连接参数、索引表、文档Id字段等信息
 
