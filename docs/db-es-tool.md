@@ -2819,7 +2819,24 @@ List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"visualops",
 
 https://doc.bbossgroups.com/#/persistent/tutorial
 
+## 2.16 作业关闭事件监听器
 
+通过作业关闭事件监听器，可以知道作业是正常结束关闭，还是异常结束导致关闭，作业关闭事件监听器使用案例如下：
+
+```java
+importBuilder.setJobClosedListener(new JobClosedListener() {
+    @Override
+    public void jobClosed(ImportContext importContext, Throwable throwable) {
+        if(throwable != null) {//作业异常关闭
+            logger.info("Job Closed by exception:",throwable);
+        }
+        else{//作业正常关闭
+            logger.info("Job Closed normal.");
+        }
+
+    }
+});
+```
 
 # 3 数据同步调优
 
