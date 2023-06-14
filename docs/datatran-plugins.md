@@ -888,15 +888,127 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 ## 1.8 Kafka输入插件
 
-[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)
+Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)，可以配置kafka消费端参数，包括kafka服务器地址、消费组id、自动提交机制、offset机制、消费线程数量、消息处理工作线程数、线程队列长度、topic、消息序列化机制等等。
 
-内容补充中。。。。。。
+### 1.8.1 插件配置案例
+
+```java
+// kafka服务器参数配置
+      // kafka 2x 客户端参数项及说明类：org.apache.kafka.clients.consumer.ConsumerConfig
+      Kafka2InputConfig kafka2InputConfig = new Kafka2InputConfig();
+      kafka2InputConfig//.addKafkaConfig("value.deserializer","org.apache.kafka.common.serialization.StringDeserializer")
+            //.addKafkaConfig("key.deserializer","org.apache.kafka.common.serialization.LongDeserializer")
+            .addKafkaConfig("group.id","trandbtest") // 消费组ID
+            .addKafkaConfig("session.timeout.ms","30000")
+            .addKafkaConfig("auto.commit.interval.ms","5000")
+            .addKafkaConfig("auto.offset.reset","latest")
+//          .addKafkaConfig("bootstrap.servers","192.168.137.133:9093")
+            .addKafkaConfig("bootstrap.servers","127.0.0.1:9092")
+            .addKafkaConfig("enable.auto.commit","false")//一般不要开启自动提交
+            .addKafkaConfig("max.poll.records","500") // The maximum number of records returned in a single call to poll().
+            .setKafkaTopic("xinkonglog") // kafka topic
+            .setConsumerThreads(5) // 并行消费线程数，建议与topic partitions数一致
+            .setKafkaWorkQueue(10)//每个消费线程对应的工作等待队列长度
+            .setKafkaWorkThreads(2)//每个消费线程对应的工作线程数量
+
+            .setPollTimeOut(1000) // 从kafka consumer poll(timeout)参数
+            .setValueCodec(CODEC_JSON)
+            .setKeyCodec(CODEC_LONG);
+      importBuilder.setInputConfig(kafka2InputConfig);
+```
 
 ## 1.9 Http输入插件
 
-[HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java)
+Http输入插件配置类：[HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java)，配置http服务连接池参数、query dsl文件路径、dsl名称、query url、是否分页查询、http请求头（动态/静态两种类型）、返回结果解析器等等；同时可以在dsl中引用通过以下两个方法添加的参数：
 
-内容补充中。。。。。。
+importBuilder.addJobInputParam  静态参数
+
+importBuilder.addJobDynamicInputParam   动态参数
+
+### 1.9.1 插件配置案例
+
+```java
+ImportBuilder importBuilder = new ImportBuilder() ;
+importBuilder.setFetchSize(50) //指定分页获取记录数
+    .setBatchSize(10);
+HttpInputConfig httpInputConfig = new HttpInputConfig();
+
+
+httpInputConfig.setDslFile("httpdsl.xml")
+      .setQueryDslName("queryPagineDsl")
+      .setQueryUrl("/httpservice/getPagineData.api")
+      .setPagine(true)
+      .setShowDsl(true)
+      .setPagineFromKey("httpPagineFrom")
+      .setPagineSizeKey("httpPagineSize")
+      .addHttpHeader("testHeader","xxxxx")
+      .addDynamicHeader("Authorization", new DynamicHeader() {
+         @Override
+         public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+            //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+            String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+            return token;
+         }
+      })
+      .setHttpResultParser(new HttpResultParser<Map>() {
+         @Override
+         public void parserHttpResult(HttpResult<Map> httpResult, HttpResultParserContext httpResultParserContext) throws Exception{
+            HttpResponse httpResponse = httpResult.getResponse();
+            HttpEntity entity = httpResponse.getEntity();
+            if(entity == null)
+               return;
+            String datas = EntityUtils.toString(entity);
+            //可以自行对返回值进行处理，比如解密，或者签名校验，但是最终需要将包含在datas里面的采集的数据集合转换为List<Map>结构，便于后续对数据进行加工处理
+            //这里由于数据本身就是List<Map>结构，所以只需要做简单的序列化处理操作即可，这个也是默认的操作
+            List<Map> _datas = SimpleStringUtil.json2ListObject(datas, Map.class);
+            httpResult.setDatas(_datas);//必须将得到的集合设置到httpResult中，否则无法对数据进行后续处理
+            httpResult.setParseredObject(datas);//设置原始数据
+         }
+      })
+      .addSourceHttpPoolName("http.poolNames","datatran")
+      .addHttpInputConfig("datatran.http.health","/health")
+      .addHttpInputConfig("datatran.http.hosts","192.168.137.1:808")
+      .addHttpInputConfig("datatran.http.timeoutConnection","5000")
+      .addHttpInputConfig("datatran.http.timeoutSocket","50000")
+      .addHttpInputConfig("datatran.http.connectionRequestTimeout","50000")
+      .addHttpInputConfig("datatran.http.maxTotal","200")
+      .addHttpInputConfig("datatran.http.defaultMaxPerRoute","100")
+      .addHttpInputConfig("datatran.http.failAllContinue","true");
+
+
+importBuilder.setInputConfig(httpInputConfig);
+importBuilder.addJobInputParam("otherParam","陈雨菲2:0战胜戴资颖")
+          .addJobInputParam("device_id","app03001")
+           .addJobInputParam("app_id","app03")
+.addJobDynamicInputParam("signature", new DynamicParam() {//根据数据动态生成签名参数
+   @Override
+   public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {
+
+      //可以根据自己的算法对数据进行签名
+      String signature = "1b3bb71f6ebae2f52b7a238c589f3ff9";//signature =md5(datas)
+      return signature;
+   }
+});
+```
+
+httpdsl.xml中配置的queryPagineDsl：
+
+```xml
+<property name="queryPagineDsl">
+    <![CDATA[
+    {
+        "device_id": #[device_id], ## device_id,通过addJobInputParam赋值
+        "app_id": #[app_id], ## app_id,通过addJobInputParam赋值
+        "logTime":#[logTime],## 传递增量时间起始条件
+        "logTimeEndTime":#[logTime__endTime],## 传递增量时间截止时间条件，必须指定IncreamentEndOffset偏移时间量才能设置增量截止时间
+        "from":#[httpPagineFrom], ## 如果服务支持分页获取增量或者全量数据，设置分页起始位置
+        "size":#[httpPagineSize],  ## 如果服务支持分页获取增量或者全量数据，设置每页记录数，如果实际返回的记录数小于httpPagineSize或者为0，则表示本次分页获取数据结束，对应参数fetchSize配置的值
+        "otherParam": #[otherParam] ## 其他服务参数otherParam,通过addJobInputParam赋值
+    }
+    ]]></property>
+```
+
+http输入插件更具体的介绍：[Http/Https插件使用指南](https://esdoc.bbossgroups.com/#/datatran-http?id=httphttps插件使用指南)
 
 # 2.输出插件
 
