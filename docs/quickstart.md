@@ -41,7 +41,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-        <version>6.9.8</version>
+        <version>6.9.9</version>
     </dependency>
 ```
 
@@ -51,7 +51,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>6.9.8</version>
+        <version>6.9.9</version>
     </dependency>
 ```
 
@@ -59,7 +59,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 6.9.8](https://pan.baidu.com/s/1XrLbhJermpiJS1QRmYJG4A?pwd=fkpd)
+链接：[bboss 6.9.9](https://pan.baidu.com/s/1XrLbhJermpiJS1QRmYJG4A?pwd=fkpd)
 提取码：fkpd
 
 ## 1.3 快速配置

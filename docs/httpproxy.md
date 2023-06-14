@@ -48,14 +48,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>6.1.7</version>
+   <version>6.1.8</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:6.1.7'
+implementation 'com.bbossgroups:bboss-http:6.1.8'
 ```
 
 # 3.负载均衡组件

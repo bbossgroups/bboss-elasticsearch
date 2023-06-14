@@ -235,7 +235,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -243,7 +243,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -251,7 +251,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -259,7 +259,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -267,7 +267,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 
@@ -276,7 +276,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>6.9.8</version>
+<version>6.9.9</version>
 </dependency>
 ```
 
@@ -2821,7 +2821,11 @@ https://doc.bbossgroups.com/#/persistent/tutorial
 
 ## 2.16 作业关闭事件监听器
 
-通过作业关闭事件监听器，可以知道作业是正常结束关闭，还是异常结束导致关闭，作业关闭事件监听器使用案例如下：
+通过作业关闭事件监听器，可以知道作业是正常结束关闭，还是异常结束导致关闭，同时可以做相应的处理工作，提供两种类型作业关闭事件监听器：同步执行和异步执行
+
+使用案例如下：
+
+同步执行
 
 ```java
 importBuilder.setJobClosedListener(new JobClosedListener() {
@@ -2831,6 +2835,24 @@ importBuilder.setJobClosedListener(new JobClosedListener() {
             logger.info("Job Closed by exception:",throwable);
         }
         else{//作业正常关闭
+            logger.info("Job Closed normal.");
+        }
+
+    }
+});
+```
+
+异步执行
+
+```java
+//异步执行JobClosedListener
+importBuilder.setJobClosedListener(new AsynJobClosedListener() {
+    @Override
+    public void jobClosed(ImportContext importContext, Throwable throwable) {
+        if(throwable != null) {
+            logger.info("Job Closed by exception:",throwable);
+        }
+        else{
             logger.info("Job Closed normal.");
         }
 
