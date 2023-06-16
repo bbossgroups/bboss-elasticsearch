@@ -603,6 +603,48 @@ ExcelFileInputConfig config = new ExcelFileInputConfig();
 
 元数据信息和文件插件一致
 
+### 1.5.2 一次性采集并清除文件案例
+
+通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
+
+通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
+
+```java
+ExcelFileInputConfig config = new ExcelFileInputConfig();
+      config.setDisableScanNewFiles(true);
+//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+//配置excel文件列与导出字段名称映射关系
+FileConfig excelFileConfig = new ExcelFileConfig();
+excelFileConfig
+      .addCellMapping(0,"shebao_org")
+      .addCellMapping(1,"person_no")
+      .addCellMapping(2,"name")
+      .addCellMapping(3,"cert_type")
+
+      .addCellMapping(4,"cert_no","")
+      .addCellMapping(5,"zhs_item")
+
+      .addCellMapping(6,"zhs_class")
+      .addCellMapping(7,"zhs_sub_class")
+      .addCellMapping(8,"zhs_year","2022")
+      .addCellMapping(9,"zhs_level","1");
+excelFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\excelfiles")//指定目录
+      .setFileFilter(new FileFilter() {
+         @Override
+         public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+            //判断是否采集文件数据，返回true标识采集，false 不采集
+            return fileInfo.getFileName().endWith(".xlsx");
+         }
+      })//指定文件过滤器
+      .setDeleteEOFFile(true)
+      .setSkipHeaderLines(1);//忽略第一行
+config.addConfig(excelFileConfig);
+config.setEnableMeta(true);
+importBuilder.setInputConfig(config);
+```
+
+本案例实用与文件采集插件和Excel文件采集插件。
+
 ## 1.6 HBase采集插件
 
 插件配置类：[HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java)，配置hbase服务器连接参数和数据检索条件等
@@ -1165,13 +1207,105 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 ## 2.2 Elasticsearch输出插件
 
-[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)
+Elasticsearch输出插件配置类：[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)，配置Elasticsearch集群配置、http连接池参数配置、输出索引配置、索引类型配置，可以指定动态索引名称和固定索引名称，配置索引id生成规则，同时还可以将数据同步到多个Elasticsearch集群。
 
-内容补充中......
+### 2.2.1 插件配置案例
+
+```java
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig
+            .addTargetElasticsearch("elasticsearch.serverNames","default")
+            .addElasticsearchProperty("default.elasticsearch.rest.hostNames","192.168.137.1:9200")
+            .addElasticsearchProperty("default.elasticsearch.showTemplate","true")
+            .addElasticsearchProperty("default.elasticUser","elastic")
+            .addElasticsearchProperty("default.elasticPassword","changeme")
+            .addElasticsearchProperty("default.elasticsearch.failAllContinue","true")
+            .addElasticsearchProperty("default.http.timeoutSocket","60000")
+            .addElasticsearchProperty("default.http.timeoutConnection","40000")
+            .addElasticsearchProperty("default.http.connectionRequestTimeout","70000")
+            .addElasticsearchProperty("default.http.maxTotal","200")
+            .addElasticsearchProperty("default.http.defaultMaxPerRoute","100")
+            .setIndex("dbdemo")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+      /**
+       elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+       //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+       // 否则根据setEsIdField方法设置的字段值作为文档id，
+       // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+       @Override
+       public Object genId(Context context) throws Exception {
+       return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+       }
+       });
+       */
+//          .setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//          .setRefreshOption("refresh")//可选项，null表示不实时刷新，elasticsearchOutputConfig.setRefreshOption("refresh");表示实时刷新
+      /**
+       * es相关配置
+       */
+//    elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+```
+
+### 2.2.2 插件参考文档
+
+[设置ES数据导入控制参数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2816-设置es数据导入控制参数)
+
+[灵活指定索引名称和索引类型](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2813-灵活指定索引名称和索引类型)
+
+[设置索引文档id机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_284-设置文档id机制)
 
 ## 2.3 文件输出插件
 
-[FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java)
+文件输出插件配置类：[FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java)，配置输出目录、记录输出格式、输出文件名称生成规则、文件记录切割记录数；结合FtpOutConfig对象，设置文件上传ftp参数。
+
+### 2.3.1 插件配置案例
+
+导出数据到本地文件
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+      importBuilder.setBatchSize(5).setFetchSize(5);
+      FileOutputConfig fileOupputConfig = new FileOutputConfig();
+      fileOupputConfig.setMaxFileRecordSize(1000);//每次任务调度执行时，每千条记录生成一个文件
+      fileOupputConfig.setFileDir("D:\\workdir");
+      //设置文件名称生成规则
+      fileOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+         @Override
+         public String genName( TaskContext taskContext,int fileSeq) {
+            String formate = "yyyyMMddHHmmss";
+            //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
+            SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
+            String time = dateFormat.format(new Date());
+            String _fileSeq = fileSeq+"";
+            int t = 6 - _fileSeq.length();
+            if(t > 0){
+               String tmp = "";
+               for(int i = 0; i < t; i ++){
+                  tmp += "0";
+               }
+               _fileSeq = tmp+_fileSeq;
+            }
+            return "metrics-report_"+time +"_" + _fileSeq+".txt";
+         }
+      });
+      fileOupputConfig.setRecordGenerator(new RecordGenerator() {
+			@Override
+			public void buildRecord(Context taskContext, CommonRecord record, Writer writer) {
+                //record.getDatas()方法返回当前记录，Map类型，key/value ，key代表字段名称，Value代表值；
+                //可以将当前记录构建为需要的格式，写入到writer对象即可,这里直接将记录转换为json输出
+				SerialUtil.normalObject2json(record.getDatas(),writer);
+                //获取记录对应的元数据信息
+                Map<String, Object> metadatas = record.getMetaDatas();
+
+			}
+		});
+      importBuilder.setOutputConfig(fileOupputConfig);
+```
 
 ## 2.4 Excel文件输出插件
 
