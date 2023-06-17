@@ -2069,10 +2069,11 @@ Elasticsearch控制参数参考文档：
 
 ### 2.8.17 数据同步任务执行统计信息获取
 
-#### 任务日志相关设置
+#### 2.8.17.1 任务日志相关设置
 
 ```java
  importBuilder.setPrintTaskLog(true);//true 打印作业任务执行统计日志，false 不打印作业任务统计信息
+importBuilder.setLogsendTaskMetric(5000l); //可以设定打印日志最大时间间隔，当打印日志到日志文件或者控制台时，判断是否满足最大时间间隔，满足则输出，不满足则不输出日志
 ```
 
 对于Elasticsearch写入和查询dsl日志的控制，可以参考文档进行关闭和打开
@@ -2089,7 +2090,7 @@ spring boot配置项
     spring.elasticsearch.bboss.elasticsearch.showTemplate=true  ## true 打印dsl（logger必须设置为info级别） false 不打印dsl
 ```
 
-#### 任务级别统计信息
+#### 2.8.17.2 任务级别统计信息
 
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
@@ -2143,7 +2144,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 
 
 
-#### 作业级别统计信息
+#### 2.8.17.3 作业级别统计信息
 
 
 
@@ -2193,7 +2194,22 @@ JobNo:558e370ae01041c4baf4835882fc6a77,JobStartTime:2022-03-24 14:46:52,JobEndTi
 			}
 ```
 
+#### 2.8.17.4 kafka输出插件设置
 
+kafka输出插件任务状态记录管理功能，可以采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能，避免频繁采集每条记录任务的metrics信息。
+
+```java
+kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
+kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
+```
+
+#### 2.8.17.5 事件型输入插件设置
+
+kafka和mysql binlog属于监听型输入插件，其拦截器收集作业metrics信息时，定时记录统计插件消费数据记录情况，并调用任务拦截器的aftercall方法输出统计jobMetrics信息，可以指定统计时间间隔：
+
+```java
+kafka2InputConfig.setMetricsInterval(300 * 1000L);//30秒时间间隔做一次任务拦截器调用
+```
 
 ### 2.8.18 设置并行导入参数
 

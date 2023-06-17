@@ -401,6 +401,10 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 
 详见章节：[输出到数据库案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-mysql-binlog%e7%9b%91%e5%90%ac%e5%a4%9a%e8%a1%a8%e5%9c%ba%e6%99%af)
 
+### 1.3.4 参考文档
+
+https://esdoc.bbossgroups.com/#/mysql-binlog
+
 ## 1.4 文件采集插件
 
 文件采集插件
@@ -494,7 +498,7 @@ ImportBuilder importBuilder = new ImportBuilder();
  FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
                 .setFtpUser("1111").setFtpPassword("111@123")
                 .setRemoteFileDir("/home/ecs/failLog")
-                .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
+                .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议，支持两种协议：ftp和sftp
  config.addConfig(new FileConfig().setFtpConfig(ftpConfig) 
                   。。。。。。。
 ```
@@ -526,10 +530,46 @@ config.addConfig(new FileConfig()
 );
 ```
 
-插件元数据说明：
+### 1.4.2 一次性扫描采集文件目录下所有文件
 
 ```java
-@filemeta  文件详细信息，map结构，包含以下信息
+FileInputConfig config = new FileInputConfig();
+      config.setCharsetEncode("GB2312");
+        config.setDisableScanNewFiles(true);//设置一次性扫描采集
+        config.setMaxFilesThreshold(10);//文件采集流控
+      config.addConfig(new FileConfig().setSourcePath("D:\\oncelogs")//指定目录
+                              .setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+                              .setFileFilter(new FileFilter() {
+                                 @Override
+                                 public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+                                    //判断是否采集文件数据，返回true标识采集，false 不采集
+                                    boolean r = fileInfo.getFileName().startsWith("metrics-report");
+                                    return r;
+                                 }
+                              })//指定文件过滤器
+                                        .setDeleteEOFFile(true) //删除采集完毕的文件
+//                                        .setCloseOlderTime(10000L)
+                                        .setCloseEOF(true) //关闭采集完毕的文件通道
+                              .addField("tag","elasticsearch")//添加字段tag到记录中
+                  );
+```
+
+关键配置说明：
+
+FileInputConfig.setDisableScanNewFiles(true);//设置一次性扫描采集
+
+FileInputConfig.setMaxFilesThreshold(10);//文件采集流控，控制同时采集文件数量，避免资源消耗过多
+
+FileConfig .setDeleteEOFFile(true) //删除采集完毕的文件
+
+FileConfig .setCloseEOF(true) //关闭采集完毕的文件通道，excel文件强制CloseEOF为true
+
+参考文档：[一次性采集控制策略](https://esdoc.bbossgroups.com/#/filelog-guide?id=_10一次性采集控制策略)
+
+### 1.4.3 元数据说明
+
+```java
+
 hostIp
 hostName
 filePath
@@ -540,13 +580,15 @@ ftpIp
 ftpPort
 ftpUser
 ftpProtocol
-
+启用元数据config.setEnableMeta(true); 后，将以下两个包含元数据信息的字段附带到记录中
+         
+@filemeta  文件详细信息，map结构，包含以下信息
 @timestamp  记录采集时间
 ```
 
 子目录文件采集、清理本地/远程文件、备份本地文件配置等更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide
 
-### 1.4.2 使用案例
+### 1.4.4 使用案例
 
 源码工程 https://gitee.com/bboss/filelog-elasticsearch
 
@@ -736,7 +778,7 @@ hbase过滤条件配置
 
 ## 1.7 MongoDB采集插件
 
-MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)
+MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)，配置mongodb数据库参数、数据库表、各种连接控制参数/服务器地址等
 
 ### 1.7.1 配置案例
 
@@ -930,7 +972,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 ## 1.8 Kafka输入插件
 
-Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)，可以配置kafka消费端参数，包括kafka服务器地址、消费组id、自动提交机制、offset机制、消费线程数量、消息处理工作线程数、线程队列长度、topic、消息序列化机制等等。
+Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)，可以配置kafka消费端参数，包括kafka服务器地址、消费组id、自动提交机制、offset机制、消费线程数量、消息处理工作线程数、线程队列长度、topic、消息序列化机制等。
 
 ### 1.8.1 插件配置案例
 
@@ -1049,6 +1091,8 @@ httpdsl.xml中配置的queryPagineDsl：
     }
     ]]></property>
 ```
+
+### 1.9.2 参考文档
 
 http输入插件更具体的介绍：[Http/Https插件使用指南](https://esdoc.bbossgroups.com/#/datatran-http?id=httphttps插件使用指南)
 
@@ -1263,7 +1307,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 文件输出插件配置类：[FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java)，配置输出目录、记录输出格式、输出文件名称生成规则、文件记录切割记录数；结合FtpOutConfig对象，设置文件上传ftp参数。
 
-### 2.3.1 插件配置案例
+### 2.3.1 导出到本地文件
 
 导出数据到本地文件
 
@@ -1281,16 +1325,8 @@ ImportBuilder importBuilder = new ImportBuilder();
             //HN_BOSS_TRADE00001_YYYYMMDDHHMM_000001.txt
             SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
             String time = dateFormat.format(new Date());
-            String _fileSeq = fileSeq+"";
-            int t = 6 - _fileSeq.length();
-            if(t > 0){
-               String tmp = "";
-               for(int i = 0; i < t; i ++){
-                  tmp += "0";
-               }
-               _fileSeq = tmp+_fileSeq;
-            }
-            return "metrics-report_"+time +"_" + _fileSeq+".txt";
+          
+            return "metrics-report_"+time +"_" + fileSeq+".txt";
          }
       });
       fileOupputConfig.setRecordGenerator(new RecordGenerator() {
@@ -1307,55 +1343,742 @@ ImportBuilder importBuilder = new ImportBuilder();
       importBuilder.setOutputConfig(fileOupputConfig);
 ```
 
+### 2.3.2 导出并上传ftp
+
+导出文件并上传ftp，只要添加ftp配置到FileOutputConfig即可：
+
+```java
+FtpOutConfig ftpOutConfig = new FtpOutConfig()//是否定义ftp配置
+ftpOutConfig.setBackupSuccessFiles(true);//发送完毕后备份文件
+ftpOutConfig.setTransferEmptyFiles(true);//是否发送空文件
+//以下是ftp服务参数配置
+ftpOutConfig.setFtpIP("127.0.0.1");
+ftpOutConfig.setFtpPort(5322);
+ftpOutConfig.setFtpUser("xxx");
+ftpOutConfig.setFtpPassword("xxx@123");
+ftpOutConfig.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议，支持两种协议：ftp和sftp
+//上传目录
+ftpOutConfig.setRemoteFileDir("/home/xxx/failLog");
+ftpOutConfig.setKeepAliveTimeout(100000L);//ftp链接保活时间
+ftpOutConfig.setFailedFileResendInterval(1000L);//上传失败文件重发时间间隔，单位：毫秒
+
+fileOupputConfig.setFtpOutConfig(ftpOutConfig);//设置ftp配置到文件导出配置
+```
+
+### 2.3.3 参考文档
+
+https://esdoc.bbossgroups.com/#/elasticsearch-sftp
+
 ## 2.4 Excel文件输出插件
 
-[ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java)
+Excel文件输出插件配置类：[ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java)，FileOutputConfig的子类，继承其所有特性，增加excel单元格和源记录字段映射关系、输出excel标题、sheetname等配置
 
-内容补充中。。。。。。
+### 2.4.1 导出本地excel文件
+
+```java
+ExcelFileOutputConfig fileOupputConfig = new ExcelFileOutputConfig();
+        fileOupputConfig.setTitle("师大2021年新生医保（2021年）申报名单");//excel标题
+        fileOupputConfig.setSheetName("2021年新生医保申报单");
+
+        fileOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+                .addCellMapping(1,"person_no","人员编号")
+                .addCellMapping(2,"name","*姓名")
+                .addCellMapping(3,"cert_type","*证件类型")
+
+                .addCellMapping(4,"cert_no","*证件号码","")
+                .addCellMapping(5,"zhs_item","*征收项目")
+
+                .addCellMapping(6,"zhs_class","*征收品目")
+                .addCellMapping(7,"zhs_sub_class","征收子目")
+                .addCellMapping(8,"zhs_year","*缴费年度","2022")
+                .addCellMapping(9,"zhs_level","*缴费档次","1");
+        fileOupputConfig.setFileDir("D:\\excelfiles\\hebin");//数据生成目录
+
+        fileOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+            @Override
+            public String genName(TaskContext taskContext, int fileSeq) {
+
+
+                return "师大2021年新生医保（2021年）申报名单-合并.xlsx";
+            }
+        });
+
+        importBuilder.setOutputConfig(fileOupputConfig);
+```
+
+关键配置说明：
+
+fileOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+
+addCellMapping方法参数：第一个参数为excel单元格编号，从0开始，第二个参数源字段名称，第三个参数对应单元格excel标题行名称
+
+### 2.4.2 上传ftp配置
+
+参考【[2.3.2 导出并上传ftp](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_232-%e5%af%bc%e5%87%ba%e5%b9%b6%e4%b8%8a%e4%bc%a0ftp)】
+
+### 2.4.3 参考文档
+
+https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 
 ## 2.5 Kafka输出插件
 
-[Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java)
+Kafka输出插件配置类：[Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java)，可以配置kafka生产端参数，包括数据格式化生成器、kafka服务器地址、topic、消息序列化机制、消息发送统计监控配置等
 
-内容补充中。。。。。。
+### 2.5.1 插件配置案例
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+      importBuilder.setFetchSize(300);
+      importBuilder.setLogsendTaskMetric(10000l);//可以设定打印日志最大时间间隔，当打印日志到日志文件或者控制台时，判断是否满足最大时间间隔，满足则输出，不满足则不输出日志
+  
+      // kafka服务器参数配置:具体配置项，可以参考kafka官方资料
+      // kafka 2x 客户端参数项及说明类：org.apache.kafka.clients.consumer.ConsumerConfig
+      Kafka2OutputConfig kafkaOutputConfig = new Kafka2OutputConfig();
+      kafkaOutputConfig.setTopic("es2kafka");//设置kafka主题名称
+      kafkaOutputConfig.addKafkaProperty("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
+      kafkaOutputConfig.addKafkaProperty("key.serializer","org.apache.kafka.common.serialization.LongSerializer");
+      kafkaOutputConfig.addKafkaProperty("compression.type","gzip");
+      kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.0.1:9092");
+//    kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.0.1:9092");
+
+      kafkaOutputConfig.addKafkaProperty("batch.size","10");
+//    kafkaOutputConfig.addKafkaProperty("linger.ms","10000");
+//    kafkaOutputConfig.addKafkaProperty("buffer.memory","10000");
+      kafkaOutputConfig.setKafkaAsynSend(true);//异步发送
+      kafkaOutputConfig.setEnableMetricsAgg(true);//启用发送统计数据聚合计算机制
+      kafkaOutputConfig.setMetricsAggWindow(60);//设定聚合时间窗口，单位：秒
+//指定文件中每条记录格式化生成器，不指定默认为json格式输出
+      kafkaOutputConfig.setRecordGenerator(new RecordGenerator() {
+         @Override
+         public void buildRecord(Context taskContext, CommonRecord record, Writer builder) throws IOException {
+            //record.setRecordKey("xxxxxx"); //指定记录key
+
+            //直接将记录按照json格式输出到文本文件中
+            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据并转换为json格式
+                  builder);
+//          String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+//
+////          System.out.println(data);
+//
+//          /**
+//           * 自定义格式输出数据到消息builder中
+//           */
+//          /**
+//          Map<String,Object > datas = record.getDatas();
+//          StringBuilder temp = new StringBuilder();
+//          for(Map.Entry<String, Object> entry:datas.entrySet()){
+//             if(temp.length() > 0)
+//                temp.append(",").append(entry.getValue());
+//             else
+//                temp.append(entry.getValue());
+//          }
+//          builder.write(temp.toString());
+//          */
+//          //更据字段拆分多条记录
+//          Map<String,Object > datas = record.getDatas();
+//          Object value = datas.get("content");
+//          String value_ = String.valueOf(value);
+//          if(value_.startsWith("[") && value_.endsWith("]")) {
+//             List<Map> list = SimpleStringUtil.json2ListObject(value_, Map.class);
+//
+//             for(int i = 0; i < list.size(); i ++){
+//                Map data_ = list.get(i);
+//                StringBuilder temp = new StringBuilder();
+//                Iterator<Map.Entry> iterator = data_.entrySet().iterator();
+//                while(iterator.hasNext()){
+//                   Map.Entry entry = iterator.next();
+//                   if (temp.length() > 0)
+//                      temp.append(",").append(entry.getValue());
+//                   else
+//                      temp.append(entry.getValue());
+//
+//                }
+//                if(i > 0)
+//                   builder.write(TranUtil.lineSeparator);
+//                builder.write(temp.toString());
+//
+//             }
+//
+//          }
+//          else {
+//             StringBuilder temp = new StringBuilder();
+//             for(Map.Entry<String, Object> entry:datas.entrySet()){
+//
+//                   if (temp.length() > 0)
+//                      temp.append(",").append(entry.getValue());
+//                   else
+//                      temp.append(entry.getValue());
+//
+//             }
+//
+//             builder.write(temp.toString());
+//          }
+
+
+         }
+      });
+      importBuilder.setOutputConfig(kafkaOutputConfig);
+```
+
+### 2.5.2 参考文档
+
+https://esdoc.bbossgroups.com/#/es-kafka
 
 ## 2.6 Http输出插件
 
-[HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java)
+Http输出插件配置类：[HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java)，配置http输出服务器地址配置、服务器ip和端口清单配置、http ssl配置、http连接池配置(可以初始化多个)、http method、请求头（静态和动态）、输出dsl及dsl配置文件配置、认证和token配置、记录生成器配置等等
 
-内容补充中。。。。。。
+### 2.6.1 直接输出数据配置案例
+
+```java
+//http输出插件配置
+      HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑，
+      // 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
+
+
+      httpOutputConfig
+            .setJson(false)
+            .setServiceUrl("/httpservice/sendData.api")
+            .setHttpMethod("post")
+            .addHttpHeader("testHeader","xxxxx")
+            .addDynamicHeader("Authorization", new DynamicHeader() {
+               @Override
+               public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+                  //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+                  TokenInfo tokenInfo = tokenManager.getTokenInfo();
+                  String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+                  return token;
+               }
+            })
+//          .addTargetHttpPoolName("http.poolNames","datatran,jwtservice")//初始化多个http服务集群时，就不要用addTargetHttpPoolName方法，使用以下方法即可
+            .setTargetHttpPool("datatran")
+            .addHttpOutputConfig("http.poolNames","datatran,jwtservice")
+//          .addHttpOutputConfig("datatran.http.health","/health")//服务监控检查地址
+            .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")//服务地址清单，多个用逗号分隔
+            .addHttpOutputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpOutputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("datatran.http.maxTotal","200")
+            .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("datatran.http.failAllContinue","true")
+            //设置token申请和更新服务配置jwtservice，在TokenManager中使用jwtservice申请和更新token
+//          .addHttpOutputConfig("jwtservice.http.health","/health") //服务监控检查地址
+            .addHttpOutputConfig("jwtservice.http.hosts","192.168.137.1:808,192.168.0.100:9501") //服务地址清单，多个用逗号分隔，192.168.0.100:9501
+            .addHttpOutputConfig("jwtservice.http.timeoutConnection","5000")
+            .addHttpOutputConfig("jwtservice.http.timeoutSocket","50000")
+            .addHttpOutputConfig("jwtservice.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("jwtservice.http.maxTotal","200")
+            .addHttpOutputConfig("jwtservice.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("jwtservice.http.failAllContinue","true")
+
+      ;
+
+      importBuilder.setOutputConfig(httpOutputConfig);
+```
+
+### 2.6.2 通过dsl输出数据配置案例
+
+配置dslFile路径（相对于classpath）、dslName名称，数据key、dsl中使用的其他参数（静态和动态参数）等
+
+```java
+//http输出插件配置
+      HttpOutputConfig httpOutputConfig = new HttpOutputConfig();
+      //指定导入数据的dsl语句，必填项，可以设置自己的提取逻辑
+
+
+      httpOutputConfig
+            .setJson(true)
+            .setShowDsl(true)
+            .setDslFile("httpdsl.xml")
+            .setDataDslName("sendData")
+            .setDataKey("httpDatas")
+            .setServiceUrl("/httpservice/sendData.api")
+            .setHttpMethod("post")
+            .addHttpHeader("testHeader","xxxxx")
+            .addDynamicHeader("Authorization", new DynamicHeader() {
+               @Override
+               public String getValue(String header, DynamicHeaderContext dynamicHeaderContext) throws Exception {
+                  //判断服务token是否过期，如果过期则需要重新调用token服务申请token
+                  TokenInfo tokenInfo = tokenManager.getTokenInfo();
+                  String token = "Bearer " + tokenInfo.getAccess_token();//"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZWZhdWx0XzYxNTE4YjlmM2UyYmM3LjEzMDI5OTkxIiwiaWF0IjoxNjMyNzM0MTExLCJuYmYiOjE2MzI3MzQxMTEsImV4cCI6MTYzMjc0MTMxMSwiZGV2aWNlX2lkIjoiYXBwMDMwMDAwMDAwMDAwMSIsImFwcF9pZCI6ImFwcDAzIiwidXVpZCI6ImFkZmRhZmFkZmFkc2ZlMzQxMzJmZHNhZHNmYWRzZiIsInNlY3JldCI6ImFwcDAzMVEyVzNFd29ybGQxMzU3OVBhc3NBU0RGIiwiaXNzdWVfdGltZSI6MTYzMjczNDExMSwiand0X3NjZW5lIjoiZGVmYXVsdCJ9.mSl-JBUV7gTUapn9yV-VLfoU7dm-gxC7pON62DnD-9c";
+                  return token;
+               }
+            })
+//          .addTargetHttpPoolName("http.poolNames","datatran,jwtservice")//初始化多个http服务集群时，就不要用addTargetHttpPoolName方法，使用以下方法即可
+            .setTargetHttpPool("datatran")
+            .addHttpOutputConfig("http.poolNames","datatran,jwtservice")
+//          .addHttpOutputConfig("datatran.http.health","/health")//服务监控检查地址
+            .addHttpOutputConfig("datatran.http.hosts","192.168.137.1:808")//服务地址清单，多个用逗号分隔
+            .addHttpOutputConfig("datatran.http.timeoutConnection","5000")
+            .addHttpOutputConfig("datatran.http.timeoutSocket","50000")
+            .addHttpOutputConfig("datatran.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("datatran.http.maxTotal","200")
+            .addHttpOutputConfig("datatran.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("datatran.http.failAllContinue","true")
+            //设置token申请和更新服务配置jwtservice，在TokenManager中使用jwtservice申请和更新token
+//          .addHttpOutputConfig("jwtservice.http.health","/health") //服务监控检查地址
+            .addHttpOutputConfig("jwtservice.http.hosts","192.168.137.1:808") //服务地址清单，多个用逗号分隔，192.168.0.100:9501
+            .addHttpOutputConfig("jwtservice.http.timeoutConnection","5000")
+            .addHttpOutputConfig("jwtservice.http.timeoutSocket","50000")
+            .addHttpOutputConfig("jwtservice.http.connectionRequestTimeout","50000")
+            .addHttpOutputConfig("jwtservice.http.maxTotal","200")
+            .addHttpOutputConfig("jwtservice.http.defaultMaxPerRoute","100")
+            .addHttpOutputConfig("jwtservice.http.failAllContinue","true")
+
+      ;
+
+      importBuilder.addJobOutputParam("device_id","app03001")
+                .addJobOutputParam("app_id","app03")
+                .addJobDynamicOutputParam("signature", new DynamicParam() {//根据数据动态生成签名参数
+                   @Override
+                   public Object getValue(String paramName, DynamicParamContext dynamicParamContext) {
+                       String datas = (String) dynamicParamContext.getDatas();
+                       //可以根据自己的算法对数据进行签名
+                       String signature = "1b3bb71f6ebae2f52b7a238c589f3ff9";//signature =md5(datas)
+                      return signature;
+                   }
+                });
+      importBuilder.setOutputConfig(httpOutputConfig);
+```
+
+dsl文件和dsl配置sendData：
+
+```xml
+<property name="sendData">
+    <![CDATA[
+    {
+        "device_id": #[device_id], ## device_id,通过addJobInputParam赋值
+        "app_id": #[app_id], ## app_id,通过addJobInputParam赋值
+        "datas":  #[httpDatas,quoted=false,escape=false], ## datas,发送的数据源
+        "signature": #[signature]
+    }
+    ]]></property>
+```
+
+### 2.6.3 自定义数据记录输出格式
+
+参考文档：[自定义数据记录输出格式](https://esdoc.bbossgroups.com/#/datatran-http?id=_6自定义数据记录输出格式)
+
+### 2.6.4 参考文档
+
+[http输出插件](https://esdoc.bbossgroups.com/#/datatran-http?id=_3http输出插件)
 
 ## 2.7 自定义输出插件
 
-[CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java)
+自定义输出插件配置：[CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java)，顾名思义，自定义数据输出功能，自行实现数据输出到各种存储介质、或者推送到各种消息中间件等，结合CustomOutPut接口实现数据自定义处理：
 
-内容补充中。。。。。。
+```java
+org.frameworkset.tran.plugin.custom.output.CustomOutPut
+public void handleData(TaskContext taskContext,List<CommonRecord> datas);
+```
+
+### 2.7.1 配置案例
+
+```java
+ //自己处理数据，可以咨询实现
+        CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+        customOutputConfig.setCustomOutPut(new CustomOutPut() {
+            @Override
+            public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+                //You can do any thing here for datas
+                for(CommonRecord record:datas){
+                    Map<String,Object> data = record.getDatas();//获取原始数据记录，key/vlaue，代表字段和值
+                    int action = (int)record.getMetaValue("action");//获取元数据,记录类型，可以是新增（默认类型）/修改/删除/其他类型
+                    String table = (String)record.getMetaValue("table");//获取元数据中的表名称
+                    logger.info("data:{},action:{},record action type:insert={},update={},delete={}",data,action,record.isInsert(),record.isUpdate(),record.isDelete());
+
+                    logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));//获取并打印所有元数据信息
+                    if(record.isDelete()){
+                        logger.info("record.isDelete");
+                    }
+
+                    if(record.isUpdate()){
+                        logger.info("record.isUpate");
+                        Map<String,Object> oldDatas = record.getUpdateFromDatas();
+                    }
+//                    logger.info(SimpleStringUtil.object2json(data));
+                }
+            }
+        });
+        importBuilder.setDataRefactor(new DataRefactor() {
+            @Override
+            public void refactor(Context context) throws Exception {
+                int action = (int)context.getMetaValue("action");
+                String table = (String)context.getMetaValue("table");
+//                int action1 = (int)context.getMetaValue("action1");
+            }
+        });
+        importBuilder.setOutputConfig(customOutputConfig);
+```
 
 ## 2.8 MongoDB输出插件
 
-[MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java)
+MongoDB输出插件配置类：[MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java)，配置mongodb数据库参数、数据库表、各种连接控制参数/服务器地址等
 
-内容补充中。。。。。。
+### 2.8.1 配置案例
+
+```java
+// 5.2.4.1 设置mongodb参数
+		MongoDBOutputConfig mongoDBOutputConfig = new MongoDBOutputConfig();
+		mongoDBOutputConfig.setName("testes2mg")//mongodb数据源名称
+				.setDb("testdb")
+				.setDbCollection("db2mongodemo")
+				.setConnectTimeout(10000)
+				.setWriteConcern("JOURNAL_SAFE")
+
+				.setMaxWaitTime(10000)
+				.setSocketTimeout(1500).setSocketKeepAlive(true)
+				.setConnectionsPerHost(100)
+				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+				//String database,String userName,String password,String mechanism
+				//https://www.iteye.com/blog/yin-bp-2064662
+//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
+//				.setOption("")
+				.setAutoConnectRetry(true);
+
+		importBuilder.setOutputConfig(mongoDBOutputConfig);
+```
 
 ## 2.9 HBase输出插件
 
-[HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java)
+HBase输出插件配置类：[HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java)，配置hbase服务器连接参数/服务器地址/表名称/表列簇名称/列影射配置等参数
 
-内容补充中。。。。。。
+### 2.9.1 基础配置案例
+
+```java
+// 5.2.4.1 设置hbase参数
+HBaseOutputConfig hBaseOutputConfig = new HBaseOutputConfig();
+hBaseOutputConfig.setName("targethbase");//hbase数据源名称
+hBaseOutputConfig.setFamiliy("info")//指定需要同步数据的hbase表列簇名称;
+              .setHbaseTable("demo") ;//指定需要同步数据的hbase表名称;
+hBaseOutputConfig.setRowKeyField("LOG_ID")
+      .addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+      .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
+      .addHbaseClientProperty("zookeeper.znode.parent","/hbase")
+      .addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
+      .addHbaseClientProperty("hbase.rpc.timeout","10000")
+      .addHbaseClientProperty("hbase.client.operation.timeout","10000")
+      .addHbaseClientProperty("hbase.ipc.client.socket.timeout.read","20000")
+      .addHbaseClientProperty("hbase.ipc.client.socket.timeout.write","30000")
+      .addHbaseClientProperty("hbase.client.async.enable","true")
+      .addHbaseClientProperty("hbase.client.async.in.queuesize","10000")
+      .setHbaseClientThreadCount(100)  //hbase客户端连接线程池参数设置
+      .setHbaseClientThreadQueue(100)
+      .setHbaseClientKeepAliveTime(10000l)
+      .setHbaseClientBlockedWaitTimeout(10000l)
+      .setHbaseClientWarnMultsRejects(1000)
+      .setHbaseClientPreStartAllCoreThreads(true)
+      .setHbaseClientThreadDaemon(true);
+
+importBuilder.setOutputConfig(hBaseOutputConfig);
+```
+
+### 2.9.2 列簇映射配置
+
+```java
+// 5.2.4.1 设置hbase参数
+HBaseOutputConfig hBaseOutputConfig = new HBaseOutputConfig();
+hBaseOutputConfig.setName("targethbase");//hbase数据源名称
+hBaseOutputConfig.setHbaseTable("customdemo") ;//指定需要同步数据的hbase表名称;
+hBaseOutputConfig.addFamilyColumnMapping("info","LOG_ID","logId");//列簇及其中列映射关系
+hBaseOutputConfig.addFamilyColumnMapping("info","LOG_OPERUSER","logOperUser");
+hBaseOutputConfig.addFamilyColumnMapping("info","OPER_MODULE","operModule");
+hBaseOutputConfig.addFamilyColumnMapping("info","testint");
+hBaseOutputConfig.setRowKeyField("LOG_ID")
+      .addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+      .addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
+      .addHbaseClientProperty("zookeeper.znode.parent","/hbase")
+      .addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
+      .addHbaseClientProperty("hbase.rpc.timeout","10000")
+      .addHbaseClientProperty("hbase.client.operation.timeout","10000")
+      .addHbaseClientProperty("hbase.ipc.client.socket.timeout.read","20000")
+      .addHbaseClientProperty("hbase.ipc.client.socket.timeout.write","30000")
+      .addHbaseClientProperty("hbase.client.async.enable","true")
+      .addHbaseClientProperty("hbase.client.async.in.queuesize","10000")
+      .setHbaseClientThreadCount(100)  //hbase客户端连接线程池参数设置
+      .setHbaseClientThreadQueue(100)
+      .setHbaseClientKeepAliveTime(10000l)
+      .setHbaseClientBlockedWaitTimeout(10000l)
+      .setHbaseClientWarnMultsRejects(1000)
+      .setHbaseClientPreStartAllCoreThreads(true)
+      .setHbaseClientThreadDaemon(true);
+
+importBuilder.setOutputConfig(hBaseOutputConfig);
+```
+
+映射列簇-源字段-列名称关系方法说明：
+
+```java
+/**
+ * 指定自定义列簇与源字段映射关系，只有映射过的源字段值才会保存到hbase表
+ * 如果没有指定自定义列簇映射关系将采用全局列簇名称
+ * @param family hbase列簇名称
+ * @param field 源字段名称，同时也是列的名称
+ * @return
+ */
+public HBaseOutputConfig addFamilyColumnMapping(String family,String field){
+   return addFamilyColumnMapping( family, field,field);
+}
+
+/**
+ * 指定自定义列簇与源字段映射关系，只有映射过的源字段值才会保存到hbase表
+ * 如果没有指定自定义列簇映射关系将采用全局列簇名称
+ * @param family hbase列簇名称
+ * @param field  源字段名称
+ * @param column  hbase列名称 ，field对应的值作为列的值
+ * @return
+ */
+public HBaseOutputConfig addFamilyColumnMapping(String family,String field,String column)
+```
 
 ## 2.10 指标结果输出插件
 
-[MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java)
+指标结果输出插件配置类：[MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java)，指定指标计算器，对采集的数据进行流处理指标计算
 
-内容补充中。。。。。。
+### 2.10.1 配置案例
 
-## 2.11 日志调试输出插件
+定义指标计算器 ：ETLMetrics和类型Metrics.MetricsType_KeyTimeMetircs
 
-[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java)
+```java
+ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyTimeMetircs){
+   @Override
+   public void builderMetrics(){
+      //指标1 按操作模块统计模块操作次数
+      addMetricBuilder(new MetricBuilder() {
+         @Override
+         public String buildMetricKey(MapData mapData){
+                      CommonRecord data = (CommonRecord) mapData.getData();
+                      String operModule = (String) data.getData("operModule");
+                      if(operModule == null || operModule.equals("")){
+                          operModule = "未知模块";
+                      }
+            return operModule;
+         }
+         @Override
+         public KeyMetricBuilder metricBuilder(){
+            return new KeyMetricBuilder() {
+               @Override
+               public KeyMetric build() {
+                  return new LoginModuleMetric();
+               }
+            };
+         }
+      });
 
-内容补充中。。。。。。
+      //指标2 按照用户统计操作次数
+      addMetricBuilder(new MetricBuilder() {
+         @Override
+         public String buildMetricKey(MapData mapData){
+                      CommonRecord data = (CommonRecord) mapData.getData();
+                      String logUser = (String) data.getData("logOperuser");//
+                      if(logUser == null || logUser.equals("")){
+                          logUser = "未知用户";
+                      }
+            return logUser;
+         }
+         @Override
+         public KeyMetricBuilder metricBuilder(){
+            return new KeyMetricBuilder() {
+               @Override
+               public KeyMetric build() {
+                  return new LoginUserMetric();
+               }
+            };
+         }
+      });
+      // key metrics中包含两个segment(S0,S1)
+      setSegmentBoundSize(5000000);
+      setTimeWindows(60 );//统计时间窗口
+              this.setTimeWindowType(MetricsConfig.TIME_WINDOW_TYPE_MINUTE);
+   }
 
+          /**
+           * 存储指标计算结果
+           * @param metrics
+           */
+   @Override
+   public void persistent(Collection< KeyMetric> metrics) {
+      metrics.forEach(keyMetric->{
+         if(keyMetric instanceof LoginModuleMetric) {
+                      LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
+            Map esData = new HashMap();
+            esData.put("dataTime", testKeyMetric.getDataTime());
+            esData.put("hour", testKeyMetric.getDayHour());
+            esData.put("minute", testKeyMetric.getMinute());
+            esData.put("day", testKeyMetric.getDay());
+            esData.put("metric", testKeyMetric.getMetric());
+            esData.put("operModule", testKeyMetric.getOperModule());
+            esData.put("count", testKeyMetric.getCount());
+            bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+         }
+         else if(keyMetric instanceof LoginUserMetric) {
+                      LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
+            Map esData = new HashMap();
+            esData.put("dataTime", testKeyMetric.getDataTime());
+            esData.put("hour", testKeyMetric.getDayHour());
+            esData.put("minute", testKeyMetric.getMinute());
+            esData.put("day", testKeyMetric.getDay());
+            esData.put("metric", testKeyMetric.getMetric());
+            esData.put("logUser", testKeyMetric.getLogUser());
+            esData.put("count", testKeyMetric.getCount());
+            bulkProcessor.insertData("vops-loginusermetrics", esData);
+         }
 
+      });
+
+   }
+};
+```
+
+### 2.10.2 关键配置说明
+
+#### 2.10.2.1 指标计算定义
+
+实现builderMetrics方法，通过MetricBuilder添加多个指标，每个指标包括指标metricKey和指标计算器、计算控制参数，指标key是由维度字段组合的形成指标的唯一键值，指标计算器包含指标维度字段和指标计算逻辑。
+
+通过buildMetricKey方法生成指标唯一键值key：这里的键值比较简单，只一由个字段logUser构成
+
+```java
+ @Override
+         public String buildMetricKey(MapData mapData){
+                      CommonRecord data = (CommonRecord) mapData.getData();
+                      String logUser = (String) data.getData("logOperuser");//
+                      if(logUser == null || logUser.equals("")){
+                          logUser = "未知用户";
+                      }
+            return logUser;
+         }
+```
+
+指标计算器：LoginUserMetric
+
+```java
+ public KeyMetricBuilder metricBuilder(){
+            return new KeyMetricBuilder() {
+               @Override
+               public KeyMetric build() {
+                  return new LoginUserMetric();
+               }
+            };
+         }
+```
+
+LoginUserMetric实现如下：必须在指标计算器中定义各个维度字段（logUser，这里只有一个字段），并通过init对初始化维度字段的值
+
+```java
+public class LoginUserMetric extends TimeMetric {
+    private String logUser;
+    @Override
+    public void init(MapData firstData) {
+        CommonRecord data = (CommonRecord) firstData.getData();
+        logUser = (String) data.getData("logOperuser");
+        if(logUser == null || logUser.equals("")){
+            logUser = "未知用户";
+        }
+    }
+
+    @Override
+    public void incr(MapData data) {
+        count ++;//指标计算
+    }
+
+    public String getLogUser() {
+        return logUser;//返回维度字段
+    }
+}
+```
+
+#### 2.10.2.2 计算控制参数
+
+```java
+// key metrics中包含两个segment(S0,S1)
+      setSegmentBoundSize(5000000);
+      setTimeWindows(60 );//统计时间窗口
+              this.setTimeWindowType(MetricsConfig.TIME_WINDOW_TYPE_MINUTE);
+```
+
+#### 2.10.2.3 指标存储定义
+
+```java
+  /**
+           * 存储指标计算结果
+           * @param metrics
+           */
+   @Override
+   public void persistent(Collection< KeyMetric> metrics) {
+      metrics.forEach(keyMetric->{
+         if(keyMetric instanceof LoginModuleMetric) {
+                      LoginModuleMetric testKeyMetric = (LoginModuleMetric) keyMetric;
+            Map esData = new HashMap();
+            esData.put("dataTime", testKeyMetric.getDataTime());
+            esData.put("hour", testKeyMetric.getDayHour());
+            esData.put("minute", testKeyMetric.getMinute());
+            esData.put("day", testKeyMetric.getDay());
+            esData.put("metric", testKeyMetric.getMetric());
+            esData.put("operModule", testKeyMetric.getOperModule());
+            esData.put("count", testKeyMetric.getCount());
+            bulkProcessor.insertData("vops-loginmodulemetrics", esData);
+         }
+         else if(keyMetric instanceof LoginUserMetric) {
+                      LoginUserMetric testKeyMetric = (LoginUserMetric) keyMetric;
+            Map esData = new HashMap();
+            esData.put("dataTime", testKeyMetric.getDataTime());
+            esData.put("hour", testKeyMetric.getDayHour());
+            esData.put("minute", testKeyMetric.getMinute());
+            esData.put("day", testKeyMetric.getDay());
+            esData.put("metric", testKeyMetric.getMetric());
+            esData.put("logUser", testKeyMetric.getLogUser());
+            esData.put("count", testKeyMetric.getCount());
+            bulkProcessor.insertData("vops-loginusermetrics", esData);
+         }
+
+      });
+
+   }
+```
+
+通过persistent方法，将达到时间窗口的的指标存储到指定的存储介质，这里通过异步批处理组件：
+
+bulkProcessor，将指标计算结果保存到对应的Elasticsearch索引表中，亦可以根据实际需要保存到其它地方
+
+### 2.10.3 设置指标输出插件
+
+将指标计算器添加到指标输出插件即可
+
+```java
+ MetricsOutputConfig metricsOutputConfig = new MetricsOutputConfig();
+
+      metricsOutputConfig.setDataTimeField("logOpertime");//指定指标时间维度字段
+      metricsOutputConfig.addMetrics(keyMetrics);//添加指标计算器,可以添加多个指标计算器
+
+importBuilder.setOutputConfig(metricsOutputConfig);
+```
+
+### 2.10.4 参考文档
+
+https://esdoc.bbossgroups.com/#/etl-metrics
+
+## 2.11 调试输出插件
+
+调试输出插件:[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java),本插件只做一个简单的事情，将数据输出到控制台或者日志文件,可以定义输出数据格式
+
+### 2.11.1 配置案例
+
+```java
+DummyOutputConfig dummyOupputConfig = new DummyOutputConfig();
+dummyOupputConfig.setRecordGenerator(new RecordGenerator() {
+   @Override
+   public void buildRecord(Context taskContext, CommonRecord record, Writer builder) throws Exception{
+      SimpleStringUtil.object2json(record.getDatas(),builder);//自定义数据输出格式
+
+   }
+}).setPrintRecord(true);
+importBuilder.setOutputConfig(dummyOupputConfig);
+```
 
 # 3.参考文档
 
