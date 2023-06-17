@@ -69,7 +69,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 
 4. mongodb 4.2.1 
 
-5. elasticsearch版本6.9.9，亦可以采用最新的版本
+5. elasticsearch版本7.0.0，亦可以采用最新的版本
 
 6. 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
 
@@ -2282,7 +2282,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
 
@@ -2324,7 +2324,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
 

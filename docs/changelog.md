@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v6.9.9 发布
+# BBOSS版本变更记录-v7.0.0 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
 
@@ -28,9 +28,13 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
+# v7.0.0 功能改进
+
+1. 细化数据处理管道停止状态：正常停止和异常停止，正常停止情况下需要继续处理完数据，异常停止情况下不处理后续数据
+
 # v6.9.9 功能改进
 
 1.  增加作业运行结束监听器（异步/同步），可以通过监听器识别作业是异常结束还是正常结束
@@ -376,7 +380,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss6.9.9版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.0.0版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -551,7 +555,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -559,7 +563,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>6.9.9</version>
+            <version>7.0.0</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -646,7 +650,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到6.9.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.0.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1192,7 +1196,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-    <version>6.9.9</version>
+    <version>7.0.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
