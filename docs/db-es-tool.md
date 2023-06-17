@@ -18,6 +18,8 @@
 
 bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
+详细输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
+
 # 工具特性
 
 ​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。	
@@ -137,6 +139,8 @@ com.bbossgroups.plugins
 ```
 
 表格中给出了对应的artifactId，插件对应的最新版本号可以从实时更新的[版本发布公告](https://esdoc.bbossgroups.com/#/changelog)获取。如需在项目中使用插件对应的数据采集和流批一体化处理功能，导入对应的Maven坐标即可，插件依赖的其他第三方包，参考[具体的案例工程依赖管理文件](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo)获取。
+
+详细输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
 
 ## 输入插件
 

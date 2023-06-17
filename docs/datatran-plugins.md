@@ -2062,9 +2062,9 @@ importBuilder.setOutputConfig(metricsOutputConfig);
 
 https://esdoc.bbossgroups.com/#/etl-metrics
 
-## 2.11 调试输出插件
+## 2.11 Dummy输出插件
 
-调试输出插件:[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java),本插件只做一个简单的事情，将数据输出到控制台或者日志文件,可以定义输出数据格式
+Dummy输出插件:[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java),本插件只做一个简单的事情，将数据输出到控制台或者日志文件,可以定义输出数据格式，用来辅助调试其他输入插件功能
 
 ### 2.11.1 配置案例
 
@@ -2085,3 +2085,5 @@ importBuilder.setOutputConfig(dummyOupputConfig);
 [bboss数据采集ETL工具使用指南](https://esdoc.bbossgroups.com/#/db-es-tool?id=bboss数据采集etl工具使用指南)
 
 [数据采集&流批一体化处理使用指南](https://esdoc.bbossgroups.com/#/etl-metrics?id=数据采集amp流批一体化处理使用指南)
+
+
