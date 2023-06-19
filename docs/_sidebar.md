@@ -1,37 +1,21 @@
-- [**BBOSS介绍**](README.md)
-
+- [BBOSS介绍](README.md)
 - **Getting started**
-
   - [Elasticsearch Quick start](quickstart.md)
-
   - [Elasticsearch Demo](Elasticsearch-demo.md)
-
-  - [集成和配置Elasticsearch bboss](common-project-with-bboss.md) 
-
-  - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md) 
-
+  - [集成和配置Elasticsearch bboss](common-project-with-bboss.md)
+  - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md)
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md)
-
   - [Apollo对接与配置 (非spring boot项目)](apollo-config.md)
-
   - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
-
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
-
-  - [Elasticsearch bboss Performance](performance.md) 
-
+  - [Elasticsearch bboss Performance](performance.md)
   - [从源码构建Elasticsearch bboss](bboss-build.md)
-
   - [常见问题处理](question-answer.md)
-
   - [Changelog](changelog.md)
-
   - [支持我们](supportus.md)
-
     
 
 - **Guide**
-
   - [Elasticsearch开发指南](development.md)
   - [数据同步ETL工具介绍](db-es-tool.md)
   - [数据采集&流批一体化处理](etl-metrics.md)
@@ -39,19 +23,19 @@
   - [Elasticsearch索引文档增删改查](document-crud.md)
   - Elasticsearch分页查询
     - [from-size](from-size.md)
-    - [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md) 
-    - [search-after](search-after.md) 
-    - [scroll](scroll.md) 
-    - [Sliced-Scroll](Sliced-Scroll.md) 
+    - [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md)
+    - [search-after](search-after.md)
+    - [scroll](scroll.md)
+    - [Sliced-Scroll](Sliced-Scroll.md)
   - [Elasticsearch SQL ORM操作](Elasticsearch-SQL-ORM.md)
   - [Elasticsearch SQL介绍](Elasticsearch-6-SQL.md)
   - [Eleasticsearch BulkProcessor异步批处理](bulkProcessor.md)
   - [通用BulkProcessor异步批处理](bulkProcessor-common.md)
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
-  - [Elasticsearch聚合查询](agg.md) 
+  - [Elasticsearch聚合查询](agg.md)
   - **数据同步及流批一体化计算** 
-    - [插件清单](datatran-plugins.md)   
-    - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md)   
+    - [插件使用指南](datatran-plugins.md)
+    - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md) 
     - [日志文件采集使用指南](filelog-guide.md)
     - [作业调度控制](bboss-datasyn-control.md)
     - [基于Filelog插件采集日志jvm溢出踩坑记](filelog-oom.md)
@@ -69,9 +53,9 @@
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)
   - [Elasticsearch地理位置维护和检索](Elasticsearch-geo.md)
-  - [Elasticsearch5父子关系维护和检索](elasticsearch5-parent-child.md) 
-  - [Elasticsearch6父子关系维护和检索](elasticsearch6-parent-child.md) 
-  - [Elasticsearch7父子关系维护和检索](elasticsearch7-parent-child.md) 
+  - [Elasticsearch5父子关系维护和检索](elasticsearch5-parent-child.md)
+  - [Elasticsearch6父子关系维护和检索](elasticsearch6-parent-child.md)
+  - [Elasticsearch7父子关系维护和检索](elasticsearch7-parent-child.md)
   - [Elasticsearch 局部更新文档 Mget GetDocSource](Elasticsearch-Mget-GetDocSource-partupdate.md)
   - [Elasticsearch中文拼音混合检索案例](pinyin-ik.md)
   - [Elasticsearch 检索所有文档API使用案例](searchAll.md)
@@ -83,14 +67,8 @@
   - [Elasticsearch历史数据清理](elasticsearch-indexclean-task.md)
   - [RestClientUtil和ConfigRestClientUtil区别](RestClientUtil-ConfigRestClientUtil.md)
   - [Spring 注入Elasticsearch组件方法](spring-inject-bboss.md)
-  - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md) 
-  - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md) 
+  - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md)
+  - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md)
   - [Elasticsearch实现同段同语句搜索](SpanQuery.md)
   - [Elasticsearch：TF-IDF，BM25和相关度控制](DocRelevancy.md)
-- [**Http负载均衡器使用介绍**](httpproxy.md) 
-  
-
-  
-  
-
-
+- [Http负载均衡器使用介绍](httpproxy.md)

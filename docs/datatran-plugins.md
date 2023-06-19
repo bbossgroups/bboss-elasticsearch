@@ -1,5 +1,9 @@
 # bboss-datatran插件清单
 
+![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
+
+# 概述
+
 bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。
 
 bboss-datatran采用标准的输入输出异步管道来处理数据，输入插件和输出插件可以自由组合，输入插件从数据源采集数据，经过数据异步并行流批一体化处理后，输出插件将处理后的数据、指标数据输出到目标地。
