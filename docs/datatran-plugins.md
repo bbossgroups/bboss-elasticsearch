@@ -11,7 +11,9 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 ![](images\datasyn-inout-now.png)
 通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
 
-本文介绍bboss-datatran提供各种输入输出插件以及配置说明，使用过程中，可以根据实际情况和应用场景自由组合输入和输出插件。
+本文介绍bboss-datatran提供各种输入输出插件以及配置说明，使用过程中，可以根据实际情况和应用场景自由组合输入和输出插件，同时也可以参考数据同步案例大全，使用各种插件实现各种数据采集作业：
+
+[bboss数据采集ETL案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=bboss数据采集etl案例大全)
 
 # 1.输入插件
 
@@ -780,6 +782,10 @@ hbase过滤条件配置
       hBaseInputConfig.setEndTimestamp(endTimestamp);
 ```
 
+### 1.6.2 参考文档
+
+https://esdoc.bbossgroups.com/#/hbase-elasticsearch
+
 ## 1.7 MongoDB采集插件
 
 MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java)，配置mongodb数据库参数、数据库表、各种连接控制参数/服务器地址等
@@ -974,9 +980,15 @@ importBuilder.setDataRefactor(new DataRefactor() {
       });
 ```
 
+### 1.7.4 参考文档
+
+https://esdoc.bbossgroups.com/#/mongodb-elasticsearch
+
 ## 1.8 Kafka输入插件
 
 Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)，可以配置kafka消费端参数，包括kafka服务器地址、消费组id、自动提交机制、offset机制、消费线程数量、消息处理工作线程数、线程队列长度、topic、消息序列化机制等。
+
+案例工程：https://gitee.com/bboss/kafka2x-elasticsearch
 
 ### 1.8.1 插件配置案例
 
@@ -1004,6 +1016,76 @@ Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-e
             .setKeyCodec(CODEC_LONG);
       importBuilder.setInputConfig(kafka2InputConfig);
 ```
+
+目前只接收String类型的消息，关键配置说明：
+
+kafka2InputConfig.setValueCodec(CODEC_JSON)     json消息反序列化，将kafka中json字符串自动转换为map对象，如果消息是json格式，可以指定这个解码器，如果不指定默认就是String解码器
+
+kafka2InputConfig.setKeyCodec(CODEC_LONG)  如果key是long类型，采用long反序列化消息key，这是一个可选配置
+
+Codec目录可以支持以下类型：
+
+CODEC_TEXT 
+
+CODEC_TEXT_SPLIT
+
+CODEC_JSON 
+
+CODEC_LONG 
+
+CODEC_INTEGER 
+
+CODEC_BYTE（byte数组）
+
+如果配置了value.deserializer，那么setValueCodec将不起作用
+
+如果配置了key.deserializer，那么setKeyCodec将不起作用
+
+如果消息是其他格式，则可以设置CODEC_TEXT 类型，然后自行在datarefactor中进行处理，亦可以按照分割字符进行解析，然后进行字段映射处理。
+
+### 1.8.2 自定义消息转换处理
+
+非格式化的字符串消息，可以自行在datarefactor中进行灵活的转换处理：
+
+```java
+kafka2InputConfig.setValueCodec(CODEC_TEXT );
+importBuilder.setDataRefactor(new DataRefactor() {
+			public void refactor(Context context) throws Exception  {
+
+				 // 获取原始的Kafka记录
+				 KafkaStringRecord record = (KafkaStringRecord) context.getCurrentRecord();
+				 if(record.getKey() == null)
+				 	System.out.println("key is null!");
+                 String message = (String)record.getData();
+                 String[] datas = message.split("|");//举个简单的处理实例：按指定消息字段分割符，将消息切割为字符串数组
+                //指定数组元素与字段名称的映射配置
+                context.addFieldValue("logOperTime",datas[0]);
+                context.addFieldValue("operModule",datas[1]);
+                context.addFieldValue("logOperuser",datas[2]);
+			}
+		});
+```
+
+如果消息是按照特定分割字符拼接而成，那么可以直接按照特定分隔符进行解析，然后进行字段映射处理，valuecodec必须设置为CODEC_TEXT_SPLIT
+
+```java
+kafka2InputConfig .setValueCodec(CODEC_TEXT_SPLIT);
+
+Kafka2InputConfig kafka2InputConfig = new Kafka2InputConfig();
+kafka2InputConfig.setFieldSplit(";");//指定消息字段分割符，按照分隔符将消息切割为字符串数组
+//指定数组元素与字段名称的映射配置，
+kafka2InputConfig.addCellMapping(0, "logOperTime");
+kafka2InputConfig.addCellMapping(1, "operModule");
+kafka2InputConfig.addCellMapping(2, "logOperuser");
+```
+
+通过上述的处理，可以非常灵活地处理各种格式的字符串kafka消息，然后将处理后的数据通过各种输出插件进行输出。
+
+### 1.8.3 参考文档
+
+[2.8.7.2 kafka输入插件拦截器设置说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2872-kafka输入插件拦截器设置说明)
+
+
 
 ## 1.9 Http输入插件
 

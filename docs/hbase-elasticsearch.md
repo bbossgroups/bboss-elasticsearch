@@ -62,7 +62,7 @@ bboss 7.0.0
 ```xml
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
-  <artifactId>bboss-elasticsearch-rest-hbase</artifactId>
+  <artifactId>bboss-datatran-hbase</artifactId>
   <version>7.0.0</version>
   <scope>compile</scope>
 </dependency>

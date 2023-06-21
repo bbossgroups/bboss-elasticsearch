@@ -11,7 +11,7 @@
 ```
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+    <artifactId>bboss-datatran-jdbc</artifactId>
     <version>7.0.0</version>
 </dependency>
 <dependency>

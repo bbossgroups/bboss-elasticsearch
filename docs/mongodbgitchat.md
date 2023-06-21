@@ -2281,7 +2281,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
-            <artifactId>bboss-elasticsearch-rest-mongodb</artifactId>
+            <artifactId>bboss-datatran-mongodb</artifactId>
             <version>7.0.0</version>
         </dependency>
 ```

@@ -17,7 +17,7 @@
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
-            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <artifactId>bboss-datatran-jdbc</artifactId>
             <version>7.0.0</version>
         </dependency>
 ```
@@ -546,7 +546,7 @@ yyyy-MM-dd HH:mm:ss
 
 1. 处理增量时间状态值写入mysql管理的增量状态数据库失败问题
 2. 时间转换优化:localdatetime和localdate向date类型转换，避免出错误
-3. 数据同步作业调度增加对xxl-job 2.3.0的支持，需将原maven坐标bboss-elasticsearch-rest-jdbc调整为bboss-datatran-schedule-xxljob
+3. 数据同步作业调度增加对xxl-job 2.3.0的支持，需将原maven坐标bboss-elasticsearch-rest-jdbc或者bboss-datatran-jdbc调整为bboss-datatran-schedule-xxljob
 
 示例如下：
 xxl-job 2.3.0以下版本采用的maven坐标
@@ -554,7 +554,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
-            <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+            <artifactId>bboss-datatran-jdbc</artifactId>
             <version>7.0.0</version>
         </dependency>
 ```
@@ -1195,7 +1195,7 @@ spring boot配置项
 ```xml
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
-    <artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+    <artifactId>bboss-datatran-jdbc</artifactId>
     <version>7.0.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
