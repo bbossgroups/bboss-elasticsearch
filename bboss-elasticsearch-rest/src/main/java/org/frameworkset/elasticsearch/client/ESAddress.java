@@ -32,6 +32,9 @@ public class ESAddress {
 
 		this.healthPath = this.getPath(address,healthPath);
 	}
+    public ESAddress(String address){
+        this(address,"/");
+    }
 	private String getPath(String host,String path){
 		String url = path.equals("") || path.startsWith("/")?
 				new StringBuilder().append(host).append(path).toString()
