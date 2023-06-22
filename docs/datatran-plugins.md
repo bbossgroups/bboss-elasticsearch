@@ -1761,6 +1761,8 @@ public void handleData(TaskContext taskContext,List<CommonRecord> datas);
 
 ### 2.7.1 配置案例
 
+简单示例
+
 ```java
  //自己处理数据，可以咨询实现
         CustomOutputConfig customOutputConfig = new CustomOutputConfig();
@@ -1797,6 +1799,47 @@ public void handleData(TaskContext taskContext,List<CommonRecord> datas);
             }
         });
         importBuilder.setOutputConfig(customOutputConfig);
+```
+
+将数据同时写入两个redis集群：
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisDemo.java
+
+```java
+//自己处理数据
+      CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+      customOutputConfig.setCustomOutPut(new CustomOutPut() {
+         @Override
+         public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+            //You can do any thing here for datas
+            //同时将数据写入两个redis集群：单笔记录处理
+            RedisHelper redisHelper = null;
+            RedisHelper redisHelper1 = null;
+            try {
+               redisHelper = RedisFactory.getRedisHelper();//第一个集群
+               redisHelper1 = RedisFactory.getRedisHelper("redis1");//第二个集群
+
+               for (CommonRecord record : datas) {
+                  Map<String, Object> data = record.getDatas();
+                  String LOG_ID =String.valueOf(data.get("LOG_ID"));
+//             logger.info(SimpleStringUtil.object2json(data));
+                  String valuedata = SimpleStringUtil.object2json(data);
+                  logger.debug("LOG_ID:{}",LOG_ID);
+//             logger.info(SimpleStringUtil.object2json(data));
+                  redisHelper.hset("xingchenma", LOG_ID, valuedata);//将数据写入第一个集群
+                  redisHelper1.hset("xingchenma", LOG_ID, valuedata);//将数据写入第一个集群
+               }
+            }
+            finally {
+               if(redisHelper != null)
+                  redisHelper.release();
+               if(redisHelper1 != null)
+                  redisHelper1.release();
+            }
+         }
+      });
+      importBuilder.setOutputConfig(customOutputConfig);
 ```
 
 ## 2.8 MongoDB输出插件
