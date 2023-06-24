@@ -155,9 +155,15 @@ https://esdoc.bbossgroups.com/#/bboss-build
 # 5. BBoss Demo
 https://www.bbossgroups.com/sources-demos.html
 
+# 6. 视频教程
 
+[Bboss介绍](https://www.bilibili.com/video/BV1Rs4y1i7EK)
 
-# 6. 联系我们
+[Bboss之ETL培训](https://www.bilibili.com/video/BV1hc411M7DX)
+
+[bboss cdc之实时采集Mysql binlog增删改数据教程](https://www.bilibili.com/video/BV1ko4y1M7My)
+
+# 7. 联系我们
 
 **Elasticsearch技术交流群：21220580,166471282**
 

@@ -1339,7 +1339,9 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 Elasticsearch输出插件配置类：[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)，配置Elasticsearch集群配置、http连接池参数配置、输出索引配置、索引类型配置，可以指定动态索引名称和固定索引名称，配置索引id生成规则，同时还可以将数据同步到多个Elasticsearch集群。
 
-### 2.2.1 插件配置案例
+### 2.2.1 同步到一个Elasticsearch案例
+
+同步到一个Elasticsearch：通过elasticsearch.serverNames指定和配置了一个数据源default，只会同步到这个Default对应的数据源
 
 ```java
 ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
@@ -1373,15 +1375,70 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
        */
 //          .setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
 //          .setRefreshOption("refresh")//可选项，null表示不实时刷新，elasticsearchOutputConfig.setRefreshOption("refresh");表示实时刷新
-      /**
-       * es相关配置
-       */
-//    elasticsearchOutputConfig.setTargetElasticsearch("default,test");//同步数据到两个es集群
+      
 
       importBuilder.setOutputConfig(elasticsearchOutputConfig);
 ```
 
-### 2.2.2 插件参考文档
+### 2.2.2 同步到多个Elasticsearch案例
+
+同步到多个Elasticsearch：通过elasticsearch.serverNames定义了两个需要输出的es数据源default,test
+
+```java
+ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+      elasticsearchOutputConfig
+            .addTargetElasticsearch("elasticsearch.serverNames","default,test")
+            //default 集群配置
+          .addElasticsearchProperty("default.elasticsearch.rest.hostNames","192.168.137.1:9200")
+            .addElasticsearchProperty("default.elasticsearch.showTemplate","true")
+            .addElasticsearchProperty("default.elasticUser","elastic")
+            .addElasticsearchProperty("default.elasticPassword","changeme")
+            .addElasticsearchProperty("default.elasticsearch.failAllContinue","true")
+            .addElasticsearchProperty("default.http.timeoutSocket","60000")
+            .addElasticsearchProperty("default.http.timeoutConnection","40000")
+            .addElasticsearchProperty("default.http.connectionRequestTimeout","70000")
+            .addElasticsearchProperty("default.http.maxTotal","200")
+            .addElasticsearchProperty("default.http.defaultMaxPerRoute","100")
+          //test 集群配置
+          .addElasticsearchProperty("test.elasticsearch.rest.hostNames","192.168.137.2:9200")
+            .addElasticsearchProperty("test.elasticsearch.showTemplate","true")
+            .addElasticsearchProperty("test.elasticUser","elastic")
+            .addElasticsearchProperty("test.elasticPassword","changeme")
+            .addElasticsearchProperty("test.elasticsearch.failAllContinue","true")
+            .addElasticsearchProperty("test.http.timeoutSocket","60000")
+            .addElasticsearchProperty("test.http.timeoutConnection","40000")
+            .addElasticsearchProperty("test.http.connectionRequestTimeout","70000")
+            .addElasticsearchProperty("test.http.maxTotal","200")
+            .addElasticsearchProperty("test.http.defaultMaxPerRoute","100")
+            .setIndex("dbdemo")
+            .setEsIdField("log_id")//设置文档主键，不设置，则自动产生文档id
+            .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
+            .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+      /**
+       elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+       //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+       // 否则根据setEsIdField方法设置的字段值作为文档id，
+       // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+       @Override
+       public Object genId(Context context) throws Exception {
+       return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+       }
+       });
+       */
+//          .setIndexType("dbdemo") ;//es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType;
+//          .setRefreshOption("refresh")//可选项，null表示不实时刷新，elasticsearchOutputConfig.setRefreshOption("refresh");表示实时刷新
+      /**
+       * es相关配置
+       */
+      elasticsearchOutputConfig.setTargetElasticsearch("default,test");//将数据源数据同步数据到两个es集群default,test
+
+      importBuilder.setOutputConfig(elasticsearchOutputConfig);
+```
+
+
+
+### 2.2.3 插件参考文档
 
 [设置ES数据导入控制参数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2816-设置es数据导入控制参数)
 
