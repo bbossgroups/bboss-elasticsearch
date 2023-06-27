@@ -618,4 +618,4 @@ bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 
-![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+![img](images/qrcode.jpg)

@@ -747,6 +747,6 @@ elasticsearch技术交流群:21220580,166471282
 
 elasticsearch微信公众号:bbossgroup   
 
-![GitHub Logo](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+![GitHub Logo](images/qrcode.jpg)
 
 

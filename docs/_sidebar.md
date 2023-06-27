@@ -12,7 +12,7 @@
   - [从源码构建Elasticsearch bboss](bboss-build.md)
   - [常见问题处理](question-answer.md)
   - [Changelog](changelog.md)
-  - [支持我们](supportus.md)
+  - [联系和支持我们](supportus.md)
     
 
 - **Guide**

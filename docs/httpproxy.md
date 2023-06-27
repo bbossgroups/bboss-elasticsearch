@@ -1305,7 +1305,7 @@ bboss http交流QQ群：21220580,166471282
 
 **bboss http微信公众号：**
 
-<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200">
 
 
 

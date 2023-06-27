@@ -1,6 +1,6 @@
 # 高性能elasticsearch ORM开发库使用介绍
 
-![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
+<img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
 
 
 
@@ -25,7 +25,7 @@ bboss elasticsearch管理dsl的方式：
 
    bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
-  bboss elasticsearch开发环境搭建和开发入门视频教程：[下载](https://pan.baidu.com/s/1kXjAOKn)
+  bboss elasticsearch开发环境搭建和开发入门视频教程：[观看教程](https://esdoc.bbossgroups.com/#/README?id=_6-%e8%a7%86%e9%a2%91%e6%95%99%e7%a8%8b)
 
 首先介绍如何在项目中导入和配置elasticsearch开发包，spring boot的导入和配置请参考文档：
 
@@ -4430,7 +4430,7 @@ bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 
-<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200">
 
 
 

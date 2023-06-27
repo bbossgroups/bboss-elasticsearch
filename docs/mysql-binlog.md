@@ -226,4 +226,4 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 
 **Elasticsearch微信公众号：**
 
-![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+![img](images/qrcode.jpg)

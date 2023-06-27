@@ -169,7 +169,7 @@ https://www.bbossgroups.com/sources-demos.html
 
 **Elasticsearch微信公众号：**
 
-<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200">
 
 
 

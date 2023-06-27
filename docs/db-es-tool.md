@@ -1,6 +1,6 @@
 # bboss数据采集ETL工具使用指南
 
-![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
+<img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
 
  
 
@@ -3095,7 +3095,7 @@ github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch
 
 **elasticsearch微信公众号：**
 
-<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200">
 
 
 

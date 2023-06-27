@@ -486,4 +486,4 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 **Elasticsearch微信公众号：**
 
-![img](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+![img](images/qrcode.jpg)

@@ -1,6 +1,6 @@
 # 一组获取Elasticsearch 索引表所有文档API使用案例
 
-![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
+<img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
 
  
 
@@ -248,7 +248,7 @@ bboss elasticsearch交流QQ群：21220580,166471282
 
 **bboss elasticsearch微信公众号：**
 
-<img src="https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200">
 
 
 

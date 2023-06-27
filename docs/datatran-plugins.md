@@ -1,6 +1,6 @@
 # bboss-datatran插件清单
 
-![bboss](https://static.oschina.net/uploads/user/47/94045_50.jpg?t=1386945037000)
+<img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
 
 # 概述
 

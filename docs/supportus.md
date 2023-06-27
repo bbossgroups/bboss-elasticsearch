@@ -1,4 +1,18 @@
-# 支持和Star bboss
+
+
+# bboss开发交流
+
+# 联系我们
+
+**Elasticsearch技术交流群：21220580,166471282**
+
+**Elasticsearch微信公众号：**
+
+<img src="images/qrcode.jpg"  height="200" width="200">
+
+
+
+# 支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 
