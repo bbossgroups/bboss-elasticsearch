@@ -731,6 +731,37 @@ bboss除了通过xml配置文件来管理dsl，还可以通过数据库来管理
 
 https://esdoc.bbossgroups.com/#/db-dsl
 
+### 2.7.4 配置dsl解析处理
+
+可以通过以下方法，测试和验证配置dsl解析后的结果：
+
+```java
+Map<String,Object> params = new HashMap<String,Object>();
+//设置参数
+params.put("cityId","10002");
+params.put("titleId",new String[]{"5",
+      "6",
+      "4",
+      "9"});
+params.put("deptId1","65");
+params.put("deptId2","65");
+params.put("deptId3","65");
+//设置size，最多返回1000条记录
+params.put("size",1000);
+//加载配置文件中的dsl信息，解析dsl语句dynamicInnerDsl
+ConfigHolder configHolder = new ConfigHolder();
+ConfigDSLUtil esUtil = configHolder.getConfigDSLUtil("esmapper/outpianduanref.xml");
+String parseResult = ESTemplateHelper.evalTemplate(esUtil,"testoutPianduan",params);
+```
+
+源文件：
+
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/dsl/TestPianduan.java
+
+dsl配置文件
+
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/outpianduanref.xml
+
 ## 2.8 设置scroll查询线程池线程数和等待队列长度
 
 ### 设置slice scroll查询对应的线程数和等待队列数
