@@ -302,7 +302,7 @@ mysql binlog插件使用文档：
 
 https://esdoc.bbossgroups.com/#/mysql-binlog
 
-下面介绍Mysql binlog输入插件配置参数和配置实例。
+Mysql binlog输入插件配置参数和配置实例，更多介绍，浏览上面的文档。
 
 ### 1.3.1 插件配置案例
 

@@ -90,10 +90,14 @@ importBuilder.setInputConfig(mySQLBinlogConfig);
         mySQLBinlogConfig.setTables("cityperson,batchtest");//
         mySQLBinlogConfig.setDatabase("bboss");
         mySQLBinlogConfig.setEnableIncrement(true);//启用模式3
-        
+       // mysql binlog插件增加异步启动机制，JoinToConnectTimeOut大于0生效，否则是同步启动，启用方法：
+		mySQLBinlogConfig.setJoinToConnectTimeOut(20000L);
         importBuilder.setInputConfig(mySQLBinlogConfig);
         importBuilder.setPrintTaskLog(true);
-
+		int batchSize = 500;//批量入库记录数
+       
+        importBuilder.setBatchSize(batchSize);//设置批量入库的记录数
+        importBuilder.setFlushInterval(10000L);//如果10秒内没有达到500条数据，但是有数据，则强制输出数据
 		//启用模式3 故障容灾机制配置       
 //        importBuilder.setStatusDbname("testStatus");//指定增量状态数据源名称
       importBuilder.setLastValueStorePath("binlog2db_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
@@ -104,7 +108,7 @@ importBuilder.setInputConfig(mySQLBinlogConfig);
 
 mySQLBinlogConfig.setEnableIncrement(true);//启用模式3
 
-## 2.2 Elasticsearch输出插件配置**
+## 2.2 Elasticsearch输出插件配置
 
 通过ElasticsearchOutputConfig 配置Elasticsearch服务器地址及连接参数、索引表、文档Id字段等信息
 
