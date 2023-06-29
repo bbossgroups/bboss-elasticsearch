@@ -465,22 +465,21 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				logger.error("Parse logDslCallback parameter failed:"+_logDslCallback,e);
 			}
 		}
-		String _slowDslCallback = elasticsearchPropes.getProperty("elasticsearch.slowDslCallback");
-		if(_slowDslCallback != null){
-			try {
-				this.slowDslCallback = (LogDslCallback) Class.forName(_slowDslCallback).newInstance();
-			}
-			catch (Exception e){
-				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);
-			}
-			catch (Throwable e){
-				logger.error("Parse slowDslCallback parameter failed:"+_slowDslCallback,e);
-			}
-		}
-		else{
-			this.slowDslCallback = new DefaultSlowDslCallback();
-		}
+        if(slowDslThreshold != null && slowDslThreshold > 0) {
+            String _slowDslCallback = elasticsearchPropes.getProperty("elasticsearch.slowDslCallback");
+            if (_slowDslCallback != null) {
+                try {
+                    this.slowDslCallback = (LogDslCallback) Class.forName(_slowDslCallback).newInstance();
+                } catch (Exception e) {
+                    logger.error("Parse slowDslCallback parameter failed:" + _slowDslCallback, e);
+                } catch (Throwable e) {
+                    logger.error("Parse slowDslCallback parameter failed:" + _slowDslCallback, e);
+                }
+            } else {
 
+                this.slowDslCallback = new DefaultSlowDslCallback();
+            }
+        }
 		String discoverHost_ = elasticsearchPropes.getProperty("elasticsearch.discoverHost");
 		if(discoverHost_ != null && !discoverHost_.equals("")){
 			try {

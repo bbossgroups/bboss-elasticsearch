@@ -56,10 +56,9 @@ public class RestSearchExecutor {
 		if(slowDslThreshold != null && slowDslThreshold > 0) {
 			logSlowDslCallback = elasticSearchClient.getSlowDslCallback();
 		}
-
-		if(logDslCallback != null || logSlowDslCallback != null){
-			long end = System.currentTimeMillis();
-			long time = end - start;
+        long end = System.currentTimeMillis();
+        long time = end - start;
+		if(logDslCallback != null){
 			LogDsl slowDsl = new LogDsl();
 			slowDsl.setUrl(url);
 			slowDsl.setAction(action);
@@ -71,13 +70,21 @@ public class RestSearchExecutor {
 			slowDsl.setEndTime(new Date(end));
 			slowDsl.setResultCode(resultCode);
 
-			if(logDslCallback != null){
-				logDslCallback.logDsl( slowDsl);
-			}
-			if(logSlowDslCallback != null){
-				logSlowDslCallback.logDsl( slowDsl);
-			}
+            logDslCallback.logDsl( slowDsl);
 		}
+        else if(logSlowDslCallback != null && time >= slowDslThreshold){
+            LogDsl slowDsl = new LogDsl();
+            slowDsl.setUrl(url);
+            slowDsl.setAction(action);
+            slowDsl.setTime(time);
+            slowDsl.setDsl(dsl);
+
+            slowDsl.setSlowDslThreshold(slowDslThreshold);
+            slowDsl.setStartTime(new Date(start));
+            slowDsl.setEndTime(new Date(end));
+            slowDsl.setResultCode(resultCode);
+            logSlowDslCallback.logDsl( slowDsl);
+        }
 	}
 	public String execute(String url,String entity,ESStringResponseHandler responseHandler) throws Exception {
 
