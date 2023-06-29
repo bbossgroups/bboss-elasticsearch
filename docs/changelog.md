@@ -33,7 +33,15 @@
 ```
 # v7.0.1 功能改进
 1. 一次性文件全量采集的处理，是否禁止记录文件采集状态，false 不禁止，true 禁止，不禁止 情况下作业重启，已经采集过的文件不会再采集，未采集完的文件，从上次采集截止的位置开始采集 默认 true 禁止
+2. 优化用户自定义dsl输出机制：用户自己实现决定输出哪些日志，但是之前提供了一个慢日志的默认功能，二选一，不需要两个同时做，自定义的优先，没有自定义就判断是否设置需要打印慢dsl，如果需要则调用慢日志输出组件输出，注意：开启自定义dsl输出后，要关闭showTemplate，否则会重复输出日志
+3. 状态管理info日志调整为debug级别日志
+4. 处理mysql binlog 插件flushInterval机制不起作用问题,   优化数据处理管道flushInterval机制
+5. mysql binlog插件增加异步启动机制，JoinToConnectTimeOut>0生效，否则是同步启动，启用方法：
+```java
+MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
 
+mySQLBinlogConfig.setJoinToConnectTimeOut(20000L);
+```
 # v7.0.0 功能改进
 
 1. 细化数据处理管道停止状态：正常停止和异常停止，正常停止情况下需要继续处理完数据，异常停止情况下不处理后续数据
