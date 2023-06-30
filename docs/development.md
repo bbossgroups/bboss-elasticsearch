@@ -79,7 +79,7 @@ elasticPassword=changeme
 
 ### **2.2.1 ES单节点配置**
 
-elasticsearch.rest.hostNames=127.0.0.1:9200
+elasticsearch.rest.hostNames=127.0.1.1:9200
 
 
 
@@ -89,7 +89,7 @@ Elasticsearch集群地址采用逗号分隔即可，如果开启了discovery机�
 
 **如果启用了ES的client node模式则只能配置所有client node的地址即可，并且关闭discovery机制**
 
-elasticsearch.rest.hostNames=127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202
+elasticsearch.rest.hostNames=127.0.1.1:9200,127.0.1.1:9201,127.0.1.1:9202
 
 
 
@@ -100,7 +100,7 @@ bboss提供了非常方便的elasticsearch节点动态发现机制，能够动�
 如果启用了节点自动发现机制，我们只需要在elasticsearch.rest.hostNames中配置几个初始节点即可：
 
 ```properties
-elasticsearch.rest.hostNames=127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202
+elasticsearch.rest.hostNames=127.0.1.1:9200,127.0.1.1:9201,127.0.1.1:9202
 ```
 
 
@@ -140,7 +140,7 @@ public static synchronized void handleDiscoverHosts(String[] hosts,String elasti
 如果节点发生变化时，可以调用上面的方法之一来处理，例如：
 
 ```java
-String hosts[] = {"127.0.0.1:9200","127.0.0.1:9201","127.0.0.1:9202","127.0.0.1:9203"};
+String hosts[] = {"127.0.1.1:9200","127.0.1.1:9201","127.0.1.1:9202","127.0.1.1:9203"};
 HostDiscoverUtil.handleDiscoverHosts(hosts);//default es数据源
 HostDiscoverUtil.handleDiscoverHosts(hosts,"loges");//指定loges数据源
 ```
@@ -276,7 +276,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -305,7 +305,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

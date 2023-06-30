@@ -501,7 +501,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 如需从Ftp采集数据，增加FtpConfig即可：
 
 ```java
- FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
+ FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.1.1").setFtpPort(5322)
                 .setFtpUser("1111").setFtpPassword("111@123")
                 .setRemoteFileDir("/home/ecs/failLog")
                 .setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议，支持两种协议：ftp和sftp
@@ -808,7 +808,7 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
 				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				.setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662
@@ -837,7 +837,7 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
             .setSocketTimeout(1500).setSocketKeepAlive(true)
             .setConnectionsPerHost(100)
             .setThreadsAllowedToBlockForConnectionMultiplier(6)
-            .setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+            .setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
             // mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
             //String database,String userName,String password,String mechanism
             //https://www.iteye.com/blog/yin-bp-2064662
@@ -1003,7 +1003,7 @@ Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-e
             .addKafkaConfig("auto.commit.interval.ms","5000")
             .addKafkaConfig("auto.offset.reset","latest")
 //          .addKafkaConfig("bootstrap.servers","192.168.137.133:9093")
-            .addKafkaConfig("bootstrap.servers","127.0.0.1:9092")
+            .addKafkaConfig("bootstrap.servers","127.0.1.1:9092")
             .addKafkaConfig("enable.auto.commit","false")//一般不要开启自动提交
             .addKafkaConfig("max.poll.records","500") // The maximum number of records returned in a single call to poll().
             .setKafkaTopic("xinkonglog") // kafka topic
@@ -1495,7 +1495,7 @@ FtpOutConfig ftpOutConfig = new FtpOutConfig()//是否定义ftp配置
 ftpOutConfig.setBackupSuccessFiles(true);//发送完毕后备份文件
 ftpOutConfig.setTransferEmptyFiles(true);//是否发送空文件
 //以下是ftp服务参数配置
-ftpOutConfig.setFtpIP("127.0.0.1");
+ftpOutConfig.setFtpIP("127.0.1.1");
 ftpOutConfig.setFtpPort(5322);
 ftpOutConfig.setFtpUser("xxx");
 ftpOutConfig.setFtpPassword("xxx@123");
@@ -1581,8 +1581,8 @@ ImportBuilder importBuilder = new ImportBuilder();
       kafkaOutputConfig.addKafkaProperty("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
       kafkaOutputConfig.addKafkaProperty("key.serializer","org.apache.kafka.common.serialization.LongSerializer");
       kafkaOutputConfig.addKafkaProperty("compression.type","gzip");
-      kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.0.1:9092");
-//    kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.0.1:9092");
+      kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.1.1:9092");
+//    kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.1.1:9092");
 
       kafkaOutputConfig.addKafkaProperty("batch.size","10");
 //    kafkaOutputConfig.addKafkaProperty("linger.ms","10000");
@@ -1918,7 +1918,7 @@ MongoDB输出插件配置类：[MongoDBOutputConfig](https://gitee.com/bboss/bbo
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
 				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				.setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662

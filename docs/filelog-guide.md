@@ -40,12 +40,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-fileftp</artifactId>
-  <version>7.0.0</version>
+  <version>7.0.1</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.0'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.1'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
@@ -804,7 +804,7 @@ elasticUser=elastic
 elasticPassword=changeme
 
 #elasticsearch.rest.hostNames=10.1.236.88:9200
-#elasticsearch.rest.hostNames=127.0.0.1:9200
+#elasticsearch.rest.hostNames=127.0.1.1:9200
 #elasticsearch.rest.hostNames=10.21.20.168:9200
 elasticsearch.rest.hostNames=192.168.137.1:9200
 ```
@@ -1071,7 +1071,7 @@ FileInputConfig config = new FileInputConfig();
 			logger.error("",e);
 		}
 		final Date startDate = _startDate;
-		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
+		FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.1.1").setFtpPort(5322)
 				.setFtpUser("1111").setFtpPassword("111@123")
 				.setRemoteFileDir("/home/ecs/failLog")
 				.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_SFTP) ;//采用sftp协议
@@ -1122,7 +1122,7 @@ if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以�
 以sftp为案例进行说明，本地目录和ftp设置方式类似：
 
 ```java
-		FtpConfig ftpConfig = new  FtpConfig().setFtpIP("127.0.0.1").setFtpPort(222)
+		FtpConfig ftpConfig = new  FtpConfig().setFtpIP("127.0.1.1").setFtpPort(222)
 				.setFtpUser("test").setFtpPassword("123456")
 				.setRemoteFileDir("/").setDeleteRemoteFile(false)//
 				//.setTransferProtocol(FtpConfig.TRANSFER_PROTOCOL_FTP); //采用ftp协议

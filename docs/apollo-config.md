@@ -10,7 +10,7 @@ maven项目pom.xml添加Apollo和bbossEs相关依赖
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.0</version>
+    <version>7.0.1</version>
      <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -35,7 +35,7 @@ maven项目pom.xml添加Apollo和bbossEs相关依赖
 # apollo应用id
 app.id=visualops
 # apollo应用地址
-apollo.meta=http://127.0.0.1:8080
+apollo.meta=http://127.0.1.1:8080
 ```
 
 ## 1.3 增加elasticsearch-boot-config.xml

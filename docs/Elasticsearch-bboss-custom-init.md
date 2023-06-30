@@ -96,7 +96,7 @@ Map properties = new HashMap();
 properties.put("elasticUser","elastic");
 properties.put("elasticPassword","changeme");
 //es服务器地址和端口，多个用逗号分隔
-properties.put("elasticsearch.rest.hostNames","127.0.0.1:9200");
+properties.put("elasticsearch.rest.hostNames","127.0.1.1:9200");
 //是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
 properties.put("elasticsearch.showTemplate","true");
 //集群节点自动发现

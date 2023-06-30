@@ -19,7 +19,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 
@@ -29,7 +29,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 
@@ -644,7 +644,7 @@ spring.bboss.db.name = default
 spring.bboss.db.user = root
 spring.bboss.db.password = 123456
 spring.bboss.db.driver = com.mysql.jdbc.Driver
-spring.bboss.db.url = jdbc:mysql://127.0.0.1:3306/mysql
+spring.bboss.db.url = jdbc:mysql://127.0.1.1:3306/mysql
 spring.bboss.db.usePool = true
 spring.bboss.db.validateSQL = select 1
 ```

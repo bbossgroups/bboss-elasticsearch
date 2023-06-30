@@ -72,7 +72,7 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 
 4. mongodb 4.2.1 
 
-5. elasticsearch版本7.0.0，亦可以采用最新的版本
+5. elasticsearch版本7.0.1，亦可以采用最新的版本
 
 6. 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
 
@@ -620,7 +620,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 | socketKeepAlive                              | boolean       | socketKeepAlive:true false                                   |
 | connectionsPerHost                           | int           | Mongodb客户端连接池为每个Mongodb集群节点保持的最大连接数     |
 | threadsAllowedToBlockForConnectionMultiplier | int           | threads Allowed To Block For Connection Multiplier           |
-| serverAddresses                              | String        | 服务器地址列表，换行符分隔：127.0.0.1:27017\n127.0.0.1:27018 |
+| serverAddresses                              | String        | 服务器地址列表，换行符分隔：127.0.1.1:27017\n127.0.1.1:27018 |
 | clientMongoCredential                        | String...     | 认证参数配置：数组方式设置mongodb数据库的、账号、口令、认证机制，例如："sessiondb","bboss","bboss","MONGODB-CR" |
 | option                                       | String        | 回车换行符\r\n分隔的通讯协议可选参数:QUERYOPTION_SLAVEOK\r\nQUERYOPTION_NOTIMEOUT,值可以参考com.mongodb.Bytes |
 | autoConnectRetry                             | boolean       | 是否启用连接重试机制                                         |
@@ -643,7 +643,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
 				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				.setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662
@@ -750,7 +750,7 @@ elasticUser=elastic
 elasticPassword=changeme
 
 #elasticsearch.rest.hostNames=10.1.236.88:9200
-#elasticsearch.rest.hostNames=127.0.0.1:9200
+#elasticsearch.rest.hostNames=127.0.1.1:9200
 #elasticsearch.rest.hostNames=10.21.20.168:9200
 elasticsearch.rest.hostNames=192.168.137.1:9200
 #elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
@@ -1191,7 +1191,7 @@ public class Mongodb2ES {
         				.setSocketTimeout(1500).setSocketKeepAlive(true)
         				.setConnectionsPerHost(100)
         				.setThreadsAllowedToBlockForConnectionMultiplier(6)
-        				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+        				.setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
         				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
         				//String database,String userName,String password,String mechanism
         				//https://www.iteye.com/blog/yin-bp-2064662
@@ -1642,7 +1642,7 @@ mongodb.maxWaitTime=10000
 mongodb.socketTimeout=10000
 mongodb.socketKeepAlive=true
 mongodb.autoConnectRetry=true
-mongodb.serverAddresses=127.0.0.1:27017
+mongodb.serverAddresses=127.0.1.1:27017
 mongodb.connectionsPerHost=100
 mongodb.threadsAllowedToBlockForConnectionMultiplier=6
 ```
@@ -1666,7 +1666,7 @@ int mongodbMaxWaitTime = CommonLauncher.getIntProperty("mongodb.maxWaitTime",100
 int mongodbSocketTimeout = CommonLauncher.getIntProperty("mongodb.socketTimeout",10000);
 int mongodbSocketKeepAlive = CommonLauncher.getBooleanAttribute("mongodb.socketKeepAlive",true);
 boolean mongodbAutoConnectRetry = CommonLauncher.getBooleanAttribute("mongodb.autoConnectRetry",true);
-String mongodbServerAddresses = CommonLauncher.getProperty("mongodb.serverAddresses","127.0.0.1:27017");
+String mongodbServerAddresses = CommonLauncher.getProperty("mongodb.serverAddresses","127.0.1.1:27017");
 int mongodbConnectionsPerHost = CommonLauncher.getIntProperty("mongodb.connectionsPerHost",100);
 int mongodbThreadsAllowedToBlockForConnectionMultiplier = CommonLauncher.getIntProperty("mongodb.threadsAllowedToBlockForConnectionMultiplier",6);
 MongoDBInputConfig mongoDBInputConfig = new MongoDBInputConfig();
@@ -1681,7 +1681,7 @@ MongoDBInputConfig mongoDBInputConfig = new MongoDBInputConfig();
                 .setSocketKeepAlive(mongodbSocketKeepAlive)
 				.setConnectionsPerHost(mongodbConnectionsPerHost)
 				.setThreadsAllowedToBlockForConnectionMultiplier(mongodbThreadsAllowedToBlockForConnectionMultiplier)
-				.setServerAddresses(mongodbServerAddresses)//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+				.setServerAddresses(mongodbServerAddresses)//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
 				.setAutoConnectRetry(mongodbAutoConnectRetry);
 ```
 
@@ -1733,7 +1733,7 @@ elasticsearch.showTemplate=false
     "lastAccessedTime": 1575360781659,
     "_validate": true,
     "appKey": "sessionmonitor",
-    "referip": "127.0.0.1",
+    "referip": "127.0.1.1",
     "host": "169.254.252.194-DESKTOP-U3V5C85",
     "requesturi": "http://localhost:9090/sessionmonitor/",
     "lastAccessedUrl": "http://localhost:9090/sessionmonitor/session/sessionManager/viewSessionInfo.page?sessionid=c020296e-4f9b-4509-b482-b44c88a913af&appkey=sessionmonitor",
@@ -1784,7 +1784,7 @@ elasticsearch.showTemplate=false
       "countyId": "未知",
       "isp": "未知",
       "ispId": null,
-      "ip": "127.0.0.1",
+      "ip": "127.0.1.1",
       "geoPoint": null
     },
     "fromTag": "jdk timer",
@@ -1792,7 +1792,7 @@ elasticsearch.showTemplate=false
     "maxInactiveInterval": 3600000,
     "_validate": true,
     "appKey": "sessionmonitor",
-    "referip": "127.0.0.1",
+    "referip": "127.0.1.1",
     "host": "169.254.252.194-DESKTOP-U3V5C85",
     "requesturi": "http://localhost:9090/sessionmonitor/",
     "lastAccessedUrl": "http://localhost:9090/sessionmonitor/session/sessionManager/viewSessionInfo.page?sessionid=c020296e-4f9b-4509-b482-b44c88a913af&appkey=sessionmonitor",
@@ -1804,7 +1804,7 @@ elasticsearch.showTemplate=false
 ```
 从Elasticsearch里面保存的数据可以发现，我们对导入的数据做了如下加工处理:
 
-1. 通过DataRefactor添加的数据字段：extfiled1，extfiled2，ipInfo（根据referip中保存的客户端ip，调用地理位置服务转换生成，示例是本机127.0.0.1，不是公网ip，所以没有获取到对应的信息）
+1. 通过DataRefactor添加的数据字段：extfiled1，extfiled2，ipInfo（根据referip中保存的客户端ip，调用地理位置服务转换生成，示例是本机127.0.1.1，不是公网ip，所以没有获取到对应的信息）
 2. 通过DataRefactor 将xml报文转换为原始数据的字段：shardNo，userAccount，testVO，privateAttr，local
 3. 通过importBuilder组件添加的全局tag字段:fromTag
 4. mongodb中long类型的两个字段lastAccessedTime和creationTime已经被转换为Elasticsearch的日期Date类型
@@ -1933,7 +1933,7 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
         					.setSocketTimeout(1500).setSocketKeepAlive(true)
         					.setConnectionsPerHost(100)
         					.setThreadsAllowedToBlockForConnectionMultiplier(6)
-        					.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
+        					.setServerAddresses("127.0.1.1:27017")//多个地址用回车换行符分割：127.0.1.1:27017\n127.0.1.1:27018
         					// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
         					//String database,String userName,String password,String mechanism
         					//https://www.iteye.com/blog/yin-bp-2064662
@@ -2161,7 +2161,7 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
 # xxjob分布式作业任务配置
 
 ### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
-xxl.job.admin.addresses=http://127.0.0.1:18001/xxl-job-admin
+xxl.job.admin.addresses=http://127.0.1.1:18001/xxl-job-admin
 
 ### xxl-job executor address
 xxl.job.executor.appname=mongodb-elasticsearch-xxjob
@@ -2220,7 +2220,7 @@ config.db.showsql = true
 
 前提：事先运行xxl-job-admin
 
-http://127.0.0.1:18001/xxl-job-admin
+http://127.0.1.1:18001/xxl-job-admin
 
 在工程目录添加文件：
 
@@ -2307,7 +2307,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 
@@ -2349,7 +2349,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 

@@ -18,7 +18,7 @@ First add the maven dependency of BBoss to your pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@ Second if it's a spring boot project, add following maven dependency to pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
 ```
 
@@ -124,7 +124,7 @@ https://github.com/bbossgroups/elasticsearch-example
 ## **2.spring boot maven project config**
 
 ```properties
-spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.1.1:9200
 ```
 
 If the HTTPS protocol is on, add the https protocol header to the elasticsearch address:

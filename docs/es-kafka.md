@@ -130,7 +130,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 		kafkaOutputConfig.addKafkaProperty("key.serializer","org.apache.kafka.common.serialization.LongSerializer");
 		kafkaOutputConfig.addKafkaProperty("compression.type","gzip");
 		kafkaOutputConfig.addKafkaProperty("bootstrap.servers","192.168.137.133:9092");
-//		kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.0.1:9092");
+//		kafkaOutputConfig.addKafkaProperty("bootstrap.servers","127.0.1.1:9092");
 
 		kafkaOutputConfig.addKafkaProperty("batch.size","10");
 //		kafkaOutputConfig.addKafkaProperty("linger.ms","10000");

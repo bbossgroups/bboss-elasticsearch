@@ -41,7 +41,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.1</version>
     </dependency>
 ```
 
@@ -51,7 +51,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.1</version>
     </dependency>
 ```
 
@@ -59,7 +59,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 7.0.0](https://pan.baidu.com/s/1LKF6FC8JrBk-JRWXXAygUg?pwd=3qe6)
+链接：[bboss 7.0.1](https://pan.baidu.com/s/1LKF6FC8JrBk-JRWXXAygUg?pwd=3qe6)
 提取码：3qe6
 
 ## 1.3 快速配置
@@ -349,7 +349,7 @@ https://esdoc.bbossgroups.com/#/common-project-with-bboss
 ## 3.2 spring boot maven 项目配置
 
 ```properties
-spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.1.1:9200
 ```
 
 
