@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 ```
 
@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.0.1"
+compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.0.2"
 ```
 
 
@@ -62,7 +62,7 @@ compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.0.1"
 
 bboss会在classpath下面查找并加载配置文件application.properties，文件不存在会忽略，那么就使用默认elasticsearch地址：
 
-**127.0.1.1:9200**
+**127.0.2.1:9200**
 
 bboss支持单集群配置和多集群配置。获取操作单集群clientinferface组件方法，获取操作多集群对应集群clientinferface组件方法，请参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》章节：【3 bboss es操作和访问elasticsearch模式】。
 
@@ -86,7 +86,7 @@ elasticUser=elastic
 elasticPassword=changeme
 
 #es服务器地址配置
-elasticsearch.rest.hostNames=127.0.1.1:9200
+elasticsearch.rest.hostNames=127.0.2.1:9200
 #elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
 
 #动态索引表名称日期格式配置
@@ -134,7 +134,7 @@ default.elasticUser=elastic
 default.elasticPassword=changeme
 
 #elasticsearch.rest.hostNames=10.1.236.88:9200
-default.elasticsearch.rest.hostNames=127.0.1.1:9200
+default.elasticsearch.rest.hostNames=127.0.2.1:9200
 #elasticsearch.rest.hostNames=10.21.20.168:9200
 #elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
 default.elasticsearch.dateFormat=yyyy.MM.dd
@@ -164,7 +164,7 @@ logs.elasticUser=elastic
 logs.elasticPassword=changeme
 
 #elasticsearch.rest.hostNames=10.1.236.88:9200
-logs.elasticsearch.rest.hostNames=127.0.1.1:9200
+logs.elasticsearch.rest.hostNames=127.0.2.1:9200
 #elasticsearch.rest.hostNames=10.21.20.168:9200
 #elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
 logs.elasticsearch.dateFormat=yyyy.MM.dd

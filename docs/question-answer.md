@@ -1,9 +1,9 @@
 # 常见问题分析和处理
 
-# 问题1 连接默认的127.0.1.1:9200地址
+# 问题1 连接默认的127.0.2.1:9200地址
 
 ```java
-org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.1.1:9200] can't been connected.
+org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.2.1:9200] can't been connected.
 	at org.frameworkset.elasticsearch.client.RoundRobinList.get(RoundRobinList.java:97)
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient._executeHttp(ElasticSearchRestClient.java:588)
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.executeHttp(ElasticSearchRestClient.java:559)
@@ -107,7 +107,7 @@ public class DocumentCRUD {
 如果获取实例方式不正确，我们可以在启动日志中看到类似以下信息：Start Elasticsearch Datasource[default] from springboot[false]
 
 ```shell
-Start Elasticsearch Datasource[default] from springboot[false]:{"elasticsearch.ttl":"2d","elasticsearch.timeZone":"Asia/Shanghai","elasticsearch.client":"restful","elasticsearch.includeTypeName":"false","elasticsearch.sliceScrollThreadCount":"50","elasticsearch.scrollThreadQueue":"200","elasticsearch.httpPool":"default","elasticsearch.healthCheckInterval":"3000","elasticsearch.dateFormat":"yyyy.MM.dd","elasticUser":"","elasticsearch.scrollBlockedWaitTimeout":"0","elasticsearch.sliceScrollThreadQueue":"100","elasticsearch.showTemplate":"false","elasticsearch.rest.hostNames":"127.0.1.1:9200","elasticsearch.discoverHost":"false","elasticsearch.scrollThreadCount":"50","elasticPassword":"","elasticsearch.sliceScrollBlockedWaitTimeout":"0"}
+Start Elasticsearch Datasource[default] from springboot[false]:{"elasticsearch.ttl":"2d","elasticsearch.timeZone":"Asia/Shanghai","elasticsearch.client":"restful","elasticsearch.includeTypeName":"false","elasticsearch.sliceScrollThreadCount":"50","elasticsearch.scrollThreadQueue":"200","elasticsearch.httpPool":"default","elasticsearch.healthCheckInterval":"3000","elasticsearch.dateFormat":"yyyy.MM.dd","elasticUser":"","elasticsearch.scrollBlockedWaitTimeout":"0","elasticsearch.sliceScrollThreadQueue":"100","elasticsearch.showTemplate":"false","elasticsearch.rest.hostNames":"127.0.2.1:9200","elasticsearch.discoverHost":"false","elasticsearch.scrollThreadCount":"50","elasticPassword":"","elasticsearch.sliceScrollBlockedWaitTimeout":"0"}
 ```
 
 如果正确的话应该是：Start Elasticsearch Datasource[default] from springboot[true]
@@ -251,7 +251,7 @@ perKeyDSLStructionCacheSize参数含义，参考文档：
 
 [dsl动态语法](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)
 
-最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到7.0.1或以上版本，从而解决该问题，从以下地址获取最新版本信息：
+最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到7.0.2或以上版本，从而解决该问题，从以下地址获取最新版本信息：
 
 https://esdoc.bbossgroups.com/#/changelog
 
@@ -271,7 +271,7 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 ![img](images\jacson.png)
 
-- 升级bboss到7.0.1
+- 升级bboss到7.0.2
 
 # 问题7 mysql大表数据同步慢
 

@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.0.1 发布
+# BBOSS版本变更记录-v7.0.2 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 ```
 
@@ -28,9 +28,11 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 ```
+# v7.0.2 功能改进
+1. 数据采集改进：处理增量状态类型转换异常
 # v7.0.1 功能改进
 1. 文件采集插件改进：一次性文件全量采集的处理，可以通过控制开关[disableScanNewFilesCheckpoint](https://esdoc.bbossgroups.com/#/filelog-guide?id=%e7%ad%96%e7%95%a5%e4%b8%80-disablescannewfiles)禁止和启用文件采集状态记录功能，false 启用，true 禁止（默认值）；启用记录状态情况下，作业重启，已经采集过的文件不会再采集，未采集完的文件，从上次采集截止的位置开始采集。
 2. 优化用户自定义dsl输出机制：用户自己实现决定输出哪些日志，但是之前提供了一个慢日志的默认功能，二选一，不需要两个同时做，自定义的优先，没有自定义就判断是否设置需要打印慢dsl，如果需要则调用慢日志输出组件输出，注意：开启自定义dsl输出后，要关闭showTemplate，否则会重复输出日志
@@ -391,7 +393,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.0.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.0.2版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -458,7 +460,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
 ```java
-FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.1.1").setFtpPort(21)
+FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.2.1").setFtpPort(21)
 				.setFtpUser("ecsftp").setFtpPassword("ecsftp").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
 				.setRemoteFileDir("xcm").setRemoteFileValidate(new RemoteFileValidate() {
 					/**
@@ -566,7 +568,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -574,7 +576,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -661,7 +663,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.0.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.0.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1207,7 +1209,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.1</version>
+    <version>7.0.2</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1230,7 +1232,7 @@ spring boot配置项
 # apollo应用id
 app.id=visualops
 # apollo应用地址
-apollo.meta=http://127.0.1.1:8080
+apollo.meta=http://127.0.2.1:8080
 ```
 
 在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：
@@ -2316,10 +2318,10 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.0.1兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.0.1兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.0.2兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.0.2兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.0.1兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.0.2兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 
