@@ -110,6 +110,7 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.sleepAwaitTimeAfterFetch | long,单位：毫秒  ,从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 | FileInputConfig.sleepAwaitTimeAfterCollect | long,单位：毫秒  ，从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0 | 0 |
 | FileInputConfig.disableScanNewFiles | boolean类型，一次性扫描导入文件功能（导入完毕后作业不会自行关闭，可以手动执行datastream.destory(true)进行关闭，通过属性disableScanNewFiles进行控制：true 一次性扫描导入目录下的文件，false 持续监听新文件（默认值false） | false |
+| FileInputConfig.disableScanNewFilesCheckpoint | 一次性文件全量采集的处理，添加是否禁止记录文件采集状态控制开关，false 不禁止，true 禁止，启用记录状态情况情况下作业重启，已经采集过的文件不会再采集，未采集完的文件，从上次采集截止的位置开始采集。默认true，禁止增量状态标记：fileInputConfig.setDisableScanNewFilesCheckpoint(false);//启用增量状态Checkpoint机制 |  |
 | FileInputConfig.maxFilesThreshold | int,设置最多允许同时采集的文件数量，> 0起作用，应用场景：ftp或者本地一次性采集大量文件时需要进行控制，默认值 -1（不控制） |  |
 
 添加采集配置示例
@@ -1221,6 +1222,12 @@ disableScanNewFiles--一次性采集目录下的所有文件，不监听新文�
 一次性采集完目录下的excel文件：
 ExcelFileInputConfig config = new ExcelFileInputConfig();
       config.setDisableScanNewFiles(true);
+```
+
+一次性文件全量采集的处理，可以通过控制开关disableScanNewFilesCheckpoint禁止和启用文件采集状态记录功能，false 启用，true 禁止（默认值）；启用记录状态情况下，作业重启，已经采集过的文件不会再采集，未采集完的文件，从上次采集截止的位置开始采集。
+
+```java
+fileInputConfig.setDisableScanNewFilesCheckpoint(false);//启用增量状态Checkpoint机制
 ```
 
 完整案例：[ExcelFile2DBDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo1.java)
