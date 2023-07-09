@@ -124,7 +124,7 @@ https://github.com/bbossgroups/elasticsearch-example
 ## **2.spring boot maven project config**
 
 ```properties
-spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.2.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
 ```
 
 If the HTTPS protocol is on, add the https protocol header to the elasticsearch address:

@@ -1,9 +1,9 @@
 # 常见问题分析和处理
 
-# 问题1 连接默认的127.0.2.1:9200地址
+# 问题1 连接默认的127.0.0.1:9200地址
 
 ```java
-org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.2.1:9200] can't been connected.
+org.frameworkset.elasticsearch.client.NoServerElasticSearchException: All elasticServer [http://127.0.0.1:9200] can't been connected.
 	at org.frameworkset.elasticsearch.client.RoundRobinList.get(RoundRobinList.java:97)
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient._executeHttp(ElasticSearchRestClient.java:588)
 	at org.frameworkset.elasticsearch.client.ElasticSearchRestClient.executeHttp(ElasticSearchRestClient.java:559)
@@ -107,7 +107,7 @@ public class DocumentCRUD {
 如果获取实例方式不正确，我们可以在启动日志中看到类似以下信息：Start Elasticsearch Datasource[default] from springboot[false]
 
 ```shell
-Start Elasticsearch Datasource[default] from springboot[false]:{"elasticsearch.ttl":"2d","elasticsearch.timeZone":"Asia/Shanghai","elasticsearch.client":"restful","elasticsearch.includeTypeName":"false","elasticsearch.sliceScrollThreadCount":"50","elasticsearch.scrollThreadQueue":"200","elasticsearch.httpPool":"default","elasticsearch.healthCheckInterval":"3000","elasticsearch.dateFormat":"yyyy.MM.dd","elasticUser":"","elasticsearch.scrollBlockedWaitTimeout":"0","elasticsearch.sliceScrollThreadQueue":"100","elasticsearch.showTemplate":"false","elasticsearch.rest.hostNames":"127.0.2.1:9200","elasticsearch.discoverHost":"false","elasticsearch.scrollThreadCount":"50","elasticPassword":"","elasticsearch.sliceScrollBlockedWaitTimeout":"0"}
+Start Elasticsearch Datasource[default] from springboot[false]:{"elasticsearch.ttl":"2d","elasticsearch.timeZone":"Asia/Shanghai","elasticsearch.client":"restful","elasticsearch.includeTypeName":"false","elasticsearch.sliceScrollThreadCount":"50","elasticsearch.scrollThreadQueue":"200","elasticsearch.httpPool":"default","elasticsearch.healthCheckInterval":"3000","elasticsearch.dateFormat":"yyyy.MM.dd","elasticUser":"","elasticsearch.scrollBlockedWaitTimeout":"0","elasticsearch.sliceScrollThreadQueue":"100","elasticsearch.showTemplate":"false","elasticsearch.rest.hostNames":"127.0.0.1:9200","elasticsearch.discoverHost":"false","elasticsearch.scrollThreadCount":"50","elasticPassword":"","elasticsearch.sliceScrollBlockedWaitTimeout":"0"}
 ```
 
 如果正确的话应该是：Start Elasticsearch Datasource[default] from springboot[true]

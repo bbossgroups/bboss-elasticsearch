@@ -580,7 +580,7 @@ spring.elasticsearch.bboss.logs.elasticUser=elastic
 spring.elasticsearch.bboss.logs.elasticPassword=changeme
 
 
-spring.elasticsearch.bboss.logs.elasticsearch.rest.hostNames=127.0.2.1:9200
+spring.elasticsearch.bboss.logs.elasticsearch.rest.hostNames=127.0.0.1:9200
 
 #spring.elasticsearch.bboss.default.elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
 spring.elasticsearch.bboss.logs.elasticsearch.dateFormat=yyyy.MM.dd
@@ -658,8 +658,8 @@ spring:
         elasticPassword: changeme
         elasticsearch:
           rest:
-            hostNames: 127.0.2.1:9200
-            ##hostNames: 127.0.2.1:9200,127.0.2.1:9201,127.0.2.1:9202 
+            hostNames: 127.0.0.1:9200
+            ##hostNames: 127.0.0.1:9200,127.0.0.1:9201,127.0.0.1:9202 
           dateFormat: yyyy.MM.dd
           timeZone: Asia/Shanghai
           showTemplate: true
@@ -688,7 +688,7 @@ spring:
           elasticPassword: changeme
           elasticsearch:
             rest:
-              hostNames: 127.0.2.1:9200
+              hostNames: 127.0.0.1:9200
             dateFormat: yyyy.MM.dd
             timeZone: Asia/Shanghai
             ttl: 2d

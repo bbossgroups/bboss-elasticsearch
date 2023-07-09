@@ -349,7 +349,7 @@ https://esdoc.bbossgroups.com/#/common-project-with-bboss
 ## 3.2 spring boot maven 项目配置
 
 ```properties
-spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.2.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=127.0.0.1:9200
 ```
 
 

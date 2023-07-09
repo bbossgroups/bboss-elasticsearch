@@ -33,6 +33,7 @@
 ```
 # v7.0.2 功能改进
 1. 数据采集改进：处理增量状态类型转换异常
+2. 优化增量状态管理：锁机制优化
 # v7.0.1 功能改进
 1. 文件采集插件改进：一次性文件全量采集的处理，可以通过控制开关[disableScanNewFilesCheckpoint](https://esdoc.bbossgroups.com/#/filelog-guide?id=%e7%ad%96%e7%95%a5%e4%b8%80-disablescannewfiles)禁止和启用文件采集状态记录功能，false 启用，true 禁止（默认值）；启用记录状态情况下，作业重启，已经采集过的文件不会再采集，未采集完的文件，从上次采集截止的位置开始采集。
 2. 优化用户自定义dsl输出机制：用户自己实现决定输出哪些日志，但是之前提供了一个慢日志的默认功能，二选一，不需要两个同时做，自定义的优先，没有自定义就判断是否设置需要打印慢dsl，如果需要则调用慢日志输出组件输出，注意：开启自定义dsl输出后，要关闭showTemplate，否则会重复输出日志
@@ -460,7 +461,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor
 2. ftp/sftp文件下载锁优化，大幅提升文件采集插件性能
 3. 增加ftp/sftp文件并行下载机制，通过setDownloadWorkThreads实现并行下载线程数，默认为3个，如果设置为0代表串行下载
 ```java
-FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.2.1").setFtpPort(21)
+FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(21)
 				.setFtpUser("ecsftp").setFtpPassword("ecsftp").setDownloadWorkThreads(4)//设置4个线程并行下载文件，可以允许最多4个文件同时下载
 				.setRemoteFileDir("xcm").setRemoteFileValidate(new RemoteFileValidate() {
 					/**
@@ -1232,7 +1233,7 @@ spring boot配置项
 # apollo应用id
 app.id=visualops
 # apollo应用地址
-apollo.meta=http://127.0.2.1:8080
+apollo.meta=http://127.0.0.1:8080
 ```
 
 在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：

@@ -644,7 +644,7 @@ spring.bboss.db.name = default
 spring.bboss.db.user = root
 spring.bboss.db.password = 123456
 spring.bboss.db.driver = com.mysql.jdbc.Driver
-spring.bboss.db.url = jdbc:mysql://127.0.2.1:3306/mysql
+spring.bboss.db.url = jdbc:mysql://127.0.0.1:3306/mysql
 spring.bboss.db.usePool = true
 spring.bboss.db.validateSQL = select 1
 ```

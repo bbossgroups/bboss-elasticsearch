@@ -1,10 +1,12 @@
 # 1. BBoss是什么
 
-bboss由以下三部分构成：
+bboss是一个基于开源协议Apache License发布的开源项目，由开源团队[bboss](https://gitee.com/bboss)运维，主要由以下三部分构成：
 
-- Elasticsearch Highlevel Java Restclient
-- 数据采集同步ETL
-- 流批一体化计算框架
+- Elasticsearch Highlevel Java Restclient ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
+- 数据采集同步ETL ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件
+- 流批一体化计算框架，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
+
+项目源码地址参考：[源码下载和构建](https://esdoc.bbossgroups.com/#/README?id=_3-源码下载和构建)，下面分别介绍各部分。
 
 ## 1.1 高性能 Elasticsearch Highlevel Java Restclient
 
@@ -13,6 +15,8 @@ bboss由以下三部分构成：
 ![](images\client-Elasticsearch.png)
 
 ### 1.1.1 主要功能特色
+
+**学习成本低，上手快，代码简洁，安全高效，客户端负载容灾，兼容性好，易于集成**
 
 1. ORM和DSL二者兼顾，类mybatis方式操作ElasticSearch,提供丰富的开发[API](https://esdoc.bbossgroups.com/#/document-crud)和[开发Demo](https://esdoc.bbossgroups.com/#/Elasticsearch-demo)
 
@@ -40,7 +44,7 @@ bboss由以下三部分构成：
 
 ## 1.2 数据采集同步ETL以及流批一体化计算框架
 
-[数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)框架，基于灵活的插件体系结构，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能，提供丰富的数据源和输出数据源类型，同时可以基于插件规范轻松扩展新的输入源和输出源：
+[数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)框架，基于灵活的插件体系结构，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件：
 
 ![](images/datasyn.png)
 
@@ -95,6 +99,8 @@ bboss支持全量和增量数据采集，增量数据采集默认基于sqlite数
 
 4) 基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
 
+5) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog输入插件)，实现mysql增删改实时增量数据采集
+
 ### 1.2.3 流批一体化计算特点
 
 1) 支持时间维度和非时间维度指标计算
@@ -113,6 +119,8 @@ bboss支持全量和增量数据采集，增量数据采集默认基于sqlite数
 
 ![](images/pagecode.png)
 
+
+
 # 2. 快速开始bboss
 
 ## 2.1 Elasticsearch Highlevel Java Restclient
@@ -127,7 +135,41 @@ https://esdoc.bbossgroups.com/#/db-es-tool
 
 https://esdoc.bbossgroups.com/#/etl-metrics
 
-# 3. bboss兼容性
+# 3. 源码下载和构建
+
+源码工程地址，欢迎大家star和支持我们：
+
+https://gitee.com/bboss/bboss-elastic
+
+https://gitee.com/bboss/bboss-elastic-tran
+
+从源码构建
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
+# 4.官网和文档地址
+
+官网：https://www.bbossgroups.com/
+
+文档：
+
+https://esdoc.bbossgroups.com/
+
+https://doc.bbossgroups.com/
+
+# 5. BBoss Demo
+
+https://www.bbossgroups.com/sources-demos.html
+
+# 6. 视频教程
+
+[Bboss介绍](https://www.bilibili.com/video/BV1Rs4y1i7EK)
+
+[Bboss之ETL培训](https://www.bilibili.com/video/BV1hc411M7DX)
+
+[bboss cdc之实时采集Mysql binlog增删改数据教程](https://www.bilibili.com/video/BV1ko4y1M7My)
+
+# 7. bboss兼容性
 
 作为Elasticsearch兼容性最好的java客户端和数据采集&流批一体化计算工具，bboss各版本对Elasticsearch、Spring boot兼容性说明如下：
 
@@ -142,28 +184,7 @@ https://esdoc.bbossgroups.com/#/etl-metrics
 
 jdk兼容性：jdk 1.8+
 
-# 4. 源码下载和构建
-
-https://gitee.com/bboss/bboss-elastic
-
-https://gitee.com/bboss/bboss-elastic-tran
-
-从源码构建
-
-https://esdoc.bbossgroups.com/#/bboss-build
-
-# 5. BBoss Demo
-https://www.bbossgroups.com/sources-demos.html
-
-# 6. 视频教程
-
-[Bboss介绍](https://www.bilibili.com/video/BV1Rs4y1i7EK)
-
-[Bboss之ETL培训](https://www.bilibili.com/video/BV1hc411M7DX)
-
-[bboss cdc之实时采集Mysql binlog增删改数据教程](https://www.bilibili.com/video/BV1ko4y1M7My)
-
-# 7. 联系我们
+# 8. 联系我们
 
 **Elasticsearch技术交流群：21220580,166471282**
 

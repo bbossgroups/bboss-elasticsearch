@@ -128,7 +128,7 @@ Elasticsearch 1.x,2.x,5.x,6.x,7.x,+
 //		hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 //				.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
 
-		hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","127.0.2.1")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+		hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","127.0.0.1")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 				.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2185")
 				.addHbaseClientProperty("zookeeper.znode.parent","/hbase")
 				.addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")

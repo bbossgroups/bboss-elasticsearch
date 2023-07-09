@@ -78,7 +78,7 @@ public class ES2FileFtpBatchSplitFileDemo {
    public static void main(String[] args){
       ImportBuilder importBuilder = new ImportBuilder();
       		importBuilder.setBatchSize(1000).setFetchSize(2000);
-      		String ftpIp = CommonLauncher.getProperty("ftpIP","127.0.2.1");//同时指定了默认值
+      		String ftpIp = CommonLauncher.getProperty("ftpIP","127.0.0.1");//同时指定了默认值
       		FileOutputConfig FileOutputConfig = new FileOutputConfig();
       		FtpOutConfig ftpOutConfig = new FtpOutConfig();
       		FileOutputConfig.setFtpOutConfig(ftpOutConfig);
@@ -1209,7 +1209,7 @@ dataStream.execute();//启动同步作业
  
          ExcelFileOutputConfig fileFtpOupputConfig = new ExcelFileOutputConfig();
  
-         String ftpIp = CommonLauncher.getProperty("ftpIP","127.0.2.1");//同时指定了默认值
+         String ftpIp = CommonLauncher.getProperty("ftpIP","127.0.0.1");//同时指定了默认值
          FtpOutConfig ftpOutConfig = new FtpOutConfig();
          fileFtpOupputConfig.setFtpOutConfig(ftpOutConfig);
          ftpOutConfig.setBackupSuccessFiles(true);
