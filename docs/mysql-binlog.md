@@ -28,6 +28,12 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
 
 模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。源表本来就有数据需要同步+实时同步,原来的数据可以基于模式1采集binlog文件，如果没有binlog文件，可以直接用数据库输入插件，直接一次性采集全表数据，然后再用模式3实现增量采集。
 
+视频教程
+
+[实时采集Mysql binlog增删改数据教程（db-db单表多表）](https://www.bilibili.com/video/BV1ko4y1M7My)
+
+[实战：基于bboss cdc实时同步mysql增删改数据到Elasticsearch](https://www.bilibili.com/video/BV1aW4y1f73c)
+
 本文介绍mysql binlog插件的使用方法，以实时同步Mysql Binlog增删改数据到Elasticsearch作为案例来讲解。
 
 # **2.采集作业实现**

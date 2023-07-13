@@ -302,6 +302,12 @@ mysql binlog插件使用文档：
 
 https://esdoc.bbossgroups.com/#/mysql-binlog
 
+视频教程
+
+[实时采集Mysql binlog增删改数据教程（db-db单表多表）](https://www.bilibili.com/video/BV1ko4y1M7My)
+
+[实战：基于bboss cdc实时同步mysql增删改数据到Elasticsearch](https://www.bilibili.com/video/BV1aW4y1f73c)
+
 Mysql binlog输入插件配置参数和配置实例，更多介绍，浏览上面的文档。
 
 ### 1.3.1 插件配置案例
