@@ -40,12 +40,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-fileftp</artifactId>
-  <version>7.0.2</version>
+  <version>7.0.3</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.2'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.3'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
