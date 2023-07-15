@@ -41,7 +41,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.3</version>
     </dependency>
 ```
 
@@ -51,7 +51,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.3</version>
     </dependency>
 ```
 
@@ -59,7 +59,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 7.0.2](https://pan.baidu.com/s/1LKF6FC8JrBk-JRWXXAygUg?pwd=3qe6)
+链接：[bboss 7.0.3](https://pan.baidu.com/s/1LKF6FC8JrBk-JRWXXAygUg?pwd=3qe6)
 提取码：3qe6
 
 ## 1.3 快速配置
@@ -612,7 +612,13 @@ Gradle环境搭建和配置教程
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-# 5.开发交流
+# 5.视频教程
+
+[实战：快速开始Elasticsearch client bboss](https://www.bilibili.com/video/BV1JP411k7sY)
+
+[实战：PO对象查询、元数据获取、文档删除、批量删除](https://www.bilibili.com/video/BV1nP411k7mF)
+
+# 6.开发交流
 
 bboss elasticsearch交流QQ群：21220580,166471282
 
