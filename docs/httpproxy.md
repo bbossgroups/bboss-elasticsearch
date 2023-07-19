@@ -117,6 +117,16 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
 
 #### **3）加载apollo配置启动httpproxy**
 
+与apollo配置中心集成，需要额外导入以下maven坐标：
+
+```xml
+ <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-plugin-apollo</artifactId>
+            <version>6.1.8</version>
+        </dependency>
+```
+
 指定apollo命名空间和配置参数变化监听器（自定义）
 
 ```java
@@ -124,10 +134,10 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
      * 从apollo加载配置启动http proxy：
 	 * 配置了两个连接池：default,schedule
      * apollo namespace:  application
-     * 服务地址变化发现监听器： org.frameworkset.http.client.AddressConfigChangeListener
+     * 服务地址变化发现监听器： org.frameworkset.apollo.HttpProxyConfigChangeListener
 	 */
 
-	HttpRequestProxy.startHttpPoolsFromApollo("application","org.frameworkset.http.client.AddressConfigChangeListener");
+	HttpRequestProxy.startHttpPoolsFromApollo("application","org.frameworkset.apollo.HttpProxyConfigChangeListener");
 ```
 指定apollo命名空间并监听服务节点及路由规则变化
 ```java
@@ -453,7 +463,7 @@ http.routing=#[area]
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>6.1.0</version>
+  <version>6.1.7</version>
 </dependency>
 ```
 
@@ -841,6 +851,10 @@ failAllContinue配置
 spring boot配置项
 
      spring.bboss.http.failAllContinue = true
+
+### 3.2.7 http协议参数配置
+
+参考文档：[http协议配置](https://esdoc.bbossgroups.com/#/development?id=_26-http%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
 
 # 4 使用负载均衡器调用服务
 
@@ -1280,6 +1294,22 @@ http basic认证机制设置
 schedule.http.authAccount=elastic
 schedule.http.authPassword=changeme
 ```
+
+默认采用http client的http basicauth securit 插件进行初始化加载账号口令，但是某些情况会导致http basic security机制不能正常工作：
+
+1）http服务端对安全认证的实现不是很规范
+
+2）某些通过http代理映射端口转发请求的情况
+
+一旦出现上述两种情况或者其他导致http basic security机制不能正常工作的情况，可以通过以下设置解决问题：
+
+```properties
+schedule.http.backoffAuth=true ##特定的服务组schedule
+default.http.backoffAuth=true ##默认服务组
+http.backoffAuth=true ##默认服务组
+```
+
+http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。spring boot项目只需要在http.backoffAuth前面加上特定的spring boot配置前缀即可。
 
 jwt token认证设置，直接申请jwt token，并经token设置到http header中，模拟token有效期管理的组件(可以根据实际场景调整)：[TokenManger](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/TokenManager.java)
 

@@ -69,6 +69,28 @@ elasticUser=elastic
 
 elasticPassword=changeme
 
+默认采用http client的http basicauth securit 插件进行初始化加载账号口令，但是某些情况会导致http basic security机制不能正常工作：
+
+1）http服务端对安全认证的实现不是很规范
+
+2）某些通过http代理映射端口转发请求的情况
+
+一旦出现上述两种情况或者其他导致http basic security机制不能正常工作的情况，可以通过以下设置解决问题：
+
+非spring boot项目
+
+```properties
+http.backoffAuth=true
+```
+
+spring boot项目
+
+```properties
+spring.elasticsearch.bboss.http.backoffAuth=true
+```
+
+http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。
+
 如果需要配置加密口令，那么可以通过配置属性拦截器来对加密口令进行识别处理，参考文档：
 
 [使用外部属性加载拦截器](https://doc.bbossgroups.com/#/aop/IntroduceIoc?id=_6-使用外部属性加载拦截器)
