@@ -31,6 +31,11 @@
             <version>7.0.3</version>
         </dependency>
 ```
+# v7.0.5 功能改进
+1. Elasticsearch客户端改进：默认加载conf/elasticsearch.properties,application.properties,config/application.properties调整为application.properties,如果需要加载其他文件初始化客户端，参考文档：
+   https://esdoc.bbossgroups.com/#/Elasticsearch-bboss-custom-init
+2. ioc加载config配置文件，全部走PropertiesUtil，统一加载模式
+
 # v7.0.3 功能改进
 1. kafka输入插件改进：处理字符集名称不正确的问题
 

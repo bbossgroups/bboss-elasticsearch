@@ -22,7 +22,8 @@ import org.frameworkset.spi.assemble.plugin.PropertiesFilePlugin;
 import java.util.Map;
 
 public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
-	private static String elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+//	private static String elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+    private static String elasticSearchConfigFiles = "application.properties";
 	private static Map configProperties;
 	/**
 	 * 0: 外部自定义配置文件
@@ -53,7 +54,8 @@ public class ElasticSearchPropertiesFilePlugin implements PropertiesFilePlugin {
 
 	@Override
 	public void restore(BaseApplicationContext applicationContext,Map<String,String> extendsAttributes, PropertiesContainer propertiesContainer) {
-		elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+//		elasticSearchConfigFiles = "conf/elasticsearch.properties,application.properties,config/application.properties";
+        elasticSearchConfigFiles = "application.properties";
 		configProperties = null;
 		/**
 		 * 0: 外部自定义配置文件

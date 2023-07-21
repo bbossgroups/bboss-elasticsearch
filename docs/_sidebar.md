@@ -35,7 +35,7 @@
   - [Elasticsearch聚合查询](agg.md)
   - **数据同步及流批一体化计算** 
     - [插件使用指南](datatran-plugins.md)
-    - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md) 
+    - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md)
     - [日志文件采集使用指南](filelog-guide.md)
     - [作业调度控制](bboss-datasyn-control.md)
     - [基于Filelog插件采集日志jvm溢出踩坑记](filelog-oom.md)

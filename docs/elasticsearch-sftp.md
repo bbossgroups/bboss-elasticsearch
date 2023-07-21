@@ -486,6 +486,21 @@ ftpOutConfig.setFailedFileResendInterval(10000L);
 
 **int fileSeq**   文件序号，从1开始，自动递增，如果指定了每个文件保存的最大记录数，fileSeq就会被用到文件名称中，用来区分各种文件
 
+重名文件替换设置：如果文件已经存在可以通过fileOupputConfig.setExistFileReplace(true)设置替换重名文件，如果不替换，就需要在genname方法返回带序号的文件名称：
+
+```java
+ fileOupputConfig.setExistFileReplace(true);//替换重名文件
+ //如果不替换，就需要在genname方法返回带序号的文件名称
+        fileOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+            @Override
+            public String genName(TaskContext taskContext, int fileSeq) {
+
+
+                return "师大2021年新生医保（2021年）申报名单-合并-"+fileSeq+".xlsx";
+            }
+        });
+```
+
 ## 3.6 自定义记录输出格式
 
 默认采用json格式输出每条记录到文件中，我们可以FileOutputConfig对象的setReocordGenerator方法设置自定义记录生成接口ReocordGenerator。

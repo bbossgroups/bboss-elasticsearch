@@ -473,6 +473,14 @@ springboot项目
 spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
 ```
 
+**注：**配置了dsl输出组件logDslCallback，需要关闭DSL脚本调试日志开关
+
+   
+
+```properties
+ elasticsearch.showTemplate=false
+```
+
 
 
 ## **2.5 按日期动态产生的索引索引名称的日期格式**
