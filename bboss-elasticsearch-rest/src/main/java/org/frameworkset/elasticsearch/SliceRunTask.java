@@ -64,6 +64,9 @@ public class SliceRunTask<T> implements Runnable {
 		} catch (Exception e) {
 			throw new ElasticSearchException("slice query task["+sliceId+"] failed:",e);
 		}
+        catch (Throwable e) {
+            throw new ElasticSearchException("slice query task["+sliceId+"] failed:",e);
+        }
 		finally {
 			if(serialContext != null){
 				this.serialContext.clean();

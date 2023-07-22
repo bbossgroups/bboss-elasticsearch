@@ -283,16 +283,31 @@ public abstract class ExecuteRequestUtil {
 	}
 	public static void waitTasksComplete(final List<Future> tasks){
 
+        Throwable exception = null;
 		for (Future future : tasks) {
 			try {
 				future.get();
 			} catch (ExecutionException e) {
+                if(exception == null){
+                    exception = e.getCause();
+                }
 				logger.error("",e);
 			}catch (Exception e) {
 				logger.error("",e);
+                if(exception == null){
+                    exception = e;
+                }
 			}
 		}
 		tasks.clear();
+        if(exception != null){
+            if(exception instanceof ElasticSearchException){
+                throw (ElasticSearchException)exception;
+            }
+            else{
+                throw new ElasticSearchException("waitTasksComplete",exception);
+            }
+        }
 
 	}
 	public static  <T> ESDatas<T> _scrollSlice(ElasticSearchRestClient client, ConfigDSLUtil configDSLUtil, final String path, final String dslTemplate, final Map params ,

@@ -60,6 +60,9 @@ public class ScrollTask<T> implements Runnable {
 			throw e;
 		} catch (Exception e) {
 			throw new ElasticSearchException("scroll result handle task["+handlerInfo.getTaskId()+"] failed:",e);
-	}
+	    }
+        catch (Throwable e) {
+            throw new ElasticSearchException("scroll result handle task["+handlerInfo.getTaskId()+"] failed:",e);
+        }
 	}
 }
