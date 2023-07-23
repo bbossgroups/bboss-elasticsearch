@@ -19,7 +19,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 
@@ -29,7 +29,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 

@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.0.3 发布
+# BBOSS版本变更记录-v7.0.5 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 # v7.0.5 功能改进
@@ -411,7 +411,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.0.3版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.0.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -586,7 +586,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -594,7 +594,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.3</version>
+            <version>7.0.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -681,7 +681,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.0.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.0.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -733,7 +733,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.0.9",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.0",transitive: true 
   ```
 
   **maven坐标**
@@ -744,7 +744,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.0.9</version>  
+      <version>6.1.0</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1227,7 +1227,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.3</version>
+    <version>7.0.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1275,7 +1275,7 @@ idc=XJ-dpq-a
 
 
 
-# v6.1.8 功能改进
+# v6.1.9 功能改进
 
 1. 优化http重试机制：禁用重试后，不再重试
 
@@ -1316,7 +1316,7 @@ idc=XJ-dpq-a
    ```
 
    
-# v6.1.7 功能改进
+# v6.1.8 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
 
 2. 功能改进：ES到db数据同步，忽略字段设置和变量名和es字段名称映射设置不起作用
@@ -1515,7 +1515,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 
 ```
 
-# v6.1.0 功能改进
+# v6.1.1 功能改进
 1. 数据同步工具改进
 
   如果在程序里面配置的增量字段类型发生改变，要把增量状态表对应的类型调整为最新的字段类型
@@ -1526,7 +1526,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 2. DB-DB数据同步工具：增加在作业中直接指定sql语句的功能
 3. 修复数据同步bug：数据库到数据库跨库同步无效
 
-# v6.1.0 功能改进
+# v6.1.1 功能改进
 1.升级jackson版本号为2.9.10
 
 2.持久层支持将sql配置文件存放位置设置为外部目录
@@ -1546,13 +1546,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.1.0</version>
+      <version>6.1.1</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.1", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -2336,10 +2336,10 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.0.3兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.0.3兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.0.5兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.0.5兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.0.3兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.0.5兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 

@@ -134,7 +134,7 @@ private String docInfoAuthor;
 
 ## 1.2 执行orm查询
 
-以rest sql api为例来介绍es 7.0.3的sql orm查询功能
+以rest sql api为例来介绍es 7.0.5的sql orm查询功能
 
 ```java
 package org.bboss.elasticsearchtest.sql;
@@ -150,7 +150,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 以rest sql api为例来介绍es 7.0.3的sql orm查询功能
+ * 以rest sql api为例来介绍es 7.0.5的sql orm查询功能
  */
 public class SQLOrmTest {
 
