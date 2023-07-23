@@ -34,7 +34,16 @@
 # v7.0.5 功能改进
 1. Elasticsearch客户端改进：默认加载conf/elasticsearch.properties,application.properties,config/application.properties调整为application.properties,如果需要加载其他文件初始化客户端，参考文档：
    https://esdoc.bbossgroups.com/#/Elasticsearch-bboss-custom-init
-2. ioc加载config配置文件，全部走PropertiesUtil，统一加载模式
+2. Ioc加载config配置文件，全部走PropertiesUtil，统一加载模式,避免相同的属性文件重复加载
+3. Metrics指标计算改进：日期维度字段类型为LocalDate或者Localdatetime时自动转换为Date类型
+4. 优化数据转换处理异常处理机制 
+5. 文件输出插件改进：处理文件名不规范时，没有及时创建文件，抽取的数据先放入缓存区，由于文件名不符合规范，导致最终写文件失败，但是增量状态已经flush，最终导致增量管理不正确 
+6. 处理异步传输通道改进：由于异常退出时，未清理队列中的脏数据，导致输入插件推送数据到异步通道队列阻塞，退出任务时，补充清理脏数据逻辑，解决阻塞问题
+7. 文件输出插件改进：处理因初始化文件失败导致写入数据空指针问题
+8. Elasticsearch客户端改进：优化scroll和slice scroll并行查询异常处理机制
+9. http proxy模块扩展：post/get/put等方法支持po对象传递请求参数
+10. bboss基础框架改进：父配置文件中存在的配置不会被引用配置文件中的配置参数覆盖
+11. bboss基础框架改进：增加日期格式化和解析工具方法
 
 # v7.0.3 功能改进
 1. kafka输入插件改进：处理字符集名称不正确的问题
