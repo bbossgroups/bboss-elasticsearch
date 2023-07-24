@@ -2,13 +2,13 @@
 
 # BBOSS版本变更记录-v7.0.5 发布
 
-[bboss](https://esdoc.bbossgroups.com/#/README) 由以下三部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)是一个基于开源协议Apache License发布的开源项目，由开源团队bboss运维，主要由以下三部分构成：
 
-- Elasticsearch Highlevel Java Restclient
-- 数据采集同步ETL
-- 流批一体化计算框架
+- **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
+- **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件
+- **流批一体化计算框架**，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
 
-详细介绍参考：[bboss是什么](https://esdoc.bbossgroups.com/#/README)
+详细介绍参考：[bboss简介](https://esdoc.bbossgroups.com/#/README)
 
 # 快速导入bboss
 
@@ -31,7 +31,10 @@
             <version>7.0.5</version>
         </dependency>
 ```
+ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
 # v7.0.5 功能改进
+
 1. Elasticsearch客户端改进：默认加载conf/elasticsearch.properties,application.properties,config/application.properties调整为application.properties,如果需要加载其他文件初始化客户端，参考文档：
    https://esdoc.bbossgroups.com/#/Elasticsearch-bboss-custom-init
 2. Ioc加载config配置文件，全部走PropertiesUtil，统一加载模式,避免相同的属性文件重复加载
