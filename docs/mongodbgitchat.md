@@ -930,8 +930,8 @@ ip转换为地址位置信息还需要在application.properties文件中配置�
 ip.cachesize = 2000000
 # 库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
 # geoip数据库文件地址配置
-ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
-ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+ip.database = d:/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = d:/geolite2/GeoLite2-ASN.mmdb
 ```
 
 geolite2数据库文件会定期更新，因此需要定期到以下地址下载最新的geolite2数据库文件：
@@ -1438,8 +1438,8 @@ dslfile.refreshInterval = 3000
 # IP地理位置信息库配置
 ip.cachesize = 2000
 # 库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
-ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
-ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
+ip.database = d:/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = d:/geolite2/GeoLite2-ASN.mmdb
 
 
 ```

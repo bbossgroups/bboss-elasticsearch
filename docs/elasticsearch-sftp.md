@@ -968,9 +968,9 @@ public void afterCall(TaskContext taskContext) {
 
 ```java
 //设置ip地址信息库地址，配置参考文档
-		importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
-		importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
-		importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
+		importBuilder.setGeoipDatabase("d:/geolite2/GeoLite2-City.mmdb");
+		importBuilder.setGeoipAsnDatabase("d:/geolite2/GeoLite2-ASN.mmdb");
+		importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
 ```
 
 IP地址库配置详细参考文档：[设置IP地址信息库地址](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2311-ip-%e5%9c%b0%e5%8c%ba%e8%bf%90%e8%90%a5%e5%95%86%e7%bb%8f%e7%ba%ac%e5%ba%a6%e5%9d%90%e6%a0%87%e8%bd%ac%e6%8d%a2)

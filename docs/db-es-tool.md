@@ -816,6 +816,8 @@ bboss的增量数据采集，默认基于sqlite数据库管理增量采集状态
 		//定时任务配置结束
 ```
 
+更多设置参考章节：[4 数据同步模式控制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_4-数据同步模式控制)
+
 #### 2.8.5.1 数字增量同步
 
 支持按照数字字段和时间字段进行增量导入，增量导入sql的语法格式：
@@ -1751,7 +1753,7 @@ ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
   ```java
   importBuilder.setGeoipDatabase("E:/workspace/geolite2/GeoLite2-City.mmdb");
   importBuilder.setGeoipAsnDatabase("E:/workspace/geolite2/GeoLite2-ASN.mmdb");
-  	importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
+  	importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
   ```
 
 ### 2.8.12 设置任务执行结果回调处理函数
@@ -2593,7 +2595,7 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
 
 从elasticsearch、mongodb这种存在写入数据的延迟性的数据库导出数据时，不设置截止时间戳偏移量时会存在遗漏数据的情况，解决方法参考文档：
 
-[时间戳增量导出截止时间偏移量配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2853-%e6%97%b6%e9%97%b4%e6%88%b3%e5%a2%9e%e9%87%8f%e5%af%bc%e5%87%ba%e6%88%aa%e6%ad%a2%e6%97%b6%e9%97%b4%e5%81%8f%e7%a7%bb%e9%87%8f%e9%85%8d%e7%bd%ae)
+[时间戳增量导出截止时间偏移量配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2854-%e6%97%b6%e9%97%b4%e6%88%b3%e5%a2%9e%e9%87%8f%e5%af%bc%e5%87%ba%e6%88%aa%e6%ad%a2%e6%97%b6%e9%97%b4%e5%81%8f%e7%a7%bb%e9%87%8f%e9%85%8d%e7%bd%ae)
 
 ## 2.14 跨库跨表数据同步
 

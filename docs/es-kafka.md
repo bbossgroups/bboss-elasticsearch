@@ -432,9 +432,9 @@ taskContext.getTaskData("time");方法获取time参数
 
 ```java
 //设置ip地址信息库地址
-importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
-importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
-importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
+importBuilder.setGeoipDatabase("d:/geolite2/GeoLite2-City.mmdb");
+importBuilder.setGeoipAsnDatabase("d:/geolite2/GeoLite2-ASN.mmdb");
+importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
 ```
 
 全局往每条记录中添加字段：

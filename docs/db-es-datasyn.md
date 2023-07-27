@@ -148,9 +148,9 @@ public class Dbdemo {
    		/**
    		 * 设置IP地址信息库
    		 */
-   		importBuilder.setGeoipDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb");
-   		importBuilder.setGeoipAsnDatabase("E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb");
-   		importBuilder.setGeoip2regionDatabase("E:/workspace/hnai/terminal/geolite2/ip2region.db");
+   		importBuilder.setGeoipDatabase("d:/geolite2/GeoLite2-City.mmdb");
+   		importBuilder.setGeoipAsnDatabase("d:/geolite2/GeoLite2-ASN.mmdb");
+   		importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
    
    		importBuilder
    //
