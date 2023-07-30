@@ -339,6 +339,7 @@ public class ES2FileFtpBatchSplitFileDemo {
 | successFilesCleanInterval | 必填，long类型，扫描需要清理上传成功文件时间间隔，单位：毫秒 | 5000                 | ftp/sftp |
 | fileLiveTime              | 必填，int类型，上传成功文件保留时间，单位：秒                | 2天                  | ftp/sftp |
 | maxFileRecordSize         | 必填，int类型，切割文件时，指定每个文件保存的记录条数，>0时启用文件切割机制；按记录条数切割文件机制对并行导出数据不起作用 | -1                   | ftp/sftp |
+| maxForceFileThreshold     | 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置 | 0                    | ftp/sftp |
 | filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
 | hostKeyVerifier           | 可选，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
 | reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |

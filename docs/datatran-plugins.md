@@ -1514,7 +1514,27 @@ ftpOutConfig.setFailedFileResendInterval(1000L);//上传失败文件重发时间
 fileOupputConfig.setFtpOutConfig(ftpOutConfig);//设置ftp配置到文件导出配置
 ```
 
-### 2.3.3 参考文档
+### 2.3.3 写入空闲时间阈值配置
+
+**maxForceFileThreshold** 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置。
+
+切割文件配置实例：
+
+```java
+fileOutputConfig.setMaxFileRecordSize(100);//达到最大记录数100,切割文件
+fileOutputConfig.setMaxForceFileThreshold(60);//默认每5秒扫描，上次写入数据后，是否已经超过60秒没有新数据写入，如果没有并且缓存中有数据，则切割生成文件，否则不做任何处理
+```
+
+flush数据配置实例：
+
+```java
+//fileOutputConfig.setMaxFileRecordSize(100);//注释掉切割文件功能，达到最大记录数100,切割文件
+fileOutputConfig.setMaxForceFileThreshold(60);//默认每5秒扫描，上次写入数据后，是否已经超过60秒没有新数据写入，如果没有并且缓存中有数据，则flush数据，否则不做处理
+```
+
+Excel输出插件不支持仅flush功能，如果设置了**maxForceFileThreshold**时，必须设置MaxFileRecordSize，进行文件切割。
+
+### 2.3.4 参考文档
 
 https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 
@@ -1565,7 +1585,11 @@ addCellMapping方法参数：第一个参数为excel单元格编号，从0开始
 
 参考【[2.3.2 导出并上传ftp](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_232-%e5%af%bc%e5%87%ba%e5%b9%b6%e4%b8%8a%e4%bc%a0ftp)】
 
-### 2.4.3 参考文档
+### 2.4.3 写入空闲时间阈值配置
+
+参考章节：[2.3.3 写入空闲时间阈值配置](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_233-写入空闲时间阈值配置)
+
+### 2.4.4 参考文档
 
 https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 

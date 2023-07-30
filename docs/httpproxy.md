@@ -155,49 +155,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
 
 ### 3.1.2 调用服务API及示例
 
-HttpRequestProxy.httpGetforString
-
-HttpRequestProxy.httpXXX
-
-HttpRequestProxy.sendXXX
-
-提供了两套方法：一套方法是带服务组名称的方法，一套方法是不带服务组名称的方法（默认default服务组）
-
-服务地址都是相对地址，例如：/testBBossIndexCrud，最终地址会被解析为
-
-http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
-
-默认服务组示例
-
-```java
-//以get方式发送请求
-String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
-//以get方式发送请求,将返回的json数据封装为AgentRule对象
-AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud?id=1",AgentRule.class);
-//以RequestBody方式，将params对象转换为json报文post方式推送到服务端，将相应json报文转换为AgentRule对象返回
-AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCrud",AgentRule.class);
-//以post方式发送请求,将返回的json数据封装为AgentRule对象,方法第二个参数为保存请求参数的map对象
-AgentRule data = HttpRequestProxy.httpPostForObject("/testBBossIndexCrud",(Map)null,AgentRule.class);
-//以post方式发送请求,将返回的json数据封装为AgentRule对象List集合,方法第二个参数为保存请求参数的map对象
-				List<AgentRule> datas = HttpRequestProxy.httpPostForList("/testBBossIndexCrud",(Map)null,AgentRule.class);
-//以post方式发送请求,将返回的json数据封装为AgentRule对象Set集合,方法第二个参数为保存请求参数的map对象
-				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("/testBBossIndexCrud",(Map)null,AgentRule.class);
-//以post方式发送请求,将返回的json数据封装为AgentRule对象Map集合,方法第二个参数为保存请求参数的map对象
-				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
-```
-
-指定服务组示例
-
-```java
-String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
-AgentRule agentRule = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",AgentRule.class);
-AgentRule agentRule = HttpRequestProxy.sendJsonBody("report", params, "/testBBossIndexCrud",AgentRule.class);
-
-AgentRule data = HttpRequestProxy.httpPostForObject("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
-				List<AgentRule> datas = HttpRequestProxy.httpPostForList("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
-				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
-				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("report","/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
-```
+参考章节：[4.2 调用服务API及示例](https://esdoc.bbossgroups.com/#/httpproxy?id=_42-调用服务api及示例)
 
 ## 3.2 http负载均衡器配置和启动
 
@@ -894,11 +852,94 @@ HttpRequestProxy组件提供了非常丰富的服务调用API，可以去查看�
       }
       while(true);
    }
+
+ @Test
+    public void testGetPost(){
+        Map params = new LinkedHashMap();
+        params.put("name",java.net.URLEncoder.encode("大河"));//get请求中文字符要进行编码处理
+        params.put("age",20);
+        params.put("birthDay",new Date());
+
+        String data = HttpRequestProxy.httpGetforStringWithParams("/demoproject/examples/sayHelloBeanHttp.page",params);
+        logger.info(data);
+
+
+        ExampleBean exampleBean = HttpRequestProxy.httpGetforObjectWithParams("/demoproject/examples/sayHelloBeanHttp.page",params,ExampleBean.class);
+        logger.info(SimpleStringUtil.object2json(exampleBean));
+        params.put("name","大河");//post请求中文字符无需编码处理
+        data = HttpRequestProxy.httpPostforStringWithParams("/demoproject/examples/sayHelloBeanHttp.page",params);
+        logger.info(data);
+        exampleBean = HttpRequestProxy.httpPostForObject("/demoproject/examples/sayHelloBeanHttp.page",params,ExampleBean.class);
+        logger.info(SimpleStringUtil.object2json(exampleBean));
+
+
+        data = HttpRequestProxy.httpGetforStringWithParams("/demoproject/examples/sayHelloBeanHttp.page",params);
+        logger.info(data);
+
+
+        exampleBean.setName(java.net.URLEncoder.encode("大河"));
+        exampleBean = HttpRequestProxy.httpGetforObjectWithParams("/demoproject/examples/sayHelloBeanHttp.page",exampleBean,ExampleBean.class);
+        logger.info(SimpleStringUtil.object2json(exampleBean));
+//        params.put("name","大河");//post请求中文字符无需编码处理
+        data = HttpRequestProxy.httpPostforStringWithParams("/demoproject/examples/sayHelloBeanHttp.page",exampleBean);
+        logger.info(data);
+        exampleBean = HttpRequestProxy.httpPostForObject("/demoproject/examples/sayHelloBeanHttp.page",exampleBean,ExampleBean.class);
+        logger.info(SimpleStringUtil.object2json(exampleBean));
+
+
+
+    }
 ```
 
+## 4.2 调用服务API及示例
 
+HttpRequestProxy.httpGetforString
 
-## 4.2 返回简单结果对象或者 基本数据类型
+HttpRequestProxy.httpXXX
+
+HttpRequestProxy.sendXXX
+
+提供了两套方法：一套方法是带服务组名称的方法，一套方法是不带服务组名称的方法（默认default服务组）
+
+服务地址都是相对地址，例如：/testBBossIndexCrud，最终地址会被解析为
+
+http://ip:port/testBBossIndexCrud 或者 https://ip:port/testBBossIndexCrud
+
+默认服务组示例
+
+```java
+//以get方式发送请求
+String data = HttpRequestProxy.httpGetforString("/testBBossIndexCrud");
+//以get方式发送请求,将返回的json数据封装为AgentRule对象
+AgentRule agentRule = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud?id=1",AgentRule.class);
+//以RequestBody方式，将params对象转换为json报文post方式推送到服务端，将相应json报文转换为AgentRule对象返回
+AgentRule agentRule = HttpRequestProxy.sendJsonBody( params, "/testBBossIndexCrud",AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象,方法第二个参数为保存请求参数的map对象
+AgentRule data = HttpRequestProxy.httpPostForObject("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象List集合,方法第二个参数为保存请求参数的map对象
+				List<AgentRule> datas = HttpRequestProxy.httpPostForList("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象Set集合,方法第二个参数为保存请求参数的map对象
+				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("/testBBossIndexCrud",(Map)null,AgentRule.class);
+//以post方式发送请求,将返回的json数据封装为AgentRule对象Map集合,方法第二个参数为保存请求参数的map对象
+				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
+```
+
+指定服务组示例
+
+```java
+String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");
+AgentRule agentRule = HttpRequestProxy.httpGetforObject("report","/testBBossIndexCrud",AgentRule.class);
+AgentRule agentRule = HttpRequestProxy.sendJsonBody("report", params, "/testBBossIndexCrud",AgentRule.class);
+
+AgentRule data = HttpRequestProxy.httpPostForObject("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				List<AgentRule> datas = HttpRequestProxy.httpPostForList("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Set<AgentRule> dataSet = HttpRequestProxy.httpPostForSet("report","/testBBossIndexCrud",(Map)null,AgentRule.class);
+				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("report","/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
+```
+
+## 
+
+## 4.3 返回简单结果对象或者 基本数据类型
 
 ```java
 @ResponseBody
@@ -912,15 +953,15 @@ public Map<String, Object> queryUrl(String isParam,String url ) {
     params.put("url",url);
     try {
         //返回简单结果对象或者 基本数据类型
-        String data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", String.class);//返回String
-        int data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", int.class);//返回int
-                short data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", short.class);//返回short
-                long data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", long.class);//返回long
-                float data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", float.class);//返回float
-                double data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", double.class);//返回double
-                boolean data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", boolean.class);//返回boolean
-        Map data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", Map.class);//返回map对象
-        PoBean data = HttpRequestProxy.sendJsonBody(params,  "/visualops/webpage/queryUrl.api", PoBean.class);//返回普通java对象
+        String data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", String.class);//返回String
+        int data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", int.class);//返回int
+                short data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", short.class);//返回short
+                long data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", long.class);//返回long
+                float data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", float.class);//返回float
+                double data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", double.class);//返回double
+                boolean data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", boolean.class);//返回boolean
+        Map data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", Map.class);//返回map对象
+        PoBean data = HttpRequestProxy.sendJsonBody(params,  "/demoproject/webpage/queryUrl.api", PoBean.class);//返回普通java对象
         if(data != null){
             ajaxData.put("data", data);
         }
@@ -936,7 +977,7 @@ public Map<String, Object> queryUrl(String isParam,String url ) {
 }
 ```
 
-## 4.3 返回集合对象
+## 4.4 返回集合对象
 
 可以非常方便地返回List，Set，Map集合对象
 
@@ -948,9 +989,9 @@ Map<String, Object> queryErrorMessage(HttpServletRequest request) {
     ajaxData.put(HNanConstant.resultCode, HNanConstant.SUCCESS);
     ajaxData.put(HNanConstant.resultInfo, "");
     try {
-       List<ErrorInfo> result = HttpRequestProxy.sendJsonBodyForList(param, "/visualops/webpage/queryErrorMessage.api", ErrorInfo.class);
-            Set<ErrorInfo> set = HttpRequestProxy.sendJsonBodyForSet(param, "/visualops/webpage/queryErrorMessage.api", ErrorInfo.class);
-            Map<String,ErrorInfo> map = HttpRequestProxy.sendJsonBodyForMap(param, "/visualops/webpage/queryErrorMessage.api", String.class,ErrorInfo.class);
+       List<ErrorInfo> result = HttpRequestProxy.sendJsonBodyForList(param, "/demoproject/webpage/queryErrorMessage.api", ErrorInfo.class);
+            Set<ErrorInfo> set = HttpRequestProxy.sendJsonBodyForSet(param, "/demoproject/webpage/queryErrorMessage.api", ErrorInfo.class);
+            Map<String,ErrorInfo> map = HttpRequestProxy.sendJsonBodyForMap(param, "/demoproject/webpage/queryErrorMessage.api", String.class,ErrorInfo.class);
         ajaxData.put("data", result);
     } catch (Exception e) {
         log.error("queryErrorMessage error", e);
