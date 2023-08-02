@@ -1188,6 +1188,190 @@ httpdsl.xml中配置的queryPagineDsl：
 
 http输入插件更具体的介绍：[Http/Https插件使用指南](https://esdoc.bbossgroups.com/#/datatran-http?id=httphttps插件使用指南)
 
+## 1.10 Word文件采集插件
+
+插件配置 [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java)(FileInputConfig子类)和WordFileConfig（FileConfig子类）结合
+
+通过WordFileConfig设置WordExtractor自定义word文件内容提取逻辑，如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中，除了word文件采集需要的配置，其他配置和文件采集插件配置一致
+
+### 1.10.1 配置案例
+
+```java
+WordFileInputConfig wordFileInputConfig = new WordFileInputConfig();
+      wordFileInputConfig.setDisableScanNewFiles(true);
+      wordFileInputConfig.setDisableScanNewFilesCheckpoint(false);
+//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+//配置excel文件列与导出字段名称映射关系
+      WordFileConfig wordFileConfig = new WordFileConfig();
+      /**
+       * 如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中
+       */
+      wordFileConfig.setWordExtractor(new WordExtractor() {
+          @Override
+          public void extractor(RecordExtractor<XWPFWordExtractor> recordExtractor) throws Exception {
+              Map record = new LinkedHashMap();
+              if(recordExtractor.getDataObject() != null)
+                  record.put("text",recordExtractor.getDataObject().getText());
+              else
+                  record.put("text","");
+              recordExtractor.addRecord(record);
+          }
+
+
+      });
+wordFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\wordfiles")//指定目录
+      .setFileFilter(new FileFilter() {
+         @Override
+         public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+            //判断是否采集文件数据，返回true标识采集，false 不采集
+            return true;
+         }
+      });//指定文件过滤器
+wordFileInputConfig.addConfig(wordFileConfig);
+
+
+wordFileInputConfig.setEnableMeta(true);
+importBuilder.setInputConfig(wordFileInputConfig);
+```
+
+### 1.10.2 一次性采集并清除文件案例
+
+通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
+
+通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/word/WordFile2CustomDemoOnce.java
+
+## 1.11 PDF文件采集插件
+
+插件配置 [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java)(FileInputConfig子类)和PDFFileConfig（FileConfig子类）结合
+
+通过PDFFileConfig设置PDFExtractor自定义pdf文件内容提取逻辑，如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中，除了pdf文件采集需要的配置，其他配置和文件采集插件配置一致
+
+### 1.11.1 配置案例
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+        importBuilder.setJobId("PDFFile2CustomDemoOnce");//作业给一个唯一标识，避免和其他同类作业任务冲突
+		importBuilder.setBatchSize(500)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+		importBuilder.setFlushInterval(10000l);
+		PDFFileInputConfig pdfFileInputConfig = new PDFFileInputConfig();
+        pdfFileInputConfig.setDisableScanNewFiles(true);
+        pdfFileInputConfig.setDisableScanNewFilesCheckpoint(false);
+		//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+		//配置excel文件列与导出字段名称映射关系
+        PDFFileConfig pdfFileConfig = new PDFFileConfig();
+        /**
+         * 如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中
+         */
+        pdfFileConfig.setPdfExtractor(new PDFExtractor() {
+            @Override
+            public void extractor(RecordExtractor<PDDocument> recordExtractor) throws Exception {
+                Map record = new LinkedHashMap();
+                if(recordExtractor.getDataObject() != null) {
+                    PDFTextStripper pdfStripper = new PDFTextStripper();
+
+
+                    //Retrieving text from PDF document
+
+                    String text = pdfStripper.getText(recordExtractor.getDataObject());
+                    record.put("wordContent", text);
+                }
+                else{
+
+
+                    record.put("wordContent", "");
+                }
+                recordExtractor.addRecord(record);
+            }
+
+
+
+
+        });
+		pdfFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\pdffiles")//指定目录
+				.setFileFilter(new FileFilter() {
+					@Override
+					public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+						//判断是否采集文件数据，返回true标识采集，false 不采集
+						return true;
+					}
+				});//指定文件过滤器
+		pdfFileInputConfig.addConfig(pdfFileConfig);
+
+
+		pdfFileInputConfig.setEnableMeta(true);
+		importBuilder.setInputConfig(pdfFileInputConfig);
+```
+
+### 1.11.2 一次性采集并清除文件案例
+
+通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
+
+通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/pdf/PDFFile2CustomDemoOnce.java
+
+## 1.12 其他类型文件采集插件
+
+插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合
+
+通过CommonFileConfig设置CommonFileExtractor自定义其他类型（图片、视频等）文件内容提取逻辑，必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致
+
+### 1.12.1 配置案例
+
+以采集图片文件二进制内容并转换为base64编码为案例进行说明
+
+```java
+ImportBuilder importBuilder = new ImportBuilder();
+		importBuilder.setBatchSize(500)//设置批量入库的记录数
+				.setFetchSize(1000);//设置按批读取文件行数
+        importBuilder.setJobId("PictureFile2CustomDemoOnce");//作业给一个唯一标识，避免和其他同类作业任务冲突
+		//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+		importBuilder.setFlushInterval(10000l);
+		CommonFileInputConfig commonFileInputConfig = new CommonFileInputConfig();
+        commonFileInputConfig.setDisableScanNewFiles(true);
+        commonFileInputConfig.setDisableScanNewFilesCheckpoint(false);
+		//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+		//配置excel文件列与导出字段名称映射关系
+        CommonFileConfig commonFileConfig = new CommonFileConfig();
+        commonFileConfig.setCommonFileExtractor(new CommonFileExtractor() {
+            @Override
+            public void extractor(RecordExtractor<File> recordExtractor) throws Exception {
+                Map record = new LinkedHashMap();
+                if(recordExtractor.getDataObject() != null) {
+                    File pic = recordExtractor.getDataObject();
+                    record.put("picContent", Base64.encode(FileUtil.readFully(pic)));
+                }
+                else
+                    record.put("picContent","");
+                recordExtractor.addRecord(record);
+            }
+
+
+        });
+		commonFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\picfiles")//指定目录
+				.setFileFilter(new FileFilter() {
+					@Override
+					public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+						//判断是否采集文件数据，返回true标识采集，false 不采集
+						return true;
+					}
+				});//指定文件过滤器
+		commonFileInputConfig.addConfig(commonFileConfig);
+
+
+		commonFileInputConfig.setEnableMeta(true);
+		importBuilder.setInputConfig(commonFileInputConfig);
+```
+
+### 1.12.2 一次性采集并清除文件案例
+
+通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
+
+通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件,图片文件内容采集实例：
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/pic/PictureFile2CustomDemoOnce.java
+
 # 2.输出插件
 
 ## 2.1 DB输出插件

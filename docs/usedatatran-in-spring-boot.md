@@ -22,7 +22,7 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot-starter</artifactId>
-    <version>6.1.1</version> 			
+    <version>6.1.8</version> 			
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
@@ -803,4 +803,4 @@ db2ESImport job has stopped.
 
 [数据库和Elasticsearch同步工具](https://esdoc.bbossgroups.com/#/db-es-tool)
 
-[spring boot db-db数据同步案例工程](https://github.com/bbossgroups/db-db-job)
+[spring boot db-db数据同步案例工程](https://gitee.com/bboss/db-db-job)

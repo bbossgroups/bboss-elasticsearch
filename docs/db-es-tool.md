@@ -1247,7 +1247,7 @@ bboss支持将增量状态保存到其他关系数据库中（譬如mysql），�
 			}
 
 			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
+			public void throwException(TaskContext taskContext, Throwable e) {
 				System.out.println("throwException");
 			}
 		}).addCallInterceptor(new CallInterceptor() {
@@ -1262,7 +1262,7 @@ bboss支持将增量状态保存到其他关系数据库中（譬如mysql），�
 			}
 
 			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
+			public void throwException(TaskContext taskContext, Throwable e) {
 				System.out.println("throwException 1");
 			}
 		});
@@ -1311,7 +1311,7 @@ public void preCall(TaskContext taskContext) {
          }
 
          @Override
-         public void throwException(TaskContext taskContext, Exception e) {
+         public void throwException(TaskContext taskContext, Throwable e) {
             System.out.println("throwException 1");
          }
       });
@@ -1764,15 +1764,15 @@ org.frameworkset.tran.ExportResultHandler
 
 ```java
 //设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error方法进行相应处理
-importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+importBuilder.setExportResultHandler(new ExportResultHandler() {
    @Override
-   public void success(TaskCommand<String,String> taskCommand, String result) {
+   public void success(TaskCommand taskCommand, Object result) {
       String datas = taskCommand.getDatas();//执行的批量数据
       System.out.println(result);//打印成功结果
    }
 
    @Override
-   public void error(TaskCommand<String,String> taskCommand, String result) {
+   public void error(TaskCommand taskCommand, Object result) {
       //具体怎么处理失败数据可以自行决定,下面的示例显示重新导入失败数据的逻辑：
       // 从result中分析出导入失败的记录，然后重新构建data，设置到taskCommand中，重新导入，
       // 支持的导入次数由getMaxRetry方法返回的数字决定
@@ -1783,7 +1783,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
       System.out.println(result);//打印失败结果
    }
 @Override
-			public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+			public void exception(TaskCommand taskCommand, Throwable exception) {
 				//任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
      			if(need retry)
      				taskCommand.execute();
@@ -2101,21 +2101,21 @@ spring boot配置项
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
 ```java
-importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+importBuilder.setExportResultHandler(new ExportResultHandler() {
 			@Override
-			public void success(TaskCommand<String,String> taskCommand, String result) {
+			public void success(TaskCommand taskCommand, Object result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(taskMetrics.toString());
 			}
 
 			@Override
-			public void error(TaskCommand<String,String> taskCommand, String result) {
+			public void error(TaskCommand taskCommand, Object result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(taskMetrics.toString());
 			}
 
 			@Override
-			public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+			public void exception(TaskCommand taskCommand, Throwable exception) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(taskMetrics.toString());
 			}
@@ -2177,7 +2177,7 @@ importBuilder.addCallInterceptor(new CallInterceptor() {
    }
 
    @Override
-   public void throwException(TaskContext taskContext, Exception e) {
+   public void throwException(TaskContext taskContext, Throwable e) {
       logger.info(taskContext.getJobTaskMetrics().toString(),e);
    }
 });
@@ -2529,7 +2529,7 @@ bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现�
 参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2812-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
 
 ```java
- public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+ public void exception(TaskCommand taskCommand, Throwable exception) {
 //任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
      if(need retry)
      	taskCommand.execute();
@@ -2577,7 +2577,7 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
 
 ```java
 @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand taskCommand, Object result) {
             //任务执行完毕，但是结果中包含错误信息
             //具体怎么处理失败数据可以自行决定,下面的示例显示重新导入失败数据的逻辑：
             // 从result中分析出导入失败的记录，然后重新构建data，设置到taskCommand中，重新导入，

@@ -1,6 +1,6 @@
 # bboss http负载均衡器使用指南
 
-bboss http一个简单而功能强大的http/https负载均衡器模块，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
+bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
 
 项目源码
 
@@ -937,7 +937,7 @@ AgentRule data = HttpRequestProxy.httpPostForObject("report","/testBBossIndexCru
 				Map<String,AgentRule> dataMap = HttpRequestProxy.httpPostForMap("report","/testBBossIndexCrud",(Map)null,String.class,AgentRule.class);
 ```
 
-## 
+
 
 ## 4.3 返回简单结果对象或者 基本数据类型
 
@@ -998,6 +998,112 @@ Map<String, Object> queryErrorMessage(HttpServletRequest request) {
         ajaxData.put(HNanConstant.resultCode, HNanConstant.FAIL);
     }
     return ajaxData;
+}
+```
+
+## 4.5 jsonbody请求返回自定义容器泛型示例
+
+```java
+@Test
+public void testSendJsonBody(){
+
+
+
+    ExampleBean exampleBean = new ExampleBean();
+    exampleBean.setName("张三");
+    exampleBean.setAge(20);
+    exampleBean.setBirthDay(new Date());
+    CustomContainer<ExampleBean> customContainer = HttpRequestProxy.sendJsonBodyTypeObject("/demoproject/examples/sayHelloBodyHttp.page",
+                                                    exampleBean,CustomContainer.class,ExampleBean.class);
+    logger.info(SimpleStringUtil.object2json(customContainer));
+
+
+
+}
+```
+
+自定义容器类CustomContainer和数据对象类ExampleBean：
+
+```java
+public class CustomContainer<T> {
+    private List<T> datas;
+    private String name;
+
+    public List<T> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(List<T> datas) {
+        this.datas = datas;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+public class ExampleBean
+{
+	private String name ;
+
+	private int age;
+
+
+
+    private Date birthDay;
+	public String getName()
+	{
+	
+		return name;
+	}
+
+	
+	public void setName(String name)
+	{
+	
+		this.name = name;
+	}
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
+    }
+
+}
+```
+
+服务端实现：
+
+```java
+/**
+ * http proxy request body custom container api
+ * @param yourname
+ * @return
+ */
+public @ResponseBody CustomContainer<ExampleBean> sayHelloBodyHttp( @RequestBody ExampleBean yourname)
+{
+
+    CustomContainer<ExampleBean> customContainer = new CustomContainer<>();
+    List<ExampleBean> datas = new ArrayList<>();
+    datas.add(yourname);
+    customContainer.setDatas(datas);
+    customContainer.setName("大河");
+    return customContainer;
 }
 ```
 
