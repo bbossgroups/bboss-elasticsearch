@@ -86,7 +86,7 @@ bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 2）支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
 
-支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
+支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、文本文件、excel/word/pdf/图片/视频等类型文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
 支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，clickhouse，mongodb、HBase等
 
@@ -239,7 +239,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -247,7 +247,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 日志文件/excel/csv/ftp/sftp插件maven坐标
@@ -255,7 +255,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -263,7 +263,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -271,7 +271,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 
@@ -280,7 +280,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.0.5</version>
+<version>7.0.6</version>
 </dependency>
 ```
 

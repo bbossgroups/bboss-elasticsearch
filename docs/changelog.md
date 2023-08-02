@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.0.5 发布
+# BBOSS版本变更记录-v7.0.6 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)是一个基于开源协议Apache License发布的开源项目，由开源团队bboss运维，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.6</version>
         </dependency>
 ```
 
@@ -28,12 +28,25 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.6</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
+# v7.0.6 功能改进
+
+1. 文件采集插件改进：增加[word](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_110-word%e6%96%87%e4%bb%b6%e9%87%87%e9%9b%86%e6%8f%92%e4%bb%b6)、[pdf](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_111-pdf%e6%96%87%e4%bb%b6%e9%87%87%e9%9b%86%e6%8f%92%e4%bb%b6)、[图片、视频等](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_112-%e5%85%b6%e4%bb%96%e7%b1%bb%e5%9e%8b%e6%96%87%e4%bb%b6%e9%87%87%e9%9b%86%e6%8f%92%e4%bb%b6)类型文件采集功能
+2. 文件输出插件改进：增加文件输入插件[数据写入空闲时间阈值配置](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_233-%e5%86%99%e5%85%a5%e7%a9%ba%e9%97%b2%e6%97%b6%e9%97%b4%e9%98%88%e5%80%bc%e9%85%8d%e7%bd%ae)
+3. [优化完成文件清理机制：在扫描新文件过程中检测完成文件并清理](https://gitee.com/bboss/bboss-elastic-tran/commit/d05fe9a83752433c29ad557cdf8cb2839b443fa9)
+4. [作业停止机制优化：异常情况停止时清理队列中的数据](https://gitee.com/bboss/bboss-elastic-tran/commit/9ce46be4dbac82a8df1fece7c8b149ef0b52fff5)
+5. http proxy微服务框架改进：httpproxy增加一组httpGetforObjectWithParams/httpGetforStringWithParams/httpGetforStringWithParamsHeaders/httpPostforStringWithHeader方法
+6. [优化http proxy rpc api方法结构，消除多态方法冲突问题](https://gitee.com/bboss/bboss-http/commit/2e7d4c16ad57ebce5da9efb231618a40a2e86dd3)
+7. [增加一组sendJsonBodyfortypeobject方法，支持非标准容器类行和元素类型rpc服务调用](https://gitee.com/bboss/bboss-http/commit/7ffa8b8c73027249ced1b0ca9db2328e914d4488)
+
+
+
 # v7.0.5 功能改进
+
 1. Elasticsearch客户端改进：将原来默认加载conf/elasticsearch.properties,application.properties,config/application.properties三个配置文件，调整为只默认加载application.properties文件。如需加载其他文件，可以参考文档：
 
 https://esdoc.bbossgroups.com/#/Elasticsearch-bboss-custom-init
@@ -424,7 +437,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.0.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.0.6版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -599,7 +612,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -607,7 +620,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -694,7 +707,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.0.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.0.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1231,7 +1244,7 @@ spring boot配置项
 
    
 
-# v6.1.9 功能改进
+# v6.2.0 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
 2. 完善dsl打印机制:打印dsl的时候，会同时把接收dsl的elasticsearch 节点url地址，重试次数打印出来
 3. 非spring boot项目支持通过apollo来管理客户端配置，只需要将maven坐标做如下处理即可
@@ -1240,7 +1253,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.5</version>
+    <version>7.0.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1288,7 +1301,7 @@ idc=XJ-dpq-a
 
 
 
-# v6.1.9 功能改进
+# v6.2.0 功能改进
 
 1. 优化http重试机制：禁用重试后，不再重试
 
@@ -1329,7 +1342,7 @@ idc=XJ-dpq-a
    ```
 
    
-# v6.1.8 功能改进
+# v6.1.9 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
 
 2. 功能改进：ES到db数据同步，忽略字段设置和变量名和es字段名称映射设置不起作用
@@ -1559,13 +1572,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.1.8</version>
+      <version>6.1.9</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.8", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.9", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -2349,10 +2362,10 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.0.5兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.0.5兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.0.6兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.0.6兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.0.5兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.0.6兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 
