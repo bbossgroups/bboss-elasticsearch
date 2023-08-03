@@ -106,7 +106,7 @@ bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 9）支持自动清理下载完毕后ftp服务器上的文件;
 
-10）支持excel、csv文件采集（本地和ftp/sftp）
+10）支持excel/word/pdf/图片/视频等类型文件采集（本地和ftp/sftp）
 
 11）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
 
@@ -144,17 +144,20 @@ com.bbossgroups.plugins
 
 ## 输入插件
 
-| 插件                                                         | 插码名称              | Maven坐标              | 功能说明                                                     |
-| ------------------------------------------------------------ | --------------------- | ---------------------- | ------------------------------------------------------------ |
-| [DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java) | DB数据库输入插件      | bboss-datatran-jdbc    | 配置DB数据源、查询sql、查询sql文件路径及文件名称,支持各种关系数据库，hive |
-| [ElasticsearchInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/input/ElasticsearchInputConfig.java) | elasticsearch输出插件 | bboss-datatran-jdbc    | 配置elasticsearch数据源、queryDsl、queryDsl配置文件路径等    |
-| [HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java) | Http输入插件          | bboss-datatran-jdbc    | 配置http服务参数、服务地址、服务查询参数、ssl证书等          |
-| [FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) | 文件输入插件          | bboss-datatran-fileftp | 对应文本类数据文件数据采集配置，源文件目录、输入Ftp/sftp配置 |
-| [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java) | excel文件输入插件     | bboss-datatran-fileftp | excel文件采集映射配置（忽略行数、excel列号与目标字段名称映射、列默认值配置），包括excel源文件目录、输入Ftp/sftp配置 |
-| [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件         | bboss-datatran-hbase   | hbase连接配置、查询表配置、查询条件配置                      |
-| [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件       | bboss-datatran-mongodb | mongodb连接配置、查询表配置、查询条件配置                    |
-| [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件         | bboss-datatran-kafka2x | kafka消费端参数配置、主题配置、客户端消费组配置等            |
-| [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件   | bboss-datatran-kafka1x | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
+| 插件                                                         | 插码名称                                                     | Maven坐标              | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------ |
+| [DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java) | DB数据库输入插件                                             | bboss-datatran-jdbc    | 配置DB数据源、查询sql、查询sql文件路径及文件名称,支持各种关系数据库，hive |
+| [ElasticsearchInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/input/ElasticsearchInputConfig.java) | elasticsearch输出插件                                        | bboss-datatran-jdbc    | 配置elasticsearch数据源、queryDsl、queryDsl配置文件路径等    |
+| [HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java) | Http输入插件                                                 | bboss-datatran-jdbc    | 配置http服务参数、服务地址、服务查询参数、ssl证书等          |
+| [FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) | 文件输入插件                                                 | bboss-datatran-fileftp | 对应文本类数据文件数据采集配置，源文件目录、输入Ftp/sftp配置 |
+| [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java) | excel文件输入插件                                            | bboss-datatran-fileftp | excel文件采集映射配置（忽略行数、excel列号与目标字段名称映射、列默认值配置），包括excel源文件目录、输入Ftp/sftp配置 |
+| [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java) | [Word文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_110-word文件采集插件) | bboss-datatran-fileftp | 插件配置 [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java)(FileInputConfig子类)和WordFileConfig（FileConfig子类）结合，通过WordFileConfig设置WordExtractor自定义word文件内容提取逻辑，如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中，除了word文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java) | [PDF文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_111-pdf文件采集插件) | bboss-datatran-fileftp | 插件配置 [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java)(FileInputConfig子类)和PDFFileConfig（FileConfig子类）结合，通过PDFFileConfig设置PDFExtractor自定义pdf文件内容提取逻辑，如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中，除了pdf文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java) | [其他类型文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_112-其他类型文件采集插件) | bboss-datatran-fileftp | 插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合,必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件                                                | bboss-datatran-hbase   | hbase连接配置、查询表配置、查询条件配置                      |
+| [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件                                              | bboss-datatran-mongodb | mongodb连接配置、查询表配置、查询条件配置                    |
+| [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件                                                | bboss-datatran-kafka2x | kafka消费端参数配置、主题配置、客户端消费组配置等            |
+| [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件                                          | bboss-datatran-kafka1x | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
 
 ## 输出插件
 
@@ -250,7 +253,7 @@ kafka插件maven坐标
 <version>7.0.6</version>
 </dependency>
 ```
-日志文件/excel/csv/ftp/sftp插件maven坐标
+日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
 ```xml
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
