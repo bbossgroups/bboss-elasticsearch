@@ -40,12 +40,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-fileftp</artifactId>
-  <version>7.0.6</version>
+  <version>7.0.7</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.6'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.7'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
@@ -72,7 +72,8 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.jsondata                | 布尔类型，标识文本记录是json格式的数据，true 将值解析为json对象，false - 不解析，这样值将作为一个完整的message字段存放到上报数据中 |         |
 | FileInputConfig.rootLevel               | jsondata = true时，自定义的数据是否和采集的数据平级，true则直接在原先的json串中存放数据 false则定义一个json存放数据，若不是json则是message |         |
 | FileInputConfig.scanNewFileInterval | long 单位：毫秒，扫描新文件时间间隔                          | 5000L   |
-| FileInputConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理 | null    |
+| FileInputConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理；设置已完成记录增量状态过期清理机制，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录 | null    |
+| FileInputConfig.scanOldRegistRecordInterval | Long,扫描过期已完成文件状态记录时间间隔，默认为1天，单位：毫秒 | 1天 |
 | FileInputConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
 | FileInputConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
 | FileInputConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
@@ -1317,7 +1318,23 @@ config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下�
 
 [采集文件数据并进行统计处理](https://esdoc.bbossgroups.com/#/etl-metrics?id=_47-采集文件数据并进行统计处理)
 
-# 14.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 14.设置已完成记录增量状态过期清理机制
+
+设置已完成记录增量状态过期清理机制，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录：
+
+```java
+fileInputConfig.setCleanCompleteFiles(true);//删除已完成文件
+
+fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间，超过这个时间的文件就会根据CleanCompleteFiles标记，进行清理操作，单位：毫秒
+
+fileInputConfig.setRegistLiveTime(60 * 1000L);//已完成文件状态记录有效期，单位：毫秒
+
+fileInputConfig.setScanOldRegistRecordInterval(30 * 1000L);//扫描过期已完成文件状态记录时间间隔，默认为1天，单位：毫秒
+```
+
+可以在删除文件或者备份完成文件的场景下，设置本机制，避免长期运行情况下，过多的完成状态记录影响作业启动和运行速度
+
+# 15.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
