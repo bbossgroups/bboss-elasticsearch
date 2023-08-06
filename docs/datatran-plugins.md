@@ -582,20 +582,22 @@ FileConfig .setCloseEOF(true) //关闭采集完毕的文件通道，excel文件�
 
 ```java
 
-hostIp
-hostName
-filePath
-pointer
-fileId
-ftpDir
-ftpIp
-ftpPort
-ftpUser
-ftpProtocol
-启用元数据config.setEnableMeta(true); 后，将以下两个包含元数据信息的字段附带到记录中
+
+启用元数据config.setEnableMeta(true); 后，将以下两个包含元数据信息的字段附带到记录中：@filemeta，@timestamp
          
 @filemeta  文件详细信息，map结构，包含以下信息
-@timestamp  记录采集时间
+        hostIp
+        hostName
+        filePath
+        pointer
+        fileId
+        ftpDir
+        ftpIp
+        ftpPort
+        ftpUser
+        ftpProtocol
+
+@timestamp  日期类型，记录采集时间
 ```
 
 子目录文件采集、清理本地/远程文件、备份本地文件配置等更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide

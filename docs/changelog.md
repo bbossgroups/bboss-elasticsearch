@@ -36,8 +36,8 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 # v7.0.7 功能改进
 1. 数据库输入插件改进：增加enableLocalDate控制开关，是否启用Localdate和LocalDateTime类型，true 启用 false 不启用，默认为false；如果不启用则将Localdate和LocalDateTime类型的值统一转换为Date类型处理
 
-2. 增量状态管理改进：设置已完成记录增量状态过期清理机制，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录，添加相关案例：
-  fileInputConfig.setCleanCompleteFiles(true);//删除已完成文件
+2. 增量状态管理改进：[设置已完成记录增量状态过期清理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_14%e8%ae%be%e7%bd%ae%e5%b7%b2%e5%ae%8c%e6%88%90%e8%ae%b0%e5%bd%95%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e8%bf%87%e6%9c%9f%e6%b8%85%e7%90%86%e6%9c%ba%e5%88%b6)，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录，添加相关案例：
+    fileInputConfig.setCleanCompleteFiles(true);//删除已完成文件
 
   fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间，超过这个时间的文件就会根据CleanCompleteFiles标记，进行清理操作，单位：毫秒
 
