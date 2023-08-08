@@ -15,6 +15,8 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 
 [bboss数据采集ETL案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=bboss数据采集etl案例大全)
 
+[bboss 流批一体化计算入门教程](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1o44y1w7VP)
+
 # 1.输入插件
 
 ## 1.1 Elasticsearch输入插件

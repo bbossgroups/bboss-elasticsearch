@@ -8,7 +8,9 @@
 
 **[bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) --- 简化版Flink**
 
-数据同步作业开发视频教程：[实时采集Mysql binlog增删改数据视频教程](https://mp.weixin.qq.com/s?__biz=MzA3MzE0MDUyNw==&mid=2247484095&idx=1&sn=daeb4da3e635f248dcfc38eef0848c30&chksm=9f12d2ffa8655be95e15bbd1fb5dcacc24c0c6132844b3da7a47b45ae2d57d38eee541d27229#rd)
+[bboss 流批一体化计算入门教程](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1o44y1w7VP)
+
+[实时采集Mysql binlog增删改数据视频教程](https://mp.weixin.qq.com/s?__biz=MzA3MzE0MDUyNw==&mid=2247484095&idx=1&sn=daeb4da3e635f248dcfc38eef0848c30&chksm=9f12d2ffa8655be95e15bbd1fb5dcacc24c0c6132844b3da7a47b45ae2d57d38eee541d27229#rd)
 
 数据同步作业开发调试工程源码地址：https://git.oschina.net/bboss/bboss-datatran-demo
 
@@ -19,6 +21,8 @@
 bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
 详细输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
+
+
 
 # 工具特性
 
