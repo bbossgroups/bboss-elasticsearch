@@ -6,9 +6,7 @@
 
 **Elasticsearch技术交流群：21220580,166471282**
 
-**Elasticsearch微信公众号：**
-
-<img src="images/qrcode.jpg"  height="200" width="200">
+<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 
 
 

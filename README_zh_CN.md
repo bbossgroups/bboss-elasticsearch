@@ -26,7 +26,7 @@ Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,+
 https://esdoc.bbossgroups.com/#/quickstart
 # Build from source code
 Build from source code guide:
- 
+
 https://esdoc.bbossgroups.com/#/bboss-build
 
 
@@ -56,13 +56,32 @@ https://github.com/bbossgroups/elasticsearch-springboot-example
 
 [High-performance elasticsearch ORM library bboss use introduction](https://my.oschina.net/bboss/blog/1556866)
 
+# 联系我们
+
+**Elasticsearch技术交流群：21220580,166471282**
+
+<img src="https://esdoc.bbossgroups.com/images/qrcode.jpg"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/douyin.png"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/wvidio.png"  height="200" width="200">
 
 
-## elasticsearch技术交流群:166471282 
+# 支持我们
 
-## elasticsearch微信公众号:bbossgroup   
+如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 
-![GitHub Logo](https://static.oschina.net/uploads/space/2017/0617/094201_QhWs_94045.jpg)
+1.Star并向您的朋友推荐或分享
+
+[bboss elasticsearch client](https://gitee.com/bboss/bboss-elastic)🚀
+
+[数据采集&流批一体化处理](https://gitee.com/bboss/bboss-elastic-tran)🚀
+
+2.通过[爱发电 ](https://afdian.net/a/bbossgroups)直接捐赠，或者扫描下面二维码进行一次性捐款赞助，请作者喝一杯咖啡☕️
+
+<img src="https://esdoc.bbossgroups.com/images/alipay.png"  height="200" width="200">
+
+<img src="https://esdoc.bbossgroups.com/images/wchat.png"   height="200" width="200" />
+
+非常感谢您对开源精神的支持！❤您的捐赠将用于bboss社区建设、QQ群年费、网站云服务器租赁费用。
+
+
 
 ## License
 
