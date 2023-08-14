@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.0.7 发布
+# BBOSS版本变更记录-v7.0.8 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)是一个基于开源协议Apache License发布的开源项目，由开源团队bboss运维，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.8</version>
         </dependency>
 ```
 
@@ -28,11 +28,28 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.8</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
+# v7.0.8 功能改进
+1. 数据库输入输出插件改进：增加配置db connection property配置方法addConnectionProperty，使用案例
+```java
+   DBInputConfig dbInputConfig = new DBInputConfig();
+   dbInputConfig.setDbName("source")
+   .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+   .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+   .setDbUser("root")
+   .setDbPassword("123456")
+   .setValidateSQL("select 1")
+   .setUsePool(true)//是否使用连接池
+   .setSqlFilepath("sql.xml")
+   .setSqlName("demoexport")
+   //.setDbAdaptor("org.frameworkset.elasticsearch.imp.DruidAdaptor")
+   .addConnectionProperty("aaaaa","bbbbbb");
+```
+2. 持久层改进：增加druid数据库适配支持
 # v7.0.7 功能改进
 1. 数据库输入插件改进：增加enableLocalDate控制开关，是否启用Localdate和LocalDateTime类型，true 启用 false 不启用，默认为false；如果不启用则将Localdate和LocalDateTime类型的值统一转换为Date类型处理
 

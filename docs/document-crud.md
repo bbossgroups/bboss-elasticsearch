@@ -902,7 +902,7 @@ public class Demo extends ESId {
 
 ## 6.2 带元数据的Map对象MetaMap使用
 
-检索返回对象类型为Map时，如果需要同时返回元数据，则可以将返回类型指定为继承HashMap的子类 org.frameworkset.elasticsearch.entity.MetaMap，使用示例如下：
+检索返回对象类型为Map时，如果需要同时返回元数据，则可以将返回类型指定为继承LinkedHashMap的子类 org.frameworkset.elasticsearch.entity.MetaMap，使用示例如下：
 
 ### 6.2.1 单文档检索
 

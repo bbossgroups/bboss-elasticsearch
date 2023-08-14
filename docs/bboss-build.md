@@ -1,8 +1,44 @@
 # Elasticsearch Bboss源码构建
+本文介绍如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)，我们采用gradle来管理bboss源码，因此需先安装和配置好gradle（参考章节【[Gradle安装和配置](https://esdoc.bbossgroups.com/#/bboss-build?id=gradle%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae)】），然后利用gradle来构建Elasticsearch Bboss的源码
+# 构建Elasticsearch bboss源码
+
+bboss采用模块化管理，多个模块相互依赖，可以从以下地址依次下载和构建bboss相关源码工程：
+
+| 源码地址                                   | 说明                                                         |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| https://gitee.com/bboss/bboss              | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
+| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB客户端封装 |
+| https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
+| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo对接框架 |
+| https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
+| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL&[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
+
+然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
+
+```shell
+cd bboss
+gradle publishToMavenLocal
+
+cd bboss-data
+gradle publishToMavenLocal
+
+cd bboss-http
+gradle publishToMavenLocal
+
+cd bboss-plugins
+gradle publishToMavenLocal
+
+
+cd bboss-elastic
+gradle publishToMavenLocal
+
+cd bboss-elastic-tran
+gradle publishToMavenLocal
+```
 
 # Gradle安装和配置
 
-在自己的电脑上装好gradle运行环境,下载**最新**的gradle版本：
+参考一下步骤配置和安装gradle运行环境,首先下载**最新**的gradle版本：
 
 [下载gradle](https://gradle.org/releases) 
 
@@ -31,46 +67,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 ![](images/mongodb/settingprojectgradle.png)
 
-# 构建Elasticsearch bboss源码
 
-安装后gradle后，我们就可以利用gradle来构建Elasticsearch Bboss的源码了。
-
-从以下地址依次下载和构建bboss相关源码工程：
-
-https://gitee.com/bboss/bboss
-
-https://gitee.com/bboss/bboss-data
-
-https://gitee.com/bboss/bboss-http
-
-https://gitee.com/bboss/bboss-plugins
-
-https://gitee.com/bboss/bboss-elastic
-
-https://gitee.com/bboss/bboss-elastic-tran  
-
-然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
-
-```shell
-cd bboss
-gradle publishToMavenLocal
-
-cd bboss-data
-gradle publishToMavenLocal
-
-cd bboss-http
-gradle publishToMavenLocal
-
-cd bboss-plugins
-gradle publishToMavenLocal
-
-
-cd bboss-elastic
-gradle publishToMavenLocal
-
-cd bboss-elastic-tran
-gradle publishToMavenLocal
-```
 
 # 开发交流
 

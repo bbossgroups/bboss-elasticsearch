@@ -582,4 +582,4 @@ public class VOPSTestdevLog2ESNew {
 
 bboss日志采集插件使用参考文档
 
-[https://esdoc.bbossgroups.com/#/filelog-guide](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Ffilelog-guide)
+[https://esdoc.bbossgroups.com/#/filelog-guide](https://esdoc.bbossgroups.com/#/filelog-guide)

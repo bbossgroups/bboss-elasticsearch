@@ -6,21 +6,23 @@
 
 *The best elasticsearch highlevel java rest api and ETL and Data batch and Stream Processor -----[bboss](https://www.bbossgroups.com)* 
 
-**[bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) --- 简化版Flink**
+bboss-datatran --- **简化版Flink**
 
-[bboss 流批一体化计算入门教程](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1o44y1w7VP)
+[视频：bboss 流批一体化计算入门教程](https://www.bilibili.com/video/BV1o44y1w7VP)
 
-[实时采集Mysql binlog增删改数据视频教程](https://mp.weixin.qq.com/s?__biz=MzA3MzE0MDUyNw==&mid=2247484095&idx=1&sn=daeb4da3e635f248dcfc38eef0848c30&chksm=9f12d2ffa8655be95e15bbd1fb5dcacc24c0c6132844b3da7a47b45ae2d57d38eee541d27229#rd)
+[视频：实时采集Mysql binlog增删改数据视频教程](https://www.bilibili.com/video/BV1ko4y1M7My)
 
 数据同步作业开发调试工程源码地址：https://git.oschina.net/bboss/bboss-datatran-demo
 
 数据同步案例大全：[bboss数据采集ETL案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=bboss数据采集etl案例大全)
 
-[数据指标统计计算流批一体化使用指南](https://esdoc.bbossgroups.com/#/etl-metrics)
+[文档：数据指标统计计算流批一体化使用指南](https://esdoc.bbossgroups.com/#/etl-metrics)
 
-bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
+输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
 
-详细输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
+**bboss-datatran源码工程**
+
+https://gitee.com/bboss/bboss-elastic-tran
 
 
 
@@ -344,7 +346,12 @@ importBuilder.setOutputConfig(elasticsearchOutputConfig);
 importBuilder.setBatchSize(5000);
 
 importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-......
+//数据加工处理、清洗
+importBuilder.setDataRefactor(new DataRefactor() {
+    public void refactor(Context context) throws Exception  {
+		context.addFieldValue("newCollecttime",new Date());//添加采集时间
+    }
+});
     
 //作业执行
 /**

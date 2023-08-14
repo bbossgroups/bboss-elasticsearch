@@ -1,14 +1,20 @@
 # bboss http负载均衡器使用指南
 
-bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，本文介绍其使用方法。
+bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，本文介绍其使用方法。
+
+![](images\client-server-http.jpg)
 
 项目源码
 
 https://github.com/bbossgroups/bboss-http
 
+https://gitee.com/bboss/bboss-http
+
 httpproxy 案例：基于apollo进行配置管理、节点自动发现、路由规则自动切换，源码地址
 
 https://github.com/bbossgroups/httpproxy-apollo
+
+https://gitee.com/bboss/httpproxy-apollo
 
 # 1.负载均衡器特色
 
@@ -1473,16 +1479,33 @@ jwt token认证设置，直接申请jwt token，并经token设置到http header�
 ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
 
 
+# 开发交流
 
-# 9.开发交流
+**Elasticsearch技术交流群：21220580,166471282**
+
+<img src="https://esdoc.bbossgroups.com/images/qrcode.jpg"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/douyin.png"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/wvidio.png"  height="200" width="200">
 
 
+# 支持我们
 
-bboss http交流QQ群：21220580,166471282
+如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 
-**bboss http微信公众号：**
+1.Star并向您的朋友推荐或分享
 
-<img src="images/qrcode.jpg"  height="200" width="200">
+[bboss http proxy](https://gitee.com/bboss/bboss-http)🚀
+
+[bboss elasticsearch client](https://gitee.com/bboss/bboss-elastic)🚀
+
+[数据采集&流批一体化处理](https://gitee.com/bboss/bboss-elastic-tran)🚀
+
+2.通过[爱发电 ](https://afdian.net/a/bbossgroups)直接捐赠，或者扫描下面二维码进行一次性捐款赞助，请作者喝一杯咖啡☕️
+
+<img src="https://esdoc.bbossgroups.com/images/alipay.png"  height="200" width="200">
+
+<img src="https://esdoc.bbossgroups.com/images/wchat.png"   height="200" width="200" />
+
+非常感谢您对开源精神的支持！❤您的捐赠将用于bboss社区建设、QQ群年费、网站云服务器租赁费用。
+
 
 
 

@@ -6,7 +6,7 @@
 
 bboss-datatran源码工程：https://gitee.com/bboss/bboss-elastic-tran
 
-[bboss 流批一体化计算入门教程](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1o44y1w7VP)
+[视频：bboss 流批一体化计算入门教程](https://www.bilibili.com/video/BV1o44y1w7VP)
 
 # 数据采集&流批一体化处理使用指南
 
