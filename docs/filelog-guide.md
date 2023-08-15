@@ -40,12 +40,12 @@ maven坐标
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-fileftp</artifactId>
-  <version>7.0.7</version>
+  <version>7.0.8</version>
 </dependency>
 ```
 gradle坐标
 ```xml
-api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.7'
+api 'com.bbossgroups.plugins:bboss-datatran-fileftp:7.0.8'
 ```
 
 如果是spring boot项目还需导入其他相关坐标，参考文档：
@@ -297,7 +297,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 				.setDbName("test")//指定目标数据库，在application.properties文件中配置
 //				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-//				.setDbUrl("jdbc:mysql://localhost:3306/bboss?useCursorFetch=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+//				.setDbUrl("jdbc:mysql://localhost:3306/bboss") 
 //				.setDbUser("root")
 //				.setDbPassword("123456")
 //				.setValidateSQL("select 1")

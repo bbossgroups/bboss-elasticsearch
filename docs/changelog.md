@@ -39,7 +39,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
    DBInputConfig dbInputConfig = new DBInputConfig();
    dbInputConfig.setDbName("source")
    .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-   .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+   .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false") 
    .setDbUser("root")
    .setDbPassword("123456")
    .setValidateSQL("select 1")
@@ -468,7 +468,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.0.7版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.0.8版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -643,7 +643,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.8</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -651,7 +651,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.8</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -738,7 +738,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.0.7时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.0.8时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -790,7 +790,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.0",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.1",transitive: true 
   ```
 
   **maven坐标**
@@ -801,7 +801,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.1.0</version>  
+      <version>6.1.1</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1284,7 +1284,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.7</version>
+    <version>7.0.8</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1583,7 +1583,7 @@ ElasticSearchHelper.stopElasticsearch("default");
 2. DB-DB数据同步工具：增加在作业中直接指定sql语句的功能
 3. 修复数据同步bug：数据库到数据库跨库同步无效
 
-# v6.1.1 功能改进
+# v6.1.0 功能改进
 1.升级jackson版本号为2.9.10
 
 2.持久层支持将sql配置文件存放位置设置为外部目录
@@ -1603,13 +1603,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.1.9</version>
+      <version>6.2.0</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.1.9", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.0", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -2393,10 +2393,10 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.0.7兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.0.7兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.0.8兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.0.8兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.0.7兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.0.8兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 

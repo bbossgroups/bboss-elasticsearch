@@ -248,7 +248,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -256,7 +256,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
@@ -264,7 +264,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -272,7 +272,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -280,7 +280,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 
@@ -289,7 +289,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.0.7</version>
+<version>7.0.8</version>
 </dependency>
 ```
 
@@ -390,7 +390,7 @@ DBInputConfig dbInputConfig = new DBInputConfig();
 		dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
 				.setDbName("test")
 				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") 
 				.setDbUser("root")
 				.setDbPassword("123456")
 				.setValidateSQL("select 1")

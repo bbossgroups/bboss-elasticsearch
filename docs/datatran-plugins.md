@@ -218,7 +218,7 @@ Database输入插件配置类：[DBInputConfig](https://gitee.com/bboss/bboss-el
 DBInputConfig dbInputConfig = new DBInputConfig();
 dbInputConfig.setDbName("source")
       .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-      .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+      .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false") 
       .setDbUser("root")
       .setDbPassword("123456")
       .setValidateSQL("select 1")
@@ -248,7 +248,7 @@ DBInputConfig dbInputConfig = new DBInputConfig();
       dbInputConfig.setSql("select * from td_sm_log where log_id > #[log_id]")
             .setDbName("test")
             .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-            .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+            .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") 
             .setDbUser("root")
             .setDbPassword("123456")
             .setValidateSQL("select 1")
@@ -1393,7 +1393,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
 		dbOutputConfig
 				.setDbName("test")
 				.setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+				.setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") 
 				.setDbUser("root")
 				.setDbPassword("123456")
 				.setValidateSQL("select 1")
@@ -1444,7 +1444,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
         dbOutputConfig
                 .setDbName("test")
                 .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") 
                 .setDbUser("root")
                 .setDbPassword("123456")
                 .setValidateSQL("select 1")
@@ -1479,7 +1479,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
         dbOutputConfig
                 .setDbName("test")
                 .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
-                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setDbUrl("jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") 
                 .setDbUser("root")
                 .setDbPassword("123456")
                 .setValidateSQL("select 1")
