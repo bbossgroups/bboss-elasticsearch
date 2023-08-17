@@ -1,8 +1,8 @@
-# Elasticsearch Bboss源码构建
-本文介绍如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)，我们采用gradle来管理bboss源码，因此需先安装和配置好gradle（参考章节【[Gradle安装和配置](https://esdoc.bbossgroups.com/#/bboss-build?id=gradle%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae)】），然后利用gradle来构建Elasticsearch Bboss的源码
-# 构建Elasticsearch bboss源码
+# Bboss源码构建指南
+本文介绍如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)，我们采用gradle来管理bboss源码工程，因此需先安装和配置好gradle（参考章节【[2.Gradle安装和配置](https://esdoc.bbossgroups.com/#/bboss-build?id=_2gradle%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae)】），然后利用gradle来构建Bboss。
+# 1.从源码构建bboss
 
-bboss采用模块化管理，多个模块相互依赖，可以从以下地址依次下载和构建bboss相关源码工程：
+bboss采用模块化管理，多个模块相互依赖，可以从以下地址依次下载和构建各个模块源码工程：
 
 | 源码地址                                   | 说明                                                         |
 | ------------------------------------------ | ------------------------------------------------------------ |
@@ -13,7 +13,7 @@ bboss采用模块化管理，多个模块相互依赖，可以从以下地址依
 | https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
 | https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL&[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
 
-然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建bboss 源码：
+然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建各模块：
 
 ```shell
 cd bboss
@@ -36,9 +36,9 @@ cd bboss-elastic-tran
 gradle publishToMavenLocal
 ```
 
-# Gradle安装和配置
+# 2.Gradle安装和配置
 
-参考一下步骤配置和安装gradle运行环境,首先下载**最新**的gradle版本：
+参考以下步骤配置和安装gradle运行环境,首先下载**最新**（与开发工具Idea或者Eclipse兼容即可）的gradle版本：
 
 [下载gradle](https://gradle.org/releases) 
 
@@ -52,10 +52,15 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
 M2_HOME: 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构建的本地包才能被maven项目引用到，gradle 通过M2_HOME环境变量查找maven安装目录，一定要与idea或者eclipse中配置的maven安装目录一致
 
+在系统环境变量Path添加gradle bin目录
+
 ![img](images/gradle_path.png)
+
+添加GRADLE_HOME和GRADLE_USER_HOME环境变量：
+
 ![img](images/gradle_home.png)
 
-一般还需要通过M2_HOME指定maven安装地址，这样gradle 构建的本地包才能被maven项目引用到，gradle 通过M2_HOME环境变量查找maven安装环境，一定要与idea或者eclipse中配置的maven安装目录一致，配置M2_HOME环境变量如下图： 
+配置M2_HOME环境变量： 
 
 ![img](images/m2_home.jpg)
 
@@ -69,7 +74,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 
 
-# 开发交流
+# 3.开发交流
 
 **Elasticsearch技术交流群：21220580,166471282**
 
@@ -77,7 +82,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 
 
-# 支持我们
+# 4.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 

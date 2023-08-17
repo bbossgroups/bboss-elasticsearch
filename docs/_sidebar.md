@@ -9,7 +9,7 @@
   - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
   - [Elasticsearch bboss Performance](performance.md)
-  - [从源码构建Elasticsearch bboss](bboss-build.md)
+  - [Bboss源码构建指南](bboss-build.md)
   - [常见问题处理](question-answer.md)
   - [Changelog](changelog.md)
   - [联系和支持我们](supportus.md)
