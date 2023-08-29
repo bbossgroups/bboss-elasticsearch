@@ -184,11 +184,14 @@ com.bbossgroups.plugins
 
 ## 作业基础配置
 
+作业基础配置，包含了作业调度、并行处理、任务监控、任务回调处理、作业初始化和作业结束回调处理配置、增量配置、数据转换处理以及指标计算配置等等，大致配置流程可以参考文档：[2.3 定义作业配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_23-定义作业配置)
+
 ```java
 //创建一个作业构建器
 ImportBuilder importBuilder = new ImportBuilder() ;
 importBuilder.setJobId("job-123");
 importBuilder.setJobName("流失数据挖掘");
+.......
 ```
 
 | 属性名称                 | 类型                | 说明                                                         |
@@ -335,7 +338,8 @@ Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构
 ```java
 //创建作业构建器
 ImportBuilder importBuilder = new ImportBuilder() ;
-
+importBuilder.setJobId("job-123");
+importBuilder.setJobName("流失数据挖掘");
 //输入插件配置
 importBuilder.setInputConfig(dbInputConfig);
 
@@ -1152,6 +1156,10 @@ sqlite作为一个本地单线程文件数据库，可能在一些场景下无�
 bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
 
 [保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+
+#### 2.8.5.9.已完成增量状态记录过期清理机制设置
+
+本功能主要适用于文件数据采集插件，参考文档：[设置已完成记录增量状态过期清理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_14设置已完成记录增量状态过期清理机制)
 
 ### 2.8.6 定时全量导入
 

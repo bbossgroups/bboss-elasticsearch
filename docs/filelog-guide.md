@@ -1,18 +1,19 @@
-# 超级棒！文件&日志采集插件使用指南
+# 超级棒！bboss文件&日志采集插件使用指南
 
-本文介绍基于java语言的文件&日志数据采集插件,插件主要特色如下:
+本文介绍bboss文件&日志数据采集插件,插件主要特色如下:
 
-1. 支持全量和增量采集两种模式；采集-转换-清洗-[流计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理
-2. 实时采集日志文件、json文件、文本文件、excel/word/pdf/图片/视频等类型文件（本地和ftp/sftp）数据到kafka/elasticsearch/database/自定义处理器等等
-3. 支持多线程并行下载和处理远程数据文件
-4. 支持本地/ftp/sftp子目录下文件数据采集；
-5. 支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件；
-6. 支持自动清理下载完毕后ftp服务器上的文件;
-7. 支持大量文件采集场景下的流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件。
+1. 支持全量和增量采集两种模式
+2. 支持ETL采集转换清洗-[流批计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理 
+3. 实时采集日志文件、json文件、文本文件、excel/word/pdf/图片/视频等类型文件（本地和ftp/sftp）数据到kafka/elasticsearch/database/自定义处理器等等 
+4. 支持多线程并行下载和处理远程数据文件 
+5. 支持本地/ftp/sftp子目录下文件数据采集； 
+6. 支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件； 
+7. 支持自动清理下载完毕后ftp服务器上的文件; 
+8. 支持大量文件采集场景下的流控处理机制，通过设置同时并行采集最大文件数量，控制并行采集文件数量，避免资源过渡消耗，保证数据的平稳采集。当并行文件采集数量达到阈值时，启用流控机制，当并行采集文件数量低于最大并行采集文件数量时，继续采集后续文件。
 
 使用案例：
 
-源码工程 https://gitee.com/bboss/filelog-elasticsearch
+案例源码工程 https://gitee.com/bboss/filelog-elasticsearch
 
    1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
    2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
@@ -1323,18 +1324,26 @@ config.setScanNewFileInterval(1*60*1000l);//每隔半1分钟扫描ftp目录下�
 设置已完成记录增量状态过期清理机制，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录：
 
 ```java
-fileInputConfig.setCleanCompleteFiles(true);//删除已完成文件
-
-fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间，超过这个时间的文件就会根据CleanCompleteFiles标记，进行清理操作，单位：毫秒
-
 fileInputConfig.setRegistLiveTime(60 * 1000L);//已完成文件状态记录有效期，单位：毫秒
 
 fileInputConfig.setScanOldRegistRecordInterval(30 * 1000L);//扫描过期已完成文件状态记录时间间隔，默认为1天，单位：毫秒
 ```
 
-可以在删除文件或者备份完成文件的场景下，设置本机制，避免长期运行情况下，过多的完成状态记录影响作业启动和运行速度
+可以在删除文件或者备份完成文件的场景下，设置本机制，避免长期运行情况下，过多的完成状态记录影响作业启动和运行速度：
 
-# 15.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+```java
+fileInputConfig.setCleanCompleteFiles(true);//删除已完成文件
+
+fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间，超过这个时间的文件就会根据CleanCompleteFiles标记，进行清理操作，单位：毫秒
+```
+
+
+
+# 15.记录字段自动分割和映射配置
+
+参考文档：[2.8.10.5 默认的字段映射配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_28105-默认的字段映射配置)
+
+# 16.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 

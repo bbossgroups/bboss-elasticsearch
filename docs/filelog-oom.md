@@ -197,25 +197,27 @@ jvm分配内存大小：考虑服务器资源情况，为作业分配2g内存，
 
 ## 2.1 内存泄漏表为空，所以不存在内存泄漏问题
 
-![img](https://oscimg.oschina.net/oscnet/up-c461634fa2cfab80aeddd2ecca9e7a35b0a.JPEG)
+![](images\oom\leak.jpg)
+
+
 
 ## 2.2 内存占用分布情况
 
 下面是mat给出的filelog进去2g内存占用分布情况，并给出了三个占用内存比较大对象实例，问题定位还是非常明确。
 
-![img](https://oscimg.oschina.net/oscnet/up-47ea3183ad6177cef014f025a8c3741839e.JPEG)
+![](images\oom\overview.jpg)
 
 根据作业定义，每个日志文件单独配置一个采集配置，一次会分配一个采集作业线程一个和一个日志目录扫描线程；**存在大量采集完但是未关闭的日志文件也分配了采集线程**；elasticsearch并行异步写入线程池大小为10个线程；作业为每个线程会分配1m的的线程stack大小，所有线程实例占了将近1g的内存
 
-![img](https://oscimg.oschina.net/oscnet/up-2eed6fed8c14bf17d5e3d8c97438ec8237c.JPEG)
+![img](images\oom\p1.jpg)
 
 每个日志文件对应一个异步采集通道对象AsynESOutPutDataTran，每个通道都包含了待写入elasticsearch的缓存数据，因此所有通道实例占用的内存将近600M
 
-![img](https://oscimg.oschina.net/oscnet/up-0133f9a13136dcba6027bedc60cf19a60f4.JPEG)
+![img](images\oom\p2.jpg)
 
 每个日志文件中实时采集的日志数据会放入一个**FileResultSet对象，给**采集通道对象AsynESOutPutDataTran消费使用，所有**FileResultSet占用的内存为230M**
 
-![img](https://oscimg.oschina.net/oscnet/up-67794649b2633557fc76278e0ba4062b2fc.JPEG)
+![img](images\oom\p3.jpg)
 
 上述三类对象占用内存将近1.8G，所以filelog采集作业启动后，内存很快就达到最大值2G，导致内存溢出问题发生，原因已经找到，接下来就可以来分析和解决问题了。
 
@@ -360,6 +362,12 @@ int fetchSize = PropertiesUtil.getPropertiesContainer().getIntSystemEnvProperty(
 setCloseOlderTime(2*24*60*60*1000l) //如果2天内日志内容没变化，则不再采集对应的日志文件，重启作业也不会采集
 ```
 
+## 优化6 控制并行文件采集数量
+
+参考文档：[12.并行采集文件数量控制-流控](https://esdoc.bbossgroups.com/#/filelog-guide?id=_12并行采集文件数量控制-流控)
+
+​    setMaxFilesThreshold(2);//允许同时采集2个文件
+
 ## 优化改造后的作业代码
 
 优化改造后的作业代码如下：
@@ -420,7 +428,7 @@ public class VOPSTestdevLog2ESNew {
       
       		FileInputConfig config = new FileInputConfig();
       		config.setCharsetEncode(charsetEncode);
-      
+             config.setMaxFilesThreshold(2);//允许同时采集2个文件
       		final String[] fileNameArr = fileNames.split(",");
       		config.addConfig(new FileConfig().setSourcePath(logPath)//指定目录
       						.setFileFilter(new FileFilter() {//根据文件名称动态判断目录下的文件是否需要被采集
