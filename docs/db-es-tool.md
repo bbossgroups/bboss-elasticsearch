@@ -1657,58 +1657,94 @@ if(ftpConfig != null){
 ```
 
 #### 2.8.10.5 默认的字段映射配置
+使用 数据采集同步默认字段映射功能，可以自动将文本类型记录按照特定的字符切割成一个数组结构，然后通过设置数组下标位置与目标字段名称、默认值、目标字段类型、目标字段格式的映射关系，从而快速实现非结构化数据到结构化数据转换映射处理。
 
-字段映射功能，对于文本记录按照特定的字符切割成一个数组结构，然后通过设置索引位置对于的字段名称、默认值、字段类型、字段格式，从而快速实现非结构化数据到结构化数据转换映射处理。
+具备默认字段映射功能的插件有：文本文件采集插件、Excel文件采集插件、Excel文件输出插件、Kafka输入插件，下面分别举例说明。
 
-涉及插件：日志采集插件、excel采集插件、生成日志/excel文件插件、kafka输入插件
+1）文件采集插件字段映射配置
 
-文件采集插件字段映射配置示例：
-
+文件采集插件字段映射配置
 ```java
 FileInputConfig fileInputConfig = new FileInputConfig();
 
 FileConfig fileConfig = new FileConfig();
-    fileConfig.setFieldSplit(";");//指定日志记录字段分割符
-  //指定字段映射配置
-    fileConfig.addDateCellMapping(0, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
-               
-    fileConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
-    fileConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
-           
+fileConfig.setFieldSplit(";");//指定日志记录字段分割符
+//简单的映射，指定字段映射配置
+fileConfig.addCellMapping(0, "logOperTime");
+fileConfig.addCellMapping(1, "operModule");
+fileConfig.addCellMapping(2, "logOperuser");
+//指定字段映射配置--日期类型映射，自动将对应位置的数据按照指定的日期格式转换为日期类型
+fileConfig.addDateCellMapping(0, "logOperTime", CELL_STRING, "2022-08-09 12:30:50", "yyyy-MM-dd HH:mm:ss");//指定数据类型，默认值，日期格式
+fileConfig.addCellMappingWithType(1, "operModule", CELL_STRING );//指定数据类型
+fileConfig.addCellMappingWithType(2, "logOperuser", CELL_NUMBER_INTEGER, 20);//指定数据类型和默认值
 ```
+完整的文本文件采集映射配置案例
 
-kafka映射配置示例：
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/SFTPFileLog2ESWithMetricsDemo.java
 
+2) kafka映射配置
+
+kafka映射配置
 ```java
 Kafka2InputConfig kafka2InputConfig = new Kafka2InputConfig();
- 
-    kafka2InputConfig.setFieldSplit(";");//指定kafka记录字段分割符
-  //指定字段映射配置
-    kafka2InputConfig.addDateCellMapping(0, //记录切割得到的字段列表位置索引，从0开始
-    			excelCellMapping.getFieldName(), //映射的字段名称
-                                          cellType, //字段值类型
-                                          excelCellMapping.getDefaultValue(), //字段默认值
-                                         excelCellMapping.getDataFormat());//字段格式：日期格式或者数字格式
-               
-    kafka2InputConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
-    kafka2InputConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+kafka2InputConfig.setValueCodec(CODEC_TEXT_SPLIT);
+kafka2InputConfig.setFieldSplit(";");//指定消息字段分割符，按照分隔符将消息切割为字符串数组
+//指定数组元素与字段名称的映射配置，
+kafka2InputConfig.addCellMapping(0, "logOperTime");
+kafka2InputConfig.addCellMapping(1, "operModule");
+kafka2InputConfig.addCellMapping(2, "logOperuser");
 ```
+完整的kafka2Elasticsearch映射案例
 
-excel字段映射配置
+https://gitee.com/bboss/kafka2x-elasticsearch/tree/master/src/main/java/org/frameworkset/elasticsearch/imp/KafkaStringMapping2ESdemo.java
 
+3) Excel输入插件字段映射配置
+
+Excel输入插件字段映射配置
 ```java
-FileInputConfig fileInputConfig = new FileInputConfig();
+//配置excel文件列与导出字段名称映射关系
+    FileConfig excelFileConfig = new ExcelFileConfig();
+    excelFileConfig
+        .addCellMapping(0,"shebao_org")
+        .addCellMapping(1,"person_no")
+        .addCellMapping(2,"name")
+        .addCellMapping(3,"cert_type")
 
-ExcelFileConfig fileConfig = new ExcelFileConfig();
-    fileConfig.setFieldSplit(";");//指定日志记录字段分割符
-  //指定字段映射配置
-    fileConfig.addDateCellMapping(0, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
-               
-    fileConfig.addNumberCellMapping(1, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue(), excelCellMapping.getDataFormat());
-    fileConfig.addCellMappingWithType(2, excelCellMapping.getFieldName(), cellType, excelCellMapping.getDefaultValue());
+        .addCellMapping(4,"cert_no","")
+        .addCellMapping(5,"zhs_item")
+
+        .addCellMapping(6,"zhs_class")
+        .addCellMapping(7,"zhs_sub_class")
+        .addCellMapping(8,"zhs_year","2022")
+        .addCellMapping(9,"zhs_level","1")
+        .addCellMappingWithType(10,"xxx",CELL_DATE );
 ```
+完整的Excel2DB案例
 
-cellType取值范围：
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo.java
+
+4) Excel输出映射配置
+
+Excel输出映射配置
+```java
+ ExcelFileOutputConfig fileOutputConfig = new ExcelFileOutputConfig();
+        fileOutputConfig.setTitle("新闻详情数据");
+        fileOutputConfig.setSheetName("2021年新闻");
+
+        fileOutputConfig.addCellMapping(0,"title","文章标题")
+                .addCellMapping(1,"subtitle","文章子标题")
+                .addCellMapping(2,"newcollecttime","*新闻发布时间")
+                .addCellMapping(3,"author","*作者")
+                .addCellMapping(4,"operModule","*新闻板块")
+                .addCellMapping(5,"logContent","*新闻内容")
+                .addCellMapping(6,"logVisitorial","发布IP")
+        ;
+```
+完整的Excel输出字段映射配置案例：
+
+https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Kafka2ExcelFileFtpDemo.java
+
+5) 映射类型常量CellType说明
 
 ```java
 public static final int CELL_BOOLEAN = 5;
@@ -1721,7 +1757,6 @@ public static final int CELL_NUMBER_FLOAT = 8;
 public static final int CELL_NUMBER_SHORT = 9;
 public static final int CELL_STRING = 1;
 ```
-
 ### 2.8.11 IP-地区运营商经纬度坐标转换
 
 与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：
