@@ -415,7 +415,13 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 
 详见章节：[输出到数据库案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-mysql-binlog%e7%9b%91%e5%90%ac%e5%a4%9a%e8%a1%a8%e5%9c%ba%e6%99%af)
 
-### 1.3.4 参考文档
+### 1.3.4 多库多表数据同步到多目标库
+
+多库多表数据同步到多目标库可是参考以下使用文档：
+
+[多库多表数据同步到多目标库](https://esdoc.bbossgroups.com/#/mysql-binlog?id=_3-多库多表数据同步到多目标库)
+
+### 1.3.5 参考文档
 
 https://esdoc.bbossgroups.com/#/mysql-binlog
 

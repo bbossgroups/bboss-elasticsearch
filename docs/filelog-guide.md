@@ -1341,9 +1341,13 @@ fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间�
 
 # 15.记录字段自动分割和映射配置
 
-参考文档：[2.8.10.5 默认的字段映射配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_28105-默认的字段映射配置)
+对于一些规则的的数据记录，可以进行记录字段自动分割和映射配置，参考文档：[2.8.10.5 默认的字段映射配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_28105-默认的字段映射配置)
 
-# 16.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 16.文件元数据处理
+
+如果要获取和处理文件元数据，可以参考文档：[文件元数据处理](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_143-元数据说明)
+
+# 17.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 

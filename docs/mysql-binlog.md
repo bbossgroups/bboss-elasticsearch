@@ -18,7 +18,13 @@ bboss mysql binlog数据采集插件原理图如下：
 
 
 
-Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等信息，实时采集mysql增删改数据，支持以下三种数据采集模式：
+Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等信息，非常方便地实现：
+
+1）Mysql增删改数据实时采集同步，源库到多个目标库数据同步
+
+2）Mysql数据库ddl操作实时同步，源库到多个目标库ddl同步
+
+Mysql binlog插件支持以下三种数据采集模式：
 
 **模式1** 直接读取binlog文件,采集文件中的增删改数据
 
@@ -34,9 +40,13 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
 
 [实战：基于bboss cdc实时同步mysql增删改数据到Elasticsearch](https://www.bilibili.com/video/BV1aW4y1f73c)
 
-本文介绍mysql binlog插件的使用方法，以实时同步Mysql Binlog增删改数据到Elasticsearch作为案例来讲解。
+本文通过两个案例来讲解介绍mysql binlog插件的使用方法：
 
-# **2.采集作业实现**
+1）实时同步Mysql Binlog增删改数据到Elasticsearch作为案例
+
+2）多库多表数据同步到多目标库案例
+
+# 2.Mysql增删改数据同步到Elasticsearch
 
 ## **2.1 binlog输入插件配置**
 
@@ -56,8 +66,8 @@ Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账�
         mySQLBinlogConfig.setDbPassword("123456");
         //如果直接监听文件则设置binlog文件路径，否则不需要配置文件路径
         mySQLBinlogConfig.setFileNames("F:\\6_environment\\mysql\\binlog.000107,F:\\6_environment\\mysql\\binlog.000127");
-        mySQLBinlogConfig.setTables("cityperson");//监控增量表名称
-        mySQLBinlogConfig.setDatabase("bboss");//监控增量表名称
+        mySQLBinlogConfig.setTables("cityperson");//监控增量表名称，多个表以逗号分隔：cityperson,batchest
+        mySQLBinlogConfig.setDatabase("bboss");//监控数据库名称,多个库以逗号分隔：bboss,pinpoint
        
         //binlog插件配置结束
         importBuilder.setInputConfig(mySQLBinlogConfig);
@@ -76,7 +86,7 @@ mySQLBinlogConfig.setDbUser("root");
 mySQLBinlogConfig.setDbPassword("123456");
 
 mySQLBinlogConfig.setTables("cityperson");//监控增量表名称
-mySQLBinlogConfig.setDatabase("bboss");//监控增量表名称
+mySQLBinlogConfig.setDatabase("bboss");//监控数据库名称
 mySQLBinlogConfig.setServerId(65536L);//模拟slave节点ID
 //binlog插件配置结束
 importBuilder.setInputConfig(mySQLBinlogConfig);
@@ -224,16 +234,318 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 [mysql binlog数据采集案例](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_20-mysql-binlog%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86%e6%a1%88%e4%be%8b)
 
-## 2.6 视频教程
+# 3 多库多表数据同步到多目标库
+
+通过mysql binlog插件与数据库输出插件相结合，可以非常方便地实现多库多表数据同步到多目标库。
+
+## 3.1 表数据多对多同步
+
+### 3.1.1 Mysql binlog输入插件配置
+
+Mysql binlog插件通过以下方法来实现多库：
+
+**1) 默认多表和多库配置**
+
+通过mySQLBinlogConfig的setTables设置多个表名称，setDatabase设置多个数据库，例如：
+
+```java
+mySQLBinlogConfig.setTables("cityperson,batchest");//监控增量表名称，多个表以逗号分隔：
+mySQLBinlogConfig.setDatabase("bboss,pinpoint");//监控数据库名称,多个库以逗号分隔：bboss,pinpoint
+```
+
+通过以上配置，实现以下数据库表的实时数据采集：
+
+```java
+bboss.cityperson
+bboss.batchest
+pinpoint.cityperson
+pinpoint.batchest
+```
+
+**2) 表名称直接指定数据库名称**
+
+通过mySQLBinlogConfig的setTables设置多个表名称，表前添加数据库名称，例如：
+
+```java
+mySQLBinlogConfig.setTables("bboss.cityperson,bboss.batchest,pinpoint.t1,pinpoint.t2");//监控增量表名称，多个表以逗号分隔
+```
+
+**3）混合模式配置**
+
+1）和2）相结合配置多库多表
+
+```java
+mySQLBinlogConfig.setTables("bboss.cityperson,batchest,logtable,apm.agent,pinpoint.cityperson");//监控增量表名称，多个表以逗号分隔：
+mySQLBinlogConfig.setDatabase("terminal,ecs,bboss");//监控数据库名称,多个库以逗号分隔：bboss,pinpoint
+```
+
+通过以上配置，实现以下数据库表的实时数据采集：
+
+```
+bboss.cityperson
+terminal.batchest
+terminal.logtable
+ecs.batchest
+ecs.logtable
+bboss.batchest
+bboss.logtable
+apm.agent
+pinpoint.cityperson
+```
+
+setTables方法中batchest,logtable两张表没有指定数据库名称，同时通过setDatabase设置了三个数据库:
+
+```java
+terminal,ecs,bboss
+```
+
+以上配置除了采集明确配置了数据库的表数据：bboss.cityperson，apm.agent,pinpoint.cityperson
+
+还会采集terminal,ecs,bboss三个数据中表数据：batchest,logtable
+
+```
+terminal.batchest
+terminal.logtable
+ecs.batchest
+ecs.logtable
+bboss.batchest
+bboss.logtable
+```
+
+**4) 数据库及表名称解析器配置**
+
+通过数据库及表名称解析器SqlConfResolver接口的实现类DatabaseTableSqlConfResolver来配置目标库表配置查找规则：
+
+```java
+dbOutputConfig.setSqlConfResolver(new DatabaseTableSqlConfResolver());
+```
+
+### 3.1.2 数据库输出插件配置
+
+需要借助数据库输出插件来实现将mysql binlog插件采集的数据同步到目标数据库，需要进行以下配置
+
+1）通过SQLConf对象的setTargetDbName方法来设置数据库表对应的目标数据源清单，如果不设置数据源，则默认采用dbOutputConfig.setDbName设置的数据源名称；
+
+2）通过SQLConf的setInsertSqlName设置目标表的数据insert语句，直接指定sql配置文件中的sql配置名称即可
+
+3）通过SQLConf的setUpdateSqlName设置目标表的数据update语句，直接指定sql配置文件中的sql配置名称即可
+
+4）通过SQLConf的setDeleteSqlName设置目标表的数据delete语句，直接指定sql配置文件中的sql配置名称即可
+
+5）通过dbOutputConfig.addSQLConf方法添加表的增删改数据同步sql和目标数据源到作业配置中，有多少张表数据需要同步则添加多少次即可
+
+增删改sql语句可以根据实际需要选择配置即可，可以全部配置也可以配置其中的一条或者2条sql。
+
+addSQLConf参数说明：
+
+dbOutputConfig.addSQLConf("bboss.cityperson",sqlConf);//数据库加表名称保存sql配置：
+
+第一个参数：bboss.cityperson，源库名称.表名称，用来保存对应库表的同步sql配置
+
+6）通过数据库及表名称解析器SqlConfResolver接口的实现类DatabaseTableSqlConfResolver来配置目标库表配置查找规则
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+dbOutputConfig.setSqlFilepath("dsl2ndSqlFile.xml");//sql语句配置文件路径
+
+//设置不同表对应的增删改sql语句
+SQLConf sqlConf = new SQLConf();
+sqlConf.setInsertSqlName("insertcitypersonSQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertcitypersonSQL
+sqlConf.setUpdateSqlName("citypersonUpdateSQL");//可选
+sqlConf.setDeleteSqlName("citypersonDeleteSQL");//可选
+sqlConf.setTargetDbName("test,ddlsyn");//为不同的库表sql配置指定对应的目标数据源，多个用逗号分隔，如果不指定就采用dbOutputConfig.setDbName方法设置的数据源
+dbOutputConfig.addSQLConf("bboss.cityperson",sqlConf);//数据库加表名称保存sql配置，对应的sql在sqlconf指定的数据源test上执行
+
+sqlConf = new SQLConf();
+sqlConf.setInsertSqlName("insertbatchtest1SQL");//对应sql配置文件dsl2ndSqlFile.xml配置的sql语句insertbatchtestSQL
+sqlConf.setUpdateSqlName("batchtest1UpdateSQL");//可选
+sqlConf.setDeleteSqlName("batchtest1DeleteSQL");//可选
+sqlConf.setTargetDbName("test,ddlsyn");//多个用逗号分隔
+dbOutputConfig.addSQLConf("visualops.batchtest",sqlConf);
+dbOutputConfig.setSqlConfResolver(new DatabaseTableSqlConfResolver());
+```
+
+## 3.2 数据库ddl同步配置
+
+通过mysql binglog输入插件启用ddl操作同步功能，同时配置需要同步ddl的数据库清单
+
+### 3.2.1 Mysql binlog输入插件配置
+
+```java
+//ddl同步配置，将bboss和visualops两个数据库的ddl操作在test和ddlsyn数据源上进行回放
+mySQLBinlogConfig.setDdlSyn(true);//启用ddl操作同步功能
+mySQLBinlogConfig.setDdlSynDatabases("bboss,visualops");//同步ddl的数据库清单
+```
+
+### 3.2.2 数据库输出插件配置
+
+通过数据库输出插件的dbOutputConfig.addDDLConf方法配置ddl同步的源库与目标库数据源映射关系,可以添加不同数据库的同步目标数据源配置：
+
+```java
+DDLConf ddlConf = new DDLConf();
+ddlConf.setDatabase("visualops");
+ddlConf.setTargetDbName("ddlsyn,test");//database visualops的ddl同步目标数据源，多个用逗号分隔
+
+dbOutputConfig.addDDLConf(ddlConf);
+ddlConf = new DDLConf();
+ddlConf.setDatabase("bboss");
+ddlConf.setTargetDbName("ddlsyn,test");//database bboss的ddl同步目标数据源，多个用逗号分隔
+dbOutputConfig.addDDLConf(ddlConf);
+```
+
+在建表或者添加字段ddl操作时，如果目标数据库已经存在相应的表或者字段，同步过程中就会报错，这样就会影响ddl操作的同步，因此需要忽略这种回放异常：
+
+```java
+dbOutputConfig.setIgnoreDDLSynError(true);//忽略ddl回放异常，如果ddl已经执行过，可能会报错，忽略sql执行异常
+```
+
+## 3.3 作业依赖数据配置
+
+本作业需要初始化和销毁ddl和数据同步的目标数据源test和ddlsyn
+
+### 3.3.1 test数据源初始化和销毁
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+dbOutputConfig
+        .setDbName("test")
+        .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+        .setDbUrl("jdbc:mysql://192.168.137.1:3306/apm?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+        .setDbUser("root")
+        .setDbPassword("123456")
+        .setValidateSQL("select 1")
+        .setUsePool(true)
+        .setDbInitSize(5)
+        .setDbMinIdleSize(5)
+        .setDbMaxSize(10)
+        .setShowSql(true)//是否使用连接池;
+        .setSqlFilepath("dsl2ndSqlFile.xml");//sql语句配置文件路径
+```
+
+test数据会在作业结束时自动销毁
+
+### 3.3.2 ddlsyn数据源初始化和销毁
+
+ddlsyn数据源初始化
+
+```java
+//通过作业初始化配置，对作业运行过程中依赖的数据源等资源进行初始化
+importBuilder.setImportStartAction(new ImportStartAction() {
+    /**
+     * 初始化之前执行的处理操作，比如后续初始化操作、数据处理过程中依赖的资源初始化
+     * @param importContext
+     */
+    @Override
+    public void startAction(ImportContext importContext) {
+
+
+        importContext.addResourceStart(new ResourceStart() {
+            @Override
+            public ResourceStartResult startResource() {
+
+                ResourceStartResult resourceStartResult = null;
+
+                DBConf tempConf = new DBConf();
+                tempConf.setPoolname("ddlsyn");//用于验证ddl同步处理的数据源
+                tempConf.setDriver("com.mysql.cj.jdbc.Driver");
+                tempConf.setJdbcurl("jdbc:mysql://192.168.137.1:3306/pinpoint?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true");
+
+                tempConf.setUsername("root");
+                tempConf.setPassword("123456");
+                tempConf.setValidationQuery("select 1");
+
+                tempConf.setInitialConnections(5);
+                tempConf.setMinimumSize(10);
+                tempConf.setMaximumSize(10);
+                tempConf.setUsepool(true);
+                tempConf.setShowsql(true);
+                tempConf.setJndiName("ddlsyn-jndi");
+                //# 控制map中的列名采用小写，默认为大写
+                tempConf.setColumnLableUpperCase(false);
+                //启动数据源
+                boolean result = SQLManager.startPool(tempConf);
+                //记录启动的数据源信息，用户作业停止时释放数据源
+                if(result){
+                    if(resourceStartResult == null)
+                        resourceStartResult = new DBStartResult();
+                    resourceStartResult.addResourceStartResult("ddlsyn");
+                }
+
+                return resourceStartResult;
+            }
+        });
+
+    }
+
+    /**
+     * 所有初始化操作完成后，导出数据之前执行的操作
+     * @param importContext
+     */
+    @Override
+    public void afterStartAction(ImportContext importContext) {
+
+    }
+});
+```
+
+ddlsyn数据源销毁
+
+```java
+//任务结束后销毁初始化阶段初始化的数据源等资源
+importBuilder.setImportEndAction(new ImportEndAction() {
+    @Override
+    public void endAction(ImportContext importContext, Exception e) {
+        //销毁初始化阶段自定义的数据源
+        importContext.destroyResources(new ResourceEnd() {
+            @Override
+            public void endResource(ResourceStartResult resourceStartResult) {
+                if(resourceStartResult instanceof DBStartResult) { //作业停止时，释放db数据源
+                    DataTranPluginImpl.stopDatasources((DBStartResult) resourceStartResult);
+                }
+            }
+        });
+    }
+});
+```
+
+## 3.4 完整案例
+
+可以访问以下地址了解多库多表数据同步到多目标库完整案例，在案例基础上适当调整即可实现所需的多库多表数据同步到多目标库功能：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2TargetDBDBOutput.java
+
+# 5 视频教程
 
 **mysql binlog数据采集作业开发调测发布部署视频教程：**
 
 https://www.bilibili.com/video/BV1ko4y1M7My/
 
-# 3 开发交流
+# 6 开发交流
 
 **Elasticsearch技术交流群：21220580,166471282**
 
-**Elasticsearch微信公众号：**
+<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 
-![img](images/qrcode.jpg)
+
+
+# 7.支持我们
+
+如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
+
+1.Star并向您的朋友推荐或分享
+
+[bboss elasticsearch client](https://gitee.com/bboss/bboss-elastic)🚀
+
+[数据采集&流批一体化处理](https://gitee.com/bboss/bboss-elastic-tran)🚀
+
+2.通过[爱发电 ](https://afdian.net/a/bbossgroups)直接捐赠，或者扫描下面二维码进行一次性捐款赞助，请作者喝一杯咖啡☕️
+
+
+
+
+
+<img src="images/alipay.png"  height="200" width="200">
+
+<img src="images/wchat.png" style="zoom:50%;" />
+
+非常感谢您对开源精神的支持！❤您的捐赠将用于bboss社区建设、QQ群年费、网站云服务器租赁费用。

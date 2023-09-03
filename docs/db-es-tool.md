@@ -240,6 +240,125 @@ CommonRecord - 封装处理后的结果记录，字段名称是经过规范化�
 
 importbuilder.addFieldMapping方法和context.addFieldMapping
 
+## 作业依赖资源初始化和销毁
+
+需要对作业执行过程中依赖其他的资源组件进行初始化，作业结束时需要释放和关闭作业执行时初始化的依赖资源组件，bboss通过以下两个接口来实现资源组件的初始化和销毁释放。
+
+资源组件的初始化：
+
+```java
+/**
+ * <p>Description: 导数据之前处理逻辑</p>
+ */
+public interface ImportStartAction {
+   /**
+    * 初始化之前执行的处理操作，比如后续初始化操作、数据处理过程中依赖的资源初始化
+    * @param importContext
+    */
+   void startAction(ImportContext importContext);
+
+   /**
+    * 所有初始化操作完成后，导出数据之前执行的操作
+    * @param importContext
+    */
+   void afterStartAction(ImportContext importContext);
+}
+```
+
+资源组件销毁：
+
+```java
+/**
+ * <p>Description: 任务结束处理逻辑</p> 
+ */
+public interface ImportEndAction {
+   /**
+    * 作业任务执行完毕后的处理操作
+    * @param importContext 作业定义配置上下文
+    * @param e  对应作业异常结束时的异常信息
+    */
+   void endAction(ImportContext importContext,Exception e);
+}
+```
+
+使用案例
+
+```java
+//通过作业初始化配置，对作业运行过程中依赖的数据源等资源进行初始化
+importBuilder.setImportStartAction(new ImportStartAction() {
+    /**
+     * 初始化之前执行的处理操作，比如后续初始化操作、数据处理过程中依赖的资源初始化
+     * @param importContext
+     */
+    @Override
+    public void startAction(ImportContext importContext) {
+
+
+        importContext.addResourceStart(new ResourceStart() {
+            @Override
+            public ResourceStartResult startResource() {
+
+                ResourceStartResult resourceStartResult = null;
+
+                DBConf tempConf = new DBConf();
+                tempConf.setPoolname("ddlsyn");//用于验证ddl同步处理的数据源
+                tempConf.setDriver("com.mysql.cj.jdbc.Driver");
+                tempConf.setJdbcurl("jdbc:mysql://192.168.137.1:3306/pinpoint?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true");
+
+                tempConf.setUsername("root");
+                tempConf.setPassword("123456");
+                tempConf.setValidationQuery("select 1");
+
+                tempConf.setInitialConnections(5);
+                tempConf.setMinimumSize(10);
+                tempConf.setMaximumSize(10);
+                tempConf.setUsepool(true);
+                tempConf.setShowsql(true);
+                tempConf.setJndiName("ddlsyn-jndi");
+                //# 控制map中的列名采用小写，默认为大写
+                tempConf.setColumnLableUpperCase(false);
+                //启动数据源
+                boolean result = SQLManager.startPool(tempConf);
+                //记录启动的数据源信息，用户作业停止时释放数据源
+                if(result){
+                    if(resourceStartResult == null)
+                        resourceStartResult = new DBStartResult();
+                    resourceStartResult.addResourceStartResult("ddlsyn");
+                }
+
+                return resourceStartResult;
+            }
+        });
+
+    }
+
+    /**
+     * 所有初始化操作完成后，导出数据之前执行的操作
+     * @param importContext
+     */
+    @Override
+    public void afterStartAction(ImportContext importContext) {
+
+    }
+});
+
+//任务结束后销毁初始化阶段初始化的数据源等资源
+importBuilder.setImportEndAction(new ImportEndAction() {
+    @Override
+    public void endAction(ImportContext importContext, Exception e) {
+        //销毁初始化阶段自定义的数据源
+        importContext.destroyResources(new ResourceEnd() {
+            @Override
+            public void endResource(ResourceStartResult resourceStartResult) {
+                if(resourceStartResult instanceof DBStartResult) { //作业停止时，释放db数据源
+                    DataTranPluginImpl.stopDatasources((DBStartResult) resourceStartResult);
+                }
+            }
+        });
+    }
+});
+```
+
 接下来结合实际案例介绍bboss datatran的功能.
 
 # 1.准备工作
