@@ -311,7 +311,7 @@ terminal,ecs,bboss
 
 以上配置除了采集明确配置了数据库的表数据：bboss.cityperson，apm.agent,pinpoint.cityperson
 
-还会采集terminal,ecs,bboss三个数据中表数据：batchest,logtable
+还会采集terminal,ecs,bboss三个数据库中两张表数据：batchest,logtable
 
 ```
 terminal.batchest
@@ -407,6 +407,36 @@ dbOutputConfig.addDDLConf(ddlConf);
 
 ```java
 dbOutputConfig.setIgnoreDDLSynError(true);//忽略ddl回放异常，如果ddl已经执行过，可能会报错，忽略sql执行异常
+```
+
+### 3.2.3 有效ddl语句筛选
+
+一般我们只需要同步建表、修改字段、删表之类的ddl语句，因此可以在作业构建器的datarefactor接口对有效的ddl进行筛选：
+
+```java
+importBuilder.setDataRefactor(new DataRefactor() {
+            @Override
+            public void refactor(Context context) throws Exception {
+                int action = (int)context.getMetaValue("action");
+//                if(context.isUpdate() || context.isDelete())
+//                    context.setDrop(true); //丢弃修改和删除数据
+                String database = (String)context.getMetaValue("database");
+                if( context.isDDL()) {
+                    String ddl = context.getStringValue("ddl").trim().toLowerCase();
+                    logger.info(context.getStringValue("ddl"));
+                    logger.info(context.getStringValue("errorCode"));
+                    logger.info(context.getStringValue("executionTime"));
+                    boolean isddl = ddl.indexOf("create ") > 0 || ddl.indexOf("alter ") > 0 || ddl.indexOf("drop ") > 0;
+                    if(!isddl){
+                        context.setDrop(true);//过滤无效ddl语句
+                    }
+
+
+                }
+                logger.info("database:{}",(String)context.getMetaValue("database"));
+//                int action1 = (int)context.getMetaValue("action1");
+            }
+        });
 ```
 
 ## 3.3 作业依赖数据配置

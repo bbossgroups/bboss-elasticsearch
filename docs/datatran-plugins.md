@@ -1535,6 +1535,16 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 多组sql语句场景下，optimize参数将不起作用
 
+### 2.1.4 数据输出到多个目标库
+
+为不同的库表sql配置指定对应的目标数据源，多个用逗号分隔，如果不指定就采用dbOutputConfig.setDbName方法设置的数据源
+
+```java
+sqlConf.setTargetDbName("test,ddlsyn");//多个用逗号分隔
+```
+
+参考文档：[多库多表数据同步到多目标库](https://esdoc.bbossgroups.com/#/mysql-binlog?id=_3-多库多表数据同步到多目标库)
+
 ## 2.2 Elasticsearch输出插件
 
 Elasticsearch输出插件配置类：[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)，配置Elasticsearch集群配置、http连接池参数配置、输出索引配置、索引类型配置，可以指定动态索引名称和固定索引名称，配置索引id生成规则，同时还可以将数据同步到多个Elasticsearch集群。
