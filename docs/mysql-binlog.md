@@ -12,11 +12,13 @@ bboss插件参考文档：
 
 https://esdoc.bbossgroups.com/#/datatran-plugins
 
+## 1.1 工作机制
+
 bboss mysql binlog数据采集插件原理图如下：
 
 <img src="images\mysql-binlog-arch.png" alt="图片" style="zoom:75%;" />
 
-
+## 1.2 同步模式
 
 Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等信息，非常方便地实现：
 
@@ -34,17 +36,25 @@ Mysql binlog插件支持以下三种数据采集模式：
 
 模式1适用一次性离线数据采集场景，模式2和模式3适用于实时采集场景。源表本来就有数据需要同步+实时同步,原来的数据可以基于模式1采集binlog文件，如果没有binlog文件，可以直接用数据库输入插件，直接一次性采集全表数据，然后再用模式3实现增量采集。
 
-视频教程
-
-[实时采集Mysql binlog增删改数据教程（db-db单表多表）](https://www.bilibili.com/video/BV1ko4y1M7My)
-
-[实战：基于bboss cdc实时同步mysql增删改数据到Elasticsearch](https://www.bilibili.com/video/BV1aW4y1f73c)
+## 1.3 同步案例
 
 本文通过两个案例来讲解介绍mysql binlog插件的使用方法：
 
 1）实时同步Mysql Binlog增删改数据到Elasticsearch作为案例
 
 2）多库多表数据同步到多目标库案例
+
+## 1.4 注意事项
+
+通过mysql binlog插件同步插入、修改和删除数据时，目标表需要避免使用自增主键字段
+
+## 1.5 视频教程
+
+[实时采集Mysql binlog增删改数据教程（db-db单表多表）](https://www.bilibili.com/video/BV1ko4y1M7My)
+
+[实战：基于bboss cdc实时同步mysql增删改数据到Elasticsearch](https://www.bilibili.com/video/BV1aW4y1f73c)
+
+
 
 # 2.Mysql增删改数据同步到Elasticsearch
 
