@@ -40,6 +40,8 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2TargetDBDBOutput.java
 
+​     参考文档：[多库多表数据同步到多目标库](https://esdoc.bbossgroups.com/#/mysql-binlog?id=_3-多库多表数据同步到多目标库)
+
 # v7.0.8 功能改进
 1. 数据库输入输出插件改进：增加配置db connection property配置方法addConnectionProperty，使用案例
 ```java
