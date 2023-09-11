@@ -69,6 +69,8 @@ elasticUser=elastic
 
 elasticPassword=changeme
 
+### 2.1.1 验证机制兼容性配置
+
 默认采用http client的http basicauth securit 插件进行初始化加载账号口令，但是某些情况会导致http basic security机制不能正常工作：
 
 1）http服务端对安全认证的实现不是很规范
@@ -91,11 +93,62 @@ spring.elasticsearch.bboss.http.backoffAuth=true
 
 http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。
 
+### 2.1.2 配置加密口令
+
 如果需要配置加密口令，那么可以通过配置属性拦截器来对加密口令进行识别处理，参考文档：
 
 [使用外部属性加载拦截器](https://doc.bbossgroups.com/#/aop/IntroduceIoc?id=_6-使用外部属性加载拦截器)
 
-## **2.2 Elasticsearch 服务器http地址和端口配置**
+加密口令配置案例：
+
+spring boot环境
+
+```properties
+spring.elasticsearch.bboss.elasticUser=elastic
+#加密口令
+spring.elasticsearch.bboss.elasticPassword=xxxxxxx
+#属性拦截器
+spring.elasticsearch.bboss.propertiesInterceptor=org.frameworkset.spi.assemble.VisualopsPropertiesInterceptor
+```
+
+非spring boot环境
+
+```properties
+elasticUser=elastic
+#加密口令
+elasticPassword=xxxxxxxxx
+#属性拦截器
+propertiesInterceptor=org.frameworkset.spi.assemble.VisualopsPropertiesInterceptor
+```
+
+在属性拦截器中配置口令解密处理
+
+```java
+public class TestPropertiesInterceptor implements PropertiesInterceptor {
+    @Override
+    public Object convert(PropertyContext propertyContext) {
+        if(propertyContext.getProperty() == null){
+            return propertyContext.getValue();
+        }
+        //对加密口令进行解密处理，根据实际加密算法采用特定的解密算法即可
+        else if(propertyContext.getProperty().equals("elasticPassword")
+                || propertyContext.getProperty().equals("http.authPassword")) {
+            BasicTextEncryptor passwordEncrypt = new BasicTextEncryptor();
+            // 设置salt值，可随意定义
+            passwordEncrypt.setPassword("dvvm");
+            return passwordEncrypt.decrypt(String.valueOf(propertyContext.getValue()));
+        }
+        else if(propertyContext.getProperty().equals("http.authAccount")
+                || propertyContext.getProperty().equals("elasticUser")) {
+            return propertyContext.getValue();
+        }
+
+        return propertyContext.getValue();
+    }
+}
+```
+
+## 2.2 Elasticsearch 服务器http地址和端口配置
 
 
 
