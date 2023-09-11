@@ -889,13 +889,19 @@ public abstract class BuildTool {
 		Object esRetryOnConflict = null;
 		Object version = null;
 		Object versionType = null;
-		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
 		if(clientOptions != null) {
 			if (clientOptions.getId() != null) {
 				docId = clientOptions.getId();
-			} else {
-				docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : getId(params, beanInfo);
+			} else if(clientOptions.getIdField() != null) {
+				docId = BuildTool.getId(params, beanInfo, clientOptions.getIdField());
+                if(beanInfo != null && beanInfo.isMap() && !clientOptions.isPersistMapDocId()){
+                    ((Map)params).remove(clientOptions.getIdField());
+                }
 			}
+             else {
+                docId =  getId(params, beanInfo);
+
+            }
 		}
 		else{
 			docId = getId(params,  beanInfo );
@@ -904,7 +910,7 @@ public abstract class BuildTool {
 			if (clientOptions.getParentId() != null) {
 				parentId = clientOptions.getParentId();
 			} else{
-				parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params, beanInfo);
+				parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanInfo, clientOptions.getParentIdField()) : getParentId(params, beanInfo);
 			}
 		}
 		else{
@@ -914,13 +920,7 @@ public abstract class BuildTool {
 		if(clientOptions != null) {
 			refreshOption = clientOptions.getRefreshOption();
 
-//			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params,beanInfo);
-//			if(clientOptions.getRouting() == null) {
-//				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRoutingField()) : null;
-//			}
-//			else{
-//				routing = clientOptions.getRouting();
-//			}
+
 		}
 
 
@@ -965,14 +965,14 @@ public abstract class BuildTool {
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
 		if(indexName == null){
-			if(beanClassInfo == null){
+			if(beanInfo == null){
 				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
 			}
-			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
 			if(esIndexWrapper == null){
-				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
 			}
-			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,params);
 			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
 			builder.append("/");
 			if(indexType == null){
@@ -1129,26 +1129,6 @@ public abstract class BuildTool {
 		}
 		return builder.toString();
 
-
-
-
-
-
-//		if (esRetryOnConflict != null) {
-//			if(!upper7) {
-//				writer.write(",\"_retry_on_conflict\":");
-//			}
-//			else{
-//				writer.write(",\"retry_on_conflict\":");
-//			}
-//			writer.write(String.valueOf(esRetryOnConflict));
-//		}
-
-
-
-
-
-
 	}
 
 	/**
@@ -1163,39 +1143,29 @@ public abstract class BuildTool {
 		Object esRetryOnConflict = null;
 		Object version = null;
 		Object versionType = null;
-		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
 		if(clientOptions != null) {
 			if (clientOptions.getId() != null) {
 				docId = clientOptions.getId();
-			} else {
-				docId = clientOptions.getIdField() != null ? BuildTool.getId(params, beanClassInfo, clientOptions.getIdField()) : getId(params, beanInfo);
+			} else if(clientOptions.getIdField() != null ){
+				docId =  BuildTool.getId(params, beanInfo, clientOptions.getIdField());
+                if(beanInfo != null && beanInfo.isMap() && !clientOptions.isPersistMapDocId()){
+                    ((Map)params).remove(clientOptions.getIdField());
+                }
 			}
+            else {
+                docId = getId(params, beanInfo);
+            }
 		}
 		else{
 			docId = getId(params,  beanInfo );
 		}
 
-//		if(clientOptions != null) {
-//			if (clientOptions.getParentId() != null) {
-//				parentId = clientOptions.getParentId();
-//			} else{
-//				parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params, beanInfo);
-//			}
-//		}
-//		else{
-//			parentId = getParentId(params,beanInfo);
-//		}
+
 
 		if(clientOptions != null) {
 			refreshOption = clientOptions.getRefreshOption();
 
-//			parentId = clientOptions.getParentIdField() != null ? BuildTool.getParentId(params, beanClassInfo, clientOptions.getParentIdField()) : getParentId(params,beanInfo);
-//			if(clientOptions.getRouting() == null) {
-//				routing = clientOptions.getRoutingField() != null ? BuildTool.getRouting(params, beanClassInfo, clientOptions.getRoutingField()) : null;
-//			}
-//			else{
-//				routing = clientOptions.getRouting();
-//			}
+
 		}
 
 
@@ -1240,26 +1210,19 @@ public abstract class BuildTool {
 		StringBuilder builder = new StringBuilder();
 		Object id = docId;
 		if(index == null){
-			if(beanClassInfo == null){
+			if(beanInfo == null){
 				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
 			}
-			ESIndexWrapper esIndexWrapper = beanClassInfo.getEsIndexWrapper();
+			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
 			if(esIndexWrapper == null){
-				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanClassInfo.toString()).toString());
+				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
 			}
-			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanClassInfo,params);
+			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,params);
 			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
 
 
 			if(!uper7) {
-//				if(indexType == null){
-//					builder.append("/");
-//					BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
-//				}
-//				else{
-//					builder.append("/").append(indexType);
-//				}
-//				builder.append("/").append(id).append("/_update");
+
 				if (indexType == null || indexType.equals("")) {
 					indexType = buildIndiceType(esIndexWrapper, restGetVariableValue);
 				}
@@ -1290,13 +1253,7 @@ public abstract class BuildTool {
 		boolean p = false;
 		if(refreshOption != null ){
 			builder.append("?").append(refreshOption);
-//			if(parentId != null){
-//				builder.append("&parent=").append(parentId);
-//
-//			}
-//			if(routing != null){
-//				builder.append("&routing=").append(routing);
-//			}
+
 			p = true;
 		}
 
@@ -1346,28 +1303,7 @@ public abstract class BuildTool {
 				p = true;
 			}
 		}
-		/**
-		String pipeline = clientOptions!= null?clientOptions.getPipeline():null;
-		if(pipeline != null){
-			if(p)
-				builder.append("&pipeline=").append(pipeline);
-			else {
-				builder.append("?pipeline=").append(pipeline);
-				p = true;
-			}
-		}
 
-		String op_type = clientOptions!= null?clientOptions.getOpType():null;
-
-		if(op_type != null){
-			if(p)
-				builder.append("&op_type=").append(op_type);
-			else {
-				builder.append("?op_type=").append(op_type);
-				p = true;
-			}
-		}
-		 */
 		String refresh = clientOptions!= null?clientOptions.getRefresh():null;
 
 		if(refresh != null){
@@ -1420,26 +1356,6 @@ public abstract class BuildTool {
 		}
 		return builder.toString();
 
-
-
-
-
-
-//		if (esRetryOnConflict != null) {
-//			if(!upper7) {
-//				writer.write(",\"_retry_on_conflict\":");
-//			}
-//			else{
-//				writer.write(",\"retry_on_conflict\":");
-//			}
-//			writer.write(String.valueOf(esRetryOnConflict));
-//		}
-
-
-
-
-
-
 	}
 	/**
 	 * bulk
@@ -1463,6 +1379,9 @@ public abstract class BuildTool {
 			if(clientOption != null) {
 				if( clientOption.getIdField() != null) {
 					id = BuildTool.getId(params, beanInfo, clientOption.getIdField());
+                    if(beanInfo != null && beanInfo.isMap() && !clientOption.isPersistMapDocId()){
+                        ((Map)params).remove(clientOption.getIdField());
+                    }
 				}
 				else if( clientOption.getId() != null){
 					id = clientOption.getId();

@@ -68,6 +68,12 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	private Integer waitForActiveShards;
 	private String refresh;
 	private String idField;
+
+    /**
+     * 添加文档时，如果数据采用Map封装，控制是否保存文档id字段到记录中，true 保存  false 不保存，默认值true
+     * 如果设置了idField，并且不想持久化这个字段值到文档中，可以设置persistMapDocId为false
+     */
+    private boolean persistMapDocId = true;
 	/**单文档操作：文档id*/
 	private Object id;
 	/**单文档操作：文档id*/
@@ -83,6 +89,8 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
      * 脚本中已经涵盖了doc部分内容，无需自动添加doc部分内容
      */
     private boolean haveScriptDoc;
+
+
 
 
     public String getRefreshOption() {
@@ -318,8 +326,9 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 	}
 
 
-	public void setFilterPath(String filterPath) {
+	public ClientOptions setFilterPath(String filterPath) {
 		this.filterPath = filterPath;
+        return this;
 	}
 
 	@Override
@@ -345,30 +354,47 @@ public class ClientOptions    implements BulkActionConfig,Serializable {
 		return id;
 	}
 
-	public void setId(Object id) {
+	public ClientOptions setId(Object id) {
 		this.id = id;
+        return this;
 	}
 
 	public Object getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(Object parentId) {
+	public ClientOptions setParentId(Object parentId) {
 		this.parentId = parentId;
+        return this;
 	}
 
 	public String getScriptField() {
 		return scriptField;
 	}
 
-	public void setScriptField(String scriptField) {
+	public ClientOptions setScriptField(String scriptField) {
 		this.scriptField = scriptField;
+        return this;
 	}
     public boolean isHaveScriptDoc() {
         return haveScriptDoc;
     }
 
-    public void setHaveScriptDoc(boolean haveScriptDoc) {
+    public ClientOptions setHaveScriptDoc(boolean haveScriptDoc) {
         this.haveScriptDoc = haveScriptDoc;
+        return this;
+    }
+
+    public boolean isPersistMapDocId() {
+        return persistMapDocId;
+    }
+
+    /**
+     * 添加文档时，如果数据采用Map封装，控制是否保存文档id字段到记录中，true 保存  false 不保存，默认值true
+     * 如果设置了idField，并且不想持久化这个字段值到文档中，可以设置persistMapDocId为false
+     */
+    public ClientOptions setPersistMapDocId(boolean persistMapDocId) {
+        this.persistMapDocId = persistMapDocId;
+        return this;
     }
 }

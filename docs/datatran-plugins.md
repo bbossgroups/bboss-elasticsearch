@@ -1545,6 +1545,49 @@ sqlConf.setTargetDbName("test,ddlsyn");//多个用逗号分隔
 
 参考文档：[多库多表数据同步到多目标库](https://esdoc.bbossgroups.com/#/mysql-binlog?id=_3-多库多表数据同步到多目标库)
 
+### 2.1.5 Sql语句配置参考
+
+Sql语句配置参考：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/resources/dsl2ndSqlFile.xml
+
+```xml
+ <!--
+    插入数据sql
+    -->
+    <property name="insertSQLnew">
+        <![CDATA[INSERT INTO batchtest ( name, author, content, title, optime, oper, subtitle, collecttime,ipinfo)
+                VALUES ( #[operModule],  ## 来源dbdemo索引中的 operModule字段
+                         #[author], ## 通过datarefactor增加的字段
+                         #[logContent], ## 来源dbdemo索引中的 logContent字段
+                         #[title], ## 通过datarefactor增加的字段
+                         #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段
+                         #[logOperuser],  ## 来源dbdemo索引中的 logOperuser字段
+                         #[subtitle], ## 通过datarefactor增加的字段
+                         #[collecttime], ## 通过datarefactor增加的字段
+                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段
+]]>
+    </property>
+```
+
+其中的#[ipinfo]为bboss sql语句变量语法:#[fieldName] ,其中的fieldName为数据采集记录中字段名称;
+
+以下为bboss注释语法
+
+单行：
+
+```properties
+## 通过datarefactor增加的字段
+```
+
+多行：
+
+```properties
+#*
+注释内容
+*#
+```
+
+bboss 持久层sql管理和配置参考文档：https://doc.bbossgroups.com/#/persistent/SqlXml
+
 ## 2.2 Elasticsearch输出插件
 
 Elasticsearch输出插件配置类：[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)，配置Elasticsearch集群配置、http连接池参数配置、输出索引配置、索引类型配置，可以指定动态索引名称和固定索引名称，配置索引id生成规则，同时还可以将数据同步到多个Elasticsearch集群。

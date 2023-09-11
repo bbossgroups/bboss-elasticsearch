@@ -438,6 +438,48 @@ mysqlbinlog插件maven坐标
  </dependency>
 ```
 
+## 1.2 clickhouse对接配置
+
+如果需要从clickhouse导出或者输出数据,需要额外引入clickhouse驱动包
+
+```xml
+<dependency>
+      <groupId>com.github.housepower</groupId>
+      <artifactId>clickhouse-native-jdbc</artifactId>
+      <version>2.6.5</version>
+      <scope>compile</scope>
+ </dependency>
+```
+
+对应clickhouse的配置案例：
+
+```properties
+clickhousedm.db.user = default
+clickhousedm.db.password =
+clickhousedm.db.driver = com.github.housepower.jdbc.ClickHouseDriver
+# DataSource singleDataSource = new BalancedClickhouseDataSource("jdbc:clickhouse://127.0.0.1:9000");
+#
+#DataSource dualDataSource = new BalancedClickhouseDataSource("jdbc:clickhouse://127.0.0.1:9000,127.0.0.1:9000");
+
+clickhousedm.db.url = jdbc:clickhouse://10.13.6.4:29000,10.13.6.7:29000,10.13.6.6:29000/visualops
+```
+
+使用housepower驱动需要使用clickhouse的tcp端口，否则会碰到异常：
+
+Accept the id of response that is not recognized by Server
+
+tcp端口详见clickhouse的config.xml配置文件：
+
+```xml
+<!-- Port for interaction by native protocol with:
+     - clickhouse-client and other native ClickHouse tools (clickhouse-benchmark, clickhouse-copier);
+     - clickhouse-server with other clickhouse-servers for distributed query processing;
+     - ClickHouse drivers and applications supporting native protocol
+     (this protocol is also informally called as "the TCP protocol");
+     See also 'tcp_port_secure' for secure connections.
+-->
+<tcp_port>29000</tcp_port>
+```
 # 2.数据库表数据导入到Elasticsearch
 
 ## 2.1.案例对应的源码
@@ -1279,6 +1321,18 @@ bboss支持将增量状态保存到其他关系数据库中（譬如mysql），�
 #### 2.8.5.9.已完成增量状态记录过期清理机制设置
 
 本功能主要适用于文件数据采集插件，参考文档：[设置已完成记录增量状态过期清理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_14设置已完成记录增量状态过期清理机制)
+
+#### 2.8.5.10  增量字段配置注意事项
+
+增量字段配置注意事项：
+
+数据库：增量字段必须出现在查询sql语句召回字段中
+
+Elasticsearch：增量字段必须出现在dsl召回字段中
+
+MongoDB：增量字段必须出现fethField字段清单中
+
+如果增量字段没有出现在查询返回的数据记录中，就会获取不到增量值，从而导致数据增量采集无法实现。
 
 ### 2.8.6 定时全量导入
 
