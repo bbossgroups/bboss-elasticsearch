@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.0.9 发布
+# BBOSS版本变更记录-v7.1.0 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)是一个基于开源协议Apache License发布的开源项目，由开源团队bboss运维，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.9</version>
+            <version>7.1.0</version>
         </dependency>
 ```
 
@@ -28,10 +28,53 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.0.9</version>
+            <version>7.1.0</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.1.0 功能改进
+1. 流批一体化改进：框架增加了添加和获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理
+使用案例：
+```java
+   //添加用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理，
+   context.addTempData("name","ddd");
+```
+```java
+   //获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理，
+   CommonRecord data = (CommonRecord) mapData.getData();
+  
+   String name = (String)data.getTempData("name");
+```
+2. 修复指标分析器设置时间格式空指针异常
+3. 修复指标分析器设置时间窗口类型空指针异常
+4. Elasticsearch客户端改进：添加文档时，如果数据采用Map封装，控制是否保存文档id字段到记录中，true 保存 false 不保存，默认值true
+使用案例：
+```java
+   //创建创建/修改/获取/删除文档的客户端对象，单实例多线程安全
+   ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
+   //构建一个对象，日期类型，字符串类型属性演示
+   Map demo = new LinkedHashMap();
+   demo.put("demoId","2");//文档id，唯一标识，@PrimaryKey注解标示,如果demoId已经存在做修改操作，否则做添加文档操作
+   demo.put("agentStarttime",new Date());
+   demo.put("applicationName","blackcatdemo2");
+   demo.put("contentbody","this-is content body2");
+   demo.put("agentStarttime",new Date());
+   demo.put("name","|刘德华");
+   demo.put("orderId","NFZF15045871807281445364228");
+   demo.put("contrastStatus",2);
+   demo.put("localDateTime", LocalDateTime.now());
+
+        //强制刷新
+        ClientOptions addOptions = new ClientOptions();
+        addOptions.setIdField("orderId");
+        addOptions.setPersistMapDocId(false);
+        //如果orderId对应的文档已经存在则更新，不存在则插入新增
+        String response = clientUtil.addDocument("demonoid",//索引表
+                demo,addOptions);
+```
+5. 流处理机制改进：根据时间窗口类型配置日期格式和相应的时间维度字段
+6. 流处理机制改进：useDefaultMapData调整为false
 
 # v7.0.9 功能改进
 
@@ -477,7 +520,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.0.9版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.1.0版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -652,7 +695,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.0.9</version>
+            <version>7.1.0</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -660,7 +703,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.0.9</version>
+            <version>7.1.0</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -747,7 +790,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.0.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.1.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1293,7 +1336,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.0.9</version>
+    <version>7.1.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2402,10 +2445,10 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.0.9兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.0.9兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.1.0兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.1.0兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.0.9兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.1.0兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 
