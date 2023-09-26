@@ -450,17 +450,23 @@ public abstract class ResultUtil {
 		Map<String,Map<String,Object>> aggregations = searchResult.getAggregations();
 		if(aggregations != null){
 			Map<String,Object> traces = aggregations.get(aggs);
-			Object _buckets = traces.get("buckets");
-			if(_buckets == null){
-				Object value = traces.get("value");
-				return singleValueAgg(searchResult,aggregations,
-						value,type);
+			if(traces != null) {
+				Object _buckets = traces.get("buckets");
+				if (_buckets == null) {
+					Object value = traces.get("value");
+					return singleValueAgg(searchResult, aggregations,
+							value, type);
+				} else {
+					return bulkAgg(searchResult, aggregations,
+							_buckets, type,
+							aggs, stats,
+							aggBucketHandle);
+				}
 			}
 			else{
-				return bulkAgg(searchResult,aggregations,
-						_buckets,type,
-						aggs,stats,
-						aggBucketHandle);
+				logger.warn("Aggs bulk {} do not exist ,return empty result,please check dsl bulk settings.",aggs);
+				ESAggDatas<T> ret = new ESAggDatas<T>();
+				return ret;
 			}
 
 		}

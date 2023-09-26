@@ -288,7 +288,7 @@ Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/
 
 Mysql binlog插件通过配置对应的mysql master ip和端口、数据库账号和口令、监听的数据库表以及binlog文件路径等信息，实时采集mysql增删改数据，支持以下三种数据采集模式：
 
-**模式1** 直接读取binlog文件,采集文件中的增删改数据
+**模式1** 直接读取binlog文件,采集文件中的增删改数据，可以配置binlog文件清单，亦可以查询mysql master status自动获取存量binlog文件清单
 
 **模式2** 监听mysql master slave ip和端口，作业重启从binlog最新位置采集数据
 
@@ -314,6 +314,8 @@ Mysql binlog输入插件配置参数和配置实例，更多介绍，浏览上�
 
 ### 1.3.1 插件配置案例
 
+配置binlog文件清单
+
 ```java
 MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
 mySQLBinlogConfig.setHost("192.168.137.1");
@@ -328,6 +330,25 @@ mySQLBinlogConfig.setTables("cityperson,batchtest");
 mySQLBinlogConfig.setDatabase("bboss");
 importBuilder.setInputConfig(mySQLBinlogConfig);
 ```
+
+查询mysql master status自动获取存量binlog文件清单
+
+```java
+        MySQLBinlogConfig mySQLBinlogConfig = new MySQLBinlogConfig();
+        mySQLBinlogConfig.setHost("localhost");
+        mySQLBinlogConfig.setPort(3306);
+        mySQLBinlogConfig.setDbUser("root");
+        mySQLBinlogConfig.setDbPassword("123456");
+        mySQLBinlogConfig.setServerId(100000L);
+        mySQLBinlogConfig.setTables("cityperson,batchtest");//
+        mySQLBinlogConfig.setDatabase("bboss");
+        mySQLBinlogConfig.setCollectMasterHistoryBinlog(true);
+        mySQLBinlogConfig.setBinlogDir("C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Data");
+
+        importBuilder.setInputConfig(mySQLBinlogConfig);
+```
+
+需要设置BinlogDir，指定binlog文件存放的服务器目录，通过设置CollectMasterHistoryBinlog为true，自动查询获取mysql存量binlog文件清单。
 
 ### 1.3.2 自定义输出插件结合案例
 

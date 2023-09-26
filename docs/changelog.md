@@ -2,7 +2,7 @@
 
 # BBOSS版本变更记录-v7.1.0 发布
 
-[bboss](https://esdoc.bbossgroups.com/#/README)是一个基于开源协议Apache License发布的开源项目，由开源团队bboss运维，主要由以下三部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件
