@@ -1609,6 +1609,48 @@ Sql语句配置参考：https://gitee.com/bboss/bboss-datatran-demo/blob/main/sr
 
 bboss 持久层sql管理和配置参考文档：https://doc.bbossgroups.com/#/persistent/SqlXml
 
+除了通过配置文件设置sql，还可以直接在dboutputconfig或者sqlconf直接指定sql语句，例如：
+
+DBOutputConfig.setInsertSql/setUpdateSql/setDeleteSql
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+dbOutputConfig.setDbName("target")
+      .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
+      .setDbUrl("jdbc:mysql://localhost:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true") //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+      .setDbUser("root")
+      .setDbPassword("123456")
+      .setValidateSQL("select 1")
+      .setUsePool(true)//是否使用连接池
+      .setInsertSql("INSERT INTO batchtest ( name, author, content, title, optime, oper, subtitle, collecttime,ipinfo)\n" +
+            "                VALUES ( #[OPER_MODULE],  ## 来源dbdemo索引中的 operModule字段\n" +
+            "                         #[author], ## 通过datarefactor增加的字段\n" +
+            "                         #[LOG_CONTENT], ## 来源dbdemo索引中的 logContent字段\n" +
+            "                         #[title], ## 通过datarefactor增加的字段\n" +
+            "                         #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段\n" +
+            "                         #[LOG_OPERUSER],  ## 来源dbdemo索引中的 logOperuser字段\n" +
+            "                         #[subtitle], ## 通过datarefactor增加的字段\n" +
+            "                         #[collecttime], ## 通过datarefactor增加的字段\n" +
+            "                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段");
+```
+
+sqlconf配置
+
+sqlConf.setInsertSql/setUpdateSql/setDeleteSql
+
+```java
+sqlConf.setInsertSql("INSERT INTO batchtest ( name, author, content, title, optime, oper, subtitle, collecttime,ipinfo)\n" +
+        "                VALUES ( #[OPER_MODULE],  ## 来源dbdemo索引中的 operModule字段\n" +
+                "                         #[author], ## 通过datarefactor增加的字段\n" +
+                "                         #[LOG_CONTENT], ## 来源dbdemo索引中的 logContent字段\n" +
+                "                         #[title], ## 通过datarefactor增加的字段\n" +
+                "                         #[logOpertime], ## 来源dbdemo索引中的 logOpertime字段\n" +
+                "                         #[LOG_OPERUSER],  ## 来源dbdemo索引中的 logOperuser字段\n" +
+                "                         #[subtitle], ## 通过datarefactor增加的字段\n" +
+                "                         #[collecttime], ## 通过datarefactor增加的字段\n" +
+                "                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段");
+```
+
 ## 2.2 Elasticsearch输出插件
 
 Elasticsearch输出插件配置类：[ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java)，配置Elasticsearch集群配置、http连接池参数配置、输出索引配置、索引类型配置，可以指定动态索引名称和固定索引名称，配置索引id生成规则，同时还可以将数据同步到多个Elasticsearch集群。

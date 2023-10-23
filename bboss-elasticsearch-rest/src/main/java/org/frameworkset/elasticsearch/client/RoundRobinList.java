@@ -96,8 +96,8 @@ public class RoundRobinList {
 						break;
 					}
 				}
-				if(temp == null)
-					throw new NoServerElasticSearchException(message);
+//				if(temp == null)
+//					throw new NoServerElasticSearchException(message);
 				return temp;
 			}
 		}
@@ -131,8 +131,7 @@ public class RoundRobinList {
 						break;
 					}
 				}
-				if(temp == null)
-					throw new NoServerElasticSearchException(message);
+
 				return temp;
 			}
 		}
@@ -142,8 +141,15 @@ public class RoundRobinList {
 	}
 	public ESAddress get(boolean failAllContinue){
 		ESAddress esAddress = _get();
-		if(esAddress != null || !failAllContinue)
+		if(esAddress != null){
 			return esAddress;
+		}
+		if(!failAllContinue){
+			throw new NoServerElasticSearchException(message);
+		}
+//		if(esAddress != null || !failAllContinue)
+//			return esAddress;
+
 
 		return _getOkOrFailed();
 	}

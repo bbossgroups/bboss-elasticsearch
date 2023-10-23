@@ -124,6 +124,15 @@ String response = clientUtil.addDocument("demo",//索引表
       demo,addOptions);
 ```
 
+上面的实例中，orderId作为文档标识保存，同时也会作为一个文档字段保存，可以通过以下配置，控制不将orderId字段作为普通字段保存：
+
+```java
+addOptions.setIdField("orderId");
+addOptions.setPersistMapDocId(false);//控制不将orderId字段作为普通字段保存
+```
+
+
+
 # 2. 批量添加修改文档
 
 ## 2.1 批量添加bean记录
@@ -221,7 +230,17 @@ public void testAddAndUpdateMapDocuments() throws ParseException {
 }
 ```
 
+上面的实例中，orderId作为文档标识保存，同时也会作为一个文档字段保存，可以通过以下配置，控制不将orderId字段作为普通字段保存：
+
+```java
+addOptions.setIdField("orderId");
+addOptions.setPersistMapDocId(false);//控制不将orderId字段作为普通字段保存
+```
+
+
+
 ## 2.3 控制批量添加响应报文内容
+
 为了提升性能，并没有把所有响应数据都返回，过滤掉了部分数据，可以自行设置FilterPath进行控制
 ```java
 		ClientOptions clientOptions = new ClientOptions();
