@@ -151,7 +151,13 @@ public class RoundRobinList {
 //			return esAddress;
 
 
-		return _getOkOrFailed();
+		esAddress = _getOkOrFailed();
+		if(esAddress != null){
+			return esAddress;
+		}
+		else{
+			throw new NoServerElasticSearchException(message);
+		}
 	}
 
 	public int size() {
