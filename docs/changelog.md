@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.1.0 发布
+# BBOSS版本变更记录-v7.1.1 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 
@@ -28,11 +28,19 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
+# v7.1.1 功能改进
+1. 处理获取Oracle Date类型字段值，字段精度丢失问题（时分秒），采用Timestamp进行处理
+2. context接口增加方法：getValue(String fieldName, java.sql.Types),用于在处理基于关系数据库输入插件数据处理时，获取指定类型的原始字段值
+```java
+   Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP);
+```
+3.增加MongoDB CDC输入插件
+参考案例：
 # v7.1.0 功能改进
 1. 流批一体化改进：框架增加了添加和获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理
 使用案例：
