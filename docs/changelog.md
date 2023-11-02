@@ -39,8 +39,10 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 ```java
    Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP);
 ```
-3.增加MongoDB CDC输入插件
-参考案例：
+3. 增加MongoDB CDC输入插件：可以增量模式采集MongoDB 增、删、改数据，也可每次作业重启从最新位置采集MongoDB 增、删、改数据
+参考案例： https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDCDemo.java
+4. 优化作业生命周期管理机制：importcotext增加终止作业执行方法，方便在异步作业处理的任何地方终止作业的执行
+
 # v7.1.0 功能改进
 1. 流批一体化改进：框架增加了添加和获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理
 使用案例：
