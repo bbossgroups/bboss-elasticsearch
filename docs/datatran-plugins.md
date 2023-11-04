@@ -844,14 +844,11 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
 				.setMaxWaitTime(10000)
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
-				.setThreadsAllowedToBlockForConnectionMultiplier(6)
 				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662
-//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
-//				.setOption("")
-				.setAutoConnectRetry(true);
+;
 
 		importBuilder.setInputConfig(mongoDBInputConfig);
 ```
@@ -873,14 +870,12 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
             .setMaxWaitTime(10000)
             .setSocketTimeout(1500).setSocketKeepAlive(true)
             .setConnectionsPerHost(100)
-            .setThreadsAllowedToBlockForConnectionMultiplier(6)
             .setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
             // mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
             //String database,String userName,String password,String mechanism
             //https://www.iteye.com/blog/yin-bp-2064662
-//          .buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
-//          .setOption("")
-            .setAutoConnectRetry(true);
+
+            ;
 
       //定义mongodb数据查询条件对象（可选步骤，全量同步可以不需要做条件配置）
       BasicDBObject query = new BasicDBObject();
@@ -905,26 +900,26 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
       mongoDBInputConfig.setQuery(query);
 
       //设定需要返回的session数据字段信息（可选步骤，同步全部字段时可以不需要做下面配置）
-      BasicDBObject fetchFields = new BasicDBObject();
-      fetchFields.put("appKey", 1);
-      fetchFields.put("sessionid", 1);
-      fetchFields.put("creationTime", 1);
-      fetchFields.put("lastAccessedTime", 1);
-      fetchFields.put("maxInactiveInterval", 1);
-      fetchFields.put("referip", 1);
-      fetchFields.put("_validate", 1);
-      fetchFields.put("host", 1);
-      fetchFields.put("requesturi", 1);
-      fetchFields.put("lastAccessedUrl", 1);
-      fetchFields.put("secure",1);
-      fetchFields.put("httpOnly", 1);
-      fetchFields.put("lastAccessedHostIP", 1);
+      List<String> fetchFields = new ArrayList<>();
+        fetchFields.add("appKey");
+        fetchFields.add("sessionid");
+        fetchFields.add("creationTime");
+        fetchFields.add("lastAccessedTime");
+        fetchFields.add("maxInactiveInterval");
+        fetchFields.add("referip");
+        fetchFields.add("_validate");
+        fetchFields.add("host");
+        fetchFields.add("requesturi");
+        fetchFields.add("lastAccessedUrl");
+        fetchFields.add("secure");
+        fetchFields.add("httpOnly");
+        fetchFields.add("lastAccessedHostIP");
 
-      fetchFields.put("userAccount",1);
-      fetchFields.put("testVO", 1);
-      fetchFields.put("privateAttr", 1);
-      fetchFields.put("local", 1);
-      fetchFields.put("shardNo", 1);
+        fetchFields.add("userAccount");
+        fetchFields.add("testVO");
+        fetchFields.add("privateAttr");
+        fetchFields.add("local");
+        fetchFields.add("shardNo");
 
       mongoDBInputConfig.setFetchFields(fetchFields);
       importBuilder.setInputConfig(mongoDBInputConfig);
@@ -1007,7 +1002,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
             context.newName2ndData("axx","newname",newvalue);
              */
              //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
-            DBObject record = (DBObject) context.getRecord();
+             Document record = (Document) context.getRecord();
             //不需要输出的字段，可以忽略掉这些属性
 //          context.addIgnoreFieldMapping("author");
 //          context.addIgnoreFieldMapping("title");
@@ -1021,13 +1016,60 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 https://esdoc.bbossgroups.com/#/mongodb-elasticsearch
 
-## 1.8 Kafka输入插件
+## 1.8 MongoDB CDC插件
+
+基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据，同步到其他数据库。
+
+MongoDB CDC输入插件配置类：[MongoCDCInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongocdc/MongoCDCInputConfig.java)，配置mongodb数据库参数、监听的数据库以及表清单、各种连接控制参数/服务器地址等。
+
+可以非常方便地实现重启恢复点采集机制。
+
+### 1.8.1 插件配置案例
+
+```java
+MongoCDCInputConfig mongoCDCInputConfig = new MongoCDCInputConfig();
+        mongoCDCInputConfig.setName("session");
+        mongoCDCInputConfig.setEnableIncrement(true);//启用重启恢复点采集机制
+        mongoCDCInputConfig.setIncludePreImage(true)
+              .setUpdateLookup(true)
+                .setDbIncludeList("sessiondb")
+              .setCollectionIncludeList("sessionmonitor_sessions,session_sessions")
+                .setConnectString("mongodb://192.168.137.1:27017,192.168.137.1:27018,192.168.137.1:27019/?replicaSet=rs0")
+                .setConnectTimeout(10000)
+                .setMaxWaitTime(10000)
+                .setSocketTimeout(1500).setSocketKeepAlive(true)
+                .setConnectionsPerHost(100)
+//                .setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符或者逗号分割：127.0.0.1:27017\n127.0.0.1:27018
+                // mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
+                //String database,String userName,String password,String mechanism
+                //https://www.iteye.com/blog/yin-bp-2064662
+//          .setUserName("bboss")
+//            .setPassword("bboss")
+//            .setMechanism("MONGODB-CR")
+//            .setAuthDb("sessiondb")
+                ;
+
+
+        importBuilder.setInputConfig(mongoCDCInputConfig);
+```
+
+完整的案例：
+
+同步数据到MongoDB案例
+
+https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDC2MongoDBDemo.java
+
+自定义数据输出案例
+
+https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDCDemo.java
+
+## 1.9 Kafka输入插件
 
 Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java)，可以配置kafka消费端参数，包括kafka服务器地址、消费组id、自动提交机制、offset机制、消费线程数量、消息处理工作线程数、线程队列长度、topic、消息序列化机制等。
 
 案例工程：https://gitee.com/bboss/kafka2x-elasticsearch
 
-### 1.8.1 插件配置案例
+### 1.9.1 插件配置案例
 
 ```java
 // kafka服务器参数配置
@@ -1080,7 +1122,7 @@ CODEC_BYTE（byte数组）
 
 如果消息是其他格式，则可以设置CODEC_TEXT 类型，然后自行在datarefactor中进行处理，亦可以按照分割字符进行解析，然后进行字段映射处理。
 
-### 1.8.2 自定义消息转换处理
+### 1.9.2 自定义消息转换处理
 
 非格式化的字符串消息，可以自行在datarefactor中进行灵活的转换处理：
 
@@ -1118,13 +1160,13 @@ kafka2InputConfig.addCellMapping(2, "logOperuser");
 
 通过上述的处理，可以非常灵活地处理各种格式的字符串kafka消息，然后将处理后的数据通过各种输出插件进行输出。
 
-### 1.8.3 参考文档
+### 1.9.3 参考文档
 
 [2.8.7.2 kafka输入插件拦截器设置说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2872-kafka输入插件拦截器设置说明)
 
 
 
-## 1.9 Http输入插件
+## 1.10 Http输入插件
 
 Http输入插件配置类：[HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java)，配置http服务连接池参数、query dsl文件路径、dsl名称、query url、是否分页查询、http请求头（动态/静态两种类型）、返回结果解析器等等；同时可以在dsl中引用通过以下两个方法添加的参数：
 
@@ -1132,7 +1174,7 @@ importBuilder.addJobInputParam  静态参数
 
 importBuilder.addJobDynamicInputParam   动态参数
 
-### 1.9.1 插件配置案例
+### 1.10.1 插件配置案例
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder() ;
@@ -1215,17 +1257,17 @@ httpdsl.xml中配置的queryPagineDsl：
     ]]></property>
 ```
 
-### 1.9.2 参考文档
+### 1.10.2 参考文档
 
 http输入插件更具体的介绍：[Http/Https插件使用指南](https://esdoc.bbossgroups.com/#/datatran-http?id=httphttps插件使用指南)
 
-## 1.10 Word文件采集插件
+## 1.11 Word文件采集插件
 
 插件配置 [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java)(FileInputConfig子类)和WordFileConfig（FileConfig子类）结合
 
 通过WordFileConfig设置WordExtractor自定义word文件内容提取逻辑，如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中，除了word文件采集需要的配置，其他配置和文件采集插件配置一致
 
-### 1.10.1 配置案例
+### 1.11.1 配置案例
 
 ```java
 WordFileInputConfig wordFileInputConfig = new WordFileInputConfig();
@@ -1265,20 +1307,20 @@ wordFileInputConfig.setEnableMeta(true);
 importBuilder.setInputConfig(wordFileInputConfig);
 ```
 
-### 1.10.2 一次性采集并清除文件案例
+### 1.11.2 一次性采集并清除文件案例
 
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/word/WordFile2CustomDemoOnce.java
 
-## 1.11 PDF文件采集插件
+## 1.12 PDF文件采集插件
 
 插件配置 [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java)(FileInputConfig子类)和PDFFileConfig（FileConfig子类）结合
 
 通过PDFFileConfig设置PDFExtractor自定义pdf文件内容提取逻辑，如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中，除了pdf文件采集需要的配置，其他配置和文件采集插件配置一致
 
-### 1.11.1 配置案例
+### 1.12.1 配置案例
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
@@ -1336,20 +1378,20 @@ ImportBuilder importBuilder = new ImportBuilder();
 		importBuilder.setInputConfig(pdfFileInputConfig);
 ```
 
-### 1.11.2 一次性采集并清除文件案例
+### 1.12.2 一次性采集并清除文件案例
 
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/pdf/PDFFile2CustomDemoOnce.java
 
-## 1.12 其他类型文件采集插件
+## 1.13 其他类型文件采集插件
 
 插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合
 
 通过CommonFileConfig设置CommonFileExtractor自定义其他类型（图片、视频等）文件内容提取逻辑，必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致
 
-### 1.12.1 配置案例
+### 1.13.1 配置案例
 
 以采集图片文件二进制内容并转换为base64编码为案例进行说明
 
@@ -1396,7 +1438,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 		importBuilder.setInputConfig(commonFileInputConfig);
 ```
 
-### 1.12.2 一次性采集并清除文件案例
+### 1.13.2 一次性采集并清除文件案例
 
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
@@ -2241,9 +2283,13 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
 
 ## 2.8 MongoDB输出插件
 
-MongoDB输出插件配置类：[MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java)，配置mongodb数据库参数、数据库表、各种连接控制参数/服务器地址等
+MongoDB输出插件配置类：[MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java)，配置mongodb数据库参数、数据库表、各种连接控制参数/服务器地址等；支持新增、修改、替换和删除记录同步，支持多表、多库、多数据源数据同步 
 
-### 2.8.1 配置案例
+通过文档id字段实现记录的新增、修改、替换和删除操作同步。
+
+### 2.8.1 简单配置案例
+
+数据库连接地址、连接参数、安全认证机制配置
 
 ```java
 // 5.2.4.1 设置mongodb参数
@@ -2257,16 +2303,93 @@ MongoDB输出插件配置类：[MongoDBOutputConfig](https://gitee.com/bboss/bbo
 				.setMaxWaitTime(10000)
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
-				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				
 				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662
-//				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
-//				.setOption("")
-				.setAutoConnectRetry(true);
+
+				.setUserName("bboss")
+		        .setPassword("bboss")
+		        .setMechanism("MONGODB-CR")
+		        .setAuthDb("sessiondb")
+				;
 
 		importBuilder.setOutputConfig(mongoDBOutputConfig);
+```
+
+### 2.8.2 多表输出配置案例
+
+默认在MongoDBOutputConfig配置MongoDB的目标数据库、目标表、目标数据源：
+
+```java
+	mongoDBOutputConfig.setName("testes2mg")//mongodb目标数据源名称
+			.setDb("testdb")//目标库
+			.setDbCollection("db2mongodemo");//目标表
+```
+可以在datarefactor接口中为记录设置不同的输入数据源、目标库和目标表：
+
+```java
+String table = (String)context.getMetaValue("table");//记录来源collection，默认输出表
+String database = (String)context.getMetaValue("database");//记录来源db
+TableMapping tableMapping = new TableMapping();
+tableMapping.setTargetDatabase("testdb");//目标库
+tableMapping.setTargetCollection("testcdc");//目标表
+tableMapping.setTargetDatasource("testes2mg");//指定MongoDB数据源名称，对应一个MongoDB集群
+
+context.setTableMapping(tableMapping);
+```
+
+### 2.8.3 设置文档_id字段
+
+默认采用记录中的\_id字段值作为MongoDB文档id标识，亦可以通过MongoDBOutputConfig全局设置输出记录的id对应的字段名称：
+
+```java
+mongoDBOutputConfig.setObjectIdField("sessionid");
+```
+
+亦可以在datarefactor接口中为记录设置id对应的字段名称：
+
+```java
+context.setRecordKeyField("_id");//记录级别指定文档_id值对应的字段
+```
+
+### 2.8.3 自定义初始化MongoDB数据源
+
+```java
+MongoDBConfig mongoDBConfig = new MongoDBConfig();
+		mongoDBConfig.setName("testes2mg")
+				.setUserName("bboss")
+				.setPassword("bboss")
+				.setAuthDb("sessions")
+				.setMechanism("PLAIN")
+//		.setServerAddresses(mongoDBInputConfig.getServerAddresses());
+		.setWriteConcern("JOURNAL_SAFE")//private String writeConcern;
+		/**
+		 * if (readPreference.equals("PRIMARY"))
+		 * 			return ReadPreference.primary();
+		 * 		else if (readPreference.equals("SECONDARY"))
+		 * 			return ReadPreference.secondary();
+		 * 		else if (readPreference.equals("SECONDARY_PREFERRED"))
+		 * 			return ReadPreference.secondaryPreferred();
+		 * 		else if (readPreference.equals("PRIMARY_PREFERRED"))
+		 * 			return ReadPreference.primaryPreferred();
+		 * 		else if (readPreference.equals("NEAREST"))
+		 * 			return ReadPreference.nearest();
+		 */
+		.setReadPreference("SECONDARY")//private String readPreference;
+
+		.setConnectionsPerHost(100)//private int connectionsPerHost = 50;
+
+		.setMaxWaitTime(120000)//private int maxWaitTime = 120000;
+		.setSocketTimeout(120000)//private int socketTimeout = 0;
+		.setConnectTimeout(120000)//private int connectTimeout = 15000;
+
+
+		.setSocketKeepAlive(true)//private Boolean socketKeepAlive = false;
+
+		.setConnectString("mongodb://192.168.137.1:27017,192.168.137.1:27018,192.168.137.1:27019/?replicaSet=rs0");
+		boolean started = MongoDBHelper.init(mongoDBConfig);// started true标识数据源成功启动，false 标识数据源没有启动，可能已经启动过了，可能启动失败
 ```
 
 ## 2.9 HBase输出插件

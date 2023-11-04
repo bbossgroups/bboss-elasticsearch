@@ -61,15 +61,15 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 
 1. jdk 1.8或以上
 
-2. idea 2019
+2. idea 
 
 3. gradle最新版本  
 
   [https://gradle.org/releases/](https://gradle.org/releases/)
 
-4. mongodb 4.2.1 
+4. mongodb  
 
-5. elasticsearch版本7.1.0，亦可以采用最新的版本
+5. elasticsearch版本7.0.0，亦可以采用最新的版本
 
 6. 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
 
@@ -2282,7 +2282,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 
@@ -2324,7 +2324,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 

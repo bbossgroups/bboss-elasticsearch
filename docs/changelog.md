@@ -35,15 +35,28 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
 # v7.1.1 功能改进
 1. 处理获取Oracle Date类型字段值，字段精度丢失问题（时分秒），采用Timestamp进行处理
-2. context接口增加方法：getValue(String fieldName, java.sql.Types),用于在处理基于关系数据库输入插件数据处理时，获取指定类型的原始字段值
+2. 增加Context接口方法getValue(String fieldName, java.sql.Types),在处理关系数据库数据时，获取字段对应类型的原始值：
 ```java
    Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP);
 ```
 3. 增加MongoDB CDC输入插件：可以增量模式采集MongoDB 增、删、改数据，也可每次作业重启从最新位置采集MongoDB 增、删、改数据
-参考案例： https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDCDemo.java
+    参考案例： https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDCDemo.java
+
 4. 优化作业生命周期管理机制：importcotext增加终止作业执行方法，方便在异步作业处理的任何地方终止作业的执行
 
-# v7.1.0 功能改进
+5. 更换MongoDB驱动包为mongodb-driver-sync
+
+6. [mysql cdc优化：兼容高版本mysql jdbc驱动](https://gitee.com/bboss/bboss-elastic-tran/commit/b00383c800e8d2bfe707ac8c6ae9c86cbc2c3fef)
+
+7. MongoDB[输出插件改进](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_28-mongodb%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)：支持修改和删除记录同步，支持多表、多库、多数据源数据同步
+   为记录指定数据源和表,案例  :https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDC2MongoDBDemo.java
+
+8. 数据库输出插件未指定修改或者删除sql语句，但是存在修改、删除状态记录时，给出明确异常提示，建议忽略对应的修改和删除状态的记录，参考文档：[2.8.10.3 过滤记录](https://esdoc.bbossgroups.com/#/db-es-tool?id=_28103-过滤记录)
+
+   
+
+# v7.1.1 功能改进
+
 1. 流批一体化改进：框架增加了添加和获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理
 使用案例：
 ```java
@@ -530,7 +543,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.1.0版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.1.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -705,7 +718,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -713,7 +726,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -800,7 +813,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.1.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.1.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -852,7 +865,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.1",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.2",transitive: true 
   ```
 
   **maven坐标**
@@ -863,7 +876,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.1.1</version>  
+      <version>6.1.2</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1346,7 +1359,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1394,7 +1407,7 @@ idc=XJ-dpq-a
 
 
 
-# v6.2.0 功能改进
+# v6.1.9 功能改进
 
 1. 优化http重试机制：禁用重试后，不再重试
 
@@ -1665,13 +1678,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.2.0</version>
+      <version>6.2.1</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.1", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
@@ -2455,14 +2468,14 @@ if(log.isWarnEnabled()){
 
 # v5.6.1 功能改进
 
-1. Elasticsearch 7.1.0兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
-2. Elasticsearch 7.1.0兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
+1. Elasticsearch 7.0.0兼容性改造：[提供一组不带索引类型的API](Elasticsearch-7-API.md)，涉及批处理api和数据同步工具
+2. Elasticsearch 7.0.0兼容性改造：处理hits.total类型为Object的问题，涉及获取文档api和检索api
 
-   3.Elasticsearch 7.1.0兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
+   3.Elasticsearch 7.0.0兼容性改造：处理bulk处理时routing字段名称变更问题，涉及批处理api和数据同步工具
 
 # v5.6.0 功能改进
 
-1.修改bboss框架版本号为5.2.7
+1.修改bboss框架版本号为6.1.2
 
 2.http连接池超时，sockettimeout，connectiontimeout异常信息添加超时时间信息
 

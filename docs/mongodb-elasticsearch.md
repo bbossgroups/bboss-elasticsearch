@@ -4,7 +4,7 @@
 
 # 1.数据同步概述
 
-在介绍MongoDB-Elasticshearch数据同步案例之前， 先了解一下基于java编写的数据同步工具-bboss![bboss数据同步工具](https://esdoc.bbossgroups.com/images/datasyn.png)
+在介绍MongoDB-Elasticshearch数据同步案例之前， 先了解一下基于java编写的数据同步工具-bboss![bboss数据同步工具](images/datasyn.png)
 
 与logstash类似，bboss主要功能特点：
 
@@ -64,19 +64,19 @@ bboss另一个显著的特色就是直接基于java语言来编写数据同步�
 
 1. jdk 1.8或以上
 
-2. idea 2019
+2. idea
 
 3. gradle最新版本  
 
   [https://gradle.org/releases/](https://gradle.org/releases/)
 
-4. mongodb 4.2.1 
+4. mongodb 4.2.1 亦可以采用最新版本
 
-5. elasticsearch版本7.1.0，亦可以采用最新的版本
+5. elasticsearch版本7.0.0，亦可以采用最新的版本
 
 6. 一个基于mongodb存储session数据的web应用，如有需要，可线下找我提供，或者到以下地址下载：
 
-  [https://github.com/bbossgroups/sessiondemo](https://github.com/bbossgroups/sessiondemo)
+https://gitee.com/bboss/sessiondemo
 
 7. mongodb-elasticsearch工具工程（基于gradle）
 
@@ -90,9 +90,9 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 
  M2_HOME: maven安装目录（可选，如果有需要或者使用gradle过程中有问题就加上）
 
-![](https://esdoc.bbossgroups.com/images/env.png)
+![](images/env.png)
 
-![](https://esdoc.bbossgroups.com/images/env1.png)
+![](images/env1.png)
 
 详细gradle安装和配置参考文档： [https://esdoc.bbossgroups.com/#/bboss-build](https://esdoc.bbossgroups.com/#/bboss-build) 
 
@@ -105,28 +105,28 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 ## 4.1 下载开发环境工程
 
 我们无需从0开始搭建开发环境，可以到以下地址下载已经配置好的Mongodb-Elasticsearch开发环境：
- 
+
  https://gitee.com/bboss/mongodb-elasticsearch 
 
-![down](https://esdoc.bbossgroups.com/images/downmongodb2es.png)
+![down](images/downmongodb2es.png)
 
 下载后解压到目录：
 
-![image-20191124223658972](https://esdoc.bbossgroups.com/images/mongodbdir.png)
+![image-20191124223658972](images/mongodbdir.png)
 ## 4.2 导入工程到Idea及gradle配置
 参考下面的向导将工程导入idea、调整gradle配置、熟悉idea中使用gradle
 
 第一步 导入工程
 
-![newproject](https://esdoc.bbossgroups.com/images/mongodb/newproject.png)
+![newproject](images/mongodb/newproject.png)
 
-![image-20191124233037071](https://esdoc.bbossgroups.com/images/mongodb/selectproject.png)
+![image-20191124233037071](images/mongodb/selectproject.png)
 
-![image-20191124233257671](https://esdoc.bbossgroups.com/images/mongodb/selectgradle.png)
+![image-20191124233257671](images/mongodb/selectgradle.png)
 
-![image-20191124233257671](https://esdoc.bbossgroups.com/images/mongodb/newwindow.png)
+![image-20191124233257671](images/mongodb/newwindow.png)
 
-![image-20191124233712833](https://esdoc.bbossgroups.com/images/mongodb/importcomplete.png)
+![image-20191124233712833](images/mongodb/importcomplete.png)
 
 第二步 进入setting，设置工程的gradle配置：
 
@@ -134,11 +134,11 @@ GRADLE_USER_HOME: 指定gradle从maven中央库下载依赖包本地存放目录
 第三步 验证工程
 设置完毕后，进入gradle面板
 
-![](https://esdoc.bbossgroups.com/images/mongodb/importsuccess.png)
+![](images/mongodb/importsuccess.png)
 
 可以选择gradle相关的任务进行clean和install构建操作：
 
-![image-20191124234308907](https://esdoc.bbossgroups.com/images/mongodb/install.png)
+![image-20191124234308907](images/mongodb/install.png)
 工程导入完毕，下面介绍一下工程目录结构和关键文件
 
 ## 4.3 工程目录结构和配置文件
@@ -259,7 +259,7 @@ elasticsearch 索引名称：mongodbdemo 索引类型：mongodbdemo
 
 org.frameworkset.elasticsearch.imp.Mongodb2ES
 
-![image-20191125223652299](https://esdoc.bbossgroups.com/images/mongodb/mongodb2db.png)
+![image-20191125223652299](images/mongodb/mongodb2db.png)
 
 接下来在scheduleImportData方法中定义同步处理逻辑。
 
@@ -607,25 +607,24 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 我们会通过同步组件设置mongodb数据源的相关参数，首先介绍一下mongdodb主要参数
 
-| 参数名称                                     | 参数类型      | 参数说明                                                     |
-| -------------------------------------------- | ------------- | ------------------------------------------------------------ |
-| name                                         | String        | mongodb数据源名称，自定义命名即可                            |
-| db                                           | String        | mongodb数据库名称                                            |
-| dbCollection                                 | String        | mongodb数据库表名称                                          |
-| connectTimeout                               | int           | 建立mongodb服务器连接超时时间，单位毫秒                      |
-| writeConcern                                 | String        | REPLICA_ACKNOWLEDGED(n),其中的数字n代表需要几个集群节点确认写入后返回，如果n为0则不需等待节点确认；  JOURNALED：所有节点确认写入才返回 |
-| readPreference                               | String        | 读数据模式：PRIMARY  SECONDARY SECONDARY_PREFERRED PRIMARY_PREFERRED NEAREST |
-| maxWaitTime                                  | int           | 从连接池中获取mongodb连接的最大等待时间，单位：毫秒          |
-| socketTimeout                                | int           | 从mongodb拉取数据socket超时时间，单位:毫秒                   |
-| socketKeepAlive                              | boolean       | socketKeepAlive:true false                                   |
-| connectionsPerHost                           | int           | Mongodb客户端连接池为每个Mongodb集群节点保持的最大连接数     |
-| threadsAllowedToBlockForConnectionMultiplier | int           | threads Allowed To Block For Connection Multiplier           |
-| serverAddresses                              | String        | 服务器地址列表，换行符分隔：127.0.0.1:27017\n127.0.0.1:27018 |
-| clientMongoCredential                        | String...     | 认证参数配置：数组方式设置mongodb数据库的、账号、口令、认证机制，例如："sessiondb","bboss","bboss","MONGODB-CR" |
-| option                                       | String        | 回车换行符\r\n分隔的通讯协议可选参数:QUERYOPTION_SLAVEOK\r\nQUERYOPTION_NOTIMEOUT,值可以参考com.mongodb.Bytes |
-| autoConnectRetry                             | boolean       | 是否启用连接重试机制                                         |
-| query                                        | BasicDBObject | 可选，设置mongodb业务检索条件，不设置则进行全量检索或者按照增量字段进行检索 |
-| fetchFields                                  | BasicDBObject | 可选，设置mongodb检索返回字段列表，不设置则，返回所有字段    |
+| 参数名称              | 参数类型      | 参数说明                                                     |
+| --------------------- | ------------- | ------------------------------------------------------------ |
+| name                  | String        | mongodb数据源名称，自定义命名即可                            |
+| db                    | String        | mongodb数据库名称                                            |
+| dbCollection          | String        | mongodb数据库表名称                                          |
+| connectTimeout        | int           | 建立mongodb服务器连接超时时间，单位毫秒                      |
+| writeConcern          | String        | REPLICA_ACKNOWLEDGED(n),其中的数字n代表需要几个集群节点确认写入后返回，如果n为0则不需等待节点确认；  JOURNALED：所有节点确认写入才返回 |
+| readPreference        | String        | 读数据模式：PRIMARY  SECONDARY SECONDARY_PREFERRED PRIMARY_PREFERRED NEAREST |
+| maxWaitTime           | int           | 从连接池中获取mongodb连接的最大等待时间，单位：毫秒          |
+| socketTimeout         | int           | 从mongodb拉取数据socket超时时间，单位:毫秒                   |
+| socketKeepAlive       | boolean       | socketKeepAlive:true false                                   |
+| connectionsPerHost    | int           | Mongodb客户端连接池为每个Mongodb集群节点保持的最大连接数     |
+| connectString         | String        | https://www.mongodb.com/docs/manual/reference/connection-string/#std-label-mongodb-uri    实例如下：mongodb://192.168.137.1:27017,192.168.137.1:27018,192.168.137.1:27019/?replicaSet=rs0 |
+| serverAddresses       | String        | 可选，服务器地址列表，换行符分隔或者逗号：127.0.0.1:27017,127.0.0.1:27018  配置了connectString就无需设置serverAddresses |
+| clientMongoCredential | String...     | 认证参数配置：数组方式设置mongodb数据库的、账号、口令、认证机制，例如："sessiondb","bboss","bboss","MONGODB-CR" |
+| option                | String        | 回车换行符\r\n分隔的通讯协议可选参数:QUERYOPTION_SLAVEOK\r\nQUERYOPTION_NOTIMEOUT,值可以参考com.mongodb.Bytes |
+| query                 | BasicDBObject | 可选，设置mongodb业务检索条件，不设置则进行全量检索或者按照增量字段进行检索 |
+| fetchFields           | List<String>  | 可选，设置mongodb检索返回字段列表，不设置则，返回所有字段    |
 
 通过importBuilder设置mongodb参数：
 
@@ -642,14 +641,14 @@ ImportBuilder importBuilder = new ImportBuilder();
 				.setMaxWaitTime(10000)
 				.setSocketTimeout(1500).setSocketKeepAlive(true)
 				.setConnectionsPerHost(100)
-				.setThreadsAllowedToBlockForConnectionMultiplier(6)
+				
 				.setServerAddresses("127.0.0.1:27017")//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
 				// mechanism 取值范围：PLAIN GSSAPI MONGODB-CR MONGODB-X509，默认为MONGODB-CR
 				//String database,String userName,String password,String mechanism
 				//https://www.iteye.com/blog/yin-bp-2064662
 //				.buildClientMongoCredential("sessiondb","bboss","bboss","MONGODB-CR")
 //				.setOption("")
-				.setAutoConnectRetry(true);
+				;
 
 		importBuilder.setInputConfig(mongoDBInputConfig);
 
@@ -676,25 +675,26 @@ ImportBuilder importBuilder = new ImportBuilder();
         mongoDBInputConfig.setQuery(query);
         
         //设定需要返回的session数据字段信息
-		BasicDBObject fetchFields = new BasicDBObject();
-		fetchFields.put("appKey", 1);
-		fetchFields.put("sessionid", 1);
-		fetchFields.put("creationTime", 1);
-		fetchFields.put("lastAccessedTime", 1);
-		fetchFields.put("maxInactiveInterval", 1);
-		fetchFields.put("referip", 1);
-		fetchFields.put("_validate", 1);
-		fetchFields.put("host", 1);
-		fetchFields.put("requesturi", 1);
-		fetchFields.put("lastAccessedUrl", 1);
-		fetchFields.put("secure",1);
-		fetchFields.put("httpOnly", 1);
-		fetchFields.put("lastAccessedHostIP", 1);
+		List<String> fetchFields = new ArrayList<>();
+		fetchFields.add("appKey");
+		fetchFields.add("sessionid");
+		fetchFields.add("creationTime");
+		fetchFields.add("lastAccessedTime");
+		fetchFields.add("maxInactiveInterval");
+		fetchFields.add("referip");
+		fetchFields.add("_validate");
+		fetchFields.add("host");
+		fetchFields.add("requesturi");
+		fetchFields.add("lastAccessedUrl");
+		fetchFields.add("secure");
+		fetchFields.add("httpOnly");
+		fetchFields.add("lastAccessedHostIP");
 
-		fetchFields.put("userAccount",1);
-		fetchFields.put("testVO", 1);
-		fetchFields.put("privateAttr", 1);
-		fetchFields.put("local", 1);
+		fetchFields.add("userAccount");
+		fetchFields.add("testVO");
+		fetchFields.add("privateAttr");
+		fetchFields.add("local");
+		fetchFields.add("shardNo");
 		mongoDBInputConfig.setFetchFields(fetchFields);
 
 ```
@@ -934,7 +934,7 @@ session数据转换处理的代码，通过importBuilder组件的setDataRefactor
 						context.addFieldValue("ipInfo",ipInfo);
 				}
 				//除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
-				DBObject record = (DBObject) context.getRecord();
+				Document record = (Document) context.getRecord();
 
 			}
 		});
@@ -1316,7 +1316,7 @@ public class Mongodb2ES {
         				context.newName2ndData("axx","newname",newvalue);
         				 */
         				 //除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
-        				DBObject record = (DBObject) context.getRecord();
+        				Document record = (Document) context.getRecord();
         				//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
         //				context.addIgnoreFieldMapping("author");
         //				context.addIgnoreFieldMapping("title");
@@ -1561,15 +1561,15 @@ ip.asnDatabase = d:/geolite2/GeoLite2-ASN.mmdb
 
 #### 5.4.1.1 启动mongodb
 
-![](https://esdoc.bbossgroups.com/images\mongodb\startmongodb.png)
+![](images\mongodb\startmongodb.png)
 
 #### 5.4.1.2 启动elasticsearch
 
-![](https://esdoc.bbossgroups.com/images\mongodb\startelasticsearch.png)
+![](images\mongodb\startelasticsearch.png)
 
 #### 5.4.1.3 启动kibana
 
-![](https://esdoc.bbossgroups.com/images\mongodb\startkibana.png)
+![](images\mongodb\startkibana.png)
 
 #### 5.4.1.4 启动session共享web应用
 
@@ -1579,32 +1579,32 @@ ip.asnDatabase = d:/geolite2/GeoLite2-ASN.mmdb
 
 导入idea后，配置和运行sessionmonitor这个web应用
 
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor1.png)
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor2.png)
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor3.png)
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor4.png)
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor5.png)
+![](images\mongodb\configsessionmonitor1.png)
+![](images\mongodb\configsessionmonitor2.png)
+![](images\mongodb\configsessionmonitor3.png)
+![](images\mongodb\configsessionmonitor4.png)
+![](images\mongodb\configsessionmonitor5.png)
 
 查看session数据:
 
 [http://localhost:9090/sessionmonitor/session/sessionManager/sessionManager.page](http://localhost:9090/sessionmonitor/session/sessionManager/sessionManager.page)
 
-![](https://esdoc.bbossgroups.com/images\mongodb\configsessionmonitor6.png)
+![](images\mongodb\configsessionmonitor6.png)
 
 ### 5.4.2 调试同步作业
 
 在作业类中需要调试的代码处添加断点，然后启动调试程序即可：
 
-![](https://esdoc.bbossgroups.com/images\mongodb\debugjob.png)
+![](images\mongodb\debugjob.png)
 调试过滤记录功能
-![](https://esdoc.bbossgroups.com/images\mongodb\debugjobfilter.png)
+![](images\mongodb\debugjobfilter.png)
 
 ### 5.4.3 查看同步作业任务执行日志
 第一次调度执行作业执行日志查看：第一次有10条数据进行同步单是被过滤掉一条日志
-![](https://esdoc.bbossgroups.com/images\mongodb\debugjoblogs.png)
+![](images\mongodb\debugjoblogs.png)
 
 增量调度执行作业日志查看：
-![](https://esdoc.bbossgroups.com/images\mongodb\debugincrtjoblogs.png)
+![](images\mongodb\debugincrtjoblogs.png)
 
 
 ## 5.5 同步作业参数提取/发布/部署
@@ -1680,36 +1680,36 @@ MongoDBInputConfig mongoDBInputConfig = new MongoDBInputConfig();
 				.setSocketTimeout(mongodbSocketTimeout)
                 .setSocketKeepAlive(mongodbSocketKeepAlive)
 				.setConnectionsPerHost(mongodbConnectionsPerHost)
-				.setThreadsAllowedToBlockForConnectionMultiplier(mongodbThreadsAllowedToBlockForConnectionMultiplier)
-				.setServerAddresses(mongodbServerAddresses)//多个地址用回车换行符分割：127.0.0.1:27017\n127.0.0.1:27018
-				.setAutoConnectRetry(mongodbAutoConnectRetry);
+	
+				.setServerAddresses(mongodbServerAddresses)//多个地址用回车换行符分割或者逗号分隔：127.0.0.1:27017,127.0.0.1:27018
+				;
 ```
 
 ### 5.5.2 发布作业
 
 参数提取梳理完毕后，打包发布版本，下点击运行工程根目录下的release.bat指令即可：
 
-![](https://esdoc.bbossgroups.com/images\mongodb\release.png)
+![](images\mongodb\release.png)
 
 命令行提示build successful，说明打包发布成功：
 
-![](https://esdoc.bbossgroups.com/images\mongodb\releasesuccess.png)
+![](images\mongodb\releasesuccess.png)
 
 构建生成的作业包所在目录：build\distributions
 
-![](https://esdoc.bbossgroups.com/images\mongodb\releasezip.png)
+![](images\mongodb\releasezip.png)
 
 ### 5.5.3 运行和停止作业
 
 将zip包分发到服务器解压即可，运行方法见图示：
 
-![](https://esdoc.bbossgroups.com/images\mongodb\runjob.png)
+![](images\mongodb\runjob.png)
 
 ###  5.5.4 运行效果
 #### 5.5.4.1同步作业启动后可以查看同步日志文件es.log中的日志
 同步作业启动后可以查看同步日志文件中的日志：es.log
 
-![](https://esdoc.bbossgroups.com/images\mongodb\restartjob.png)
+![](images\mongodb\restartjob.png)
 
 正式环境可以通过修改application.properties的配置来关闭dsl调试功能：
 
@@ -1812,7 +1812,7 @@ elasticsearch.showTemplate=false
 #### 5.5.4.3 通过kibana检索session数据
 
 可以在kibana discover界面中按照条件检索同步到Elasticsearch中的session数据
-![](https://esdoc.bbossgroups.com/images\mongodb\kibanasessiondatas.png)
+![](/images\mongodb\kibanasessiondatas.png)
 
 ### 5.5.5 调优：作业jvm内存和并行线程队列调整
 
@@ -1843,7 +1843,7 @@ importBuilder.setThreadCount(20);//设置批量导入线程池工作线程数量
 ### 5.6.1 xxl-job介绍
 xxl-job是一个不错的开源分布式作业调度引擎，大致的原理如下：
 
-![image-20191204104127272](https://esdoc.bbossgroups.com/images\mongodb\xxl-job.png)
+![image-20191204104127272](/images\mongodb\xxl-job.png)
 
 运行xxl-job同步作业时依赖xxl-job组件，需要在build.gradle文件导入xx-job依赖包：
 
@@ -1880,7 +1880,7 @@ org.frameworkset.tran.schedule.xxjob.AbstractXXLJobHandler
 
 xxl-job的分片调度处理机制（下图来源于xxl-job官方文档）：
 
-![image-20191204102007642](https://esdoc.bbossgroups.com/images\mongodb\xxl_jobshard.png)
+![image-20191204102007642](images\mongodb\xxl_jobshard.png)
 
 完整的xxl-job同步作业类XXJobMongodb2ESImportTask：
 
@@ -1981,26 +1981,26 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
         			mongoDBInputConfig.setQuery(query);
         
         			//设定需要返回的session数据字段信息（可选步骤，同步全部字段时可以不需要做下面配置）
-        			BasicDBObject fetchFields = new BasicDBObject();
-        			fetchFields.put("appKey", 1);
-        			fetchFields.put("sessionid", 1);
-        			fetchFields.put("creationTime", 1);
-        			fetchFields.put("lastAccessedTime", 1);
-        			fetchFields.put("maxInactiveInterval", 1);
-        			fetchFields.put("referip", 1);
-        			fetchFields.put("_validate", 1);
-        			fetchFields.put("host", 1);
-        			fetchFields.put("requesturi", 1);
-        			fetchFields.put("lastAccessedUrl", 1);
-        			fetchFields.put("secure",1);
-        			fetchFields.put("httpOnly", 1);
-        			fetchFields.put("lastAccessedHostIP", 1);
-        
-        			fetchFields.put("userAccount",1);
-        			fetchFields.put("testVO", 1);
-        			fetchFields.put("privateAttr", 1);
-        			fetchFields.put("local", 1);
-        			fetchFields.put("shardNo", 1);
+        			List<String> fetchFields = new ArrayList<>();
+		fetchFields.add("appKey");
+		fetchFields.add("sessionid");
+		fetchFields.add("creationTime");
+		fetchFields.add("lastAccessedTime");
+		fetchFields.add("maxInactiveInterval");
+		fetchFields.add("referip");
+		fetchFields.add("_validate");
+		fetchFields.add("host");
+		fetchFields.add("requesturi");
+		fetchFields.add("lastAccessedUrl");
+		fetchFields.add("secure");
+		fetchFields.add("httpOnly");
+		fetchFields.add("lastAccessedHostIP");
+
+		fetchFields.add("userAccount");
+		fetchFields.add("testVO");
+		fetchFields.add("privateAttr");
+		fetchFields.add("local");
+		fetchFields.add("shardNo");
         
         			mongoDBInputConfig.setFetchFields(fetchFields);
         			importBuilder.setInputConfig(mongoDBInputConfig);
@@ -2092,7 +2092,7 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
         							context.addFieldValue("ipInfo",ipInfo);
         					}
         					//除了通过context接口获取mongodb的记录字段，还可以直接获取当前的mongodb记录，可自行利用里面的值进行相关处理
-        					DBObject record = (DBObject) context.getRecord();
+        					Document record = (Document) context.getRecord();
         				}
         			});
         
@@ -2265,7 +2265,7 @@ xxl-job作业启动和运行其实只是启动了xxl-job的executor节点，并�
 1. xxl-job-admin中添加executor
 
 
-![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewexecutor.png)
+![](images\mongodb\xxlnewexecutor.png)
 
 其中的AppName必须与application.properties文件中配置项值保持一致
 
@@ -2275,19 +2275,19 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
 
 2. xxl-job-admin中添加作业调度任务
 
-![](https://esdoc.bbossgroups.com/images\mongodb\xxlnewtask.png)
+![](images\mongodb\xxlnewtask.png)
 
 3. xxl-job控制台启动作业调度任务
 
-![](https://esdoc.bbossgroups.com/images\mongodb\xxltaskschedule.png)
+![](images\mongodb\xxltaskschedule.png)
 
 任务详细执行情况和日志与jdk timer调度执行类似，也可以登录xxl-job管理界面查看作业执行情况、控制和启动作业，也可以像jdk timer作业一样，通过restart指令重启作业、stop指令停止作业。
 
 下面给出正在运行的两个发布后的xxl-job作业窗口
 
-![](https://esdoc.bbossgroups.com/images\mongodb\xxljob1.png)
+![](images\mongodb\xxljob1.png)
 
-![](https://esdoc.bbossgroups.com/images\mongodb\xxljob2.png)
+![](images\mongodb\xxljob2.png)
 
 
 
@@ -2307,7 +2307,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 
@@ -2339,7 +2339,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups</groupId>
             <artifactId>bboss-schedule</artifactId>
-            <version>6.1.1</version>
+            <version>6.1.2</version>
         </dependency>
 ```
 
@@ -2349,7 +2349,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
         </dependency>
 ```
 

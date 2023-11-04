@@ -66,6 +66,8 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 5) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集
 
+6）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
+
 如果您还在：
 
 - 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
@@ -162,6 +164,7 @@ com.bbossgroups.plugins
 | [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java) | [其他类型文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_112-其他类型文件采集插件) | bboss-datatran-fileftp | 插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合,必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致 |
 | [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件                                                | bboss-datatran-hbase   | hbase连接配置、查询表配置、查询条件配置                      |
 | [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件                                              | bboss-datatran-mongodb | mongodb连接配置、查询表配置、查询条件配置                    |
+| [MongoCDCInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongocdc/MongoCDCInputConfig.java) | mongodb cdc插件                                              | bboss-datatran-mongodb | 基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据 |
 | [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件                                                | bboss-datatran-kafka2x | kafka消费端参数配置、主题配置、客户端消费组配置等            |
 | [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件                                          | bboss-datatran-kafka1x | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
 
@@ -370,7 +373,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -378,7 +381,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
@@ -386,7 +389,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -394,7 +397,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -402,7 +405,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 
@@ -411,7 +414,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.1.0</version>
+<version>7.1.1</version>
 </dependency>
 ```
 
@@ -1660,6 +1663,12 @@ importBuilder.setExternalTimer(true);
 importBuilder.addFieldValue("fromTag","jdk timer");  //jdk timer调度作业设置
 
 importBuilder.addFieldValue("fromTag","xxl-jobr");  //xxl-job调度作业设置
+```
+
+通过Context接口方法getValue(String fieldName, java.sql.Types),在处理关系数据库数据时，获取字段对应类型的原始值：
+
+```java
+Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP);
 ```
 
 记录级别的转换处理参考下面的代码,举例说明如下：
