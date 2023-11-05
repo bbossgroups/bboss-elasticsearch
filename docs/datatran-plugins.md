@@ -1024,12 +1024,36 @@ MongoDB CDC输入插件配置类：[MongoCDCInputConfig](https://gitee.com/bboss
 
 可以非常方便地实现重启恢复点采集机制。
 
-### 1.8.1 插件配置案例
+### 1.8.1 关键参数
+
+name   MongoDB数据源名称
+
+enableIncrement 控制重启后是否从上次结束位置继续采集数据，true 启用 false 重启后从最新位置采集数据
+
+updateLookup 返回完整的修改记录数据 true 返回全部记录信息 false 返回修改信息
+
+includePreImage 是否包含修改前/替代前的数据 true 返回 false 不返回
+
+dbIncludeList  要监听的MongoDB数据库清单，多个用逗号分隔，不指定监听所有
+
+collectionIncludeList 要监听的表清单，多个用逗号分隔，不指定监听所有
+
+监听的不同库表数据，可以参考文档，输出到不同目标地：
+
+数据库输出插件：[2.1.4 数据输出到多个目标库](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-数据输出到多个目标库)
+
+MongoDB输出插件：[2.8.2 多表输出配置案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_282-多表输出配置案例)
+
+### 1.8.2 插件配置案例
 
 ```java
 MongoCDCInputConfig mongoCDCInputConfig = new MongoCDCInputConfig();
         mongoCDCInputConfig.setName("session");
         mongoCDCInputConfig.setEnableIncrement(true);//启用重启恢复点采集机制
+        //设置要采集的操作类型，不设置都采集
+		mongoCDCInputConfig.addIncludeOperation(Record.RECORD_INSERT);//采集新增数据
+        mongoCDCInputConfig.addIncludeOperation(Record.RECORD_UPDATE);//采集新增修改/替换数据
+        mongoCDCInputConfig.addIncludeOperation(Record.RECORD_DELETE);//采集删除数据
         mongoCDCInputConfig.setIncludePreImage(true)
               .setUpdateLookup(true)
                 .setDbIncludeList("sessiondb")
