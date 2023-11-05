@@ -1044,6 +1044,8 @@ collectionIncludeList 要监听的表清单，多个用逗号分隔，不指定�
 
 MongoDB输出插件：[2.8.2 多表输出配置案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_282-多表输出配置案例)
 
+其他连接参数和认证配置方法，参考下面的插件配置案例。
+
 ### 1.8.2 插件配置案例
 
 ```java
@@ -1077,7 +1079,7 @@ MongoCDCInputConfig mongoCDCInputConfig = new MongoCDCInputConfig();
         importBuilder.setInputConfig(mongoCDCInputConfig);
 ```
 
-完整的案例：
+### 1.8.3 完整的案例
 
 同步数据到MongoDB案例
 
@@ -1086,6 +1088,12 @@ https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/fram
 自定义数据输出案例
 
 https://gitee.com/bboss/mongodb-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/cdc/MongodbCDCDemo.java
+
+### 1.8.4 参考资料
+
+https://www.mongodb.com/docs/drivers/java/sync/current/fundamentals/crud/read-operations/change-streams/
+
+https://www.mongodb.com/docs/manual/changeStreams/
 
 ## 1.9 Kafka输入插件
 
