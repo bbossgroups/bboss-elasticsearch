@@ -32,6 +32,14 @@
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.1.2 功能改进
+1. 优化jvm推出机制：默认关闭jvm退出时注销ioc容器及相关资源：
+   只有在启用自动关闭的情况下，才可以在jvm退出时自动关闭和释放资源，否则需要手动调用ShutdownUtil.shutdown()方法释放资源，启用自动释放资源方法：
+   java命令行参数
+   -DenableShutdownHook=true
+   环境变量
+   enableShutdownHook=true
+   默认关闭自动：enableShutdownHook=false
 
 # v7.1.1 功能改进
 1. 处理获取Oracle Date类型字段值，字段精度丢失问题（时分秒），采用Timestamp进行处理
@@ -55,7 +63,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
    
 
-# v7.1.1 功能改进
+# v7.1.0 功能改进
 
 1. 流批一体化改进：框架增加了添加和获取用于指标计算处理等的临时数据到记录，不会对临时数据进行持久化处理
 使用案例：

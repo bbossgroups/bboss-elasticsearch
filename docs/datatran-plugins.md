@@ -9,6 +9,9 @@ bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同�
 bboss-datatran采用标准的输入输出异步管道来处理数据，输入插件和输出插件可以自由组合，输入插件从数据源采集数据，经过数据异步并行流批一体化处理后，输出插件将处理后的数据、指标数据输出到目标地。
 
 ![](images\datasyn-inout-now.png)
+
+## 导入插件
+
 通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)
 
 本文介绍bboss-datatran提供各种输入输出插件以及配置说明，使用过程中，可以根据实际情况和应用场景自由组合输入和输出插件，同时也可以参考数据同步案例大全，使用各种插件实现各种数据采集作业：
@@ -2386,7 +2389,21 @@ mongoDBOutputConfig.setObjectIdField("sessionid");
 context.setRecordKeyField("_id");//记录级别指定文档_id值对应的字段
 ```
 
-### 2.8.3 自定义初始化MongoDB数据源
+### 2.8.3 MongoDB数据源定义和关闭
+
+下面介绍如何自定义和关闭MongoDB数据源，关键属性：
+
+name   MongoDB数据源名称，通过name对应的数据源名称，来针对MongoDB集群执行各种MongoDB操作，通过name来关闭和释放MongoDB数据源资源
+
+认证配置相关userName,password,authdb,mechanism具体可以参考MongoDB官方文档介绍
+
+读写相关WriteConcern和ReadPreference，具体可以参考MongoDB官方介绍
+
+链接参数maxWaitTime，socketTimeout，connectTimeout，socketKeepAlive
+
+连接池相关参数 connectionsPerHost  连接池连接数大小
+
+通过MongoDBConfig类配置上述参数：对应的数据源名称name为testes2mg
 
 ```java
 MongoDBConfig mongoDBConfig = new MongoDBConfig();
@@ -2422,6 +2439,37 @@ MongoDBConfig mongoDBConfig = new MongoDBConfig();
 
 		.setConnectString("mongodb://192.168.137.1:27017,192.168.137.1:27018,192.168.137.1:27019/?replicaSet=rs0");
 		boolean started = MongoDBHelper.init(mongoDBConfig);// started true标识数据源成功启动，false 标识数据源没有启动，可能已经启动过了，可能启动失败
+```
+
+通过以下方法来初始化和启动MongoDB数据源testes2mg：
+
+```java
+boolean started = MongoDBHelper.init(mongoDBConfig)；
+```
+
+返回布尔值started说明：
+
+ true标识数据源成功启动
+
+false 标识数据源没有启动，可能已经启动过了，可能启动失败
+
+可以在MongoDB输出插件中指定将记录输出到数据源testes2mg：
+
+[2.8.2 多表输出配置案例](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_282-多表输出配置案例)
+
+```java
+TableMapping tableMapping = new TableMapping();
+tableMapping.setTargetDatabase("testdb");//目标库
+tableMapping.setTargetCollection("testcdc");//目标表
+tableMapping.setTargetDatasource("testes2mg");//指定MongoDB数据源名称，对应一个MongoDB集群
+
+context.setTableMapping(tableMapping);
+```
+
+如果数据源启动成功，在作业或者应用退出时，可以通过以下方法关闭和释放MongoDB数据源testes2mg资源
+
+```java
+MongoDBHelper.closeDB("testes2mg");
 ```
 
 ## 2.9 HBase输出插件
