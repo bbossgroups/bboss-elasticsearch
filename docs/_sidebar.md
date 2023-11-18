@@ -1,4 +1,6 @@
 - [BBOSS介绍](README.md)
+- [Http负载均衡器使用介绍](httpproxy.md)
+- [MongoDB数据源定义和使用](MongoDBDatasource.md)
 - **Getting started**
   - [Elasticsearch Quick start](quickstart.md)
   - [Elasticsearch Demo](Elasticsearch-demo.md)
@@ -13,8 +15,6 @@
   - [常见问题处理](question-answer.md)
   - [Changelog](changelog.md)
   - [联系和支持我们](supportus.md)
-    
-
 - **Guide**
   - [Elasticsearch开发指南](development.md)
   - [数据同步ETL工具介绍](db-es-tool.md)
@@ -70,5 +70,4 @@
   - [Elasticsearch 7 API使用介绍](Elasticsearch-7-API.md)
   - [Field Collapsing优化Elasticsearch搜索结果](FiledCollapsing.md)
   - [Elasticsearch实现同段同语句搜索](SpanQuery.md)
-  - [Elasticsearch：TF-IDF，BM25和相关度控制](DocRelevancy.md)
-- [Http负载均衡器使用介绍](httpproxy.md)
+  - [Elasticsearch TFIDF BM25和相关度控制](DocRelevancy.md)
