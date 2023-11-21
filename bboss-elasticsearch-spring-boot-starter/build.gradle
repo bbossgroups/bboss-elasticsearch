@@ -35,7 +35,6 @@ dependencies {
 			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.7.2', transitive: true],
 			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.7.2', transitive: true]
 	)
-//	compile project(':bboss-elasticsearch-rest-jdbc')
-//	compile "org.springframework.boot:spring-boot-starter-data-redis:+"
+
 
 }
