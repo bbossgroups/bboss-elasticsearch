@@ -1120,7 +1120,7 @@ Kafka输入插件配置类：[Kafka2InputConfig](https://gitee.com/bboss/bboss-e
             .addKafkaConfig("bootstrap.servers","127.0.0.1:9092")
             .addKafkaConfig("enable.auto.commit","false")//一般不要开启自动提交
             .addKafkaConfig("max.poll.records","500") // The maximum number of records returned in a single call to poll().
-            .setKafkaTopic("xinkonglog") // kafka topic
+            .setKafkaTopic("xinkonglog") // kafka topics，多个用逗号分隔,例如：xinkonglog,xinkonglog1
             .setConsumerThreads(5) // 并行消费线程数，建议与topic partitions数一致
             .setKafkaWorkQueue(10)//每个消费线程对应的工作等待队列长度
             .setKafkaWorkThreads(2)//每个消费线程对应的工作线程数量
@@ -1195,7 +1195,15 @@ kafka2InputConfig.addCellMapping(2, "logOperuser");
 
 通过上述的处理，可以非常灵活地处理各种格式的字符串kafka消息，然后将处理后的数据通过各种输出插件进行输出。
 
-### 1.9.3 参考文档
+### 1.9.3 消费多个topic主体消息配置
+
+kafka输入插件可以同时消费多个topic主体消息，多个topic之间用逗号分隔，配置实例如下：
+
+```java
+kafka2InputConfig.setKafkaTopic("xinkonglog,xinkonglog1") // kafka topics，多个用逗号分隔,例如：xinkonglog,xinkonglog1
+```
+
+### 1.9.4 参考文档
 
 [2.8.7.2 kafka输入插件拦截器设置说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2872-kafka输入插件拦截器设置说明)
 
