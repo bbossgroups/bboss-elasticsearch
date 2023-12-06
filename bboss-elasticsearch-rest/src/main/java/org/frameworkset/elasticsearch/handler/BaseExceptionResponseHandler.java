@@ -63,11 +63,16 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
 				if(_logger.isDebugEnabled()) {
 					_logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
 				}
+                StringBuilder msg = new StringBuilder();
 				if(charSet == null ) {
-					this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity), status);
+                    msg.append("Request url:").append(url);
+                    msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity));
+					this.elasticSearchException = new ElasticSearchException(msg.toString(), status);
 				}
 				else{
-					this.elasticSearchException = new ElasticSearchException(EntityUtils.toString(entity,charSet), status);
+                    msg.append("Request url:").append(url);
+                    msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
+					this.elasticSearchException = new ElasticSearchException(msg.toString(), status);
 				}
 			}
 			else
@@ -82,10 +87,15 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
                     if (_logger.isDebugEnabled()) {
                         _logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
                     }
+                    StringBuilder msg = new StringBuilder();
                     if (charSet == null) {
-                        throw new ElasticSearchException(EntityUtils.toString(entity), status);
+                        msg.append("Request url:").append(url);                       
+                        msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity));
+                        throw new ElasticSearchException(msg.toString(), status);
                     } else {
-                        throw new ElasticSearchException(EntityUtils.toString(entity, charSet), status);
+                        msg.append("Request url:").append(url);
+                        msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
+                        throw new ElasticSearchException(msg.toString(), status);
                     }
                 } else {
 
@@ -100,21 +110,24 @@ public abstract class BaseExceptionResponseHandler extends BaseResponseHandler i
                         _logger.debug(new StringBuilder().append("Request url:").append(url).append(",status:").append(status).toString());
                     }
                     if (charSet == null) {
-                        msg.append("RequestBody:");
+                        msg.append("Request url:").append(url);
+                        msg.append("\r\nRequestBody:");
                         trucateData(msg);
                         msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity));
 
                     } else {
-                        msg.append("RequestBody:");
+                        msg.append("Request url:").append(url);
+                        msg.append("\r\nRequestBody:");
                         trucateData(msg);
                         msg.append("\r\nResponseBody:").append(EntityUtils.toString(entity, charSet));
 
                     }
                 } else {
-                    msg.append("RequestBody:");
-                    trucateData(msg);
-                    msg.append("\r\nRequest url:").append(url)
+                    msg.append("Request url:").append(url)
                             .append(",Unexpected response status: ").append(status);
+                    msg.append("\r\nRequestBody:");
+                    trucateData(msg);
+                   
 
                 }
                 throw new ElasticSearchException(msg.toString(), status);
