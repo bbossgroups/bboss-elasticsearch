@@ -16,6 +16,7 @@ package org.frameworkset.elasticsearch.boot;/*
 
 import com.frameworkset.common.poolman.util.DBConf;
 import com.frameworkset.common.poolman.util.SQLManager;
+import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
@@ -137,6 +138,8 @@ public class BBossESStarter  extends BaseESProperties{
 		temConf.setJdbcurl(db.getUrl());
 		temConf.setUsername(db.getUser());
 		temConf.setPassword(db.getPassword());
+        temConf.setBalance(db.getBalance());
+        temConf.setEnableBalance(SimpleStringUtil.isNotEmpty(db.getEnableBalance())&& db.getEnableBalance().equals("true"));
 		temConf.setReadOnly(null);
 		temConf.setTxIsolationLevel(null);
 		temConf.setValidationQuery(db.getValidateSQL());
