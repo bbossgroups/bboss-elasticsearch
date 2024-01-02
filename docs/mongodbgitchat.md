@@ -2282,7 +2282,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 
@@ -2324,7 +2324,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 

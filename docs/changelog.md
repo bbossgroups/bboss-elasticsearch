@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.1.2 发布
+# BBOSS版本变更记录-v7.1.3 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 
@@ -28,10 +28,59 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.1.3 功能改进
+1. 为Clickhouse数据源增加负载均衡机制，解决Clickhouse-native-jdbc驱动只有容灾功能而没有负载均衡功能的缺陷，使用方法如下：
+
+   在jdbc url地址后面增加b.balance和b.enableBalance参数
+```java
+   jdbc:clickhouse://101.13.6.4:29000,101.13.6.7:29000,101.13.6.6:29000/visualops?b.balance=roundbin&b.enableBalance=true
+```
+b.enableBalance为true时启用负载均衡机制，并具备原有容灾功能，否则只具备容灾功能
+
+b.balance 指定负载均衡算法，目前支持random（随机算法，不公平机制）和roundbin(轮询算法，公平机制)两种算法，默认random算法
+
+另外也可以在DBConf上进行设置，例如：
+```java
+BConf tempConf = new DBConf();
+tempConf.setPoolname(ds.getDbname());
+tempConf.setDriver(ds.getDbdriver());
+tempConf.setJdbcurl( ds.getDburl());
+tempConf.setUsername(ds.getDbuser());
+tempConf.setPassword(ds.getDbpassword());
+tempConf.setValidationQuery(ds.getValidationQuery());
+//tempConf.setTxIsolationLevel("READ_COMMITTED");
+tempConf.setJndiName("jndi-"+ds.getDbname());
+PropertiesContainer propertiesContainer = PropertiesUtil.getPropertiesContainer();
+int initialConnections = propertiesContainer.getIntProperty("initialConnections",5);
+tempConf.setInitialConnections(initialConnections);
+int minimumSize = propertiesContainer.getIntProperty("minimumSize",5);
+tempConf.setMinimumSize(minimumSize);
+int maximumSize = propertiesContainer.getIntProperty("maximumSize",10);
+tempConf.setMaximumSize(maximumSize);
+tempConf.setUsepool(true);
+tempConf.setExternal(false);
+tempConf.setEncryptdbinfo(false);
+boolean showsql = propertiesContainer.getBooleanProperty("showsql",true);
+tempConf.setShowsql(showsql);
+tempConf.setQueryfetchsize(null);
+tempConf.setEnableBalance(true);
+tempConf.setBalance(DBConf.BALANCE_RANDOM);
+return SQLManager.startPool(tempConf);
+```
+持久层使用案例：
+
+https://gitee.com/bboss/bestpractice/blob/master/persistent/src/com/frameworkset/sqlexecutor/TestClickHouseDB.java
+
+ETL DB输出插件案例（DB输入插件类似）：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/clickhouse/Db2Clickhousedemo.java
+2. 优化停止db数据源机制，修复当停止数据源并移除数据源信息时，没有执行停止数据源操作
+3. 处理sqlite数据库创建statement兼容性问题
+4. Clickhouse-native-jdbc驱动兼容性问题修复处理
 # v7.1.2 功能改进
 1. 优化jvm推出机制：默认关闭jvm退出时注销ioc容器及相关资源
    在启用自动关闭的情况下，才可以在jvm退出时自动关闭和释放资源，否则需要手动调用ShutdownUtil.shutdown()方法释放资源，启用自动释放资源方法：
@@ -581,7 +630,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.1.2版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.1.3版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -756,7 +805,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -764,7 +813,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -851,7 +900,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.1.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.1.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -903,7 +952,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.3",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.1.5",transitive: true 
   ```
 
   **maven坐标**
@@ -914,7 +963,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.1.3</version>  
+      <version>6.1.5</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1388,7 +1437,7 @@ spring boot配置项
 
    
 
-# v6.2.0 功能改进
+# v6.1.9 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
 2. 完善dsl打印机制:打印dsl的时候，会同时把接收dsl的elasticsearch 节点url地址，重试次数打印出来
 3. 非spring boot项目支持通过apollo来管理客户端配置，只需要将maven坐标做如下处理即可
@@ -1397,7 +1446,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.1.2</version>
+    <version>7.1.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1445,7 +1494,7 @@ idc=XJ-dpq-a
 
 
 
-# v6.1.9 功能改进
+# v6.1.8 功能改进
 
 1. 优化http重试机制：禁用重试后，不再重试
 
@@ -1486,7 +1535,7 @@ idc=XJ-dpq-a
    ```
 
    
-# v6.1.9 功能改进
+# v6.1.7 功能改进
 1. bug修复：ES到db数据同步类型转换异常处理
 
 2. 功能改进：ES到db数据同步，忽略字段设置和变量名和es字段名称映射设置不起作用
@@ -1501,7 +1550,7 @@ idc=XJ-dpq-a
 
 # v6.1.3 功能改进
 1. 添加http.backoffAuth属性：
-    向后兼容的basic安全签名机制，v6.1.3以及之后的版本默认采用http组件内置的basic签名认证机制，但是有些http服务端对安全认证
+    向后兼容的basic安全签名机制，v6.1.5以及之后的版本默认采用http组件内置的basic签名认证机制，但是有些http服务端对安全认证
    的实现不是很规范，会导致http basic security机制不能正常工作，因此通过设置http.backoffAuth兼容老版本安全认证方式
    true:向老版本兼容，false（默认值）：不向老版本兼容
    http.backoffAuth=true
@@ -1716,13 +1765,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.2.2</version>
+      <version>6.2.3</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.2", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.3", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

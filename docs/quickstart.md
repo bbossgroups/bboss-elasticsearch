@@ -41,7 +41,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.1.2</version>
+        <version>7.1.3</version>
     </dependency>
 ```
 
@@ -51,7 +51,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.1.2</version>
+        <version>7.1.3</version>
     </dependency>
 ```
 
@@ -59,7 +59,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 7.1.2](https://pan.baidu.com/s/1IrDRHRUWDbk8wJ_jbzRaZg?pwd=at2w)
+链接：[bboss 7.1.3](https://pan.baidu.com/s/1IrDRHRUWDbk8wJ_jbzRaZg?pwd=at2w)
 提取码：at2w
 
 ## 1.3 快速配置
