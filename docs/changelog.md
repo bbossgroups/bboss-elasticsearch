@@ -32,6 +32,12 @@
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.1.5 功能改进
+1，ETL改进：设置增量状态ID生成策略，在设置jobId的情况下起作用
+ImportIncreamentConfig.STATUSID_POLICY_JOBID 采用jobType+jobId作为增量状态id
+ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT 采用[jobType]+[jobId]+[作业查询语句/文件路径等信息的hashcode]，作为增量id作为增量状态id
+默认值ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
+
 # v7.1.3 功能改进
 1. 为Clickhouse数据源增加负载均衡机制，解决Clickhouse-native-jdbc驱动只有容灾功能而没有负载均衡功能的缺陷，使用方法如下：
 

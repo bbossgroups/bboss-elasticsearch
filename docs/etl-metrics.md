@@ -116,14 +116,14 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 通用流批一体化数据处理指标计算器，
 
-| 属性           | 描述                                                         |
-| -------------- | ------------------------------------------------------------ |
-| builderMetrics | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型）、SegmentBoundSize |
-| metricsType    | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs; |
+| 属性           | 描述                                                                                                                                                                                                                                    |
+| -------------- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| builderMetrics | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型,只用于确定内置的时间维度字段粒度精度）、SegmentBoundSize                      |
+| metricsType    | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs;                                                                                                                                                         |
 | **persistent** | 方法类型，**非常关键的方法**，实现指标统计结果持久化，一般采用异步批处理机制持久化指标统计结果，Elasticsearch存储指标时，可以使用[BulkProcessor进行处理](https://esdoc.bbossgroups.com/#/bulkProcessor)，其他数据源可以使用[通用BulkProcessor异步批处理组件](https://esdoc.bbossgroups.com/#/bulkProcessor-common)处理 |
-| timeWindowType | int类型，包含以下几种类型，见下文说明                        |
-| map            | 方法类型，可选实现，内部提供默认实现，可以重载实现自定义的map逻辑 |
-| metric         | 方法类型，无需自行实现，直接接收String类型指标key、MapData以及KeyMetricBuilder类型参数，内部根据具体的指标类型，根据需要通过KeyMetricBuilder创建KeyMetric对象，通过指标key缓存KeyMetric对象，后续通过指标key检索KeyMetric对象（如果没有则创建），通过检索到KeyMetric对象对MapData中包含的数据进行具体指标统计计算 |
+| timeWindowType | int类型，包含以下几种类型，见下文说明                                                                                                                                                                                                                  |
+| map            | 方法类型，可选实现，内部提供默认实现，可以重载实现自定义的map逻辑                                                                                                                                                                                                    |
+| metric         | 方法类型，无需自行实现，直接接收String类型指标key、MapData以及KeyMetricBuilder类型参数，内部根据具体的指标类型，根据需要通过KeyMetricBuilder创建KeyMetric对象，通过指标key缓存KeyMetric对象，后续通过指标key检索KeyMetric对象（如果没有则创建），通过检索到KeyMetric对象对MapData中包含的数据进行具体指标统计计算                             |
 
 
 
@@ -135,7 +135,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 | ---------------- | ------------------------------------------------------------ |
 | dataTimeField    | String类型,设置指标时间维度字段，不是设置默认采用当前时间，否则采用字段对应的时间值 |
 | metricsType      | int类型，指标构建器类型，目前提供了四种类型KeyTimeMetircs，TimeKeyMetircs; TimeMetircs;KeyMetircs; |
-| builderMetrics   | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型）、SegmentBoundSize |
+| builderMetrics   | 方法类型，用于初始化ETLMetrics参数，包括：设置BuildMapData接口（用于构建自定义MapData对象）、添加MetricBuilder（用于生成指标key和指标key对应的KeyMetric构建器KeyMetricBuilder）、TimeWindows（时间窗口大小，单位为秒）、TimeWindowType（时间窗口类型时间窗口类型,只用于确定内置的时间维度字段粒度精度）、SegmentBoundSize |
 | **persistent**   | 方法类型，**非常关键的方法**，实现指标统计结果持久化，一般采用异步批处理机制持久化指标统计结果，Elasticsearch存储指标时，可以使用[BulkProcessor进行处理](https://esdoc.bbossgroups.com/#/bulkProcessor)，其他数据源可以使用[通用BulkProcessor异步批处理组件](https://esdoc.bbossgroups.com/#/bulkProcessor-common)处理 |
 | timeWindowType   | int类型，包含以下几种类型，见下文说明                        |
 | addMetricBuilder | 方法类型，为ETLMetrics对象添加多个指标对象构建器MetricBuilder，每个MetricBuilder创建特定的指标对象和对应的指标key |
@@ -156,7 +156,7 @@ public static int MetricsType_KeyTimeMetircs = 0;  //关键字+时间维度，�
 ETLMetrics keyMetrics = new ETLMetrics(Metrics.MetricsType_KeyMetircs)
 ```
 
-timeWindowType几种类型：
+timeWindowType几种类型，时间窗口类型,只用于确定内置的时间维度字段粒度精度：
 
 ```java
 public final static int TIME_WINDOW_TYPE_SECOND = 1;//秒时间窗口
@@ -165,6 +165,16 @@ public final static int TIME_WINDOW_TYPE_HOUR = 3;//小时时间窗口
 public final static int TIME_WINDOW_TYPE_DAY = 4;//天时间窗口
 public final static int TIME_WINDOW_TYPE_WEEK = 5;//周时间窗口
 public final static int TIME_WINDOW_TYPE_MONTH = 6;//月时间窗口
+
+//通过以下方法从指标中获取对应的时间维度值
+        esData.put("miniute", metric.getMinute());
+        esData.put("dayHour", metric.getDayHour());
+        esData.put("day", metric.getDay());
+        esData.put("month", metric.getMonth());
+        esData.put("week", metric.getWeek());
+        esData.put("year", metric.getYear());
+        esData.put("dataTime", metric.getDataTime());
+        
 ```
 
 提供了两种定义ETLMetrics的方法，一般来说方法1 更加直观，推荐使用方法1创建ETLMetrics
