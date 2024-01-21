@@ -786,10 +786,16 @@ http.pemkeyPassword = 7240a0366eb6a764103e
 
 ### 2.7.1 热加载扫描时间间隔
 
-\# dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
+dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 
 ```properties
 dslfile.refreshInterval = -1
+```
+
+spring boot对应配置：
+
+```properties
+spring.elasticsearch.bboss.dslfile.refreshInterval = -1
 ```
 
 

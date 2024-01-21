@@ -61,6 +61,10 @@ ConfigRestClientUtil和dsl结构及关系说明如下：
 
 ![](images\db-dsl.png)
 
+- dsl热加载机制的开启和关闭配置
+
+[热加载扫描时间间隔](https://esdoc.bbossgroups.com/#/development?id=_271-热加载扫描时间间隔)
+
 - 指定Elasticsearch数据源名称
 
 ```
