@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.1.3 发布
+# BBOSS版本变更记录-v7.1.5 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
 ```
 
@@ -28,15 +28,58 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.1.5 功能改进
-1，ETL改进：设置增量状态ID生成策略，在设置jobId的情况下起作用
+1. 数据处理作业改进：设置增量状态ID生成策略，在设置jobId的情况下起作用
+
 ImportIncreamentConfig.STATUSID_POLICY_JOBID 采用jobType+jobId作为增量状态id
+
 ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT 采用[jobType]+[jobId]+[作业查询语句/文件路径等信息的hashcode]，作为增量id作为增量状态id
+
 默认值ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
+2. 扩展kafka输出插件，可以根据实际需求，设置记录级别kafka发送主题功能，使用案例：
+```java
+   //设置记录级别的kafka主题
+   context.setKafkaTopic("es2kafka1");
+```
+3. context接口增加一组工具方法，用户一次性将bean或者map中的数据添加到记录中
+
+```java
+/**
+     * 将对象中的所有字段和值作为字段添加到记录中，忽略空值字段
+     * @param bean
+     * @return
+     */
+    Context addFieldValues( Object bean);
+
+/**
+     * 将对象中的所有字段和值作为字段添加到记录中
+     * 根据参数ignoreNullField控制是否忽略空值字段 true 忽略  false 不忽略
+     * @param bean
+     * @param ignoreNullField
+     * @return
+     */
+    Context addFieldValues(Object bean,boolean ignoreNullField);
+
+/**
+     * 将map中的所有键值对作为字段添加到记录中，忽略空值字段
+     * @param values
+     * @return
+     */
+    Context addMapFieldValues( Map<String,Object> values);
+
+/**
+     * 将map中的所有键值对作为字段添加到记录中
+     *  根据参数ignoreNullField控制是否忽略空值字段 true 忽略  false 不忽略
+     * @param values
+     * @param ignoreNullField
+     * @return
+     */
+    Context addMapFieldValues( Map<String,Object> values,boolean ignoreNullField);
+```
 
 # v7.1.3 功能改进
 1. 为Clickhouse数据源增加负载均衡机制，解决Clickhouse-native-jdbc驱动只有容灾功能而没有负载均衡功能的缺陷，使用方法如下：
@@ -636,7 +679,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.1.3版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.1.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -811,7 +854,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -819,7 +862,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -906,7 +949,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.1.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.1.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1452,7 +1495,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.1.3</version>
+    <version>7.1.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

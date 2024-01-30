@@ -46,20 +46,20 @@ maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.3</version>
+            <version>7.1.5</version>
         </dependency>
 ```
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.3"
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.1.3"
+compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.5"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.1.5"
 ```
 
 
