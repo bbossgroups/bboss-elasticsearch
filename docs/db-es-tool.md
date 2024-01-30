@@ -464,7 +464,7 @@ clickhousedm.db.driver = com.github.housepower.jdbc.ClickHouseDriver
 #
 #DataSource dualDataSource = new BalancedClickhouseDataSource("jdbc:clickhouse://127.0.0.1:9000,127.0.0.1:9000");
 
-clickhousedm.db.url = jdbc:clickhouse://10.13.6.4:29000,10.13.6.7:29000,10.13.6.6:29000/visualops
+clickhousedm.db.url = jdbc:clickhouse://10.103.6.4:29000,10.103.6.7:29000,10.103.6.6:29000/visualops
 ```
 
 使用housepower驱动需要使用clickhouse的tcp端口，否则会碰到异常：

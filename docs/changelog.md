@@ -35,11 +35,12 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 # v7.1.5 功能改进
 1. 数据处理作业改进：设置增量状态ID生成策略，在设置jobId的情况下起作用
 
+```java
 ImportIncreamentConfig.STATUSID_POLICY_JOBID 采用jobType+jobId作为增量状态id
-
 ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT 采用[jobType]+[jobId]+[作业查询语句/文件路径等信息的hashcode]，作为增量id作为增量状态id
-
 默认值ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
+```
+
 2. 扩展kafka输出插件，可以根据实际需求，设置记录级别kafka发送主题功能，使用案例：
 ```java
    //设置记录级别的kafka主题
