@@ -95,6 +95,8 @@ bboss kafka数据同步插件gradle依赖包
 1).定义main方法
 2).定义同步方法scheduleTimestampImportData
 
+## 3.1 定义main方法
+
 main方法将作为作业执行入口方法
 
 ```java
@@ -108,6 +110,8 @@ public static void main(String args[]){
 
 接下来在同步方法scheduleTimestampImportData中定义同步作业逻辑
 
+## 3.2 定义作业构建器
+
 先定义作业构建器
 
 ```java
@@ -118,7 +122,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 ```
 
-
+## 3.3 kafka输出插件配置
 
 接下来做kafka相关配置参数
 
@@ -135,7 +139,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 		kafkaOutputConfig.addKafkaProperty("batch.size","10");
 //		kafkaOutputConfig.addKafkaProperty("linger.ms","10000");
 //		kafkaOutputConfig.addKafkaProperty("buffer.memory","10000");
-		kafkaOutputConfig.setKafkaAsynSend(true);
+
 //指定文件中每条记录格式，不指定默认为json格式输出
 		kafkaOutputConfig.setRecordGenerator(new RecordGenerator() {
 			@Override
@@ -220,6 +224,39 @@ ImportBuilder importBuilder = new ImportBuilder();
 kafka2x=1.1.0
 这个是kafka客户端的版本号，可以根据实际kafka版本进行调整。
 
+## 3.4 kafka主题设置
+
+可以直接在kafka输出插件配置kafka主题
+
+```java
+kafkaOutputConfig.setTopic("es2kafka");//设置kafka主题名称
+```
+
+亦可以在记录级别配置kafka主题（默认使用在kafka输出插件配置的kafka主题）
+
+```java
+ importBuilder.setDataRefactor(new DataRefactor() {
+         public void refactor(Context context) throws Exception  {
+           String tag = context.getStringValue("tag");
+           if(tag.equals("shop"){
+                //设置记录级别的kafka主题
+				context.setKafkaTopic("shoptopic");
+           }
+           else if(tag.equals("city"){
+                //设置记录级别的kafka主题
+				context.setKafkaTopic("citytopic");
+           }
+           //默认使用在kafka输出插件配置的kafka主题        
+
+		}
+
+}
+```
+
+
+
+## 3.5 kafka消息处理
+
 配置好kafka参数后，接下来配置发往kafka的消息格式处理器（不设置默认采用json格式发送）：
 
 
@@ -247,7 +284,9 @@ public void buildRecord(Context taskContext, CommonRecord record, Writer builder
 importBuilder.setOutputConfig(kafkaOutputConfig);
 ```
 
+## 3.6 Elasticsearch输入插件配置
 
+### 3.6.1 增量采集时间偏移量设置
 
 接下来设置增量同步时间戳截止时间偏移量（相对应当前时间）
 
@@ -258,6 +297,8 @@ importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截
 
 
 这个主要是考虑到es写入数据的延迟性，避免增量导出时遗漏数据。
+
+### 3.6.2 es导出的相关配置
 
 接下来做es导出的相关配置：dsl，dsl对应文件路径，以及queryaction，dsl需要用到的条件变量值：
 
@@ -357,7 +398,7 @@ es数据源在application.properties文件中配置
 
 
 
-定时任务配置
+## 3.7 定时任务配置
 
 ```java
 //定时任务配置，
@@ -370,7 +411,7 @@ es数据源在application.properties文件中配置
 
 延迟1秒执行，每隔30秒执行一次
 
-
+## 3.8 任务执行拦截器配置
 
 接下来设置任务执行拦截器
 
@@ -412,6 +453,8 @@ taskContext.getTaskData("time");方法获取time参数
 				taskContext.addTaskData("time",time);
 ```
 
+## 3.9 增量导出状态管理配置
+
 下面是设置采集数据增量时间戳对应的elasticsearch字段名称、任务重启是否重新开始同步数据、增量状态保存文件路径、增量字段类型等信息，以及增量起始值等信息
 
 ```java
@@ -428,6 +471,8 @@ taskContext.getTaskData("time");方法获取time参数
       //增量配置结束
 ```
 
+## 3.10 设置ip地址信息库地址
+
 设置ip地址信息库地址
 
 ```java
@@ -436,6 +481,8 @@ importBuilder.setGeoipDatabase("d:/geolite2/GeoLite2-City.mmdb");
 importBuilder.setGeoipAsnDatabase("d:/geolite2/GeoLite2-ASN.mmdb");
 importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
 ```
+
+## 3.11 数据加工处理
 
 全局往每条记录中添加字段：
 
@@ -553,6 +600,10 @@ importBuilder.setExportResultHandler(new ExportResultHandler<Object, RecordMetad
 });
 ```
 
+
+
+## 3.12 其他配置
+
 其他配置：打印日志设置，任务报错继续执行设置
 
 ```java
@@ -562,7 +613,7 @@ importBuilder.setPrintTaskLog(true);
 
 这样我们这个作业就配置好了，下面的代码构建和启动导出elasticsearch数据并发送kafka同步作业
 
-
+## 3.13 作业调试执行
 
 ```java
 		/**
@@ -586,6 +637,8 @@ importBuilder.setPrintTaskLog(true);
 
 调试好作业后，说一下，我们要如何发布作业
 
+## 3.14 作业发布部署
+
 先修改工程application.properties文件中的mainclass配置为我们要执行的作业：org.frameworkset.elasticsearch.imp.ES2KafkaDemo
 
 ![img](images/es-kafka-release.png)
@@ -605,6 +658,8 @@ importBuilder.setPrintTaskLog(true);
 ![img](images/es-kafka-run.png)
 
 ![img](images/es-kafka-run1.png)
+
+## 3.15 作业jvm内存配置
 
 作业执行需要的jvm内存可以修改jvm.options文件进行调整
 

@@ -219,7 +219,7 @@ elasticsearchOutputConfig.setEsIdField("rowNo");*//设置文档主键，不设�
 
 
 
-可以直接参考以下文档章节：【2.8.10 灵活控制文档数据结构】
+可以直接参考以下文档章节：【2.8.10 数据加工处理】
 
 https://esdoc.bbossgroups.com/#/db-es-tool
 

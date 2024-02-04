@@ -33,7 +33,7 @@
 ```
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.1.5 功能改进
-1. 数据处理作业改进：设置增量状态ID生成策略，在设置jobId的情况下起作用
+1. 数据处理作业改进：[设置增量状态ID生成策略](https://esdoc.bbossgroups.com/#/db-es-tool?id=_28511-%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81id%e7%94%9f%e6%88%90%e7%ad%96%e7%95%a5%e9%85%8d%e7%bd%ae)，在设置jobId的情况下起作用
 
 ```java
 ImportIncreamentConfig.STATUSID_POLICY_JOBID 采用jobType+jobId作为增量状态id

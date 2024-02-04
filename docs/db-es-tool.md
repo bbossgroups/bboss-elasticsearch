@@ -1,4 +1,4 @@
-# bboss数据采集ETL工具使用指南
+# 数据采集ETL工具使用指南
 
 <img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
 
@@ -1337,6 +1337,36 @@ MongoDB：增量字段必须出现fethField字段清单中
 
 如果增量字段没有出现在查询返回的数据记录中，就会获取不到增量值，从而导致数据增量采集无法实现。
 
+#### 2.8.5.11 增量状态ID生成策略配置
+
+设置增量状态ID生成策略，在设置jobId的情况下起作用，目前提供了两种策略：
+
+**策略1** 采用jobType+jobId作为增量状态id
+
+ImportIncreamentConfig.STATUSID_POLICY_JOBID 
+
+**策略2** 采用[jobType]+[jobId]+[作业查询语句/文件路径等信息的hashcode]，作为增量id作为增量状态id
+
+ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT 
+
+**默认策略**：ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
+
+**策略配置方法**：
+
+```java
+
+/**
+         * 设置增量状态ID生成策略，在设置jobId的情况下起作用
+         * ImportIncreamentConfig.STATUSID_POLICY_JOBID 采用jobType+jobId作为增量状态id
+         * ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT 采用[jobType]+[jobId]+[作业查询语句/文件路径等信息的hashcode]，作为增量id作为增量状态id
+         * 默认值ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
+         */
+        importBuilder.setStatusIdPolicy(ImportIncreamentConfig.STATUSID_POLICY_JOBID);
+
+```
+
+文件采集插件强制直接使用ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT策略
+
 ### 2.8.6 定时全量导入
 
 定时机制配置
@@ -1624,8 +1654,8 @@ importBuilder.setExternalTimer(true);
 
 
 
-### 2.8.10 灵活控制文档数据结构
-
+### 2.8.10 数据加工处理
+实现数据结构修改调整，增加、修改字段，过滤记录等功能
 #### 2.8.10.1 全局处理
 
 可以通过importBuilder全局扩展添加字段到es索引中：
@@ -1646,6 +1676,8 @@ importBuilder.setExternalTimer(true);
 | 数据处理类型             | 全局处理 | 记录级别 | 举例(全局通过importBuilder组件实现，记录级别通过context接口实现) |
 | ------------------------ | -------- | -------- | ------------------------------------------------------------ |
 | 添加字段                 | 支持     | 支持     | 全局处理：importBuilder.addFieldValue("testF1","f1value");                                             记录级别：context.addFieldValue("testF1","f1value"); |
+| 添加对象中所有字段到记录 | 不支持   | 支持     | 将对象中的所有字段和值作为字段添加到记录中，忽略空值字段 ： Context addFieldValues( Object bean); 将对象中的所有字段和值作为字段添加到记录中 根据参数ignoreNullField控制是否忽略空值字段 true 忽略  false 不忽略      Context addFieldValues(Object bean,boolean ignoreNullField); |
+| 添加map中所有字段到记录  | 不支持   | 支持     | 将map中的所有键值对作为字段添加到记录中，忽略空值字段      Context addMapFieldValues( Map<String,Object> values); 将map中的所有键值对作为字段添加到记录中       根据参数ignoreNullField控制是否忽略空值字段 true 忽略  false 不忽略       Context addMapFieldValues( Map<String,Object> values,boolean ignoreNullField); |
 | 删除字段                 | 支持     | 支持     | 全局处理：importBuilder.addIgnoreFieldMapping("testInt");                                           记录级别：context.addIgnoreFieldMapping("testInt"); |
 | 映射字段名称             | 支持     | 不支持   | 全局处理：importBuilder.addFieldMapping("document_id","docId"); |
 | 映射字段名称并修改字段值 | 不支持   | 支持     | String oldValue = context.getStringValue("axx");                                                           String newvalue = oldValue+" new value";                context.newName2ndData("axx","newname",newvalue); |
