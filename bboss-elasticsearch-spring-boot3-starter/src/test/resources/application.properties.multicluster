@@ -1,0 +1,97 @@
+##多集群配置样例，如果需要做多集群配置，请将参照本文内容修改application.properties文件内容
+spring.elasticsearch.bboss.elasticsearch.serverNames = default,logs
+
+##default集群配配置
+spring.elasticsearch.bboss.elasticUser=elastic
+spring.elasticsearch.bboss.elasticPassword=changeme
+
+#elasticsearch.rest.hostNames=10.1.236.88:9200
+#elasticsearch.rest.hostNames=127.0.0.1:9200
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=10.21.20.168:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
+spring.elasticsearch.bboss.elasticsearch.dateFormat=yyyy.MM.dd
+spring.elasticsearch.bboss.elasticsearch.timeZone=Asia/Shanghai
+spring.elasticsearch.bboss.elasticsearch.ttl=2d
+#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
+spring.elasticsearch.bboss.elasticsearch.showTemplate=true
+spring.elasticsearch.bboss.elasticsearch.discoverHost=false
+
+##default连接池配置
+spring.elasticsearch.bboss.http.timeoutConnection = 5000
+spring.elasticsearch.bboss.http.timeoutSocket = 5000
+spring.elasticsearch.bboss.http.connectionRequestTimeout=5000
+spring.elasticsearch.bboss.http.retryTime = 1
+spring.elasticsearch.bboss.http.maxLineLength = -1
+spring.elasticsearch.bboss.http.maxHeaderCount = 200
+spring.elasticsearch.bboss.http.maxTotal = 400
+spring.elasticsearch.bboss.http.defaultMaxPerRoute = 200
+spring.elasticsearch.bboss.http.keystore =
+spring.elasticsearch.bboss.http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.elasticsearch.bboss.http.hostnameVerifier =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.elasticsearch.bboss.http.hostnameVerifier =
+#每隔多少毫秒校验空闲connection，自动释放无效链接
+# -1 或者0不检查
+spring.elasticsearch.bboss.http.validateAfterInactivity=2000
+# 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+# validateAfterInactivity来控制连接是否有效
+# 默认值false
+spring.elasticsearch.bboss.http.staleConnectionCheckEnabled=false
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#* 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+spring.elasticsearch.bboss.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+
+
+##logs集群配置
+spring.elasticsearch.bboss.logs.elasticUser=elastic
+spring.elasticsearch.bboss.logs.elasticPassword=changeme
+
+#elasticsearch.rest.hostNames=10.1.236.88:9200
+spring.elasticsearch.bboss.logs.elasticsearch.rest.hostNames=127.0.0.1:9200
+#elasticsearch.rest.hostNames=10.21.20.168:9200
+#elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
+spring.elasticsearch.bboss.logs.elasticsearch.dateFormat=yyyy.MM.dd
+spring.elasticsearch.bboss.logs.elasticsearch.timeZone=Asia/Shanghai
+spring.elasticsearch.bboss.logs.elasticsearch.ttl=2d
+#在控制台输出脚本调试开关showTemplate,false关闭，true打开，同时log4j至少是info级别
+spring.elasticsearch.bboss.logs.elasticsearch.showTemplate=true
+spring.elasticsearch.bboss.logs.elasticsearch.discoverHost=false
+
+##logs集群对应的连接池配置
+spring.elasticsearch.bboss.logs.http.timeoutConnection = 5000
+spring.elasticsearch.bboss.logs.http.timeoutSocket = 5000
+spring.elasticsearch.bboss.logs.http.connectionRequestTimeout=5000
+spring.elasticsearch.bboss.logs.http.retryTime = 1
+spring.elasticsearch.bboss.logs.http.maxLineLength = -1
+spring.elasticsearch.bboss.logs.http.maxHeaderCount = 200
+spring.elasticsearch.bboss.logs.http.maxTotal = 400
+spring.elasticsearch.bboss.logs.http.defaultMaxPerRoute = 200
+# https证书配置
+spring.elasticsearch.bboss.logs.http.keystore =
+spring.elasticsearch.bboss.logs.http.keyPassword =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.elasticsearch.bboss.logs.http.hostnameVerifier =
+# ssl 主机名称校验，是否采用default配置，
+# 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+spring.elasticsearch.bboss.logs.http.hostnameVerifier =
+#每隔多少毫秒校验空闲connection，自动释放无效链接
+# -1 或者0不检查
+spring.elasticsearch.bboss.logs.http.validateAfterInactivity=2000
+# 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
+# validateAfterInactivity来控制连接是否有效
+# 默认值false
+spring.elasticsearch.bboss.logs.http.staleConnectionCheckEnabled=false
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#* 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+spring.elasticsearch.bboss.logs.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+

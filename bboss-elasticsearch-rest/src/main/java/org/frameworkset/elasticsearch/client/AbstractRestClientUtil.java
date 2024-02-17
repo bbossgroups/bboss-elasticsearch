@@ -1594,7 +1594,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 *             twitter/_doc/1/_source
 	 *             GET twitter/_doc/2?routing=user1
 	 *
-	 * @param path
 	 * @return
 	 * @throws ElasticSearchException
 	 */

@@ -1309,6 +1309,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * slice scroll并行检索，每次检索结果列表交给scrollHandler回调函数处理
 	 * @param path
 	 * @param dslTemplate here is a example dsltemplate: must contain sliceId,sliceMax varialbe
+     *                       
 	 * 	 * 	 *    <property name="scrollSliceQuery">
 	 * 	 * 	 *         <![CDATA[
 	 * 	 * 	 *          {

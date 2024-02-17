@@ -58,7 +58,7 @@ public abstract class ResultUtil {
 	public static final int OPERTYPE_getScript = 10;
 
 	public static final int OPERTYPE_deletePitId = 11;
-	public static final Boolean exist = new Boolean(false);
+	public static final Boolean exist = false;
 
 
 	public static <T> List<T> getInnerHits(Map<String,Map<String,InnerSearchHits>> innerHits,String indexType, Class<T> type){

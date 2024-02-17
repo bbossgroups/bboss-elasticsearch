@@ -164,10 +164,12 @@ public class ESTemplateCache {
 					}
 					else if(t.startsWith("escape=")){
 						String escape_ = t.substring("escape=".length()).trim();
-						if(escape_.equals("false"))
-							escape = new Boolean(false);
-						else if(escape_.equals("true"))
-							escape = new Boolean(true);
+						if(escape_.equals("false")) {
+                            escape = false;
+                        }
+						else if(escape_.equals("true")) {
+                            escape = true;
+                        }
 
 					}
 					else if(t.startsWith("esEncode=")){
@@ -179,9 +181,9 @@ public class ESTemplateCache {
 					else if(t.startsWith("serialJson=")){
 						String serialJson_ = t.substring("serialJson=".length()).trim();
 						if(serialJson_.equals("false"))
-							serialJson = new Boolean(false);
+							serialJson = false;
 						else if(serialJson_.equals("true"))
-							serialJson = new Boolean(true);
+							serialJson = true;
 
 					}else if(t.startsWith("escapeCount=")){
 						String escapeCount_ = t.substring("escapeCount=".length()).trim();
