@@ -15,7 +15,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 5. Support Opensearch 1.x,2.x,+
 
-6. Support Spring boot 1.x,2.x,3.x
+6. Support Spring boot 1.x,2.x,3.x,+
 
 7. 可在普通maven项目和其他java工程中集成bboss
 
@@ -41,17 +41,26 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.1.5</version>
+        <version>7.1.6</version>
     </dependency>
 ```
 
 如果是 spring boot 项目，还需导入以下 maven 坐标:
-
+spring boot 1.x,2.x
 ```xml
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.1.5</version>
+        <version>7.1.6</version>
+    </dependency>
+```
+
+spring boot 3.x,+
+```xml
+    <dependency>
+        <groupId>com.bbossgroups.plugins</groupId>
+        <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+        <version>7.1.6</version>
     </dependency>
 ```
 
