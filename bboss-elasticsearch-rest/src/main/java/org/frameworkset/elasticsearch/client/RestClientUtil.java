@@ -1032,7 +1032,7 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	@Override
 	public List<ESIndice> getIndexesWithCluster(String datasourceName) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.getIndexes(datasourceName);
+		return clientInterface.getIndexes();
 	}
 
 	@Override
