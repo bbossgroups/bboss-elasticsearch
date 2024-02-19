@@ -2,28 +2,48 @@
 
 # 1、pom添加Apollo和bbossEs相关依赖
 
+```xml
 <dependency>
    <groupId>com.ctrip.framework.apollo</groupId>
    <artifactId>apollo-client</artifactId>
-   <version>1.6.2</version>
+   <version>2.0.1</version>
  </dependency>
-
 ```
+
+bboss
+
+```xml
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.1.5</version>
+    <version>7.1.6</version>
 </dependency>
+
+```
+
+ 以下两个根据spring boot版本二选一即可：
+
+ spring boot 1.x,2.x依赖包
+
+```xml
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.1.5</version>
+    <version>7.1.6</version>
 </dependency>
 ```
 
- 
+spring boot 3.x依赖包
 
- 
+```xml
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+   <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+    <version>7.1.6</version>
+</dependency>
+```
+
+
 
 # 2、安装配置Apollo
 

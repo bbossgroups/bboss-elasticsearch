@@ -1,7 +1,7 @@
 # Spring boot整合Elasticsearch案例分享
 
 <img src="images/qrcode.jpg" alt="bboss" style="zoom:10%;" />
- 
+
 
   **The best elasticsearch highlevel java rest api-----bboss**       
 
@@ -40,26 +40,49 @@ https://esdoc.bbossgroups.com/#/Elasticsearch-demo
 
 在spring boot项目中导入bboss es starter 
 
-maven工程
+bboss maven工程
 
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.6</version>
         </dependency>
-        <dependency>
-            <groupId>com.bbossgroups.plugins</groupId>
-            <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.5</version>
-        </dependency>
+    
 ```
+
+ 以下两个根据spring boot版本二选一即可：
+
+ spring boot 1.x,2.x依赖包
+
+```xml
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+   <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
+    <version>7.1.6</version>
+</dependency>
+```
+
+spring boot 3.x依赖包
+
+```xml
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+   <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+    <version>7.1.6</version>
+</dependency>
+```
+
+
 
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.5"
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.1.5"
+compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.6"
+//spring boot 1.x,2.x 二选一
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.1.6"
+//spring boot 3.x 二选一
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.1.6"
 ```
 
 

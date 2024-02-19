@@ -1,18 +1,26 @@
-# Elasticsearch Demo
+# Bboss Demo
 _如果github访问不了，可以访问码云下载demo：_
 
 https://gitee.com/bboss
 # 1.Elasticsearch Demo
 
-spring boot必看demo1：
+spring boot 1.x,2.x必看demo1：
 
 [spring booter web服务demo](https://gitee.com/bboss/springboot-elasticsearch)（maven）
 
-spring boot必看demo2：
+spring boot 1.x,2.x必看demo2：
 
 [eshelloword-spring-boot-starter](https://gitee.com/bboss/eshelloword-spring-boot-starter) （maven）
 
-spring boot必看demo3：
+spring 3.x
+
+https://gitee.com/bboss/springboot3-elasticsearch-webservice
+
+https://gitee.com/bboss/eshelloword-spring-boot3-starter
+
+https://gitee.com/bboss/db-db-job3
+
+spring boot 1.x,2.x必看demo3：
 
 [spring boot多个Elasticsearch集群环境案例web demo](https://gitee.com/bboss/springboot-elasticsearch/tree/multiesdatasource)（maven）
 

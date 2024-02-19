@@ -54,14 +54,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>6.2.5</version>
+   <version>6.2.6</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:6.2.5'
+implementation 'com.bbossgroups:bboss-http:6.2.6'
 ```
 
 # 3.负载均衡组件
@@ -129,7 +129,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
  <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-plugin-apollo</artifactId>
-            <version>6.2.5</version>
+            <version>6.2.6</version>
         </dependency>
 ```
 
@@ -423,11 +423,21 @@ http.routing=#[area]
 
 首先需要在工程中导入bboss spring boot starter的maven坐标：
 
+spring 1.x,2.x
 ```xml
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>6.2.3</version>
+  <version>6.2.5</version>
+</dependency>
+```
+
+spring 3.x
+```xml
+<dependency>
+  <groupId>com.bbossgroups</groupId>
+  <artifactId>bboss-spring-boot3-starter</artifactId>
+  <version>6.2.5</version>
 </dependency>
 ```
 

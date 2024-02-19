@@ -2307,7 +2307,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.6</version>
         </dependency>
 ```
 
@@ -2339,21 +2339,27 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups</groupId>
             <artifactId>bboss-schedule</artifactId>
-            <version>6.1.5</version>
+            <version>6.1.6</version>
         </dependency>
 ```
 
 6.如果是spring boot项目，导入一个maven坐标：
-
+spring boot 1.x,2.x
 ```xml
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.6</version>
         </dependency>
 ```
-
-
+spring boot 3.x
+```xml
+       <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+            <version>7.1.6</version>
+        </dependency>
+```
 
 # 6.总结
 

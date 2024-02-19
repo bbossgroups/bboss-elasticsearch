@@ -351,7 +351,7 @@ logging.level.org.apache=INFO
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -375,12 +375,38 @@ logging.level.org.apache=INFO
 
 
 #### spring boot项目
-
+spring 1.x,2.x
 ```xml
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.6</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+```
+
+spring 3.x
+```xml
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+            <version>7.1.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

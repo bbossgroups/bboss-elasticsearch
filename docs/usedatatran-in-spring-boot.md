@@ -14,28 +14,48 @@ https://gitee.com/bboss/springboot-elasticsearch
 
 # 1.导入maven坐标
 
-基于spring boot的数据同步功能需要导入如下maven坐标：
+基于spring boot 1.x,2.x的数据同步功能需要导入如下maven坐标：
 
 
 
 ```xml
-<dependency>
-    <groupId>com.bbossgroups</groupId>
-    <artifactId>bboss-spring-boot-starter</artifactId>
-    <version>6.2.3</version> 			
-</dependency>
+
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.1.5</version>
+    <version>7.1.6</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.1.5</version>
+    <version>7.1.6</version>
+</dependency>
+<dependency>
+    <groupId>com.bbossgroups</groupId>
+    <artifactId>bboss-spring-boot-starter</artifactId>
+    <version>6.2.5</version> 			
 </dependency>
 ```
+基于spring boot 3.x的数据同步功能需要导入如下maven坐标：
 
+```xml
+
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-datatran-jdbc</artifactId>
+    <version>7.1.6</version>
+</dependency>
+<dependency>
+    <groupId>com.bbossgroups.plugins</groupId>
+    <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
+    <version>7.1.6</version>
+</dependency>
+<dependency>
+    <groupId>com.bbossgroups</groupId>
+    <artifactId>bboss-spring-boot3-starter</artifactId>
+    <version>6.2.5</version> 			
+</dependency>
+```
 
 
 # 2 关键点说明
