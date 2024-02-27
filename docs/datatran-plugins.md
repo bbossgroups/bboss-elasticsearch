@@ -1015,7 +1015,9 @@ importBuilder.setDataRefactor(new DataRefactor() {
       });
 ```
 
-### 1.7.4 参考文档
+### 1.7.4 更多案例及文档
+
+https://gitee.com/bboss/mongodb-elasticsearch
 
 https://esdoc.bbossgroups.com/#/mongodb-elasticsearch
 
@@ -2400,6 +2402,12 @@ context.setRecordKeyField("_id");//记录级别指定文档_id值对应的字段
 ### 2.8.3 MongoDB数据源定义和关闭
 
 如何自定义和关闭MongoDB数据源，参考文档：[MongoDB数据源定义和使用](https://esdoc.bbossgroups.com/#/MongoDBDatasource)
+
+### 2.8.4 更多案例
+
+https://gitee.com/bboss/mongodb-elasticsearch
+
+
 
 ## 2.9 HBase输出插件
 
