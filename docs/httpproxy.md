@@ -340,9 +340,7 @@ HttpRequestProxy.startHttpPools("application.properties");
  Map<String,Object> configs = new HashMap<String,Object>();
  configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制 
 
-DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
-  configs.put("http.discoverService",demoHttpHostDiscover);//注册服务发现机制，服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
-
+		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
  
  //启动负载均衡器
   HttpRequestProxy.startHttpPools(configs);
@@ -367,20 +365,20 @@ Map data = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",Map.class);//
        * 4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
        * 配置了两个服务集群组：default,report
        */
-      Map<String,Object> configs = new HashMap<String,Object>();
-      configs.put("http.poolNames","default,report");
-	//default组配置	
-      configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+    Map<String,Object> configs = new HashMap<String,Object>();
+		configs.put("http.poolNames","default,report");
+//		configs.put("http.poolNames","report");
+//		configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+//		configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
+		configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
+//		configs.put("http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
 
-      DemoHttpHostDiscover demoHttpHostDiscover = new DemoHttpHostDiscover();
-      configs.put("http.discoverService",demoHttpHostDiscover);
 
-      //report组配置
-      configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
-
-      configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
-     //启动负载均衡器
-      HttpRequestProxy.startHttpPools(configs);
+		configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
+		configs.put("report.http.hosts","192.168.137.1:808,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
+//		configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
+		HttpRequestProxy.startHttpPools(configs);
 ```
 
 服务调用
