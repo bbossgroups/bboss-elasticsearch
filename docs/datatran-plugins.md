@@ -1051,6 +1051,13 @@ MongoDB输出插件：[2.8.2 多表输出配置案例](https://esdoc.bbossgroups
 
 其他连接参数和认证配置方法，参考下面的插件配置案例。
 
+同步修改数据时，同步记录会包含以下两个字段
+
+```java
+mongodb.updateDescription  修改描述对象，类型为UpdateDescription，包含修改、删除描述信息和操作数据
+mongodb.update.removedFields ---List<String>类型，包含删除的字段列表，如果没有删除字段则为空
+```
+
 ### 1.8.2 插件配置案例
 
 ```java
