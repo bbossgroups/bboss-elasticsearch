@@ -462,7 +462,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType , String templateName,Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 	/**
@@ -474,7 +474,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public  <T> List<T>  sql(Class<T> beanType , String templateName,Object bean) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 	/**
@@ -487,7 +487,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 
@@ -500,7 +500,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -514,7 +514,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public  <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Object bean) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -529,7 +529,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -544,7 +544,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public   <T> T  sqlObject(Class<T> beanType , String templateName,Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 	/**
@@ -559,7 +559,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
         if(bean instanceof Map){
             return sqlObject( beanType ,  templateName,(Map) bean);
         }
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 	/**
@@ -572,7 +572,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  sqlObject(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 

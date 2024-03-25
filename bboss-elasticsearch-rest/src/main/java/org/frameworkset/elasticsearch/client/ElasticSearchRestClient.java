@@ -333,7 +333,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 						if (v >= 8) {
 							upper8 = true;
 						}
-						if (v >= 7) {
+						else if (v >= 7) {
 							upper7 = true;
 						}
 
@@ -347,6 +347,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			}
 		}
 	}
+    public static final String _xpack6_sql_restapi = "/_xpack/sql";
+    public static final String _xpack8_sql_restapi = "/_sql";
+
+    private String sqlRestapi = _xpack8_sql_restapi;
 	private String healthPool;
 	private String discoverPool;
 
@@ -354,7 +358,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return healthPool;
 	}
 
-	public boolean healthCheckEnabled(){
+    public String getSqlRestapi() {
+        return sqlRestapi;
+    }
+
+    public boolean healthCheckEnabled(){
 		return healthCheckInterval > 0;
 	}
 	public void init() {
@@ -451,6 +459,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				logger.error("Parse Long slowDslThreshold parameter failed:"+_slowDslThreshold,e);
 			}
 		}
+        
+        String _sqlRestapi = elasticsearchPropes.getProperty("elasticsearch.sqlRestapi");
+        if(_sqlRestapi != null && !_sqlRestapi.equals("")){
+            this.sqlRestapi = _sqlRestapi;            
+        }
 
 
 		String _logDslCallback = elasticsearchPropes.getProperty("elasticsearch.logDslCallback");

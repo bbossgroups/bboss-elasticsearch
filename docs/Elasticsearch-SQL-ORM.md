@@ -699,6 +699,17 @@ sql转换为dsl的结果：
 }
 ```
 
+## 1.5 sql rest api配置
+
+只有在出现服务兼容性问题的时候才需要配置，bboss 7.1.8以后版本提供了以下配置（向后兼容，Elasticsearch 7以后版本无需配置）
+
+```
+elasticsearch.sqlRestapi=_sql  //高版本配置，默认值，无需配置
+
+elasticsearch.sqlRestapi=/_xpack/sql  //低版本需要配置，低版本的Elasticsearch api
+
+```
+
 # 2 第三方插件Elasticsearch-sql查询
 
 基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可。

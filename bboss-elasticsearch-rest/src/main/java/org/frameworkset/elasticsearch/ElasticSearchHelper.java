@@ -248,7 +248,11 @@ public class ElasticSearchHelper {
 							useHttps);
 				}
 
-
+                String sqlRestapi = ElasticSearchHelper._getStringValue(serverName, "elasticsearch.sqlRestapi", configContext, null);
+                if (sqlRestapi != null) {
+                    elasticsearchPropes.put("elasticsearch.sqlRestapi",
+                            sqlRestapi);
+                }                        
 				final ElasticSearch elasticSearch = new ElasticSearch();
 				if (firstElasticSearch == null)
 					firstElasticSearch = elasticSearch;

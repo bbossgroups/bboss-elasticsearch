@@ -11,19 +11,20 @@ Elasticsearch 6.3及以上版本新增的SQL功能非常不错，本文以实际
 
 另外一篇文章：[Elasticsearch SQL ORM查询案例](https://esdoc.bbossgroups.com/#/Elasticsearch-SQL-ORM)
 
+
 # 1.代码中的sql检索
 
 ```java
     @Test
 	public void testQuery(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		String json = clientUtil.executeHttp("/_xpack/sql?format=txt",
+		String json = clientUtil.executeHttp("/_sql?format=txt",
 				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
 				ClientInterface.HTTP_POST
 				);
 		System.out.println(json);
 
-		json = clientUtil.executeHttp("/_xpack/sql?format=json",
+		json = clientUtil.executeHttp("/_sql?format=json",
 				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
 				ClientInterface.HTTP_POST
 		);
@@ -44,7 +45,7 @@ Elasticsearch 6.3及以上版本新增的SQL功能非常不错，本文以实际
 ```java
    public void testTranslate(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		String json = clientUtil.executeHttp("/_xpack/sql/translate",
+		String json = clientUtil.executeHttp("/_sql/translate",
 				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
 				ClientInterface.HTTP_POST
 		);
@@ -138,7 +139,7 @@ sql转换为dsl的结果：
 		Map params = new HashMap();
 		params.put("channelId",1);
         params.put("name","乔丹");
-		String json = clientUtil.executeHttp("/_xpack/sql","sqlQuery",params,
+		String json = clientUtil.executeHttp("/_sql","sqlQuery",params,
 				ClientInterface.HTTP_POST
 		);
 		System.out.println(json);//打印检索结果

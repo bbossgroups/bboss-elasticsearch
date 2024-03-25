@@ -641,6 +641,7 @@ public abstract class BaseESProperties {
 		private String slowDslThreshold;
 		private String useHttps;
         private String healthPath;
+        private String sqlRestapi;
 
         public void setHealthPath(String healthPath) {
             this.healthPath = healthPath;
@@ -830,7 +831,15 @@ public abstract class BaseESProperties {
 		public void setSlowDslThreshold(String slowDslThreshold) {
 			this.slowDslThreshold = slowDslThreshold;
 		}
-	}
+
+        public String getSqlRestapi() {
+            return sqlRestapi;
+        }
+
+        public void setSqlRestapi(String sqlRestapi) {
+            this.sqlRestapi = sqlRestapi;
+        }
+    }
 	public static class Dslfile{
 		private String refreshInterval;
 		private String dslMappingDir;
@@ -1001,6 +1010,9 @@ public abstract class BaseESProperties {
 
 			if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getReferExternal()))
 				properties.put(_name+"elasticsearch.referExternal",this.getElasticsearch().getReferExternal());
+
+            if(SimpleStringUtil.isNotEmpty(this.getElasticsearch().getSqlRestapi()))
+                properties.put(_name+"elasticsearch.sqlRestapi",this.getElasticsearch().getSqlRestapi());
 
 		}
 

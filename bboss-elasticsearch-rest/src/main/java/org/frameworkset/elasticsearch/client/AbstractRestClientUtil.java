@@ -1828,7 +1828,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType,  String entity) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 
@@ -1864,7 +1864,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String entity) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -1904,11 +1904,11 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",entity,   new SQLRestResponseHandler());
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 	public String closeSQLCursor(String cursor) throws ElasticSearchException {
-		return this.client.executeRequest("/_xpack/sql/close",
+		return this.client.executeRequest(client.getSqlRestapi()+"/close",
 				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
 				new ESStringResponseHandler(),HTTP_POST);
 	}
@@ -1925,7 +1925,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		if(oldPage.getCursor() == null ){
 			return null;
 		}
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
 														new StringBuilder().append("{\"cursor\": \"").append(oldPage.getCursor()).append("\"}").toString(),
 														new SQLRestResponseHandler());
 
@@ -1948,7 +1948,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		if(cursor == null ){
 			return null;
 		}
-		SQLRestResponse result = this.client.executeRequest("/_xpack/sql",
+		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
 				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
 				new SQLRestResponseHandler());
 
