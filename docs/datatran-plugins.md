@@ -928,7 +928,29 @@ MongoDB输入插件配置类：[MongoDBInputConfig](https://gitee.com/bboss/bbos
       importBuilder.setInputConfig(mongoDBInputConfig);
 ```
 
-### 1.7.2 增量采集配置
+### 1.7.2 自定义构建MongoDB客户端
+
+MongoDB客户端自定义构建接口，方便业务侧自定义MongoDB客户端配置，使用案例：
+
+```java
+   mongoDBInputConfig.setCustomSettingBuilder(new CustomSettingBuilder() {
+   @Override
+   public void customSettingBuilder(MongoClientSettings.Builder builder, MongoDBConfig mongoDBConfig) {
+   //自定义ssl配置
+   /**             clientBuilder.applyToSslSettings(builder -> {
+   *                 builder.invalidHostNameAllowed(true);
+   *                 builder.enabled(true);
+   *                 builder.context(sscontext);     
+   *              });
+   **/
+   logger.info("Come to customSettingBuilder.....");
+
+                    }
+                })
+
+```
+
+### 1.7.3 增量采集配置
 
 指定时间戳增量字段，并设置增量查询起始值
 
@@ -952,7 +974,7 @@ catch (Exception e){
 
 
 
-### 1.7.3 加工和处理数据
+### 1.7.4 加工和处理数据
 
 通过DataRefactor接口，可以非常方便地加工和处理数据
 
@@ -1015,7 +1037,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
       });
 ```
 
-### 1.7.4 更多案例及文档
+### 1.7.5 更多案例及文档
 
 https://gitee.com/bboss/mongodb-elasticsearch
 
