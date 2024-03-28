@@ -1489,7 +1489,7 @@ ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com
 
 # 开发交流
 
-**Elasticsearch技术交流群：21220580,166471282**
+**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
 
 <img src="https://esdoc.bbossgroups.com/images/qrcode.jpg"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/douyin.png"  height="200" width="200"><img src="https://esdoc.bbossgroups.com/images/wvidio.png"  height="200" width="200">
 

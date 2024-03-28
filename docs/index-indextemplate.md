@@ -530,7 +530,7 @@ clientInterface.updateClusterSettings(clusterSettingList);
 
 
 
-bboss elasticsearch交流QQ群：21220580,166471282
+bboss elasticsearch交流QQ群：21220580,166471282,3625720,154752521,166471103,166470856
 
 **bboss elasticsearch微信公众号：**
 

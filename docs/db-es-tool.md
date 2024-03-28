@@ -3364,7 +3364,7 @@ config.setDisableScanNewFiles(true);
 github：[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)
 
 
-**elasticsearch交流QQ群：21220580,166471282**
+**elasticsearch交流QQ群：21220580,166471282,3625720,154752521,166471103,166470856**
 
 **elasticsearch微信公众号：**
 

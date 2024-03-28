@@ -76,7 +76,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 # 3.开发交流
 
-**Elasticsearch技术交流群：21220580,166471282**
+**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
 
 <img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 

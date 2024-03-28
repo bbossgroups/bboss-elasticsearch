@@ -743,7 +743,7 @@ HBase2ES job has started.
 
 ## 8.2 讨论交流
 
-elasticsearch技术交流群:21220580,166471282 
+elasticsearch技术交流群:21220580,166471282,3625720,154752521,166471103,166470856
 
 elasticsearch微信公众号:bbossgroup   
 
