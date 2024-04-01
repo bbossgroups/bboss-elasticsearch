@@ -44,9 +44,24 @@ The following Demo and related documentation is compatible with Elasticsearch 1.
 ## Elasticsearch demo for Java project:
 https://github.com/bbossgroups/elasticsearch-example
 ## Elasticsearch demo for spring booter 1.x,2.x
+
+github
+
 https://github.com/bbossgroups/es_bboss_web
 
 https://github.com/bbossgroups/elasticsearch-springboot-example
+
+码云
+
+https://gitee.com/bboss/springboot-elasticsearch
+
+https://gitee.com/bboss/eshelloword-spring-boot-starter
+
+
+## Elasticsearch demo for spring booter 3.x
+https://gitee.com/bboss/springboot3-elasticsearch-webservice
+
+https://gitee.com/bboss/eshelloword-spring-boot3-starter
 
 # Fast integration bboss documentation
 [Spring boot integration ElasticSearch case sharing](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
