@@ -26,6 +26,14 @@ https://git.oschina.net/bboss/eshelloword-spring-boot-starter
 
 https://git.oschina.net/bboss/springboot-elasticsearch
 
+- Spring boot 3.x 案例
+
+https://gitee.com/bboss/springboot3-elasticsearch-webservice
+
+https://gitee.com/bboss/eshelloword-spring-boot3-starter
+
+https://gitee.com/bboss/db-db-job3
+
 - 更多bboss案例可以浏览：
 
 https://esdoc.bbossgroups.com/#/Elasticsearch-demo

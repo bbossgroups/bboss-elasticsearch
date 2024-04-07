@@ -1,8 +1,12 @@
 # Bboss源码构建指南
-本文介绍如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)，我们采用gradle来管理bboss源码工程，因此需先安装和配置好gradle（参考章节【[2.Gradle安装和配置](https://esdoc.bbossgroups.com/#/bboss-build?id=_2gradle%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae)】），然后利用gradle来构建Bboss。
-# 1.从源码构建bboss
+bboss采用gradle管理源码工程，本文介绍bboss模块构成，以及如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)。
+# 1.bboss模块及构建说明
 
-bboss采用模块化管理，多个模块相互依赖，可以从以下地址依次下载和构建各个模块源码工程：
+bboss采用模块化管理，模块之间依赖关系如下：
+
+<img src="images\bboss_modules.png" style="zoom:80%;" />
+
+模块源码工程地址和功能说明如下：
 
 | 源码地址                                   | 说明                                                         |
 | ------------------------------------------ | ------------------------------------------------------------ |
@@ -13,7 +17,7 @@ bboss采用模块化管理，多个模块相互依赖，可以从以下地址依
 | https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
 | https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL&[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
 
-然后分别按顺序在命令行源码根目录执行gradle publishToMavenLocal指令构建各模块：
+可以从以上地址下载各模块源码工程，然后按表格顺序，依次在命令行源码根目录下，执行gradle publishToMavenLocal指令，构建模块版本：
 
 ```shell
 cd bboss
@@ -36,13 +40,18 @@ cd bboss-elastic-tran
 gradle publishToMavenLocal
 ```
 
+下面分别介绍：
+
+1. 如何安装和配置gradle环境
+2. 源码工程导入idea及工程在idea中gradle相关配置
+
 # 2.Gradle安装和配置
 
 参考以下步骤配置和安装gradle运行环境,首先下载**最新**（与开发工具Idea或者Eclipse兼容即可）的gradle版本：
 
 [下载gradle](https://gradle.org/releases) 
 
-![image-20210619095208788](images\gradle.png)
+<img src="images\gradle.png" alt="image-20210619095208788" style="zoom:80%;" />
 
 下载完毕后解压，然后配置好gradle环境变量： 
 
@@ -54,27 +63,31 @@ M2_HOME: 一般还需要通过M2_HOME指定maven安装地址，这样gradle 构�
 
 在系统环境变量Path添加gradle bin目录
 
-![img](images/gradle_path.png)
+<img src="images/gradle_path.png" alt="img" style="zoom:80%;" />
 
 添加GRADLE_HOME和GRADLE_USER_HOME环境变量：
 
-![img](images/gradle_home.png)
+<img src="images/gradle_home.png" alt="img" style="zoom:80%;" />
 
 配置M2_HOME环境变量： 
 
-![img](images/m2_home.jpg)
+<img src="images/m2_home.jpg" alt="img" style="zoom:80%;" />
 
 M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入setting，配置maven：
 
-![image-20200510093315247](images/maven-idea.png)
+<img src="images/maven-idea.png" alt="image-20200510093315247" style="zoom:80%;" />
 
-新版本的idea必须调整导入工程的gradle配置，进入setting，设置工程的gradle配置：
+# 3.源码工程在idea中的配置
 
-![](images/mongodb/settingprojectgradle.png)
+可以将bboss的源码工程导入idea，工程导入新版本idea后，必须调整导入工程的gradle配置，进入setting，设置工程的gradle配置：
 
+<img src="images\project-ideasetting.png" style="zoom:80%;" />
 
+bboss-elasticsearch源码工程jdk配置（可选，因bboss Elasticsearch包含了对spring boot 3的支持，而spring boot 3要求至少jdk 17版本，所以需要额外进行jdk的配置，语言级别设置为8即可，非bboss Elasticsearch源码工程可以不用额外配置jdk版本）
 
-# 3.开发交流
+<img src="images\idea_project_jdk.png" style="zoom:80%;" />
+
+# 4.开发交流
 
 **Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
 
@@ -82,7 +95,7 @@ M2_HOME变量中的maven安装路径要与idea中maven配置保持一致,进入s
 
 
 
-# 4.支持我们
+# 5.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 

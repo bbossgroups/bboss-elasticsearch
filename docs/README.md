@@ -6,13 +6,28 @@
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件
 - **流批一体化计算框架**，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
 
-项目源码地址参考：[源码下载和构建](https://esdoc.bbossgroups.com/#/README?id=_3-源码下载和构建)，下面分别介绍各部分。
+bboss采用模块化管理以上三部分，模块之间依赖关系如下：
+
+<img src="images/bboss_modules.png" style="zoom:80%;" />
+
+模块源码工程源码地址和功能说明如下：
+
+| 源码地址                                   | 说明                                                         |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| https://gitee.com/bboss/bboss              | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
+| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB客户端封装 |
+| https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
+| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo对接框架 |
+| https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
+| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL&[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
+
+项目源码构建：[源码下载和构建](https://esdoc.bbossgroups.com/#/README?id=_3-源码下载和构建)，下面详细介绍各部分特色。
 
 ## 1.1 高性能 Elasticsearch Highlevel Java Restclient
 
 [bboss Elasticsearch Highlevel Java Restclient](https://esdoc.bbossgroups.com/#/quickstart)是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Opensearch的o/r mapping高性能开发库
 
-![](images\client-Elasticsearch.png)
+<img src="images\client-Elasticsearch.png" style="zoom:80%;" />
 
 ### 1.1.1 主要功能特色
 
@@ -40,19 +55,19 @@
 
 ### 1.1.2 典型应用场景
 
-![](images/client.png)
+<img src="images/client.png" style="zoom:80%;" />
 
 ## 1.2 数据采集同步ETL以及流批一体化计算框架
 
 [数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)框架，基于灵活的插件体系结构，提供数据采集、数据清洗转换处理和数据入库以及数据指标统计计算流批一体化处理功能，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件：
 
-![](images/datasyn.png)
+<img src="images/datasyn.png" style="zoom:80%;" />
 
 ### 1.2.1 数据采集ETL
 
 [数据采集同步ETL](https://esdoc.bbossgroups.com/#/db-es-tool)以及[流批一体化计算](https://esdoc.bbossgroups.com/#/etl-metrics)作业分为作业配置态和运行态，作业可以独立调度运行，亦可以嵌入到应用中运行，同时也可以和各种主流的调度引擎（quartz、xxl-job等）结合运行：
 
-![](images/datasyn-inout-now.png)
+<img src="images/datasyn-inout-now.png" style="zoom:80%;" />
 
 通过bboss可以灵活定制具备各种功能的数据采集统计作业
 
@@ -117,7 +132,7 @@ bboss支持全量和增量数据采集，增量数据采集默认基于sqlite数
 
 ### 1.2.4 典型应用案例---互联网用户行为分析监控
 
-![](images/pagecode.png)
+<img src="images/pagecode.png" style="zoom:80%;" />
 
 
 
