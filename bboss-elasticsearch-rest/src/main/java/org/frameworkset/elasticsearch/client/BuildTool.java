@@ -1559,12 +1559,7 @@ public abstract class BuildTool {
 
 				if (if_seq_no != null) {
 
-//					if(!upper7) {
-//						writer.write(",\"_if_seq_no\":");
-//					}
-//					else{
-//						writer.write(",\"if_seq_no\":");
-//					}
+
 
 					writer.write(",\"if_seq_no\":");
 
@@ -1574,11 +1569,7 @@ public abstract class BuildTool {
 				Long if_primary_term = clientOption != null ? clientOption.getIfPrimaryTerm() : null;
 
 				if (if_primary_term != null) {
-//					if (!upper7) {
-//						writer.write(",\"_if_primary_term\":");
-//					} else {
-//						writer.write(",\"if_primary_term\":");
-//					}
+
 					writer.write(",\"if_primary_term\":");
 					writer.write(String.valueOf(if_primary_term));
 				}
@@ -1610,194 +1601,7 @@ public abstract class BuildTool {
 
 	}
 
-	/**
-	 * String docIdKey,String parentIdKey,String routingKey
-	 * @param writer
-	 * @param indexType
-	 * @param indexName
-	 * @param params
-	 * @param action
-	 * @throws IOException
-	 */
-	/**
-	public static void buildMeta(Writer writer ,String indexType,String indexName, Object params,String action,ClientOptions clientOption,boolean upper7) throws IOException {
-		if(params instanceof Map){
-			buildMapMeta(  writer ,  indexType,  indexName, (Map) params,  action,  clientOption,  upper7);
-			return;
-		}
-		Object id = null;
-		Object parentId = null;
-		Object routing = null;
-		Object esRetryOnConflict = null;
-		Object version = null;
-		Object versionType = null;
-		ClassUtil.ClassInfo beanInfo = ClassUtil.getClassInfo(params.getClass());
-		if(clientOption != null) {
-
-			id = clientOption.getIdField() != null ? BuildTool.getId(params, beanInfo, clientOption.getIdField()) : null;
-			parentId = clientOption.getParentIdField() != null ? BuildTool.getParentId(params, beanInfo, clientOption.getParentIdField()) : null;
-			if(clientOption.getRouting() == null) {
-				routing = clientOption.getRoutingField() != null ? BuildTool.getRouting(params, beanInfo, clientOption.getRoutingField()) : null;
-			}
-			else{
-				routing = clientOption.getRouting();
-			}
-
-			if(clientOption.getEsRetryOnConflict() == null) {
-				esRetryOnConflict = clientOption.getEsRetryOnConflictField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo,
-						clientOption.getEsRetryOnConflictField()) : null;
-			}
-			else{
-				esRetryOnConflict = clientOption.getEsRetryOnConflict();
-			}
-			if(clientOption.getVersion() == null) {
-				version = clientOption.getVersionField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionField()) : null;
-			}
-			else{
-				version = clientOption.getVersion();
-			}
-			if(clientOption.getVersionType() == null) {
-				versionType = clientOption.getVersionTypeField() != null ? BuildTool.getEsRetryOnConflict(params, beanInfo, clientOption.getVersionTypeField()) : null;
-			}else{
-				versionType = clientOption.getVersionType();
-			}
-		}
-		ESIndexWrapper esIndexWrapper = beanInfo != null ?beanInfo.getEsIndexWrapper():null;
-		RestGetVariableValue restGetVariableValue = esIndexWrapper != null ?new RestGetVariableValue(beanInfo,params):null;
-
-
-		if(id != null) {
-			writer.write("{ \"");
-			writer.write(action);
-			writer.write("\" : { \"_index\" : \"");
-			if(indexName != null) {
-				writer.write(indexName);
-			}
-			else{
-				if (esIndexWrapper == null ) {
-					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
-				}
-				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
-			}
-			if(!upper7) {
-				writer.write("\", \"_type\" : \"");
-				if(indexType != null) {
-					writer.write(indexType);
-				}
-				else{
-					if (esIndexWrapper == null ) {
-						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-								.append(beanInfo != null ?beanInfo.toString():"").toString());
-					}
-					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
-				}
-			}
-			writer.write("\", \"_id\" : ");
-			buildId(id,writer,true);
-			if(parentId != null){
-				writer.write(", \"parent\" : ");
-				buildId(parentId,writer,true);
-			}
-			if(routing != null){
-				if(!upper7) {
-					writer.write(", \"_routing\" : ");
-				}
-				else{
-					writer.write(", \"routing\" : ");
-				}
-				buildId(routing,writer,true);
-			}
-
-			if (esRetryOnConflict != null) {
-				writer.write(",\"_retry_on_conflict\":");
-				writer.write(String.valueOf(esRetryOnConflict));
-			}
-
-			if(version != null) {
-				writer.write(",\"_version\":");
-
-				writer.write(String.valueOf(version));
-			}
-
-
-			if(versionType != null) {
-				writer.write(",\"_version_type\":\"");
-				writer.write(String.valueOf(versionType));
-				writer.write("\"");
-			}
-
-
-			writer.write(" } }\n");
-		}
-		else {
-
-			writer.write("{ \"");
-			writer.write(action);
-			writer.write("\" : { \"_index\" : \"");
-			if(indexName != null) {
-				writer.write(indexName);
-			}
-			else{
-				if (esIndexWrapper == null ) {
-					throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-							.append(beanInfo != null ?beanInfo.toString():"").toString());
-				}
-				buildIndiceName(esIndexWrapper,writer,restGetVariableValue);
-			}
-			if(!upper7) {
-				writer.write("\", \"_type\" : \"");
-				if(indexType != null) {
-					writer.write(indexType);
-				}
-				else{
-					if (esIndexWrapper == null ) {
-						throw new ElasticSearchException(new StringBuilder().append(" ESIndex annotation do not set in class ")
-								.append(beanInfo != null ?beanInfo.toString():"").toString());
-					}
-					buildIndiceType(esIndexWrapper,writer,restGetVariableValue);
-				}
-
-			}
-			writer.write("\"");
-			if(parentId != null){
-				writer.write(", \"parent\" : ");
-				buildId(parentId,writer,true);
-			}
-			if(routing != null){
-				if(!upper7) {
-					writer.write(", \"_routing\" : ");
-				}
-				else{
-					writer.write(", \"routing\" : ");
-				}
-				buildId(routing,writer,true);
-			}
-
-			if (esRetryOnConflict != null) {
-				writer.write(",\"_retry_on_conflict\":");
-				writer.write(String.valueOf(esRetryOnConflict));
-			}
-
-			if(version != null) {
-				writer.write(",\"_version\":");
-
-				writer.write(String.valueOf(version));
-			}
-
-			if(versionType != null) {
-				writer.write(",\"_version_type\":\"");
-				writer.write(String.valueOf(versionType));
-				writer.write("\"");
-			}
-
-			writer.write(" } }\n");
-		}
-	}*/
-	/**
-	public static void buildMeta(ClassUtil.ClassInfo classInfo,Writer writer ,String indexType,String indexName, Object params,String action,Object id,Object parentId,Object routing,boolean upper7) throws IOException {
-		buildMeta(  classInfo, writer ,  indexType,  indexName,   params,  action,  id,  parentId, routing,null,  upper7);
-	}*/
+	
 	public static Object getVersion(ClassUtil.ClassInfo classInfo, Object params){
 		if(classInfo == null){
 			return null;

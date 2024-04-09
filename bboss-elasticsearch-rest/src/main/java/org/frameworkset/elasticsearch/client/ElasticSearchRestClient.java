@@ -325,15 +325,13 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 						version = v;
 						if (v == 1) {
-//						if (esVersion.startsWith("1.")) {
-//							v1 = true;
-//						}
+
 							v1 = true;
 						}
 						if (v >= 8) {
 							upper8 = true;
 						}
-						else if (v >= 7) {
+						if (v >= 7) {
 							upper7 = true;
 						}
 
