@@ -2307,7 +2307,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-mongodb</artifactId>
-            <version>7.1.7</version>
+            <version>7.1.8</version>
         </dependency>
 ```
 
@@ -2349,7 +2349,7 @@ spring boot 1.x,2.x
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.1.7</version>
+            <version>7.1.8</version>
         </dependency>
 ```
 spring boot 3.x
@@ -2357,7 +2357,7 @@ spring boot 3.x
        <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.1.7</version>
+            <version>7.1.8</version>
         </dependency>
 ```
 

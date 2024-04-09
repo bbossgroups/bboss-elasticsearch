@@ -373,7 +373,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -381,7 +381,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
@@ -389,7 +389,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -397,7 +397,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -405,7 +405,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 
@@ -414,7 +414,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.1.7</version>
+<version>7.1.8</version>
 </dependency>
 ```
 
@@ -1504,7 +1504,7 @@ ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
 
 通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
 
-##### 2.8.7.1.7  定义任务上下文数据
+##### 2.8.7.1.8  定义任务上下文数据
 
  任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
 
@@ -1546,7 +1546,7 @@ public void preCall(TaskContext taskContext) {
     //设置任务执行拦截器结束，可以添加多个
 ```
 
-##### 2.8.7.1.7 获取任务上下文数据
+##### 2.8.7.1.8 获取任务上下文数据
 
 在生成文件名称的接口方法中获取任务上下文数据
 
