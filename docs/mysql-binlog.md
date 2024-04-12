@@ -562,7 +562,14 @@ https://www.bilibili.com/video/BV1ko4y1M7My/
 
 # 6 开发交流
 
-**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
+
+微信交流群：
+
+<img src="images\wxbboss.png" style="zoom:50%;" />
+
+
+交流社区：
 
 <img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 

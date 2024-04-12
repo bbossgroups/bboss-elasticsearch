@@ -44,8 +44,10 @@
 
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-
 # v7.1.8 功能改进
+1. Elasticsearch客户端改进：处理Elasticsearch 8以上版本_type兼容性问题
+2. Elasticsearch客户端改进：处理Elasticsearch 7.x,8.x 版本sql api兼容性问题
+# v7.1.7 功能改进
 1. 持久层改进：修复无法获取Clickhouse元数据问题
 2. 完善MongoDB CDC插件：解决新版MongoDB场景下修改数据不完整的场景下空指针异常问题
 3. 数据同步改进：tranresultset部分与记录数据处理相关的职能迁移到Record对象
@@ -2778,7 +2780,12 @@ if(log.isWarnEnabled()){
 
 # 开发交流
 
-**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
+
+微信交流群：
+
+<img src="images/wxbboss.png" style="zoom:50%;" />
+交流社区：
 
 <img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 

@@ -482,8 +482,15 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 # 开发交流
 
-**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
 
-**Elasticsearch微信公众号：**
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
-![img](images/qrcode.jpg)
+微信交流群：
+
+<img src="images\wxbboss.png" style="zoom:50%;" />
+
+
+
+交流社区：
+
+<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">

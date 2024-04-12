@@ -743,10 +743,17 @@ HBase2ES job has started.
 
 ## 8.2 讨论交流
 
-elasticsearch技术交流群:21220580,166471282,3625720,154752521,166471103,166470856
 
-elasticsearch微信公众号:bbossgroup   
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
-![GitHub Logo](images/qrcode.jpg)
+微信交流群：
+
+<img src="images\wxbboss.png" style="zoom:50%;" />
+
+
+交流社区：
+
+<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
+
 
 

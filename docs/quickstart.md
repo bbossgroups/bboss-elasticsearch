@@ -21,7 +21,9 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 8. 操作返回的结果可以是原始json报文、PO对象、List集合、Map对象以及分页查询、聚合查询、高亮检索封装对象，可以方便的从结果中获取索引文档id、score等元数据信息
 
-9. 学习成本低
+9. 支持多Elasticsearch数据源，每个数据源可以是不同版本的Elasticsearch
+
+10. 学习成本低
 
    1）无需任何配置即可完成增删改、简单查询操作，复杂的查询才需编写和配置dsl；
 
@@ -631,7 +633,14 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 # 6. 开发交流
 
-**Elasticsearch技术交流群：21220580,166471282,3625720,154752521,166471103,166470856**
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
+
+微信交流群：
+
+<img src="images\wxbboss.png" style="zoom:50%;" />
+
+
+交流社区：
 
 <img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 

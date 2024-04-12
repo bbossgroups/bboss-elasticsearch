@@ -179,14 +179,19 @@ ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapp
 https://www.elastic.co/guide/cn/elasticsearch/guide/current/lat-lon-formats.html
 
 # 开发交流
+QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
+
+微信交流群：
+
+<img src="images\wxbboss.png" style="zoom:50%;" />
 
 
 
-bboss elasticsearch交流QQ群：21220580,166471282,3625720,154752521,166471103,166470856
+交流社区：
 
-**bboss elasticsearch微信公众号：**
+<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 
-<img src="images/qrcode.jpg"  height="200" width="200">
+
 
 
 
