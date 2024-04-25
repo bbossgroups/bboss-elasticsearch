@@ -12,7 +12,7 @@ spring boot 1.x,2.x必看demo2：
 
 [eshelloword-spring-boot-starter](https://gitee.com/bboss/eshelloword-spring-boot-starter) （maven）
 
-spring 3.x
+spring boot 3.x
 
 https://gitee.com/bboss/springboot3-elasticsearch-webservice
 

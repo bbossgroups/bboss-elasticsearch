@@ -443,7 +443,7 @@ mysqlbinlog插件maven坐标
 
 ## 1.2 clickhouse对接配置
 
-如果需要从clickhouse导出或者输出数据,需要额外引入clickhouse驱动包
+如果需要使用bboss的数据库输入输出插件从clickhouse导出或者输出数据,需要额外引入clickhouse jdbc驱动包com.github.housepower
 
 ```xml
 <dependency>
@@ -467,7 +467,7 @@ clickhousedm.db.driver = com.github.housepower.jdbc.ClickHouseDriver
 clickhousedm.db.url = jdbc:clickhouse://10.103.6.4:29000,10.103.6.7:29000,10.103.6.6:29000/visualops
 ```
 
-使用housepower驱动需要使用clickhouse的tcp端口，否则会碰到异常：
+客户端驱动com.github.housepower使用tcp端口或者tcp ssl端口连接clickhouse，如果配置其他协议的端口连接Clickhouse会碰到异常以下异常：
 
 Accept the id of response that is not recognized by Server
 
@@ -483,6 +483,10 @@ tcp端口详见clickhouse的config.xml配置文件：
 -->
 <tcp_port>29000</tcp_port>
 ```
+bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档：
+
+https://doc.bbossgroups.com/#/persistent/datasource-cluster
+
 # 2.数据库表数据导入到Elasticsearch
 
 ## 2.1.案例对应的源码
@@ -2541,6 +2545,10 @@ final Random random = new Random();
 
 也可以先将需要增删改的数据推送到kafka，同步工具从kafka接收增删改数据，再进行相应的处理：
 ![](images\kafka-elasticsearch-crud.png)
+
+[Mysql binlog输入插件实现mysql增删改数据同步](https://esdoc.bbossgroups.com/#/mysql-binlog?id=mysql-binlog输入插件使用指南)
+
+[MongoDB CDC插件实现MongoDB增删改数据同步](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_18-mongodb-cdc插件)
 
 ### 2.8.20 同步数据到多个ES集群
 
