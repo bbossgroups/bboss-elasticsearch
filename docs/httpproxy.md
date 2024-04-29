@@ -1486,6 +1486,92 @@ jwt token认证设置，直接申请jwt token，并经token设置到http header�
 
 ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
 
+# 9.配置HttpRequestInterceptor
+
+在bboss配置文件application.properties中设置HttpRequestInterceptor，多个用逗号分隔，自定义httpquest请求处理。
+
+定义两个拦截器HttpRequestInterceptorDemo和HttpRequestInterceptorDemo1。
+
+HttpRequestInterceptorDemo
+
+```java
+public class HttpRequestInterceptorDemo implements HttpRequestInterceptor{
+
+    @Override
+    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+        request.addHeader("name","test");
+    }
+}
+```
+
+HttpRequestInterceptorDemo1
+
+```java
+public class HttpRequestInterceptorDemo1 implements HttpRequestInterceptor{
+
+    @Override
+    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+        request.addHeader("name1","test1");
+    }
+}
+```
+
+拦截器配置,多个用逗号分隔：
+
+application.properties
+
+spring boot配置：
+
+```properties
+spring.elasticsearch.bboss.http.httpRequestInterceptors=org.frameworkset.http.client.HttpRequestInterceptorDemo,org.frameworkset.http.client.HttpRequestInterceptorDemo1
+```
+
+普通项目配置：
+
+```properties
+http.httpRequestInterceptors=org.frameworkset.http.client.HttpRequestInterceptorDemo,org.frameworkset.http.client.HttpRequestInterceptorDemo1
+```
+
+# 10.配置HttpClientBuilderCallback
+
+在bboss配置文件application.properties中设置HttpClientBuilderCallback，自定义构建httpclient。
+
+实现案例：
+
+```java
+public class HttpClientBuilderCallbackDemo implements HttpClientBuilderCallback {
+    private static Logger logger = LoggerFactory.getLogger(HttpClientBuilderCallbackDemo.class);
+    public HttpClientBuilder customizeHttpClient(HttpClientBuilder builder, ClientConfiguration clientConfiguration) {
+       /**
+        AWSCredentials credentials = new BasicAWSCredentials("", "");
+        AWS4Signer signer = new AWS4Signer();
+        AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(credentials);
+        signer.setServiceName("es");
+        signer.setRegionName("us-east-1");
+
+        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(
+        "es", signer, awsCredentialsProvider);
+        builder.addInterceptorLast(interceptor);
+        */
+       logger.info("HttpClientBuilderCallbackDemo--------------------------------");
+       return builder;
+    }
+}
+```
+
+spring boot配置：
+
+```properties
+spring.elasticsearch.bboss.http.httpClientBuilderCallback=com.example.esbboss.HttpClientBuilderCallbackDemo
+```
+
+普通项目配置：
+
+```properties
+http.httpClientBuilderCallback=org.bboss.elasticsearchtest.aws.HttpClientBuilderCallbackDemo
+```
+
+配置好后即可基于bboss api操作和访问aws elasticsearch了。
 
 # 开发交流
 

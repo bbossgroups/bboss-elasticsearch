@@ -443,7 +443,15 @@ mysqlbinlog插件maven坐标
 
 ## 1.2 clickhouse对接配置
 
-如果需要使用bboss的数据库输入输出插件从clickhouse导出或者输出数据,需要额外引入clickhouse jdbc驱动包com.github.housepower
+如果需要使用bboss的数据库输入输出插件从clickhouse导出或者输出数据,需要额外引入clickhouse jdbc驱动包，可以根据需要使用不同的驱动连接Clickhouse
+
+基于TCP端口对接：com.github.housepower驱动
+
+基于http端口对接：官方驱动包
+
+### 1.2.1 基于TCP端口对接
+
+基于TCP端口对接，需要额外引入clickhouse jdbc驱动包com.github.housepower
 
 ```xml
 <dependency>
@@ -486,6 +494,39 @@ tcp端口详见clickhouse的config.xml配置文件：
 bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档：
 
 https://doc.bbossgroups.com/#/persistent/datasource-cluster
+
+### 1.2.2 基于http端口对接
+
+基于Http端口对接，需要额外引入clickhouse 官方 jdbc驱动包
+
+maven
+
+```xml
+<dependency>
+            <groupId>com.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.4.6</version>
+            <classifier>http</classifier>
+        </dependency>
+```
+
+gradle
+
+```groovy
+api 'com.clickhouse:clickhouse-jdbc:0.4.6:http'
+```
+
+对应clickhouse的配置案例：
+
+```properties
+clickhousedm.db.user = default
+clickhousedm.db.password =
+clickhousedm.db.driver = com.clickhouse.jdbc.ClickHouseDriver
+
+clickhousedm.db.url = jdbc:ch://(http://10.103.6.4:28123),(http://10.103.6.7:28123),(http://10.103.6.6:28123)/visualops?failover=1&load_balancing_policy=random
+```
+
+
 
 # 2.数据库表数据导入到Elasticsearch
 

@@ -396,13 +396,27 @@ public abstract class BaseESProperties {
 		}
 
 		private String httpClientBuilderCallback;
+
+
+        /**
+         * http接口org.apache.http.HttpRequestInterceptor清单，多个用逗号分隔
+         */
+        private String httpRequestInterceptors;
 		/**
 		 * 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
 		 * validateAfterInactivity来控制连接是否有效
 		 * 默认值false
 		 */
 		private String staleConnectionCheckEnabled = "false";
-
+        public String getHttpRequestInterceptors() {
+            return httpRequestInterceptors;
+        }
+        /**
+         * http接口org.apache.http.HttpRequestInterceptor清单，多个用逗号分隔
+         */
+        public void setHttpRequestInterceptors(String httpRequestInterceptors) {
+            this.httpRequestInterceptors = httpRequestInterceptors;
+        }
 		public String getEvictExpiredConnections() {
 			return evictExpiredConnections;
 		}
@@ -1098,6 +1112,9 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.trustPassword",this.getHttp().getTrustPassword());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpClientBuilderCallback()))
 				properties.put(_name + "http.httpClientBuilderCallback",this.getHttp().getHttpClientBuilderCallback());
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpRequestInterceptors()))
+                properties.put(_name + "http.httpRequestInterceptors",this.getHttp().getHttpRequestInterceptors());
 		}
 
 		if(dslfile != null){
