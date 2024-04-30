@@ -491,10 +491,6 @@ tcp端口详见clickhouse的config.xml配置文件：
 -->
 <tcp_port>29000</tcp_port>
 ```
-bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档：
-
-https://doc.bbossgroups.com/#/persistent/datasource-cluster
-
 ### 1.2.2 基于http端口对接
 
 基于Http端口对接，需要额外引入clickhouse 官方 jdbc驱动包
@@ -526,7 +522,9 @@ clickhousedm.db.driver = com.clickhouse.jdbc.ClickHouseDriver
 clickhousedm.db.url = jdbc:ch://(http://10.103.6.4:28123),(http://10.103.6.7:28123),(http://10.103.6.6:28123)/visualops?failover=1&load_balancing_policy=random
 ```
 
+bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档：
 
+https://doc.bbossgroups.com/#/persistent/datasource-cluster
 
 # 2.数据库表数据导入到Elasticsearch
 
