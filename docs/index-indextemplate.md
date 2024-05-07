@@ -40,52 +40,61 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 
 # 2 定义创建Indice的dsl脚本
 
-在配置文件-[esmapper/demo.xml](https://github.com/bbossgroups/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml)中定义一个名称为createDemoIndice的dsl脚本：
+在配置文件-[esmapper/demo7.xml](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo7.xml)中定义一个名称为createDemoIndice的dsl脚本：
 
 ```xml
     <!--
         创建demo需要的索引表结构
     -->
-    <property name="createDemoIndice">
+   <property name="createDemoIndice">
         <![CDATA[{
             "settings": {
                 "number_of_shards": 6,
-                "number_of_replicas": 1,
                 "index.refresh_interval": "5s"
             },
             "mappings": {
-                "demo": {
-                    "properties": {
-                        "demoId":{
-                            "type":"long"
-                        },
-                        "contentbody": {
-                            "type": "text" ##定义text类型的全文检索字段
+                "properties": {
+                    "demoId":{
+                        "type":"long"
+                    },
+                    "contentbody": {
+                        "type": "text"
 
-                        },
-                        "agentStarttime": {
-                            "type": "date"
-                             ## ,"format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
-                        },
-                        "applicationName": {
-                            "type": "text",##定义text类型的全文检索字段
-                            "fields": { ##定义精确查找的内部keyword字段
-                                "keyword": {
-                                    "type": "keyword"
-                                }
+                    },
+                    "agentStarttime": {
+                        "type": "date"
+                         ## ,"format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                    },
+                    "applicationName": {
+                        "type": "text",
+                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "keyword": {
+                                "type": "keyword"
                             }
-                        },
-                        "name": {
-                            "type": "keyword"
+                        }
+                    },
+                    "name": {
+                        "type": "text"
+                    },
+                    "contrastStatus":{
+                        "type":"integer"
+                    },
+                    "orderId": {
+                        "type": "text",
+                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "keyword": {
+                                "type": "keyword"
+                            }
                         }
                     }
                 }
             }
         }]]>
     </property>
+
 ```
 
-
+如果是Elasticsearch 6参考：https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml
 
 # 3 创建indice/判断indice是否存在/删除indice
 
@@ -127,37 +136,37 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
         <![CDATA[{
             "index_patterns": "demo-*", ## 5.x版本中请使用语法："template": "demo-*"
             "settings": {
-                "number_of_shards": 30, ##定义分片数
-                "number_of_replicas" : 2, ##定义副本数
-                "index.refresh_interval": "5s" ## 定义索引写入刷新时间间隔
+                "number_of_shards": 30,
+                "number_of_replicas" : 2,
+                "index.refresh_interval": "5s"
             },
             "mappings": {
-                "demo": {
-                    "properties": {
-                        "contentbody": {
-                            "type": "text",
-                            "fields": {
-                                "keyword": {
-                                    "type": "keyword",
-                                    "ignore_above": 256
-                                }
+
+                "properties": {
+                    "contentbody": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
                             }
-                        },
-                        "agentStarttime": {
-                            "type": "date",
-                            "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
-                        },
-                        "applicationName": {
-                            "type": "text",
-                            "fields": {
-                                "keyword": {
-                                    "type": "keyword",
-                                    "ignore_above": 256
-                                }
+                        }
+                    },
+                    "agentStarttime": {
+                        "type": "date",
+                        "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                    },
+                    "applicationName": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
                             }
                         }
                     }
                 }
+
             }
         }]]>
     </property>
@@ -192,7 +201,7 @@ ElasticSearch客户端框架bboss的ClientInterface 接口提供了创建/修改
 	}
 ```
 
-
+如果是Elasticsearch 6参考：https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/esmapper/demo.xml
 
 # 6 修改和获取索引表结构
 
@@ -521,6 +530,8 @@ clientInterface.updateClusterSettings(clusterSettingList);
 # 19 案例源码工程下载
 
 <https://github.com/bbossgroups/eshelloword-booter>
+
+https://gitee.com/bboss/eshelloword-booter
 
 
 

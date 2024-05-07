@@ -1913,7 +1913,16 @@ if(ftpConfig != null){
 }
 ```
 
+context获取全部元数据方法：
+
+```java
+Map<String, Object> getMetaDatas()
+//使用实例：将全部元数据转换为json格式输出
+logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
+```
+
 #### 2.8.10.5 默认的字段映射配置
+
 使用 数据采集同步默认字段映射功能，可以自动将文本类型记录按照特定的字符切割成一个数组结构，然后通过设置数组下标位置与目标字段名称、默认值、目标字段类型、目标字段格式的映射关系，从而快速实现非结构化数据到结构化数据转换映射处理。
 
 具备默认字段映射功能的插件有：文本文件采集插件、Excel文件采集插件、Excel文件输出插件、Kafka输入插件，下面分别举例说明。
