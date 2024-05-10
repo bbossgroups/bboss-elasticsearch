@@ -48,7 +48,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 3. 处理采用sqlserver数据库管理增量同步状态管理表无法创建问题
 4. 支持http请求拦截器功能，[配置HttpRequestInterceptor](https://esdoc.bbossgroups.com/#/httpproxy?id=_9%e9%85%8d%e7%bd%aehttprequestinterceptor)
 5. 增加对Clickhouse jdbc官方驱动的支持（使用http端口）,参考文档：https://doc.bbossgroups.com/#/persistent/datasource-cluster
-6. Elasticsearch输出插件改进：优化并行批处理任务性能
+6. 插件改进：优化http输出插件、文本文件输出插件、dummy输出插件、Elasticsearch输出插件，大幅提升并行批处理任务性能
 # v7.1.8 功能改进
 1. Elasticsearch客户端改进：处理Elasticsearch 8以上版本_type兼容性问题
 2. Elasticsearch客户端改进：处理Elasticsearch 7.x,8.x 版本sql api兼容性问题
