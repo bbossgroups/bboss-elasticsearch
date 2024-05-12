@@ -313,21 +313,21 @@ public class ImportDataJob implements Job {
         
                     importBuilder.setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
                             .setPrintTaskLog(true); //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-                    importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+                    importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
                         @Override
-                        public void success(TaskCommand<String,String> taskCommand, String result) {
+                        public void success(TaskCommand<String>taskCommand, String result) {
                             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                             logger.info(taskMetrics.toString());
                         }
         
                         @Override
-                        public void error(TaskCommand<String,String> taskCommand, String result) {
+                        public void error(TaskCommand<String>taskCommand, String result) {
                             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                             logger.info(taskMetrics.toString());
                         }
         
                         @Override
-                        public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+                        public void exception(TaskCommand<String>taskCommand, Exception exception) {
                             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                             logger.info(taskMetrics.toString());
                         }

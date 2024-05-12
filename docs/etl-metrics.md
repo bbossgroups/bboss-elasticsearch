@@ -1268,23 +1268,23 @@ public void scheduleTimestampImportData(boolean dropIndice){
 		});
         //		//设置任务执行拦截器结束，可以添加多个
 
-		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+		importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 			@Override
-			public void success(TaskCommand<String,String> taskCommand, String result) {
+			public void success(TaskCommand<String>taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(taskMetrics.toString());
 				logger.debug(result);
 			}
 
 			@Override
-			public void error(TaskCommand<String,String> taskCommand, String result) {
+			public void error(TaskCommand<String>taskCommand, String result) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.info(taskMetrics.toString());
 				logger.debug(result);
 			}
 
 			@Override
-			public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+			public void exception(TaskCommand<String>taskCommand, Throwable exception) {
 				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 				logger.debug(taskMetrics.toString());
 			}
@@ -1702,23 +1702,23 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
         //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
-        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
          @Override
-         public void success(TaskCommand<String,String> taskCommand, String result) {
+         public void success(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+         public void exception(TaskCommand<String>taskCommand, Throwable exception) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.debug(taskMetrics.toString());
          }
@@ -2140,23 +2140,23 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
         //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
-        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
          @Override
-         public void success(TaskCommand<String,String> taskCommand, String result) {
+         public void success(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+         public void exception(TaskCommand<String>taskCommand, Throwable exception) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.debug(taskMetrics.toString());
          }
@@ -2435,23 +2435,23 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
         //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等
-      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+      importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
          @Override
-         public void success(TaskCommand<String,String> taskCommand, String result) {
+         public void success(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+         public void exception(TaskCommand<String>taskCommand, Throwable exception) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.debug(taskMetrics.toString());
          }
@@ -2875,23 +2875,23 @@ ImportBuilder importBuilder = new ImportBuilder() ;
       importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
       
         //采集作业task执行结果回调处理接口，可以对任务执行成功、错误、异常回调处理，同时可以通过taskMetrics获取任务执行统计数据，知悉任务记录执行处理情况：成功数、失败数、忽略数量、总数量等  
-      importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+      importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
          @Override
-         public void success(TaskCommand<String,String> taskCommand, String result) {
+         public void success(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand<String>taskCommand, String result) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.info(taskMetrics.toString());
             logger.debug(result);
          }
 
          @Override
-         public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+         public void exception(TaskCommand<String>taskCommand, Throwable exception) {
             TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
             logger.debug(taskMetrics.toString());
          }
@@ -3366,19 +3366,19 @@ ImportBuilder importBuilder = new ImportBuilder();
 			}
 		});
 		//映射和转换配置结束
-		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+		importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 			@Override
-			public void success(TaskCommand<String,String> taskCommand, String o) {
+			public void success(TaskCommand<String>taskCommand, String o) {
 				logger.info("result:"+o);
 			}
 
 			@Override
-			public void error(TaskCommand<String,String> taskCommand, String o) {
+			public void error(TaskCommand<String>taskCommand, String o) {
 				logger.warn("error:"+o);
 			}
 
 			@Override
-			public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+			public void exception(TaskCommand<String>taskCommand, Throwable exception) {
 				logger.warn("error:",exception);
 			}
 

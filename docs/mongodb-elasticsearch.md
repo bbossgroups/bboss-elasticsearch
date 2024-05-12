@@ -971,14 +971,14 @@ geolite2数据库文件会定期更新，因此需要定期到以下地址下载
 
 ```java
         //设置任务处理结果回调接口
-		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
+		importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 			@Override
-			public void success(TaskCommand<Object,String> taskCommand, String result) {
+			public void success(TaskCommand<String> taskCommand, String result) {
 				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 			}
 
 			@Override
-			public void error(TaskCommand<Object,String> taskCommand, String result) {			 
+			public void error(TaskCommand<String> taskCommand, String result) {			 
                 System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 				/**
 				//分析result，提取错误数据修改后重新执行,
@@ -990,7 +990,7 @@ geolite2数据库文件会定期更新，因此需要定期到以下地址下载
 			}
 
 			@Override
-			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+			public void exception(TaskCommand<String> taskCommand, Exception exception) {
 				System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
 			}
 
@@ -1336,20 +1336,20 @@ public class Mongodb2ES {
         		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
         
         		//设置任务处理结果回调接口
-        		importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
+        		importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
         			@Override
-        			public void success(TaskCommand<Object,String> taskCommand, String result) {
+        			public void success(TaskCommand<String> taskCommand, String result) {
         				logger.info(taskCommand.getTaskMetrics().toString());//打印任务执行情况
         			}
         
         			@Override
-        			public void error(TaskCommand<Object,String> taskCommand, String result) {
+        			public void error(TaskCommand<String> taskCommand, String result) {
         				logger.info(taskCommand.getTaskMetrics().toString());//打印任务执行情况
         
         			}
         
         			@Override
-        			public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+        			public void exception(TaskCommand<String> taskCommand, Exception exception) {
         				logger.info(taskCommand.getTaskMetrics().toString(),exception);//打印任务执行情况
         			}
         
@@ -2098,16 +2098,16 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
         
         			// 5.2.4.7 设置同步作业结果回调处理函数（可选步骤，可以不需要做以下配置）
         			//设置任务处理结果回调接口
-        			importBuilder.setExportResultHandler(new ExportResultHandler<Object,String>() {
+        			importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
         				@Override
-        				public void success(TaskCommand<Object,String> taskCommand, String result) {
+        				public void success(TaskCommand<String> taskCommand, String result) {
         					System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
         
         
         				}
         
         				@Override
-        				public void error(TaskCommand<Object,String> taskCommand, String result) {
+        				public void error(TaskCommand<String> taskCommand, String result) {
         					System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
         					System.out.println(result);
         					/**
@@ -2120,7 +2120,7 @@ public class XXJobMongodb2ESImportTask extends AbstractXXLJobHandler {
         				}
         
         				@Override
-        				public void exception(TaskCommand<Object,String> taskCommand, Exception exception) {
+        				public void exception(TaskCommand<String> taskCommand, Exception exception) {
         					System.out.println(taskCommand.getTaskMetrics());//打印任务执行情况
         					logger.error("",exception);
         				}

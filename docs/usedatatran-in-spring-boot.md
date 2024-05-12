@@ -371,23 +371,23 @@ public class DataTran {
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
-					importBuilder.setExportResultHandler(new ExportResultHandler<String, String>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 						@Override
-						public void success(TaskCommand<String, String> taskCommand, String result) {
+						public void success(TaskCommand<String>taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 							logger.info(result);
 						}
 
 						@Override
-						public void error(TaskCommand<String, String> taskCommand, String result) {
+						public void error(TaskCommand<String>taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 							logger.info(result);
 						}
 
 						@Override
-						public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String>taskCommand, Exception exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
@@ -667,21 +667,21 @@ public class DataTran {
 					/**
 					 * 设置任务执行情况回调接口
 					 */
-					importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 						@Override
-						public void success(TaskCommand<String,String> taskCommand, String result) {
+						public void success(TaskCommand<String>taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
 
 						@Override
-						public void error(TaskCommand<String,String> taskCommand, String result) {
+						public void error(TaskCommand<String>taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String>taskCommand, Exception exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}

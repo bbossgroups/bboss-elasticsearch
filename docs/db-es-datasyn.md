@@ -309,23 +309,23 @@ public class Dbdemo {
    		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
    		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
    
-   		importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+   		importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
    			@Override
-   			public void success(TaskCommand<String,String> taskCommand, String result) {
+   			public void success(TaskCommand<String>taskCommand, String result) {
    				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
    				logger.info(taskMetrics.toString());
    				logger.debug(result);
    			}
    
    			@Override
-   			public void error(TaskCommand<String,String> taskCommand, String result) {
+   			public void error(TaskCommand<String>taskCommand, String result) {
    				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
    				logger.info(taskMetrics.toString());
    				logger.debug(result);
    			}
    
    			@Override
-   			public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+   			public void exception(TaskCommand<String>taskCommand, Exception exception) {
    				TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
    				logger.debug(taskMetrics.toString());
    			}
@@ -673,7 +673,7 @@ importBuilder.setPrintTaskLog(true) //可选项，true 打印任务执行日志�
 参考章节【[设置任务执行结果回调处理函数](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2312-%e8%ae%be%e7%bd%ae%e4%bb%bb%e5%8a%a1%e6%89%a7%e8%a1%8c%e7%bb%93%e6%9e%9c%e5%9b%9e%e8%b0%83%e5%a4%84%e7%90%86%e5%87%bd%e6%95%b0)】
 
 ```java
- public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+ public void exception(TaskCommand<String>taskCommand, Exception exception) {
 //任务执行抛出异常，失败处理方法,特殊的异常可以调用taskCommand的execute方法重试
      if(need retry)
      	taskCommand.execute();
@@ -721,7 +721,7 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
 
 ```java
 @Override
-         public void error(TaskCommand<String,String> taskCommand, String result) {
+         public void error(TaskCommand<String>taskCommand, String result) {
             //任务执行完毕，但是结果中包含错误信息
             //具体怎么处理失败数据可以自行决定,下面的示例显示重新导入失败数据的逻辑：
             // 从result中分析出导入失败的记录，然后重新构建data，设置到taskCommand中，重新导入，

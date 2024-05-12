@@ -575,21 +575,21 @@ importBuilder.addFieldValue("author","张无忌");
 添加任务执行结果回调函数，如果任务执行有错误发生，就会调用error方法或者exception方法，对应排查数据同步中各种问题非常有用：
 
 ```java
-importBuilder.setExportResultHandler(new ExportResultHandler<Object, RecordMetadata>() {
+importBuilder.setExportResultHandler(new ExportResultHandler<RecordMetadata>() {
    @Override
-   public void success(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
+   public void success(TaskCommand<RecordMetadata> taskCommand, RecordMetadata result) {
       TaskMetrics taskMetric = taskCommand.getTaskMetrics();
       System.out.println("处理耗时："+taskCommand.getElapsed() +"毫秒");
       System.out.println(taskCommand.getTaskMetrics());
    }
 
    @Override
-   public void error(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
+   public void error(TaskCommand<RecordMetadata> taskCommand, RecordMetadata result) {
       System.out.println(taskCommand.getTaskMetrics());
    }
 
    @Override
-   public void exception(TaskCommand<Object,RecordMetadata> taskCommand, Exception exception) {
+   public void exception(TaskCommand<RecordMetadata> taskCommand, Exception exception) {
       logger.error(taskCommand.getTaskMetrics().toString(),exception);
    }
 

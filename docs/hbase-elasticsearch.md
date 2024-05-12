@@ -419,21 +419,21 @@ importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入�
 /**
  * 设置任务执行情况回调接口
  */
-importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
    @Override
-   public void success(TaskCommand<String,String> taskCommand, String result) {
+   public void success(TaskCommand<String>taskCommand, String result) {
       TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
       logger.info(taskMetrics.toString());
    }
 
    @Override
-   public void error(TaskCommand<String,String> taskCommand, String result) {
+   public void error(TaskCommand<String>taskCommand, String result) {
       TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
       logger.info(taskMetrics.toString());
    }
 
    @Override
-   public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+   public void exception(TaskCommand<String>taskCommand, Exception exception) {
       TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
       logger.info(taskMetrics.toString());
    }
