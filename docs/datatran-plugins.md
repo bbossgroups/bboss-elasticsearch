@@ -1906,7 +1906,7 @@ ImportBuilder importBuilder = new ImportBuilder();
       });
       fileOupputConfig.setRecordGenerator(new RecordGenerator() {
 			@Override
-			public void buildRecord(Context taskContext, CommonRecord record, Writer writer) {
+			public void buildRecord(TaskContext taskContext, CommonRecord record, Writer writer) {
                 //record.getDatas()方法返回当前记录，Map类型，key/value ，key代表字段名称，Value代表值；
                 //可以将当前记录构建为需要的格式，写入到writer对象即可,这里直接将记录转换为json输出
 				SerialUtil.normalObject2json(record.getDatas(),writer);
@@ -2049,13 +2049,13 @@ ImportBuilder importBuilder = new ImportBuilder();
 //指定文件中每条记录格式化生成器，不指定默认为json格式输出
       kafkaOutputConfig.setRecordGenerator(new RecordGenerator() {
          @Override
-         public void buildRecord(Context taskContext, CommonRecord record, Writer builder) throws IOException {
+         public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) throws IOException {
             //record.setRecordKey("xxxxxx"); //指定记录key
 
             //直接将记录按照json格式输出到文本文件中
             SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据并转换为json格式
                   builder);
-//          String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+//          String data = (String)taskContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //
 ////          System.out.println(data);
 //
@@ -2767,7 +2767,7 @@ Dummy输出插件:[DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran
 DummyOutputConfig dummyOupputConfig = new DummyOutputConfig();
 dummyOupputConfig.setRecordGenerator(new RecordGenerator() {
    @Override
-   public void buildRecord(Context taskContext, CommonRecord record, Writer builder) throws Exception{
+   public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) throws Exception{
       SimpleStringUtil.object2json(record.getDatas(),builder);//自定义数据输出格式
 
    }

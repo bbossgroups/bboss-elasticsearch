@@ -122,11 +122,11 @@ public class ES2FileFtpBatchSplitFileDemo {
       		//指定文件中每条记录格式，不指定默认为json格式输出
       		FileOutputConfig.setRecordGenerator(new RecordGenerator() {
       			@Override
-      			public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
+      			public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) {
       				//直接将记录按照json格式输出到文本文件中
       				SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
       						builder);
-      				String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+      				String data = (String)taskContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
       //          System.out.println(data);
       
       			}
@@ -400,11 +400,11 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","192.168.137.1");//同时指�
       //指定文件中每条记录格式，不指定默认为json格式输出
       FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
-         public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
+         public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) {
              //直接将记录按照json格式输出到文本文件中
             SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
                                          builder);
-            String data = (String)taskContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+            String data = (String)taskContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
 
          }
@@ -520,11 +520,11 @@ ftpOutConfig.setFailedFileResendInterval(10000L);
  //指定文件中每条记录格式，不指定默认为json格式输出
       FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
-         public void buildRecord(Context recordContext, CommonRecord record, Writer builder) {
+         public void buildRecord(TaskContext recordContext, CommonRecord record, Writer builder) {
              //直接将记录按照json格式输出到文本文件中
             SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
                                          builder);
-            //String data = (String)recordContext.getTaskContext().getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
+            //String data = (String)recordContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
 
          }
@@ -536,10 +536,10 @@ ftpOutConfig.setFailedFileResendInterval(10000L);
 ```java
 public class DataSendReocordGenerator implements ReocordGenerator {
     @Override
-    public void buildRecord(Context taskContext, CommonRecord record, Writer builder) {
+    public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) {
             Map<String, Object> datas = record.getDatas();
             try {
-                Map<String,String> chanMap = (Map<String,String>)taskContext.getTaskContext().getTaskData("chanMap");//从任务上下文中获取渠道字典数据
+                Map<String,String> chanMap = (Map<String,String>)taskContext.getTaskData("chanMap");//从任务上下文中获取渠道字典数据
 
                 String phoneNumber = (String) datas.get("phoneNumber");//手机号码
                 if(phoneNumber==null){
@@ -606,7 +606,7 @@ FileOutputConfig.setRecordGenerator(new HeaderRecordGenerator() {
     }
 
     @Override
-    public void buildRecord(Context context, CommonRecord record, Writer builder)throws Exception {
+    public void buildRecord(TaskContext context, CommonRecord record, Writer builder)throws Exception {
         Map<String,Object> datas = record.getDatas();
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(datas.get("shebao_org"))   ;
@@ -917,9 +917,9 @@ FileOutputConfig.setFilenameGenerator(new FilenameGenerator() {
 ```java
 FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
-         public void buildRecord(Context context, CommonRecord record, Writer builder) {
+         public void buildRecord(TaskContext context, CommonRecord record, Writer builder) {
             //SerialUtil.normalObject2json(record.getDatas(),builder);
-            String data = (String)context.getTaskContext().getTaskData("data");//获取全局参数
+            String data = (String)context.getTaskData("data");//获取全局参数
 //          System.out.println(data);
 
          }
