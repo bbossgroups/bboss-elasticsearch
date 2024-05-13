@@ -38,7 +38,7 @@ maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.1.8</version>
+            <version>7.1.9</version>
         </dependency>
 ```
 
@@ -51,7 +51,7 @@ maven坐标
 gradle坐标
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.8"
+compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.1.9"
 ```
 
 
