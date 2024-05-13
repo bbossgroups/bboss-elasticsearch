@@ -64,7 +64,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 9. 增加统一异常信息构建工具 
 10. 处理作业过程中提供指标分析器提示metricspersistent已经停止问题
 
-# v7.1.9 功能改进
+# v7.1.8 功能改进
 1. Elasticsearch客户端改进：处理Elasticsearch 8以上版本_type兼容性问题
 2. Elasticsearch客户端改进：处理Elasticsearch 7.x,8.x 版本sql api兼容性问题
 # v7.1.7 功能改进
