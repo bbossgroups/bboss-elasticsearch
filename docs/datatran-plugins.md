@@ -1568,11 +1568,15 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
 2. 基于配置文件输出sql语句配置：sql语句配置文件路径（xml文件）、新增语句名称（InsertSqlName）、修改语句名称（updateSqlName，可选）、修改语句名称（deleteSqlName，可选）
 3. 可以直接设置增删改sql语句：新增语句（InsertSql）、修改语句（updateSql，可选）、修改语句（deleteSql，可选）
 
-### 2.1.1 sql语句设置的补充说明
+可以通过datarefactor接口进行人工设置，如果是mysql binlog cdc和MongoDB cdc则会自动标记增、删、改状态
+
+参考文档：[人工标记记录为增删改状态](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2819-%e5%90%8c%e6%ad%a5%e5%a2%9e%e5%88%a0%e6%94%b9%e6%95%b0%e6%8d%ae%e5%88%b0es)
+
+### 2.1.2 sql语句设置的补充说明
 
 正常情况下，我们只需要设置一组sql语句即可（增删改），但是在与mysql binlog输入插件或者其他多类型输入插件（比如文件输入插件）对接时，需要根据不同表，或者不同的文件路径，设置各自对应的一组sql语句（增删改），因此采用以下方法来应对各种情况。
 
-### 2.1.2 mysql binlog监听多表场景
+### 2.1.3 mysql binlog监听多表场景
 
 参考文档：[mysql binlog插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)
 
@@ -1613,7 +1617,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
         importBuilder.setOutputConfig(dbOutputConfig);
 ```
 
-### 2.1.3 监听多个不同结构文件场景
+### 2.1.4 监听多个不同结构文件场景
 
 场景源码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/MultiFileLog2DBbatchDemo.java
 
@@ -1672,7 +1676,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
 
 多组sql语句场景下，optimize参数将不起作用
 
-### 2.1.4 数据输出到多个目标库
+### 2.1.5 数据输出到多个目标库
 
 为不同的库表sql配置指定对应的目标数据源，多个用逗号分隔，如果不指定就采用dbOutputConfig.setDbName方法设置的数据源
 
@@ -1682,7 +1686,7 @@ sqlConf.setTargetDbName("test,ddlsyn");//多个用逗号分隔
 
 参考文档：[多库多表数据同步到多目标库](https://esdoc.bbossgroups.com/#/mysql-binlog?id=_3-多库多表数据同步到多目标库)
 
-### 2.1.5 Sql语句配置参考
+### 2.1.6 Sql语句配置参考
 
 Sql语句配置参考：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/resources/dsl2ndSqlFile.xml
 
