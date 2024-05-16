@@ -1698,7 +1698,17 @@ importBuilder.setExternalTimer(true);
 
 
 ### 2.8.10 数据加工处理
-实现数据结构修改调整，增加、修改字段，过滤记录等功能
+实现数据结构修改调整，增加、修改字段，过滤记录等功能。
+
+记录并行加工处理说明：
+
+- 除数据库输入插件，其他输入插件采用并行模式执行数据加工方法datarefactor。
+
+- [数据库](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_124-%e5%b9%b6%e8%a1%8c%e6%95%b0%e6%8d%ae%e5%8a%a0%e5%b7%a5%e5%a4%84%e7%90%86)默认采用串行模式执行，可以通过dbInputConfig.setParallelDatarefactor(true)切换为并行执行模式
+- 并行加工处理模式只有在并行作业任务模式才起作用，参考章节【[4.3 串行执行和并行执行](https://esdoc.bbossgroups.com/#/db-es-tool?id=_43-%e4%b8%b2%e8%a1%8c%e6%89%a7%e8%a1%8c%e5%92%8c%e5%b9%b6%e8%a1%8c%e6%89%a7%e8%a1%8c)】
+
+通过记录并行加工处理，可大幅提升数据加工处理性能。
+
 #### 2.8.10.1 全局处理
 
 可以通过importBuilder全局扩展添加字段到es索引中：

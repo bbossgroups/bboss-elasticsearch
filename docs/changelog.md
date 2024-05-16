@@ -42,6 +42,16 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.2.0 功能改进
+1. 数据采集同步改进：增加并行模式执行数据加工方法datarefactor
+
+   除[数据库输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_124-%e5%b9%b6%e8%a1%8c%e6%95%b0%e6%8d%ae%e5%8a%a0%e5%b7%a5%e5%a4%84%e7%90%86)，其他输入插件采用并行模式执行数据加工方法datarefactor。
+
+   数据库默认采用串行模式执行，可以通过dbInputConfig.setParallelDatarefactor(true)切换为并行执行模式
+
+   并行加工处理模式只有在并行作业任务模式才起作用，参考章节【[4.3 串行执行和并行执行](https://esdoc.bbossgroups.com/#/db-es-tool?id=_43-%e4%b8%b2%e8%a1%8c%e6%89%a7%e8%a1%8c%e5%92%8c%e5%b9%b6%e8%a1%8c%e6%89%a7%e8%a1%8c)】
+
 # v7.1.9 功能改进
 1. RecordGenerator接口方法参数由Context调整为TaskContext，简化接口设计
 ```java

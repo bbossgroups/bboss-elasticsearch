@@ -283,7 +283,76 @@ importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字�
 
 全量采集：sql中不需要设置增量字段
 
+```java
  dbInputConfig.setSql("select * from td_sm_log")
+```
+
+
+
+### 1.2.4 并行数据加工处理
+
+除数据库输入插件，其他输入插件采用并行模式执行数据加工方法datarefactor。
+
+数据库默认采用串行模式执行，可以通过以下配置将串行模式切换为并行执行模式：
+
+```java
+dbInputConfig.setParallelDatarefactor(true)
+```
+
+并行加工处理模式只有在并行作业任务模式才起作用，参考章节【[4.3 串行执行和并行执行](https://esdoc.bbossgroups.com/#/db-es-tool?id=_43-串行执行和并行执行)】
+
+为了支持并行处理数据，需要设置RecordBuidler接口：
+
+```java
+public interface RecordBuidler<T> {
+    Map<String,Object> build(RecordBuidlerContext<T> recordBuidlerContext) throws DataImportException; 
+    
+}
+```
+
+当setParallelDatarefactor(true)时，默认使用DBRecordBuilder类来构建当前result记录为Map<String,Object>，实现代码如下：
+
+```java
+public class DBRecordBuilder implements RecordBuidler<ResultSet> {
+
+    @Override
+    public Map<String, Object> build(RecordBuidlerContext<ResultSet> recordBuidlerContext) throws DataImportException {
+        DBRecordBuilderContext dbRecordBuilderContext = (DBRecordBuilderContext)recordBuidlerContext;
+        try {
+            return   ResultMap.buildValueObject(  dbRecordBuilderContext.getResultSet(),
+                    LinkedHashMap.class,
+                    dbRecordBuilderContext.getStatementInfo()) ;
+        } catch (SQLException e) {
+            throw ImportExceptionUtil.buildDataImportException(dbRecordBuilderContext.getImportContext(),e);
+        }
+    }
+}
+```
+
+如果想自定义构建记录对象Map<String,Object>，则可以定义自己的RecordBuidler，例如：CustomDBRecordBuilder
+
+```java
+public class CustomDBRecordBuilder implements RecordBuidler<ResultSet> {
+
+    @Override
+    public Map<String, Object> build(RecordBuidlerContext<ResultSet> recordBuidlerContext) throws DataImportException {
+        DBRecordBuilderContext dbRecordBuilderContext = (DBRecordBuilderContext)recordBuidlerContext;
+        try {
+            return   ResultMap.buildValueObject(  dbRecordBuilderContext.getResultSet(),
+                    LinkedHashMap.class,
+                    dbRecordBuilderContext.getStatementInfo()) ;
+        } catch (SQLException e) {
+            throw ImportExceptionUtil.buildDataImportException(dbRecordBuilderContext.getImportContext(),e);
+        }
+    }
+}
+```
+
+然后将定义好的CustomDBRecordBuilder设置到inputConfig中：
+
+```java
+dbInputConfig.setRecordBuidler(new CustomDBRecordBuilder());
+```
 
 ## 1.3 Mysql binlog输入插件
 
