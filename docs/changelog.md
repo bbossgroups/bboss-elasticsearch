@@ -62,7 +62,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
    ExportResultHandler<DATA,RESULT> ---- ExportResultHandler<RESULT>
 8. 添加增量采集配置正确性校验功能
 9. 增加统一异常信息构建工具 
-10. 处理作业过程中提供指标分析器提示metricspersistent已经停止问题
+10. 处理作业过程中指标分析器提示metricspersistent已经停止问题
 
 # v7.1.8 功能改进
 1. Elasticsearch客户端改进：处理Elasticsearch 8以上版本_type兼容性问题

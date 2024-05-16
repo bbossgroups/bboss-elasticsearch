@@ -150,6 +150,9 @@ https://esdoc.bbossgroups.com/#/db-es-tool
 
 https://esdoc.bbossgroups.com/#/etl-metrics
 
+[bboss插件使用指南](https://esdoc.bbossgroups.com/#/datatran-plugins)
+
+[数据采集&流批一体化计算案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo)
 # 3. 源码下载和构建
 
 源码工程地址，欢迎大家star和支持我们：
