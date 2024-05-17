@@ -310,7 +310,10 @@ public interface RecordBuidler<T> {
 }
 ```
 
-当setParallelDatarefactor(true)时，默认使用DBRecordBuilder类来构建当前result记录为Map<String,Object>，实现代码如下：
+当setParallelDatarefactor(true)时，默认使用DBRecordBuilder类来构建当前result记录为Map<String,Object>，用查询返回的字段名称作为map的key值，字段值作为map的value值，
+这种场景下，在设置增量sql的变量名称和增量字段名称以及esid等信息时，都需要使用查询返回的实际字段名称。
+
+实现代码如下：
 
 ```java
 public class DBRecordBuilder implements RecordBuidler<ResultSet> {
@@ -338,9 +341,11 @@ public class CustomDBRecordBuilder implements RecordBuidler<ResultSet> {
     public Map<String, Object> build(RecordBuidlerContext<ResultSet> recordBuidlerContext) throws DataImportException {
         DBRecordBuilderContext dbRecordBuilderContext = (DBRecordBuilderContext)recordBuidlerContext;
         try {
-            return   ResultMap.buildValueObject(  dbRecordBuilderContext.getResultSet(),
-                    LinkedHashMap.class,
-                    dbRecordBuilderContext.getStatementInfo()) ;
+            Map record = new LinkedHashMap();
+            ResultSet resultSet = dbRecordBuilderContext.getResultSet();
+            record.put("name",resultSet.getString("name"));
+            .........
+            return   record ;
         } catch (SQLException e) {
             throw ImportExceptionUtil.buildDataImportException(dbRecordBuilderContext.getImportContext(),e);
         }
