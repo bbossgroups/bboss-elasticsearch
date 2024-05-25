@@ -21,8 +21,12 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 # scroll和slice scroll
 先了解一下scroll和slice scroll特点
-1. scroll串行从elasticserch查询拉取数据，bboss可以并行处理也可以串行处理scroll拉取回来数据
-2. slice scroll查询可以串行和并行从elasticserch查询拉取拉取数据，bboss亦可以并行或者串行处理slice scroll拉取回来的数据 
+1. scroll串行从elasticserch查询拉取数据，bboss可以通过并行和串行两种模式处理scroll拉取回来数据
+2. slice scroll查询可以通过串行和并行两种模式从elasticserch查询拉取拉取数据，bboss可以通过并行和串行两模式处理slice scroll拉取回来的数据
+3. bboss支持将 scroll和slice scroll查询返回的所有数据合并到一个大的集合结果对象返回（实现比较简单，风险是数据量大时，存在内存溢出风险），亦可以通过设置handler回调函数来处理每次scroll或者slice scroll迭代查询返回结果集（稍微复杂，不存在内存溢出风险）
+4. 在使用hanlder回调处理函数的情况下，可以根据要求，随时中断退出scroll和slice scroll查询。
+
+下面展开介绍具体的用法。
 
 # **1.dsl配置文件定义**
 
@@ -73,6 +77,8 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 #  2.基本scroll api使用
 
+scroll上下文有效期1分钟（1m）,每次scroll检索的结果都会合并到总得结果集返回，数据量大时存在oom内存溢出风险，大数据量时可以采用handler函数来处理每次scroll检索的结果(后面介绍)。
+
 ```java
 	@Test
 	public void testSimleScrollAPI(){
@@ -81,7 +87,7 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 		Map params = new HashMap();
 		params.put("size", 10000);//每页10000条记录
-		//scroll上下文有效期1分钟,每次scroll检索的结果都会合并到总得结果集中；数据量大时存在oom内存溢出风险，大数据量时可以采用handler函数来处理每次scroll检索的结果(后面介绍)
+		//scroll上下文有效期1分钟,每次scroll检索的结果都会合并到总得结果集返回，数据量大时存在oom内存溢出风险，大数据量时可以采用handler函数来处理每次scroll检索的结果(后面介绍)
 		ESDatas<Map> response = clientUtil.scroll("demo/_search","scrollQuery","1m",params,Map.class);
 		List<Map> datas = response.getDatas();
 		long realTotalSize = datas.size();
@@ -96,7 +102,11 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 # 3.基本scroll api与自定义scorll结果集handler函数结合使用
 
+大数据量场景下，采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险；采用自定义handler函数处理每个scroll的结果集后，结果对象ESDatas\<Map\> response中只会包含总记录数，不会包含记录集合，scroll上下文有效期1分钟（1m）
+
 ## 3.1 串行
+
+通过scroll实现结果的串行处理
 
 ```java
 	@Test
@@ -155,6 +165,8 @@ Elasticsearch Scroll和Slice Scroll查询API使用案例
 
 
 ## 3.3 并行
+
+通过scrollParallel方法实现每次返回结果的并行处理
 
 ```java
 @Test
@@ -223,7 +235,7 @@ spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=200
 
 # 4.slice api使用
 
-
+通过scrollSlice(串行)/scrollSliceParallel（并行）方法执行对应的query dsl语句，实现Elasticsearch的scrollSlice查询
 
 ##  4.1 串行
 
@@ -244,8 +256,9 @@ spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=200
 		//scroll上下文有效期1分钟,每次scroll检索的结果都会合并到总得结果集中；数据量大时存在oom内存溢出风险，大数据量时可以采用handler函数来处理每次slice scroll检索的结果(后面介绍)
 		ESDatas<Map> sliceResponse = clientUtil.scrollSlice("demo/_search",
 				"scrollSliceQuery", params,"1m",Map.class);//串行；如果数据量大，建议采用并行方式来执行
-		System.out.println("totalSize:"+sliceResponse.getTotalSize());
-		System.out.println("realSize size:"+sliceResponse.getDatas().size());
+		System.out.println("totalSize:"+sliceResponse.getTotalSize());//总记录数
+		System.out.println("realSize size:"+sliceResponse.getDatas().size());//结果集中记录
+        System.out.println("real datas:"+sliceResponse.getDatas());//结果集
 	}
 ```
 
@@ -268,8 +281,9 @@ spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=200
 		//scroll上下文有效期2分钟,每次scroll检索的结果都会合并到总得结果集中；数据量大时存在oom内存溢出风险，大数据量时可以采用handler函数来处理每次scroll检索的结果(后面介绍)
 		ESDatas<Map> sliceResponse = clientUtil.scrollSliceParallel("demo/_search",
 				"scrollSliceQuery", params,"2m",Map.class);//表示并行，会从slice scroll线程池中申请sliceMax个线程来并行执行slice scroll检索操作，大数据量多个shared分片的情况下建议采用并行模式
-		System.out.println("totalSize:"+sliceResponse.getTotalSize());
-		System.out.println("realSize size:"+sliceResponse.getDatas().size());
+		System.out.println("totalSize:"+sliceResponse.getTotalSize());//总记录数
+		System.out.println("realSize size:"+sliceResponse.getDatas().size());//结果集中记录数
+     	System.out.println("real datas:"+sliceResponse.getDatas());//结果集
 
 	}
 ```
@@ -278,7 +292,7 @@ spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=200
 
 # 5.slice api使用与自定义scorll结果集handler函数结合使用
 
-
+采用自定义handler函数处理每个slice scroll的结果集后，sliceResponse中只会包含总记录数，不会包含记录集合；scroll上下文有效期1分钟,大数据量时可以采用handler函数来处理每次scroll检索的结果，规避数据量大时存在的oom内存溢出风险
 
 ## 5.1 串行
 
