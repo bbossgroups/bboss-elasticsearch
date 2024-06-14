@@ -359,6 +359,19 @@ public class CustomDBRecordBuilder implements RecordBuidler<ResultSet> {
 dbInputConfig.setRecordBuidler(new CustomDBRecordBuilder());
 ```
 
+### 1.2.5 引用第三方DataSource
+
+在集成环境中开发作业时，可以直接引用第三方数据源：
+
+```java
+DBInputConfig dbInputConfig = new DBInputConfig();
+dbInputConfig.setDbName("secondds1");
+dbInputConfig.setDataSource(DBUtil.getDataSource("secondds"))//直接设置DataSource
+              .setDbtype(DBFactory.DBMMysql)//需指定数据库类型      
+```
+
+设置dbname，datasource以及dbtype（数据源对应的数据库类型）三个参数即可。
+
 ## 1.3 Mysql binlog输入插件
 
 Mysql binlog输入插件配置类：[MySQLBinlogConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-binlog/src/main/java/org/frameworkset/tran/plugin/mysqlbinlog/input/MySQLBinlogConfig.java)
@@ -1844,6 +1857,19 @@ sqlConf.setInsertSql("INSERT INTO batchtest ( name, author, content, title, opti
                 "                         #[collecttime], ## 通过datarefactor增加的字段\n" +
                 "                         #[ipinfo]) ## 通过datarefactor增加的地理位置信息字段");
 ```
+
+### 2.1.7 引用第三方DataSource
+
+在集成环境中开发作业时，可以直接引用第三方数据源：
+
+```java
+DBOutputConfig dbOutputConfig = new DBOutputConfig();
+		dbOutputConfig.setDbName("firstds1")//指定目标数据库，在application.properties文件中配置
+                .setDataSource(DBUtil.getDataSource("firstds"))//直接设置DataSource
+                .setDbtype(DBFactory.DBMMysql)//需指定数据库类型    
+```
+
+设置dbname，datasource以及dbtype（数据源对应的数据库类型）三个参数即可。
 
 ## 2.2 Elasticsearch输出插件
 

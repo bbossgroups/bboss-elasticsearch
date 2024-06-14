@@ -193,8 +193,16 @@ DSL表脚本及将xml文件中管理的dsl转换: 其中的dslTemplate字段为c
 可以下载源码工程直接运行其中的数据库管理dsl的案例
 
 基于数据库配置和管理dsl的示例
-源码工程：https://github.com/bbossgroups/elasticsearch-example
+非spring boot源码工程：https://github.com/bbossgroups/elasticsearch-example
 
 Elasticsearch 6及以下版本：[TestThirdDslContainer.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer.java)
 
 Elasticsearch 7及以上版本：[TestThirdDslContainer7.java](https://github.com/bbossgroups/elasticsearch-example/blob/master/src/test/java/org/bboss/elasticsearchtest/thirddslcontainer/TestThirdDslContainer7.java)
+
+
+
+spring boot源码地址：
+
+https://gitee.com/bboss/eshelloword-spring-boot-starter/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/thirddslcontainer/TestThirdDslContainer7.java
+
+https://gitee.com/bboss/eshelloword-spring-boot-starter/blob/master/src/test/java/org/bboss/elasticsearchtest/springboot/thirddslcontainer/TestThirdDslContainer.java

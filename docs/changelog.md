@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.2.0 发布
+# BBOSS版本变更记录-v7.2.1 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.0</version>
+            <version>7.2.1</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.2.0</version>
+            <version>7.2.1</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,13 +37,20 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.2.0</version>
+            <version>7.2.1</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
+# v7.2.1 功能改进-20240615
+
+1. 增加tdengine数据库的适配器
+2. 数据库输出插件改进：同步sql 输出到log日志
+2. 数据库[输入](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_125-%e5%bc%95%e7%94%a8%e7%ac%ac%e4%b8%89%e6%96%b9datasource)[输出](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_217-%e5%bc%95%e7%94%a8%e7%ac%ac%e4%b8%89%e6%96%b9datasource)插件改进：增加直接引用第三方Datasource功能
+
 # v7.2.0 功能改进
+
 1. 数据采集同步改进：增加并行模式执行数据加工方法datarefactor
 
    除[数据库输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_124-%e5%b9%b6%e8%a1%8c%e6%95%b0%e6%8d%ae%e5%8a%a0%e5%b7%a5%e5%a4%84%e7%90%86)，其他输入插件采用并行模式执行数据加工方法datarefactor。
