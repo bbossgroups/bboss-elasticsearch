@@ -701,7 +701,7 @@ sql转换为dsl的结果：
 
 ## 1.5 sql rest api配置
 
-只有在出现服务兼容性问题的时候才需要配置，bboss 7.2.0以后版本提供了以下配置（向后兼容，Elasticsearch 7以后版本无需配置）
+只有在出现服务兼容性问题的时候才需要配置，bboss 7.2.1以后版本提供了以下配置（向后兼容，Elasticsearch 7以后版本无需配置）
 
 ```
 elasticsearch.sqlRestapi=_sql  //高版本配置，默认值，无需配置

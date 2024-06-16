@@ -426,7 +426,7 @@ spring 1.x,2.x
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>6.2.7</version>
+  <version>6.2.8</version>
 </dependency>
 ```
 
@@ -435,7 +435,7 @@ spring 3.x
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot3-starter</artifactId>
-  <version>6.2.7</version>
+  <version>6.2.8</version>
 </dependency>
 ```
 
