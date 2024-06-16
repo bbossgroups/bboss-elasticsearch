@@ -1864,7 +1864,7 @@ sqlConf.setInsertSql("INSERT INTO batchtest ( name, author, content, title, opti
 
 ```java
 DBOutputConfig dbOutputConfig = new DBOutputConfig();
-		dbOutputConfig.setDbName("firstds1")//指定目标数据库，在application.properties文件中配置
+		dbOutputConfig.setDbName("firstds1")//指定目标数据源名称
                 .setDataSource(DBUtil.getDataSource("firstds"))//直接设置DataSource
                 .setDbtype(DBFactory.DBMMysql)//需指定数据库类型    
 ```
