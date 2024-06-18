@@ -87,7 +87,10 @@ bboss-elasticsearch源码工程jdk配置（可选，因bboss Elasticsearch包含
 
 <img src="images\idea_project_jdk.png" style="zoom:80%;" />
 
-# 4.开发交流
+# 4.快速开始bboss
+https://esdoc.bbossgroups.com/#/quickstart
+
+# 5.开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
@@ -102,7 +105,7 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 <img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
 
 
-# 5.支持我们
+# 6.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 

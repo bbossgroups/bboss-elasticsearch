@@ -530,9 +530,9 @@ https://doc.bbossgroups.com/#/persistent/datasource-cluster
 
 ## 2.1.案例对应的源码
 
-一次性批量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Db2EleasticsearchOnceScheduleDateDemo.java
+一次性批量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Db2EleasticsearchOnceScheduleDateDemo.java
 
-定时增量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Db2EleasticsearchDemo.java
+定时增量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Db2EleasticsearchDemo.java
 
 ## 2.2.索引表结构定义
 
@@ -1071,7 +1071,7 @@ importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字�
 
 精度毫秒级：ImportIncreamentConfig.TIMESTAMP_TYPE
 
-[精度纳秒级（Elasticsearch同步有用）](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2CustomDemo.java)：ImportIncreamentConfig.LOCALDATETIME_TYPE
+[精度纳秒级（Elasticsearch同步有用）](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/ES2CustomDemo.java)：ImportIncreamentConfig.LOCALDATETIME_TYPE
 
 sql语句格式：
 
@@ -1956,7 +1956,7 @@ fileConfig.addCellMappingWithType(2, "logOperuser", CELL_NUMBER_INTEGER, 20);//�
 ```
 完整的文本文件采集映射配置案例
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/SFTPFileLog2ESWithMetricsDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/SFTPFileLog2ESWithMetricsDemo.java
 
 2) kafka映射配置
 
@@ -1997,7 +1997,7 @@ Excel输入插件字段映射配置
 ```
 完整的Excel2DB案例
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/ExcelFile2DBDemo.java
 
 4) Excel输出映射配置
 
@@ -2781,7 +2781,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 自定义处理采集数据功能典型的应用场景就是对接大数据流处理，直接将采集的数据交给一些流处理框架，譬如与我们内部自己开发的大数据流处理框架对接，效果简直不要不要的，哈哈。
 
-[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 ## 2.9 作业异常处理
 

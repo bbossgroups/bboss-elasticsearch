@@ -15,14 +15,14 @@
 
 案例源码工程 https://gitee.com/bboss/filelog-elasticsearch
 
-   1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-   2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+   1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
+   2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)  
    3. [采集本地日志数据并发送到Kafka](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
-   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESDemo.java)
-      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESETLScheduleDemo.java)
+   5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESDemo.java)
+   6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESETLScheduleDemo.java)
+   7. [采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESDemo.java)
+      8. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 ![](images\datasyn.png)
 
@@ -84,7 +84,7 @@ FileConfig用于指定文件级别配置
 | FileConfig.sourcePath                    | String,数据文件存放目录，或者远程文件下载目录                           |         |
 | FileConfig.ftpConfig | FtpConfig,可选，封装ftp/sftp配置信息，[设置ftpConfig](https://esdoc.bbossgroups.com/#/filelog-guide?id=_7ftp%e9%87%87%e9%9b%86%e9%85%8d%e7%bd%ae)，代表作业从ftp和sftp服务器下载数据文件并采集处理，否则就是本地数据文件采集处理 | |
 | FileConfig.scanChild | 是否检测子目录 ,如果扫描子目录，则inode机制强制关闭,默认false，适用于本地目录/ftp目录/sftp目录 | |
-| FileConfig.renameFileSourcePath          | String,重命名文件监听路径：一些日志组件会指定将滚动日志文件放在与当前日志文件不同的目录下，需要通过renameFileSourcePath指定这个不同的目录地址，以便可以追踪到未采集完毕的滚动日志文件，从而继续采集文件中没有采集完毕的日志本路径只有在inode机制有效并且启用的情况下才起作用,默认与sourcePath一致，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileConfig.renameFileSourcePath          | String,重命名文件监听路径：一些日志组件会指定将滚动日志文件放在与当前日志文件不同的目录下，需要通过renameFileSourcePath指定这个不同的目录地址，以便可以追踪到未采集完毕的滚动日志文件，从而继续采集文件中没有采集完毕的日志本路径只有在inode机制有效并且启用的情况下才起作用,默认与sourcePath一致，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.fileNameRegular               | String,日志文件名称正则表达式，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.fileFilter                    | FileFilter类型，用于筛选需要采集的日志文件，fileNameRegular和fileFilter只能指定一个 |         |
 | FileConfig.addField                      | 方法，为对应的日志文件记录添加字段和值，例如：FileConfig.addField("tag","elasticsearch")//添加字段tag到记录中，其他记录级别或全局添加字段，可以参考文档[5.2.4.5 数据加工处理](https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5245-数据加工处理) |         |
@@ -96,13 +96,13 @@ FileConfig用于指定文件级别配置
 | FileConfig.maxBytes                      | 字符串maxBytes为0或者负数时忽略长度截取，The maximum number of bytes that a single log message can have. All bytes after max_bytes are discarded and not sent. * This setting is especially useful for multiline log messages, which can get large. The default is 1MB (1048576) | 1048576 |
 | FileConfig.startPointer                  | long ,指定采集的日志文件内容开始位置                         | 0       |
 | FileConfig.ignoreOlderTime               | Long类型，If this option is enabled, bboss ignores any files that were modified before the specified timespan. Configuring ignore_older can be especially useful if you keep log files for a long time. For example, if you want to start bboss, but only want to send the newest files and files from last week, you can configure this option. You can use time strings like 2h (2 hours) and 5m (5 minutes). The default is null,  which disables the setting. Commenting out the config has the same effect as setting it to null.如果为null忽略该机制 | null    |
-| FileConfig.ignoreFileAssert              | ignoreFileAssert类型，如果指定了ignoreOlderTime，但是有些文件是特例不能不忽略，那么可以通过指定IgnoreFileAssert来检查静默时间达到ignoreOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileConfig.ignoreFileAssert              | ignoreFileAssert类型，如果指定了ignoreOlderTime，但是有些文件是特例不能不忽略，那么可以通过指定IgnoreFileAssert来检查静默时间达到ignoreOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.closeEOF                      | 布尔类型，true 采集到日志文件末尾后关闭本文件采集通道，后续不再采集； false不关闭，适用于文件只采集一次的场景 | false   |
 | FileConfig.closeRenameEOF                | 布尔类型，重命名后的文件采集完毕后，是否要被关闭,默认true，true 采集到日志文件末尾后关闭本文件采集通道，后续不再采集； false不关闭，适用于文件存在重命名场景 | true   |
 | FileConfig.deleteEOFFile                 | 布尔类型，如果deleteEOFFile为true,则删除采集完数据的文件，适用于文件只采集一次的场景 | false   |
 | FileConfig.closeOlderTime                | Long类型，启用日志文件采集探针closeOlderTime配置，允许文件内容静默最大时间，单位毫秒，如果在idleMaxTime访问内一直没有数据更新，认为文件是静默文件，将不再采集静默文件数据，关闭文件对应的采集线程，作业重启后也不会采集，0或者null不起作用 | null    |
-| FileConfig.closeOldedFileAssert          | CloseOldedFileAssert类型，如果指定了closeOlderTime，但是有些文件是特例不能不关闭，那么可以通过指定CloseOldedFileAssert来检查静默时间达到closeOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
-| FileConfig.fieldBuilder                  | FieldBuilder类型，根据文件信息动态为不同的日志文件添加固定的字段，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileConfig.closeOldedFileAssert          | CloseOldedFileAssert类型，如果指定了closeOlderTime，但是有些文件是特例不能不关闭，那么可以通过指定CloseOldedFileAssert来检查静默时间达到closeOlderTime的文件是否需要被关闭，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/VOPSTestdevLog2ESNew.java | null    |
+| FileConfig.fieldBuilder                  | FieldBuilder类型，根据文件信息动态为不同的日志文件添加固定的字段，参考案例：https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/VOPSTestdevLog2ESNew.java | null    |
 | FileConfig.skipHeaderLines | 指定忽略前几行记录 |  |
 | FileInputConfig.backupSuccessFiles | 备份采集完成文件  true 备份  false 不备份 | false |
 | FileInputConfig.backupSuccessFileDir | 文件备份目录 |  |
@@ -831,7 +831,7 @@ https://gitee.com/bboss/filelog-elasticsearch
 基于组件ImportBuilder、FileInputConfig、DBOutputConfig实现日志数据采集并写入数据库作业
 
 浏览完整的案例代码：
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java
 
 在工程中调试好作业后，修改application.properties文件中的mainclass配置，将作业类调整为新开发的作业程序FileLog2DBDemo
 
@@ -1166,15 +1166,15 @@ if(filterFileInfo.isDirectory())//由于要采集子目录下的文件，所以�
 
 本地文件
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileSubDirLog2ESDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileSubDirLog2ESDemo.java
 
 ftp
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpSubdirLog2ESDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpSubdirLog2ESDemo.java
 
 sftp
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpSubdirLog2ESETLScheduleDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpSubdirLog2ESETLScheduleDemo.java
 
 # 9.文件采集任务状态跟踪
 
@@ -1232,7 +1232,7 @@ ExcelFileInputConfig config = new ExcelFileInputConfig();
 fileInputConfig.setDisableScanNewFilesCheckpoint(false);//启用增量状态Checkpoint机制
 ```
 
-完整案例：[ExcelFile2DBDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo1.java)
+完整案例：[ExcelFile2DBDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/ExcelFile2DBDemo1.java)
 
 ## 策略二 closeOlderTime/ignoreOlderTime
 
@@ -1244,7 +1244,7 @@ fileConfig.setCloseOlderTime(10000L);//setIgnoreOlderTime
 
 ```
 
-完整案例：[SFtpLog2ESClearComplete2ndCloseOlderTimeDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java)
+完整案例：[SFtpLog2ESClearComplete2ndCloseOlderTimeDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java)
 
 ## 策略三 closeEOF
 
@@ -1255,7 +1255,7 @@ FileConfig fileConfig = new FileConfig();
 fileConfig.setCloseEOF(true);//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
 ```
 
-完整案例：[FileSubDirLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileSubDirLog2ESDemo.java)
+完整案例：[FileSubDirLog2ESDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileSubDirLog2ESDemo.java)
 
 # 11.文件备份和清理
 
@@ -1265,7 +1265,7 @@ fileConfig.setCloseEOF(true);//已经结束的文件内容采集完毕后关闭�
 
 ## 策略一 备份清理策略
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndBackupDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESClearComplete2ndBackupDemo.java
 
 ```java
 FileInputConfig config = new FileInputConfig();
@@ -1295,7 +1295,7 @@ FileInputConfig config = new FileInputConfig();
 
 ## 策略二 有效期后清理策略
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESClearComplete2ndCloseOlderTimeDemo.java
 
 ```java
 FileInputConfig config = new FileInputConfig();

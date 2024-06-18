@@ -238,7 +238,7 @@ dataStream.execute();
 
 案例作业代码文件：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2EleasticsearchOutput.java
 
 更多案例，可以参考文档：
 
@@ -552,7 +552,7 @@ importBuilder.setImportEndAction(new ImportEndAction() {
 
 可以访问以下地址了解多库多表数据同步到多目标库完整案例，在案例基础上适当调整即可实现所需的多库多表数据同步到多目标库功能：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2TargetDBDBOutput.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/MasterSlaveBinlog2TargetDBDBOutput.java
 
 # 5 视频教程
 

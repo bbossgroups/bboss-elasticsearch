@@ -1472,7 +1472,7 @@ http.backoffAuth=true ##默认服务组
 
 http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。spring boot项目只需要在http.backoffAuth前面加上特定的spring boot配置前缀即可。
 
-jwt token认证设置，直接申请jwt token，并经token设置到http header中，模拟token有效期管理的组件(可以根据实际场景调整)：[TokenManger](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/TokenManager.java)
+jwt token认证设置，直接申请jwt token，并经token设置到http header中，模拟token有效期管理的组件(可以根据实际场景调整)：[TokenManger](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/TokenManager.java)
 
 ```java
 //判断服务token是否过期，如果过期则需要重新调用token服务申请token

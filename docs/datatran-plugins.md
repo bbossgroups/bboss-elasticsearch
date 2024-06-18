@@ -442,7 +442,7 @@ importBuilder.setInputConfig(mySQLBinlogConfig);
 
 ### 1.3.2 自定义输出插件结合案例
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2CustomOutput.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
@@ -725,14 +725,14 @@ FileConfig .setCloseEOF(true) //关闭采集完毕的文件通道，excel文件�
 
 源码工程 https://gitee.com/bboss/filelog-elasticsearch
 
-1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)
+1. [采集本地日志数据并写入数据库](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
+2. [采集本地日志数据并写入Elasticsearch](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)
 3. [采集本地日志数据并发送到Kafka](https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
-4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
-5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
-6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2ESETLScheduleDemo.java)
+4. [采集ftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESETLScheduleDemo.java)
+5. [采集ftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESDemo.java)
+6. [采集sftp日志文件写入Elasticsearch-基于通用调度机制](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2ESETLScheduleDemo.java)
 7. 采集sftp日志文件写入Elasticsearch-基于日志采集插件自带调度机制
-   1. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+   1. [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 ## 1.5 Excel文件采集插件
 
@@ -1473,7 +1473,7 @@ importBuilder.setInputConfig(wordFileInputConfig);
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/word/WordFile2CustomDemoOnce.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/word/WordFile2CustomDemoOnce.java
 
 ## 1.12 PDF文件采集插件
 
@@ -1544,7 +1544,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/pdf/PDFFile2CustomDemoOnce.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/pdf/PDFFile2CustomDemoOnce.java
 
 ## 1.13 其他类型文件采集插件
 
@@ -1604,7 +1604,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 通过设置FileInputConfig.setDisableScanNewFiles为true，控制插件采集完毕sourcePath目录下所有的文件后就结束采集作业；
 
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件,图片文件内容采集实例：
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/pic/PictureFile2CustomDemoOnce.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/pic/PictureFile2CustomDemoOnce.java
 
 # 2.输出插件
 
@@ -1667,7 +1667,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
 
 参考文档：[mysql binlog插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)
 
-场景源码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2DBOutput.java
+场景源码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2DBOutput.java
 
  mySQLBinlogConfig.setTables("cityperson,batchtest");//这里指定了要监听两张表
 
@@ -1706,7 +1706,7 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
 
 ### 2.1.4 监听多个不同结构文件场景
 
-场景源码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/MultiFileLog2DBbatchDemo.java
+场景源码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/MultiFileLog2DBbatchDemo.java
 
 ```java
 DBOutputConfig dbOutputConfig = new DBOutputConfig();
@@ -2420,7 +2420,7 @@ public void handleData(TaskContext taskContext,List<CommonRecord> datas);
 
 将数据同时写入两个redis集群：
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/Elasticsearch2CustomRedisDemo.java
 
 ```java
 //自己处理数据

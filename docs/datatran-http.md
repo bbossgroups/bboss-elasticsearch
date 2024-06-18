@@ -6,14 +6,14 @@ https://gitee.com/bboss/bboss-datatran-demo
 
 输入插件案例：
 
-[Http2ESFullQueryDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Http2ESFullQueryDslDemo.java)
+[Http2ESFullQueryDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Http2ESFullQueryDslDemo.java)
 
 输出插件案例：
 
-1. [ES2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2HttpDemo.java) 从Elasticsearch采集数据直接推送http服务
-2. [LocalLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java)  从本地日志文件采集数据基于dsl脚本推送http服务
-3. [SFtpLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java)  从ftp服务器采集日志文件基于dsl脚本推送http服务
-4. [SFtpLog2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2HttpDemo.java) 从ftp服务器采集日志文件直接推送http服务
+1. [ES2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/ES2HttpDemo.java) 从Elasticsearch采集数据直接推送http服务
+2. [LocalLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/LocalLog2FullfeatureHttpDslDemo.java)  从本地日志文件采集数据基于dsl脚本推送http服务
+3. [SFtpLog2FullfeatureHttpDslDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2FullfeatureHttpDslDemo.java)  从ftp服务器采集日志文件基于dsl脚本推送http服务
+4. [SFtpLog2HttpDemo](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2HttpDemo.java) 从ftp服务器采集日志文件直接推送http服务
 5. [其他案例](https://gitee.com/bboss/db-elasticsearch-tool/tree/master/src/main/java/org/frameworkset/elasticsearch/imp/http)
 
 通过bboss http输入/输出插件，可以从http服务采集数据，也可以从其他数据源采集的数据推送给http服务，插件特性如下：
@@ -873,11 +873,11 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/resources/httpdsl
 
 采集本地文件数据推送到http服务   
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/LocalLog2FullfeatureHttpDslDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/LocalLog2FullfeatureHttpDslDemo.java
 
 采集ftp文件数据推送到http服务
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/SFtpLog2FullfeatureHttpDslDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/SFtpLog2FullfeatureHttpDslDemo.java
 
 
 

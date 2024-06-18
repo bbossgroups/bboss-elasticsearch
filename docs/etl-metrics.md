@@ -948,7 +948,7 @@ https://gitee.com/bboss/bboss-datatran-demo
       importBuilder.setOutputConfig(metricsOutputConfig);
 ```
 
-案例代码如下：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/Db2MetricsDemo.java
+案例代码如下：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/Db2MetricsDemo.java
 
 ```java
 public void scheduleTimestampImportData(boolean dropIndice){
@@ -1461,7 +1461,7 @@ public void persistent(Collection< KeyMetric> metrics) {
       importBuilder.setOutputConfig(metricsOutputConfig);
 ```
 
-案例代码如下：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/Db2KeyMetricsDemo.java
+案例代码如下：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/Db2KeyMetricsDemo.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder() ;
@@ -1792,7 +1792,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 案例代码如下：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/Db2EleasticsearchMetricsDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/Db2EleasticsearchMetricsDemo.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder() ;
@@ -2189,7 +2189,7 @@ ImportBuilder importBuilder = new ImportBuilder() ;
 
 ```
 
-案例代码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/Db2KeyMetricsScheduleDemo.java
+案例代码：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/Db2KeyMetricsScheduleDemo.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder() ;
@@ -3083,7 +3083,7 @@ https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/framewor
 
 下面是一个实时监听采集文件数据写入Elasticsearch，同时进行流计算并将计算结果也异步批量写入Elasticsearch的案例：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/metrics/FileLog2ESWithMetricsDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/metrics/FileLog2ESWithMetricsDemo.java
 
 ```java
 ImportBuilder importBuilder = new ImportBuilder();

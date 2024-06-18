@@ -96,7 +96,7 @@ https://www.bbossgroups.com/sources-demos.html
 ## 2.3 采集日志文件并写入Elasticsearch
 [github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)
 
-[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)
+[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)
 
 ## 2.4 Mongodb到Elasticsearch数据同步
 ### 案例1 基于时间戳增量同步案例
@@ -223,7 +223,7 @@ https://www.bbossgroups.com/sources-demos.html
 
 [github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
 
-[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
 
 ## 3.4 采集hbase数据到database
 
@@ -333,17 +333,17 @@ https://www.bbossgroups.com/sources-demos.html
 # 6 自定义处理器案例
 [github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
 
-[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 # 7 Ftp文件下载采集案例
 [Filelog插件调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
 
-[Filelog插件调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[Filelog插件调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESDemo.java)
 
 
 [ETL调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
 
-[ETL调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[ETL调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESETLScheduleDemo.java)
 
 # 8 记录切割案例
 
@@ -355,11 +355,11 @@ https://www.bbossgroups.com/sources-demos.html
 
 ## 9.1 采集excel案例
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ExcelFile2DBDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/ExcelFile2DBDemo.java
 
 ## 9.2 从ftp采集excel案例
 
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpExcelFile2DBDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpExcelFile2DBDemo.java
 
 ## 9.3 生成excel案例
 
@@ -376,23 +376,23 @@ https://gitee.com/bboss/csv-dbhandle
 # 11 从sftp服务器采集excel文件写入redis案例 
 
 单写入redis案例：多线程并行下载，内含数据文件校验接口示例
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FTPFileLog2CustomRedisDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FTPFileLog2CustomRedisDemo.java
 
 批量写入redis案例，多线程并行下载，内含数据文件校验接口示例
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FTPFileLog2CustomRedisBatchDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FTPFileLog2CustomRedisBatchDemo.java
 
 # 12 从ftp服务器采集avl文件写入elasticsearch案例 
 
 多线程并行下载，内含数据文件校验接口示例
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/avl/FtpAvl2ESDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/avl/FtpAvl2ESDemo.java
 
 # 13 从Elasticsearch采集数据写入redis案例 
 
 单写入redis案例
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/Elasticsearch2CustomRedisDemo.java
 
 批量写入redis案例，多线程并行下载，内含数据文件校验接口示例
-https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/Elasticsearch2CustomRedisBatchDemo.java
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/Elasticsearch2CustomRedisBatchDemo.java
 
 # 14 作业控制案例-spring boot web服务
 
@@ -470,15 +470,15 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 # 20 mysql binlog数据采集案例
 
-[采集binlog数据到自定义输出插件案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2CustomOutput.java)
+[采集binlog数据到自定义输出插件案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2CustomOutput.java)
 
-[采集binlog数据输出到DB案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2DBOutput.java)
+[采集binlog数据输出到DB案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2DBOutput.java)
 
-[基于Master-Slave机制监听采集binlog数据-故障容灾案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2DBOutput.java)
+[基于Master-Slave机制监听采集binlog数据-故障容灾案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/MasterSlaveBinlog2DBOutput.java)
 
-[基于Master-Slave机制监听binlog数据-重启直接从最新位置采集案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/MasterSlaveBinlog2DBOutputUnIncre.java)
+[基于Master-Slave机制监听binlog数据-重启直接从最新位置采集案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/MasterSlaveBinlog2DBOutputUnIncre.java)
 
-[基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/binlog/Binlog2EleasticsearchOutput.java)
+[基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2EleasticsearchOutput.java)
 
 # 开发交流
 
