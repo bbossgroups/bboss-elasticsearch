@@ -1402,8 +1402,8 @@ spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elastic
    使用文档：https://esdoc.bbossgroups.com/#/filelog-guide
 
    日志文件采集插件使用案例：
-   1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
-   2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)  
+   1. [采集日志数据并写入数据库](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
+   2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)  
    3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
    
    升级6.2.9注意事项，需手动修改增量同步状态表结构，增加下面三个字段：

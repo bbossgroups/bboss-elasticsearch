@@ -94,7 +94,7 @@ https://www.bbossgroups.com/sources-demos.html
 
 
 ## 2.3 采集日志文件并写入Elasticsearch
-[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2ESDemo.java)
+[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)
 
 [gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)
 
@@ -221,7 +221,7 @@ https://www.bbossgroups.com/sources-demos.html
 
 ## 3.4 采集日志文件数据到database
 
-[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2DBDemo.java)
+[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
 
 [gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2DBDemo.java)
 
@@ -331,17 +331,17 @@ https://www.bbossgroups.com/sources-demos.html
 [gitee地址](https://gitee.com/bboss/hbase-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/HBase2KafkaFullDemo.java)
 
 # 6 自定义处理器案例
-[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FileLog2CustomDemo.java)
+[github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 [gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
 # 7 Ftp文件下载采集案例
-[Filelog插件调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESDemo.java)
+[Filelog插件调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESDemo.java)
 
 [Filelog插件调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESDemo.java)
 
 
-[ETL调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/FtpLog2ESETLScheduleDemo.java)
+[ETL调度采集案例 github地址](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESETLScheduleDemo.java)
 
 [ETL调度采集案例 gitee地址](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FtpLog2ESETLScheduleDemo.java)
 
