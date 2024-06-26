@@ -719,6 +719,10 @@ FileConfig .setCloseEOF(true) //关闭采集完毕的文件通道，excel文件�
 @timestamp  日期类型，记录采集时间
 ```
 
+元数据参考文档：
+
+https://esdoc.bbossgroups.com/#/db-es-tool?id=_28104-%e8%8e%b7%e5%8f%96%e8%ae%b0%e5%bd%95%e5%85%83%e6%95%b0%e6%8d%ae
+
 子目录文件采集、清理本地/远程文件、备份本地文件配置等更多介绍，访问文档：https://esdoc.bbossgroups.com/#/filelog-guide
 
 ### 1.4.4 使用案例

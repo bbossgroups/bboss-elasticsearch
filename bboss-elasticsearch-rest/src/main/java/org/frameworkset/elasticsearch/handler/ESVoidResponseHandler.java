@@ -41,7 +41,7 @@ public class ESVoidResponseHandler extends BaseExceptionResponseHandler implemen
 			throws ClientProtocolException, IOException {
 		int status = initStatus(  response);
 
-		if (status >= 200 && status < 300) {
+		if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 
 
 			return null;

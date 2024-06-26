@@ -76,6 +76,7 @@ FileConfig用于指定文件级别配置
 | FileInputConfig.registLiveTime          | Long ,已完成文件增量记录保留时间，超过指定的时间后将会迁入历史表中，为null时不处理；设置已完成记录增量状态过期清理机制，设置采集完毕文件状态记录有效期，过期后迁移到历史表，同时清理内存中的记录 | null    |
 | FileInputConfig.scanOldRegistRecordInterval | Long,扫描过期已完成文件状态记录时间间隔，默认为1天，单位：毫秒 | 1天 |
 | FileInputConfig.checkFileModifyInterval | long，扫描文件内容改变时间间隔                               | 3000L   |
+| FileInputConfig.bufferCapacity | int,设置读取文本文件内容缓冲区大小，默认为8092，大幅提升采集性能 |  |
 | FileInputConfig.charsetEncode           | String,日志内容字符集                                        | UTF-8   |
 | FileInputConfig.enableMeta              | boolean，是否将日志文件信息补充到日志记录中，                | true    |
 | FileInputConfig.cleanCompleteFiles | boolean,清理采集完毕文件,backupSuccessFiles为false时，配置后起作用 | false |
@@ -1347,7 +1348,15 @@ fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间�
 
 如果要获取和处理文件元数据，可以参考文档：[文件元数据处理](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_143-元数据说明)
 
-# 17.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 17.设置文本文件采集缓冲区大小
+
+通过缓冲技术，可以大幅提升数据采集性能，通过以下方式配置缓冲区大小，默认为8092
+
+```java
+       fileInputConfig.setBufferCapacity(1024*1024);
+```
+
+# 18.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 

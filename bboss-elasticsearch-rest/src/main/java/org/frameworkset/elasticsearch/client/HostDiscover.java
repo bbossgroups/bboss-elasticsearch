@@ -96,7 +96,7 @@ public class HostDiscover extends Thread{
 					@Override
 					public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 						int status = response.getStatusLine().getStatusCode();
-						if (status >= 200 && status < 300) {
+						if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 							List<HttpHost> hosts = readHosts(response.getEntity());
 							handleDiscoverHosts(hosts);
 

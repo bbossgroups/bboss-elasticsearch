@@ -91,7 +91,7 @@ public class HealthCheck implements Runnable{
 							 @Override
 							 public Void handleResponse(HttpResponse response) throws IOException {
 								 int status = response.getStatusLine().getStatusCode();
-								 if (status >= 200 && status < 300) {
+								 if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 									 if(logger.isInfoEnabled())
 										 logger.info(new StringBuilder().append("Downed elasticsearch[").append(elasticsearch).append("] server[").append(address.toString()).append("] recovered to normal server.").toString());
 									 address.onlySetStatus(0);

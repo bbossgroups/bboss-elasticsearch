@@ -275,7 +275,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 				@Override
 				public Void handleResponse(HttpResponse response) throws IOException {
 					int status = response.getStatusLine().getStatusCode();
-					if (status >= 200 && status < 300) {
+					if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 						HttpEntity entity = response.getEntity();
 						clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
 						if (logger.isInfoEnabled()) {

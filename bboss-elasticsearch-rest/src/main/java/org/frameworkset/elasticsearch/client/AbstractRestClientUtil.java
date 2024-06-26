@@ -103,7 +103,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 					int status = response.getStatusLine().getStatusCode();
 
-					if (status >= 200 && status < 300) {
+					if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 						HttpEntity entity = response.getEntity();
 						InputStream inputStream = null;
 						try{

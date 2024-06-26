@@ -41,7 +41,7 @@ public class ElasticSearchResponseHandler extends BaseESResponsehandler {
              throws ClientProtocolException, IOException {
 		 int status = initStatus(  response);
 
-         if (status >= 200 && status < 300) {
+         if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
              HttpEntity entity = response.getEntity();
              RestResponse searchResponse = null;
               

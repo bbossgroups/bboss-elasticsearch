@@ -1,6 +1,8 @@
 package org.frameworkset.elasticsearch;
 
+import com.frameworkset.util.BaseSimpleStringUtil;
 import com.frameworkset.util.SimpleStringUtil;
+import org.frameworkset.elasticsearch.boot.ElasticsearchBootResult;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.template.AOPTemplateContainerImpl;
@@ -496,7 +498,15 @@ public class ElasticSearchHelper {
 
 	}
 
-	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch){
+    public static synchronized void stopElasticsearchs(ElasticsearchBootResult elasticsearchBootResult){
+        Map<String, Object> initedElasticsearch = elasticsearchBootResult.getResourceStartResult();
+        if (BaseSimpleStringUtil.isNotEmpty(initedElasticsearch)) {
+            ElasticSearchHelper.stopElasticsearchs(initedElasticsearch);
+        }
+    }
+
+
+    public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch){
 		return getElasticSearchSinkOnly(elasticSearch,false);
 	}
 	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch,boolean direct){
