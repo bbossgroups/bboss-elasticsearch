@@ -1356,7 +1356,71 @@ fileInputConfig.setFileLiveTime(30 * 1000L);//已采集完成文件存活时间�
        fileInputConfig.setBufferCapacity(1024*1024);
 ```
 
-# 18.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
+# 18.增量采集文本类型文件配置
+
+如果需要实时增量采集文本文件中数据，需要进行如下设置：
+
+1）开启新文件扫描机制，默认开启
+
+```java
+fileInputConfig.setDisableScanNewFiles(false);
+```
+
+2）在文件结束时不要关闭文件采集通道
+
+```java
+new FileConfig().setCloseEOF(false)
+```
+
+参考：[10.一次性采集控制策略](https://esdoc.bbossgroups.com/#/filelog-guide?id=_10一次性采集控制策略)
+
+3）保存增量状态配置
+
+使用sqlite保存增量状态，**注意：路径对应的是一个sqlite数据库文件，而不是一个目录**
+
+```java
+importBuilder.setLastValueStorePath("C:\\workdir\\exception\\status");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点
+```
+
+使用关系数据库保存增量状态
+
+```java
+importBuilder.setStatusDbname("mysqlds");
+```
+
+更多资料参考：[2.8.5.8 增量状态存储数据库](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2858-增量状态存储数据库)
+
+# 19.多行类型记录采集配置
+
+如果存在多行记录场景，则需要设置记录开始的正则表达式规则：
+
+```java
+new FileConfig()
+.setFileHeadLineRegular("^\\{")//指定多行记录的开头识别标记为{，正则表达式
+```
+
+那么多行类型记录就能够正常采集：deviceId为6和7的记录是多行记录，将作为一条记录采集
+
+```json
+{"deviceId":"1","crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+{"deviceId":"2","crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+{"deviceId":"6",
+     "crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+{"deviceId":"3","crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+{"deviceId":"5","crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+{"deviceId":"7",
+"crashName":"NSInternalInconsistencyException","sendTime":1717174043460}
+```
+
+# 20.文本文件字符集配置
+
+如果是UTF-8编码的文本文件不需要指定字符集，如果是GBK或者GB2312等字符集编码的文件则需要指定字符集：
+
+```java
+fileInputConfig.setCharsetEncode("GBK");
+```
+
+# 21.基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
 基于Filelog插件采集大量日志文件导致jvm heap溢出踩坑记
 
