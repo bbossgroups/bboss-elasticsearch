@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.2.1 发布
+# BBOSS版本变更记录-v7.2.2 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.1</version>
+            <version>7.2.2</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.2.1</version>
+            <version>7.2.2</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,11 +37,16 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.2.1</version>
+            <version>7.2.2</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.2.2 功能改进-20240628
+1. 文件采集插件改进：为文本文件采集增加内存缓冲区机制，大幅提升文本采集性能
+2. 并行数据采集改进：增加判断记录集是否为空逻辑，解决可能存在输入内容为空异常
+3. http proxy改进：将3xx状态响应当做正常响应处理
 
 # v7.2.1 功能改进-20240616
 
@@ -768,7 +773,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.2.1版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.2.2版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -943,7 +948,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.1</version>
+            <version>7.2.2</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -951,7 +956,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.2.1</version>
+            <version>7.2.2</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1038,7 +1043,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.2.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.2.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1090,7 +1095,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.0",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.1",transitive: true 
   ```
 
   **maven坐标**
@@ -1101,7 +1106,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.2.0</version>  
+      <version>6.2.1</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1584,7 +1589,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.1</version>
+    <version>7.2.2</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1903,13 +1908,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.2.8</version>
+      <version>6.2.9</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.8", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.2.9", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
