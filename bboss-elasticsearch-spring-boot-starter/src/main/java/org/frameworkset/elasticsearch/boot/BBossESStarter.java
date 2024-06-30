@@ -155,7 +155,7 @@ public class BBossESStarter  extends BaseESProperties{
 		temConf.setQueryfetchsize(db.getJdbcFetchSize() != null?Integer.parseInt(db.getJdbcFetchSize()):0);
 		temConf.setDbAdaptor(db.getDbAdaptor());
 		temConf.setDbtype(db.getDbtype());
-		boolean ff = db.getColumnLableUpperCase() == null ? true:db.getColumnLableUpperCase().equals("true");
+		boolean ff = db.getColumnLableUpperCase() == null ? false:db.getColumnLableUpperCase().equals("true");
 
 
 		temConf.setColumnLableUpperCase(ff);
