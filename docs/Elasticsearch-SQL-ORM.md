@@ -701,13 +701,20 @@ sql转换为dsl的结果：
 
 ## 1.5 sql rest api配置
 
-只有在出现服务兼容性问题的时候才需要配置，bboss 7.2.2以后版本提供了以下配置（向后兼容，Elasticsearch 7以后版本无需配置）
+在出现服务兼容性问题的时候需要配置sqlRestapi，针对低版本兼容，Elasticsearch 7以后版本无需配置
 
-```
+```properties
 elasticsearch.sqlRestapi=_sql  //高版本配置，默认值，无需配置
 
 elasticsearch.sqlRestapi=/_xpack/sql  //低版本需要配置，低版本的Elasticsearch api
 
+```
+
+对应的常量定义：
+
+```java
+org.frameworkset.elasticsearch.client.ElasticSearchRestClient._xpack6_sql_restapi
+org.frameworkset.elasticsearch.client.ElasticSearchRestClient._xpack8_sql_restapi
 ```
 
 # 2 第三方插件Elasticsearch-sql查询
@@ -717,6 +724,8 @@ elasticsearch.sqlRestapi=/_xpack/sql  //低版本需要配置，低版本的Elas
 如果需要使用本插件，请自行下载安装Elasticsearch-sql插件并安装，下载地址：
 
 https://github.com/NLPchina/elasticsearch-sql
+
+
 
 ## 2.1 简单案例
 
