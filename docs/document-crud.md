@@ -923,7 +923,7 @@ public class Demo extends ESId {
 
 检索返回对象类型为Map时，如果需要同时返回元数据，则可以将返回类型指定为继承LinkedHashMap的子类 org.frameworkset.elasticsearch.entity.MetaMap，使用示例如下：
 
-### 6.2.1 单文档检索
+### 6.2.2 单文档检索
 
 ```java
     //创建批量创建文档的客户端对象，单实例多线程安全

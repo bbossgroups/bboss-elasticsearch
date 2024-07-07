@@ -23,17 +23,17 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.2</version>
+    <version>7.2.3</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.2.2</version>
+    <version>7.2.3</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot-starter</artifactId>
-    <version>6.2.9</version> 			
+    <version>6.3.0</version> 			
 </dependency>
 ```
 基于spring boot 3.x的数据同步功能需要导入如下maven坐标：
@@ -43,17 +43,17 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.2</version>
+    <version>7.2.3</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-    <version>7.2.2</version>
+    <version>7.2.3</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot3-starter</artifactId>
-    <version>6.2.9</version> 			
+    <version>6.3.0</version> 			
 </dependency>
 ```
 
