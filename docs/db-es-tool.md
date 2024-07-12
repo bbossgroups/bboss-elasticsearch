@@ -2242,13 +2242,17 @@ elasticsearchOutputConfig.setClientOptions(clientOptions);
 
 ### 2.8.14 数据库ResultSet Stream机制说明
 
-利用数据库ResultSet Stream机制可以查询大表数据，设置方式如下：
+利用数据库ResultSet Stream机制可以查询大表数据，通用设置方式如下：
 
 ```java
 DBInputConfig dbInputConfig = new DBInputConfig();
 //通过设置JdbcFetchSize来控制预fetch记录数
 dbInputConfig.setJdbcFetchSize(2000);
 ```
+
+部分数据库，例如oracle默认具备fetch机制，只需要在必要时setJdbcFetchSize即可，无需进行特殊处理，但是mysql和postgresql开启流处理机制比较特殊，说明如下。
+
+#### 2.8.14.1 Mysql流处理机制
 
 同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
@@ -2282,7 +2286,33 @@ db.jdbcFetchSize = -2147483648
                 .setUsePool(true);//是否使用连接池
 ```
 
+#### 2.8.14.2 Postgresql流处理机制
 
+一般可以全局设置jdbcFetchSize开启jdbc流处理机制，postgresql通过jdbcFetchSize开启流处理机制必须在数据库连接上开启数据库事务才会生效，为了避免导致所有jdbc链接被自动设置为启用事务,bboss持久层针对postgresql查询操作，默认全局禁用jdbcFetchSize设置，当需要启用postgresq的流处理机制进行大数据量查询时，可通过设置jdbcFetchSize进行启用，配置方法如下:
+
+```java
+DBInputConfig dbInputConfig = new DBInputConfig();
+//通过设置JdbcFetchSize来控制预fetch记录数
+dbInputConfig.setJdbcFetchSize(2000);
+```
+
+另外bboss持久层查询api可通过DBOptions参数设置jdbcFetchSize，从而启用Postgresql流处理机制方法，实例如下：
+
+```java
+DBOptions dbOptions = null;
+        Integer fetchSize = dbInputConfig.getFetchSize();
+		if(fetchSize != null && fetchSize != 0) {
+            dbOptions = new DBOptions();
+            dbOptions.setFetchSize(fetchSize);
+		}
+	
+if (executor == null) {
+				SQLExecutor.queryBeanWithDBNameByNullRowHandler(dbOptions,resultSetHandler, sourceDBName, dbInputConfig.getSql(), dataTranPlugin.getParamValue(params));
+			} else {
+				executor.queryBeanWithDBNameByNullRowHandler(dbOptions,resultSetHandler, sourceDBName, dbInputConfig.getSqlName(), dataTranPlugin.getParamValue(params));
+
+			}
+```
 
 ### 2.8.15 用配置文件来管理同步sql
 
