@@ -373,7 +373,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -381,7 +381,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
@@ -389,7 +389,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -397,7 +397,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -405,7 +405,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 
@@ -414,7 +414,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.2.3</version>
+<version>7.2.5</version>
 </dependency>
 ```
 
@@ -1547,7 +1547,7 @@ ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
 
 通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
 
-##### 2.8.7.2.3  定义任务上下文数据
+##### 2.8.7.2.5  定义任务上下文数据
 
  任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
 
@@ -1589,7 +1589,7 @@ public void preCall(TaskContext taskContext) {
     //设置任务执行拦截器结束，可以添加多个
 ```
 
-##### 2.8.7.2.3 获取任务上下文数据
+##### 2.8.7.2.5 获取任务上下文数据
 
 在生成文件名称的接口方法中获取任务上下文数据
 
@@ -2242,7 +2242,7 @@ elasticsearchOutputConfig.setClientOptions(clientOptions);
 
 ### 2.8.14 数据库ResultSet Stream机制说明
 
-利用数据库ResultSet Stream机制可以查询大表数据，通用设置方式如下：
+可以利用JDBC驱动的ResultSet Stream机制来同步数据库中的大表数据，从而避免因数据量过大导致jvm内存溢出等问题，ResultSet Stream机制设置方式如下：
 
 ```java
 DBInputConfig dbInputConfig = new DBInputConfig();
@@ -2254,7 +2254,7 @@ dbInputConfig.setJdbcFetchSize(2000);
 
 #### 2.8.14.1 Mysql流处理机制
 
-同步Mysql 大数据表到Elasticsearch时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
+同步Mysql 大数据表到Elasticsearch或者其他数据源时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
 **机制一** mysql 5以后的版本采用jdbc url串参数useCursorFetch=true以及配置fetchsize属性来实现，数据库url做如下配置即可：
 
