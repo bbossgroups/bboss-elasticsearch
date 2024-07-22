@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -201,7 +202,7 @@ public class ElasticSearch extends ApplicationObjectSupport {
 			return detaultClientInterface;
 		}
 	}
-	private final Map<String,ClientInterface> configClientUtis = new HashMap<String,ClientInterface>();
+	private final Map<String,ClientInterface> configClientUtis = new ConcurrentHashMap<String,ClientInterface>();
 	public ClientInterface getConfigRestClientUtil(String configFile) {
 		ClientInterface clientInterface = configClientUtis.get(configFile);
 		if(clientInterface != null)

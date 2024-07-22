@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ElasticSearchHelper {
 	private static final Logger logger = LoggerFactory.getLogger(ElasticSearchHelper.class);
@@ -25,7 +26,7 @@ public class ElasticSearchHelper {
 	public static final String DEFAULT_SEARCH = "elasticSearch";
 	protected static ElasticSearch elasticSearchSink = null;
 
-	private static final Map<String,Object> geoipConfig = new LinkedHashMap<String, Object>();
+	private static final Map<String,Object> geoipConfig = new ConcurrentHashMap<String, Object>();
 	private static boolean inited;
 	// # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
 	private static long dslfileRefreshInterval = 5000;
@@ -72,13 +73,13 @@ public class ElasticSearchHelper {
 	public static void setDslfileRefreshInterval(long dslfileRefreshInterval){
 		ElasticSearchHelper.dslfileRefreshInterval = dslfileRefreshInterval;
 	}
-	private static final Map<String,ElasticSearch> elasticSearchMap = new LinkedHashMap<String, ElasticSearch>();
+	private static final Map<String,ElasticSearch> elasticSearchMap = new ConcurrentHashMap<String, ElasticSearch>();
 
 
 	/**
 	 * 引用elasticsearch数据源
 	 */
-	private static final Map<String,String> referElasticSearchMap = new LinkedHashMap<String, String>();
+	private static final Map<String,String> referElasticSearchMap = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * 获取所有的es数据源配置对象
@@ -341,7 +342,7 @@ public class ElasticSearchHelper {
 
 		}
 		if(referElasticSearchMap.size() > 0){
-			synchronized (referElasticSearchMap) {
+			synchronized (ElasticSearchHelper.referElasticSearchMap) {
 				ElasticSearchHelper.referElasticSearchMap.putAll(referElasticSearchMap);
 			}
 		}

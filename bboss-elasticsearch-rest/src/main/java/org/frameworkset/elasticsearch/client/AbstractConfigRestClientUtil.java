@@ -99,7 +99,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 *
 	 * @param actionUrl reindex请求相对url，例如：
 	 *                  _reindex
-	 *                  _reindex?slices=5&refresh
+	 *                  _reindex?slices=5&ref.resh
 	 * @param dslName  xml配置文件中dsl对应的name
 	 * @param params dslName 中对应的变量参数信息
 	 * @return

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,7 +18,7 @@ public class ESTemplateCache {
 	private static Logger logger = LoggerFactory.getLogger(ESTemplateCache.class);
 	private Lock lock = new ReentrantLock();
 	private Lock vtplLock = new ReentrantLock();
-	private Map<String,VariableHandler.URLStruction> parserTempateStructions = new java.util.HashMap<String,VariableHandler.URLStruction>();
+	private Map<String,VariableHandler.URLStruction> parserTempateStructions = new ConcurrentHashMap<String,VariableHandler.URLStruction>();
 	private Map<String, EdenConcurrentCache<String,VariableHandler.URLStruction>> parserVTPLTempateStructions;
 	private Map<String, MissingStaticCache<String,VariableHandler.URLStruction>> parserVTPLTempateStructionsMissingCache;
 	private static TempateStructionBuiler tempateStructionBuiler = new TempateStructionBuiler();
@@ -28,10 +29,10 @@ public class ESTemplateCache {
 		this.perKeyDSLStructionCacheSize = perKeyDSLStructionCacheSize;
 		this.alwaysCacheDslStruction = alwaysCacheDslStruction;
 		if(this.alwaysCacheDslStruction) {
-			parserVTPLTempateStructions = new java.util.HashMap<String, EdenConcurrentCache<String, VariableHandler.URLStruction>>();
+			parserVTPLTempateStructions = new ConcurrentHashMap<String, EdenConcurrentCache<String, VariableHandler.URLStruction>>();
 		}
 		else{
-			parserVTPLTempateStructionsMissingCache = new java.util.HashMap<String,MissingStaticCache<String,VariableHandler.URLStruction>>();
+			parserVTPLTempateStructionsMissingCache = new ConcurrentHashMap<String,MissingStaticCache<String,VariableHandler.URLStruction>>();
 		}
 	}
 
