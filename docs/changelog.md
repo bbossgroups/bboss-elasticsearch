@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.2.5 发布
+# BBOSS版本变更记录-v7.2.6 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,11 +37,15 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.2.6 功能改进-20240723
+1. 问题修复：修复部分Postgresql分页查询失败问题
+2. 功能改进：将框架中部分缓存功能中使用的HashMap调整为ConcurrentHashMap,消除可能存在多线程安全隐患
+
 # v7.2.5 功能改进-20240716
 1. 问题修复：解决大数据量excel文件采集失败问题
 

@@ -258,12 +258,12 @@ addOptions.setPersistMapDocId(false);//控制不将orderId字段作为普通字�
 ```java
 //根据文档id获取文档对象，返回Demo对象
 Demo demo = clientUtil.getDocument("demo",//索引表
-      "demo",//索引类型
+     // "demo",//索引类型,es 7以下版本才需要设定
       "2",//文档id
       Demo.class);
 //根据文档id获取文档对象，返回Map对象
 Map map = clientUtil.getDocument("demo",//索引表
-      "demo",//索引类型
+     // "demo",//索引类型,es 7以下版本才需要设定
       "2",//文档id
       Map.class);      
 ```
