@@ -2048,7 +2048,30 @@ ftpOutConfig.setFailedFileResendInterval(1000L);//上传失败文件重发时间
 fileOupputConfig.setFtpOutConfig(ftpOutConfig);//设置ftp配置到文件导出配置
 ```
 
-### 2.3.3 写入空闲时间阈值配置
+### 2.3.3 导出并上传OSS
+
+导出数据到文件并上传oss数据库minio，只要添加minio配置到FileOutputConfig即可：
+
+```java
+MinioFileConfig minioFileConfig = new MinioFileConfig();
+fileOutputConfig.setMinioFileConfig(minioFileConfig);
+
+minioFileConfig.setBackupSuccessFiles(true);
+minioFileConfig.setTransferEmptyFiles(true);
+minioFileConfig.setEndpoint("http://172.24.176.18:9000");
+
+minioFileConfig.setName("miniotest");
+minioFileConfig.setAccessKeyId("O3CBPdUzJICHsMp7pj6h");        
+minioFileConfig.setSecretAccesskey("Y6o9piJTjhL6wRQcHeI7fRCyeM2LTSavGcCVx8th");
+minioFileConfig.setConnectTimeout(5000);
+minioFileConfig.setReadTimeout(5000);
+      minioFileConfig.setWriteTimeout(5000);
+      minioFileConfig.setBucket("etlfiles");
+minioFileConfig.setFailedFileResendInterval(-1);
+      minioFileConfig.setSendFileAsyn(true);//异步发送文件
+```
+
+### 2.3.4 写入空闲时间阈值配置
 
 **maxForceFileThreshold** 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置。
 
@@ -2068,7 +2091,7 @@ fileOutputConfig.setMaxForceFileThreshold(60);//默认每5秒扫描，上次写�
 
 Excel输出插件不支持仅flush功能，如果设置了**maxForceFileThreshold**时，必须设置MaxFileRecordSize，进行文件切割。
 
-### 2.3.4 参考文档
+### 2.3.5 参考文档
 
 https://esdoc.bbossgroups.com/#/elasticsearch-sftp
 
@@ -2119,9 +2142,13 @@ addCellMapping方法参数：第一个参数为excel单元格编号，从0开始
 
 参考【[2.3.2 导出并上传ftp](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_232-%e5%af%bc%e5%87%ba%e5%b9%b6%e4%b8%8a%e4%bc%a0ftp)】
 
-### 2.4.3 写入空闲时间阈值配置
+### 2.4.3 导出并上传OSS
 
-参考章节：[2.3.3 写入空闲时间阈值配置](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_233-写入空闲时间阈值配置)
+参考【2.3.3 导出并上传OSS】
+
+### 2.4.4 写入空闲时间阈值配置
+
+参考章节：[2.3.4 写入空闲时间阈值配置](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_234-写入空闲时间阈值配置)
 
 ### 2.4.4 参考文档
 

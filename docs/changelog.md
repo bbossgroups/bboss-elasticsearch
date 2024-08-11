@@ -42,9 +42,13 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.2.6 功能改进-20240723
+# v7.2.6 功能改进-20240811
 1. 问题修复：修复部分Postgresql分页查询失败问题
 2. 功能改进：将框架中部分缓存功能中使用的HashMap调整为ConcurrentHashMap,消除可能存在多线程安全隐患
+3. 文件输出插件改进：增加将文件写入oss数据库minio功能，案例地址：抽取Elasticsearch数据生成文件，并写入oss数据库minio
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileMinioDemo.java
+
 
 # v7.2.5 功能改进-20240716
 1. 问题修复：解决大数据量excel文件采集失败问题
@@ -52,7 +56,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 # v7.2.3 功能改进-20240707
 1. 持久层改进：优化持久层查询元数据缓冲机制和结构，去除不必要的缓冲和冗余信息，节约内存，提升性能
 2. 持久层改进：映射记录为Map类型时，默认关闭将查询列名称转换为大写值作为map key功能，如果需要开启(不建议开启)，则进行相应设置即可：db.columnLableUpperCase=true
-  
+
 
 # v7.2.2 功能改进-20240628
 1. 文件采集插件改进：为文本文件采集增加内存缓冲区机制，大幅提升文本采集性能
