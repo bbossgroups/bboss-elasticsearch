@@ -788,7 +788,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.2.5版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.2.6版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -963,7 +963,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -971,7 +971,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1058,7 +1058,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.2.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.2.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1110,7 +1110,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.2",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.3",transitive: true 
   ```
 
   **maven坐标**
@@ -1121,7 +1121,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.2.2</version>  
+      <version>6.2.3</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1426,7 +1426,7 @@ spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elastic
    2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)  
    3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
    
-   升级6.3.0注意事项，需手动修改增量同步状态表结构，增加下面三个字段：
+   升级6.3.1注意事项，需手动修改增量同步状态表结构，增加下面三个字段：
    
    ```
    status number(1) ,  //数据采集完成状态：0-采集中（默认值）  1-完成  适用于文件日志采集 默认值 0
@@ -1510,7 +1510,7 @@ spring boot配置项
    System.out.println(data);
    ```
 2. 完善http 响应报文处理机制，增加响应报文为空时的判断和处理   
-# v6.2.2 功能改进
+# v6.2.1 功能改进
 1. 数据同步改进：增加原始quartz调度作业基础类org.frameworkset.tran.schedule.quartz.BaseQuartzDatasynJob
 2. dsl模板变量增加esEncode属性，说明如下：
  **esEncode** boolean 类型，默认值false（不转义elasticsearch操作符），true（转义elasticsearch操作符），用于在query_string中对应不要作为elasticsearch操作符字符（\+ - = && || ! ( ) { } [ ] ^ " ~ * ? : \ /）进行转义处理，例如：
@@ -1595,7 +1595,7 @@ spring boot配置项
 
    
 
-# v6.2.2 功能改进
+# v6.2.0 功能改进
 1. 优化bulkproccessor：jvm退出时，同时关闭bulkprocessor flush线程
 2. 完善dsl打印机制:打印dsl的时候，会同时把接收dsl的elasticsearch 节点url地址，重试次数打印出来
 3. 非spring boot项目支持通过apollo来管理客户端配置，只需要将maven坐标做如下处理即可
@@ -1604,7 +1604,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.5</version>
+    <version>7.2.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1923,13 +1923,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.0</version>
+      <version>6.3.1</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.0", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.1", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>

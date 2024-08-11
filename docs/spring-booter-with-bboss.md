@@ -54,7 +54,7 @@ bboss maven工程
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
     
 ```
@@ -67,7 +67,7 @@ bboss maven工程
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.2.5</version>
+    <version>7.2.6</version>
 </dependency>
 ```
 
@@ -77,7 +77,7 @@ spring boot 3.x依赖包
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-    <version>7.2.5</version>
+    <version>7.2.6</version>
 </dependency>
 ```
 
@@ -86,11 +86,11 @@ spring boot 3.x依赖包
 gradle工程
 
 ```groovy
-compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.2.5"
+compile "com.bbossgroups.plugins:bboss-datatran-jdbc:7.2.6"
 //spring boot 1.x,2.x 二选一
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.2.5"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.2.6"
 //spring boot 3.x 二选一
-compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.2.5"
+compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:7.2.6"
 ```
 
 
