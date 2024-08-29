@@ -1,6 +1,8 @@
 # bboss http负载均衡器使用指南
 
-bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，本文介绍其使用方法。
+bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，包括spring cloud、spring boot、spring mvc以及其他基于http协议开发的微服务；同时还可以非常方便地实现多个文件上传服务器。
+
+本文介绍bboss http使用方法。
 
 ![](images\client-server-http.jpg)
 
@@ -1119,6 +1121,20 @@ public @ResponseBody CustomContainer<ExampleBean> sayHelloBodyHttp( @RequestBody
     customContainer.setName("大河");
     return customContainer;
 }
+```
+
+
+
+## 4.6 发送和上传文件
+
+可以通过http proxy非常方便地实现文件上传功能，方法说明如下：
+
+```java
+//发送多个文件
+//url：请求地址
+//params:请求参数，可以map，或者po对象
+//files：多个需上传的文件，key代码文件名称信息，File代表对应要上传的文件
+public static String httpPostFileforString(String url, Object params, Map<String, File> files)
 ```
 
 总之，通过HttpRequestProxy调用服务就像我们调用本地类方法一样，支持post、get、put、delete、head http请求处理方法，提供or mapping机制，可以根据实际需要使用相关api即可。

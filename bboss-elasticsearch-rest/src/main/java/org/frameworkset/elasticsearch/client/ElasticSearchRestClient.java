@@ -139,7 +139,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private String distribution;
 	private boolean v1 ;
 
-	public boolean isLower5() {
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public boolean isLower5() {
 		return lower5;
 	}
 
@@ -966,6 +970,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //		return response;
 	}
 
+ 
 	/**
 	 *
 	 * @param path
@@ -974,7 +979,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @throws ElasticSearchException
 	 */
 	private <T> T _executeHttp(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
-		int triesCount = 0;
+		
+        int triesCount = 0;
 		T response = null;
 		Throwable e = null;
 

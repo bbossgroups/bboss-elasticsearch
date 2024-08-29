@@ -476,7 +476,7 @@ public class ElasticSearchHelper {
 		ElasticSearch elasticSearch = getElasticSearchSinkOnly(esname,true);
 		if(elasticSearch != null) {
 			elasticSearch.stop();
-			if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
+			if(esname == null || esname.equals("") || esname.equals("default") ) {
 
 				 elasticSearchSink = null;
 				 elasticSearchMap.remove(DEFAULT_SEARCH);
@@ -512,14 +512,13 @@ public class ElasticSearchHelper {
 	}
 	public static ElasticSearch getElasticSearchSinkOnly(String elasticSearch,boolean direct){
 		if(elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default") ) {
-
-			return elasticSearchSink;
+            return elasticSearchMap.get(DEFAULT_SEARCH);
 		}
 		if(!direct) {
 			elasticSearch = getRealElasticserachName(elasticSearch);
 			if (elasticSearch == null || elasticSearch.equals("") || elasticSearch.equals("default")) {
 
-				return elasticSearchSink;
+                return elasticSearchMap.get(DEFAULT_SEARCH);
 			}
 		}
 		ElasticSearch elasticSearchSink = elasticSearchMap.get(elasticSearch);

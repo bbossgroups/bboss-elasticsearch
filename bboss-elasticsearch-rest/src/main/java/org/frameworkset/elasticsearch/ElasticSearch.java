@@ -100,7 +100,9 @@ public class ElasticSearch extends ApplicationObjectSupport {
 	public void setDslMappingDir(String dslMappingDir) {
 		this.dslMappingDir = dslMappingDir;
 	}
-
+    public boolean isStoped(){
+        return stoped;
+    }
 	public String getDslMappingDir() {
 		return dslMappingDir;
 	}

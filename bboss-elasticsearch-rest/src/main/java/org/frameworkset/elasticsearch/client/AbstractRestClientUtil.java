@@ -6,9 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
-import org.frameworkset.elasticsearch.ElasticSearch;
-import org.frameworkset.elasticsearch.ElasticSearchException;
-import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.bulk.BulkConfig;
 import org.frameworkset.elasticsearch.bulk.BulkData;
@@ -68,6 +66,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public ElasticSearchRestClient getClient() {
+        assertStop();
 		return this.client;
 	}
 	public IndexNameBuilder getIndexNameBuilder(){
@@ -442,7 +441,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public String addMapDocuments(String indexName, String indexType, List<Map> beans,ClientOptions clientOptions) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
-
+        assertStop();
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Map bean:beans) {
@@ -598,6 +597,22 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		clientOptions.setRefreshOption(refreshOption);
 		return addDocument( indexName,  indexType,  bean, clientOptions);
 	}
+    private Object assertStoplock = new Object();
+    protected void assertStop(){
+        if(this.client.isClosed()) {
+            synchronized (assertStoplock) {
+                //检查数据源是否重新启动，如果有启动则重置client对象，确保遗留clientutil能够恢复正常工作
+                ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSinkOnly(client.getElasticsearchName());
+                if (elasticSearch != null) {
+                    this.client = (ElasticSearchRestClient) elasticSearch.getRestClient();
+                    logger.info("Client[" + client.getElasticsearchName() + "] restarted.");
+                    return;
+                }
+            }
+            throw new ElasticSearchDSStoppedException("Client[" + client.getElasticsearchName() + "] is stopped.");
+        }
+        
+    }
 	/**
 	 * 创建或者更新索引文档
 	 * @param indexName
@@ -607,7 +622,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String addDocument(String indexName, String indexType, Object params,ClientOptions clientOptions) throws ElasticSearchException{
-
+        assertStop();
 		String path = BuildTool.buildAddPathUrlMeta( indexName , indexType, params, clientOptions,ClassUtil.getClassInfo(params.getClass()));
 		path = this.client.executeHttp(path, SerialUtil.object2json(params),ClientUtil.HTTP_POST);
 		return path;
@@ -871,6 +886,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public   String addDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
+        assertStop();
 		StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
@@ -893,7 +909,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
+        assertStop();
+        StringBuilder builder = new StringBuilder();
 		if(!this.client.isUpper7() ) {
 			for (String id : ids) {
 
@@ -910,7 +927,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public String updateDocuments(String indexName, String indexType, List<?> beans,ClientOptions clientOptions) throws ElasticSearchException{
-		StringBuilder builder = new StringBuilder();
+        assertStop();
+        StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
 //			try {
@@ -939,8 +957,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public String updateDocument(String index,String indexType,Object params,ClientOptions updateOptions) throws ElasticSearchException{
-//		Object id = null;
-//		String refreshOption = null;
+        assertStop();
 		Object detect_noop = null;
 		Object doc_as_upsert = null;
 		ClassUtil.ClassInfo beanClassInfo = ClassUtil.getClassInfo(params.getClass());
@@ -977,22 +994,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		}
 
 
-		/**
-		StringBuilder path = new StringBuilder();
-
-		if(!this.client.isUpper7()) {
-			if (indexType == null || indexType.equals(""))
-				path.append(index).append("/").append(id).append("/_update");
-			else
-				path.append(index).append("/").append(indexType).append("/").append(id).append("/_update");
-		}
-		else{
-			path.append(index).append("/_update").append("/").append(id);
-		}
-		if(refreshOption != null){
-			path.append("?").append(refreshOption);
-		}
-		 */
+		
 		String path = BuildTool.buildUpdatePathUrlMeta(index,indexType,params,updateOptions,beanClassInfo,client.isUpper7());
 		StringBuilder builder = new StringBuilder();
 		builder.append(" {\"doc\":");
@@ -1090,7 +1092,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
         if(bulkCommand.getBulkDataRecords() == 0){
             return null;
         }
-
+        assertStop();
         String data = bulkCommand.getDataString();
         return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig(), BulkConfig.FILTER_PATH_EMPTY),
                                     data, ClientUtil.HTTP_POST);
@@ -1184,7 +1186,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	@Override
 	public String deleteDocuments(String indexName, String indexType, String[] ids,ClientOptions clientOptions) throws ElasticSearchException {
-		StringBuilder builder = new StringBuilder();
+        assertStop();
+        StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for (String id : ids) {
 			BulkData bulkData = new BulkData(BulkData.DELETE,id);
@@ -1227,7 +1230,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String deleteByQuery(String path,String entity) throws ElasticSearchException{
-		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
 	}
 	/**
 	 *
@@ -1270,7 +1274,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String deleteTempate(String template) throws ElasticSearchException {
-		try{
+        assertStop();
+        try{
 			return client.executeHttp("/_template/"+template,ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
@@ -1285,6 +1290,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   String getTempate(String template) throws ElasticSearchException {
+        assertStop();
 		try {
 			return client.executeHttp("/_template/" + template, ClientUtil.HTTP_GET);
 		}
@@ -1299,6 +1305,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   String getTempate() throws ElasticSearchException {
+        assertStop();
 		return client.executeHttp("/_template",ClientUtil.HTTP_GET);
 	}
 	/**
@@ -1366,7 +1373,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocument(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(BuildTool.buildGetDocumentRequest(indexName, indexType, documentId, options), ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
@@ -1382,7 +1390,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
 //		return searchObject(actionUrl,dsl,  type);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
@@ -1398,7 +1407,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public  String getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
 		return client.executeRequest(actionUrl,dsl);
 
@@ -1413,7 +1423,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
 //		return searchObject(actionUrl,dsl,  type);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
@@ -1429,7 +1440,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public  String getDocumentByFieldLike(String indexName, String fieldName,Object fieldValue,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,fieldValue);
 		return client.executeRequest(actionUrl,dsl);
 	}
@@ -1443,7 +1455,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
 //		return searchObject(actionUrl,dsl,  type);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
@@ -1453,7 +1466,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 
 	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object fieldValue,Class<T> type,int from,int size) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue,from, size);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
@@ -1467,14 +1481,16 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchListByField(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,value,from, size);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
 	}
 
 	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
@@ -1488,7 +1504,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchListByFieldLike(String indexName, String fieldName,Object value,Class<T> type,int from,int size,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.matchByFieldValueDsl(fieldName,value,from, size);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
@@ -1504,7 +1521,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public  String getDocumentByField(String indexName, String fieldName,Object fieldValue) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,null);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
 		return client.executeRequest(actionUrl,dsl);
 
@@ -1519,7 +1537,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByField(String indexName, String fieldName,Object fieldValue,Class<T> type,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
 //		return searchObject(actionUrl,dsl,  type);
 		RestResponse result = this.client.executeRequest(actionUrl,dsl,   new ElasticSearchResponseHandler( type));
@@ -1535,7 +1554,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public  String getDocumentByField(String indexName, String fieldName,Object fieldValue,Map<String,Object> options) throws ElasticSearchException{
-		String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
+        assertStop();
+        String actionUrl = BuildTool.buildSearchDocumentRequest(indexName,null,options);
 		String dsl = BuildTool.findByFieldValueDsl(fieldName,fieldValue);
 		return client.executeRequest(actionUrl,dsl);
 	}
@@ -1557,7 +1577,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocumentByPath(String path) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
@@ -1574,7 +1595,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String getDocumentSource(String path) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path,ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
@@ -1598,7 +1620,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentByPath(String path,Class<T> beanType) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			SearchHit searchResult = this.client.executeRequest(path,null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
 			return ResultUtil.buildObject(searchResult, beanType);
 		}
@@ -1617,7 +1640,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocumentSource(String path,Class<T> beanType) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			T searchResult = (T) this.client.executeRequest(path,null,   new GetDocumentSourceResponseHandler( beanType),ClientUtil.HTTP_GET);
 			return searchResult;
 		}
@@ -1662,7 +1686,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T getDocument(String indexName, String indexType,String documentId,Map<String,Object> options,Class<T> beanType) throws ElasticSearchException{
-		try{
+        assertStop();
+        try{
 			SearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(  indexName,   indexType,  documentId,  options),null,   new GetDocumentResponseHandler( beanType),ClientUtil.HTTP_GET);
 
 			return ResultUtil.buildObject(searchResult, beanType);
@@ -1687,7 +1712,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String path,String entity,Class<T> type)  throws ElasticSearchException{
-		MGetDocs searchResult = (MGetDocs) this.client.executeRequest(path,entity,   new MGetDocumentsSourceResponseHandler( type),ClientUtil.HTTP_POST);
+        assertStop();
+        MGetDocs searchResult = (MGetDocs) this.client.executeRequest(path,entity,   new MGetDocumentsSourceResponseHandler( type),ClientUtil.HTTP_POST);
 
 		return ResultUtil.buildObjects(searchResult, type);
 	}
@@ -1738,7 +1764,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public   MapSearchHit getDocumentHit(String indexName, String indexType,String documentId,Map<String,Object> options) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			MapSearchHit searchResult = this.client.executeRequest(BuildTool.buildGetDocumentRequest(indexName, indexType, documentId, options), null, new GetDocumentHitResponseHandler(), ClientUtil.HTTP_GET);
 			return searchResult;
 		}
@@ -1765,7 +1792,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	@Override
 	public String deleteDocument(String indexName, String indexType, String id) throws ElasticSearchException {
 
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/").append(id).toString(), ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
@@ -1773,7 +1801,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		}
 	}
 	public   String deleteDocument(String indexName, String indexType, String id,String refreshOption) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			if(refreshOption == null || refreshOption.equals("")){
 				return deleteDocument(indexName, indexType, id);
 			}
@@ -1786,14 +1815,14 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	@Override
 	public String executeRequest(String path, String entity) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeRequest(path,entity);
+        assertStop();
+        return this.client.executeRequest(path,entity);
 	}
 	
 	@Override
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeRequest(path,entity,  responseHandler);
+        assertStop();
+        return this.client.executeRequest(path,entity,  responseHandler);
 	}
 
 	/**
@@ -1828,7 +1857,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType,  String entity) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 
@@ -1864,7 +1894,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String entity) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -1904,11 +1935,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  sqlObject(Class<T> beanType,  String entity ) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),entity,   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 	public String closeSQLCursor(String cursor) throws ElasticSearchException {
-		return this.client.executeRequest(client.getSqlRestapi()+"/close",
+        assertStop();
+        return this.client.executeRequest(client.getSqlRestapi()+"/close",
 				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
 				new ESStringResponseHandler(),HTTP_POST);
 	}
@@ -1925,7 +1958,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		if(oldPage.getCursor() == null ){
 			return null;
 		}
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
 														new StringBuilder().append("{\"cursor\": \"").append(oldPage.getCursor()).append("\"}").toString(),
 														new SQLRestResponseHandler());
 
@@ -1948,7 +1982,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		if(cursor == null ){
 			return null;
 		}
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),
 				new StringBuilder().append("{\"cursor\": \"").append(cursor).append("\"}").toString(),
 				new SQLRestResponseHandler());
 
@@ -1966,13 +2001,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 */
 	@Override
 	public String executeHttp(String path, String action) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeHttp(path,action);
+        assertStop();
+        return this.client.executeHttp(path,action);
 	}
 	@Override
 	public String executeHttp(String path, String entity,String action) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeHttp(path,entity,action);
+        assertStop();
+        return this.client.executeHttp(path,entity,action);
 	}
 
 	@Override
@@ -1997,16 +2032,17 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public <T> T executeHttp(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeHttp(path,action,responseHandler);
+        assertStop();
+        return this.client.executeHttp(path,action,responseHandler);
 	}
 	public <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		return this.client.discover(path,action,responseHandler);
+        assertStop();
+        return this.client.discover(path,action,responseHandler);
 	}
 	@Override
 	public <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
-		// TODO Auto-generated method stub
-		return this.client.executeHttp(path,entity,action,responseHandler);
+        assertStop();
+        return this.client.executeHttp(path,entity,action,responseHandler);
 	}
 	
 	public String getIndexMapping(String index) throws ElasticSearchException{
@@ -2019,7 +2055,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public String getIndexMapping(String index,boolean pretty) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			if (pretty)
 				return this.client.executeHttp(index + "/_mapping?pretty", ClientUtil.HTTP_GET);
 			else
@@ -2031,7 +2068,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			if (pretty)
 				return this.client.executeRequest(index + "/_mapping?pretty", null, responseHandler, ClientUtil.HTTP_GET);
 			else
@@ -2049,7 +2087,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String deleteByPath(String path) throws ElasticSearchException{
-		try{
+        assertStop();
+        try{
 			return this.client.executeHttp(path,ClientUtil.HTTP_DELETE);
 		}
 		catch(ElasticSearchException e){
@@ -2109,7 +2148,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	@Override
 	public MapRestResponse search(String path, String entity) throws ElasticSearchException {
-		MapRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchMapResponseHandler(  ));
+        assertStop();
+        MapRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchMapResponseHandler(  ));
 //		if(searchResult instanceof ErrorResponse){
 //			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
 //		}
@@ -2117,7 +2157,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public long count(String index,String entity)  throws ElasticSearchException{
-		MapRestResponse searchResult = this.client.executeRequest(new StringBuilder().append(index).append("/_count").toString(),
+        assertStop();
+        MapRestResponse searchResult = this.client.executeRequest(new StringBuilder().append(index).append("/_count").toString(),
 				entity,   new ElasticSearchMapResponseHandler(  ));
 //		if(searchResult instanceof ErrorResponse){
 //			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
@@ -2132,7 +2173,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public long countAll(String index)  throws ElasticSearchException{
-		String queryAll = "{\"query\": {\"match_all\": {}}}";
+        assertStop();
+        String queryAll = "{\"query\": {\"match_all\": {}}}";
 		MapRestResponse searchResult = this.client.executeRequest(new StringBuilder().append(index).append("/_count").toString(),
 				queryAll,   new ElasticSearchMapResponseHandler(  ));
 //		if(searchResult instanceof ErrorResponse){
@@ -2238,7 +2280,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchAllParallel(String index,  final int fetchSize ,ScrollHandler<T> scrollHandler,final Class<T> type,int max) throws ElasticSearchException{
-		if(!this.client.isLower5()) {
+        assertStop();
+        if(!this.client.isLower5()) {
 			SliceScroll sliceScroll = new SliceScroll() {
 				@Override
 				public String buildSliceDsl(int sliceId, int max) {
@@ -2284,25 +2327,29 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public TermRestResponse termSuggest(String path, String entity) throws ElasticSearchException {
-		TermRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchTermResponseHandler( ));
+        assertStop();
+        TermRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchTermResponseHandler( ));
 		return searchResult;
 	}
 
 	@Override
 	public PhraseRestResponse phraseSuggest(String path, String entity) throws ElasticSearchException {
-		PhraseRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchPhraseResponseHandler( ));
+        assertStop();
+        PhraseRestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchPhraseResponseHandler( ));
 		return searchResult;
 	}
 
 	@Override
 	public CompleteRestResponse complateSuggest(String path, String entity, Class<?> type) throws ElasticSearchException {
-		RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( type));
+        assertStop();
+        RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( type));
 		return (CompleteRestResponse)searchResult;
 	}
 
 	@Override
 	public CompleteRestResponse complateSuggest(String path, String entity) throws ElasticSearchException {
-		RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( Map.class));
+        assertStop();
+        RestResponse searchResult = this.client.executeRequest(path,entity,   new CompleteElasticSearchResponseHandler( Map.class));
 		return (CompleteRestResponse)searchResult;
 	}
 
@@ -2357,10 +2404,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	@Override
 	public RestResponse search(String path, String entity,Class<?> type) throws ElasticSearchException {
-		RestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
-//		if(searchResult instanceof ErrorResponse){
-//			throw new ElasticSearchException(SimpleStringUtil.object2json(searchResult));
-//		}
+        assertStop();
+        RestResponse searchResult = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+ 
 		return searchResult;
 	}
 
@@ -2375,8 +2421,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> searchScroll(String scroll,String scrollId ,Class<T> type) throws ElasticSearchException{
+        assertStop();
 
-		if(!this.client.isV1()) {
+        if(!this.client.isV1()) {
 			StringBuilder entity = new StringBuilder();
 			entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
 			RestResponse result = this.client.executeRequest("_search/scroll", entity.toString(), new ElasticSearchResponseHandler(type));
@@ -2400,7 +2447,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String searchScroll(String scroll,String scrollId ) throws ElasticSearchException{
-		if(!this.client.isV1()) {
+        assertStop();
+        if(!this.client.isV1()) {
 			StringBuilder entity = new StringBuilder();
 			entity.append("{\"scroll\" : \"").append(scroll).append("\",\"scroll_id\" : \"").append(scrollId).append("\"}");
 			String result = this.client.executeHttp("_search/scroll",entity.toString(),ClientUtil.HTTP_POST);
@@ -2448,7 +2496,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String deleteAllScrolls() throws ElasticSearchException{
-		String result = this.client.executeHttp("_search/scroll/_all",ClientUtil.HTTP_DELETE);
+        assertStop();
+        String result = this.client.executeHttp("_search/scroll/_all",ClientUtil.HTTP_DELETE);
 		return result;
 	}
 
@@ -2462,7 +2511,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 	return null;
 	}
 	public <T> ESDatas<T> searchList(String path, String entity, Class<T> type) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildESDatas(result,type);
 	}
 
@@ -2475,6 +2525,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
      * @throws ElasticSearchException
      */
     public <T> List<ESDatas<T>> msearchList(String path, String entity,Class<T> type) throws ElasticSearchException{
+        assertStop();
         if(entity != null && !entity.endsWith("\n")){
             StringBuilder builder = new StringBuilder(entity.length() + 1);
             builder.append(entity).append("\n");
@@ -2512,6 +2563,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
      * @throws ElasticSearchException
      */
     public  List<RestResponse> msearch(String path, String entity,Class<?> type) throws ElasticSearchException{
+        assertStop();
         if(entity != null && !entity.endsWith("\n")){
             StringBuilder builder = new StringBuilder(entity.length() + 1);
             builder.append(entity).append("\n");
@@ -2539,7 +2591,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public <T> ESDatas<T> searchList(String path, Class<T> type) throws ElasticSearchException {
-		RestResponse result = this.client.executeRequest(path, (String)null, new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
+        assertStop();
+        RestResponse result = this.client.executeRequest(path, (String)null, new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
 		return ResultUtil.buildESDatas(result,type);
 	}
 
@@ -2600,7 +2653,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 
 	public <T> ESDatas<T> scrollParallel(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		List<Future> tasks = null;
+        assertStop();
+        List<Future> tasks = null;
 		try {
 			path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
 					new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
@@ -2714,14 +2768,16 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public String forcemerge(String indices) {
-		String result = this.client.executeHttp(new StringBuilder().append(indices)
+        assertStop();
+        String result = this.client.executeHttp(new StringBuilder().append(indices)
 				.append("/_forcemerge").toString(),ClientUtil.HTTP_POST);
 		return result;
 	}
 
 	@Override
 	public String forcemerge(String indices, MergeOption mergeOption) {
-		StringBuilder action = new StringBuilder().append(indices)
+        assertStop();
+        StringBuilder action = new StringBuilder().append(indices)
 				.append("/_forcemerge");
 		if(mergeOption != null) {
 			boolean seted = false;
@@ -2755,13 +2811,15 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public String forcemerge() {
-		String result = this.client.executeHttp("/_forcemerge",ClientUtil.HTTP_POST);
+        assertStop();
+        String result = this.client.executeHttp("/_forcemerge",ClientUtil.HTTP_POST);
 		return result;
 	}
 
 	@Override
 	public String forcemerge(MergeOption mergeOption) {
-		StringBuilder action = new StringBuilder()
+        assertStop();
+        StringBuilder action = new StringBuilder()
 				.append("/_forcemerge");
 		if(mergeOption != null) {
 			boolean seted = false;
@@ -2811,7 +2869,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> ESDatas<T> scroll(String path,String entity,String scroll ,Class<T> type,ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			path = path.indexOf('?') < 0 ? new StringBuilder().append(path).append("?scroll=").append(scroll).toString() :
 					new StringBuilder().append(path).append("&scroll=").append(scroll).toString();
 
@@ -3072,12 +3131,14 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	public <T> T searchObject(String path, String entity, Class<T> type) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 		return ResultUtil.buildObject(result, type);
 	}
 	@Override
 	public <T> T searchObject(String path, Class<T> type) throws ElasticSearchException {
-		RestResponse result = this.client.executeRequest(path, (String )null,new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
+        assertStop();
+        RestResponse result = this.client.executeRequest(path, (String )null,new ElasticSearchResponseHandler( type),ClientUtil.HTTP_GET);
 		return ResultUtil.buildObject(result, type);
 	}
 
@@ -3100,11 +3161,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return null;
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return ResultUtil.buildESAggDatas(result,type,aggs,stats,(ESAggBucketHandle<T>)null);
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,String stats,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return ResultUtil.buildESAggDatas(result,type,aggs,stats,aggBucketHandle);
 	}
 
@@ -3127,17 +3190,20 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return null;
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return ResultUtil.buildESAggDatas(result,type,aggs,null,(ESAggBucketHandle<T>)null);
 	}
 	public <T extends AggHit> ESAggDatas<T> searchAgg(String path,String entity,Class<T> type,String aggs,ESAggBucketHandle<T> aggBucketHandle) throws ElasticSearchException{
-		RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
+        assertStop();
+        RestResponse result = this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( ));
 		return ResultUtil.buildESAggDatas(result,type,aggs,null,aggBucketHandle);
 	}
 
 	@Override
 	public String createTempate(String template, String entity) throws ElasticSearchException {
-		return this.client.executeHttp("_template/"+this.handleIndexName(template),entity,ClientUtil.HTTP_PUT);
+        assertStop();
+        return this.client.executeHttp("_template/"+this.handleIndexName(template),entity,ClientUtil.HTTP_PUT);
 	}
 
 	@Override
@@ -3163,7 +3229,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	@Override
 	public RestResponse search(String path, String entity,ESTypeReferences type) throws ElasticSearchException {
-		return this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
+        assertStop();
+        return this.client.executeRequest(path,entity,   new ElasticSearchResponseHandler( type));
 	}
 	
 	
@@ -3183,17 +3250,18 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		  */
 		 @SuppressWarnings("unchecked")
 		public Map<String,Object> searchMap(String path, String entity) throws ElasticSearchException {
-			 // TODO Auto-generated method stub
-			 return this.client.executeRequest(path,entity,  new ESMapResponseHandler());
+             assertStop();
+             return this.client.executeRequest(path,entity,  new ESMapResponseHandler());
 		 }
 	
 	 public String dropIndice(String index)  throws ElasticSearchException {
-		 	try {
-				return this.client.executeHttp(index + "?pretty", ClientUtil.HTTP_DELETE);
-			}
-			catch(ElasticSearchException e){
-				return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_dropIndice);
-			}
+         assertStop();
+        try {
+            return this.client.executeHttp(index + "?pretty", ClientUtil.HTTP_DELETE);
+        }
+        catch(ElasticSearchException e){
+            return ResultUtil.hand404HttpRuntimeException(e,String.class,ResultUtil.OPERTYPE_dropIndice);
+        }
 		 
 	 }
 	 
@@ -3206,7 +3274,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String updateIndiceMapping(String action,String indexMapping)  throws ElasticSearchException {
-	 	try {
+         assertStop();
+         try {
 			return this.client.executeHttp(handleIndexName(action), indexMapping, ClientUtil.HTTP_PUT);
 		}
 		catch(ElasticSearchException e){
@@ -3234,7 +3303,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	  * @throws ElasticSearchException
 	  */
 	 public String createIndiceMapping(String indexName,String indexMapping)  throws ElasticSearchException {
-		 return this.client.executeHttp(handleIndexName(indexName),indexMapping,ClientUtil.HTTP_PUT);
+         assertStop();
+         return this.client.executeHttp(handleIndexName(indexName),indexMapping,ClientUtil.HTTP_PUT);
 	 }
 
 	 private String handleIndexName(String indexName){
@@ -3301,7 +3371,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	 public List<ESIndice> getIndexes() throws ElasticSearchException{
-		 String data = this.client.executeHttp("_cat/indices?v",HTTP_GET);
+         assertStop();
+         String data = this.client.executeHttp("_cat/indices?v",HTTP_GET);
 		 if(logger.isDebugEnabled()) {
 			 logger.debug(data);
 		 }
@@ -3325,7 +3396,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public List<ESIndice> getIndexes(String indicePattern) throws ElasticSearchException{
-		String data = this.client.executeHttp(new StringBuilder().append("_cat/indices/").append(indicePattern).append("?v").toString(),HTTP_GET);
+        assertStop();
+        String data = this.client.executeHttp(new StringBuilder().append("_cat/indices/").append(indicePattern).append("?v").toString(),HTTP_GET);
 		if(logger.isDebugEnabled()) {
 			logger.debug(data);
 		}
@@ -3397,14 +3469,17 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	    
 
 	    public String refreshIndexInterval(String indexName,int interval) throws ElasticSearchException{
-	    	return this.client.executeHttp(new StringBuilder().append(indexName).append("/_settings").toString(), new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"   } }").toString(), HTTP_PUT);
+            assertStop();
+            return this.client.executeHttp(new StringBuilder().append(indexName).append("/_settings").toString(), new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"   } }").toString(), HTTP_PUT);
 	    }
 	    public String refreshIndexInterval(String indexName,String indexType,int interval) throws ElasticSearchException{
-	    	return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/_settings").toString(), new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"    } }").toString(), HTTP_PUT);
+            assertStop();
+            return this.client.executeHttp(new StringBuilder().append(indexName).append("/").append(indexType).append("/_settings").toString(), new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"    } }").toString(), HTTP_PUT);
 	    }
 	    
 	    public String refreshIndexInterval(int interval,boolean preserveExisting) throws ElasticSearchException{
-	    	if(preserveExisting)
+            assertStop();
+            if(preserveExisting)
 	    		return this.client.executeHttp("_all/_settings?preserve_existing=true", new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"    } }").toString(), HTTP_PUT);
 	    	else
 	    		return this.client.executeHttp("_all/_settings?preserve_existing=false", new StringBuilder().append("{  \"index\" : {  \"refresh_interval\" : \"").append(interval).append("s\"    } }").toString(), HTTP_PUT);
@@ -3421,7 +3496,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 */
 	    public String cleanAllXPackIndices() throws ElasticSearchException{
 
-			StringBuilder ret = new StringBuilder();
+            assertStop();
+            StringBuilder ret = new StringBuilder();
 			for(String monitor:monitorIndices) {
 				try {
 					ret.append(this.client.executeHttp(java.net.URLEncoder.encode(monitor, "UTF-8") + "?pretty", HTTP_DELETE)).append("\n");
@@ -3447,7 +3523,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String entity) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path, entity, ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
@@ -3496,7 +3573,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateByQuery(String path) throws ElasticSearchException{
-		return this.client.executeHttp(path,ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ClientUtil.HTTP_POST);
 	}
 	/**
 	 * The simplest usage of _update_by_query just performs an update on every document in the index without changing the source. This is useful to pick up a new property or some other online mapping change. Here is the API:
@@ -3516,7 +3594,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String updateByQuery(String path,String entity) throws ElasticSearchException{
-		return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,entity,ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -3578,7 +3657,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException{
-		if(ids == null || ids.length ==0)
+        assertStop();
+        if(ids == null || ids.length ==0)
 			return null;
 		StringBuilder path = new StringBuilder();
 		if(indexType == null || indexType.equals(""))
@@ -3609,7 +3689,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String mgetDocuments(String index,String indexType,Object ... ids)  throws ElasticSearchException{
-		if(ids == null || ids.length ==0)
+        assertStop();
+        if(ids == null || ids.length ==0)
 			return null;
 		StringBuilder path = new StringBuilder();
 		if(indexType == null || indexType.equals(""))
@@ -3898,7 +3979,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String reindex(String sourceIndice,String destIndice){
-		String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\"}}").toString();
+        assertStop();
+        String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\"}}").toString();
 		return this.client.executeHttp("_reindex",reindex,ClientUtil.HTTP_POST);
 
 	}
@@ -3932,7 +4014,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String reindexByDsl(String actionUrl,String dsl){
-		return this.client.executeHttp(actionUrl,dsl,ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(actionUrl,dsl,ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -3946,7 +4029,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String reindex(String sourceIndice,String destIndice,String versionType){
-		String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"version_type\": \"").append(versionType).append("\"}}").toString();
+        assertStop();
+        String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"version_type\": \"").append(versionType).append("\"}}").toString();
 		return this.client.executeHttp("_reindex",reindex,ClientUtil.HTTP_POST);
 	}
 
@@ -3961,7 +4045,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String reindex(String sourceIndice,String destIndice,String opType,String conflicts){
-		if(conflicts == null || conflicts.equals("")) {
+        assertStop();
+        if(conflicts == null || conflicts.equals("")) {
 			String reindex = new StringBuilder().append("{\"source\": {\"index\": \"").append(sourceIndice).append("\"},\"dest\": {\"index\": \"").append(destIndice).append("\",\"op_type\": \"").append(opType).append("\"}}").toString();
 			return this.client.executeHttp("_reindex", reindex, ClientUtil.HTTP_POST);
 		}
@@ -3981,7 +4066,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String addAlias(String indice,String alias){
-		String aliasJson = new StringBuilder().append("{\"actions\": [{\"add\": {\"index\":\"").append(indice).append("\",\"alias\": \"").append(alias).append("\"}}]}").toString();
+        assertStop();
+        String aliasJson = new StringBuilder().append("{\"actions\": [{\"add\": {\"index\":\"").append(indice).append("\",\"alias\": \"").append(alias).append("\"}}]}").toString();
 		return this.client.executeHttp("_aliases",aliasJson,ClientUtil.HTTP_POST);
 	}
 
@@ -3994,7 +4080,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String removeAlias(String indice,String alias){
-		String removeAlias = new StringBuilder().append("{\"actions\": [{\"remove\": {\"index\":\"").append(indice).append("\",\"alias\": \"").append(alias).append("\"}}]}").toString();
+        assertStop();
+        String removeAlias = new StringBuilder().append("{\"actions\": [{\"remove\": {\"index\":\"").append(indice).append("\",\"alias\": \"").append(alias).append("\"}}]}").toString();
 		return this.client.executeHttp("_aliases",removeAlias,ClientUtil.HTTP_POST);
 	}
 
@@ -4004,13 +4091,15 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public String closeIndex(String index) {
-		String closeIndex = new StringBuilder().append("/").append(index).append("/_close").toString();
+        assertStop();
+        String closeIndex = new StringBuilder().append("/").append(index).append("/_close").toString();
 		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
 	}
 
 	@Override
 	public String openIndex(String index) {
-		String closeIndex = new StringBuilder().append("/").append(index).append("/_open").toString();
+        assertStop();
+        String closeIndex = new StringBuilder().append("/").append(index).append("/_open").toString();
 		return this.client.executeHttp(closeIndex,ClientUtil.HTTP_POST);
 	}
 	/**
@@ -4021,7 +4110,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return getClusterSettings(true);
 	}
 	public String getClusterSettings(boolean includeDefault){
-		if(includeDefault) {
+        assertStop();
+        if(includeDefault) {
 			return this.client.executeHttp("/_cluster/settings?include_defaults=true", ClientInterface.HTTP_GET);
 		}
 		else{
@@ -4048,7 +4138,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	public String getIndiceSetting(String indice,String params){
 
-		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+        assertStop();
+        StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
 		if(params != null && params.length() > 0){
 			builder.append("?").append(params);
 		}
@@ -4056,7 +4147,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	}
 	public String getIndiceSettingByName(String indice,String settingName){
-		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+        assertStop();
+        StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
 		if(settingName != null && settingName.length() > 0){
 			builder.append("/").append(settingName);
 		}
@@ -4073,7 +4165,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String unassignedNodeLeftDelayedTimeout(String indice,String delayedTimeout){
-		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+        assertStop();
+        StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
 		StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{")
 				.append("\"index.unassigned.node_left.delayed_timeout\":\"").append(delayedTimeout)
@@ -4083,7 +4176,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public String updateNumberOfReplicas(String indice, int numberOfReplicas) {
-		StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
+        assertStop();
+        StringBuilder builder = new StringBuilder().append(indice).append("/_settings");
 		StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{")
 				.append("\"index.number_of_replicas\":").append(numberOfReplicas)
@@ -4093,7 +4187,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	@Override
 	public String updateNumberOfReplicas(int numberOfReplicas) {
-		StringBuilder updateDsl = new StringBuilder();
+        assertStop();
+        StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{")
 				.append("\"index.number_of_replicas\":").append(numberOfReplicas)
 				.append("}}");
@@ -4118,8 +4213,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public String _updateIndiceSettings(String path,Map<String,Object> settings){
 		if(settings == null || settings.size() ==0)
 			return "";
+        assertStop();
 
-		StringBuilder updateDsl = new StringBuilder();
+        StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{");
 		Iterator<Map.Entry<String,Object>> iterator = settings.entrySet().iterator();
 		boolean seted = false;
@@ -4145,9 +4241,10 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return this.client.executeHttp(path,updateDsl.toString(),ClientInterface.HTTP_PUT);
 	}
 	public String _updateIndiceSetting(String path,String key,Object value){
+        assertStop();
 
 
-		StringBuilder updateDsl = new StringBuilder();
+        StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{");
 
 		updateDsl.append("\"").append(key).append("\":");
@@ -4176,7 +4273,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 
 	public String unassignedNodeLeftDelayedTimeout(String delayedTimeout){
 
-		StringBuilder updateDsl = new StringBuilder();
+        assertStop();
+        StringBuilder updateDsl = new StringBuilder();
 		updateDsl.append("{").append("\"settings\":{")
 				.append("\"index.unassigned.node_left.delayed_timeout\":\"").append(delayedTimeout)
 				.append("\"}}");
@@ -4375,7 +4473,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 */
 	public String updateClusterSetting(ClusterSetting clusterSetting){
 
-		StringBuilder updateDsl = new StringBuilder();
+        assertStop();
+        StringBuilder updateDsl = new StringBuilder();
 		if(!clusterSetting.containPersistentSettings() && !clusterSetting.containTransientSettings()) {
 			if(clusterSetting.isPersistent()) {
 				updateDsl.append("{").append("\"persistent\":{");
@@ -4555,7 +4654,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String updateClusterSettings(List<ClusterSetting> clusterSettings){
-		if(clusterSettings == null || clusterSettings.size() ==0)
+        assertStop();
+        if(clusterSettings == null || clusterSettings.size() ==0)
 			return "";
 		StringBuilder updateDsl = new StringBuilder();
 		StringBuilder persistentDsl = new StringBuilder();
@@ -4637,7 +4737,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return this.updateClusterSetting(clusterSetting);
 	}
 	public String flushSynced(){
-		if(client.isUpper8()) {
+        assertStop();
+        if(client.isUpper8()) {
 			return this.client.executeHttp("_flush", ClientInterface.HTTP_POST);
 		}
 		else{
@@ -4654,7 +4755,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String flushSynced(String indice){
-		if(client.isUpper8()) {
+        assertStop();
+        if(client.isUpper8()) {
 			return this.client.executeHttp(new StringBuilder().append(indice).append("/_flush").toString(),ClientInterface.HTTP_POST);
 		}
 		else{
@@ -5933,7 +6035,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String createScript(String scriptName,String scriptDsl){
-		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), scriptDsl,ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), scriptDsl,ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -5967,7 +6070,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String deleteScript(String scriptName){
-		 return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), ClientUtil.HTTP_DELETE);
+        assertStop();
+        return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), ClientUtil.HTTP_DELETE);
 
 	}
 
@@ -5978,7 +6082,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 */
 	public String getScript(String scriptName){
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(), ClientUtil.HTTP_GET);
 		}
 		catch(ElasticSearchException e){
@@ -5986,7 +6091,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		}
 	}
 	public PitId requestPitId(String index, String keepaliveTime){
-		if(!keepaliveTime.startsWith("keep_alive=")) {
+        assertStop();
+        if(!keepaliveTime.startsWith("keep_alive=")) {
 			return this.client.executeHttp(new StringBuilder().append("/").append(index).append("/_pit?keep_alive=").append(keepaliveTime).toString(),
 					ClientUtil.HTTP_POST,new ESPitIdResponseHandler());
 		}
@@ -5996,7 +6102,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		}
 	}
 	public String deletePitId(String pitId){
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp("/_pit",
 					new StringBuilder().append("{\"id\" : \"").append(pitId).append("\"}").toString(),
 					ClientUtil.HTTP_DELETE);

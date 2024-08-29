@@ -138,9 +138,11 @@ public class ScriptImpl {
 		params.put("last","gaudreau");
 		params.put("nick","hockey");
         //通过script脚本为文档id为2的文档增加last和nick两个属性，为了演示效果强制refresh，实际环境慎用
-		clientUtil.updateByPath("demo/demo/2/_update?refresh","scriptDsl",params);
+		//clientUtil.updateByPath("demo/demo/2/_update?refresh","scriptDsl",params);//Elasticsearch 6及以下版本需要设置索引类型
+        clientUtil.updateByPath("demo/2/_update?refresh","scriptDsl",params);
         //获取更新后的文档，会看到新加的2个字段属性
-		String doc = clientUtil.getDocument("demo","demo","2");
+		//String doc = clientUtil.getDocument("demo","demo","2");//Elasticsearch 6及以下版本需要设置索引类型
+        String doc = clientUtil.getDocument("demo","2");
 		System.out.println(doc);
 
 	}
@@ -216,7 +218,7 @@ public class ScriptImpl {
 
 # 4 参考资料
 
-<https://www.elastic.co/guide/en/elasticsearch/painless/6.3/painless-examples.html>
+https://www.elastic.co/guide/en/elasticsearch/painless/current/index.html
 
 # 开发交流
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856

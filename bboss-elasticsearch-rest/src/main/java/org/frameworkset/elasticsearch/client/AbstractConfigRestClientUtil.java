@@ -105,6 +105,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 */
 	public String reindexByDsl(String actionUrl,String dslName,Object params){
+        assertStop();
 		return this.client.executeHttp(actionUrl,ESTemplateHelper.evalTemplate(configDSLUtil,dslName, params),ClientUtil.HTTP_POST);
 	}
 
@@ -124,10 +125,12 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 */
 	public String reindexByDsl(String actionUrl,String dslName){
+        assertStop();
 		return this.client.executeHttp(actionUrl,ESTemplateHelper.evalTemplate(configDSLUtil,dslName, (Map)null),ClientUtil.HTTP_POST);
 	}
 
 	public Object execute(String options) throws ElasticSearchException {
+        assertStop();
 		return client.execute(this.bulkBuilder.toString(),  options);
 	}
 
@@ -174,7 +177,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		 return ExecuteRequestUtil._addDocuments(client, configDSLUtil,indexName, indexType,addTemplate, beans, refreshOption);
+        assertStop(); 
+        return ExecuteRequestUtil._addDocuments(client, configDSLUtil,indexName, indexType,addTemplate, beans, refreshOption);
 	}
 
 
@@ -192,7 +196,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 		return updateDocuments( indexName,  indexType, updateTemplate, beans,(String)null);
 	}
 	public String updateDocuments(String indexName, String indexType,String updateTemplate, List<?> beans,String refreshOption) throws ElasticSearchException{
-		return ExecuteRequestUtil._updateDocuments( client, configDSLUtil,indexName,  indexType, updateTemplate, beans, refreshOption);
+        assertStop();
+        return ExecuteRequestUtil._updateDocuments( client, configDSLUtil,indexName,  indexType, updateTemplate, beans, refreshOption);
 	}
 
 
@@ -239,7 +244,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public   String addDocument(String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
-		return _addDocument( client, indexName,  indexType, addTemplate,  bean, refreshOption);
+        assertStop();
+        return _addDocument( client, indexName,  indexType, addTemplate,  bean, refreshOption);
 	}
 	protected String _addDocument(ElasticSearchRestClient client,String indexName, String indexType,String addTemplate, Object bean,String refreshOption) throws ElasticSearchException{
 		StringBuilder builder = new StringBuilder();
@@ -338,7 +344,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String deleteByQuery(String path,String templateName) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object)null),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object)null),ClientUtil.HTTP_POST);
 	}
 	/**
 	 *
@@ -354,7 +361,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String deleteByQuery(String path,String templateName,Map params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
 	}
 	/**
 	 *
@@ -370,7 +378,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String deleteByQuery(String path,String templateName,Object params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
 	}
 
 
@@ -462,7 +471,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType , String templateName,Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 	/**
@@ -474,7 +484,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public  <T> List<T>  sql(Class<T> beanType , String templateName,Object bean) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 	/**
@@ -487,7 +498,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T>  sql(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLResult(result,beanType);
 	}
 
@@ -500,7 +512,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -514,7 +527,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public  <T> SQLResult<T> fetchQuery(Class<T> beanType , String templateName , Object bean) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -529,7 +543,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> SQLResult<T>  fetchQuery(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		SQLResult<T> datas = ResultUtil.buildFetchSQLResult(  result,  beanType,  (SQLResult<T> )null);
 		datas.setClientInterface(this);
 		return datas;
@@ -544,7 +559,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public   <T> T  sqlObject(Class<T> beanType , String templateName,Map params) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 	/**
@@ -556,6 +572,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public   <T> T  sqlObject(Class<T> beanType , String templateName,Object bean) throws ElasticSearchException {
+        assertStop();
         if(bean instanceof Map){
             return sqlObject( beanType ,  templateName,(Map) bean);
         }
@@ -572,7 +589,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public <T> T  sqlObject(Class<T> beanType,  String templateName) throws ElasticSearchException {
-		SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
+        assertStop();
+        SQLRestResponse result = this.client.executeRequest(client.getSqlRestapi(),ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Map)null),   new SQLRestResponseHandler());
 		return ResultUtil.buildSQLObject(result,beanType);
 	}
 
@@ -730,7 +748,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 
 	@Override
 	public RestResponse search(String path, String templateName, ESTypeReferences type) throws ElasticSearchException {
-		return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
+        assertStop();
+        return this.client.executeRequest(path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object) null), new ElasticSearchResponseHandler(type));
 	}
 
 
@@ -1018,7 +1037,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(configDSLUtil, templateName, (Object) null), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
@@ -1039,7 +1059,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName,Map params) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(configDSLUtil, templateName, params), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
@@ -1060,7 +1081,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByPath(String path,String templateName,Object params) throws ElasticSearchException{
-		try {
+        assertStop();
+        try {
 			return this.client.executeHttp(path, ESTemplateHelper.evalTemplate(configDSLUtil, templateName, params), ClientUtil.HTTP_POST);
 		}
 		catch(ElasticSearchException e){
@@ -1086,7 +1108,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByQuery(String path,String templateName) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object)null),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object)null),ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -1108,7 +1131,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByQuery(String path,String templateName,Map params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -1130,7 +1154,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @throws ElasticSearchException
 	 */
 	public String updateByQuery(String path,String templateName,Object params) throws ElasticSearchException{
-		return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
+        assertStop();
+        return this.client.executeHttp(path,ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),ClientUtil.HTTP_POST);
 	}
 
 	/**
@@ -1337,7 +1362,8 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	public <T> ESDatas<T> scrollSlice(String path,final String dslTemplate,Map params ,
 									  final String scroll  ,final Class<T> type,
 									  ScrollHandler<T> scrollHandler) throws ElasticSearchException{
-			return  ExecuteRequestUtil._scrollSlice( client, configDSLUtil,path, dslTemplate,  params ,
+        assertStop();	
+        return  ExecuteRequestUtil._scrollSlice( client, configDSLUtil,path, dslTemplate,  params ,
 					scroll  ,  type,
 					scrollHandler);
 
@@ -1512,6 +1538,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 */
 	public String createScript(String scriptName,String scriptDslTemplate){
+        assertStop();
 		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
 				ESTemplateHelper.evalTemplate(configDSLUtil,scriptDslTemplate, (Object)null),ClientUtil.HTTP_POST);
 	}
@@ -1525,6 +1552,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 */
 	public String createScript(String scriptName,String scriptDslTemplate,Map params){
+        assertStop();
 		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
 				ESTemplateHelper.evalTemplate(configDSLUtil,scriptDslTemplate, params),ClientUtil.HTTP_POST);
 	}
@@ -1538,6 +1566,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 */
 	public String createScript(String scriptName,String scriptDslTemplate,Object params){
+        assertStop();
 		return this.client.executeHttp(new StringBuilder().append("_scripts/").append(scriptName).toString(),
 				ESTemplateHelper.evalTemplate(configDSLUtil,scriptDslTemplate, params),ClientUtil.HTTP_POST);
 	}
