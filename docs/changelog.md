@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.2.6 发布
+# BBOSS版本变更记录-v7.2.7 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.6</version>
+            <version>7.2.7</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.2.6</version>
+            <version>7.2.7</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,11 +37,20 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.2.6</version>
+            <version>7.2.7</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.2.7 功能改进-20240901
+1. http服务框架改进：http-proxy增加nacos配置中心支持以及基于nacos服务发现功能
+2. 基础框架改进：属性配置管理增加nacos插件支持，参考Apollo配置中心插件，支持基于nacos管理配置，从nacos加载ioc配置、属性配置；可以基于nacos和Apollo实现Elasticsearch客户端节点发现机制和http proxy服务节点发现机制
+3. es客户端改进：增加nacos配置中心支持以及基于nacos的es节点发现功能
+4. es客户端改进：es数据源停止后，相应的ClientInterface api抛出es数据源停止异常；数据源重启后，相应的ClientInterface api即可恢复正常调用，提供相应的测试用例CustormInitAndBoot1
+5. 基础框架改进：属性配置管理增加nacos插件支持，参考Apollo配置中心插件，支持基于nacos管理配置，从nacos加载ioc配置、属性配置 
+6. 问题修复：修复apollo和nacos配置管理属性不能热加载问题
+
 # v7.2.6 功能改进-20240811
 1. 问题修复：修复部分Postgresql分页查询失败问题
 2. 功能改进：将框架中部分缓存功能中使用的HashMap调整为ConcurrentHashMap,消除可能存在多线程安全隐患
@@ -788,7 +797,7 @@ https://esdoc.bbossgroups.com/#/db-es-datasyn
 7. 增加数据同步作业开发gradle模板工程
     https://gitee.com/bboss/bboss-datatran-demo
 
-由于bboss7.2.6版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
+由于bboss7.2.7版本对整个数据同步架构做了很大的改进调整，去掉旧版本中的“源-目标builder”作业构建器，统一采用“ImportBuilder构建器+InputConfig+OutputConfig“架构来构建数据同步作业，特制作了系列升级教程，帮助大家将旧版本开发的作业升级到最新版本。
 
 
 
@@ -963,7 +972,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.6</version>
+            <version>7.2.7</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -971,7 +980,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.2.6</version>
+            <version>7.2.7</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1058,7 +1067,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.2.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.2.7时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1110,7 +1119,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.3",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.5",transitive: true 
   ```
 
   **maven坐标**
@@ -1121,7 +1130,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.2.3</version>  
+      <version>6.2.5</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1426,7 +1435,7 @@ spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elastic
    2. [采集日志数据并写入Elasticsearch](https://github.com/bbossgroups/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2ESDemo.java)  
    3. [采集日志数据并发送到Kafka](https://github.com/bbossgroups/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2KafkaDemo.java)
    
-   升级6.3.1注意事项，需手动修改增量同步状态表结构，增加下面三个字段：
+   升级6.3.2注意事项，需手动修改增量同步状态表结构，增加下面三个字段：
    
    ```
    status number(1) ,  //数据采集完成状态：0-采集中（默认值）  1-完成  适用于文件日志采集 默认值 0
@@ -1604,7 +1613,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.6</version>
+    <version>7.2.7</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -1923,13 +1932,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.1</version>
+      <version>6.3.2</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.1", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.2", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
