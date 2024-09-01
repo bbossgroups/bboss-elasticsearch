@@ -161,6 +161,31 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
   HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
 ```
 
+#### **4）加载nacos配置启动httpproxy**
+
+与nacos配置中心集成，需要额外导入以下maven坐标：
+
+```xml
+ <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-plugin-nacos</artifactId>
+            <version>6.3.2</version>
+        </dependency>
+```
+
+指定nacos命名空间和配置参数变化监听器（自定义）
+
+```java 
+
+	 Map<String,String> config = new HashMap<>();
+        config.put("remote-first","false");
+
+        config.put("auto-refresh","true");
+        config.put("max-retry","10");
+		HttpRequestProxy.startHttpPoolsFromNacosAwaredChange("test","localhost:8848","http-proxy","DEFAULT_GROUP" ,5000L,config);
+```
+
+
 ### 3.1.2 调用服务API及示例
 
 参考章节：[4.2 调用服务API及示例](https://esdoc.bbossgroups.com/#/httpproxy?id=_42-调用服务api及示例)
@@ -1336,6 +1361,8 @@ Apollo配置使用参考文档：<https://esdoc.bbossgroups.com/#/apollo-config>
 
       HttpRequestProxy.startHttpPoolsFromApolloAwaredChange("application");
 ```
+## 5.4 基于nacos配置中心被动发现模式示例
+参考章节：** 3.1.1 小节4）加载nacos配置启动httpproxy**
 # 6.主备和异地灾备配置和服务发现
 
 主备和异地灾备配置和服务发现

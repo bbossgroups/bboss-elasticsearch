@@ -7,6 +7,7 @@
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md)
   - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md)
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md)
+  - [Nacos对接与配置 (非spring boot项目)](nacos-config.md)
   - [Apollo对接与配置 (非spring boot项目)](apollo-config.md)
   - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
   - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
