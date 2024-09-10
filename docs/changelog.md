@@ -44,11 +44,16 @@
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
 # v7.2.7 功能改进-20240901
-1. http服务框架改进：http-proxy增加nacos配置中心支持以及基于nacos服务发现功能
-2. 基础框架改进：属性配置管理增加nacos插件支持，参考Apollo配置中心插件，支持基于nacos管理配置，从nacos加载ioc配置、属性配置；可以基于nacos和Apollo实现Elasticsearch客户端节点发现机制和http proxy服务节点发现机制
-3. es客户端改进：增加nacos配置中心支持以及基于nacos的es节点发现功能
-4. es客户端改进：es数据源停止后，相应的ClientInterface api抛出es数据源停止异常；数据源重启后，相应的ClientInterface api即可恢复正常调用，提供相应的测试用例CustormInitAndBoot1
+1. http服务框架改进：http-proxy增加[nacos配置中心支持以及基于nacos服务发现功能](https://esdoc.bbossgroups.com/#/httpproxy?id=_4%ef%bc%89%e5%8a%a0%e8%bd%bdnacos%e9%85%8d%e7%bd%ae%e5%90%af%e5%8a%a8httpproxy)
+
+3. es客户端改进：增加[nacos配置中心支持以及基于nacos的es节点发现功能](https://esdoc.bbossgroups.com/#/nacos-config?id=_1elasticsearch%e5%ae%a2%e6%88%b7%e7%ab%af%e4%b8%8enacos%e5%af%b9%e6%8e%a5)
+
+4. es客户端改进：es数据源停止后，相应的ClientInterface api抛出es数据源停止异常；数据源重启后，相应的ClientInterface api即可恢复正常调用，提供相应的测试用例[CustormInitAndBoot1](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot1.java)
+
 5. 基础框架改进：属性配置管理增加nacos插件支持，参考Apollo配置中心插件，支持基于nacos管理配置，从nacos加载ioc配置、属性配置 
+
+   参考文档：https://esdoc.bbossgroups.com/#/nacos-config
+
 6. 问题修复：修复apollo和nacos配置管理属性不能热加载问题
 
 # v7.2.6 功能改进-20240811

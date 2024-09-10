@@ -3,6 +3,10 @@
 
 ## 1.elasticsearch客户端与Nacos对接
 
+案例工程：
+
+https://gitee.com/bboss/elasticsearch-example-nacos
+
 ### 1.1 添加Nacos和bbossEs相关依赖
 
 maven项目pom.xml添加Nacos和bbossEs相关依赖
@@ -29,7 +33,7 @@ maven项目pom.xml添加Nacos和bbossEs相关依赖
  注意：一定要排除bboss-elasticsearch-rest-booter包
 
 ### 1.2 增加elasticsearch-boot-config.xml
-在resources/conf下新增文件elasticsearch-boot-config.xml，内容如下：
+在resources/conf下新增文件[elasticsearch-boot-config.xml](https://gitee.com/bboss/elasticsearch-example-nacos/blob/main/src/main/resources/conf/elasticsearch-boot-config.xml)，内容如下：
 
 ```xml
 <properties>
@@ -43,8 +47,8 @@ maven项目pom.xml添加Nacos和bbossEs相关依赖
 ```
 
 
-### 1.5 Nacos中创建项目和namespace
-应用名称：visualops
+### 1.5 Nacos配置
+命名空间：test
 
 es服务器的相关信息，那么就可以创建一个名为test的namespace，dataId为esclient，group为DEFAULT_GROUP，主要配置信息如下：
 ```properties
@@ -90,11 +94,17 @@ http.keepAlive = 3600000
 ```
 ![image-20200802133509704](images\nacos-config.jpg)
 
-
 ### 1.6 完成上述操作之后，就可以正常使用bbosses的api了
 
-## 2.bboss中使用nacos管理属性的其他作用
+api使用案例：
+
+https://gitee.com/bboss/elasticsearch-example-nacos/blob/main/src/test/java/org/bboss/elasticsearchtest/crud/DocumentCRUD7Test.java
+
+## 2.bboss中使用nacos管理属性的其他案例
 ###  2.1 IOC与nacos集成并管理属性案例
+
+https://gitee.com/bboss/bboss-plugins/blob/master/bboss-plugin-nacos/src/test/resources/redis.xml
+
 ```xml
 <properties>
     <config nacosNamespace="test" dataId="redisconf"
@@ -141,6 +151,8 @@ org.frameworkset.nacos.PropertiesChangeListener
 
 
 ### 2.2 在代码中直接加载nacos中的配置
+
+https://gitee.com/bboss/bboss-plugins/blob/master/bboss-plugin-nacos/src/test/java/org/frameworkset/apollo/NacosIOCTest.java
 
 ```java
 import org.frameworkset.spi.assemble.PropertiesContainer;
@@ -232,11 +244,16 @@ maven工程-http proxy案例
 
 https://github.com/bbossgroups/httpproxy-nacos 
 
- 
+
+
+ db数据源管理案例
+
+
+
+https://github.com/bbossgroups/db-db-job3-nacos
 
 ## 4.参考文档
 
 [Spring boot整合Elasticsearch](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss?id=spring-boot整合elasticsearch案例分享)
-
 
 [httpproxy使用文档](https://esdoc.bbossgroups.com/#/httpproxy)

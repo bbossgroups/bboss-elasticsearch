@@ -1,6 +1,6 @@
 # bboss http负载均衡器使用指南
 
-bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，包括spring cloud、spring boot、spring mvc以及其他基于http协议开发的微服务；同时还可以非常方便地实现多个文件上传服务器。
+bboss http一个简单而功能强大的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，包括spring cloud、spring boot、spring mvc以及其他基于http协议开发的微服务；同时还可以非常方便地实现多个文件上传服务器。可基于apollo和nacos管理[服务配置参数和实现服务发现](https://esdoc.bbossgroups.com/#/nacos-config)功能。
 
 本文介绍bboss http使用方法。
 
@@ -12,11 +12,17 @@ https://github.com/bbossgroups/bboss-http
 
 https://gitee.com/bboss/bboss-http
 
-httpproxy 案例：基于apollo进行配置管理、节点自动发现、路由规则自动切换，源码地址
+httpproxy 案例：
+
+基于apollo进行配置管理、节点自动发现、路由规则自动切换，源码地址
 
 https://github.com/bbossgroups/httpproxy-apollo
 
 https://gitee.com/bboss/httpproxy-apollo
+
+基于nacos进行配置管理、节点自动发现、路由规则自动切换，源码地址
+
+https://gitee.com/bboss/httpproxy-nacos
 
 # 1.负载均衡器特色
 
@@ -26,7 +32,7 @@ bboss http基于http/https协议实现客户端-服务端点到点的负载均�
 1.服务负载均衡（目前提供RoundRobin负载算法）
 2.服务健康检查
 3.服务容灾故障恢复
-4.服务自动发现（zk，etcd，consul，eureka，db，其他第三方注册中心）
+4.服务自动发现（apollo、nacos、db，其他第三方注册中心）
 5.本地地址清单与远程配置中心动态地址管理相结合，远程不可用时，采用本地地址
 6.动态监听路由变化
 7.分组服务管理
