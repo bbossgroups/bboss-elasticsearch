@@ -22,7 +22,7 @@ Elasticsearch 目前有两个sql插件
 
 - 官方:[xpack-sql插件](https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-sql.html)
 
-- 第三方：[Elasticsearch-sql插件](https://github.com/NLPchina/elasticsearch-sql)
+- 第三方：[Elasticsearch-sql插件](https://github.com/NLPchina/elasticsearch-sql)，最新版本Elasticsearch已无法使用
 
 
 官方的ES-SQL功能必须Elasticsearch 6.3以上的版本才提供；Elasticsearch-SQL插件可以在不同的Elasticsearch版本上运行，可以根据实际情况进行选择。
@@ -270,7 +270,7 @@ public class SQLOrmTest {
 	@Test
 	public void testTranslate(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		String json = clientUtil.executeHttp("/_xpack/sql/translate",
+		String json = clientUtil.executeHttp("/_sql/translate",//老版本es地址"/_xpack/sql/translate",
 				"{\"query\": \"SELECT * FROM dbclobdemo limit 5\",\"fetch_size\": 5}",
 				ClientInterface.HTTP_POST
 		);
@@ -284,7 +284,7 @@ public class SQLOrmTest {
 	@Test
 	public void testSQLRestResponse(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		SQLRestResponse sqlRestResponse = clientUtil.executeHttp("/_xpack/sql",
+		SQLRestResponse sqlRestResponse = clientUtil.executeHttp("/_sql",//es老版本地址"/_xpack/sql",
 																	"{\"query\": \"SELECT * FROM dbclobdemo where documentId = 1\"}",
 																	ClientInterface.HTTP_POST,
 																		new SQLRestResponseHandler());
@@ -635,7 +635,7 @@ public class SQLPagineTest {
 ```java
    public void testTranslate(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
-		String json = clientUtil.executeHttp("/_xpack/sql/translate",
+		String json = clientUtil.executeHttp("/_sql/translate",//老版本地址："/_xpack/sql/translate",
 				"{\"query\": \"SELECT * FROM dbclobdemo\"}",
 				ClientInterface.HTTP_POST
 		);
@@ -718,6 +718,8 @@ org.frameworkset.elasticsearch.client.ElasticSearchRestClient._xpack8_sql_restap
 ```
 
 # 2 第三方插件Elasticsearch-sql查询
+
+注意：最新的Elasticsearch已经无法使用这个第三方插件
 
 基于第三方[Elasticsearch-sql](https://github.com/NLPchina/elasticsearch-sql)插件的查询功能的使用方法和bboss提供的查询api使用方法一致，只是检索的rest服务换成/_sql服务即可。
 
