@@ -1233,7 +1233,7 @@ ExcelFileInputConfig config = new ExcelFileInputConfig();
 fileInputConfig.setDisableScanNewFilesCheckpoint(false);//启用增量状态Checkpoint机制
 ```
 
-完整案例：[ExcelFile2DBDemo](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/ExcelFile2DBDemo1.java)
+完整案例：[WordFile2CustomDemoOnce](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/word/WordFile2CustomDemoOnce.java)
 
 ## 策略二 closeOlderTime/ignoreOlderTime
 
