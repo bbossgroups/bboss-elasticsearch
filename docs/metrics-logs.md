@@ -319,6 +319,7 @@ dataStream.resetMetricsLogLevel(newMetricsLogLevel);
 ## 5.日志可视化
 
 日志可视化需要自行额外开发，以下是一个日志监控可视化实例：
+
 基础信息
 
 ![image-20241102114412179](images\log\log1.png)
