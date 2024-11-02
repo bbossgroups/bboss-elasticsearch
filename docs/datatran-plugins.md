@@ -1994,6 +1994,8 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 导出数据到本地文件
 
+#### 基于RecordGenerator接口
+
 ```java
 ImportBuilder importBuilder = new ImportBuilder();
       importBuilder.setBatchSize(5).setFetchSize(5);
@@ -2024,6 +2026,50 @@ ImportBuilder importBuilder = new ImportBuilder();
 			}
 		});
       importBuilder.setOutputConfig(fileOupputConfig);
+```
+
+#### 基于RecordGeneratorV1
+
+```java
+if (fileJobComponentOutputConfig.getFieldTitleType() != null) {
+            fileOutputConfig.setRecordGeneratorV1(new HeaderRecordGeneratorV1() {
+                @Override
+                public void buildHeaderRecord(RecordGeneratorContext recordGeneratorContext) throws Exception {
+                    generateHeader(recordGeneratorContext, fileJobComponentOutputConfig, fieldMappingConfig);
+                }
+
+                @Override
+                public void buildRecord(RecordGeneratorContext recordGeneratorContext){
+                    try {
+                   jobExecutorContext.getRecordGeneratorAPI().api(jobExecutorContext,
+                         recordGeneratorContext.getTaskContext(),recordGeneratorContext.getTaskContext(),
+                         recordGeneratorContext.getTaskMetrics(),
+                         log,recordGeneratorContext.getRecord(),recordGeneratorContext.getBuilder(), 
+                         jobExecutorContext.getJobId(),  jobExecutorContext.getTaskId(), jobExecutorContext.getJobName());
+
+                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        } else {
+            fileOutputConfig.setRecordGeneratorV1(RecordGeneratorV1() {
+                @Override
+                public void buildRecord(RecordGeneratorContext recordGeneratorContext) throws Exception{
+                    try {
+                   jobExecutorContext.getRecordGeneratorAPI().api(jobExecutorContext,
+                         recordGeneratorContext.getTaskContext(),recordGeneratorContext.getTaskContext(),
+                         recordGeneratorContext.getTaskMetrics(),log,recordGeneratorContext.getRecord(),recordGeneratorContext.getBuilder(),
+                         jobExecutorContext.getJobId(),  jobExecutorContext.getTaskId(), jobExecutorContext.getJobName());
+
+                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
 ```
 
 ### 2.3.2 导出并上传ftp
@@ -2407,7 +2453,7 @@ org.frameworkset.tran.plugin.custom.output.CustomOutPut
 public void handleData(TaskContext taskContext,List<CommonRecord> datas);
 ```
 
-### 2.7.1 配置案例
+### 2.7.1 CustomOutPut配置案例
 
 简单示例
 
@@ -2488,6 +2534,29 @@ https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/framew
          }
       });
       importBuilder.setOutputConfig(customOutputConfig);
+```
+
+### 2.7.2 CustomOutPutV1 案例
+
+CustomOutPutV1 接口参数调整为CustomOutPutContext customOutPutContext 封装需要处理的数据和其他作业上下文信息
+
+```java
+customOutputConfig.setCustomOutPutV1(new CustomOutPutV1() {
+          @Override
+          public void handleData(CustomOutPutContext customOutPutContext) {             
+             
+             //调用CustomOutPutAPI，执行自定义记录处理逻辑
+             if(jobExecutorContext.getCustomOutPutAPI() != null) {
+                TaskContext taskContext = customOutPutContext.getTaskContext();
+                TaskMetrics taskMetrics = customOutPutContext.getTaskMetrics();
+                List<CommonRecord> datas = customOutPutContext.getDatas();
+                jobExecutorContext.getCustomOutPutAPI().api(logger, jobExecutorContext, jobExecutorContext.getJobId(),
+                      jobExecutorContext.getTaskId(), jobExecutorContext.getJobName(),
+                      taskContext, taskMetrics, datas);
+             }
+             
+          }
+       });
 ```
 
 ## 2.8 MongoDB输出插件
@@ -2909,6 +2978,193 @@ dummyOupputConfig.setRecordGenerator(new RecordGenerator() {
 }).setPrintRecord(true);
 importBuilder.setOutputConfig(dummyOupputConfig);
 ```
+
+## 2.12 Milvus向量数据库输出插件
+
+Milvus向量数据库输出插件:[MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java),配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等
+
+### 2.12.1 使用案例
+
+插件配置
+
+定义数据源并配置表信息
+
+```java
+MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
+        milvusOutputConfig.setName("ucr_chan_fqa")  //向量数据库数据源名称
+                             .setDbName("ucr_chan_fqa") //向量数据库
+                             .setUri("http://172.24.176.18:19530")//数据库地址
+                             .setToken("root:ddddxx")  //数据库认证信息,账号和口令
+                          .setCollectionName(collectionName) //表名称
+                          .setLoadCollectionSchema(true)//预加载表结构
+                            .setUpsert(true);//如果主键对应的记录存在则更新，不存在则插入
+       importBuilder.setOutputConfig(milvusOutputConfig);
+```
+
+引用外部数据源
+
+```java
+MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
+        milvusOutputConfig.setName("ucr_chan_fqa")  //使用之前定义的向量数据库数据源，无需设置向量数据库地址和名称以及token等信息
+ 
+                          .setCollectionName(collectionName)//表名称
+                          .setLoadCollectionSchema(true)//预加载表结构
+                            .setUpsert(true);
+       importBuilder.setOutputConfig(milvusOutputConfig);//如果主键对应的记录存在则更新，不存在则插入
+```
+
+更多参数配置访问插件配置对象了解：[MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java)
+
+### 2.12.2 依赖资源定义和释放
+
+首先要在作业初始化时定义向量模型服务数据源，初始化向量数据库数据源，检查向量表是否存在不存在则进行创建：
+
+```java
+importBuilder.setImportStartAction(new ImportStartAction() {
+    @Override
+    public void startAction(ImportContext importContext) {
+        importContext.addResourceStart(new ResourceStart() {
+            @Override
+            public ResourceStartResult startResource() {
+                //初始化向量模型服务数据源
+                Map properties = new HashMap();
+
+                //embedding_model为的向量模型服务数据源名称
+                properties.put("http.poolNames","embedding_model");
+                /**
+                 * metricsES数据源配置，每个配置项可以加metricsES.前缀
+                 */
+                properties.put("embedding_model.http.hosts","127.0.0.1:7861");//设置向量模型服务地址，这里调用的基于python封装发布的xinference管理的向量模型服务
+
+      
+                properties.put("embedding_model.http.timeoutSocket","60000");
+                properties.put("embedding_model.http.timeoutConnection","40000");
+                properties.put("embedding_model.http.connectionRequestTimeout","70000");
+                properties.put("embedding_model.http.maxTotal","100");
+                properties.put("embedding_model.http.defaultMaxPerRoute","100");
+                return HttpRequestProxy.startHttpPools(properties);
+
+            }
+        }).addResourceStart(new ResourceStart() {
+            @Override
+            public ResourceStartResult startResource() {
+                //初始化milvus数据源服务，用来操作向量数据库
+                MilvusConfig milvusConfig = new MilvusConfig();
+                milvusConfig.setName("ucr_chan_fqa");
+                milvusConfig.setDbName("ucr_chan_fqa");
+                milvusConfig.setUri("http://172.24.176.18:19530");
+                milvusConfig.setToken("");
+                ResourceStartResult resourceStartResult =  MilvusHelper.init(milvusConfig);//初始化向量数据库数据源
+                //如果向量表不存在，则创建向量表
+                MilvusHelper.executeRequest("ucr_chan_fqa", new MilvusFunction<Void>() {
+                    @Override
+                    public Void execute(MilvusClientV2 milvusClientV2) {
+                        if(!milvusClientV2.hasCollection(HasCollectionReq.builder()
+                                .collectionName(collectionName)
+                                .build())) {
+                            ;
+                            // create a collection with schema, when indexParams is specified, it will create index as well
+                            CreateCollectionReq.CollectionSchema collectionSchema = milvusClientV2.createSchema();
+                            collectionSchema.addField(AddFieldReq.builder().fieldName("log_id").dataType(DataType.Int64).isPrimaryKey(Boolean.TRUE).autoID(Boolean.FALSE).build());
+                            collectionSchema.addField(AddFieldReq.builder().fieldName("content").dataType(DataType.FloatVector).dimension(1024).build());
+                            collectionSchema.addField(AddFieldReq.builder().fieldName("collecttime").dataType(DataType.Int64).build());
+
+                            IndexParam indexParam = IndexParam.builder()
+                                    .fieldName("content")
+                                    .metricType(IndexParam.MetricType.COSINE)
+                                    .build();
+                            CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
+                                    .collectionName(collectionName)
+                                    .collectionSchema(collectionSchema)
+                                    .indexParams(Collections.singletonList(indexParam))
+                                    .build();
+                            milvusClientV2.createCollection(createCollectionReq);
+                        }
+                        return null;
+                    }
+                });
+                return resourceStartResult;
+            }
+        });
+    }
+
+    @Override
+    public void afterStartAction(ImportContext importContext) {
+    }
+});
+```
+
+作业完成时要释放相关资源
+
+```java
+//作业结束后销毁初始化阶段自定义的向量模型服务数据源和向量数据库数据源
+importBuilder.setImportEndAction(new ImportEndAction() {
+    @Override
+    public void endAction(ImportContext importContext, Exception e) {
+        
+        //销毁初始化阶段自定义的数据源
+        importContext.destroyResources(new ResourceEnd() {
+            @Override
+            public void endResource(ResourceStartResult resourceStartResult) {
+
+                //销毁初始化阶段自定义的向量模型服务数据源
+                if (resourceStartResult instanceof HttpResourceStartResult) {
+                    HttpResourceStartResult httpResourceStartResult = (HttpResourceStartResult) resourceStartResult;
+                    HttpRequestProxy.stopHttpClients(httpResourceStartResult);
+                }
+                //销毁初始化阶段自定义的向量数据库数据源
+                else if(resourceStartResult instanceof MilvusStartResult){
+                    MilvusHelper.shutdown((MilvusStartResult) resourceStartResult);
+                }
+            }
+        });
+    }
+});
+```
+
+### 2.12.3 数据加工处理向量化处理
+
+在作业初始化时完成向量模型服务数据源、初始化向量数据库数据源定义，以及创建好向量表后，就可以在数据加工处理过程中调用文本转向量服务，实现数据的向量化处理：
+
+```java
+/**
+ * 加工和处理数据
+ */
+importBuilder.setDataRefactor(new DataRefactor() {
+    public void refactor(Context context) throws Exception  {
+
+             String content = context.getStringValue("LOG_CONTENT");
+             if(content != null){
+                 Map params = new HashMap();
+                 params.put("text",content);
+                 //调用向量服务，将LOG_CONTENT转换为向量数据
+                 BaseResponse baseResponse = HttpRequestProxy.sendJsonBody("embedding_model",params,"/fqa-py-api/knowledge_base/kb_embedding_textv1",BaseResponse.class);
+                 if(baseResponse.getCode() == 200){
+                     context.addFieldValue("content",baseResponse.getData());//设置向量数据
+                 }
+                 else {
+                     throw new DataImportException("change LOG_CONTENT to vector failed:"+baseResponse.getMsg());
+                 }
+             }
+             //添加主键信息
+             int log_id = context.getIntegerValue("LOG_ID");
+              context.addFieldValue("log_id",log_id);
+              //添加采集时间
+       context.addFieldValue("collecttime",new Date().getTime());
+
+    }
+});
+```
+
+### 2.12.4 完整案例代码
+
+完整的案例代码，可以下载源码工程获取：
+
+https://gitee.com/bboss/bboss-datatran-demo/
+
+案例源码文件：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
 
 # 3.参考文档
 

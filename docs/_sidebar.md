@@ -34,6 +34,7 @@
   - [通用BulkProcessor异步批处理](bulkProcessor-common.md)
   - [Elasticsearch JDBC案例介绍](Elasticsearch-JDBC.md)
   - [Elasticsearch聚合查询](agg.md)
+  - [监控日志使用介绍](metrics-logs.md)
   - **数据同步及流批一体化计算** 
     - [插件使用指南](datatran-plugins.md)
     - [数据采集及流批一体化计算案例](bboss-datasyn-demo.md)

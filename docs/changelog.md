@@ -42,7 +42,45 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.2.8 功能改进-20241102
+1. 数据交换功能扩展：增加向量数据库Milvus输出插件，支持在数据处理时，调用向量模型服务，对数据进行向量化处理，通过向量库Milvus输出插件保存向量化处理结果。
+    
+    使用参考文档：[milvus向量数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-milvus%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
+    
+    使用案例：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+    
+2. 完善文件输出插件：修复重传失败文件到minio oss对象存储抛出的空指针问题
 
+3. 新增作业监控日志收集模块，日志级别分为：debug,info,warn,error,不输出日志，可以在脚本中调用对应的日志api，记录和上报日志，可以在作业监控查看记录的作业和作业任务日志；
+    日志采用异步批处理模式入库，不影响作业加工处理性能和速度；通过输出日志MetricsLogReport接口输出和记录相关配置，通过ImportBuilder进行设置,在所有的作业初始化、数据处理接口方法中调用日志接口方法记录和上报日志，使用参考文档：
+
+  https://esdoc.bbossgroups.com/#/metrics-logs
+
+4. Datastream改进：增加运行时调整监控日志级别方法
+```java
+    dataStream.resetMetricsLogLevel(newMetricsLogLevel);
+    日志级别定义如下：
+   MetricsLogLevel {
+   public static final int DEBUG = 1;
+   public static final int INFO = 2;
+   public static final int WARN = 3;
+   public static final int ERROR = 4;
+
+   /**
+    * 忽略所有日志
+      */
+      public static final int NO_LOG = 5;
+   }
+```
+5. 优化作业异常处理
+
+6. 增加一系列新接口
+   
+   [RecordGeneratorV1](https://esdoc.bbossgroups.com/#/datatran-plugins?id=%e5%9f%ba%e4%ba%8erecordgeneratorv1) 接口参数调整为RecordGeneratorContext recordGeneratorContext，封装需要处理的数据和其他作业上下文信息
+   
+   [HeaderRecordGeneratorV1](https://esdoc.bbossgroups.com/#/datatran-plugins?id=%e5%9f%ba%e4%ba%8erecordgeneratorv1) 接口参数调整为RecordGeneratorContext recordGeneratorContext，封装需要处理的数据和其他作业
+   
+   [CustomOutPutV1](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_272-customoutputv1-%e6%a1%88%e4%be%8b) 接口参数调整为CustomOutPutContext customOutPutContext 封装需要处理的数据和其他作业上下文信息
 # v7.2.7 功能改进-20240901
 1. http服务框架改进：http-proxy增加[nacos配置中心支持以及基于nacos服务发现功能](https://esdoc.bbossgroups.com/#/httpproxy?id=_4%ef%bc%89%e5%8a%a0%e8%bd%bdnacos%e9%85%8d%e7%bd%ae%e5%90%af%e5%8a%a8httpproxy)
 
