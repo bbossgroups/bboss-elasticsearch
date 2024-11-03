@@ -32,6 +32,23 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 ​	bboss-datatran 数据同步作业直接采用java语言开发，小巧而精致，可以采用java提供的所有功能和现有组件框架，随心所欲地处理和加工海量历史存量数据、实时增量数据；在实现数据采集-清洗-转换处理的同时，实现数据流批一体化计算功能；可以根据数据规模及同步性能要求，按需配置和调整数据采集同步作业所需内存、工作线程、线程队列大小；可以将作业独立运行，亦可以将作业嵌入基于java开发的各种应用一起运行；提供了作业任务控制API、作业监控api，支持作业启动、暂停(pause)、继续（resume）、停止控制机制，可轻松定制一款属于自己的ETL管理工具。
 
+![](images\datasyn.png)
+
+采用标准的输入输出异步管道来处理数据
+
+![](images\datasyn-inout-now.png)
+
+如果您还在：
+
+- 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
+- 苦于无法调用企业现有服务和库来处理加工数据；
+- 苦于因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
+- 苦于寻求数据采集和流批一体数据处理和指标统计计算于一体的数据处理计算框架
+
+那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
+
+## 多种作业
+
 工具可以灵活定制具备各种功能的数据采集统计作业
 
 1) 只采集和处理数据作业
@@ -40,7 +57,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 3) 采集数据只做指标统计计算作业
 
-指标计算特点
+## 指标计算特点
 
 1) 支持时间维度和非时间维度指标计算
 
@@ -53,6 +70,8 @@ https://gitee.com/bboss/bboss-elastic-tran
 5）支持准实时指标统计计算和离线指标统计计算
 
 6）可以从不同的数据输入来源获取需要统计的指标数据，亦可以将指标计算结果保存到各种不同的目标数据源
+
+## 作业采集状态-增量采集-故障恢复
 
 增量数据采集，默认基于sqlite数据库管理增量采集状态，可以配置到其他关系数据库管理增量采集状态，提供对多种不同数据来源增量采集机制：
 
@@ -68,20 +87,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 6）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
 
-如果您还在：
-
-- 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
-- 苦于无法调用企业现有服务和库来处理加工数据；
-- 苦于因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
-- 苦于寻求数据采集和流批一体数据处理和指标统计计算于一体的数据处理计算框架
-
-那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
-
-![](images\datasyn.png)
-
-采用标准的输入输出异步管道来处理数据
-
-![](images\datasyn-inout-now.png)
+## 主要功能
 
 1）数据导入的方式
 
@@ -100,43 +106,43 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
-3) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
+3）支持数据向量化处理，并将向量数据保存到Milvus向量数据库
 
-4）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
+4) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
 
-5）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
+5）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
 
-6）支持将单条记录切割为多条记录；
+6）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
 
-7）可以将加工后的数据写入File并上传到ftp/sftp服务器；
+7）支持将单条记录切割为多条记录；
 
-8）支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
+8）可以将加工后的数据写入File并上传到ftp/sftp服务器；
 
-9）支持自动清理下载完毕后ftp服务器上的文件;
+9）可以将加工后的数据写入File并上传到OSS对象存储服务器Minio；
 
-10）支持excel/word/pdf/图片/视频等类型文件采集（本地和ftp/sftp）
+10）支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理超过时长文件；
 
-11）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
+11）支持自动清理下载完毕后ftp服务器上的文件;
 
-12）支持海量PB级数据同步导入功能
+12）支持excel/word/pdf/图片/视频等类型文件采集（本地和ftp/sftp）
 
-13）支持将ip转换为对应的运营商和城市地理坐标位置信息
+13）支持导出数据到excel和csv文件,并支持上传到ftp/sftp服务器
 
-14）**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+14）支持海量PB级数据同步导入功能
 
-15）支持以下三种作业调度机制：
+15）支持将ip转换为对应的运营商和城市地理坐标位置信息
+
+16）**支持设置数据bulk导入任务结果处理回调函数，对每次bulk任务的结果进行成功和失败反馈，然后针对失败的bulk任务通过error和exception方法进行相应处理**
+
+17）支持以下三种作业调度机制：
 
 - jdk timer （内置）
 - quartz
 - xxl-job分布式调度引擎，基于分片调度机制实现海量数据快速同步能力
 
-16) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
+18) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
 
-​	下面通过案例来介绍ETL工具的使用方法，本文案例工程地址
 
-https://github.com/bbossgroups/db-elasticsearch-tool
-
-https://gitee.com/bboss/db-elasticsearch-tool
 
 # 插件清单
 
@@ -170,20 +176,21 @@ com.bbossgroups.plugins
 
 ## 输出插件
 
-| 插件                                                         | 插码名称              | Maven坐标              | 功能说明                                                     |
-| ------------------------------------------------------------ | --------------------- | ---------------------- | ------------------------------------------------------------ |
-| [DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java) | 数据库输出插件        | bboss-datatran-jdbc    | 数据库地址配置、连接池配置、输出sql、更新sql、deletesql配置、sql文件路径配置 |
-| [ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java) | Elasticsearch输出插件 | bboss-datatran-jdbc    | elasticsearch地址配置、http连接池配置、账号口令配置、elasticsearch连接参数配置、Elasticsearch输出表配置 |
-| [HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java) | http/https输出插件    | bboss-datatran-jdbc    | http输出服务参数配置、连接参数配置、监控检查机制配置、ssl证书配置、输出服务地址配置 |
-| [FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java) | 文本文件输出插件      | bboss-datatran-fileftp | 文本文件输出配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、记录标题行配置、发送Ftp/sftp配置 |
-| [ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java) | excel文件输出插件     | bboss-datatran-fileftp | Excel文件输出配置、列号与字段映射配置、标题配置、sheet配置、列标题配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、发送Ftp/sftp配置 |
-| [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件         | bboss-datatran-kafka2x | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
-| [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件   | bboss-datatran-kafka1x | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置（不推荐使用，建议升级到kafka 2x版本） |
-| [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件        | bboss-datatran-jdbc    | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
-| [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件       | bboss-datatran-mongodb | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
-| [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件         | bboss-datatran-hbase   | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
-| [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件          | bboss-datatran-jdbc    | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等，具体参考[使用指南](https://esdoc.bbossgroups.com/#/etl-metrics) |
-| [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件             | bboss-datatran-jdbc    | 调试作业使用，将采集的数据直接输出到控制台                   |
+| 插件                                                         | 插码名称                 | Maven坐标              | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------ | ---------------------- | ------------------------------------------------------------ |
+| [DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java) | 数据库输出插件           | bboss-datatran-jdbc    | 数据库地址配置、连接池配置、输出sql、更新sql、deletesql配置、sql文件路径配置 |
+| [ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java) | Elasticsearch输出插件    | bboss-datatran-jdbc    | elasticsearch地址配置、http连接池配置、账号口令配置、elasticsearch连接参数配置、Elasticsearch输出表配置 |
+| [HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java) | http/https输出插件       | bboss-datatran-jdbc    | http输出服务参数配置、连接参数配置、监控检查机制配置、ssl证书配置、输出服务地址配置 |
+| [FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java) | 文本文件输出插件         | bboss-datatran-fileftp | 文本文件输出配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、记录标题行配置、发送Ftp/sftp配置、发送OSS对象数据库配置 |
+| [ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java) | excel文件输出插件        | bboss-datatran-fileftp | Excel文件输出配置、列号与字段映射配置、标题配置、sheet配置、列标题配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、发送Ftp/sftp配置 |
+| [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件            | bboss-datatran-kafka2x | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
+| [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件      | bboss-datatran-kafka1x | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置（不推荐使用，建议升级到kafka 2x版本） |
+| [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件           | bboss-datatran-jdbc    | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
+| [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件          | bboss-datatran-mongodb | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
+| [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件            | bboss-datatran-hbase   | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
+| [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件             | bboss-datatran-jdbc    | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等，具体参考[使用指南](https://esdoc.bbossgroups.com/#/etl-metrics) |
+| [MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java) | Milvus向量数据库输出插件 | bboss-datatran-milvus  | 配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等 |
+| [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件                | bboss-datatran-jdbc    | 调试作业使用，将采集的数据直接输出到控制台                   |
 
 ## 作业基础配置
 
@@ -533,7 +540,19 @@ bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档�
 
 https://doc.bbossgroups.com/#/persistent/datasource-cluster
 
-# 2.数据库表数据导入到Elasticsearch
+# 2.使用介绍
+
+下面以数据库表数据导入到Elasticsearch为案例，介绍bboss的使用方法。
+
+案例工程地址
+
+https://github.com/bbossgroups/db-elasticsearch-tool
+
+https://gitee.com/bboss/db-elasticsearch-tool
+
+其他案例清单：
+
+https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
 
 ## 2.1.案例对应的源码
 
@@ -2586,6 +2605,12 @@ kafka和mysql binlog属于监听型输入插件，其拦截器收集作业metric
 ```java
 kafka2InputConfig.setMetricsInterval(300 * 1000L);//30秒时间间隔做一次任务拦截器调用
 ```
+
+#### 2.8.17.6 在作业处理过程手动记录和上报日志
+
+bboss提供一个完备的日志记录模块，以便在作业处理过程中根据需要自行记录和输出作业和任务的日志和异常，具体使用，可以参考文档：
+
+- [ETL作业监控日志使用介绍](https://esdoc.bbossgroups.com/#/metrics-logs)
 
 ### 2.8.18 设置并行导入参数
 
