@@ -3019,6 +3019,7 @@ MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
 
 首先要在作业初始化时定义向量模型服务数据源，初始化向量数据库数据源，检查向量表是否存在不存在则进行创建：
 
+本文介绍调用的Langchain-Chatchat封装的xinference发布的模型服务,进行向量化处理，也可以直接调用xinference发布的模型服务（具体访问后面的案例代码链接了解）
 ```java
 importBuilder.setImportStartAction(new ImportStartAction() {
     @Override
@@ -3034,7 +3035,7 @@ importBuilder.setImportStartAction(new ImportStartAction() {
                 /**
                  * metricsES数据源配置，每个配置项可以加metricsES.前缀
                  */
-                properties.put("embedding_model.http.hosts","127.0.0.1:7861");//设置向量模型服务地址，这里调用的基于python封装发布的xinference管理的向量模型服务
+                properties.put("embedding_model.http.hosts","127.0.0.1:7861");//设置向量模型服务地址，调用的Langchain-Chatchat封装的xinference发布的模型服务
 
       
                 properties.put("embedding_model.http.timeoutSocket","60000");
@@ -3164,8 +3165,13 @@ https://gitee.com/bboss/bboss-datatran-demo/
 
 案例源码文件：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+    调用的Langchain-Chatchat封装的xinference发布的模型服务 
 
+    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+    
+    调用的xinference发布的模型服务 
+
+    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
 # 3.参考文档
 
 [bboss数据采集ETL工具使用指南](https://esdoc.bbossgroups.com/#/db-es-tool?id=bboss数据采集etl工具使用指南)

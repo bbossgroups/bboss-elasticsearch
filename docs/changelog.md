@@ -47,7 +47,15 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
     
     使用参考文档：[milvus向量数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-milvus%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
     
-    使用案例：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+    使用案例：
+    
+    调用的Langchain-Chatchat封装的xinference发布的模型服务 
+
+    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+    
+    调用的xinference发布的模型服务 
+
+    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
     
 2. 完善文件输出插件：修复重传失败文件到minio oss对象存储抛出的空指针问题
 
@@ -81,6 +89,8 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
    [HeaderRecordGeneratorV1](https://esdoc.bbossgroups.com/#/datatran-plugins?id=%e5%9f%ba%e4%ba%8erecordgeneratorv1) 接口参数调整为RecordGeneratorContext recordGeneratorContext，封装需要处理的数据和其他作业
    
    [CustomOutPutV1](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_272-customoutputv1-%e6%a1%88%e4%be%8b) 接口参数调整为CustomOutPutContext customOutPutContext 封装需要处理的数据和其他作业上下文信息
+7. 增加Milvus客户端组件，使用参考文档：https://doc.bbossgroups.com/#/Milvus
+
 # v7.2.7 功能改进-20240901
 1. http服务框架改进：http-proxy增加[nacos配置中心支持以及基于nacos服务发现功能](https://esdoc.bbossgroups.com/#/httpproxy?id=_4%ef%bc%89%e5%8a%a0%e8%bd%bdnacos%e9%85%8d%e7%bd%ae%e5%90%af%e5%8a%a8httpproxy)
 
