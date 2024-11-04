@@ -2991,8 +2991,8 @@ Milvus向量数据库输出插件:[MilvusOutputConfig](https://gitee.com/bboss/b
 
 ```java
 MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
-        milvusOutputConfig.setName("ucr_chan_fqa")  //向量数据库数据源名称
-                             .setDbName("ucr_chan_fqa") //向量数据库
+        milvusOutputConfig.setName("chan_fqa")  //向量数据库数据源名称
+                             .setDbName("chan_fqa") //向量数据库
                              .setUri("http://172.24.176.18:19530")//数据库地址
                              .setToken("root:ddddxx")  //数据库认证信息,账号和口令
                           .setCollectionName(collectionName) //表名称
@@ -3005,7 +3005,7 @@ MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
 
 ```java
 MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
-        milvusOutputConfig.setName("ucr_chan_fqa")  //使用之前定义的向量数据库数据源，无需设置向量数据库地址和名称以及token等信息
+        milvusOutputConfig.setName("chan_fqa")  //使用之前定义的向量数据库数据源，无需设置向量数据库地址和名称以及token等信息
  
                           .setCollectionName(collectionName)//表名称
                           .setLoadCollectionSchema(true)//预加载表结构
@@ -3051,13 +3051,13 @@ importBuilder.setImportStartAction(new ImportStartAction() {
             public ResourceStartResult startResource() {
                 //初始化milvus数据源服务，用来操作向量数据库
                 MilvusConfig milvusConfig = new MilvusConfig();
-                milvusConfig.setName("ucr_chan_fqa");
-                milvusConfig.setDbName("ucr_chan_fqa");
+                milvusConfig.setName("chan_fqa");
+                milvusConfig.setDbName("chan_fqa");
                 milvusConfig.setUri("http://172.24.176.18:19530");
                 milvusConfig.setToken("");
                 ResourceStartResult resourceStartResult =  MilvusHelper.init(milvusConfig);//初始化向量数据库数据源
                 //如果向量表不存在，则创建向量表
-                MilvusHelper.executeRequest("ucr_chan_fqa", new MilvusFunction<Void>() {
+                MilvusHelper.executeRequest("chan_fqa", new MilvusFunction<Void>() {
                     @Override
                     public Void execute(MilvusClientV2 milvusClientV2) {
                         if(!milvusClientV2.hasCollection(HasCollectionReq.builder()
@@ -3139,7 +3139,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
                  Map params = new HashMap();
                  params.put("text",content);
                  //调用向量服务，将LOG_CONTENT转换为向量数据
-                 BaseResponse baseResponse = HttpRequestProxy.sendJsonBody("embedding_model",params,"/fqa-py-api/knowledge_base/kb_embedding_textv1",BaseResponse.class);
+                 BaseResponse baseResponse = HttpRequestProxy.sendJsonBody("embedding_model",params,"/py-api/knowledge_base/kb_embedding_textv1",BaseResponse.class);
                  if(baseResponse.getCode() == 200){
                      context.addFieldValue("content",baseResponse.getData());//设置向量数据
                  }
@@ -3165,13 +3165,16 @@ https://gitee.com/bboss/bboss-datatran-demo/
 
 案例源码文件：
 
-    调用的Langchain-Chatchat封装的xinference发布的模型服务 
+调用的Langchain-Chatchat封装的xinference发布的模型服务 
 
-    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
-    
-    调用的xinference发布的模型服务 
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
 
-    https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
+调用的xinference发布的模型服务 
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
+
+
+
 # 3.参考文档
 
 [bboss数据采集ETL工具使用指南](https://esdoc.bbossgroups.com/#/db-es-tool?id=bboss数据采集etl工具使用指南)
