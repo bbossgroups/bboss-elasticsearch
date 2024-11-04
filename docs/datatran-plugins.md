@@ -3145,7 +3145,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
              if(content != null){
                  Map params = new HashMap();
                  params.put("text",content);
-                 //调用向量服务，将LOG_CONTENT转换为向量数据
+                 //调用的 Langchain-Chatchat 封装的 xinference 发布的模型服务，将LOG_CONTENT转换为向量数据
                  BaseResponse baseResponse = HttpRequestProxy.sendJsonBody("embedding_model",params,"/py-api/knowledge_base/kb_embedding_textv1",BaseResponse.class);
                  if(baseResponse.getCode() == 200){
                      context.addFieldValue("content",baseResponse.getData());//设置向量数据
