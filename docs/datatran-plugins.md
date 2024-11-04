@@ -2985,11 +2985,12 @@ Milvus向量数据库输出插件:[MilvusOutputConfig](https://gitee.com/bboss/b
 
 ### 2.12.1 使用案例
 
-插件配置
+Milvus输出插件配置，两种配置方式
 
-定义数据源并配置表信息
+方式一   直接定义数据源并配置表信息--如果没有在作业初始化时或者其他地方定义数据源chan_fqa时，使用本方式
 
 ```java
+String collectionName = "demo_vector";
 MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
         milvusOutputConfig.setName("chan_fqa")  //向量数据库数据源名称
                              .setDbName("chan_fqa") //向量数据库
@@ -3001,7 +3002,7 @@ MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
        importBuilder.setOutputConfig(milvusOutputConfig);
 ```
 
-引用外部数据源
+方式二 引用外部数据源---如果在作业初始化时或者其他地方定义数据源chan_fqa时，直接通过名称引用数据即可
 
 ```java
 MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
@@ -3012,6 +3013,8 @@ MilvusOutputConfig milvusOutputConfig = new MilvusOutputConfig();
                             .setUpsert(true);
        importBuilder.setOutputConfig(milvusOutputConfig);//如果主键对应的记录存在则更新，不存在则插入
 ```
+
+配置好后，通过输入插件采集和加工处理（包括向量化处理）后的数据，将通过Milvus输出插件保存到Milvus数据库中。
 
 更多参数配置访问插件配置对象了解：[MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java)
 
@@ -3060,6 +3063,7 @@ importBuilder.setImportStartAction(new ImportStartAction() {
                 MilvusHelper.executeRequest("chan_fqa", new MilvusFunction<Void>() {
                     @Override
                     public Void execute(MilvusClientV2 milvusClientV2) {
+                        //String collectionName = "demo_vector";
                         if(!milvusClientV2.hasCollection(HasCollectionReq.builder()
                                 .collectionName(collectionName)
                                 .build())) {
@@ -3129,7 +3133,10 @@ importBuilder.setImportEndAction(new ImportEndAction() {
 
 ```java
 /**
- * 加工和处理数据
+ * 加工和处理数据：向量化处理，在记录中添加向量表demo_vector对应的三个字段的值：
+   log_id  主键字段
+   collecttime 采集时间
+   content  向量字段
  */
 importBuilder.setDataRefactor(new DataRefactor() {
     public void refactor(Context context) throws Exception  {
@@ -3156,6 +3163,8 @@ importBuilder.setDataRefactor(new DataRefactor() {
     }
 });
 ```
+
+加工后的数据将通过Milvus输出插件保存到Milvus数据库。
 
 ### 2.12.4 完整案例代码
 
