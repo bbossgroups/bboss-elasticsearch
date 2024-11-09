@@ -2117,6 +2117,10 @@ minioFileConfig.setFailedFileResendInterval(-1);
       minioFileConfig.setSendFileAsyn(true);//异步发送文件
 ```
 
+完整作业代码：
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileMinioDemo.java
+
 ### 2.3.4 写入空闲时间阈值配置
 
 **maxForceFileThreshold** 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置。
@@ -2983,6 +2987,10 @@ importBuilder.setOutputConfig(dummyOupputConfig);
 
 Milvus向量数据库输出插件:[MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java),配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等
 
+Milvus输出插件使用bboss Milvus客户端组件来对接Milvus向量数据库，参考资料：
+
+https://doc.bbossgroups.com/#/Milvus
+
 ### 2.12.1 使用案例
 
 Milvus输出插件配置，两种配置方式
@@ -3133,38 +3141,48 @@ importBuilder.setImportEndAction(new ImportEndAction() {
 
 ```java
 /**
- * 加工和处理数据：向量化处理，在记录中添加向量表demo_vector对应的三个字段的值：
-   log_id  主键字段
-   collecttime 采集时间
-   content  向量字段
- */
-importBuilder.setDataRefactor(new DataRefactor() {
-    public void refactor(Context context) throws Exception  {
+		 * 加工和处理数据
+		 */
+		importBuilder.setDataRefactor(new DataRefactor() {
+            /**
+             * 加工和处理数据：向量化处理，在记录中添加向量表demo_vector对应的三个字段的值：
+             *    log_id  主键字段
+             *    collecttime 采集时间
+             *    content  日志内容对应的向量字段
+             *    log_content  日志内容
+             * @param context 包含需要加工数据记录的上下文对象
+             * @throws Exception
+             */
+			public void refactor(Context context) throws Exception  {
 
-             String content = context.getStringValue("LOG_CONTENT");
-             if(content != null){
-                 Map params = new HashMap();
-                 params.put("text",content);
-                 //调用的 Langchain-Chatchat 封装的 xinference 发布的模型服务，将LOG_CONTENT转换为向量数据
-                 BaseResponse baseResponse = HttpRequestProxy.sendJsonBody("embedding_model",params,"/py-api/knowledge_base/kb_embedding_textv1",BaseResponse.class);
-                 if(baseResponse.getCode() == 200){
-                     context.addFieldValue("content",baseResponse.getData());//设置向量数据
-                 }
-                 else {
-                     throw new DataImportException("change LOG_CONTENT to vector failed:"+baseResponse.getMsg());
-                 }
-             }
-             //添加主键信息
-             int log_id = context.getIntegerValue("LOG_ID");
-              context.addFieldValue("log_id",log_id);
-              //添加采集时间
-       context.addFieldValue("collecttime",new Date().getTime());
+               String content = context.getStringValue("LOG_CONTENT");//需要通过表字段名称获取字段值，不能通过映射后的字段名称获取数据
+               if(content != null){
+                   Map params = new HashMap();
+                   params.put("input",content);
+                   params.put("model","custom-bge-large-zh-v1.5");
+                   //调用的 xinference 发布的向量模型模型服务，将LOG_CONTENT转换为向量数据
+                 
+                   XinferenceResponse result = HttpRequestProxy.sendJsonBody("embedding_model",params,"/v1/embeddings",XinferenceResponse.class);
+                   if(result != null){
+                       float[] embedding = result.embedding();
+                       if(embedding != null)
+                            context.addFieldValue("content",embedding);//设置向量数据
+                   }
+                   else {
+                       throw new DataImportException("change LOG_CONTENT to vector failed:XinferenceResponse is null");
+                   }
+               }
+            
+                //添加采集时间
+				context.addFieldValue("collecttime",new Date().getTime());
 
-    }
-});
+			}
+		});
 ```
 
-加工后的数据将通过Milvus输出插件保存到Milvus数据库。
+加工后的数据将通过Milvus输出插件保存到Milvus数据库，**Milvus输出插件会自动过滤掉来源记录中包含，但是向量表demo_vector中不存在的字段**。
+
+
 
 ### 2.12.4 完整案例代码
 

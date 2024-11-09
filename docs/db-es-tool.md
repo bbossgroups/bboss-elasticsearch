@@ -38,12 +38,12 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 ![](images\datasyn-inout-now.png)
 
-如果您还在：
+如果您正在：
 
-- 苦于 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景；
-- 苦于无法调用企业现有服务和库来处理加工数据；
-- 苦于因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
-- 苦于寻求数据采集和流批一体数据处理和指标统计计算于一体的数据处理计算框架
+- 寻求 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景的解决方案；
+- 寻求调用企业现有服务和库来处理加工数据的解决方案；
+- 因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
+- 寻求一款简单实用，且易于维护的，数据采集、处理、流批一体化的大数据工具
 
 那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
 
