@@ -12,6 +12,14 @@ https://git.oschina.net/bboss/bboss-datatran-demo
 
 https://www.bbossgroups.com/sources-demos.html
 
+插件清单介绍
+
+https://esdoc.bbossgroups.com/#/datatran-plugins
+
+基于源码构建bboss
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
 # 1.功能架构	
 
 ​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
@@ -479,6 +487,38 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 [基于Master-Slave机制监听binlog数据-重启直接从最新位置采集案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/MasterSlaveBinlog2DBOutputUnIncre.java)
 
 [基于Master-Slave机制监听采集binlog数据-重启直接从最新位置采集到Elasticsearch案例](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/binlog/Binlog2EleasticsearchOutput.java)
+
+
+
+# 21 数据向量化处理及Milvus向量数据库对接案例
+
+调用的 Langchain-Chatchat 封装的 xinference 发布的模型服务
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java
+
+调用的 xinference 发布的模型服务
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
+
+向量数据库 Milvus 输出插件，支持在数据处理时，调用向量模型服务，对数据进行向量化处理，将向量化数据输出保存到向量库 Milvus。
+
+使用参考文档：[milvus 向量数据库输出插件](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdatatran-plugins%3Fid%3D_212-milvus%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
+
+# 22 OSS对象存储库Mino对接案例
+
+可以基于其他输入插件采集不同数据来源数据，加工处理后输出到文件并上传Minio数据库
+
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ES2FileMinioDemo.java
+
+更多插件配置和使用，访问参考资料了解
+
+https://esdoc.bbossgroups.com/#/datatran-plugins
+
+# 23 Doris和Starrocks案例
+
+Doris和Starrocks兼容Mysql客户端协议，可以直接使用数据库输出插件将其他数据源的数据同步到Doris和Starrocks中，Doris对接案例（Starrocks类似）：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/doris/Db2Dorisdemo.java
 
 # 开发交流
 
