@@ -4,6 +4,24 @@
 
 ![](images\commonbulkprocessor.png)
 
+## 导入组件
+
+gradle
+
+```groovy
+compile 'com.bbossgroups:bboss-core-entity:6.2.5' 
+```
+
+maven
+
+```xml
+<dependency>  
+    <groupId>com.bbossgroups</groupId>  
+    <artifactId>bboss-core-entity</artifactId>  
+    <version>6.2.5</version>  
+</dependency>  
+```
+
 ## **1.1 API说明**
 
 通用BulkProcessor异步批处理组件支持各种场景的异步处理Bulk操作。通过通用BulkProcessor，可以将不同数据的增加、删除、修改文档操作添加到Bulk队列中，然后通过异步bulk方式快速完成数据批量处理功能，通用BulkProcessor提供三类api来支撑异步批处理功能：
@@ -22,7 +40,7 @@
 通用BulkProcessor异步批处理组件提供了两种触发批处理机制：
 
 1. bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
-2. flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+2. flushInterval 强制bulk操作时间，单位毫秒，如果自上次往bulk中添加记录的时间后，空闲了flushInterval毫秒后一直没有数据到来，且数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
 
 ## **1.3 失败重试**
 
@@ -63,7 +81,7 @@
 
 bulkSizes  按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
 
-flushInterval 强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，或者没有满足maxMemSize，但是有记录，那么强制进行bulk处理
+flushInterval 强制bulk操作时间，单位毫秒，如果自上次往bulk中添加记录的时间后，空闲了flushInterval毫秒后一直没有数据到来，且数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
 
 workThreads bulk处理工作线程数
 
@@ -168,7 +186,7 @@ public class PersistentBulkProcessor {
         bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
 
                 .setBulkSizes(bulkSize)//按批处理数据记录数
-                .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
+                .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次往bulk中添加记录的时间后，空闲了flushInterval毫秒后一直没有数据到来，且数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
 
                 .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
                 .setWorkThreads(workThreads)//bulk处理工作线程数

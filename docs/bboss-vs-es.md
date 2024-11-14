@@ -80,15 +80,15 @@ SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 [开发指南](development.md)
 
 基于bboss es开发的统计查询效果图：   
-![img](https://static.oschina.net/uploads/img/201712/19104625_GiDw.jpg)
+![img](images/example/1.png)
 
-![img](https://static.oschina.net/uploads/img/201712/19104625_WiAf.png)
+![img](images/example/2.png)
 
-![img](https://static.oschina.net/uploads/img/201712/19104625_0s2d.jpg)
+![img](images/example/3.png)
 
-![img](https://static.oschina.net/uploads/img/201712/19104625_2DkP.png)
+![img](images/example/4.png)
 
-![img](https://static.oschina.net/uploads/img/201712/19104625_PsKL.png)
+![img](images/example/5.png)
 
 # 开发交流
 
