@@ -54,7 +54,7 @@ ip:port（默认http协议）
 ![](images/httpproxy5.jpg)
 
 
-# 2.导入http负载均衡器
+# 2.导入负载均衡器
 
 在工程中导入以下maven坐标即可
 
@@ -69,10 +69,10 @@ ip:port（默认http协议）
 如果是gradle工程，导入方法如下：
 
 ```groovy
-implementation 'com.bbossgroups:bboss-http:6.3.2'
+api 'com.bbossgroups:bboss-http:6.3.2'
 ```
 
-# 3.负载均衡组件
+# 3.负载均衡器配置和初始化
 ![](images/httpproxy1.jpg)
 
 ![](images/httpproxy2.jpg)

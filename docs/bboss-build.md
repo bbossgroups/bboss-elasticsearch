@@ -11,11 +11,11 @@ bboss采用模块化管理，模块之间依赖关系如下：
 | 源码地址                                   | 说明                                                         |
 | ------------------------------------------ | ------------------------------------------------------------ |
 | https://gitee.com/bboss/bboss              | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
-| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB客户端封装 |
+| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB、Milvus、Minio客户端封装 |
 | https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
-| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo对接框架 |
+| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos对接框架 |
 | https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
-| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL&[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
+| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
 
 可以从以上地址下载各模块源码工程，然后按表格顺序，依次在命令行源码根目录下，执行gradle publishToMavenLocal指令，构建模块版本：
 
