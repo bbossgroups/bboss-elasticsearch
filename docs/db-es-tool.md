@@ -158,39 +158,41 @@ com.bbossgroups.plugins
 
 ## 输入插件
 
-| 插件                                                         | 插码名称                                                     | Maven坐标              | 功能说明                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------ |
-| [DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java) | DB数据库输入插件                                             | bboss-datatran-jdbc    | 配置DB数据源、查询sql、查询sql文件路径及文件名称,支持各种关系数据库，hive |
-| [ElasticsearchInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/input/ElasticsearchInputConfig.java) | elasticsearch输出插件                                        | bboss-datatran-jdbc    | 配置elasticsearch数据源、queryDsl、queryDsl配置文件路径等    |
-| [HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java) | Http输入插件                                                 | bboss-datatran-jdbc    | 配置http服务参数、服务地址、服务查询参数、ssl证书等          |
-| [FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) | 文件输入插件                                                 | bboss-datatran-fileftp | 对应文本类数据文件数据采集配置，源文件目录、输入Ftp/sftp配置 |
-| [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java) | excel文件输入插件                                            | bboss-datatran-fileftp | excel文件采集映射配置（忽略行数、excel列号与目标字段名称映射、列默认值配置），包括excel源文件目录、输入Ftp/sftp配置 |
-| [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java) | [Word文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_110-word文件采集插件) | bboss-datatran-fileftp | 插件配置 [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java)(FileInputConfig子类)和WordFileConfig（FileConfig子类）结合，通过WordFileConfig设置WordExtractor自定义word文件内容提取逻辑，如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中，除了word文件采集需要的配置，其他配置和文件采集插件配置一致 |
-| [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java) | [PDF文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_111-pdf文件采集插件) | bboss-datatran-fileftp | 插件配置 [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java)(FileInputConfig子类)和PDFFileConfig（FileConfig子类）结合，通过PDFFileConfig设置PDFExtractor自定义pdf文件内容提取逻辑，如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中，除了pdf文件采集需要的配置，其他配置和文件采集插件配置一致 |
-| [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java) | [其他类型文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_112-其他类型文件采集插件) | bboss-datatran-fileftp | 插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合,必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致 |
-| [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件                                                | bboss-datatran-hbase   | hbase连接配置、查询表配置、查询条件配置                      |
-| [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件                                              | bboss-datatran-mongodb | mongodb连接配置、查询表配置、查询条件配置                    |
-| [MongoCDCInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongocdc/MongoCDCInputConfig.java) | mongodb cdc插件                                              | bboss-datatran-mongodb | 基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据 |
-| [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件                                                | bboss-datatran-kafka2x | kafka消费端参数配置、主题配置、客户端消费组配置等            |
-| [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件                                          | bboss-datatran-kafka1x | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
+| 插件                                                         | 插码名称                                                     | Maven坐标               | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ----------------------- | ------------------------------------------------------------ |
+| [DBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/input/DBInputConfig.java) | DB数据库输入插件                                             | bboss-datatran-jdbc     | 配置DB数据源、查询sql、查询sql文件路径及文件名称,支持各种关系数据库，hive |
+| [ElasticsearchInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/input/ElasticsearchInputConfig.java) | elasticsearch输出插件                                        | bboss-datatran-jdbc     | 配置elasticsearch数据源、queryDsl、queryDsl配置文件路径等    |
+| [HttpInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/input/HttpInputConfig.java) | Http输入插件                                                 | bboss-datatran-jdbc     | 配置http服务参数、服务地址、服务查询参数、ssl证书等          |
+| [FileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/FileInputConfig.java) | 文件输入插件                                                 | bboss-datatran-fileftp  | 对应文本类数据文件数据采集配置，源文件目录、输入Ftp/sftp配置 |
+| [ExcelFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/ExcelFileInputConfig.java) | excel文件输入插件                                            | bboss-datatran-fileftp  | excel文件采集映射配置（忽略行数、excel列号与目标字段名称映射、列默认值配置），包括excel源文件目录、输入Ftp/sftp配置 |
+| [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java) | [Word文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_110-word文件采集插件) | bboss-datatran-fileftp  | 插件配置 [WordFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/WordFileInputConfig.java)(FileInputConfig子类)和WordFileConfig（FileConfig子类）结合，通过WordFileConfig设置WordExtractor自定义word文件内容提取逻辑，如果不设置setWordExtractor，默认将文件内容放置到wordContent字段中，除了word文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java) | [PDF文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_111-pdf文件采集插件) | bboss-datatran-fileftp  | 插件配置 [PDFFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/PDFFileInputConfig.java)(FileInputConfig子类)和PDFFileConfig（FileConfig子类）结合，通过PDFFileConfig设置PDFExtractor自定义pdf文件内容提取逻辑，如果不设置setPdfExtractor，默认将文件内容放置到pdfContent字段中，除了pdf文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java) | [其他类型文件采集插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_112-其他类型文件采集插件) | bboss-datatran-fileftp  | 插件配置 [CommonFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CommonFileInputConfig.java)(FileInputConfig子类)和CommonFileConfig（FileConfig子类）结合,必须通过setCommonFileExtractor设置CommonFileExtractor，提取文件内容，除了其他类型（图片、视频等）文件采集需要的配置，其他配置和文件采集插件配置一致 |
+| [HBaseInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/input/HBaseInputConfig.java) | hbase输入插件                                                | bboss-datatran-hbase    | hbase连接配置、查询表配置、查询条件配置                      |
+| [MongoDBInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/input/MongoDBInputConfig.java) | mongodb输入插件                                              | bboss-datatran-mongodb  | mongodb连接配置、查询表配置、查询条件配置                    |
+| [MongoCDCInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongocdc/MongoCDCInputConfig.java) | mongodb cdc插件                                              | bboss-datatran-mongodb  | 基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据 |
+| [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件                                                | bboss-datatran-kafka2x  | kafka消费端参数配置、主题配置、客户端消费组配置等            |
+| [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件                                          | bboss-datatran-kafka1x  | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
+| [RocketmqInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/input/RocketmqInputConfig.java) | Rocketmq输入插件                                             | bboss-datatran-rocketmq | Rocketmq消费端参数配置、主题配置、客户端消费组配置等         |
 
 ## 输出插件
 
-| 插件                                                         | 插码名称                 | Maven坐标              | 功能说明                                                     |
-| ------------------------------------------------------------ | ------------------------ | ---------------------- | ------------------------------------------------------------ |
-| [DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java) | 数据库输出插件           | bboss-datatran-jdbc    | 数据库地址配置、连接池配置、输出sql、更新sql、deletesql配置、sql文件路径配置 |
-| [ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java) | Elasticsearch输出插件    | bboss-datatran-jdbc    | elasticsearch地址配置、http连接池配置、账号口令配置、elasticsearch连接参数配置、Elasticsearch输出表配置 |
-| [HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java) | http/https输出插件       | bboss-datatran-jdbc    | http输出服务参数配置、连接参数配置、监控检查机制配置、ssl证书配置、输出服务地址配置 |
-| [FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java) | 文本文件输出插件         | bboss-datatran-fileftp | 文本文件输出配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、记录标题行配置、发送Ftp/sftp配置、发送OSS对象数据库配置 |
-| [ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java) | excel文件输出插件        | bboss-datatran-fileftp | Excel文件输出配置、列号与字段映射配置、标题配置、sheet配置、列标题配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、发送Ftp/sftp配置 |
-| [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件            | bboss-datatran-kafka2x | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
-| [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件      | bboss-datatran-kafka1x | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置（不推荐使用，建议升级到kafka 2x版本） |
-| [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件           | bboss-datatran-jdbc    | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
-| [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件          | bboss-datatran-mongodb | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
-| [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件            | bboss-datatran-hbase   | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
-| [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件             | bboss-datatran-jdbc    | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等，具体参考[使用指南](https://esdoc.bbossgroups.com/#/etl-metrics) |
-| [MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java) | Milvus向量数据库输出插件 | bboss-datatran-milvus  | 配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等 |
-| [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件                | bboss-datatran-jdbc    | 调试作业使用，将采集的数据直接输出到控制台                   |
+| 插件                                                         | 插码名称                 | Maven坐标               | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------ | ----------------------- | ------------------------------------------------------------ |
+| [DBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/db/output/DBOutputConfig.java) | 数据库输出插件           | bboss-datatran-jdbc     | 数据库地址配置、连接池配置、输出sql、更新sql、deletesql配置、sql文件路径配置 |
+| [ElasticsearchOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/es/output/ElasticsearchOutputConfig.java) | Elasticsearch输出插件    | bboss-datatran-jdbc     | elasticsearch地址配置、http连接池配置、账号口令配置、elasticsearch连接参数配置、Elasticsearch输出表配置 |
+| [HttpOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/http/output/HttpOutputConfig.java) | http/https输出插件       | bboss-datatran-jdbc     | http输出服务参数配置、连接参数配置、监控检查机制配置、ssl证书配置、输出服务地址配置 |
+| [FileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/FileOutputConfig.java) | 文本文件输出插件         | bboss-datatran-fileftp  | 文本文件输出配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、记录标题行配置、发送Ftp/sftp配置、发送OSS对象数据库配置 |
+| [ExcelFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/ExcelFileOutputConfig.java) | excel文件输出插件        | bboss-datatran-fileftp  | Excel文件输出配置、列号与字段映射配置、标题配置、sheet配置、列标题配置、文件切割记录数配置、文件行分隔符配置、文件名称生成规则配置、发送Ftp/sftp配置 |
+| [Kafka2OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka2OutputConfig.java) | kafka输出插件            | bboss-datatran-kafka2x  | kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
+| [Kafka1OutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/output/Kafka1OutputConfig.java) | 低版本kafka输出插件      | bboss-datatran-kafka1x  | 低版本kafka输出参数配置、主题配置、记录序列化机制配置、记录生成器配置（不推荐使用，建议升级到kafka 2x版本） |
+| [RocketmqOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/output/RocketmqOutputConfig.java) | Rocketmq输出插件配置     | bboss-datatran-rocketmq | Rocketmq输出参数配置、主题配置、记录序列化机制配置、记录生成器配置 |
+| [CustomOupputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/custom/output/CustomOupputConfig.java) | 自定义输出插件           | bboss-datatran-jdbc     | 提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可 |
+| [MongoDBOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-mongodb/src/main/java/org/frameworkset/tran/plugin/mongodb/output/MongoDBOutputConfig.java) | MongoDB输出插件          | bboss-datatran-mongodb  | 提供MongoDB地址和连接参数配置，输出db和collection配置        |
+| [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件            | bboss-datatran-hbase    | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
+| [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件             | bboss-datatran-jdbc     | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等，具体参考[使用指南](https://esdoc.bbossgroups.com/#/etl-metrics) |
+| [MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java) | Milvus向量数据库输出插件 | bboss-datatran-milvus   | 配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等 |
+| [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件                | bboss-datatran-jdbc     | 调试作业使用，将采集的数据直接输出到控制台                   |
 
 ## 作业基础配置
 
@@ -388,6 +390,14 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
+<version>7.2.8</version>
+</dependency>
+```
+rocketmq插件maven坐标
+```xml
+<dependency>
+<groupId>com.bbossgroups.plugins</groupId>
+<artifactId>bboss-datatran-rocketmq</artifactId>
 <version>7.2.8</version>
 </dependency>
 ```
@@ -2059,6 +2069,22 @@ public static final int CELL_NUMBER_FLOAT = 8;
 public static final int CELL_NUMBER_SHORT = 9;
 public static final int CELL_STRING = 1;
 ```
+#### 2.8.10.6 消息key设置
+
+可以直接通过context设置kafka、Rocketmq输出插件的消息key，使用实例：
+
+```java
+/**
+         * 设置消息可以
+         */
+        importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception  { 
+                //直接通过context设置kafka、Rocketmq输出插件的消息key
+                context.setMessageKey("testKey"); 
+            }
+        });
+```
+
 ### 2.8.11 IP-地区运营商经纬度坐标转换
 
 与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：

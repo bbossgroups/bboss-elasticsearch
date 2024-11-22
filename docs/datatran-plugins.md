@@ -3200,7 +3200,82 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
 
+## 2.13 Rocketmq输出插件
 
+Rocketmq输出插件:[RocketmqOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/output/RocketmqOutputConfig.java),Rocketmq输出参数配置、主题配置、记录序列化机制配置、记录生成器配置
+
+Rocketmq输出插件使用bboss Rocketmq客户端组件来对接Rocketmq，参考资料：
+
+https://doc.bbossgroups.com/#/Rocketmq
+
+### 2.13.1 使用案例
+
+Rocketmq输出插件配置:
+
+```java
+RocketmqOutputConfig rocketmqOutputConfig = new RocketmqOutputConfig();
+        rocketmqOutputConfig.setNamesrvAddr("172.24.176.18:9876")
+                .setProductGroup("etlgroup2")
+                .setTopic("etltopic")//全局topic，记录级别topic，参考相关章节介绍
+                .setTag("json").setAccessKey("Rocketmq")
+                .setSecretKey("12345678") ;
+        
+        importBuilder.setOutputConfig(rocketmqOutputConfig);
+```
+
+### 2.13.2 序列化编码器设置
+
+序列化编码器需要实现接口
+
+```java
+org.frameworkset.rocketmq.codec.CodecSerial
+```
+
+Value默认编码器：如果数据是String类型，直接转化为UTF-8字符集的byte[]，如果不是，先转化为json格式字符串，再转化为UTF-8字符集的byte[]
+
+```java
+org.frameworkset.rocketmq.codec.StringBytesCodecSerial
+```
+
+Key默认编码器：如果数据是String类型，无需转换，如果不是，则转化为json格式字符串
+
+```java
+org.frameworkset.rocketmq.codec.StringCodecSerial
+```
+
+如果需要自定义编码器，则实现CodecSerial接口即可，Value编码器需返回byte[]数组，Key编码器需返回String。
+
+序列化编码器设置
+
+```java
+rocketmqOutputConfig.setValueCodecSerial("org.frameworkset.rocketmq.codec.StringBytesCodecSerial")
+        .setKeyCodecSerial("org.frameworkset.rocketmq.codec.StringCodecSerial") ;
+```
+
+### 2.13.3 设置消息key和记录级别topic
+
+可以在datarefactor中设置消息key和记录级别topic：
+
+```java
+ /**
+         * 设置数据结构和消息key以及记录级别topic
+         */
+        importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception  {               
+                //设置消息key
+                context.setMessageKey("testKey");
+
+                //设置消息发送的主题
+                context.addTempData(Context.ROCKETMQ_TOPIC_KEY,"othertopic");
+            }
+        });
+```
+
+完整的案例代码：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
+
+更多参数配置访问插件配置对象了解：:[RocketmqOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/output/RocketmqOutputConfig.java)
 
 # 3.参考文档
 
