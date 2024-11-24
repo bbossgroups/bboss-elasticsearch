@@ -42,15 +42,17 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.2.9 功能改进-20241122
+# v7.2.9 功能改进-20241125
 1. 新增Rocketmq输入插件：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
 2. 新增Rocketmq输出插件：将数据源采集的数据，进行加工处理后，通过Rocketmq输出插件将处理后的数据发送到Rocketmq
-3. 完善Kafka输入输出插件：完善kafk输入输出插件，不注册jvm shutdown hook
-4. 完善kafka输入插件：增加消息元数据信息
-5. 调小http链接池健康检查数据源连接池大小
-6. 指标计算改进：新增指标key对象MetricKey,相关接口将String metricKey调整为MetricKey metricKey，调整相关案例代码 
-7. 项目和案例源码jdk 18+兼容性调整，兼容jdk 18+版本 
-8. Gradle构建脚本兼容性调整，兼容gradle 8+版本
+3. 增加Milvus输入插件：支持全量或者增量从向量数据库Milvus采集同步数据到其他Milvus库，或者其他数据源 
+4. 完善Kafka输入输出插件：完善kafk输入输出插件，不注册jvm shutdown hook 
+5. 完善kafka输入插件：增加消息元数据信息 
+6. 调小http链接池健康检查数据源连接池大小 
+7. 指标计算改进：新增指标key对象MetricKey,相关接口将String metricKey调整为MetricKey metricKey，调整相关案例代码 
+8. 项目和案例源码jdk 18+兼容性调整，兼容jdk 18+版本 
+9. Gradle构建脚本兼容性调整，兼容gradle 8+版本 
+10. 增加Rocketmq客户端组件，使用参考文档：https://doc.bbossgroups.com/#/Rocketmq
 
 # v7.2.8 功能改进-20241102
 1. 数据交换功能扩展：增加向量数据库Milvus输出插件，支持在数据处理时，调用向量模型服务，对数据进行向量化处理，通过向量库Milvus输出插件保存向量化处理结果。

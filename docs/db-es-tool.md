@@ -174,6 +174,7 @@ com.bbossgroups.plugins
 | [Kafka2InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka2x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka2InputConfig.java) | kafka输入插件                                                | bboss-datatran-kafka2x  | kafka消费端参数配置、主题配置、客户端消费组配置等            |
 | [Kafka1InputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-kafka1x/src/main/java/org/frameworkset/tran/plugin/kafka/input/Kafka1InputConfig.java) | 低版本kafka输入插件                                          | bboss-datatran-kafka1x  | 低版本kafka消费端参数配置、主题配置、客户端消费组配置等（不推荐使用，建议升级到kafka 2x版本） |
 | [RocketmqInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/input/RocketmqInputConfig.java) | Rocketmq输入插件                                             | bboss-datatran-rocketmq | Rocketmq消费端参数配置、主题配置、客户端消费组配置等         |
+| [MilvusInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/input/MilvusInputConfig.java) | Milvus输入插件                                               | bboss-datatran-milvus   | Milvus向量库输入插件，支持全量或者增量从Milvus采集同步数据到其他Milvus库，或者其他数据源 |
 
 ## 输出插件
 

@@ -492,6 +492,14 @@ http服务端实现：一个简单的rest服务（http input输出插件支持po
 
 # 21 数据向量化处理及Milvus向量数据库对接案例
 
+## 21.1 输入插件案例
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomDemo.java
+
+使用参考文档：[milvus 向量数据库输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_115-%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93milvus%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)
+
+## 21.2 输出插件案例
+
 调用的 Langchain-Chatchat 封装的 xinference 发布的模型服务
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2Milvusdemo.java

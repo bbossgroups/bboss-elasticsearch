@@ -1689,6 +1689,36 @@ importBuilder.setOutputConfig(customOutputConfig);
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/Rockemq2Custom.java
 
+## 1.15 向量数据库Milvus输入插件
+
+Milvus输入插件:[MilvusInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/input/MilvusInputConfig.java)，Milvus服务器参数配置、向量表名称、数据查询条件、召回字段清单以及认证参数设置等。
+
+Milvus向量库输入插件支持全量或者增量从Milvus采集同步数据到其他Milvus库，或者其他数据源。
+
+### 1.15.1 使用案例
+
+Milvus输入插件使用案例：
+
+```java
+/**
+		 * Milvus相关配置
+		 */
+        String[] array = {"log_id","collecttime","log_content","content"};//定义要返回的字段清单
+		MilvusInputConfig milvusInputConfig = new MilvusInputConfig();
+		milvusInputConfig.setName("ucr_chan")  //使用之前定义的向量数据库数据源，无需设置向量数据库地址和名称以及token等信息
+                             .setDbName("ucr_chan")
+                            .setExpr("log_id < 100000")//指定过滤条件，可以进行条件组合，具体参考文档：https://milvus.io/api-reference/java/v2.4.x/v2/Vector/search.md
+                             .setUri("http://172.24.176.18:19530")
+                            .setOutputFields(Arrays.asList(array))
+                             .setToken("")
+                             .setCollectionName("demo");
+		importBuilder.setInputConfig(milvusInputConfig);
+```
+
+### 1.15.2 完整案例代码
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomDemo.java
+
 # 2.输出插件
 
 ## 2.1 DB输出插件
