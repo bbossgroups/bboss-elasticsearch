@@ -322,29 +322,29 @@ public class ES2FileFtpBatchSplitFileDemo {
 
 通过FileOutputConfig和FtpOutConfig两个类配合来设置sftp和ftp上传的的相关配置：
 
-| 参数名称                  | 描述                                                         | 默认值               | 对应协议 |
-| ------------------------- | ------------------------------------------------------------ | -------------------- | -------- |
-| ftpIP                     | 必填，String类型，ftp/sftp服务器ip地址                       | 空                   | ftp/sftp |
-| ftpPort                   | 必填，int类型，ftp/sftp服务器端口                            | 空                   | ftp/sftp |
-| ftpUser                   | 必填，String类型，ftp/sftp服务器用户账号                     | 空                   | ftp/sftp |
-| ftpPassword               | 必填，String类型，ftp/sftp服务器用户口令                     | 空                   | ftp/sftp |
-| remoteFileDir             | 必填，String类型，指定ftp/sftp服务器目录地址，用户存放上传的文件 | 空                   | ftp/sftp |
-| fileDir                   | 必填，String类型，指定导出数据生成的文件存放的本地目录、上传成功文件备份目录、上传失败文件存放目录（便于定时重传） | 空                   | ftp/sftp |
-| keepAliveTimeout          | 可选，long类型，单位毫秒，ftp/sftp通讯协议连接存活超时时间   | 0                    | ftp/sftp |
-| socketTimeout             | 可选，long类型，单位毫秒，ftp/sftp数据读取超时时间，避免socketTimeout异常 | 0                    | ftp/sftp |
-| connectTimeout            | 可选，long类型，单位毫秒，sftp数据连接建立超时时间           | 0                    | sftp     |
-| transferEmptyFiles        | 必填，boolean类型，是否上传空文件，true上传，false不上传     | true                 | ftp/sftp |
-| backupSuccessFiles        | 必填，boolean类型，是备份上传成功文件，true备份，false不备份 | false                | ftp/sftp |
-| failedFileResendInterval  | 必填，long类型，失败文件重传时间间隔，-1或者0不重传，单位：毫秒 | 5000                 | ftp/sftp |
-| successFilesCleanInterval | 必填，long类型，扫描需要清理上传成功文件时间间隔，单位：毫秒 | 5000                 | ftp/sftp |
-| fileLiveTime              | 必填，int类型，上传成功文件保留时间，单位：秒                | 2天                  | ftp/sftp |
-| maxFileRecordSize         | 必填，int类型，切割文件时，指定每个文件保存的记录条数，>0时启用文件切割机制；按记录条数切割文件机制对并行导出数据不起作用 | -1                   | ftp/sftp |
-| maxForceFileThreshold     | 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置 | 0                    | ftp/sftp |
-| filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称    | 无                   | ftp/sftp |
-| hostKeyVerifier           | 可选，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可 | 无                   | sftp     |
-| reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式 | JsonReocordGenerator | ftp/sftp |
-| sendFileAsyn              | 可选，boolean类型,设置是否异步发送文件， true 异步发送 false同步发送,默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能 | false                | ftp/sftp |
-| sendFileAsynWorkThreads   | 可选，int类型,设置异步发送文件线程数                         | 10                   | ftp/sftp |
+| 参数名称                  | 描述                                                                                                                                                                                                                                                        | 默认值               | 对应协议 |
+| ------------------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -------------------- | -------- |
+| ftpIP                     | 必填，String类型，ftp/sftp服务器ip地址                                                                                                                                                                                                                               | 空                   | ftp/sftp |
+| ftpPort                   | 必填，int类型，ftp/sftp服务器端口                                                                                                                                                                                                                                    | 空                   | ftp/sftp |
+| ftpUser                   | 必填，String类型，ftp/sftp服务器用户账号                                                                                                                                                                                                                               | 空                   | ftp/sftp |
+| ftpPassword               | 必填，String类型，ftp/sftp服务器用户口令                                                                                                                                                                                                                               | 空                   | ftp/sftp |
+| remoteFileDir             | 必填，String类型，指定ftp/sftp服务器目录地址，用户存放上传的文件                                                                                                                                                                                                                   | 空                   | ftp/sftp |
+| fileDir                   | 必填，String类型，指定导出数据生成的文件存放的本地目录、上传成功文件备份目录、上传失败文件存放目录（便于定时重传）                                                                                                                                                                                              | 空                   | ftp/sftp |
+| keepAliveTimeout          | 可选，long类型，单位毫秒，ftp/sftp通讯协议连接存活超时时间                                                                                                                                                                                                                       | 0                    | ftp/sftp |
+| socketTimeout             | 可选，long类型，单位毫秒，ftp/sftp数据读取超时时间，避免socketTimeout异常                                                                                                                                                                                                         | 0                    | ftp/sftp |
+| connectTimeout            | 可选，long类型，单位毫秒，sftp数据连接建立超时时间                                                                                                                                                                                                                             | 0                    | sftp     |
+| transferEmptyFiles        | 必填，boolean类型，是否上传空文件，true上传，false不上传                                                                                                                                                                                                                      | true                 | ftp/sftp |
+| backupSuccessFiles        | 必填，boolean类型，是备份上传成功文件，true备份，false不备份                                                                                                                                                                                                                    | false                | ftp/sftp |
+| failedFileResendInterval  | 必填，long类型，失败文件重传时间间隔，-1或者0不重传，单位：毫秒                                                                                                                                                                                                                       | 5000                 | ftp/sftp |
+| successFilesCleanInterval | 必填，long类型，扫描需要清理上传成功文件时间间隔，单位：毫秒                                                                                                                                                                                                                          | 5000                 | ftp/sftp |
+| fileLiveTime              | 必填，int类型，上传成功文件保留时间，单位：秒                                                                                                                                                                                                                                  | 2天                  | ftp/sftp |
+| maxFileRecordSize         | 必填，int类型，切割文件时，指定每个文件保存的记录条数，>0时启用文件切割机制；按记录条数切割文件机制对并行导出数据不起作用                                                                                                                                                                                           | -1                   | ftp/sftp |
+| maxForceFileThreshold     | 单位：秒，设置文件数据写入空闲时间阈值，如果空闲时间内没有数据到来，则进行文件切割或者flush数据到文件处理。文件切割记录规则：达到最大记录数或者空闲时间达到最大空闲时间阈值，进行文件切割 。 如果不切割文件，达到最大最大空闲时间阈值，当切割文件标识为false时，只执行flush数据操作，不关闭文件也不生成新的文件，否则生成新的文件。本属性适用于文件输出插件与Rocketmq、kafka、mysql binlog 、fileinput等事件监听型的输入插件配合使用，其他类型输入插件无需配置 | 0                    | ftp/sftp |
+| filenameGenerator         | 必填，FilenameGenerator接口类型，用于自定义生成文件的名称                                                                                                                                                                                                                     | 无                   | ftp/sftp |
+| hostKeyVerifier           | 可选，适用于sftp协议，如果sftp协议需要指定，可以先不设置，然后将运行报错日志中打印出来字符串设置即可                                                                                                                                                                                                    | 无                   | sftp     |
+| reocordGenerator          | 可选，ReocordGenerator接口类型，用来定义生成的记录格式，如果不设置默认为json格式                                                                                                                                                                                                        | JsonReocordGenerator | ftp/sftp |
+| sendFileAsyn              | 可选，boolean类型,设置是否异步发送文件， true 异步发送 false同步发送,默认同步发送。数据量比较多，同时切割文件的情况下，启用异步发送文件，会显著提升数据采集同步性能                                                                                                                                                              | false                | ftp/sftp |
+| sendFileAsynWorkThreads   | 可选，int类型,设置异步发送文件线程数                                                                                                                                                                                                                                      | 10                   | ftp/sftp |
 
 示例代码如下：
 

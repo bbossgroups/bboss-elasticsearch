@@ -1610,6 +1610,85 @@ ImportBuilder importBuilder = new ImportBuilder();
 通过设置FileConfig.setDeleteEOFFile(true)，可以控制删除采集完毕的文件,图片文件内容采集实例：
 https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/pic/PictureFile2CustomDemoOnce.java
 
+## 1.14 Rocketmq输入插件
+
+Rocketmq输入插件:[RocketmqInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/input/RocketmqInputConfig.java)，Rocketmq消费端参数配置、主题配置、客户端消费组配置等
+
+### 1.14.1 使用案例
+
+Rocketmq输入插件使用案例：
+
+```java
+/**
+ * Rocketmq输入插件配置
+ */
+RocketmqInputConfig rocketmqInputConfig = new RocketmqInputConfig();
+rocketmqInputConfig.setNamesrvAddr("172.24.176.18:9876")
+        .setConsumerGroup("etlgroup2")
+        .setTopic("etltopic")//多个主题，用逗号分隔：etltopic,etltopic1
+        .setTag("json").setAccessKey("Rocketmq")
+        .setSecretKey("12345678").setMaxPollRecords(100)
+        .setConsumeMessageBatchMaxSize(50)
+        .setConsumeFromWhere("CONSUME_FROM_FIRST_OFFSET")
+        .setWorkThreads(10)
+        .setKeyDeserializer("org.frameworkset.rocketmq.codec.StringCodecDeserial")
+        .setValueDeserializer("org.frameworkset.rocketmq.codec.JsonMapCodecDeserial");
+importBuilder.setInputConfig(rocketmqInputConfig);
+```
+
+消费位置ConsumeFromWhere设置：
+
+```java
+*     CONSUME_FROM_LAST_OFFSET,
+*
+*     @Deprecated
+*     CONSUME_FROM_LAST_OFFSET_AND_FROM_MIN_WHEN_BOOT_FIRST,
+*     @Deprecated
+*     CONSUME_FROM_MIN_OFFSET,
+*     @Deprecated
+*     CONSUME_FROM_MAX_OFFSET,
+*     CONSUME_FROM_FIRST_OFFSET,
+*     CONSUME_FROM_TIMESTAMP,
+```
+
+### 1.14.2 获取消息元数据
+
+通过record.getMetaDatas()方法获取Rocketmq消息元数据信息，实例如下
+
+```java
+//自己处理数据
+CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+customOutputConfig.setCustomOutPut(new CustomOutPut() {
+    @Override
+    public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+        //You can do any thing here for datas
+        for(CommonRecord record:datas){
+            Map<String,Object> data = record.getDatas();
+            logger.info(SimpleStringUtil.object2json(data));
+            logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
+
+        }
+    }
+});
+importBuilder.setOutputConfig(customOutputConfig);
+```
+
+消息元数据样本数据源：
+
+```json
+{
+    "topic":"etltopic",
+ 	"queueOffset":6328,
+ 	"keys":"testKey",
+ 	"tag":"json"
+}
+```
+
+### 1.14.3 完整案例代码
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/Rockemq2Custom.java
+
 # 2.输出插件
 
 ## 2.1 DB输出插件

@@ -22,7 +22,7 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 # 1.功能架构	
 
-​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；可以将加工后的数据写入File并上传到ftp/sftp服务器。
+​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka、Rocketmq接收数据；经过加工处理的数据亦可以发送到kafka、Rocketmq；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
 ![img](images/datasyn.png)​	
 
@@ -519,6 +519,16 @@ https://esdoc.bbossgroups.com/#/datatran-plugins
 Doris和Starrocks兼容Mysql客户端协议，可以直接使用数据库输出插件将其他数据源的数据同步到Doris和Starrocks中，Doris对接案例（Starrocks类似）：
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/doris/Db2Dorisdemo.java
+
+# 24 Rocketmq案例
+
+输入插件案例：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/Rockemq2Custom.java
+
+输出插件案例
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
 
 # 开发交流
 

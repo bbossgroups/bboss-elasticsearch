@@ -4,7 +4,7 @@
 
 1. 支持全量和增量采集两种模式
 2. 支持ETL采集转换清洗-[流批计算一体化融合](https://esdoc.bbossgroups.com/#/etl-metrics)处理 
-3. 实时采集日志文件、json文件、文本文件、excel/word/pdf/图片/视频等类型文件（本地和ftp/sftp）数据到kafka/elasticsearch/database/自定义处理器等等 
+3. 实时采集日志文件、json文件、文本文件、excel/word/pdf/图片/视频等类型文件（本地和ftp/sftp）数据到kafka/Rocketmq/elasticsearch/database/自定义处理器等等 
 4. 支持多线程并行下载和处理远程数据文件 
 5. 支持本地/ftp/sftp子目录下文件数据采集； 
 6. 支持备份采集完毕日志文件功能，可以指定备份文件保存时长，定期清理过期文件； 

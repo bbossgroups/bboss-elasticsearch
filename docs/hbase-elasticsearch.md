@@ -23,7 +23,7 @@ bboss提供了不错的数据同步功能，通过bboss可以非常方便地实�
  - 将mongodb数据同步到Elasticsearch
  - 将mongodb数据同步到数据库表
  - 将hbase数据同步到Elasticsearch
- - 从kafka接收数据导入elasticsearch（支持kafka_2.12-0.10.2.0和kafka_2.12-2.3.0 系列版本）
+ - 从kafka/Rocketmq接收数据导入elasticsearch（支持kafka_2.12-0.10.2.0和kafka_2.12-2.3.0 系列版本）
 
 2. 支持的导入方式
    - 逐条数据导入

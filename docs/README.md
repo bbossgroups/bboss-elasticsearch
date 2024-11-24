@@ -12,14 +12,14 @@ bboss采用模块化管理以上三部分，模块之间依赖关系如下：
 
 模块源码工程源码地址和功能说明如下：
 
-| 源码地址                                   | 说明                                                         |
-| ------------------------------------------ | ------------------------------------------------------------ |
+| 源码地址                                   | 说明                                                                                                                              |
+| ------------------------------------------ |---------------------------------------------------------------------------------------------------------------------------------|
 | https://gitee.com/bboss/bboss              | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
-| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB、Milvus、Minio客户端封装 |
-| https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
-| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos对接框架 |
-| https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
-| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
+| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB、Milvus、Minio客户端封装                                                          |
+| https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架                                                                       |
+| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架                                                          |
+| https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart)                                                     |
+| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架                  |
 
 项目源码构建：[源码下载和构建](https://esdoc.bbossgroups.com/#/README?id=_3-源码下载和构建)，下面详细介绍各部分特色。
 
