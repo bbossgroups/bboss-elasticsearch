@@ -1325,7 +1325,56 @@ kafka输入插件可以同时消费多个topic主体消息，多个topic之间�
 kafka2InputConfig.setKafkaTopic("xinkonglog,xinkonglog1") // kafka topics，多个用逗号分隔,例如：xinkonglog,xinkonglog1
 ```
 
-### 1.9.4 参考文档
+### 1.9.4 获取消息元数据
+
+通过record.getMetaDatas()方法获取Kafka消息元数据信息，实例如下
+
+```java
+//自己处理数据
+CustomOutputConfig customOutputConfig = new CustomOutputConfig();
+customOutputConfig.setCustomOutPut(new CustomOutPut() {
+    @Override
+    public void handleData(TaskContext taskContext, List<CommonRecord> datas) {
+
+        //You can do any thing here for datas
+        for(CommonRecord record:datas){
+            Map<String,Object> data = record.getDatas();
+            logger.info(SimpleStringUtil.object2json(data));
+            logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
+
+        }
+    }
+});
+importBuilder.setOutputConfig(customOutputConfig);
+```
+亦可以通过context.getMetaValue方法获取：
+
+```java
+ importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception  {
+
+                //获取元数据
+                String topic = (String)context.getMetaValue("topic");
+               
+            }
+        });
+```
+
+消息元数据样本数据源：
+
+```json
+{
+    "topic":"etltopic",
+ 	"offset":6328,
+ 	"key":"testKey",
+ 	"partition":"json",
+    "timestamp":12321546456
+}
+```
+
+
+
+### 1.9.5 参考文档
 
 [2.8.7.2 kafka输入插件拦截器设置说明](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2872-kafka输入插件拦截器设置说明)
 
@@ -1672,6 +1721,18 @@ customOutputConfig.setCustomOutPut(new CustomOutPut() {
     }
 });
 importBuilder.setOutputConfig(customOutputConfig);
+```
+亦可以通过context.getMetaValue方法获取：
+
+```java
+ importBuilder.setDataRefactor(new DataRefactor() {
+            public void refactor(Context context) throws Exception  {
+
+                //获取元数据
+                String topic = (String)context.getMetaValue("topic");
+               
+            }
+        });
 ```
 
 消息元数据样本数据源：

@@ -43,20 +43,34 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.2.9 功能改进-20241125
-1. 新增Rocketmq输入插件：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
-2. 新增Rocketmq输出插件：将数据源采集的数据，进行加工处理后，通过Rocketmq输出插件将处理后的数据发送到Rocketmq
-3. 增加Milvus输入插件：支持全量或者增量从向量数据库Milvus采集同步数据到其他Milvus库，或者其他数据源 
-4. 完善Kafka输入输出插件：完善kafk输入输出插件，不注册jvm shutdown hook 
-5. 完善kafka输入插件：增加消息元数据信息 
+1. 新增[Rocketmq输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_114-rocketmq%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
+2. 新增[Rocketmq输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_213-rocketmq%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)：将数据源采集的数据，进行加工处理后，通过Rocketmq输出插件将处理后的数据发送到Rocketmq
+3. 增加[Milvus输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_115-%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93milvus%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：支持全量或者增量从向量数据库Milvus采集同步数据到其他Milvus库，或者其他数据源 
+4. 完善[Kafka输入](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_19-kafka%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)输出插件：完善kafk输入[输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_25-kafka%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，初始化kafka客户端时不自动注册jvm shutdown hook 
+5. 完善kafka输入插件：在数据中[设置kafka消息元数据](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_194-%e8%8e%b7%e5%8f%96%e6%b6%88%e6%81%af%e5%85%83%e6%95%b0%e6%8d%ae),包括topic、消息offset等信息
 6. 调小http链接池健康检查数据源连接池大小 
 7. 指标计算改进：新增指标key对象MetricKey,相关接口将String metricKey调整为MetricKey metricKey，调整相关案例代码 
 8. 项目和案例源码jdk 18+兼容性调整，兼容jdk 18+版本 
 9. Gradle构建脚本兼容性调整，兼容gradle 8+版本 
 10. 增加Rocketmq客户端组件，使用参考文档：https://doc.bbossgroups.com/#/Rocketmq
+11. 增量设置改进：增加数字类型增量字段是否是时间戳标识，如果是时间戳，那么increamentEndOffset配置将起作用,为时间戳增量查询增加一个查询截止时间条件：
+```java
+    public ImportBuilder setNumberTypeTimestamp(boolean numberTypeTimestamp)
+    与以下方法配合一起使用（如果不设置increamentEndOffset，标识将不起作用）：
+    /**
+    *  对于有延迟的数据源，指定增量截止时间与当前时间的偏移量
+    *  增量查询截止时间为：System.currenttime - increamentEndOffset
+    *  对应的变量名称：getLastValueVarName()+"__endTime" 对应的值类型为long
+    *  单位：秒
+    * @return
+    */
+      public ImportBuilder setIncreamentEndOffset(Integer increamentEndOffset)
+```
+   使用参考案例：[Milvus时间戳增量同步](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomNumerTimestampDemo.java)
 
 # v7.2.8 功能改进-20241102
 1. 数据交换功能扩展：增加向量数据库Milvus输出插件，支持在数据处理时，调用向量模型服务，对数据进行向量化处理，通过向量库Milvus输出插件保存向量化处理结果。
-    
+   
     使用参考文档：[milvus向量数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_212-milvus%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
     
     使用案例：

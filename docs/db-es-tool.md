@@ -1155,11 +1155,15 @@ yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'
 
 #### 2.8.5.4 时间戳增量导出截止时间偏移量配置
 
+##### 日期类型增量字段
+
 日期类型增量导入，还可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。
 
 ```java
 importBuilder.setIncreamentEndOffset(300);//单位秒，同步从上次同步截止时间当前时间前5分钟的数据，下次继续从上次截止时间开始同步数据
 ```
+
+
 
 bboss会自动增加一个内部变量collecttime\_\_endTime（增量字段名称后面加上\_\_endTime后缀），这样我们增量同步sql就可以写成如下方式：
 
@@ -1233,7 +1237,24 @@ select * from td_sm_log where collecttime > #[collecttime] and collecttime <=
 
 ```
 
+##### 数字类型时间戳增量字段
 
+数字类型增量字段，如果通过ImportBuilder将数字值标记为时间戳类型，那么可以通过increamentEndOffset为数字时间戳增量查询增加一个查询截止时间戳条件：
+
+```java
+public ImportBuilder setNumberTypeTimestamp(boolean numberTypeTimestamp)
+与以下方法配合一起使用（如果不设置increamentEndOffset，标识将不起作用）：
+/**
+*  对于有延迟的数据源，指定增量截止时间与当前时间的偏移量
+*  增量查询截止时间为：System.currenttime - increamentEndOffset
+*  对应的变量名称：getLastValueVarName()+"__endTime" 对应的值类型为long
+*  单位：秒
+* @return
+*/
+  public ImportBuilder setIncreamentEndOffset(Integer increamentEndOffset)
+```
+
+使用参考案例：[Milvus时间戳增量同步](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomNumerTimestampDemo.java)
 
 #### 2.8.5.5 控制重启作业是否重新开始同步数据
 
