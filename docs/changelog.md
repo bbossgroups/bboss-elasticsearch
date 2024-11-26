@@ -42,7 +42,7 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.2.9 功能改进-20241125
+# v7.2.9 功能改进-20241126
 1. 新增[Rocketmq输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_114-rocketmq%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
 2. 新增[Rocketmq输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_213-rocketmq%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)：将数据源采集的数据，进行加工处理后，通过Rocketmq输出插件将处理后的数据发送到Rocketmq
 3. 增加[Milvus输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_115-%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93milvus%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：支持全量或者增量从向量数据库Milvus采集同步数据到其他Milvus库，或者其他数据源 
