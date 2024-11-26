@@ -959,7 +959,7 @@ public class Demo extends ESId {
        
 ```
 
-### 6.2.5 列表检索
+### 6.2.6 列表检索
 
 ```java
 		Map params = new HashMap();

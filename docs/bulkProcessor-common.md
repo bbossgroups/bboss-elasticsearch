@@ -9,7 +9,7 @@
 gradle
 
 ```groovy
-compile 'com.bbossgroups:bboss-core-entity:6.2.5' 
+compile 'com.bbossgroups:bboss-core-entity:6.2.6' 
 ```
 
 maven
@@ -18,7 +18,7 @@ maven
 <dependency>  
     <groupId>com.bbossgroups</groupId>  
     <artifactId>bboss-core-entity</artifactId>  
-    <version>6.2.5</version>  
+    <version>6.2.6</version>  
 </dependency>  
 ```
 
@@ -131,7 +131,7 @@ CommonBulkCommand.getTotalFailedSize()
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-core-entity</artifactId>
-  <version>6.2.5</version>
+  <version>6.2.6</version>
 </dependency>
 ```
 ## 2.2 案例代码

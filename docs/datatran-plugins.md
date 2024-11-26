@@ -58,7 +58,7 @@ ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig
 //				.setSliceSize(5)
 				.setQueryUrl("kafkademo/_search")
 				/**
-				//通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.3.2将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
+				//通过简单的示例，演示根据实间范围计算queryUrl,以当前时间为截止时间，后续版本6.3.3将增加lastEndtime参数作为截止时间（在设置了IncreamentEndOffset情况下有值）
 				.setQueryUrlFunction((TaskContext taskContext,Date lastStartTime,Date lastEndTime)->{
 					String formate = "yyyy.MM.dd";
 					SimpleDateFormat dateFormat = new SimpleDateFormat(formate);
