@@ -75,17 +75,19 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 增量数据采集，默认基于sqlite数据库管理增量采集状态，可以配置到其他关系数据库管理增量采集状态，提供对多种不同数据来源增量采集机制：
 
-1) 基于数字字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse等
+1) 基于数字字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、向量数据库Milvus等
 
-2)  基于时间字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、HBase等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据
+2) 基于数字字段类型的时间戳增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、向量数据库Milvus等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据
 
-3)  基于文件内容位置偏移量：文本文件、日志文件基于采集位置偏移量做增量
+3) 基于时间字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、HBase、向量数据库Milvus等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据，支持纳秒级精度数据同步
 
-4)  基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
+4) 基于文件内容位置偏移量：文本文件、日志文件基于采集位置偏移量做增量
 
-5) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集
+5) 基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
 
-6）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
+6) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog输入插件)，实现mysql增删改实时增量数据采集，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
+
+7）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
 
 ## 主要功能
 
@@ -100,7 +102,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 2）支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
 
-支持在Elasticsearch、关系数据库、Mongodb、HBase、Hive、Kafka、Rocketmq、文本文件、excel/word/pdf/图片/视频等类型文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
+支持在Elasticsearch、关系数据库、向量数据库Milvus、Mongodb、HBase、Hive、Kafka、Rocketmq、文本文件、excel/word/pdf/图片/视频等类型文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
 支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，clickhouse，mongodb、HBase等
 
@@ -112,7 +114,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 5）提供自定义处理采集数据功能，可以按照自己的要求将采集的数据处理到目的地，如需定制化将数据保存到特定的地方，可自行实现CustomOutPut接口处理即可。
 
-6）支持从kafka接收数据；经过加工处理的数据亦可以发送到kafka；
+6）支持从kafka、Rocketmq接收数据；经过加工处理的数据亦可以发送到kafka、Rocketmq；
 
 7）支持将单条记录切割为多条记录；
 

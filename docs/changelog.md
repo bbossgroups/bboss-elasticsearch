@@ -49,22 +49,20 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 4. 完善[Kafka输入](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_19-kafka%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)输出插件：完善kafk输入[输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_25-kafka%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，初始化kafka客户端时不自动注册jvm shutdown hook 
 5. 完善kafka输入插件：在数据中[设置kafka消息元数据](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_194-%e8%8e%b7%e5%8f%96%e6%b6%88%e6%81%af%e5%85%83%e6%95%b0%e6%8d%ae),包括topic、消息offset等信息
 6. 调小http链接池健康检查数据源连接池大小 
-7. 指标计算改进：新增指标key对象MetricKey,相关接口将String metricKey调整为MetricKey metricKey，调整相关案例代码 
+7. 指标计算改进：新增指标key对象MetricKey,将相关接口参数String metricKey调整为MetricKey metricKey；通过在MetricKey中设置指标key类型，可以根据指标key类型，为指标设置不同的时间维度字段或者进行其他处理
 8. 项目和案例源码jdk 18+兼容性调整，兼容jdk 18+版本 
 9. Gradle构建脚本兼容性调整，兼容gradle 8+版本 
 10. 增加Rocketmq客户端组件，使用参考文档：https://doc.bbossgroups.com/#/Rocketmq
-11. 增量设置改进：增加数字类型增量字段是否是时间戳标识，如果是时间戳，那么increamentEndOffset配置将起作用,为时间戳增量查询增加一个查询截止时间条件：
+11. 增量采集改进：增加将数字类型增量字段值标记为时间戳配置，如果标记为时间戳，那么increamentEndOffset配置将起作用,为时间戳增量查询增加一个查询截止时间条件：
 ```java
-    public ImportBuilder setNumberTypeTimestamp(boolean numberTypeTimestamp)
-    与以下方法配合一起使用（如果不设置increamentEndOffset，标识将不起作用）：
-    /**
-    *  对于有延迟的数据源，指定增量截止时间与当前时间的偏移量
-    *  增量查询截止时间为：System.currenttime - increamentEndOffset
-    *  对应的变量名称：getLastValueVarName()+"__endTime" 对应的值类型为long
-    *  单位：秒
-    * @return
-    */
-      public ImportBuilder setIncreamentEndOffset(Integer increamentEndOffset)
+        importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);    
+        importBuilder.setNumberTypeTimestamp(true);
+        与以下方法配合一起使用（如果不设置increamentEndOffset，标识将不起作用）：       
+         *  对于有延迟的数据源，指定增量截止时间与当前时间的偏移量
+         *  增量查询截止时间为：System.currenttime - increamentEndOffset
+         *  对应的变量名称：getLastValueVarName()+"__endTime" 对应的值类型为long
+         *  单位：秒     
+        importBuilder.setIncreamentEndOffset(10);
 ```
    使用参考案例：[Milvus时间戳增量同步](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomNumerTimestampDemo.java)
 

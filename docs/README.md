@@ -106,15 +106,19 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 
 bboss支持全量和增量数据采集，增量数据采集默认基于sqlite数据库管理增量采集状态，可以配置到其他关系数据库管理增量采集状态，提供对多种不同数据来源增量采集机制：
 
-1) 基于数字字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse等
+1) 基于数字字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、向量数据库Milvus等
 
-2) 基于时间字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、HBase等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据
+2) 基于数字字段类型的时间戳增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、向量数据库Milvus等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据
 
-3) 基于文件内容位置偏移量：文本文件、日志文件基于采集位置偏移量做增量
+3) 基于时间字段增量采集：各种关系数据库、Elasticsearch、MongoDB、Clickhouse、HBase、向量数据库Milvus等，基于时间增量还可以设置一个截止时间偏移量，比如采集到当前时间前十秒的增量数据，避免漏数据，支持纳秒级精度数据同步
 
-4) 基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
+4) 基于文件内容位置偏移量：文本文件、日志文件基于采集位置偏移量做增量
 
-5) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog输入插件)，实现mysql增删改实时增量数据采集
+5) 基于ftp文件增量采集：基于文件级别，下载采集完的文件就不会再采集
+
+6) 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog输入插件)，实现mysql增删改实时增量数据采集，实现mysql增删改实时增量数据采集，支持master/slave监听、binlog日志文件直接采集两种模式
+
+7）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
 
 ### 1.2.3 流批一体化计算特点
 
