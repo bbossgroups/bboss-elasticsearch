@@ -42,6 +42,14 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.3.0 功能改进-20241201
+1. Milvus输入插件改进：新增通过向量search检索条件采集Milvus向量数据功能，并添加相关案例
+2. 问题修复：修复引用外部Milvus数据源异常问题
+3. 问题修复：修复Milvus输入插件没有配置expr的情况下增量查询报错的问题 
+4. 增加Milvus到Milvus同步的案例 
+5. 升级Milvus客户端驱动版本为2.5.0
+
 # v7.2.9 功能改进-20241126
 1. 新增[Rocketmq输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_114-rocketmq%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
 2. 新增[Rocketmq输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_213-rocketmq%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)：将数据源采集的数据，进行加工处理后，通过Rocketmq输出插件将处理后的数据发送到Rocketmq

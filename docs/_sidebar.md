@@ -51,6 +51,7 @@
     - [Elasticsearch-Kafka数据同步作业](es-kafka.md)
     - [http服务输入输出插件使用指南](datatran-http.md)
     - [Mysql binlog输入插件使用指南](mysql-binlog.md)
+    - [Milvus向量数据库数据迁移指南](milvus-datatran.md)
   - [Elasticsearch关键词高亮检索](highlight.md)
   - [Elasticsearch索引表和索引表模板管理](index-indextemplate.md)
   - [Elasticsearch update/delete by querey](update-delete-byquery.md)
