@@ -1758,7 +1758,11 @@ Milvus向量库输入插件支持全量或者增量从Milvus采集同步数据�
 
 ### 1.15.1 使用案例
 
-Milvus输入插件使用案例：
+Milvus输入插件使用案例
+
+#### 1.15.1.1 基于QueryIterator
+
+基于QueryIterator，通过指定过滤条件实现数据查询
 
 ```java
 /**
@@ -1776,9 +1780,77 @@ Milvus输入插件使用案例：
 		importBuilder.setInputConfig(milvusInputConfig);
 ```
 
+#### 1.15.1.2 基于SearchIterator
+
+基于SearchIterator，通过向量相似度检索和过滤条件相结合实现数据查询
+
+```java
+/**
+         * 源Milvus相关配置，这里用与目标库相同的Milvus数据源ucr_chan_fqa（在startaction中初始化）
+         */
+        String[] array = {"log_id","collecttime","log_content","content"};//定义要返回的字段清单        
+
+        MilvusVectorInputConfig milvusInputConfig = new MilvusVectorInputConfig();
+        milvusInputConfig.setVectorFieldName("content")//设置向量字段 
+                .setBuildMilvusVectorDataFunction(() -> { //注册检索文本条件向量化转换函数
+                    Map eparams = new HashMap();
+                    eparams.put("input", "新增了机构");//查询条件文本内容 
+                    eparams.put("model", "custom-bge-large-zh-v1.5");//指定Xinference向量模型名称
+                    //调用的 xinference 发布的向量模型模型服务，将查询条件转换为向量
+                    XinferenceResponse result = HttpRequestProxy.sendJsonBody("embedding_model", eparams,
+                            "/v1/embeddings", XinferenceResponse.class);
+                    float[] embedding = result.embedding();
+                    return Collections.singletonList(new FloatVec(embedding));
+                })
+                .setSearchParams("{\"radius\": 0.85}") //返回content与查询条件相似度为0.85以上的记录
+                .setMetricType(IndexParam.MetricType.COSINE) //采用余弦相似度算法
+                .setConsistencyLevel(ConsistencyLevel.BOUNDED)
+                .setName("ucr_chan_fqa")  //使用之前定义的向量数据库数据源，无需设置向量数据库地址和名称以及token等信息
+//                             .setDbName("ucr_chan_fqa")
+                            .setExpr("log_id < 100000")//指定过滤条件，可以进行条件组合，具体参考文档：https://milvus.io/api-reference/java/v2.4.x/v2/Vector/search.md
+//                             .setUri("http://172.24.176.18:19530").setToken("")
+                            .setOutputFields(Arrays.asList(array))  //指定返回字段清单                          
+                             .setCollectionName("demo");//指定源表名称
+        importBuilder.setInputConfig(milvusInputConfig);
+```
+
+向量检索时，除了要配置数据源参数、源表名称、过滤条件表达式以及返回字段清单，还需额外指定：
+
+1）检索向量字段
+
+2）字段向量值：通过BuildMilvusVectorDataFunction函数，调用Xinference向量模型服务，将文本转换为向量
+
+3）向量检索参数：返回content与查询条件相似度为0.85以上的记录
+
+importBuilder.setSearchParams("{"radius": 0.85}")
+
+4）向量检索算法：本文采用余弦相似度算法COSINE
+
+```java
+// Only for float vectors
+        L2,
+        IP,
+        COSINE,
+
+        // Only for binary vectors
+        HAMMING,
+        JACCARD,
+
+        // Only for sparse vector with BM25
+        BM25
+```
+
 ### 1.15.2 完整案例代码
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomDemo.java
+1）基于Search案例代码
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/MilvusVectorSearch2MilvusDemo.java
+
+2）基于Query案例代码
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2MilvusDemo.java
+
+更多Milvus输入插件使用文档，参考：[Milvus向量数据库数据迁移指南](https://esdoc.bbossgroups.com/#/milvus-datatran)
 
 # 2.输出插件
 
@@ -3352,7 +3424,9 @@ importBuilder.setImportEndAction(new ImportEndAction() {
 
 加工后的数据将通过Milvus输出插件保存到Milvus数据库，**Milvus输出插件会自动过滤掉来源记录中包含，但是向量表demo_vector中不存在的字段**。
 
+其他从源库同步的字段与目标表字段名称和类型都一致，会自动完成字段映射处理，所以为没有做进一步的datarefactor处理，如果需要进行相关字段数据类型转换和映射处理，可以参考文档：
 
+[数据加工处理](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2810-数据加工处理)
 
 ### 2.12.4 完整案例代码
 
@@ -3369,6 +3443,8 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 调用的xinference发布的模型服务 
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Db2MilvusXinferencedemo.java
+
+更多Milvus输出插件使用文档，参考：[Milvus向量数据库数据迁移指南](https://esdoc.bbossgroups.com/#/milvus-datatran)
 
 ## 2.13 Rocketmq输出插件
 

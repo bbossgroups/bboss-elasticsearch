@@ -268,6 +268,8 @@ importBuilder.setSearchParams("{\"radius\": 0.85}")
 
 ## **5. 输出配置**
 
+通过Milvus输出插件配置Milvus输出源和目标表：
+
 ```java
         /**
          * 目标Milvus配置，这里用与源相同的Milvus数据源ucr_chan_fqa（在startaction中初始化）
@@ -283,6 +285,10 @@ importBuilder.setSearchParams("{\"radius\": 0.85}")
                 .setUpsert(true);//设置为true，记录存在更新，不存在则插入
         importBuilder.setOutputConfig(milvusOutputConfig);
 ```
+
+从源库同步的向量数据表输出字段与目标表字段名称和类型都一致，会自动完成字段映射处理，所以为没有做进一步的datarefactor处理，如果需要进行字段数据类型转换和映射处理，可以参考文档：
+
+[数据加工处理](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2810-%e6%95%b0%e6%8d%ae%e5%8a%a0%e5%b7%a5%e5%a4%84%e7%90%86)
 
 ## 6. 增量迁移和定时执行策略配置
 

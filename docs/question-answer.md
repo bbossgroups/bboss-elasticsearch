@@ -285,3 +285,9 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 参考文档解决：[启用mysql 流处理机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2814-mysql-resultset-stream%e6%9c%ba%e5%88%b6%e8%af%b4%e6%98%8e)
 
+# 问题8 Alaorithm X25519 not available
+在使用file插件上传文件到ftp服务器或者从ftp服务器下载文件时，有时会报Alaorithm X25519 not available异常
+## 问题分析
+jdk 版本过低，使用jdk 1.8的小版本号过低
+## 问题处理
+升级jdk 到1.8小版本到1.8高版本，或者到更高的jdk版本
