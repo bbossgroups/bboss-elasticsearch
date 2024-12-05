@@ -44,10 +44,10 @@
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
 # v7.3.0 功能改进-20241201
-1. Milvus输入插件改进：新增通过向量search检索条件采集Milvus向量数据功能，并添加相关案例
+1. Milvus输入插件改进：新增通过向量search检索条件采集Milvus向量数据功能，并添加[相关案例](https://esdoc.bbossgroups.com/#/milvus-datatran)
 2. 问题修复：修复引用外部Milvus数据源异常问题
 3. 问题修复：修复Milvus输入插件没有配置expr的情况下增量查询报错的问题 
-4. 增加Milvus到Milvus同步的案例 
+4. 增加Milvus到Milvus同步的[案例](https://esdoc.bbossgroups.com/#/milvus-datatran) 
 5. 升级Milvus客户端驱动版本为2.5.0
 
 # v7.2.9 功能改进-20241126
