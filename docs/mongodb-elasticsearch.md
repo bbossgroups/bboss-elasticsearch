@@ -2339,7 +2339,7 @@ xxl.job.executor.appname=mongodb-elasticsearch-xxjob
         <dependency>
             <groupId>com.bbossgroups</groupId>
             <artifactId>bboss-schedule</artifactId>
-            <version>6.2.6</version>
+            <version>6.2.7</version>
         </dependency>
 ```
 

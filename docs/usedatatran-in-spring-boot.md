@@ -33,7 +33,7 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot-starter</artifactId>
-    <version>6.3.3</version> 			
+    <version>6.3.5</version> 			
 </dependency>
 ```
 基于spring boot 3.x的数据同步功能需要导入如下maven坐标：
@@ -53,7 +53,7 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-spring-boot3-starter</artifactId>
-    <version>6.3.3</version> 			
+    <version>6.3.5</version> 			
 </dependency>
 ```
 
