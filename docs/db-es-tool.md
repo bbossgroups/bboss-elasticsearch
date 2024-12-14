@@ -386,7 +386,7 @@ Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处�
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-jdbc</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 kafka插件maven坐标
@@ -394,7 +394,7 @@ kafka插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-kafka2x</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 rocketmq插件maven坐标
@@ -402,7 +402,7 @@ rocketmq插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-rocketmq</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 日志文件/excel/csv//word/pdf/图片/视频等采集以及上传ftp/sftp插件maven坐标
@@ -410,7 +410,7 @@ rocketmq插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-fileftp</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 hbase插件maven坐标
@@ -418,7 +418,7 @@ hbase插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-hbase</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 mongodb插件maven坐标
@@ -426,7 +426,7 @@ mongodb插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-mongodb</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 
@@ -435,7 +435,7 @@ mysqlbinlog插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-binlog</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 milvus插件maven坐标
@@ -443,7 +443,7 @@ milvus插件maven坐标
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-milvus</artifactId>
-<version>7.2.9</version>
+<version>7.3.0</version>
 </dependency>
 ```
 

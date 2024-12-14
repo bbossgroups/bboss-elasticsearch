@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.2.9 发布
+# BBOSS版本变更记录-v7.3.0 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.9</version>
+            <version>7.3.0</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.2.9</version>
+            <version>7.3.0</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,18 +37,19 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.2.9</version>
+            <version>7.3.0</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.0 功能改进-20241201
+# v7.3.0 功能改进-20241215
 1. Milvus输入插件改进：新增通过向量search检索条件采集Milvus向量数据功能，并添加[相关案例](https://esdoc.bbossgroups.com/#/milvus-datatran)
 2. 问题修复：修复引用外部Milvus数据源异常问题
 3. 问题修复：修复Milvus输入插件没有配置expr的情况下增量查询报错的问题 
 4. 增加Milvus到Milvus同步的[案例](https://esdoc.bbossgroups.com/#/milvus-datatran) 
-5. 升级Milvus客户端驱动版本为2.5.0
+5. 升级Milvus客户端驱动版本为2.5.2
+6. 去除框架中对log4j的依赖，调整为log4j2
 
 # v7.2.9 功能改进-20241126
 1. 新增[Rocketmq输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_114-rocketmq%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)：从Rocketmq接收数据，支持同时设置多个topic主题，指定消息消费位置等参数；数据通过加工处理后，通过其他输出插件进行输出。
@@ -1057,7 +1058,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.2.9</version>
+            <version>7.3.0</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1065,7 +1066,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.2.9</version>
+            <version>7.3.0</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1152,7 +1153,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.2.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1698,7 +1699,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.9</version>
+    <version>7.3.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

@@ -3,21 +3,21 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
-    <RollingFile name="RollingFile" fileName="es.log"
-                      filePattern="error-%d{yyyy-MM-dd}-%i.log">
+    <RollingFile name="RollingFile" fileName="bboss-elasticsearch-rest-booter.log"
+                      filePattern="bboss-elasticsearch-rest-booter-%d{yyyy-MM-dd}-%i.log">
              <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
              <Policies>
                  <TimeBasedTriggeringPolicy/>
-                 <SizeBasedTriggeringPolicy size="1 MB"/>
+                 <SizeBasedTriggeringPolicy size="5 MB"/>
+                 <DefaultRolloverStrategy max="5"/>  <!--最多产生多少个日志文件，如果更多，将以前的覆盖-->
              </Policies>
        </RollingFile>
   </Appenders>
   <Loggers>
-    <Logger name="com.foo.Bar" level="debug" additivity="false">
-      <AppenderRef ref="RollingFile"/>
-    </Logger>
-    <Root level="info">
-      <AppenderRef ref="Console"/>
+
+    <Root level="INFO">
+        <AppenderRef ref="Console"/>
+        <AppenderRef ref="RollingFile"/>
     </Root>
   </Loggers>
 </Configuration>

@@ -23,12 +23,12 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.9</version>
+    <version>7.3.0</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.2.9</version>
+    <version>7.3.0</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups</groupId>
@@ -43,12 +43,12 @@ https://gitee.com/bboss/springboot-elasticsearch
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.2.9</version>
+    <version>7.3.0</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-    <version>7.2.9</version>
+    <version>7.3.0</version>
 </dependency>
 <dependency>
     <groupId>com.bbossgroups</groupId>
