@@ -15,23 +15,23 @@
  */
 package org.frameworkset.elasticsearch.template;
 
-import bboss.org.apache.velocity.VelocityContext;
+import bboss.org.apache.velocity.Template;
 import bboss.org.apache.velocity.context.Context;
 import bboss.org.apache.velocity.context.InternalContextAdapterImpl;
 import bboss.org.apache.velocity.exception.*;
-import bboss.org.apache.velocity.runtime.RuntimeConstants;
 import bboss.org.apache.velocity.runtime.directive.Scope;
 import bboss.org.apache.velocity.runtime.directive.StopCommand;
 import bboss.org.apache.velocity.runtime.parser.ParseException;
 import bboss.org.apache.velocity.runtime.parser.node.ASTText;
 import bboss.org.apache.velocity.runtime.parser.node.Node;
 import bboss.org.apache.velocity.runtime.parser.node.SimpleNode;
-import bboss.org.apache.velocity.runtime.resource.Resource;
 import bboss.org.apache.velocity.runtime.resource.ResourceManager;
 import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.soa.BBossStringReader;
+import org.slf4j.Logger;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,25 +45,20 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESTemplate extends Resource
+public class ESTemplate extends Template
 {
-    /*
-     * The name of the variable to use when placing
-     * the scope object into the context.
-     */
-    private String scopeName = "template";
-    private ESInfo esInfo;
-    
-    private boolean provideScope = false;
+
+    private ESInfo esInfo;    
+ 
    private String template;   
    private boolean processed;
-
-    private VelocityException errorCondition = null;
+   
 
     /** Default constructor */
     public ESTemplate(ESInfo esInfo)
     {
         super();
+        scopeName = "estemplate";
         this.esInfo = esInfo;   
          this.template = this.esInfo.getTemplate();
         this.setName(esInfo.getTemplateName());
@@ -156,11 +151,11 @@ public class ESTemplate extends Resource
 	            /*
 	             *  now parse the template
 	             */
-	
-	            try
+                BufferedReader br = null;
+                try
 	            {
-	                BufferedReader br = new BufferedReader( is);
-	                data = rsvc.parse(br, name);
+	                br = new BufferedReader( is);
+	                data = rsvc.parse(br, this);
 	                initDocument();
 	                processed = true;
 	                try {
@@ -191,8 +186,8 @@ public class ESTemplate extends Resource
 	             */
 	            catch( RuntimeException e )
 	            {
-	                errorCondition = new VelocityException("Exception thrown processing Template "
-	                    +getName(), e);
+                    errorCondition = new VelocityException("Exception thrown processing Template "
+                            +getName(), e, rsvc.getLogContext().getStackTrace());
 	                processed = true;
 	                throw errorCondition;
 	            }
@@ -208,93 +203,36 @@ public class ESTemplate extends Resource
 	                }
 	                catch(IOException e)
 	                {
-	                    // If we are already throwing an exception then we want the original
-	                    // exception to be continued to be thrown, otherwise, throw a new Exception.
-	                    if (errorCondition == null)
-	                    {
-	                         throw new VelocityException(e);
-	                    }                    
+	                                        
 	                }
+
+                    try
+                    {
+                        if(br != null)
+                            br.close();
+                    }
+                    catch(IOException e)
+                    {
+                         
+                    }
 	                
 	            }
 	        }
 	        else
 	        {
-	            /*
-	             *  is == null, therefore we have some kind of file issue
-	             */
-	            errorCondition = new ResourceNotFoundException("Unknown resource error for resource " + name );
+                /*
+                 *  is == null, therefore we have some kind of file issue
+                 */
+                errorCondition = new ResourceNotFoundException("Unknown resource error for resource " + name, null, rsvc.getLogContext().getStackTrace() );
 	            processed = true;
 	            throw errorCondition;
 	        }
     	}
     }
 
-    /**
-     *  initializes the document.  init() is not longer
-     *  dependant upon context, but we need to let the
-     *  init() carry the template name down throught for VM
-     *  namespace features
-     * @throws TemplateInitException When a problem occurs during the document initialization.
-     */
-    public void initDocument()
-    throws TemplateInitException
-    {
-        /*
-         *  send an empty InternalContextAdapter down into the AST to initialize it
-         */
-
-        InternalContextAdapterImpl ica = new InternalContextAdapterImpl(  new VelocityContext() );
-
-        try
-        {
-            /*
-             *  put the current template name on the stack
-             */
-
-            ica.pushCurrentTemplateName( name );
-            ica.setCurrentResource( this );
-
-            /*
-             *  init the AST
-             */
-
-            ((SimpleNode)data).init( ica, rsvc);
-
-            String property = scopeName+'.'+RuntimeConstants.PROVIDE_SCOPE_CONTROL;
-            provideScope = rsvc.getBoolean(property, provideScope);
-        }
-        finally
-        {
-            /*
-             *  in case something blows up...
-             *  pull it off for completeness
-             */
-
-            ica.popCurrentTemplateName();
-            ica.setCurrentResource( null );
-        }
-
-    }
-
-    /**
-     * The AST node structure is merged with the
-     * context to produce the final output.
-     *
-     *  @param context Conext with data elements accessed by template
-     *  @param writer output writer for rendered template
-     *  @throws ResourceNotFoundException if template not found
-     *          from any available source.
-     *  @throws ParseErrorException if template cannot be parsed due
-     *          to syntax (or other) error.
-     *  @throws MethodInvocationException When a method on a referenced object in the context could not invoked.
-     */
-    public void merge( Context context, Writer writer)
-        throws ResourceNotFoundException, ParseErrorException, MethodInvocationException
-    {
-        merge(context, writer, null);
-    }
     
+
+ 
     public String evaluate( Map variablevalues)
             throws ResourceNotFoundException, ParseErrorException, MethodInvocationException
     {
@@ -302,10 +240,8 @@ public class ESTemplate extends Resource
         merge(BBossVelocityUtil.buildVelocityContext(variablevalues), writer, null);
         return writer.toString();
     }
-    
-    
 
-    
+
     /**
      * The AST node structure is merged with the
      * context to produce the final output.
@@ -320,145 +256,163 @@ public class ESTemplate extends Resource
      *  @throws MethodInvocationException When a method on a referenced object in the context could not invoked.
      *  @since 1.6
      */
-    public void merge( Context context, Writer writer, List macroLibraries)
-        throws ResourceNotFoundException, ParseErrorException, MethodInvocationException
+    public void merge( Context context, Writer writer, List<String> macroLibraries)
+            throws ResourceNotFoundException, ParseErrorException, MethodInvocationException
     {
-    	process();
-        /*
-         *  we shouldn't have to do this, as if there is an error condition,
-         *  the application code should never get a reference to the
-         *  Template
-         */
-
-        if (errorCondition != null)
+        try
         {
-            throw errorCondition;
-        }
-
-        if( data != null)
-        {
+            process();
             /*
-             *  create an InternalContextAdapter to carry the user Context down
-             *  into the rendering engine.  Set the template name and render()
+             *  we shouldn't have to do this, as if there is an error condition,
+             *  the application code should never get a reference to the
+             *  Template
              */
 
-            InternalContextAdapterImpl ica = new InternalContextAdapterImpl( context );
-
-            /**
-             * Set the macro libraries
-             */
-            ica.setMacroLibraries(macroLibraries);
-
-            if (macroLibraries != null)
+            if (errorCondition != null)
             {
-                for (int i = 0; i < macroLibraries.size(); i++)
-                {
-                    /**
-                     * Build the macro library
-                     */
-                    try
-                    {
-                        rsvc.getTemplate((String) macroLibraries.get(i));
-                    }
-                    catch (ResourceNotFoundException re)
-                    {
-                        /*
-                        * the macro lib wasn't found.  Note it and throw
-                        */
-                        rsvc.getLog().error("template.merge(): " +
-                                "cannot find template " +
-                                (String) macroLibraries.get(i));
-                        throw re;
-                    }
-                    catch (ParseErrorException pe)
-                    {
-                        /*
-                        * the macro lib was found, but didn't parse - syntax error
-                        *  note it and throw
-                        */
-                        rsvc.getLog().error("template.merge(): " +
-                                "syntax error in template " +
-                                (String) macroLibraries.get(i) + ".");
-                        throw pe;
-                    }
-                    
-                    catch (Exception e)
-                    {
-                        throw new RuntimeException("Template.merge(): parse failed in template  " +
-                                (String) macroLibraries.get(i) + ".", e);
-                    }
-                }
+                throw errorCondition;
             }
 
-            if (provideScope)
-            {
-                ica.put(scopeName, new Scope(this, ica.get(scopeName)));
-            }
-            try
-            {
-                ica.pushCurrentTemplateName( name );
-                ica.setCurrentResource( this );
-
-                ( (SimpleNode) data ).render( ica, writer);
-            }
-            catch (StopCommand stop)
-            {
-                if (!stop.isFor(this))
-                {
-                    throw stop;
-                }
-                else if (rsvc.getLog().isDebugEnabled())
-                {
-                    rsvc.getLog().debug(stop.getMessage());
-                }
-            }
-            catch (IOException e)
-            {
-                throw new VelocityException("IO Error rendering template '"+ name + "'", e);
-            }
-            finally
+            if (data != null)
             {
                 /*
-                 *  lets make sure that we always clean up the context
+                 *  create an InternalContextAdapter to carry the user Context down
+                 *  into the rendering engine.  Set the template name and render()
                  */
-                ica.popCurrentTemplateName();
-                ica.setCurrentResource( null );
+
+                InternalContextAdapterImpl ica = new InternalContextAdapterImpl(context);
+
+                /*
+                 * Set the macro libraries
+                 */
+                List<Template> libTemplates = new ArrayList<>();
+                ica.setMacroLibraries(libTemplates);
+
+                if (macroLibraries != null)
+                {
+                    for (String macroLibrary : macroLibraries)
+                    {
+                        /*
+                         * Build the macro library
+                         */
+                        try
+                        {
+                            Template t = rsvc.getTemplate(macroLibrary);
+                            libTemplates.add(t);
+                        }
+                        catch (ResourceNotFoundException re)
+                        {
+                            /*
+                             * the macro lib wasn't found.  Note it and throw
+                             */
+                            log.error("cannot find template {}", macroLibrary);
+                            throw re;
+                        }
+                        catch (ParseErrorException pe)
+                        {
+                            /*
+                             * the macro lib was found, but didn't parse - syntax error
+                             *  note it and throw
+                             */
+                            rsvc.getLog("parser").error("syntax error in template {}: {}",
+                                    macroLibrary, pe.getMessage(), pe);
+                            throw pe;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new RuntimeException("parse failed in template  " +
+                                    macroLibrary + ".", e);
+                        }
+                    }
+                }
 
                 if (provideScope)
                 {
-                    Object obj = ica.get(scopeName);
-                    if (obj instanceof Scope)
+                    ica.put(scopeName, new Scope(this, ica.get(scopeName)));
+                }
+                try
+                {
+                    ica.pushCurrentTemplateName(name);
+                    ica.setCurrentResource(this);
+
+                    ((SimpleNode) data).render(ica, writer);
+                }
+                catch (StopCommand stop)
+                {
+                    if (!stop.isFor(this))
                     {
-                        Scope scope = (Scope)obj;
-                        if (scope.getParent() != null)
+                        throw stop;
+                    }
+                    else
+                    {
+                        Logger renderingLog = rsvc.getLog("rendering");
+                        renderingLog.debug(stop.getMessage());
+                    }
+                }
+                catch (IOException e)
+                {
+                    throw new VelocityException("IO Error rendering template '" + name + "'", e, rsvc.getLogContext().getStackTrace());
+                }
+                finally
+                {
+                    /*
+                     *  lets make sure that we always clean up the context
+                     */
+                    ica.popCurrentTemplateName();
+                    ica.setCurrentResource(null);
+
+                    if (provideScope)
+                    {
+                        Object obj = ica.get(scopeName);
+                        if (obj instanceof Scope)
                         {
-                            ica.put(scopeName, scope.getParent());
-                        }
-                        else if (scope.getReplaced() != null)
-                        {
-                            ica.put(scopeName, scope.getReplaced());
-                        }
-                        else
-                        {
-                            ica.remove(scopeName);
+                            Scope scope = (Scope) obj;
+                            if (scope.getParent() != null)
+                            {
+                                ica.put(scopeName, scope.getParent());
+                            }
+                            else if (scope.getReplaced() != null)
+                            {
+                                ica.put(scopeName, scope.getReplaced());
+                            }
+                            else
+                            {
+                                ica.remove(scopeName);
+                            }
                         }
                     }
                 }
             }
+            else
+            {
+                /*
+                 * this shouldn't happen either, but just in case.
+                 */
+
+                String msg = "Template merging failed. The document is null, " +
+                        "most likely due to a parsing error.";
+
+                throw new RuntimeException(msg);
+
+            }
         }
-        else
+        catch (VelocityException ve)
         {
-            /*
-             * this shouldn't happen either, but just in case.
-             */
-
-            String msg = "Template.merge() failure. The document is null, " +
-                "most likely due to parsing error.";
-
-            throw new RuntimeException(msg);
-
+            /* it's a good place to display the VTL stack trace if we have one */
+            String[] vtlStacktrace = ve.getVtlStackTrace();
+            if (vtlStacktrace != null)
+            {
+                Logger renderingLog = rsvc.getLog("rendering");
+                renderingLog.error(ve.getMessage());
+                renderingLog.error("VTL stacktrace:");
+                for (String level : vtlStacktrace)
+                {
+                    renderingLog.error(level);
+                }
+            }
+            throw ve;
         }
     }
-
-	
+ 
+  
 }
