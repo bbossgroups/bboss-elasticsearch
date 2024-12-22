@@ -9,8 +9,9 @@
              <Policies>
                  <TimeBasedTriggeringPolicy/>
                  <SizeBasedTriggeringPolicy size="5 MB"/>
-                 <DefaultRolloverStrategy max="5"/>  <!--最多产生多少个日志文件，如果更多，将以前的覆盖-->
+                 
              </Policies>
+        <DefaultRolloverStrategy max="5"/>  <!--最多产生多少个日志文件，如果更多，将以前的覆盖-->
        </RollingFile>
   </Appenders>
   <Loggers>
