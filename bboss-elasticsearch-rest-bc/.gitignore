@@ -1,0 +1,14 @@
+/distrib
+/classes
+/build.properties.bak
+/build-jdk5.log
+/build-jdk6.log
+/common.log
+/deployment
+/src-jdk7_20150114
+/build-jdk7.log
+/velocity.log
+/build/
+/bin/
+/derby.log
+/out/

@@ -1,0 +1,11 @@
+
+//project.tasks.compileJava.dependsOn(project(':bboss-core').tasks.publishToMavenLocal)
+dependencies {
+	api( project(":bboss-elasticsearch-rest")){
+        exclude group: 'com.bbossgroups', module: 'bboss-velocity'
+    }
+
+    api([group: 'com.bbossgroups', name: 'bboss-persistent-bc', version: "${PROJ_BBOSS_VERSION}", transitive: true])
+ 
+}
+

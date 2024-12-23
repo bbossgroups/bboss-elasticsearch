@@ -31,7 +31,7 @@ public class ESTemplateHelper {
 			return esInfo.getTemplate();
 		}
 		else{
-			ESTemplate esTemplate = esInfo.getEstpl();
+            ESTemplate esTemplate = esInfo.getEstpl();
 			esTemplate.process();
 			if (esInfo.isTpl()) {
 				VelocityContext vcontext = configDSLUtil.buildVelocityContext();//一个context是否可以被同时用于多次运算呢？

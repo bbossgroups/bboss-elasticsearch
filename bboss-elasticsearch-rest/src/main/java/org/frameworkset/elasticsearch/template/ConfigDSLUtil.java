@@ -17,6 +17,8 @@
 package org.frameworkset.elasticsearch.template;
 
 import bboss.org.apache.velocity.VelocityContext;
+import bboss.org.apache.velocity.runtime.VelocityEngineVersion;
+import bboss.org.apache.velocity.runtime.resource.Resource;
 import com.frameworkset.util.*;
 import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
@@ -25,6 +27,8 @@ import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.CustomCharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
+import org.frameworkset.persitent.template.SQLTemplateFactory;
+import org.frameworkset.persitent.util.SQLInfo;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.assemble.Param;
 import org.frameworkset.util.ClassUtil;
@@ -75,6 +79,79 @@ public class ConfigDSLUtil {
 	protected boolean destroyed = false;
 //	protected  Map<String,ESUtil> esutils;
 	protected ConfigHolder configHolder;
+
+    private static ESTemplateFactory factory = null;
+    static {
+        initESTemplateFactory();
+    }
+    private static void initESTemplateFactory(){
+
+        if(factory != null)
+            return;
+
+        boolean isVersion2 = (VelocityEngineVersion.getVersion() >= 20);
+        if(isVersion2) {
+            initESTemplateFactory2();
+        }
+        else{
+            initESTemplateFactory1();
+        }
+    }
+
+    private static void initESTemplateFactory1(){
+
+        if(factory != null)
+            return;
+
+        try {
+            Class clazz = Class.forName("org.frameworkset.elasticsearch.template.ESTemplateFactoryImpl1");
+            factory = (ESTemplateFactory) clazz.getConstructor().newInstance();
+
+        } catch (ClassNotFoundException e) {
+            log.error("org.frameworkset.elasticsearch.template.ESTemplateFactoryImpl1 not exist", e);
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+    }
+
+    private static void initESTemplateFactory2(){
+
+        if(factory != null)
+            return;
+
+        try {
+            Class clazz = Class.forName("org.frameworkset.elasticsearch.template.ESTemplateFactoryImpl2");
+            factory = (ESTemplateFactory) clazz.getConstructor().newInstance();
+
+        } catch (ClassNotFoundException e) {
+            log.error("org.frameworkset.elasticsearch.template.ESTemplateFactoryImpl2", e);
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+    }
+    public static ESTemplate createESTemplate(ESInfo esInfo){
+        return factory.createESTemplate(esInfo);
+    }
 	public VariableHandler.URLStruction getTempateStruction(ESInfo esInfo, String template) {
 		return this.templateCache.getTemplateStruction(esInfo,template);
 	}
@@ -800,15 +877,15 @@ public class ConfigDSLUtil {
 							boolean cache = pro.getCache() != null? pro.getCache():true;
 							boolean istpl = pro.getVtpl() != null? pro.getVtpl():true;//pro.getBooleanExtendAttribute("istpl",true);//标识sql语句是否为velocity模板
 							boolean multiparser = pro.getMultiparser() != null? pro.getMultiparser():istpl;//pro.getBooleanExtendAttribute("multiparser",istpl);//如果sql语句为velocity模板，则在批处理时是否需要每条记录都需要分析sql语句
-							ESTemplate sqltpl = null;
+                            ESTemplate sqltpl = null;
 							value = ConfigDSLUtil.ltrim(value);
 							ESInfo sqlinfo = new ESInfo(key, value, istpl,multiparser,pro, cache);
 							sqlinfo.setConfigDSLUtil(this);
 							if(istpl)
 							{
-								sqltpl = new ESTemplate(sqlinfo);
+								sqltpl = createESTemplate(sqlinfo);
 								sqlinfo.setEstpl(sqltpl);
-								BBossVelocityUtil.initElasticTemplate(sqltpl);
+								BBossVelocityUtil.initElasticTemplate((Resource) sqltpl);
 								try {
 									sqltpl.process();
 								}

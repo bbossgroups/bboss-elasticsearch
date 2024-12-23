@@ -1,5 +1,6 @@
 include 'bboss-elasticsearch-rest-entity'
 include 'bboss-elasticsearch-rest'
+include 'bboss-elasticsearch-rest-bc'
 //include 'bboss-elasticsearch'
 include 'bboss-elasticsearch-rest-booter'
 include 'bboss-elasticsearch-spring-boot-starter'

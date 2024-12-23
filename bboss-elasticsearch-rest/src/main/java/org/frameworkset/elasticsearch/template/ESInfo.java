@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.template;
 
+import bboss.org.apache.velocity.runtime.resource.Resource;
 import com.frameworkset.util.VariableHandler;
 
 public class ESInfo {
