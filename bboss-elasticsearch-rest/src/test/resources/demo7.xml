@@ -346,7 +346,7 @@
                 #if($includes && $includes.size() > 0) ##设置includes filter
                     "includes": [
                         #foreach($include in $includes)
-                             #if($velocityCount > 0),#end "$include"
+                             #if($foreach.index > 0),#end "$include"
                         #end
                     ]
                     #if($excludes && $excludes.size() > 0),#end ##如果还存在排斥字段，则需要加一个逗号
@@ -354,7 +354,7 @@
                 #if($excludes && $excludes.size() > 0)  ##设置excludes filter
                     "excludes": [
                         #foreach($exclude in $excludes)
-                             #if($velocityCount > 0),#end "$exclude"
+                             #if($foreach.index > 0),#end "$exclude"
                         #end
                     ]
                 #end
@@ -368,7 +368,7 @@
                             "terms": {
                                 "applicationName.keyword":[
                                     #foreach($applicationName in $applicationNames)
-                                         #if($velocityCount > 0),#end "$applicationName"
+                                         #if($foreach.index > 0),#end "$applicationName"
                                     #end
                                 ]
                             }
@@ -458,11 +458,11 @@
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
+                       #if($foreach.index > 0),#end
                    {
-                        "ruleId": #[dynamicPriceTemplate->rules[$velocityCount]->ruleId],
-                        "ruleCount": #[dynamicPriceTemplate->rules[$velocityCount]->ruleCount],
-                        "ruleExist": #[dynamicPriceTemplate->rules[$velocityCount]->ruleExist]
+                        "ruleId": #[dynamicPriceTemplate->rules[$foreach.index]->ruleId],
+                        "ruleCount": #[dynamicPriceTemplate->rules[$foreach.index]->ruleCount],
+                        "ruleExist": #[dynamicPriceTemplate->rules[$foreach.index]->ruleExist]
                     }
                    #end
               ]
@@ -478,7 +478,7 @@
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
+                       #if($foreach.index > 0),#end
                    {
 
                         "ruleId": "$rule.ruleId",
@@ -513,8 +513,8 @@
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #[dynamicPriceTemplate->rules[$velocityCount],serialJson=true] ## 通过属性serialJson指示框架直接将对象序列化为json数据
-                        #if($velocityCount != ($dynamicPriceTemplate.rules.size() - 1)),#end
+                       #[dynamicPriceTemplate->rules[$foreach.index],serialJson=true] ## 通过属性serialJson指示框架直接将对象序列化为json数据
+                        #if($foreach.index != ($dynamicPriceTemplate.rules.size() - 1)),#end
                    #end
               ]
             }
@@ -552,7 +552,7 @@
     <property name="mapbianli"><![CDATA[
         ## map遍历实例，通过$item.value直接输出值，如果值中存在的特殊字符，不会对特殊字符进行转义处理，请自行处理
         #foreach($item in $softTypeMap.entrySet())
-            #if($velocityCount > 0),#end
+            #if($foreach.index > 0),#end
             { "match": { "$item.key": "$item.value" } }
         #end
     ]]>
@@ -563,7 +563,7 @@
         ## map<String,List<String>>遍历实例，可以通过#[]绑定变量对值中存在的特殊字符进行转义处理
         #foreach($item in $softTypeMap.entrySet())
             #if($item.value)
-                #if($velocityCount > 0),#end
+                #if($foreach.index > 0),#end
                 { "match": { "$item.key": #[softTypeMap[$item.key],serialJson=true] } }
             #end
         #end
@@ -578,14 +578,14 @@
                 "bool": {
                     "must": [
                             #foreach($item in $softTypeMap.entrySet())
-                                #if($velocityCount > 0),#end
+                                #if($foreach.index > 0),#end
                                 { "match":
                                     {
                                     #if($item.value)
                                     "$item.key":
                                     [
                                         #foreach($applicationName in $item.value)
-                                             #if($velocityCount > 0),#end #[softTypeMap[$item.key][$velocityCount]]
+                                             #if($foreach.index > 0),#end #[softTypeMap[$item.key][$foreach.index]]
                                         #end
                                     ]
                                     #end
@@ -608,8 +608,8 @@
                                 "bool":{
                                     "should":[
                                         #foreach($children in $item)
-                                            #if($velocityCount > 0),#end
-                                            { "match": { "$item.key": #[$mustShouldMap[$item.key][$velocityCount]] } }
+                                            #if($foreach.index > 0),#end
+                                            { "match": { "$item.key": #[$mustShouldMap[$item.key][$foreach.index]] } }
                                         #end
                                     ]
                                 }

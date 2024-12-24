@@ -80,7 +80,7 @@ GET /_mget
         {
             "docs" : [
             #foreach($id in $ids)
-                #if($velocityCount > 0),#end
+                #if($foreach.index > 0),#end
                 {
                     "_index" : "agentinfo",
                     "_type" : "agentinfo",

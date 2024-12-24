@@ -43,7 +43,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.10 功能改进-20241223
+# v7.3.1 功能改进-20241223
 1. 升级Velocity模版引擎1.7到2.5
    升级注意事项：将模版脚本中的$velocityCount变量调整为$foreach.index
    在foreach循环中，判断是否有记录，亦可以可以访问$foreach.hasNext

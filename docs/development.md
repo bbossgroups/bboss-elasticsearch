@@ -2435,13 +2435,13 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
 
 \#foreach-#end
 
-  foreach循环内置循环变量：$velocityCount，不需要从外部传入,使用示例：
+  foreach循环内置循环变量：$foreach.index，不需要从外部传入,使用示例：
 
 ```velocity
 #foreach($xxx in $xxxs)
-     #if($velocityCount > 0) ,#end
+     #if($foreach.index > 0) ,#end
      {"term": {
-     	"applicationName": #[xxxs[$velocityCount]]
+     	"applicationName": #[xxxs[$foreach.index]]
      }}
 #end
 ```
@@ -2450,12 +2450,12 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
 
 ```velocity
 #foreach($subxxxs in $xxxs)
-     ## 定义保存外部循环变量velocityCount的临时变量
-     #set($outIndex = $velocityCount)
+     ## 定义保存外部循环变量foreach.index的临时变量
+     #set($outIndex = $foreach.index)
      #foreach($item in $subxxxs.innerList)
          #if($outIndex > 0) ,#end
          {"term": {
-            "applicationName": #[xxxs[$outIndex]->innerList[$velocityCount]]
+            "applicationName": #[xxxs[$outIndex]->innerList[$foreach.index]]
          }}
 	#end
 #end
@@ -2622,7 +2622,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和\*#包起来
 
 \#[dynamicPriceTemplate->goodName,escapeCount=2]
 
-\#[dynamicPriceTemplate->rules[$velocityCount],serialJson=true]
+\#[dynamicPriceTemplate->rules[$foreach.index],serialJson=true]
 
 **#[testVar,serialJson=true]**
 
@@ -2630,7 +2630,7 @@ dsl注释是用多个#号来标识的，大段注释用 #* 和\*#包起来
 
 - **serialJson** boolean类型，通过属性serialJson指示框架直接将对象序列化为json数据,使用案例：
 
-\#[dynamicPriceTemplate->rules[$velocityCount],serialJson=true]
+\#[dynamicPriceTemplate->rules[$foreach.index],serialJson=true]
 
 \#[testVar,serialJson=true]
 
@@ -2892,19 +2892,19 @@ $myarray.size()
 
 **建议**:**在dsl拼接中采用#[xxx]替代$xxx模式变量，在foreach和if/else语法中使用$xxx.**
 
- **${xxx}都是硬解析的，除了if-else和foreach条件、foreach循环下标变量velocityCount中使用，其他地方都尽量避免使用  ${xxx}模式变量**
+ **${xxx}都是硬解析的，除了if-else和foreach条件、foreach循环下标变量foreach.index中使用，其他地方都尽量避免使用  ${xxx}模式变量**
 
 ### 5.3.6 foreach循环中使用#[xxx]模式变量及优化
 
-可以下foreach循环中结合循环计数器$velocityCount使用#[xxx]模式变量，例如：
+可以下foreach循环中结合循环计数器$foreach.index使用#[xxx]模式变量，例如：
 
 ```json
 
 
 "terms":{"sourceFields":[
     					 #foreach($sourceField in $sourceFields) 
-                             #if($velocityCount > 0),#end 
-                             #[sourceFields[$velocityCount]] 
+                             #if($foreach.index > 0),#end 
+                             #[sourceFields[$foreach.index]] 
                          #end 
                         ]
         }
@@ -3351,11 +3351,11 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
+                       #if($foreach.index > 0),#end
                    {
-                        "ruleId": #[dynamicPriceTemplate->rules[$velocityCount]->ruleId],
-                        "ruleCount": #[dynamicPriceTemplate->rules[$velocityCount]->ruleCount],
-                        "ruleExist": #[dynamicPriceTemplate->rules[$velocityCount]->ruleExist]
+                        "ruleId": #[dynamicPriceTemplate->rules[$foreach.index]->ruleId],
+                        "ruleCount": #[dynamicPriceTemplate->rules[$foreach.index]->ruleCount],
+                        "ruleExist": #[dynamicPriceTemplate->rules[$foreach.index]->ruleExist]
                     }
                    #end
               ]
@@ -3371,8 +3371,8 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
-                       #[dynamicPriceTemplate->rules[$velocityCount],serialJson=true] ## 通过属性serialJson指示框架直接将对象序列化为json数据
+                       #if($foreach.index > 0),#end
+                       #[dynamicPriceTemplate->rules[$foreach.index],serialJson=true] ## 通过属性serialJson指示框架直接将对象序列化为json数据
                    #end
               ]
             }
@@ -3387,7 +3387,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
               "goodsId": #[dynamicPriceTemplate->goodsId],
               "rules":[
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
+                       #if($foreach.index > 0),#end
                    {
 
                         "ruleId": "$rule.ruleId",
@@ -3500,7 +3500,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 
 循环语法：#foreach-#end
 
-循环控制计数器变量：$velocityCount
+循环控制计数器变量：$foreach.index
 
 举例说明如下：
 
@@ -3514,8 +3514,8 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 {
 #foreach($ldxxbh in $ldxxbhs) ## foreach循环，变量$ldxxbhs是一个list集合,$ldxxbh对应循环中的元素变量，
                                 对应当前遍历的元素
-   #if($velocityCount > 0),#end  ## $velocityCount是foreach循环控制变量
-        "v$velocityCount":#[ldxxbhs[$velocityCount]]  ## 拼接每个元素到脚本中，如果集合中元素类型不确定，使用#[]类型变量，同时又结合$velocityCount做集合的下标索引
+   #if($foreach.index > 0),#end  ## $foreach.index是foreach循环控制变量
+        "v$foreach.index":#[ldxxbhs[$foreach.index]]  ## 拼接每个元素到脚本中，如果集合中元素类型不确定，使用#[]类型变量，同时又结合$foreach.index做集合的下标索引
    
 #end  
 }    
@@ -3542,7 +3542,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 #### 案例2：循环List或者数组中的bean对象，并访问每个bean对象属性id
 
 ```java
-"dynamic_price_template.rules":#foreach($rule in $rules)#if($velocityCount > 0),#end #[rules[$velocityCount]->id]  #end 
+"dynamic_price_template.rules":#foreach($rule in $rules)#if($foreach.index > 0),#end #[rules[$foreach.index]->id]  #end 
 ```
 
 
@@ -3553,10 +3553,10 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 #if($sortColumn)  ##动态排序字段案例
 	"sort":[                   
 		#foreach( $column in $sortColumn)
-			#if($velocityCount > 0),#end
+			#if($foreach.index > 0),#end
 			{
-				#[sortColumn[$velocityCount]->sort] :{
-					"order" : #[sortColumn[$velocityCount]->order]
+				#[sortColumn[$foreach.index]->sort] :{
+					"order" : #[sortColumn[$foreach.index]->order]
 				}
 			}
 		#end
@@ -3572,7 +3572,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 #if($sortColumn) 
 	"sort":[                   
         #foreach( $column in $sortColumn)
-            #if($velocityCount > 0),#end
+            #if($foreach.index > 0),#end
             {
                "$column.Sort" :{
                    "order": "$column.Order"
@@ -3594,7 +3594,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 	"sort":[             
         
             #foreach( $key in $columnMap.keySet() ) 
-            #if($velocityCount > 0),#end
+            #if($foreach.index > 0),#end
             {
                 "$key": {
                    "order" :"$columnMap.get($key)"
@@ -3617,7 +3617,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
                 "bool": {
                     "must": [
                         #foreach($key in $condition.keySet())
-                        #if($velocityCount > 0),#end
+                        #if($foreach.index > 0),#end
                         {
                             "match": {
                                 "$key": #[condition[$key]]
@@ -3638,7 +3638,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 	"sort":[             
         
             #foreach( $key in $columnMap.keySet() ) 
-            #if($velocityCount > 0),#end
+            #if($foreach.index > 0),#end
             {
                "$key": {
                    "order" :#[columnMap[$key]]
@@ -3661,7 +3661,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 #else
     "fields":[
           #foreach($field in $searchFields)
-             #if($velocityCount > 0),#end "$field" //拼接每个元素到脚本中，如果集合中元素类型确定，使用$xxx类型变量
+             #if($foreach.index > 0),#end "$field" //拼接每个元素到脚本中，如果集合中元素类型确定，使用$xxx类型变量
           #end
      ]
 #end
@@ -3679,7 +3679,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 #else
     "fields":[
           #foreach($field in $searchFields)
-             #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+             #if($foreach.index > 0),#end #[searchFields[$foreach.index]]
           #end
      ]
 #end
@@ -3706,7 +3706,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
 ```json
 "fields":[
           #foreach($field in $searchFields)
-             #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+             #if($foreach.index > 0),#end #[searchFields[$foreach.index]]
           #end
      ]
 ```
@@ -3724,7 +3724,7 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
                         "terms": {
                             "titleId": [
           #foreach($field in $titleIds)
-             #if($velocityCount > 0),#end #[titleIds[$velocityCount]]
+             #if($foreach.index > 0),#end #[titleIds[$foreach.index]]
           #end
      ]
                         }
@@ -3756,12 +3756,12 @@ bboss提供了dsl 语法了对多行值进行处理，最终会转换为elastics
                     "must": [
                     
                     #foreach($innerList in $outList)
-                        #set($outVelocityCount = $velocityCount)
+                        #set($outIndex = $foreach.index)
                         #foreach($item in $innerList)
-                        #if($velocityCount > 0), #end
+                        #if($foreach.index > 0), #end
                         {
                             "xxxx": {
-                                "xxxx": #[outList[$outVelocityCount][$velocityCount]]
+                                "xxxx": #[outList[$outIndex][$foreach.index]]
                             }
                         }
                         #end
@@ -3890,7 +3890,7 @@ foreach嵌套dsl脚本定义
                     "terms": {
                         "applicationName.keyword": [
                         #foreach($application in $channelApplications) ## 遍历列表channelApplications，列表中对象类型Application包含属性applicationName
-                           #if($velocityCount > 0),#end #[channelApplications[$velocityCount]->applicationName] ## 引用列表中元素属性applicationName的语法
+                           #if($foreach.index > 0),#end #[channelApplications[$foreach.index]->applicationName] ## 引用列表中元素属性applicationName的语法
                         #end
                         ]
                     }

@@ -576,7 +576,7 @@ public class TraceExtraCriteria {
                             #else
                                 "fields":[
                                 #foreach($field in $searchFields)
-                                      #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+                                      #if($foreach.index > 0),#end #[searchFields[$foreach.index]]
                                 #end
                                 ]
                             #end
@@ -1129,7 +1129,7 @@ ESDatas<TAgentInfo> data //ESDatas为查询结果集对象，封装了返回的�
                             #else
                                 "fields":[
                                 #foreach($field in $searchFields)
-                                      #if($velocityCount > 0),#end #[searchFields[$velocityCount]]
+                                      #if($foreach.index > 0),#end #[searchFields[$foreach.index]]
                                 #end
                                 ]
                             #end

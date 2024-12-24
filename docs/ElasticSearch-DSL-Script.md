@@ -192,18 +192,18 @@ public class ScriptImpl {
               "dynamic_price_template.rules":
               [
                    #foreach($rule in $dynamicPriceTemplate.rules)
-                       #if($velocityCount > 0),#end
+                       #if($foreach.index > 0),#end
                    {
-                        "id": #[dynamicPriceTemplate->rules[$velocityCount].id],
-                        "sort_num": #[dynamicPriceTemplate->rules[$velocityCount]->sortNum],
-                        "act_expired_time_tick": #[dynamicPriceTemplate->rules[$velocityCount]->actExpiredTimeTick],
-                        "act_expired_time_value": #[dynamicPriceTemplate->rules[$velocityCount]->actExpiredTimeValue],
-                        "act_expired_time_unit": #[dynamicPriceTemplate->rules[$velocityCount]->actExpiredTimeUnit],
-                        "price_new_type": #[dynamicPriceTemplate->rules[$velocityCount]->priceNewType],
-                        "price_new_coefficient": #[dynamicPriceTemplate->rules[$velocityCount]->priceNewCoefficient],
-                        "price_new_custom": #[dynamicPriceTemplate->rules[$velocityCount]->priceNewCustom],
-                        "auto_set_commend": #[dynamicPriceTemplate->rules[$velocityCount].autoSetCommend],
-                        "auto_set_tag": #[dynamicPriceTemplate->rules[$velocityCount]->autoSetTag]
+                        "id": #[dynamicPriceTemplate->rules[$foreach.index].id],
+                        "sort_num": #[dynamicPriceTemplate->rules[$foreach.index]->sortNum],
+                        "act_expired_time_tick": #[dynamicPriceTemplate->rules[$foreach.index]->actExpiredTimeTick],
+                        "act_expired_time_value": #[dynamicPriceTemplate->rules[$foreach.index]->actExpiredTimeValue],
+                        "act_expired_time_unit": #[dynamicPriceTemplate->rules[$foreach.index]->actExpiredTimeUnit],
+                        "price_new_type": #[dynamicPriceTemplate->rules[$foreach.index]->priceNewType],
+                        "price_new_coefficient": #[dynamicPriceTemplate->rules[$foreach.index]->priceNewCoefficient],
+                        "price_new_custom": #[dynamicPriceTemplate->rules[$foreach.index]->priceNewCustom],
+                        "auto_set_commend": #[dynamicPriceTemplate->rules[$foreach.index].autoSetCommend],
+                        "auto_set_tag": #[dynamicPriceTemplate->rules[$foreach.index]->autoSetTag]
                     }
                    #end
               ]
