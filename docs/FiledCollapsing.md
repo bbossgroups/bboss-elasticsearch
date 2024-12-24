@@ -12,7 +12,7 @@ https://github.com/rookieygl/bboss-wiki
 
 https://esdoc.bbossgroups.com/#/README
 
-本案例以Elasticsearch7.0.0版本，bboss7.3.0单元测试时，建议版本选择不要太低
+本案例以Elasticsearch7.0.0版本，bboss7.3.1单元测试时，建议版本选择不要太低
 
 DSL的配置文件[resources/esmapper/field_collapsing.xml](https://github.com/rookieygl/bboss-wiki/blob/master/src/main/resources/esmapper/field_collapsing.xml)，本文涉及到的DSL都会放到该配置文件，测试代码[FieldCollapsing](https://github.com/rookieygl/bboss-wiki/blob/master/src/test/java/com/ygl/dsldo/FieldCollapsing.java)。
 
