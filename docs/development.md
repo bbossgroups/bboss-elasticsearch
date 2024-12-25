@@ -2361,7 +2361,7 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
 
 ## 5.3 dsl配置规范
 
-
+bboss dsl配置规范遵循Elasticsearch dsl语法、velocity 2.4.1以上版本脚本语法以及bboss自研变量语法。
 
 ### **5.3.1 查询dsl动态脚本语法**
 
@@ -2453,7 +2453,7 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
      ## 定义保存外部循环变量foreach.index的临时变量
      #set($outIndex = $foreach.index)
      #foreach($item in $subxxxs.innerList)
-         #if($outIndex > 0) ,#end
+         #if($foreach.hasNext) ,#end
          {"term": {
             "applicationName": #[xxxs[$outIndex]->innerList[$foreach.index]]
          }}
@@ -2461,7 +2461,7 @@ spring.elasticsearch.bboss.detail.elasticsearch.referExternal=default
 #end
 ```
 
-
+在foreach循环中，可以通过$foreach.hasNext判断是否有记录。
 
 #### **5.3.1.6 逻辑判断语法**
 
@@ -4564,9 +4564,7 @@ http://192.168.137.1:9200/_cat/indices?v
 
 ## **7.4 velocity官方文档：**
 
-<http://velocity.apache.org/engine/1.7/user-guide.html>
-
-
+https://velocity.apache.org/engine/2.4.1/user-guide.html
 
 ## 7.5 开发交流
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
