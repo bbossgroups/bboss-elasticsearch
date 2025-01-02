@@ -102,9 +102,10 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 2）支持各种主流数据库、各种es版本以及本地/Ftp日志文件数据采集和同步、加工处理
 
-支持在Elasticsearch、关系数据库、向量数据库Milvus、Mongodb、HBase、Hive、Kafka、Rocketmq、文本文件、excel/word/pdf/图片/视频等类型文件、SFTP/FTP、http/https多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
+数据源支持：支持在Elasticsearch、关系数据库、向量数据库Milvus、Mongodb、HBase、Hive、Kafka、Rocketmq、文本文件、excel/word/pdf/图片/视频等类型文件、SFTP/FTP、http/https、OSS对象存储等多种数据源之间进行海量数据采集同步；支持数据实时增量采集和全量采集；支持根据字段进行数据记录切割；支持多级文件路径(本地和FTP/SFTP)下不同文件数据采集写入不同的数据库表和其他数据源。
 
-支持各种数据库： mysql,maridb，postgress,oracle ,sqlserver,db2,tidb,hive，clickhouse，mongodb、HBase等
+支持各种关系数据库： mysql,maridb，postgresql,oracle ,sqlserver,db2，derby,sqlite,informix,sybase,达梦，以及其他支持jdbc协议的数据库
+支持分布式数仓：clickhouse，mongodb、HBase、tidb、hive、doris、druid、StarRocks
 
 支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
 
