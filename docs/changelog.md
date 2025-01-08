@@ -43,12 +43,28 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.1 功能改进-20241223
-1. 升级Velocity模版引擎1.7到2.5
-2. 
-   升级注意事项：将模版脚本中的$velocityCount变量调整为$foreach.index
+# v7.3.1 功能改进-20250102
+1. 升级Velocity模版引擎版本1.7到2.5
 
-   在foreach循环中，可以通过$foreach.hasNext判断是否有记录
+升级注意事项：新版本去除模版变量$velocityCount，升级时，将脚本中的$velocityCount变量调整为$foreach.index即可，例如：
+
+```java
+#foreach($include in $includes)
+	 #if($velocityCount > 0),#end
+#end
+调整为：
+#foreach($include in $includes)
+	 #if($foreach.index > 0),#end
+#end
+```
+
+另外，在foreach循环中，可以通过$foreach.hasNext判断是否有记录。
+
+如果不想升级velocity版本，可以参考文档降级velocity2.5到1.7：
+
+[降级velocity2.5到1.7方法](https://esdoc.bbossgroups.com/#/question-answer?id=问题9-降级velocity25到17方法)
+
+2. 升级jackson版本到2.18.2
 
 # v7.3.0 功能改进-20241215
 1. Milvus输入插件改进：新增通过向量search检索条件采集Milvus向量数据功能，并添加[相关案例](https://esdoc.bbossgroups.com/#/milvus-datatran)

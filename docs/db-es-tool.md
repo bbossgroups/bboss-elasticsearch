@@ -486,7 +486,7 @@ milvus插件maven坐标
 <dependency>
       <groupId>com.github.housepower</groupId>
       <artifactId>clickhouse-native-jdbc</artifactId>
-      <version>2.6.5</version>
+      <version>2.7.1</version>
       <scope>compile</scope>
  </dependency>
 ```
@@ -527,18 +527,53 @@ tcp端口详见clickhouse的config.xml配置文件：
 maven
 
 ```xml
-<dependency>
+		<dependency>
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.4.6</version>
+            <version>0.6.5</version>
             <classifier>http</classifier>
         </dependency>
+	    <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.4</version>   
+            <exclusions>
+                <exclusion>                    
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+	    <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+            <version>5.3</version>   
+            <exclusions>
+                <exclusion>                    
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>             
+        </dependency>
+
 ```
 
 gradle
 
 ```groovy
-api 'com.clickhouse:clickhouse-jdbc:0.4.6:http'
+api 'com.clickhouse:clickhouse-jdbc:0.6.5:http'
+    api (
+            [group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: "5.4", transitive: true]
+    )
+    {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    api (
+            [group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: "5.3", transitive: true]
+    )
+    {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
 ```
 
 对应clickhouse的配置案例：

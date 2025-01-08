@@ -291,3 +291,74 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 jdk 版本过低，使用jdk 1.8的小版本号过低
 ## 问题处理
 升级jdk 到1.8小版本到1.8高版本，或者到更高的jdk版本
+
+# 问题9 降级velocity2.5到1.7方法
+
+bboss 7.3.1及以后版本将velocity模版引擎版本由1.7升级到2.5，去除了模版变量$velocityCount，升级时，将脚本中的$velocityCount变量调整为$foreach.index即可，例如：
+
+```java
+#foreach($include in $includes)
+	 #if($velocityCount > 0),#end
+#end
+调整为：
+#foreach($include in $includes)
+	 #if($foreach.index > 0),#end
+#end
+```
+另外，在foreach循环中，可以通过$foreach.hasNext判断是否有记录。
+如果还想使用1.7版本的velocity，可以使用以下方法将velocity2.5降级到velocity1.7：
+
+1）排除2.5包
+
+2）导入1.7兼容包
+
+```xml
+		<dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-datatran-jdbc</artifactId>
+            <version>7.3.1</version>
+            <!--
+                兼容velocity1.7，需要排除velocity2.5包
+            -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>bboss-velocity</artifactId>
+                    <groupId>com.bbossgroups</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--
+                兼容velocity1.7，导入兼容包
+         -->
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-elasticsearch-rest-bc</artifactId>
+            <version>7.3.1</version>
+        </dependency>
+```
+
+bboss Persistent数据库持久层框架的降级方法与Elasticsearch客户端方法一致：
+```xml
+		<dependency>
+            <groupId>com.bbossgroups</groupId>
+            <artifactId>bboss-persistent</artifactId>
+            <version>6.2.8</version>
+            <!--
+                兼容velocity1.7，需要排除velocity2.5包
+            -->
+            <exclusions>
+                <exclusion>                    
+                    <groupId>com.bbossgroups</groupId>                   
+                    <artifactId>bboss-velocity</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--
+                兼容velocity1.7，导入兼容包
+         -->
+        <dependency>
+            <groupId>com.bbossgroups.plugins</groupId>
+            <artifactId>bboss-persistent-bc</artifactId>
+            <version>6.2.8</version>
+        </dependency>
+```
