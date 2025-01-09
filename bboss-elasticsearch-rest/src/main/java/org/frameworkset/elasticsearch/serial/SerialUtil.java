@@ -1,5 +1,6 @@
 package org.frameworkset.elasticsearch.serial;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -13,6 +14,7 @@ import java.io.Writer;
 
 public class SerialUtil {
 	protected static ObjectMapper normaMapper = null;
+    protected static ObjectMapper disableCloseAndFlushMapper = null;
 	protected static ObjectMapper esBaseDataFilterMapper = null;
 	protected static ObjectMapper esIdFilterMapper = null;
 	protected static DateFormateMeta dateFormateMeta;
@@ -106,6 +108,19 @@ public class SerialUtil {
 		normaMapper.setSerializerFactory(new DefaultEntityCustomSerializationFactory());
 
         Jackson2ObjectMapper.registerWellKnownModulesIfAvailable(normaMapper);
+
+        disableCloseAndFlushMapper = new ObjectMapper();
+        //反序列化时，属性不存在时忽略属性
+        disableCloseAndFlushMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, ElasticsearchConstant.FAIL_ON_UNKNOWN_PROPERTIES);
+        disableCloseAndFlushMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
+        disableCloseAndFlushMapper.configure(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM, false);
+        disableCloseAndFlushMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        disableCloseAndFlushMapper.setDateFormat(dateFormateMeta.toDateFormat());
+        disableCloseAndFlushMapper.setSerializerFactory(new DefaultEntityCustomSerializationFactory());
+
+
+        Jackson2ObjectMapper.registerWellKnownModulesIfAvailable(disableCloseAndFlushMapper);
+        
 		esBaseDataFilterMapper = new ObjectMapper();
 		//反序列化时，属性不存在时忽略属性
 		esBaseDataFilterMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, ElasticsearchConstant.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -120,6 +135,8 @@ public class SerialUtil {
 		esIdFilterMapper.setDateFormat(dateFormateMeta.toDateFormat());
 		esIdFilterMapper.setSerializerFactory(new ESIdEntityCustomSerializationFactory());
         Jackson2ObjectMapper.registerWellKnownModulesIfAvailable(esIdFilterMapper);
+        
+        
 	}
 	public static String object2json(Object bean){
 		try {
@@ -165,7 +182,15 @@ public class SerialUtil {
 
 
 	}
+    public  static void object2jsonDisableCloseAndFlush(Object bean, Writer writer) {
+        try {
 
+            disableCloseAndFlushMapper.writeValue(writer,bean);
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error JSON serialization operation",e);
+        }
+    }
 	public  static void normalObject2json(Object bean, Writer writer) {
 		try {
 
@@ -174,9 +199,5 @@ public class SerialUtil {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error JSON serialization operation",e);
 		}
-
-
-
-
 	}
 }
