@@ -6,7 +6,7 @@
 
 bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。
 
-bboss-datatran采用标准的输入输出异步管道来处理数据，输入插件和输出插件可以自由组合，输入插件从数据源采集数据，经过数据异步并行流批一体化处理后，输出插件将处理后的数据、指标数据输出到目标地。
+bboss-datatran采用标准的输入输出异步管道来处理数据，输入插件和输出插件可以自由组合，输入插件从数据源采集数据，经过数据异步并行流批一体化处理后，输出插件将处理后的数据、指标数据输出到目标地。支持将采集的数据同时输出到多个输出插件。
 
 ![](images\datasyn-inout-now.png)
 
@@ -3522,6 +3522,37 @@ rocketmqOutputConfig.setValueCodecSerial("org.frameworkset.rocketmq.codec.String
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
 
 更多参数配置访问插件配置对象了解：:[RocketmqOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-rocketmq/src/main/java/org/frameworkset/tran/plugin/rocketmq/output/RocketmqOutputConfig.java)
+
+## 2.14 多源输出插件
+
+组合多个输出插件，实现将数据同时同步到多个输出地。
+
+设置单个输出插件方法：
+
+```java
+importBuilder.setOutputConfig(rocketmqOutputConfig);
+```
+
+importBuilder的setOutputConfig方法只能被调用一次，如果多次调用setOutputConfig方法，覆盖之前的配置。
+
+设置多个不同输出插件方法：
+
+```java
+importBuilder.addOutputConfig(kafkaOutputConfig);
+importBuilder.addOutputConfig(fileOutputConfig);
+importBuilder.addOutputConfig(elasticsearchOutputConfig);
+......
+```
+
+通过多次调用importBuilder的addOutputConfig方法，将每个输出插件添加到作业中即可。
+
+### 2.14.1 使用案例
+
+多源输出案例代码：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
+
+
 
 # 3.参考文档
 

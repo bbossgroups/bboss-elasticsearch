@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.3.1 发布
+# BBOSS版本变更记录-v7.3.2 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.1</version>
+            <version>7.3.2</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.1</version>
+            <version>7.3.2</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,11 +37,15 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.1</version>
+            <version>7.3.2</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+
+# v7.3.2 功能改进-20250111
+1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到多个数据源
+2. 数据采集功能优化：优化文件输出插件文件切割机制
 
 # v7.3.1 功能改进-20250102
 1. 升级Velocity模版引擎版本1.7到2.5

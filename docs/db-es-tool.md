@@ -34,7 +34,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 ![](images\datasyn.png)
 
-采用标准的输入输出异步管道来处理数据
+支持将采集的数据同时输出到多个输出插件，采用标准的输入输出异步管道来处理数据：
 
 ![](images\datasyn-inout-now.png)
 
@@ -197,6 +197,7 @@ com.bbossgroups.plugins
 | [HBaseOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-hbase/src/main/java/org/frameworkset/tran/plugin/hbase/output/HBaseOutputConfig.java) | HBase输出插件            | bboss-datatran-hbase    | HBase地址和连接参数配置，hbase输出表配置，hbase列簇和列及对应的源字段映射配置 |
 | [MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java) | 指标统计插件             | bboss-datatran-jdbc     | 提供指标计算规则配置：ETLMetrics、时间维度字段配置等，具体参考[使用指南](https://esdoc.bbossgroups.com/#/etl-metrics) |
 | [MilvusOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/output/MilvusOutputConfig.java) | Milvus向量数据库输出插件 | bboss-datatran-milvus   | 配置Milvus服务器参数：数据源名称，uri，token，dbname，表名称，表分区，连接池参数、超时参数配置等 |
+|                                                              |                          |                         |                                                              |
 | [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件                | bboss-datatran-jdbc     | 调试作业使用，将采集的数据直接输出到控制台                   |
 
 ## 作业基础配置
