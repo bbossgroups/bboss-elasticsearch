@@ -3550,7 +3550,11 @@ importBuilder.addOutputConfig(elasticsearchOutputConfig);
 
 多源输出案例代码：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/multioutput/Db2MultiOutputDemo.java
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/multioutput/Kafka2MultiOutputDemo.java
+
+https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2MultiKafkaDemo.java
 
 
 

@@ -5,7 +5,7 @@
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
-- **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件
+- **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
 - **流批一体化计算框架**，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
 
 详细介绍参考：[bboss简介](https://esdoc.bbossgroups.com/#/README)
@@ -44,7 +44,7 @@
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
 # v7.3.2 功能改进-20250111
-1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到多个数据源
+1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
 2. 数据采集功能优化：优化文件输出插件文件切割机制
 
 # v7.3.1 功能改进-20250102

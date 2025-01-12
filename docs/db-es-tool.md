@@ -145,7 +145,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 18) 提供灵活的作业启动、暂停(pause)、继续（resume）、停止控制机制
 
-
+19) 支持将数据同时输出到[多个输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
 
 # 插件清单
 
