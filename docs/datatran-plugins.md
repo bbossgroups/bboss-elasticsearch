@@ -3556,6 +3556,8 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2MultiKafkaDemo.java
 
+https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ESSlice2MultiOutputDemo.java
+
 
 
 # 3.参考文档
