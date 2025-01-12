@@ -16,7 +16,7 @@ package org.frameworkset.elasticsearch.scroll;
  */
 
 /**
- * <p>Description: 可以终端scroll查询的处理器</p>
+ * <p>Description: 可以中断scroll查询的处理器</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
  * @Date 2018/9/4 11:45
