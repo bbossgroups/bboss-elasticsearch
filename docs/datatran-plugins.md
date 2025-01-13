@@ -3525,7 +3525,7 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 ## 2.14 多源输出插件
 
-组合多个输出插件，实现将数据同时同步到多个输出地。
+可以通过多源输出插件，组合多个输出插件，从而将数据同步到多个输出数据源。
 
 设置单个输出插件方法：
 
@@ -3544,7 +3544,7 @@ importBuilder.addOutputConfig(elasticsearchOutputConfig);
 ......
 ```
 
-通过多次调用importBuilder的addOutputConfig方法，将每个输出插件添加到作业中即可。
+通过多次调用importBuilder的addOutputConfig方法，将每个输出插件添加到作业，实现将数据同步到多个输出数据源。
 
 ### 2.14.1 使用案例
 
