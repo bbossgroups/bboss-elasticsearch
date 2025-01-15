@@ -34,7 +34,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 ![](images\datasyn.png)
 
-支持将采集的数据同时输出到多个输出插件，采用标准的输入输出异步管道来处理数据：
+支持将采集的数据同时输出到[多个输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，采用标准的输入输出异步管道来处理数据：
 
 ![](images\datasyn-inout-now.png)
 
