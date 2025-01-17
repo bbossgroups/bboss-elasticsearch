@@ -56,14 +56,14 @@ Spring booter 1.x,2.x,+
 
 hbase 1.x,hbase 2.x
 
-bboss 7.3.1
+bboss 7.3.2
 ## 2.2.maven坐标
 
 ```xml
 <dependency>
   <groupId>com.bbossgroups.plugins</groupId>
   <artifactId>bboss-datatran-hbase</artifactId>
-  <version>7.3.1</version>
+  <version>7.3.2</version>
   <scope>compile</scope>
 </dependency>
 <!--

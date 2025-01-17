@@ -43,9 +43,9 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.2 功能改进-20250115
+# v7.3.2 功能改进-20250117
 1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
-2. 数据采集功能改进：优化文件输出插件文件切割机制 
+2. 数据采集功能改进：优化文件输出插件文件切割机制，优化输出记录数据buffer机制，提升生成Excel文件性能 
 3. 数据采集功能改进：作业任务完成回调处理配置管理优化 
 4. 数据采集功能改进：优化作业停止逻辑
 5. Kafka客户端组件改进：优化消费组件事务管理机制
@@ -1089,7 +1089,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.1</version>
+            <version>7.3.2</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1097,7 +1097,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.1</version>
+            <version>7.3.2</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1184,7 +1184,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.1时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1730,7 +1730,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.1</version>
+    <version>7.3.2</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
