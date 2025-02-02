@@ -3527,6 +3527,14 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 可以通过多源输出插件，组合多个输出插件，从而将数据同步到多个输出数据源。
 
+![](images/multiplugin.png)
+
+- 通过多输出插件组合多个输出插件
+- 输入插件从数据源采集原始数据
+- 原始数据经过转换处理，形成结果数据
+- 多输出插件将结果数据分别交给各个输出插件进行输出处理
+- 每个输出插件接收和输出同一份结果数据，而不是数据副本，从而大大减少数据对内存占用
+
 设置单个输出插件方法：
 
 ```java
@@ -3557,6 +3565,14 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 https://gitee.com/bboss/kafka2x-elasticsearch/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Filelog2MultiKafkaDemo.java
 
 https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/ESSlice2MultiOutputDemo.java
+
+可以下载源码工程，尝试运行上述案例，亦可以参考案例实现符合自身需求的数据同步作业：
+
+https://gitee.com/bboss/bboss-datatran-demo
+
+https://gitee.com/bboss/kafka2x-elasticsearch
+
+https://gitee.com/bboss/elasticsearch-file2ftp
 
 
 

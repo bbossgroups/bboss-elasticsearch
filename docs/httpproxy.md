@@ -107,7 +107,7 @@ Map<String,Object> configs = new HashMap<String,Object>();
 
 configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机制
 
-//如果指定hosts那么就会采用配置的地址作为初始化地址清单
+//如果指定hosts那么就会采用配置的地址作为初始化地址清单,多个地址用逗号分隔
 configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3:9200");
 
 HttpRequestProxy.startHttpPools(configs);
@@ -123,7 +123,7 @@ HttpRequestProxy.startHttpPools(configs);
 
 
       configs.put("http.health","/health.html");//health监控检查地址必须配置，否则将不会启动健康检查机制
-//如果指定hosts那么就会采用配置的地址作为初始化地址清单，后续通过discoverService服务发现的地址都会加入到清单中，去掉的服务也会从清单中剔除
+//如果指定hosts那么就会采用配置的地址作为初始化地址清单，后续通过discoverService服务发现的地址都会加入到清单中，去掉的服务也会从清单中剔除,多个地址用逗号分隔
 configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3:9200");
  
       HttpRequestProxy.startHttpPools(configs);
@@ -229,9 +229,9 @@ http.hostnameVerifier =
 # 服务全认证账号配置
 http.authAccount=elastic
 http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置
+# ha proxy 集群负载均衡地址配置,多个地址用逗号分隔
 http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
-# https服务必须带https://协议头
+# https服务必须带https://协议头,多个地址用逗号分隔
 #http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
 
 # 健康检查服务
@@ -264,9 +264,9 @@ schedule.http.hostnameVerifier =
 # 服务全认证账号配置
 schedule.http.authAccount=elastic
 schedule.http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置
+# ha proxy 集群负载均衡地址配置,多个地址用逗号分隔
 schedule.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
-# https服务必须带https://协议头
+# https服务必须带https://协议头,多个地址用逗号分隔
 # schedule.http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
 
 # 健康检查服务
@@ -291,11 +291,11 @@ http连接池配置这里不着重说明，只介绍服务负载均衡相关配�
 # 服务全认证账号和口令配置
 http.authAccount=elastic
 http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置，初始地址清单，
+# ha proxy 集群负载均衡地址配置，初始地址清单,多个地址用逗号分隔
 # 还可以通过http.discoverService动态发现新的负载地址、移除关停的负载地址，也可以不配置初始地址
 # 这样初始地址完全由http.discoverService对应的服务发现功能来提供
 http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
-# https服务必须带https://协议头
+# https服务必须带https://协议头,多个地址用逗号分隔
 #http.hosts=https://192.168.137.1:808,https://192.168.137.1:809,https://192.168.137.1:810
 # 健康检查服务，服务端提供的一个监控服务检查地址，当服务节点不可用时，就会启动健康检查,根据healthCheckInterval参数，按一定的时间间隔探测health对应的服务是否正常，如果正常，那么服务即可用，健康检查线程停止（直到服务不可用时，再次启动检查机制），否则继续监测
 http.health=/health
@@ -373,7 +373,7 @@ HttpRequestProxy.startHttpPools("application.properties");
  Map<String,Object> configs = new HashMap<String,Object>();
  configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制 
 
-		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
+		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//服务节点地址清单，多个地址用逗号分隔
  
  //启动负载均衡器
   HttpRequestProxy.startHttpPools(configs);
@@ -404,12 +404,12 @@ Map data = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",Map.class);//
 //		configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
 //		configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
 		configs.put("http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
-		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
+		configs.put("http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//服务节点地址清单，多个地址用逗号分隔
 //		configs.put("http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
 
 
 		configs.put("report.http.health","/health");//health监控检查地址必须配置，否则将不会启动健康检查机制
-		configs.put("report.http.hosts","192.168.137.1:808,192.168.137.1:810");//health监控检查地址必须配置，否则将不会启动健康检查机制
+		configs.put("report.http.hosts","192.168.137.1:808,192.168.137.1:810");//服务节点地址清单，多个地址用逗号分隔
 //		configs.put("report.http.discoverService","org.frameworkset.http.client.DemoHttpHostDiscover");
 		HttpRequestProxy.startHttpPools(configs);
 ```
@@ -515,7 +515,7 @@ spring.bboss.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http
 
 spring.bboss.http.authAccount=elastic
 spring.bboss.http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置
+# ha proxy 集群负载均衡地址配置，服务节点地址清单，多个地址用逗号分隔
 #spring.bboss.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
 spring.bboss.http.hosts=192.168.137.1:9200
 # 健康检查服务
@@ -654,7 +654,7 @@ spring.bboss.default.http.customHttpRequestRetryHandler=org.frameworkset.spi.rem
 
 spring.bboss.default.http.authAccount=elastic
 spring.bboss.default.http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置
+# ha proxy 集群负载均衡地址配置，多个地址用逗号分隔
 #spring.bboss.default.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
 spring.bboss.default.http.hosts=127.0.0.1:8082
 # 健康检查服务
@@ -720,7 +720,7 @@ spring.bboss.second.http.customHttpRequestRetryHandler=org.frameworkset.spi.remo
 
 spring.bboss.second.http.authAccount=elastic
 spring.bboss.second.http.authPassword=changeme
-# ha proxy 集群负载均衡地址配置
+# ha proxy 集群负载均衡地址配置，多个地址用逗号分隔
 #spring.bboss.second.http.hosts=192.168.137.1:808,192.168.137.1:809,192.168.137.1:810
 spring.bboss.second.http.hosts=127.0.0.1:8082
 # 健康检查服务
@@ -1380,7 +1380,7 @@ ip:port|routing
 例如：
 
 ```properties
-#指定了每个地址对应的地区信息，可以按照地区信息进行路由
+#指定了每个地址对应的地区信息，可以按照地区信息进行路由，多个地址用逗号分隔
 http.hosts=192.168.137.1:808|beijing,192.168.137.1:809|beijing,192.168.137.1:810|shanghai
 ```
 

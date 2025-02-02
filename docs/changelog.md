@@ -43,13 +43,41 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.2 功能改进-20250117
-1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
-2. 数据采集功能改进：优化文件输出插件文件切割机制，优化输出记录数据buffer机制，提升生成Excel文件性能 
-3. 数据采集功能改进：作业任务完成回调处理配置管理优化 
-4. 数据采集功能改进：优化作业停止逻辑
-5. Kafka客户端组件改进：优化消费组件事务管理机制
-6. Json组件改进：增加不关闭writer的json序列化方法
+# v7.3.3 功能改进
+1. Elasticsearch客户端改进：增加对apiKey认证机制的支持,设置方法：
+```xml
+   #基于apiKeyId和apiKeySecret认证配置（主要用于Elasticsearch认证）
+   http.apiKeyId = aaaa
+   http.apiKeySecret = bbbbbb
+```
+2. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
+使用案例：
+
+```java
+   importBuilder.setOutputRecordsFilter((config, records) -> {
+        if(config instanceof ElasticsearchOutputConfig) {
+        return records;
+            }
+                    else{
+//最多只返回前两条记录
+List<CommonRecord> newRecords = new ArrayList<>();
+                for(int i = 0; i < records.size() ; i ++) {
+        newRecords.add(records.get(i));
+        if(i == 2)
+        break;
+        }
+        return  newRecords;
+            }
+                    });
+```
+
+# v7.3.2 功能改进-20250118
+1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdatatran-plugins%3Fid%3D_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
+2. 数据采集功能改进：优化[文件输出插件](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Felasticsearch-sftp)文件切割机制，优化输出记录数据 buffer 机制，提升数据文件生成性能
+3. 数据采集功能改进：作业任务完成回调处理配置管理优化
+4. 数据采集功能改进：优化[作业停止逻辑](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fbboss-datasyn-control)
+5. [Kafka 客户端](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fdoc.bbossgroups.com%2F%23%2Fkafka)组件改进：优化消费组件事务管理机制
+6. Json 组件改进：增加不关闭 writer 的 json 序列化方法，提供更加优雅的数据序列化功能，并提升序列化性能
 
 # v7.3.1 功能改进-20250102
 1. 升级Velocity模版引擎版本1.7到2.5

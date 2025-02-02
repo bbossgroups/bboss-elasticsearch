@@ -370,8 +370,44 @@ public abstract class BaseESProperties {
 		private String supportedProtocols;
 		private String truststore;
 		private String trustPassword;
+        private String apiKeyId;
+        private String apiKeySecret;
+        private String authAccount;
+        private String authPassword;
 
-		public void setEncodedAuthCharset(String encodedAuthCharset) {
+        public String getApiKeyId() {
+            return apiKeyId;
+        }
+
+        public void setApiKeyId(String apiKeyId) {
+            this.apiKeyId = apiKeyId;
+        }
+
+        public String getApiKeySecret() {
+            return apiKeySecret;
+        }
+
+        public void setApiKeySecret(String apiKeySecret) {
+            this.apiKeySecret = apiKeySecret;
+        }
+
+        public String getAuthAccount() {
+            return authAccount;
+        }
+
+        public void setAuthAccount(String authAccount) {
+            this.authAccount = authAccount;
+        }
+
+        public String getAuthPassword() {
+            return authPassword;
+        }
+
+        public void setAuthPassword(String authPassword) {
+            this.authPassword = authPassword;
+        }
+
+        public void setEncodedAuthCharset(String encodedAuthCharset) {
 			this.encodedAuthCharset = encodedAuthCharset;
 		}
 
@@ -925,7 +961,7 @@ public abstract class BaseESProperties {
 	 * # 如果指定为default，就采用DefaultHostnameVerifier,否则采用 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
 	 * http.hostnameVerifier =
 	 *
-	 * # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，<= 0时关闭扫描机制
+	 * # dsl配置文件热加载扫描时间间隔，毫秒为单位，默认5秒扫描一次，小于等于 0时关闭扫描机制
 	 * dslfile.refreshInterval = -1
 	 *
 	 *
@@ -1037,16 +1073,29 @@ public abstract class BaseESProperties {
 		if(this.getHttp() != null){
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTimeoutConnection()))
 				properties.put(_name+"http.timeoutConnection",this.getHttp().getTimeoutConnection());
-			if(SimpleStringUtil.isNotEmpty(this.elasticUser)){
-				properties.put(_name+"http.authAccount",this.elasticUser);
+            if(SimpleStringUtil.isNotEmpty(this.elasticUser)){
+                properties.put(_name+"http.authAccount",this.elasticUser);
 
-			}
+            }
+            else if(SimpleStringUtil.isNotEmpty(this.getHttp().getAuthAccount())){
+                properties.put(_name+"http.authAccount",this.getHttp().getAuthAccount());
+            }
+
+
 
 //		##default集群配配置
-			if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
+            if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
 
-				properties.put(_name+"http.authPassword",this.elasticPassword);
-			}
+                properties.put(_name+"http.authPassword",this.elasticPassword);
+            }
+            else if(SimpleStringUtil.isNotEmpty(this.getHttp().getAuthPassword())){
+                properties.put(_name+"http.authPassword",this.getHttp().getAuthPassword());
+            }
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getApiKeyId()))
+                properties.put(_name + "http.apiKeyId",this.getHttp().getApiKeyId());
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getApiKeySecret() ))
+                properties.put(_name + "http.apiKeySecret",this.getHttp().getApiKeySecret());
 
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getTimeoutSocket()))
 				properties.put(_name+"http.timeoutSocket",this.getHttp().getTimeoutSocket());
