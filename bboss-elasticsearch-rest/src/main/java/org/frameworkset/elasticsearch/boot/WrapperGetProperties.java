@@ -45,7 +45,17 @@ public class WrapperGetProperties implements GetProperties {
 	public String getExternalProperty(String property) {
 		return context.getExternalProperty(property);
 	}
-
+    /**
+     * 根据属性名称前缀获取属性集
+     * @param namespace
+     * @param propertyPrex 属性名称前缀
+     * @param truncated 返回的key是否截取掉前缀
+     * @return
+     */
+    @Override
+    public Map<String,Object> getExternalProperties(String namespace,String propertyPrex,boolean truncated){
+        return context.getExternalProperties(namespace,propertyPrex,truncated);
+    }
 	@Override
 	public String getSystemEnvProperty(String property) {
 		return context.getSystemEnvProperty(property);

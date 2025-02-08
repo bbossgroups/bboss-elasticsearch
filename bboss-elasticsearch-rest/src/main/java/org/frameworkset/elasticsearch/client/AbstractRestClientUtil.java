@@ -332,34 +332,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public String addDocuments(String indexName, String indexType,  List<?> beans,String refreshOption) throws ElasticSearchException{
 		if(beans == null || beans.size() == 0)
 			return null;
-//		StringBuilder builder = new StringBuilder();
-//		BBossStringWriter writer = new BBossStringWriter(builder);
 		ClientOptions clientOptions = null;
 		if(refreshOption != null){
 			clientOptions = new ClientOptions();
 			clientOptions.setRefreshOption(refreshOption);
 		}
 		return addDocuments(indexName, indexType, beans,clientOptions);
-//		for(Object bean:beans) {
-//			try {
-////				if(beanInfo == null) {
-////					beanInfo = ClassUtil.getClassInfo(bean.getClass());
-////				}
-//				BulkData bulkData = new BulkData(BulkData.INSERT,bean);
-//				bulkData.setIndex(indexName);
-//				bulkData.setIndexType(indexType);
-//				bulkData.setClientOptions(clientOptions);
-//				BuildTool.evalBuilk(writer,bulkData,client.isUpper7());
-////				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"index",this.client.isUpper7());
-//			} catch (IOException e) {
-//				throw new ElasticSearchException(e);
-//			}
-//		}
-//		writer.flush();
-////		if(refreshOption == null)
-//			return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions),builder.toString(),ClientUtil.HTTP_POST);
-////		else
-////			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+
 	}
 	/**
 	 * 批量创建索引,根据时间格式建立新的索引表
@@ -387,22 +366,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return addDocuments(this.indexNameBuilder.getIndexName(indexName),   indexType,     beans,docIdKey,refreshOption);
 	}
 	public String addDocuments(String indexName, String indexType, List<Map> beans,String docIdKey,String refreshOption) throws ElasticSearchException{
-//		if(beans == null || beans.size() == 0)
-//			return null;
-//		StringBuilder builder = new StringBuilder();
-//		BBossStringWriter writer = new BBossStringWriter(builder);
-//		for(Map bean:beans) {
-//			try {
-//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,(String)null);
-//			} catch (IOException e) {
-//				throw new ElasticSearchException(e);
-//			}
-//		}
-//		writer.flush();
-//		if(refreshOption == null)
-//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-//		else
-//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
+
 		return addDocuments(  indexName,   indexType,  beans,  docIdKey,(String)null,  refreshOption);
 	}
 	public String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey) throws ElasticSearchException{
@@ -471,20 +435,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		clientOptions.setParentIdField(parentIdKey);
 		clientOptions.setRefreshOption(refreshOption);
 		return addDocuments(  indexName,   indexType, beans,clientOptions);
-//		StringBuilder builder = new StringBuilder();
-//		BBossStringWriter writer = new BBossStringWriter(builder);
-//		for(Map bean:beans) {
-//			try {
-//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"index",docIdKey,parentIdKey,this.client.isUpper7());
-//			} catch (IOException e) {
-//				throw new ElasticSearchException(e);
-//			}
-//		}
-//		writer.flush();
-//		if(refreshOption == null)
-//			return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
-//		else
-//			return this.client.executeHttp("_bulk?"+refreshOption,builder.toString(),ClientUtil.HTTP_POST);
 	}
 	public String addDocumentsWithIdKey(String indexName, String indexType,  List<Map> beans,String docIdKey,String parentIdKey) throws ElasticSearchException{
 		return addDocuments(indexName, indexType, beans,docIdKey, parentIdKey,(String)null);
@@ -729,90 +679,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return addDocument( indexName,   indexType,   bean,  clientOptions);
 	}
 
-	/**
-	 *
-	 * @param indexName
-	 * @param indexType
-	 * @param bean
-	 * @param refreshOption
-	 *    refresh=wait_for
-	 *    refresh=false
-	 *    refresh=true
-	 *    refresh
-	 *    Empty string or true
-	Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. This should ONLY be done after careful thought and verification that it does not lead to poor performance, both from an indexing and a search standpoint.
-	wait_for
-	Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh to happen. Elasticsearch automatically refreshes shards that have changed every index.refresh_interval which defaults to one second. That setting is dynamic. Calling the Refresh API or setting refresh to true on any of the APIs that support it will also cause a refresh, in turn causing already running requests with refresh=wait_for to return.
-	false (the default)
-	Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
-	 * @return
-	 * @throws ElasticSearchException
-	 */
-
-//	private String _addDocument(ClassUtil.ClassInfo beanInfo,String indexName, String indexType, Object bean, Object docId, Object parentId, Object routing, String refreshOption) throws ElasticSearchException{
-//		StringBuilder builder = new StringBuilder();
-//		Object id = docId;
-//		if(indexName == null){
-//			if(beanInfo == null){
-//				throw   new ElasticSearchException(" _addDocument failed: Class info not setted.");
-//			}
-//			ESIndexWrapper esIndexWrapper = beanInfo.getEsIndexWrapper();
-//			if(esIndexWrapper == null){
-//				throw new ElasticSearchException(builder.append(" ESIndex annotation do not set in class ").append(beanInfo.toString()).toString());
-//			}
-//			RestGetVariableValue restGetVariableValue = new RestGetVariableValue(beanInfo,bean);
-//			BuildTool.buildIndiceName(esIndexWrapper,builder,restGetVariableValue);
-//			builder.append("/");
-//			if(indexType == null){
-//				BuildTool.buildIndiceType(esIndexWrapper,builder,restGetVariableValue);
-//			}
-//			else{
-//				builder.append("/").append(indexType);
-//			}
-//
-//		}
-//		else {
-//			builder.append(indexName);
-//			if(indexType == null || indexType.equals("")) {
-//				builder.append("/").append(_doc);
-//			}
-//			else{
-//				builder.append("/").append(indexType);
-//			}
-//
-//		}
-//
-//
-//		if(id != null){
-//			builder.append("/").append(id);
-//		}
-//		if(refreshOption != null ){
-//			builder.append("?").append(refreshOption);
-//			if(parentId != null){
-//				builder.append("&parent=").append(parentId);
-//			}
-//			if(routing != null){
-//				builder.append("&routing=").append(routing);
-//			}
-//		}
-//		else{
-//			if(parentId != null){
-//				builder.append("?parent=").append(parentId);
-//				if(routing != null){
-//					builder.append("&routing=").append(routing);
-//				}
-//			}
-//			else if(routing != null){
-//				builder.append("?routing=").append(routing);
-//			}
-//
-//		}
-//		String path = builder.toString();
-//		builder = null;
-//		path = this.client.executeHttp(path, SerialUtil.object2json(bean),ClientUtil.HTTP_POST);
-//		return path;
-//	}
-
 
 
 	/**
@@ -851,26 +717,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			clientOptions.setRefreshOption(refreshOption);
 		}
 		return updateDocuments(  indexName,   indexType,beans,clientOptions);
-//		StringBuilder builder = new StringBuilder();
-//		BBossStringWriter writer = new BBossStringWriter(builder);
-//		ClassUtil.ClassInfo beanInfo = null;
-//		for(Object bean:beans) {
-//			try {
-//				if(beanInfo == null){
-//					beanInfo = ClassUtil.getClassInfo(bean.getClass());
-//				}
-//				BuildTool.evalBuilk(beanInfo,writer,indexName,indexType,bean,"update",this.client.isUpper7());
-//			} catch (IOException e) {
-//				throw new ElasticSearchException(e);
-//			}
-//		}
-//		writer.flush();
-//		if(refreshOption != null) {
-//			return this.client.executeHttp("_bulk?" + refreshOption, builder.toString(), ClientUtil.HTTP_POST);
-//		}
-//		else {
-//			return this.client.executeHttp("_bulk", builder.toString(), ClientUtil.HTTP_POST);
-//		}
 	}
 	public  String updateDocumentsWithIdKey(String indexName, String indexType, List<Map> beans,String docIdKey) throws ElasticSearchException
 	{
@@ -931,11 +777,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
         StringBuilder builder = new StringBuilder();
 		BBossStringWriter writer = new BBossStringWriter(builder);
 		for(Object bean:beans) {
-//			try {
-//				BuildTool.evalBuilk(writer,indexName,indexType,bean,"update",clientOptions,this.client.isUpper7());
-//			} catch (IOException e) {
-//				throw new ElasticSearchException(e);
-//			}
 			try {
 				BulkData bulkData = new BulkData(BulkData.UPDATE,bean);
 				bulkData.setIndex(indexName);
@@ -1054,39 +895,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 //		return this._update(  index,  indexType,
 //				id,  params,  refreshOption,  detect_noop,  doc_as_upsert);
 	}
-	/**
-	 * @see "https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html"
-	 * @param bulkCommand
-	 * @return
-	 */
-	/**public String executeBulk(BulkCommand bulkCommand){
-		List<BulkData> bulkDatas = bulkCommand.getBatchBulkDatas();
-		if(bulkDatas == null || bulkDatas.size() == 0){
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-		BBossStringWriter writer = new BBossStringWriter(builder);
-		try {
-			for (BulkData bulkData : bulkDatas) {
-				try {
-					BuildTool.evalBuilk(writer, bulkData, this.client.isUpper7());
-				} catch (IOException e) {
-					throw new ElasticSearchException(e);
-				}
-			}
-			writer.flush();
-
-			return this.client.executeHttp(BuildTool.buildActionUrl(bulkCommand.getBulkProcessor().getBulkConfig(), BulkConfig.FILTER_PATH_EMPTY), builder.toString(), ClientUtil.HTTP_POST);
-
-
-		}
-		finally {
-			builder.setLength(0);
-			builder = null;
-			writer = null;
-		}
-
-	}*/
 
     public String executeBulk(BulkCommand bulkCommand){
         if(bulkCommand.getBulkDataRecords() == 0){
@@ -1202,14 +1010,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 //			builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
 		}
 		writer.flush();
-//		if(!this.client.isUpper7() ) {
-//
-//		}
-//		else{
-//			for (String id : ids) {
-//				builder.append("{ \"delete\" : { \"_index\" : \"").append(indexName).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-//			}
-//		}
 
 		return this.client.executeHttp(BuildTool.buildActionUrl(clientOptions, BulkConfig.FILTER_PATH_EMPTY), builder.toString(), ClientUtil.HTTP_POST);
 
@@ -1330,11 +1130,6 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * only use by config rest clientutil
 	 */
 	public String addDocuments(String indexName, String indexType,String addTemplate, List<?> beans) throws ElasticSearchException {
-//		StringBuilder builder = new StringBuilder();
-//		for(Object id:beans) {
-//			builder.append("{ \"index\" : { \"_index\" : \"").append(indexName).append("\", \"_type\" : \"").append(indexType).append("\", \"_id\" : \"").append(id).append("\" } }\n");
-//		}
-//		return this.client.executeHttp("_bulk",builder.toString(),ClientUtil.HTTP_POST);
 		return null;
 
 	}
