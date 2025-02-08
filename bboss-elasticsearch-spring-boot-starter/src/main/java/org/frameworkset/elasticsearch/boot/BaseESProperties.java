@@ -18,6 +18,7 @@ import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public abstract class BaseESProperties {
@@ -374,6 +375,7 @@ public abstract class BaseESProperties {
         private String apiKeySecret;
         private String authAccount;
         private String authPassword;
+        private Map<String,String> kerberos;
 		public void setEncodedAuthCharset(String encodedAuthCharset) {
 			this.encodedAuthCharset = encodedAuthCharset;
 		}
@@ -674,7 +676,15 @@ public abstract class BaseESProperties {
 		public void setAutomaticRetriesDisabled(String automaticRetriesDisabled) {
 			this.automaticRetriesDisabled = automaticRetriesDisabled;
 		}
-	}
+
+        public Map<String,String> getKerberos() {
+            return kerberos;
+        }
+
+        public void setKerberos(Map<String,String> kerberos) {
+            this.kerberos = kerberos;
+        }
+    }
 
 	public static class Elasticsearch{
 		private Rest rest;
@@ -1080,7 +1090,15 @@ public abstract class BaseESProperties {
                 properties.put(_name+"http.authAccount",this.getHttp().getAuthAccount());
             }
 
-           
+            Map<String,String> kerberos = this.getHttp().getKerberos();
+            if(kerberos != null && !kerberos.isEmpty()){
+                Iterator<Map.Entry<String, String>> iterator = kerberos.entrySet().iterator();
+                while (iterator.hasNext()){
+                    Map.Entry<String, String> entry = iterator.next();
+                    properties.put(_name+"http.kerberos."+entry.getKey(),entry.getValue());
+                }
+
+            }
 
 //		##default集群配配置
 			if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
