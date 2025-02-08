@@ -78,19 +78,20 @@ elasticPassword=changeme
 
 ### 2.1.2 Kerberos认证配置
 
-如果启用Elasticsearch启用了Kerberos认证，则在http协议参数上配置Kerberos认证相关的参数即可。
+如果启用Elasticsearch启用了Kerberos认证，则在http协议参数上配置Kerberos认证相关的参数即可，bboss http Kerberos认证配置参考文档：[Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos%e8%ae%a4%e8%af%81)
 
-Elasticsearch客户端Kerberos认证使用参考配置用例：
+Elasticsearch客户端Kerberos认证使用配置实例：
 
-代码配置模式：[CustormInitAndBootKerberosAuth](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBootKerberosAuth.java)
+- 代码配置模式：[CustormInitAndBootKerberosAuth](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBootKerberosAuth.java)
 
-配置文件模式：[application.kerberos.properties](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/application.kerberos.properties)
 
-spring boot配置：[application.kerberos.yml](https://gitee.com/bboss/eshelloword-spring-boot3-starter/blob/main/src/main/resources/application.kerberos.yml)
+- 配置文件模式：[application.kerberos.properties](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/application.kerberos.properties)
 
-bboss http协议Kerberos认证配置参考文档：[Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos%e8%ae%a4%e8%af%81)
 
-Elasticsearch Kerberos参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
+- Spring boot配置：[application.kerberos.yml](https://gitee.com/bboss/eshelloword-spring-boot3-starter/blob/main/src/main/resources/application.kerberos.yml)
+
+
+Elasticsearch Kerberos使用参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
 
 ### 2.1.3 验证机制兼容性配置
 
