@@ -1548,6 +1548,7 @@ ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com
 http.kerberos.principal=elastic/admin@BBOSSGROUPS.COM
 http.kerberos.keytab=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/elastic.keytab
 http.kerberos.krb5Location=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf
+http.kerberos.loginContextName=Krb5Login
 http.kerberos.useTicketCache=false
  
 #Krb5 in GSS API needs to be refreshed so it does not throw the error
@@ -1560,7 +1561,9 @@ http.kerberos.isInitiator=true
 http.kerberos.debug=false
 ```
 
-其中http.kerberos.principal、http.kerberos.keytab和http.kerberos.krb5Location是必填项
+其中http.kerberos.principal、http.kerberos.keytab和http.kerberos.krb5Location是必填项；http.kerberos.loginContextName（可选项）的默认值为Krb5Login
+
+如果是不同的服务组，则在每个参数前面加上服务组名称即可
 
 配置参考用例：[application.kerberos.properties](https://gitee.com/bboss/bboss-http/blob/kerberos/resources/application.kerberos.properties)
 
@@ -1570,12 +1573,25 @@ http.kerberos.debug=false
 # 服务kerberos安全认证配置
 http.kerberos.loginConfig=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/jaas.conf
 http.kerberos.krb5Location=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf
+http.kerberos.loginContextName=Krb5Login
 http.kerberos.debug=false
 ```
 
-其中http.kerberos.loginConfig和http.kerberos.krb5Location为必填项
+其中http.kerberos.loginConfig和http.kerberos.krb5Location为必填项；http.kerberos.loginContextName（可选项）的默认值为Krb5Login，loginContextName的值必须与jaas.conf中的登录模块配置名称保持一致：
 
-如果是不同的服务组，则在每个参数前面加上服务组名称即可
+```properties
+Krb5Login { #---Krb5Login与loginContextName配置保持一致
+  com.sun.security.auth.module.Krb5LoginModule required
+  useKeyTab=true
+  keyTab="C:/environment/es/8.13.2/elasticsearch-8.13.2/config/elastic.keytab"
+  principal="elastic/admin@BBOSSGROUPS.COM"
+  useTicketCache=false
+  storeKey=true
+  debug=false;
+};
+```
+
+如果是不同的http服务组，则在每个参数前面加上服务组名称即可。
 
 # 9.配置HttpRequestInterceptor
 
