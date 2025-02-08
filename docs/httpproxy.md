@@ -1495,7 +1495,9 @@ health参数配置服务故障节点健康检查服务地址，在节点不可�
 
 # 8.安全认证
 
-bboss支持http basic认证机制，亦可以通过添加header参数实现jwt token认证机制。
+bboss支持http basic认证和Kerberos认证，亦可以通过添加header参数实现jwt token认证机制。
+
+## 8.1 basic认证
 
 http basic认证机制设置
 
@@ -1534,6 +1536,46 @@ jwt token认证设置，直接申请jwt token，并经token设置到http header�
 ```
 
 ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
+
+## 8.2 Kerberos认证
+
+对接开启Kerberos认证的服务时，需要额外添加Kerberos认证相关的参数，bboss支持两种配置模式：参数配置模式和jaas配置模式
+
+### 8.2.1 参数配置模式
+
+```properties
+# 服务kerberos安全认证配置
+http.kerberos.principal=elastic/admin@BBOSSGROUPS.COM
+http.kerberos.keytab=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/elastic.keytab
+http.kerberos.krb5Location=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf
+http.kerberos.useTicketCache=false
+ 
+#Krb5 in GSS API needs to be refreshed so it does not throw the error
+#Specified version of key is not available
+http.kerberos.refreshKrb5Config=true
+
+http.kerberos.storeKey=true
+http.kerberos.doNotPrompt=true
+http.kerberos.isInitiator=true
+http.kerberos.debug=false
+```
+
+其中http.kerberos.principal、http.kerberos.keytab和http.kerberos.krb5Location是必填项
+
+配置参考用例：[application.kerberos.properties](https://gitee.com/bboss/bboss-http/blob/kerberos/resources/application.kerberos.properties)
+
+### 8.2.2 jaas配置模式
+
+```properties
+# 服务kerberos安全认证配置
+http.kerberos.loginConfig=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/jaas.conf
+http.kerberos.krb5Location=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf
+http.kerberos.debug=false
+```
+
+其中http.kerberos.loginConfig和http.kerberos.krb5Location为必填项
+
+如果是不同的服务组，则在每个参数前面加上服务组名称即可
 
 # 9.配置HttpRequestInterceptor
 

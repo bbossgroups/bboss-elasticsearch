@@ -43,15 +43,23 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.3 功能改进
+# v7.3.3 功能改进-20250208
 1. Elasticsearch客户端改进：增加对apiKey认证机制的支持,设置方法：
-```xml
+```properties
    #基于apiKeyId和apiKeySecret认证配置（主要用于Elasticsearch认证）
    http.apiKeyId = aaaa
    http.apiKeySecret = bbbbbb
 ```
-2. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
-使用案例：
+2. Elasticsearch客户端增加Kerberos认证支持，使用参考文档：
+   
+      [Elasticsearch Kerberos认证配置](https://esdoc.bbossgroups.com/#/development?id=_212-kerberos认证配置)
+      
+3. http-proxy微服务框架增加Kerberos认证支持，使用参考文档：
+   
+  [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
+   
+4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
+     使用案例：
 
 ```java
    importBuilder.setOutputRecordsFilter((config, records) -> {

@@ -63,13 +63,36 @@ https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
 
 ## **2.1 es服务器账号和口令配置**
 
+bboss支持basic认证和Kerberos认证
+
+### 2.1.1 basic认证配置
+
 如果启用了x-pack或者searchguard安全认证，那么通过下面两个属性配置账号和口令：
 
+```properties
 elasticUser=elastic
-
 elasticPassword=changeme
+```
 
-### 2.1.1 验证机制兼容性配置
+
+
+### 2.1.2 Kerberos认证配置
+
+如果启用Elasticsearch启用了Kerberos认证，则在http协议参数上配置Kerberos认证相关的参数即可。
+
+Elasticsearch客户端Kerberos认证使用参考配置用例：
+
+代码配置模式：[CustormInitAndBootKerberosAuth](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBootKerberosAuth.java)
+
+配置文件模式：[application.kerberos.properties](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/resources/application.kerberos.properties)
+
+spring boot配置：[application.kerberos.yml](https://gitee.com/bboss/eshelloword-spring-boot3-starter/blob/main/src/main/resources/application.kerberos.yml)
+
+bboss http协议Kerberos认证配置参考文档：[Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos%e8%ae%a4%e8%af%81)
+
+Elasticsearch Kerberos参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
+
+### 2.1.3 验证机制兼容性配置
 
 默认采用http client的http basicauth securit 插件进行初始化加载账号口令，但是某些情况会导致http basic security机制不能正常工作：
 
@@ -93,7 +116,7 @@ spring.elasticsearch.bboss.http.backoffAuth=true
 
 http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。
 
-### 2.1.2 配置加密口令
+### 2.1.4 配置加密口令
 
 如果需要配置加密口令，那么可以通过配置属性拦截器来对加密口令进行识别处理，参考文档：
 
