@@ -3534,6 +3534,9 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 - 原始数据经过转换处理，形成结果数据
 - 多输出插件将结果数据分别交给各个输出插件进行输出处理
 - 每个输出插件接收和输出同一份结果数据，而不是数据副本，从而大大减少数据对内存占用
+- 可以设置记录过滤器，根据需要为特定输出插件增加记录过滤功能，筛选需要的记录再输出
+
+### 2.14.1 多输出插件配置
 
 设置单个输出插件方法：
 
@@ -3554,7 +3557,31 @@ importBuilder.addOutputConfig(elasticsearchOutputConfig);
 
 通过多次调用importBuilder的addOutputConfig方法，将每个输出插件添加到作业，实现将数据同步到多个输出数据源。
 
-### 2.14.1 使用案例
+### 2.14.2 记录过滤器配置
+
+输出插件记录过滤器设置：
+
+```java
+
+   importBuilder.setOutputRecordsFilter((config, records) -> {
+        if(config instanceof ElasticsearchOutputConfig) {
+        	return records;
+        }
+        else{
+			//最多只返回前两条记录
+			List<CommonRecord> newRecords = new ArrayList<>();
+            for(int i = 0; i < records.size() ; i ++) {
+        		newRecords.add(records.get(i));
+        		if(i == 2)
+        			break;
+        	}
+        	return  newRecords;
+        }
+   });
+
+```
+
+### 2.14.3 使用案例
 
 多源输出案例代码：
 

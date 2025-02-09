@@ -15,7 +15,7 @@
   - [Bboss源码构建指南](bboss-build.md)
   - [常见问题处理](question-answer.md)
   - [Changelog](changelog.md)
-  - [联系和支持我们](supportus.md)
+  - [开发交流](supportus.md)
 - **Guide**
   - [Elasticsearch开发指南](development.md)
   - [数据同步ETL工具介绍](db-es-tool.md)

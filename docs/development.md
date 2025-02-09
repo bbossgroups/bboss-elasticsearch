@@ -63,7 +63,7 @@ https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
 
 ## **2.1 es服务器账号和口令配置**
 
-bboss支持basic认证和Kerberos认证
+bboss支持basic认证、apiKey认证以及Kerberos认证
 
 ### 2.1.1 basic认证配置
 
@@ -93,7 +93,17 @@ Elasticsearch客户端Kerberos认证使用配置实例：
 
 Elasticsearch Kerberos使用参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
 
-### 2.1.3 验证机制兼容性配置
+### 2.1.3 apiKey认证配置
+
+如果启用了apiKey安全认证，那么通过下面两个属性配置apiKeyId和apiKeySecret：
+
+```properties
+   #基于apiKeyId和apiKeySecret认证配置（主要用于Elasticsearch认证）
+   http.apiKeyId = aaaa
+   http.apiKeySecret = bbbbbb
+```
+
+### 2.1.4 验证机制兼容性配置
 
 默认采用http client的http basicauth securit 插件进行初始化加载账号口令，但是某些情况会导致http basic security机制不能正常工作：
 
@@ -117,7 +127,7 @@ spring.elasticsearch.bboss.http.backoffAuth=true
 
 http.backoffAuth为true时，将直接采用添加认证头的方式设置http认证口令和账号，从而规避解决上述问题。
 
-### 2.1.4 配置加密口令
+### 2.1.5 配置加密口令
 
 如果需要配置加密口令，那么可以通过配置属性拦截器来对加密口令进行识别处理，参考文档：
 
