@@ -43,7 +43,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.3.3 功能改进-20250208
+# v7.3.3 功能改进-20250209
 1. Elasticsearch客户端改进：增加对apiKey认证机制的支持,设置方法：
 ```properties
    #基于apiKeyId和apiKeySecret认证配置（主要用于Elasticsearch认证）
@@ -56,28 +56,35 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
       
 3. http-proxy微服务框架增加Kerberos认证支持，使用参考文档：
    
-  [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
-   
+
+​       [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
+
 4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
+   
+     ![](images/multiplugin.png)
+     
      使用案例：
 
 ```java
    importBuilder.setOutputRecordsFilter((config, records) -> {
         if(config instanceof ElasticsearchOutputConfig) {
-        return records;
-            }
-                    else{
-//最多只返回前两条记录
-List<CommonRecord> newRecords = new ArrayList<>();
-                for(int i = 0; i < records.size() ; i ++) {
-        newRecords.add(records.get(i));
-        if(i == 2)
-        break;
+        	return records;
         }
-        return  newRecords;
+        else{
+            //最多只返回前两条记录
+            List<CommonRecord> newRecords = new ArrayList<>();
+            for(int i = 0; i < records.size() ; i ++) {
+                newRecords.add(records.get(i));
+                if(i == 2)
+                break;
+                }
+                return  newRecords;
             }
-                    });
+   	   });
 ```
+5. 属性配置管理改进：新增获取特定属性名前缀的配置参数集合的方法,参考文档：[根据名称前缀获取参数集](https://doc.bbossgroups.com/#/aop/IntroduceIoc?id=_10%e6%a0%b9%e6%8d%ae%e5%90%8d%e7%a7%b0%e5%89%8d%e7%bc%80%e8%8e%b7%e5%8f%96%e5%8f%82%e6%95%b0%e9%9b%86)
+
+   
 
 # v7.3.2 功能改进-20250118
 1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdatatran-plugins%3Fid%3D_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
