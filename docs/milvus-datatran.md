@@ -23,7 +23,7 @@
 <dependency>
 <groupId>com.bbossgroups.plugins</groupId>
 <artifactId>bboss-datatran-milvus</artifactId>
-<version>7.3.2</version>
+<version>7.3.3</version>
 </dependency>
 ```
 

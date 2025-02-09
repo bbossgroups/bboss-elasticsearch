@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.3.2 发布
+# BBOSS版本变更记录-v7.3.3 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.2</version>
+            <version>7.3.3</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.2</version>
+            <version>7.3.3</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.2</version>
+            <version>7.3.3</version>
         </dependency>
 ```
 
@@ -54,10 +54,9 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
    
       [Elasticsearch Kerberos认证配置](https://esdoc.bbossgroups.com/#/development?id=_212-kerberos认证配置)
       
-3. http-proxy微服务框架增加Kerberos认证支持，使用参考文档：
-   
+3. http-proxy微服务框架增加Kerberos认证支持，使用参考文档：   
 
-​       [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
+     [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
 
 4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
    
@@ -86,7 +85,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
    
 
-# v7.3.2 功能改进-20250118
+# v7.3.3 功能改进-20250118
 1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdatatran-plugins%3Fid%3D_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
 2. 数据采集功能改进：优化[文件输出插件](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Felasticsearch-sftp)文件切割机制，优化输出记录数据 buffer 机制，提升数据文件生成性能
 3. 数据采集功能改进：作业任务完成回调处理配置管理优化
@@ -1132,7 +1131,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.2</version>
+            <version>7.3.3</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1140,7 +1139,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.2</version>
+            <version>7.3.3</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1227,7 +1226,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1279,7 +1278,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.8",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.9",transitive: true 
   ```
 
   **maven坐标**
@@ -1290,7 +1289,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.2.8</version>  
+      <version>6.2.9</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1773,7 +1772,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.2</version>
+    <version>7.3.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2092,13 +2091,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.6</version>
+      <version>6.3.7</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.6", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.7", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
