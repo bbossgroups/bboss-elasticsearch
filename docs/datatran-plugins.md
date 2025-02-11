@@ -3595,7 +3595,7 @@ https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frame
 
 带记录过滤功能案例：
 
-https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/multioutput/Db2MultiOutputDemo.java
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/multioutput/Db2FilterMultiOutputDemo.java
 
 可以下载源码工程，尝试运行上述案例，亦可以参考案例实现符合自身需求的数据同步作业：
 

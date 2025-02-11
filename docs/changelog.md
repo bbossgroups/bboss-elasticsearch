@@ -58,7 +58,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
      [Http Kerberos认证配置](https://esdoc.bbossgroups.com/#/httpproxy?id=_82-kerberos认证)
 
-4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对记录集进行过滤功能
+4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对[记录集进行过滤](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_2142-%e8%ae%b0%e5%bd%95%e8%bf%87%e6%bb%a4%e5%99%a8%e9%85%8d%e7%bd%ae)功能
    
      ![](images/multiplugin.png)
      
