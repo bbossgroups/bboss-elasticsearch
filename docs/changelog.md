@@ -85,7 +85,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 
    
 
-# v7.3.3 功能改进-20250118
+# v7.3.2 功能改进-20250118
 1. 数据采集功能扩展：增加多输出插件，支持将采集的数据同时同步到[多个数据源](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdatatran-plugins%3Fid%3D_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
 2. 数据采集功能改进：优化[文件输出插件](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Felasticsearch-sftp)文件切割机制，优化输出记录数据 buffer 机制，提升数据文件生成性能
 3. 数据采集功能改进：作业任务完成回调处理配置管理优化
