@@ -1593,6 +1593,10 @@ Krb5Login { #---Krb5Login与loginContextName配置保持一致
 
 如果是不同的http服务组，则在每个参数前面加上服务组名称即可。
 
+Kerberos配置加载和http服务调用案例：
+
+https://gitee.com/bboss/bboss-http/blob/master/test/org/frameworkset/http/client/StartKerberosHttpPoolFromFile.java
+
 # 9.配置HttpRequestInterceptor
 
 在bboss配置文件application.properties中设置HttpRequestInterceptor，多个用逗号分隔，自定义httpquest请求处理。
