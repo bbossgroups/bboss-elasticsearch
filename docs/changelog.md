@@ -42,7 +42,10 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-
+# v7.3.5 功能改进-20250220
+1. Elasticsearch客户端改进：Elasticsearch客户端健康检查机制、服务节点发现机制与Http服务框架完全合并
+2. Elasticsearch Kerberos安全认证改进：提供服务端和客户端Princpal相结合的认证机制，兼容华为云Elasticsearch Kerberos认证
+3. Http-proxy微服务框架改进：提供服务端和客户端Princpal相结合的认证机制
 # v7.3.3 功能改进-20250209
 1. Elasticsearch客户端改进：增加对apiKey认证机制的支持,设置方法：
 ```properties
@@ -61,8 +64,8 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 4. 多输出插件改进：为多输出插件添加记录过滤器,实现根据不同的输出插件对[记录集进行过滤](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_2142-%e8%ae%b0%e5%bd%95%e8%bf%87%e6%bb%a4%e5%99%a8%e9%85%8d%e7%bd%ae)功能
    
      ![](images/multiplugin.png)
-     
-     使用案例：
+
+   多输出插件记录过滤器使用示例：根据插件配置类型过滤记录，除了ElasticsearchOutputConfig输出插件，其他插件只返回2条记录
 
 ```java
    importBuilder.setOutputRecordsFilter((config, records) -> {

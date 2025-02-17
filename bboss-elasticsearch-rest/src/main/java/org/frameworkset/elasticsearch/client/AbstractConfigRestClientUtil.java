@@ -31,18 +31,7 @@ import static org.frameworkset.elasticsearch.ElasticSearchHelper.configHolder;
  */
 public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	private static Logger logger = LoggerFactory.getLogger(AbstractConfigRestClientUtil.class);
-	//	public String to_char(String date,String format)
-//    {
-//    	 SimpleDateFormat f = new SimpleDateFormat(format);
-//    	 return f.format(SimpleStringUtil.stringToDate(date,format));
-//
-//    }
-//
-//    public String to_char(String date)
-//    {
-//    	return to_char(date,this.FORMART_ALL);
-//
-//    }
+ 
 	protected static String java_date_format = "yyyy-MM-dd HH:mm:ss";
 	protected String configFile;
 	protected ConfigDSLUtil configDSLUtil = null;

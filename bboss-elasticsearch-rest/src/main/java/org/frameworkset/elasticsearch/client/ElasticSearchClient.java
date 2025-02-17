@@ -31,10 +31,10 @@ import java.util.Properties;
  * of events to ElasticSearch.
  */
 public interface ElasticSearchClient {
-	public void recoverRemovedNodes(List<ESAddress> hosts);
-	public boolean containAddress(ESAddress address);
-	public void addAddresses(List<ESAddress> address);
-	public void handleRemoved(List<ESAddress> hosts);
+//	public void recoverRemovedNodes(List<ESAddress> hosts);
+//	public boolean containAddress(ESAddress address);
+//	public void addAddresses(List<ESAddress> address);
+//	public void handleRemoved(List<ESAddress> hosts);
 	void configure(Properties elasticsearchPropes);
 
 	/**

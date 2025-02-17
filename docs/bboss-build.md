@@ -1,5 +1,7 @@
 # Bboss源码构建指南
 bboss采用gradle管理源码工程，本文介绍bboss模块构成，以及如何从源码构建[bboss](https://esdoc.bbossgroups.com/#/README)。
+
+bboss环境搭建视频教程：https://www.bilibili.com/video/BV1KYNaeuEGm
 # 1.bboss模块及构建说明
 
 bboss采用模块化管理，模块之间依赖关系如下：

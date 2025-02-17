@@ -19,7 +19,7 @@ import org.apache.http.client.ResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.LogDsl;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
-import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class RestSearchExecutor {
 		long start = System.currentTimeMillis();
 		int resultCode = 0;
 		try {
-			return HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
+			return HttpRequestProxy.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 		}
 		catch(Exception e){
 			resultCode = 1;
@@ -150,7 +150,7 @@ public class RestSearchExecutor {
 			int resultCode = 0;
 			long start = System.currentTimeMillis();
 			try {
-				return RestSearchExecutorUtil.__executeHttp(    discoverHttpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
+				return RestSearchExecutorUtil.__executeHttp(    httpPool,  (Map<String, String>)null,  url,   entity,  action,  responseHandler);
 			}
 			catch(Exception e){
 				resultCode = 1;
@@ -183,9 +183,9 @@ public class RestSearchExecutor {
 		try {
 			String response = null;
 			if (entity == null) {
-				response = HttpRequestUtil.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
+				response = HttpRequestProxy.httpPostforString(httpPool, url, null, (Map<String, String>)null, responseHandler);
 			} else {
-				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
+				response = HttpRequestProxy.sendJsonBody(httpPool, entity, url, (Map<String, String>)null, responseHandler);
 			}
 
 			return response;

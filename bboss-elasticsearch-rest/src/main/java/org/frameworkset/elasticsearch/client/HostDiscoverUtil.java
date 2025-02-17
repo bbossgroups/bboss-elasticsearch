@@ -2,6 +2,8 @@ package org.frameworkset.elasticsearch.client;
 
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.spi.remote.http.HttpHost;
+import org.frameworkset.spi.remote.http.proxy.HttpProxyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,40 +28,51 @@ public class HostDiscoverUtil{
 	 * @param elasticsearch
 	 */
 	public static synchronized void handleDiscoverHosts(String[] hosts,String elasticsearch){
-		if(elasticsearch == null ){
-			throw new IllegalArgumentException("elasticsearch can not be null.");
-		}
-        ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSink(elasticsearch);
-        if(elasticSearch == null ){
-            throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
+//		if(elasticsearch == null ){
+//			throw new IllegalArgumentException("elasticsearch can not be null.");
+//		}
+//        ElasticSearch elasticSearch = ElasticSearchHelper.getElasticSearchSink(elasticsearch);
+//        if(elasticSearch == null ){
+//            throw new IllegalArgumentException("elasticSearch["+elasticsearch+"] is null.");
+//        }
+//
+//        List<ESAddress> addressList = new ArrayList<ESAddress>();
+//		for(String host:hosts){
+//			ESAddress esAddress = new ESAddress(host.trim(),elasticSearch.getHealthPath());
+//			addressList.add(esAddress);
+//		}
+//
+//		ElasticSearchClient elasticSearchRestClient = elasticSearch.getRestClient();
+//		List<ESAddress> newAddress = new ArrayList<ESAddress>();
+//		//恢复移除节点
+//		elasticSearchRestClient.recoverRemovedNodes(addressList);
+//		//识别新增节点
+//		for(int i = 0; i < addressList.size();i ++){
+//			ESAddress address = addressList.get(i);
+//			if(!elasticSearchRestClient.containAddress(address)){
+//				newAddress.add(address);
+//			}
+//		}
+//		//处理新增节点
+//		if(newAddress.size() > 0) {
+//			if (logger.isInfoEnabled()) {
+//				logger.info(new StringBuilder().append("Discovery new elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] node [").append(newAddress).append("].").toString());
+//			}
+//			elasticSearchRestClient.addAddresses(newAddress);
+//		}
+//		//处理删除节点
+//		elasticSearchRestClient.handleRemoved(addressList);
+        //模拟被动获取监听地址清单
+        List<HttpHost> httpHosts = new ArrayList<HttpHost>();
+        HttpHost httpHost = null;
+// https服务必须带https://协议头,例如https://192.168.137.1:808
+        if(hosts != null && hosts.length > 0) {
+            for (String host : hosts) {
+                httpHost = new HttpHost(host);
+                httpHosts.add(httpHost);
+            }
         }
-
-        List<ESAddress> addressList = new ArrayList<ESAddress>();
-		for(String host:hosts){
-			ESAddress esAddress = new ESAddress(host.trim(),elasticSearch.getHealthPath());
-			addressList.add(esAddress);
-		}
-
-		ElasticSearchClient elasticSearchRestClient = elasticSearch.getRestClient();
-		List<ESAddress> newAddress = new ArrayList<ESAddress>();
-		//恢复移除节点
-		elasticSearchRestClient.recoverRemovedNodes(addressList);
-		//识别新增节点
-		for(int i = 0; i < addressList.size();i ++){
-			ESAddress address = addressList.get(i);
-			if(!elasticSearchRestClient.containAddress(address)){
-				newAddress.add(address);
-			}
-		}
-		//处理新增节点
-		if(newAddress.size() > 0) {
-			if (logger.isInfoEnabled()) {
-				logger.info(new StringBuilder().append("Discovery new elasticsearch[").append(elasticSearch.getElasticSearchName()).append("] node [").append(newAddress).append("].").toString());
-			}
-			elasticSearchRestClient.addAddresses(newAddress);
-		}
-		//处理删除节点
-		elasticSearchRestClient.handleRemoved(addressList);
+        HttpProxyUtil.handleDiscoverHosts(elasticsearch,httpHosts);
 	}
 
 	/**

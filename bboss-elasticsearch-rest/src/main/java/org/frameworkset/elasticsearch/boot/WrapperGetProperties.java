@@ -106,6 +106,31 @@ public class WrapperGetProperties implements GetProperties {
 
 			}
 		}
+        else if(property.endsWith(ClientConfiguration.http_hosts)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+
+                value =	ElasticSearchHelper._getStringValue(namespace,"elasticsearch.rest.hostNames",context,null);
+
+            }
+        }
+        else if(property.endsWith(ClientConfiguration.http_health)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+
+                value =	"/";
+
+            }
+        }
+        else if(property.endsWith(ClientConfiguration.http_discover_service)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                String elasticsearchDiscoverHost = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.discoverHost",context,null);
+                if(elasticsearchDiscoverHost != null && elasticsearchDiscoverHost.equals("true")) {
+                    value = "org.frameworkset.elasticsearch.client.ElasticsearchHostNodeDiscover";
+                }
+            }
+        }
 		else{
 			value = context.getExternalProperty(property);
 		}

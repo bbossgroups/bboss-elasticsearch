@@ -17,7 +17,7 @@ package org.frameworkset.elasticsearch.client;
 
 import org.apache.http.client.ResponseHandler;
 import org.frameworkset.spi.remote.http.BaseResponseHandler;
-import org.frameworkset.spi.remote.http.HttpRequestUtil;
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
 
 import java.util.Map;
 
@@ -50,17 +50,17 @@ public abstract class RestSearchExecutorUtil {
 		T response = null;
 		if (entity == null) {
 			if (action == null)
-				response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestProxy.httpPostforString(httpPool, url, null, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_POST)
-				response = HttpRequestUtil.httpPostforString(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestProxy.httpPostforString(httpPool, url, null, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_PUT)
-				response = HttpRequestUtil.httpPutforString(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestProxy.httpPutforString(httpPool, url, null, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_GET)
-				response = HttpRequestUtil.httpGetforString(httpPool, url, headers, responseHandler);
+				response = HttpRequestProxy.httpGetforString(httpPool, url, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestProxy.httpDelete(httpPool, url, null, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_HEAD)
-				response = HttpRequestUtil.httpHead(httpPool, url, null, headers, responseHandler);
+				response = HttpRequestProxy.httpHead(httpPool, url, null, headers, responseHandler);
 			else
 				throw new IllegalArgumentException("not support http action:" + action+",url:"+url);
 		} else {
@@ -70,11 +70,11 @@ public abstract class RestSearchExecutorUtil {
                 baseResponseHandler.setEnableSetRequestBody(true);
             }
 			if (action == ClientUtil.HTTP_POST)
-				response = HttpRequestUtil.sendJsonBody(httpPool, entity, url, headers, responseHandler);
+				response = HttpRequestProxy.sendJsonBody(httpPool, entity, url, headers, responseHandler);
 			else if (action == ClientUtil.HTTP_PUT) {
-				response = HttpRequestUtil.putJson(httpPool, entity, url, headers, responseHandler);
+				response = HttpRequestProxy.putJson(httpPool, entity, url, headers, responseHandler);
 			} else if (action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool, url, entity, null, headers, responseHandler);
+				response = HttpRequestProxy.httpDelete(httpPool, url, entity, null, headers, responseHandler);
 			else
 				throw new IllegalArgumentException("not support http action:" + action+",url:"+url);
 		}
@@ -89,17 +89,17 @@ public abstract class RestSearchExecutorUtil {
 		T response = null;
 		if (entity == null){
 			if(action == null)
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
+				response = HttpRequestProxy.httpPostforString(httpPool,url, null, headers,  responseHandler);
 			else if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.httpPostforString(httpPool,url, null, headers,  responseHandler);
+				response = HttpRequestProxy.httpPostforString(httpPool,url, null, headers,  responseHandler);
 			else if( action == ClientUtil.HTTP_PUT)
-				response = HttpRequestUtil.httpPutforString(httpPool,url, null, headers,  responseHandler);
+				response = HttpRequestProxy.httpPutforString(httpPool,url, null, headers,  responseHandler);
 			else if(action == ClientUtil.HTTP_GET)
-				response = HttpRequestUtil.httpGetforString(httpPool,url, headers,  responseHandler);
+				response = HttpRequestProxy.httpGetforString(httpPool,url, headers,  responseHandler);
 			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url, null, headers,  responseHandler);
+				response = HttpRequestProxy.httpDelete(httpPool,url, null, headers,  responseHandler);
 			else if(action == ClientUtil.HTTP_HEAD)
-				response = HttpRequestUtil.httpHead(httpPool,url, null, headers,  responseHandler);
+				response = HttpRequestProxy.httpHead(httpPool,url, null, headers,  responseHandler);
 			else
 				throw new IllegalArgumentException("not support http action:"+action+",url:"+url);
 		}
@@ -111,13 +111,13 @@ public abstract class RestSearchExecutorUtil {
                 baseResponseHandler.setEnableSetRequestBody(true);
             }
 			if(action == ClientUtil.HTTP_POST )
-				response = HttpRequestUtil.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
+				response = HttpRequestProxy.sendJsonBody(httpPool,entity, url, headers,  responseHandler);
 			else if( action == ClientUtil.HTTP_PUT)
 			{
-				response = HttpRequestUtil.putJson(httpPool,entity, url, headers,  responseHandler);
+				response = HttpRequestProxy.putJson(httpPool,entity, url, headers,  responseHandler);
 			}
 			else if(action == ClientUtil.HTTP_DELETE)
-				response = HttpRequestUtil.httpDelete(httpPool,url, entity,null, headers,  responseHandler);
+				response = HttpRequestProxy.httpDelete(httpPool,url, entity,null, headers,  responseHandler);
 			else
 				throw new IllegalArgumentException("not support http action:"+action+",url:"+url);
 
