@@ -35,6 +35,7 @@ import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.frameworkset.spi.remote.http.callback.ExecuteIntercepter;
+import org.frameworkset.spi.remote.http.proxy.HttpProxyRequestException;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -765,8 +766,20 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
         }
 		 
 		if (e != null){
-			if(e instanceof ElasticSearchException)
-				throw (ElasticSearchException)e;
+            if(e instanceof HttpProxyRequestException){
+                HttpProxyRequestException httpProxyRequestException = (HttpProxyRequestException)e;
+                Throwable httpResponseStatusException = httpProxyRequestException.getHttpResponseStatusException();
+                if(httpResponseStatusException != null && httpResponseStatusException instanceof ElasticSearchException){
+                    throw (ElasticSearchException)httpResponseStatusException;
+                }
+                Throwable throwable = httpProxyRequestException.getCause();
+                if(throwable != null && throwable instanceof ElasticSearchException){
+                    throw (ElasticSearchException)throwable;
+                }
+            }
+			else if(e instanceof ElasticSearchException) {
+                throw (ElasticSearchException) e;
+            }
 			throw new ElasticSearchException(e);
 		}
 		return response;

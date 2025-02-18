@@ -92,6 +92,12 @@ public class WrapperGetProperties implements GetProperties {
 		String value = null;
 		if(property.endsWith(ClientConfiguration.http_authAccount)) {
 			value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
 			if(SimpleStringUtil.isEmpty(value)){
 
 				value =	ElasticSearchHelper._getStringValue(namespace,"elasticUser",context,null);
@@ -100,6 +106,12 @@ public class WrapperGetProperties implements GetProperties {
 		}
 		else if(property.endsWith(ClientConfiguration.http_authPassword)) {
 			value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
 			if(SimpleStringUtil.isEmpty(value)){
 
 				value =	ElasticSearchHelper._getStringValue(namespace,"elasticPassword",context,null);
@@ -109,6 +121,12 @@ public class WrapperGetProperties implements GetProperties {
         else if(property.endsWith(ClientConfiguration.http_hosts)) {
             value = context.getExternalProperty(property);
             if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
+            if(SimpleStringUtil.isEmpty(value)){
 
                 value =	ElasticSearchHelper._getStringValue(namespace,"elasticsearch.rest.hostNames",context,null);
 
@@ -117,13 +135,38 @@ public class WrapperGetProperties implements GetProperties {
         else if(property.endsWith(ClientConfiguration.http_health)) {
             value = context.getExternalProperty(property);
             if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
+            if(SimpleStringUtil.isEmpty(value)){
 
                 value =	"/";
 
             }
         }
+        
+        else if(property.endsWith(ClientConfiguration.http_fail_all_continue)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
+            if(SimpleStringUtil.isEmpty(value)){
+                value = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.failAllContinue",context,null);
+            }
+        }
         else if(property.endsWith(ClientConfiguration.http_discover_service)) {
             value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
             if(SimpleStringUtil.isEmpty(value)){
                 String elasticsearchDiscoverHost = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.discoverHost",context,null);
                 if(elasticsearchDiscoverHost != null && elasticsearchDiscoverHost.equals("true")) {
@@ -131,14 +174,14 @@ public class WrapperGetProperties implements GetProperties {
                 }
             }
         }
-        else if(property.endsWith(ClientConfiguration.http_fail_all_continue)) {
-            value = context.getExternalProperty(property);
-            if(SimpleStringUtil.isEmpty(value)){
-                value = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.failAllContinue",context,null);
-            }
-        }
         else if(property.endsWith(ClientConfiguration.http_exception_ware)) {
             value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalProperty(namespace + "."+property);
+                }
+
+            }
             if(SimpleStringUtil.isEmpty(value)){
                  value = "org.frameworkset.elasticsearch.client.ElasticsearchExceptionWare";
             }
@@ -148,6 +191,41 @@ public class WrapperGetProperties implements GetProperties {
 		}
 		return value;
 	}
+    @Override
+    public Object getExternalObjectPropertyWithNS(String namespace, String property) {
+        Object value = null;
+        if(property.endsWith(ClientConfiguration.http_discover_service)) {
+            value = context.getExternalObjectProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalObjectProperty(namespace + "."+property);
+                }
+
+            }
+            if(SimpleStringUtil.isEmpty(value)){                 
+                String elasticsearchDiscoverHost = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.discoverHost",context,null);
+                if(elasticsearchDiscoverHost != null && elasticsearchDiscoverHost.equals("true")) {
+                    value = "org.frameworkset.elasticsearch.client.ElasticsearchHostNodeDiscover";
+                }
+            }
+        }
+        else if(property.endsWith(ClientConfiguration.http_exception_ware)) {
+            value = context.getExternalObjectProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                if(namespace.equals("default")){
+                    value = context.getExternalObjectProperty(namespace + "."+property);
+                }
+
+            }
+            if(SimpleStringUtil.isEmpty(value)){
+                value = "org.frameworkset.elasticsearch.client.ElasticsearchExceptionWare";
+            }
+        }
+        else{
+            value = context.getExternalObjectProperty(property);
+        }
+        return value;
+    }
 
 	/**
 	 * 如果没有配置http连接池账号和口令，则将es账号和口令转为http协议账号和口令
@@ -184,10 +262,6 @@ public class WrapperGetProperties implements GetProperties {
 			return defaultValue;
 	}
 
-	@Override
-	public Object getExternalObjectPropertyWithNS(String namespace, String property) {
-		return context.getExternalObjectProperty(property);
-	}
 
 	@Override
 	public Object getExternalObjectPropertyWithNS(String namespace, String property, Object defaultValue) {
