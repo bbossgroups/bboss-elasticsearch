@@ -355,6 +355,7 @@ public abstract class BaseESProperties {
 		private String connectionRequestTimeout;
 		private String automaticRetriesDisabled;
 		private String backoffAuth;
+        private String failAllContinue;
 		private String encodedAuthCharset;
 		private String retryTime;
 		private String retryInterval;
@@ -683,6 +684,14 @@ public abstract class BaseESProperties {
 
         public void setKerberos(Map<String,String> kerberos) {
             this.kerberos = kerberos;
+        }
+
+        public String getFailAllContinue() {
+            return failAllContinue;
+        }
+
+        public void setFailAllContinue(String failAllContinue) {
+            this.failAllContinue = failAllContinue;
         }
     }
 
@@ -1121,7 +1130,8 @@ public abstract class BaseESProperties {
 				properties.put(_name+"http.automaticRetriesDisabled",this.getHttp().getAutomaticRetriesDisabled());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getBackoffAuth()))
 				properties.put(_name+"http.backoffAuth",this.getHttp().getBackoffAuth());
-
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getFailAllContinue()))
+                properties.put(_name+"http.failAllContinue",this.getHttp().getFailAllContinue());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getEncodedAuthCharset()))
 				properties.put(_name+"http.encodedAuthCharset",this.getHttp().getEncodedAuthCharset());
 			if(SimpleStringUtil.isNotEmpty(this.getHttp().getRetryTime()))

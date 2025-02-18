@@ -131,6 +131,12 @@ public class WrapperGetProperties implements GetProperties {
                 }
             }
         }
+        else if(property.endsWith(ClientConfiguration.http_fail_all_continue)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                value = ElasticSearchHelper._getStringValue(namespace,"elasticsearch.failAllContinue",context,null);
+            }
+        }
         else if(property.endsWith(ClientConfiguration.http_exception_ware)) {
             value = context.getExternalProperty(property);
             if(SimpleStringUtil.isEmpty(value)){
@@ -152,26 +158,26 @@ public class WrapperGetProperties implements GetProperties {
 	 */
 	@Override
 	public String getExternalPropertyWithNS(String namespace, String property, String defaultValue) {
-		String value = null;
-		if(property.endsWith(ClientConfiguration.http_authAccount)) {
-			value = context.getExternalProperty(property);
-			if(SimpleStringUtil.isEmpty(value)){
-
-				value =	ElasticSearchHelper._getStringValue(namespace,"elasticUser",context,null);
-
-			}
-		}
-		else if(property.endsWith(ClientConfiguration.http_authPassword)) {
-			value = context.getExternalProperty(property);
-			if(SimpleStringUtil.isEmpty(value)){
-
-				value =	ElasticSearchHelper._getStringValue(namespace,"elasticPassword",context,null);
-
-			}
-		}
-		else{
-			value = context.getExternalProperty(property);
-		}
+		String value = getExternalPropertyWithNS(  namespace,   property);
+//		if(property.endsWith(ClientConfiguration.http_authAccount)) {
+//			value = context.getExternalProperty(property);
+//			if(SimpleStringUtil.isEmpty(value)){
+//
+//				value =	ElasticSearchHelper._getStringValue(namespace,"elasticUser",context,null);
+//
+//			}
+//		}
+//		else if(property.endsWith(ClientConfiguration.http_authPassword)) {
+//			value = context.getExternalProperty(property);
+//			if(SimpleStringUtil.isEmpty(value)){
+//
+//				value =	ElasticSearchHelper._getStringValue(namespace,"elasticPassword",context,null);
+//
+//			}
+//		}
+//		else{
+//			value = context.getExternalProperty(property);
+//		}
 		if(value != null)
 			return value;
 		else
