@@ -755,7 +755,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
      
             response = (T)executeRequest.execute(path);
             //从响应处理器中获取异常信息
-            e = getException(  responseHandler );
+//            e = getException(  responseHandler );
         } catch (Exception ex) {
             e = ex;
          
@@ -772,8 +772,8 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return response;
 	}
 
-    /**    
-    private <T> T _executeHttp(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
+     /**
+    private <T> T _executeHttpOld(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
 
         int triesCount = 0;
         T response = null;
