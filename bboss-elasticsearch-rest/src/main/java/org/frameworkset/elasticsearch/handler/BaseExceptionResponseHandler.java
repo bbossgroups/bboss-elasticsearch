@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author biaoping.yin
  * @version 1.0
  */
-public abstract class BaseExceptionResponseHandler extends BaseResponseHandler implements ESExceptionWrapper {
+public abstract class BaseExceptionResponseHandler<T> extends BaseResponseHandler<T> implements ESExceptionWrapper {
 	protected ElasticSearchException elasticSearchException;
 	protected static Logger _logger =  LoggerFactory.getLogger(BaseExceptionResponseHandler.class);
 

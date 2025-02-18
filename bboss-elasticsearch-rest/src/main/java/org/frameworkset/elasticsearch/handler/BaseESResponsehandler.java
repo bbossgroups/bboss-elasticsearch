@@ -8,7 +8,7 @@ import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.util.List;
 
-public abstract class BaseESResponsehandler extends BaseResponsehandler implements URLResponseHandler<RestResponse> {
+public abstract class BaseESResponsehandler extends BaseResponsehandler<RestResponse> implements URLResponseHandler<RestResponse> {
 
 
 	public BaseESResponsehandler() {

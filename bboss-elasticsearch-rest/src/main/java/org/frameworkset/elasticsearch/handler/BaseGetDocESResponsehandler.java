@@ -5,7 +5,7 @@ import org.frameworkset.elasticsearch.serial.ESClassType;
 import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
 
-public abstract class BaseGetDocESResponsehandler  extends BaseResponsehandler  implements URLResponseHandler<SearchHit> {
+public abstract class BaseGetDocESResponsehandler  extends BaseResponsehandler<SearchHit>  implements URLResponseHandler<SearchHit> {
 
 	public BaseGetDocESResponsehandler() {
 		super();

@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESPitIdResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<PitId>,ESExceptionWrapper {
+public class ESPitIdResponseHandler extends BaseExceptionResponseHandler<PitId> implements URLResponseHandler<PitId>,ESExceptionWrapper {
 
 	public ESPitIdResponseHandler() {
 		// TODO Auto-generated constructor stub

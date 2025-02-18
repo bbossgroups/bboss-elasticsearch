@@ -22,6 +22,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
+import org.frameworkset.spi.remote.http.callback.ExecuteIntercepter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import static org.frameworkset.spi.remote.http.ResponseUtil.entityEmpty;
  */
 public class SQLRestResponseHandler implements URLResponseHandler<SQLRestResponse> {
 	private String url;
+    private ExecuteIntercepter executeIntercepter;
 
 	@Override
 	public void setUrl(String url) {
@@ -49,7 +51,17 @@ public class SQLRestResponseHandler implements URLResponseHandler<SQLRestRespons
 		return url;
 	}
 
-	@Override
+    @Override
+    public ExecuteIntercepter getExecuteIntercepter() {
+        return executeIntercepter;
+    }
+
+    @Override
+    public void setExecuteIntercepter(ExecuteIntercepter executeIntercepter) {
+        this.executeIntercepter = executeIntercepter;
+    }
+
+    @Override
 	public SQLRestResponse handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 		int status = response.getStatusLine().getStatusCode();
 

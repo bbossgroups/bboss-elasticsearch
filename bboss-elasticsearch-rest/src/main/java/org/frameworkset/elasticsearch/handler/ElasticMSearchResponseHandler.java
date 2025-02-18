@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticMSearchResponseHandler extends BaseResponsehandler implements URLResponseHandler<MSearchRestResponse> {
+public class ElasticMSearchResponseHandler extends BaseResponsehandler<MSearchRestResponse> implements URLResponseHandler<MSearchRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticMSearchResponseHandler.class);
 
 	public ElasticMSearchResponseHandler() {

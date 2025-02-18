@@ -24,7 +24,7 @@ import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
 
-public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler implements URLResponseHandler<MGetDocs> {
+public class MGetDocumentsSourceResponseHandler extends BaseResponsehandler<MGetDocs> implements URLResponseHandler<MGetDocs> {
 
 
 	public MGetDocumentsSourceResponseHandler(Class type){

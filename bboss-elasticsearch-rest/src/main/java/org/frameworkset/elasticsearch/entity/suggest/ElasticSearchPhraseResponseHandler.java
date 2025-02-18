@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchPhraseResponseHandler extends BaseResponseHandler implements URLResponseHandler<PhraseRestResponse> {
+public class ElasticSearchPhraseResponseHandler extends BaseResponseHandler<PhraseRestResponse>  implements URLResponseHandler<PhraseRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchPhraseResponseHandler.class);
 
 	public ElasticSearchPhraseResponseHandler() {

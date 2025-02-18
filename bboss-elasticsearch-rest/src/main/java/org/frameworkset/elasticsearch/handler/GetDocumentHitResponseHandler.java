@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<MapSearchHit> {
+public class GetDocumentHitResponseHandler extends BaseExceptionResponseHandler<MapSearchHit> implements URLResponseHandler<MapSearchHit> {
 	private static Logger logger = LoggerFactory.getLogger(GetDocumentHitResponseHandler.class);
 
 

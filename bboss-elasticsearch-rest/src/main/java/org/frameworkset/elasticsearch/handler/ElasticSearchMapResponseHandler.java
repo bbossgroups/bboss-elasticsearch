@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<MapRestResponse> {
+public class ElasticSearchMapResponseHandler extends BaseExceptionResponseHandler<MapRestResponse> implements URLResponseHandler<MapRestResponse> {
 	private static Logger logger = LoggerFactory.getLogger(ElasticSearchMapResponseHandler.class);
 
 	public ElasticSearchMapResponseHandler() {

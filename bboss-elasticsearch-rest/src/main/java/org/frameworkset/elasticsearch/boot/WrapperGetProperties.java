@@ -131,6 +131,12 @@ public class WrapperGetProperties implements GetProperties {
                 }
             }
         }
+        else if(property.endsWith(ClientConfiguration.http_exception_ware)) {
+            value = context.getExternalProperty(property);
+            if(SimpleStringUtil.isEmpty(value)){
+                 value = "org.frameworkset.elasticsearch.client.ElasticsearchExceptionWare";
+            }
+        }
 		else{
 			value = context.getExternalProperty(property);
 		}

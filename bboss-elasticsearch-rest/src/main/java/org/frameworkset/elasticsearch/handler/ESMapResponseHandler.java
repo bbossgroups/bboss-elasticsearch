@@ -31,7 +31,7 @@ import java.util.Map;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESMapResponseHandler  extends BaseExceptionResponseHandler implements URLResponseHandler<Map> {
+public class ESMapResponseHandler  extends BaseExceptionResponseHandler<Map> implements URLResponseHandler<Map> {
 	public ESMapResponseHandler() {
 		// TODO Auto-generated constructor stub
 	}

@@ -7,7 +7,7 @@ import org.frameworkset.elasticsearch.serial.ESTypeReferences;
 
 import java.util.List;
 
-public abstract class BaseResponsehandler extends BaseExceptionResponseHandler  {
+public abstract class BaseResponsehandler<T> extends BaseExceptionResponseHandler<T>  {
 	protected ESClass types;
 
 

@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESStringResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<String>,ESExceptionWrapper {
+public class ESStringResponseHandler extends BaseExceptionResponseHandler<String> implements URLResponseHandler<String>,ESExceptionWrapper {
 
 	public ESStringResponseHandler() {
 		// TODO Auto-generated constructor stub

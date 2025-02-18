@@ -30,7 +30,7 @@ import java.io.IOException;
  * @author biaoping.yin
  * @version 1.0
  */
-public class ESVoidResponseHandler extends BaseExceptionResponseHandler implements URLResponseHandler<Void>,ESExceptionWrapper {
+public class ESVoidResponseHandler extends BaseExceptionResponseHandler<Void> implements URLResponseHandler<Void>,ESExceptionWrapper {
 
 	public ESVoidResponseHandler() {
 		// TODO Auto-generated constructor stub

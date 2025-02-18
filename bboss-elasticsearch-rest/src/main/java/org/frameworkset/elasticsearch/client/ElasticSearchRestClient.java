@@ -21,27 +21,30 @@ package org.frameworkset.elasticsearch.client;
 import com.frameworkset.util.SimpleStringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.util.EntityUtils;
-import org.frameworkset.elasticsearch.*;
+import org.frameworkset.elasticsearch.ElasticSearch;
+import org.frameworkset.elasticsearch.ElasticSearchException;
+import org.frameworkset.elasticsearch.IndexNameBuilder;
+import org.frameworkset.elasticsearch.TimeBasedIndexNameBuilder;
 import org.frameworkset.elasticsearch.handler.BaseExceptionResponseHandler;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
+import org.frameworkset.spi.remote.http.URLResponseHandler;
+import org.frameworkset.spi.remote.http.callback.ExecuteIntercepter;
 import org.frameworkset.util.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 
 //import org.apache.http.client.HttpClient;
@@ -602,17 +605,30 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 			endpoint = new StringBuilder().append(endpoint).append("?").append(options).toString();
 		}
 		final ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+        if(showTemplate ){
+
+            if(logger.isInfoEnabled()) {
+                responseHandler.setExecuteIntercepter(new ExecuteIntercepter() {
+                    @Override
+                    public void before(String url, URLResponseHandler urlResponseHandler, int triesCount) {
+                        logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+                    }
+
+                    @Override
+                    public void after(String url, URLResponseHandler urlResponseHandler, int triesCount, Object response, Throwable e) {
+
+                    }
+                });
+
+            }
+
+        }
 		return _executeHttp(endpoint, responseHandler,  new ExecuteRequest() {
 			@Override
-			public Object execute(String url,int triesCount) throws Exception {
+			public Object execute(String url) throws Exception {
 				Object response = null;
-
-				if(showTemplate ){
-					if(logger.isInfoEnabled()) {
-						logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
-					}
-
-				}
+                
+				
 				response = restSeachExecutor.execute(url,entity,responseHandler);
 				return response;
 			}
@@ -675,22 +691,41 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @throws ElasticSearchException
 	 */
 	private <T> T _executeHttp(String path, final String entity,final String action,final ResponseHandler<T> responseHandler,final boolean discoverHost) throws ElasticSearchException {
-		return _executeHttp(path,   responseHandler, new ExecuteRequest() {
+        if(showTemplate && !discoverHost ){
+            if(logger.isInfoEnabled()) {
+                if(responseHandler !=null && responseHandler instanceof URLResponseHandler)
+                    ((URLResponseHandler)responseHandler).setExecuteIntercepter(new ExecuteIntercepter() {
+                    @Override
+                    public void before(String url, URLResponseHandler urlResponseHandler, int triesCount) {
+                        if(entity != null)
+                            logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+                        else
+                            logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+                    }
+
+                    @Override
+                    public void after(String url, URLResponseHandler urlResponseHandler, int triesCount, Object response, Throwable e) {
+
+                    }
+                });
+                else{
+                    if(entity != null)
+                        logger.info("ElasticSearch http request endpoint:{},request body:\n{}",path,entity);
+                    else
+                        logger.info("ElasticSearch http request endpoint:{}",path);
+                }
+                
+            }
+
+
+        }
+        return _executeHttp(path,   responseHandler, new ExecuteRequest() {
 			@Override
-			public Object execute(String url,int triesCount) throws Exception {
+			public Object execute(String url) throws Exception {
 				Object response = null;
 
 				if(!discoverHost) {
-					if(showTemplate && !discoverHost ){
-						if(logger.isInfoEnabled()) {
-							if(entity != null)
-								logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
-							else
-								logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
-						}
-
-
-					}
+					
 					response = restSeachExecutor.executeHttp(url, entity, action, responseHandler);
 				}
 				else {
@@ -713,52 +748,18 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 */
 	private <T> T _executeHttp(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
 		
-        int triesCount = 0;
 		T response = null;
 		Throwable e = null; 
 	 
         try {
      
-            response = (T)executeRequest.execute(path,triesCount);
+            response = (T)executeRequest.execute(path);
             //从响应处理器中获取异常信息
             e = getException(  responseHandler );
-        } catch (HttpHostConnectException ex) {
-            e = new NoServerElasticSearchException(path,ex);
+        } catch (Exception ex) {
+            e = ex;
          
-        } catch (UnknownHostException ex) {
-            e = new NoServerElasticSearchException(path,ex);
-
-        }
-        catch (NoRouteToHostException ex) {
-            e = new NoServerElasticSearchException(path,ex);
-
-        }
-        catch (NoHttpResponseException ex) {
-            e = new NoServerElasticSearchException(path,ex);
-
-        }
-        catch (ConnectionPoolTimeoutException ex){//连接池获取connection超时，直接抛出
-            e = handleConnectionPoolTimeOutException(path, ex);
-        }
-        catch (ConnectTimeoutException connectTimeoutException){
-            e = handleConnectionTimeOutException(path,connectTimeoutException);
-        }
-
-        catch (SocketTimeoutException ex) {
-            e = handleSocketTimeoutException(path, ex);
-        }
-        catch (NoServerElasticSearchException ex){
-            e = ex;
-        }
-        catch (ClientProtocolException ex){
-            e = ex;
-        }
-        catch (ElasticSearchException ex) {
-            e = ex;
-        }
-        catch (Exception ex) {
-            e = ex;
-        }
+        } 
         catch (Throwable ex) {
             e = ex;
         }
@@ -932,19 +933,31 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 
 	public String executeRequest(String path, final String entity) throws ElasticSearchException {
 		final ESStringResponseHandler responseHandler = new ESStringResponseHandler();
+        if(showTemplate ){
+            if(logger.isInfoEnabled()) {
+                responseHandler.setExecuteIntercepter(new ExecuteIntercepter() {
+                    @Override
+                    public void before(String url, URLResponseHandler urlResponseHandler, int triesCount) {
+                        if(entity != null)
+                            logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
+                        else
+                            logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
+                    }
+
+                    @Override
+                    public void after(String url, URLResponseHandler urlResponseHandler, int triesCount, Object response, Throwable e) {
+
+                    }
+                });
+                
+            }
+        }
 		return _executeHttp(path,   responseHandler, new ExecuteRequest() {
 			@Override
-			public Object execute(String url,int triesCount) throws Exception {
+			public Object execute(String url) throws Exception {
 				Object response = null;
 
-				if(showTemplate ){
-					if(logger.isInfoEnabled()) {
-						if(entity != null)
-							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
-						else
-							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
-					}
-				}
+				
 
 				response = restSeachExecutor.executeSimpleRequest(url,entity,responseHandler);
 				return response;
@@ -955,7 +968,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return executeRequest(path, entity,responseHandler,ClientUtil.HTTP_POST);
 	}
-	private Exception getException(ResponseHandler responseHandler ){
+	public static Exception getException(ResponseHandler responseHandler ){
 		if(responseHandler instanceof BaseExceptionResponseHandler){
 			return ((BaseExceptionResponseHandler)responseHandler).getElasticSearchException();
 		}
@@ -969,22 +982,42 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeRequest(String path, final String entity,final ResponseHandler<T> responseHandler,final String action) throws ElasticSearchException {
-		return _executeHttp(path,  responseHandler, new ExecuteRequest() {
+	public <T> T executeRequest(String path, final String entity, final ResponseHandler<T> responseHandler, final String action) throws ElasticSearchException {
+        if(showTemplate  ){
+            if(logger.isInfoEnabled()) {
+                if(responseHandler != null && responseHandler instanceof URLResponseHandler) {
+                    ((URLResponseHandler)responseHandler).setExecuteIntercepter(new ExecuteIntercepter() {
+                        @Override
+                        public void before(String url, URLResponseHandler urlResponseHandler, int triesCount) {
+                            if (entity != null)
+                                logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}", url, triesCount, entity);
+                            else
+                                logger.info("ElasticSearch http request endpoint:{},retry:{}", url, triesCount);
+                        }
+
+                        @Override
+                        public void after(String url, URLResponseHandler urlResponseHandler, int triesCount, Object response, Throwable e) {
+
+                        }
+                    });
+
+                }
+                else{
+                    if (entity != null)
+                        logger.info("ElasticSearch http request endpoint:{},request body:\n{}", path,  entity);
+                    else
+                        logger.info("ElasticSearch http request endpoint:{}", path);
+                }
+            }
+
+
+        }
+        return _executeHttp(path,  responseHandler, new ExecuteRequest() {
 			@Override
-			public Object execute(String url,int triesCount) throws Exception {
+			public Object execute(String url) throws Exception {
 				Object response = null;
 
-				if(showTemplate  ){
-					if(logger.isInfoEnabled()) {
-						if(entity != null)
-							logger.info("ElasticSearch http request endpoint:{},retry:{},request body:\n{}",url,triesCount,entity);
-						else
-							logger.info("ElasticSearch http request endpoint:{},retry:{}",url,triesCount);
-					}
-
-
-				}
+				
 				response = restSeachExecutor.executeRequest(url,entity,action,responseHandler);
 				return response;
 			}
@@ -997,7 +1030,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 	private interface ExecuteRequest{
-		Object execute( String url, int triesCount) throws Exception;
+		Object execute( String url) throws Exception;
 	}
 
 
