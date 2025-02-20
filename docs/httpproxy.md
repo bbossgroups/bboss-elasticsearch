@@ -1539,7 +1539,11 @@ ssl证书配置，参考文档：[设置ssl证书](https://esdoc.bbossgroups.com
 
 ## 8.2 Kerberos认证
 
-对接开启Kerberos认证的服务时，需要额外添加Kerberos认证相关的参数，bboss支持两种配置模式：参数配置模式和jaas配置模式
+对接开启Kerberos认证的服务时，需要额外添加Kerberos认证相关的参数，bboss支持三种Kerberos认证模式：
+
+- 参数配置模式
+- jaas配置模式
+- ServerRealm模式
 
 ### 8.2.1 参数配置模式
 
@@ -1559,6 +1563,8 @@ http.kerberos.storeKey=true
 http.kerberos.doNotPrompt=true
 http.kerberos.isInitiator=true
 http.kerberos.debug=false
+#可选参数
+http.kerberos.useSubjectCredsOnly=false
 ```
 
 其中http.kerberos.principal、http.kerberos.keytab和http.kerberos.krb5Location是必填项；http.kerberos.loginContextName（可选项）的默认值为Krb5Login
@@ -1575,6 +1581,8 @@ http.kerberos.loginConfig=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/j
 http.kerberos.krb5Location=C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf
 http.kerberos.loginContextName=Krb5Login
 http.kerberos.debug=false
+#可选参数
+http.kerberos.useSubjectCredsOnly=false
 ```
 
 其中http.kerberos.loginConfig和http.kerberos.krb5Location为必填项；http.kerberos.loginContextName（可选项）的默认值为Krb5Login，loginContextName的值必须与jaas.conf中的登录模块配置名称保持一致：
@@ -1596,6 +1604,30 @@ Krb5Login { #---Krb5Login与loginContextName配置保持一致
 Kerberos配置加载和http服务调用案例：
 
 https://gitee.com/bboss/bboss-http/blob/master/test/org/frameworkset/http/client/StartKerberosHttpPoolFromFile.java
+
+### 8.2.3 ServerRealm模式
+
+可以结合前面两种模式参数（任意一种）的基础上，增加以下参数实现ServerRealm模式Kerberos认证：
+
+```properties
+#http.kerberos.serverRealmPath = /elasticsearch/serverrealm?appName=Krb5Login
+#直接指定获取ServerRealm的http/https restful服务地址，生产环境建议使用，需由服务端提供的免鉴权免认证服务
+http.kerberos.serverRealmPath = /elasticsearch/serverrealm
+#直接指定ServerRealm，生产环境不建议
+http.kerberos.serverRealm = elasticsearch/hadoop.bbossgroups.com@BBOSSGROUPS.COM
+```
+
+如果配置了serverRealm，serverRealmPath参数就被忽略。serverRealmPath服务为http/https restful类型服务相对地址，需由服务端提供的免鉴权免认证服务，要求直接返回serverRealm，不能返回其他格式数据。
+
+另外可以指定获取serverRealm的其他参数，由于服务端判断不同客户端身份返回相应的serverRealm，serverRealmPath服务实现案例：
+
+```java
+    @RequestMap("/elasticsearch/serverrealm")
+	public @ResponseBody String serverrealm(String appName){
+//        return "BBOSSGROUPS.COM";
+        return "elasticsearch/hadoop.bbossgroups.com@BBOSSGROUPS.COM";
+    }
+```
 
 # 9.配置HttpRequestInterceptor
 
