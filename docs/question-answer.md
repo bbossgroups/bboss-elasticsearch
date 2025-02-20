@@ -251,7 +251,7 @@ perKeyDSLStructionCacheSize参数含义，参考文档：
 
 [dsl动态语法](https://esdoc.bbossgroups.com/#/development?id=_53-dsl配置规范)
 
-最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到7.3.3或以上版本，从而解决该问题，从以下地址获取最新版本信息：
+最新版本bboss提供了dsl 结构缓存区溢出保护机制，当dsl 结构缓存区块溢出时，自动关闭dsl 结构缓存机制，因此可以将bboss升级到7.3.5或以上版本，从而解决该问题，从以下地址获取最新版本信息：
 
 https://esdoc.bbossgroups.com/#/changelog
 
@@ -271,7 +271,7 @@ jackson版本过低，例如2.3.2及以下的版本会报以上问题
 
 ![img](images\jacson.png)
 
-- 升级bboss到7.3.3
+- 升级bboss到7.3.5
 
 # 问题7 mysql大表数据同步慢
 
@@ -294,7 +294,7 @@ jdk 版本过低，使用jdk 1.8的小版本号过低
 
 # 问题9 降级velocity2.5到1.7方法
 
-bboss 7.3.3及以后版本将velocity模版引擎版本由1.7升级到2.5，去除了模版变量$velocityCount，升级时，将脚本中的$velocityCount变量调整为$foreach.index即可，例如：
+bboss 7.3.5及以后版本将velocity模版引擎版本由1.7升级到2.5，去除了模版变量$velocityCount，升级时，将脚本中的$velocityCount变量调整为$foreach.index即可，例如：
 
 ```java
 #foreach($include in $includes)
@@ -316,7 +316,7 @@ bboss 7.3.3及以后版本将velocity模版引擎版本由1.7升级到2.5，去�
 		<dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
             <!--
                 兼容velocity1.7，需要排除velocity2.5包
             -->
@@ -333,7 +333,7 @@ bboss 7.3.3及以后版本将velocity模版引擎版本由1.7升级到2.5，去�
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-rest-bc</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 

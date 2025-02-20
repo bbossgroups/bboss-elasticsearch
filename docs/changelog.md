@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.3.3 发布
+# BBOSS版本变更记录-v7.3.5 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,15 +37,17 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.3.5 功能改进-20250220
-1. Elasticsearch客户端改进：Elasticsearch客户端健康检查机制、服务节点发现机制与Http服务框架完全合并
+1. Elasticsearch客户端改进：Elasticsearch客户端健康检查机制、服务节点发现机制、负载均衡容灾机制与Http-proxy微服务框架完全合并
+2. Elasticsearch客户端改进：Elasticsearch客户端新增异地双中心异地灾备机制
 2. Elasticsearch Kerberos安全认证改进：提供服务端和客户端Princpal相结合的认证机制，兼容华为云Elasticsearch Kerberos认证
-3. Http-proxy微服务框架改进：提供服务端和客户端Princpal相结合的认证机制
+3. Http-proxy微服务框架改进：提供服务端和客户端Princpal相结合的Kerberos认证机制
+
 # v7.3.3 功能改进-20250209
 1. Elasticsearch客户端改进：增加对apiKey认证机制的支持,设置方法：
 ```properties
@@ -1134,7 +1136,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1142,7 +1144,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.3</version>
+            <version>7.3.5</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1229,7 +1231,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1297,7 +1299,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
 
-# v6.3.8 功能改进
+# v6.3.9 功能改进
 1. 日志完善：对httpproxy和elasticsearch客户端输出日志中的用户口令信息进行脱敏处理
 2. 兼容老版本升级到最新的数据同步框架：自动创建增量状态表和增量状态历史表中新增的字段
 3. 修复httpproxy问题：停止默认连接池时，没有清空默认配置对象
@@ -1775,7 +1777,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.3</version>
+    <version>7.3.5</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2094,13 +2096,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.7</version>
+      <version>6.3.8</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.7", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.8", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
