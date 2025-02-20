@@ -1468,15 +1468,15 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> List<T> mgetDocumentsWithCluster(String datasourceName, String index, String indexType, Class<T> type, Object... ids) throws ElasticSearchException {
+	public <T> List<T> mgetDocumentsWithIdsWithCluster(String datasourceName, String index, String indexType, Class<T> type, Object... ids) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.mgetDocuments(index, indexType, type, ids);
+		return clientInterface.mgetDocumentsWithIds(index, indexType, type, ids);
 	}
 
 	@Override
-	public String mgetDocumentsWithCluster(String datasourceName, String index, String indexType, Object... ids) throws ElasticSearchException {
+	public String mgetDocumentsWithIdsWithCluster(String datasourceName, String index, String indexType, Object... ids) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
-		return clientInterface.mgetDocuments(index, indexType,  ids);
+		return clientInterface.mgetDocumentsStringWithIds(index, indexType,  ids);
 	}
 
 	@Override

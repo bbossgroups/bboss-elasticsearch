@@ -2192,7 +2192,7 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> List<T> mgetDocumentsWithCluster(String datasourceName,String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException;
+	public <T> List<T> mgetDocumentsWithIdsWithCluster(String datasourceName,String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException;
 	/**
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
 	 * @param index _mget
@@ -2205,7 +2205,7 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String mgetDocumentsWithCluster(String datasourceName,String index,String indexType,Object ... ids)  throws ElasticSearchException;
+	public String mgetDocumentsWithIdsWithCluster(String datasourceName,String index,String indexType,Object ... ids)  throws ElasticSearchException;
 	/**
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
 	 * @param path _mget

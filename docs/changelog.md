@@ -43,8 +43,8 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.3.5 功能改进-20250220
-1. Elasticsearch客户端改进：Elasticsearch客户端健康检查机制、服务节点发现机制、负载均衡容灾机制与Http-proxy微服务框架完全合并
-2. Elasticsearch客户端改进：Elasticsearch客户端新增异地双中心异地灾备机制
+1. [Elasticsearch客户端改进](https://esdoc.bbossgroups.com/#/quickstart)：Elasticsearch客户端健康检查机制、服务节点发现机制、负载均衡容灾机制与[Http-proxy微服务框架](https://esdoc.bbossgroups.com/#/httpproxy)完全合并
+2. Elasticsearch客户端改进：Elasticsearch客户端新增异地双中心灾备机制
 2. Elasticsearch Kerberos安全认证改进：提供服务端和客户端Princpal相结合的认证机制，兼容华为云Elasticsearch Kerberos认证
 3. Http-proxy微服务框架改进：提供服务端和客户端Princpal相结合的Kerberos认证机制
 

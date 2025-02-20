@@ -3451,15 +3451,17 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> List<T> mgetDocuments(String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException{
+	public <T> List<T> mgetDocumentsWithIds(String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException{
         assertStop();
         if(ids == null || ids.length ==0)
 			return null;
 		StringBuilder path = new StringBuilder();
-		if(indexType == null || indexType.equals(""))
-			path.append(index).append("/_mget");
-		else
-			path.append(index).append("/").append(indexType).append("/_mget");
+		if((client.isUpper7() && !client.isIncludeTypeName()) || indexType == null  || indexType.equals("")) {
+            path.append(index).append("/_mget");
+        }
+		else {
+            path.append(index).append("/").append(indexType).append("/_mget");
+        }
 		StringBuilder builder = new StringBuilder();
 		builder.append(" {\"ids\":");
 		Writer writer = new BBossStringWriter(builder);
@@ -3483,25 +3485,34 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String mgetDocuments(String index,String indexType,Object ... ids)  throws ElasticSearchException{
-        assertStop();
-        if(ids == null || ids.length ==0)
-			return null;
-		StringBuilder path = new StringBuilder();
-		if(indexType == null || indexType.equals(""))
-			path.append(index).append("/_mget");
-		else
-			path.append(index).append("/").append(indexType).append("/_mget");
-		StringBuilder builder = new StringBuilder();
-		builder.append(" {\"ids\":");
-		Writer writer = new BBossStringWriter(builder);
-		SerialUtil.object2json(ids,writer);
-		builder.append("}");
-		String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+    @Override
+	public String mgetDocumentsStringWithIds(String index,String indexType,Object ... ids)  throws ElasticSearchException{
 
-		return searchResult;
+		return _mgetDocuments(  index,  indexType,  ids);
 
 	}
+
+    private String _mgetDocuments(String index,String indexType,Object ... ids)  throws ElasticSearchException{
+        assertStop();
+        if(ids == null || ids.length ==0)
+            return null;
+        StringBuilder path = new StringBuilder();
+        if((client.isUpper7() && !client.isIncludeTypeName()) || indexType == null || indexType.equals("")) {
+            path.append(index).append("/_mget");
+        }
+        else {
+            path.append(index).append("/").append(indexType).append("/_mget");
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(" {\"ids\":");
+        Writer writer = new BBossStringWriter(builder);
+        SerialUtil.object2json(ids,writer);
+        builder.append("}");
+        String searchResult = this.client.executeHttp(path.toString(),builder.toString(),   ClientUtil.HTTP_POST);
+
+        return searchResult;
+
+    }
 
 	/**
 	 * 根据路径更新文档
@@ -5549,7 +5560,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public <T> List<T> mgetDocuments(String index, Class<T> type, Object... ids)  throws ElasticSearchException{
-		return mgetDocuments(  index, _doc,type, ids);
+		return mgetDocumentsWithIds(  index, _doc,type, ids);
 	}
 	/**
 	 * For Elasticsearch 7 and 7+
@@ -5564,7 +5575,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
 	public String mgetDocumentsNew(String index,  Object... ids)  throws ElasticSearchException{
-		return mgetDocuments(index, _doc,ids);
+//		return mgetDocuments(index, _doc,ids);
+        return _mgetDocuments(  index,  _doc,  ids);
 	}
 
 

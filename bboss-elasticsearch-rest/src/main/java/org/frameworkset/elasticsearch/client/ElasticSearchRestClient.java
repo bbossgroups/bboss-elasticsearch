@@ -125,6 +125,9 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	public ElasticSearch getElasticSearch() {
 		return elasticSearch;
 	}
+    public boolean isIncludeTypeName(){
+        return elasticSearch.isIncludeTypeName();
+    }
 	public Integer slowDslThreshold(){
 		return slowDslThreshold;
 	}
