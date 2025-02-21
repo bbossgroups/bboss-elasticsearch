@@ -3451,7 +3451,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> List<T> mgetDocumentsWithIds(String index,String indexType,Class<T> type,Object ... ids)  throws ElasticSearchException{
+    @Override
+	public <T> List<T> mgetDocuments(String index,String indexType,Class<T> type,Object[] ids)  throws ElasticSearchException{
         assertStop();
         if(ids == null || ids.length ==0)
 			return null;
@@ -3486,13 +3487,13 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @throws ElasticSearchException
 	 */
     @Override
-	public String mgetDocumentsStringWithIds(String index,String indexType,Object ... ids)  throws ElasticSearchException{
+	public String mgetDocuments(String index,String indexType,Object[] ids)  throws ElasticSearchException{
 
 		return _mgetDocuments(  index,  indexType,  ids);
 
 	}
 
-    private String _mgetDocuments(String index,String indexType,Object ... ids)  throws ElasticSearchException{
+    private String _mgetDocuments(String index,String indexType,Object[] ids)  throws ElasticSearchException{
         assertStop();
         if(ids == null || ids.length ==0)
             return null;
@@ -5559,8 +5560,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> List<T> mgetDocuments(String index, Class<T> type, Object... ids)  throws ElasticSearchException{
-		return mgetDocumentsWithIds(  index, _doc,type, ids);
+	public <T> List<T> mgetDocuments(String index, Class<T> type, Object[] ids)  throws ElasticSearchException{
+		return mgetDocuments(  index, _doc,type, ids);
 	}
 	/**
 	 * For Elasticsearch 7 and 7+
@@ -5574,7 +5575,8 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String mgetDocumentsNew(String index,  Object... ids)  throws ElasticSearchException{
+    @Override
+	public String mgetDocuments(String index,  Object[] ids)  throws ElasticSearchException{
 //		return mgetDocuments(index, _doc,ids);
         return _mgetDocuments(  index,  _doc,  ids);
 	}

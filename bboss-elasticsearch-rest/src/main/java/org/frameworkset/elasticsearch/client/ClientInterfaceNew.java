@@ -845,7 +845,7 @@ public interface ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> List<T> mgetDocuments(String index, Class<T> type, Object... ids)  throws ElasticSearchException;
+	public <T> List<T> mgetDocuments(String index, Class<T> type, Object[] ids)  throws ElasticSearchException;
 	/**
 	 * For Elasticsearch 7 and 7+
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
@@ -858,7 +858,7 @@ public interface ClientInterfaceNew {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public String mgetDocumentsNew(String index,  Object... ids)  throws ElasticSearchException;
+	public String mgetDocuments(String index,  Object[] ids)  throws ElasticSearchException;
 
 
 

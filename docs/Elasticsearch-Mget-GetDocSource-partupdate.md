@@ -17,15 +17,16 @@
 ```java
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		//获取json报文
-		String response = clientUtil.mgetDocuments("agentinfo",//索引表
-				  "agentinfo",//索引表类型
-				  new String[]{"10.21.20.168","192.168.0.143"});//文档id清单
+
+        String response  = clientUtil.mgetDocuments("dbdemo",//索引表
+                new String[]{"TT5A8JQBcIsteX3sNfdw","TD5A8JQBcIsteX3sNfdw"});//文档id清单，如果是数字类型，请用Integer之类的封装对象
 		System.out.println(response);
 		//获取封装成对象的文档列表，此处是Map对象，还可以是其他用户定义的对象类型
-		List<Map> docs = clientUtil.mgetDocuments("agentinfo",//索引表
-			"agentinfo",//索引表类型
-			Map.class,//返回文档对象类型
-			new String[]{"10.21.20.168","192.168.0.143"});//文档id清单
+
+
+        List<Map> docs = clientUtil.mgetDocuments("dbdemo",//索引表
+                Map.class,//返回文档对象类型
+                new String[]{"TT5A8JQBcIsteX3sNfdw","TD5A8JQBcIsteX3sNfdw"});//文档id清单
 		System.out.println(docs);
 	 
 ```
@@ -33,28 +34,26 @@
 通过执行dsl获取多个文档的内容案例
 
 ```java
-        ClientInterface clientUtil = 
-                ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/mget.xml");
-		//通过执行dsl获取多个文档的内容，具体可以参考文档：
-//https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
+ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/estrace/mget7.xml");
+		//通过执行dsl获取多个文档的内容
 		List<String> ids = new ArrayList<String>();
-		ids.add("10.21.20.168");
-		ids.add("192.168.0.143");
+		ids.add("TT5A8JQBcIsteX3sNfdw");
+		ids.add("TD5A8JQBcIsteX3sNfdw");
 		Map params = new HashMap();
 		params.put("ids",ids);
 		String response = clientUtil.executeHttp("_mget",
-			"testMget",//dsl定义名称
-			params, //存放文档id的参数
-			ClientUtil.HTTP_POST);
+												 "testMget",//dsl定义名称
+												 params, //存放文档id的参数
+				                                 ClientUtil.HTTP_POST);
 		System.out.println(response);
 		List<Map> docs = clientUtil.mgetDocuments("_mget",
-				"testMget",//dsl定义名称
-				params, //存放文档id的参数
-				Map.class);//返回文档对象类型
+												"testMget",//dsl定义名称
+												 params, //存放文档id的参数
+												 Map.class);//返回文档对象类型
 		System.out.println(docs);
 ```
 
-dsl定义-esmapper/estrace/mget.xml
+dsl定义-esmapper/estrace/mget7.xml
 
 ```xml
 <!--
@@ -62,38 +61,43 @@ GET /_mget
 {
             "docs" : [
                 {
-                    "_index" : "agentinfo",
-                    "_type" : "agentinfo",
-                    "_id" : "10.21.20.168"
+                    "_index" : "dbdemo",
+                   
+                    "_id" : "TT5A8JQBcIsteX3sNfdw"
                 },
                 {
-                     "_index" : "agentinfo",
-                    "_type" : "agentinfo",
-                    "_id" : "192.168.0.143"
+                     "_index" : "dbdemo",
+                     
+                    "_id" : "TD5A8JQBcIsteX3sNfdw"
                 }
             ]
         }
 -->
-<property name="testMget">
-    <![CDATA[
-
-        {
-            "docs" : [
-            #foreach($id in $ids)
-                #if($foreach.index > 0),#end
-                {
-                    "_index" : "agentinfo",
-                    "_type" : "agentinfo",
-                    "_id" : "$id"
-                }
-            #end
-            ]
-        }
-        ]]>
-</property>
+<properties>
+    <property name="testMget">
+        <![CDATA[
+    
+            {
+                "docs" : [
+                #foreach($id in $ids)
+                    #if($foreach.index > 0),#end
+                    {
+                        "_index" : "dbdemo",
+                        "_id" : "$id"
+                    }
+                #end
+                ]
+            }
+            ]]>
+    </property>
+</properties>
 ```
 
+完整案例地址
 
+Elasticsearch 7+及以上版本案例：https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/java/org/frameworkset/elasticsearch/TestMGet7.java
+
+Elasticsearch 6及以下版本案例：https://gitee.com/bboss/elasticsearchdemo/blob/master/src/test/java/org/frameworkset/elasticsearch/TestMGet.java
 
 # 3.更新索引文档部分信息案例
 
