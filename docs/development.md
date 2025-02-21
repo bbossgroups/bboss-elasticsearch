@@ -89,9 +89,11 @@ Elasticsearch客户端Kerberos认证使用配置实例：
 
 
 - Spring boot配置：[application.kerberos.yml](https://gitee.com/bboss/eshelloword-spring-boot3-starter/blob/main/src/main/resources/application.kerberos.yml)
+- 华为云Elasticsearch对接配置案例：[application.kerberos.serverrealm.properties](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/resources/application.kerberos.serverrealm.properties)
+- 华为云Elasticsearch对接配置案例1：[application.kerberos.serverrealmjaas.properties](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/resources/application.kerberos.serverrealmjaas.properties)
 
 
-Elasticsearch Kerberos使用参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
+Elasticsearch Kerberos官方使用参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
 
 ### 2.1.3 apiKey认证配置
 
