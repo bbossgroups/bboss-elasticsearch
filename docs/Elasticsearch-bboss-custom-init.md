@@ -1,22 +1,14 @@
-# 基于自定义配置文件/Map属性集初始化bboss es方法介绍
+# 自定义bboss elasticsearch数据源
 
-本文涉及的案例源码和工程地址
+bboss默认提供了以下三种方式配置和管理Elasticsearch数据源：
 
-gitee工程地址
+- [resources/application.properties](https://esdoc.bbossgroups.com/#/common-project-with-bboss)（适用于spring boot和非spring boot项目）
+- [resources/application.yaml](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)（只适用于spring boot）文件配置和管理Elasticsearch数据源。
+- [apollo](https://esdoc.bbossgroups.com/#/springboot-bbosses-apollo)和[nacos](https://esdoc.bbossgroups.com/#/nacos-config)配置中心管理Elasticsearch数据源
 
-https://gitee.com/bboss/eshelloword-booter
+亦可以自行定义配置和管理bboss elasticsearch数据源，本文介绍具体的方法。
 
-github地址
-
-https://github.com/bbossgroups/eshelloword-booter
-
-自定义初始化java类
-
-https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
-
-https://github.com/bbossgroups/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
-
-# 1.指定配置文件启动和初始化
+## 1.指定配置文件启动和初始化
 
 指定配置文件启动和初始化Elasticsearch bboss
 
@@ -42,7 +34,7 @@ ElasticSearchBoot.boot("myapplication.properties");
 //ElasticSearchBoot.boot("file:/home/elasticsearch/myapplication.properties");
 ```
 
-# 2.代码中配置参数启动和初始化
+## 2.代码中配置参数启动和初始化
 
 所有的属性通过Map对象传入并初始化ES rest client组件：
 
@@ -84,7 +76,7 @@ public class ElasticsearchBootResult {
 ```
 下面详细介绍。
 
-## 单个Elasticsearch数据源案例
+### 2.1 单个Elasticsearch数据源案例
 
 ```java
 Map properties = new HashMap();
@@ -107,7 +99,7 @@ properties.put("http.connectionRequestTimeout","70000");
 ElasticSearchBoot.boot(properties);
 ```
 
-## 多Elasticsearch数据源案例
+### 2.2 多Elasticsearch数据源案例
 
 ```java
 Map properties = new HashMap();
@@ -162,14 +154,140 @@ ElasticSearchBoot.boot(properties);
 
 [获取多数据源ClientInterface方法](https://esdoc.bbossgroups.com/#/development?id=_521-%e6%99%ae%e9%80%9amaven%e9%a1%b9%e7%9b%ae%e5%a4%9aes%e9%9b%86%e7%be%a4%e6%95%b0%e6%8d%ae%e6%ba%90%e5%ae%a2%e6%88%b7%e7%ab%af%e7%bb%84%e4%bb%b6%e5%ae%9a%e4%b9%89%e6%96%b9%e6%b3%95)
 
+### 2.3 基于Kerberos认证数据源案例
 
-# 3.停止elasticsearch数据源
+#### 2.3.1 基于参数配置模式
+
+```java
+	Map properties = new HashMap();
+		/**
+		 * 这里只设置必须的配置项，其他的属性参考配置文件：resources/application.properties
+		 *
+		 */
+		//认证账号和口令配置，如果启用了安全认证才需要，支持xpack和searchguard
+		properties.put("elasticsearch.serverNames","es233");
+		//es服务器地址和端口，多个用逗号分隔
+		properties.put("es233.elasticsearch.rest.hostNames","192.168.137.1:9200");
+		//是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
+		properties.put("es233.elasticsearch.showTemplate","true");
+		//集群节点自动发现
+		properties.put("es233.elasticsearch.discoverHost","true");
+
+        
+//        # kerberos安全认证配置
+        properties.put("es233.http.kerberos.principal","elastic/admin@BBOSSGROUPS.COM");
+        properties.put("es233.http.kerberos.keytab","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/elastic.keytab");
+        properties.put("es233.http.kerberos.krb5Location","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf");
+        properties.put("es233.http.kerberos.useTicketCache","false");
+        //#http.kerberos.useKeyTab=true
+        
+        //#Krb5 in GSS API needs to be refreshed so it does not throw the error
+        //#Specified version of key is not available
+        properties.put("es233.http.kerberos.refreshKrb5Config","false");
+        
+        properties.put("es233.http.kerberos.storeKey","true");
+        properties.put("es233.http.kerberos.doNotPrompt","true");
+        properties.put("es233.http.kerberos.isInitiator","true");
+        properties.put("es233.http.kerberos.debug","true");
+        properties.put("es233.http.kerberos.loginContextName","Krb5Login");
+        properties.put("es233.http.kerberos.useSubjectCredsOnly","true");
+        
+
+		ElasticSearchBoot.boot(properties);
+```
+
+#### 2.3.2 基于jaas配置模式
+
+```java
+ Map properties = new HashMap();
+        /**
+         * 这里只设置必须的配置项，其他的属性参考配置文件：resources/application.properties
+         *
+         */
+        //认证账号和口令配置，如果启用了安全认证才需要，支持xpack和searchguard
+        properties.put("elasticsearch.serverNames","es233");
+        //es服务器地址和端口，多个用逗号分隔
+        properties.put("es233.elasticsearch.rest.hostNames","192.168.137.1:9200");
+        //是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
+        properties.put("es233.elasticsearch.showTemplate","true");
+        //集群节点自动发现
+        properties.put("es233.elasticsearch.discoverHost","true");
+
+
+//        # kerberos安全认证配置
+        properties.put("es233.http.kerberos.krb5Location","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf");
+        properties.put("es233.http.kerberos.loginConfig","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/jaas.conf");
+        properties.put("es233.http.kerberos.loginContextName","test");
+        properties.put("es233.http.kerberos.debug","true");
+
+
+        ElasticSearchBoot.boot(properties);
+```
+
+#### 2.3.3 基于Serverrealm配置模式
+
+Serverrealm配置模式只需增加serverRealmPath服务地址配置或者serverRealm参数配置（二选一），其他Kerberos参数可以参考2.3.1和2.3.2章节配置
+
+```java
+Map properties = new HashMap();
+        /**
+         * 这里只设置必须的配置项，其他的属性参考配置文件：resources/application.properties
+         *
+         */
+        //认证账号和口令配置，如果启用了安全认证才需要，支持xpack和searchguard
+        properties.put("elasticsearch.serverNames","es233");
+        //es服务器地址和端口，多个用逗号分隔
+        properties.put("es233.elasticsearch.rest.hostNames","192.168.137.1:9200");
+        //是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
+        properties.put("es233.elasticsearch.showTemplate","true");
+        //集群节点自动发现
+        properties.put("es233.elasticsearch.discoverHost","true");
+
+ 
+//        kerberos安全认证配置
+ // properties.put("es233.http.kerberos.serverRealm","elastic/hadoop.bbossgroups.com@BBOSSGROUPS.COM");  
+  properties.put("es233.http.kerberos.serverRealmPath","/elasticsearch/serverrealm");        properties.put("es233.http.kerberos.useSubjectCredsOnly","false");       properties.put("es233.http.kerberos.krb5Location","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/krb5.conf");
+        properties.put("es233.http.kerberos.loginConfig","C:/environment/es/8.13.2/elasticsearch-8.13.2/config/jaas.conf");
+        properties.put("es233.http.kerberos.loginContextName","test");
+        properties.put("es233.http.kerberos.debug","true");
+
+
+        ElasticSearchBoot.boot(properties);
+```
+
+Kerberos认证参考资料：
+
+https://esdoc.bbossgroups.com/#/development?id=_212-kerberos%e8%ae%a4%e8%af%81%e9%85%8d%e7%bd%ae
+
+## 3.停止elasticsearch数据源
 
 ```java
 ElasticSearchHelper.stopElasticsearch("default");//指定要停止的数据源名称
 ```
 
-# 4. 开发交流
+## 4.参考资料
+
+本文涉及的案例源码和工程地址
+
+gitee工程地址
+
+https://gitee.com/bboss/eshelloword-booter
+
+github地址
+
+https://github.com/bbossgroups/eshelloword-booter
+
+自定义初始化案例
+
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
+
+https://github.com/bbossgroups/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBoot.java
+
+基于Kerberos认证的自定义初始化案例
+
+https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/custominit/CustormInitAndBootKerberosAuth.java
+
+## 4. 开发交流
 
 参考文档：[快速开始bboss](https://esdoc.bbossgroups.com/#/quickstart)
 
@@ -189,7 +307,7 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
 
 
-# 5.支持我们
+## 5.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 

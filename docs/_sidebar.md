@@ -10,7 +10,7 @@
   - [Nacos对接与配置 (非spring boot项目)](nacos-config.md)
   - [Apollo对接与配置 (非spring boot项目)](apollo-config.md)
   - [AWS Elasticsearch集成与请求签名](aws-elasticsearch-config.md)
-  - [自定义初始化bboss es方法](Elasticsearch-bboss-custom-init.md)
+  - [自定义bboss elasticsearch数据源](Elasticsearch-bboss-custom-init.md)
   - [Elasticsearch bboss Performance](performance.md)
   - [Bboss源码构建指南](bboss-build.md)
   - [常见问题处理](question-answer.md)

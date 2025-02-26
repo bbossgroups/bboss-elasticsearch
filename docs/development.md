@@ -92,6 +92,7 @@ Elasticsearch客户端Kerberos认证使用配置实例：
 - 华为云Elasticsearch对接配置案例：[application.kerberos.serverrealm.properties](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/resources/application.kerberos.serverrealm.properties)
 - 华为云Elasticsearch对接配置案例1：[application.kerberos.serverrealmjaas.properties](https://gitee.com/bboss/elasticsearchdemo/blob/master/src/main/resources/application.kerberos.serverrealmjaas.properties)
 
+对接华为云Elasticsearch一般需要配置https协议，可以参考章节【[**2.6.5 https协议配置**](https://esdoc.bbossgroups.com/#/development?id=_265-https%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)】。
 
 Elasticsearch Kerberos官方使用参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/kerberos-realm.html
 
