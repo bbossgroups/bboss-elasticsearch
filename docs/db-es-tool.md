@@ -1851,10 +1851,14 @@ importBuilder.addFieldValue("fromTag","xxl-jobr");  //xxl-job调度作业设置
 通过Context接口方法getValue(String fieldName, java.sql.Types),在处理关系数据库数据时，获取字段对应类型的原始值：
 
 ```java
-Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP);
+Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP)
 ```
 
 记录级别的转换处理参考下面的代码,举例说明如下：
+
+##### 示例 1 添加修改删除字段以及删除记录
+
+Elasticsearch会根据文档id自动根据记录状态对数据进行增删改处理，关系数据需要设置相应的insert、update、delete语句，可以参考[数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_21-db%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)使用文档进行设置。
 
 ```java
 final AtomicInteger s = new AtomicInteger(0);
@@ -1892,16 +1896,20 @@ final AtomicInteger s = new AtomicInteger(0);
             
             context.addIgnoreFieldMapping("subtitle");
 
-            //关联查询数据,单值查询
+         	 //如果使用的数据源是数据库输入插件或者数据库输出插件对应的数据源，可以直接从对应插件中获取指定的数据源名称，否则需要定义额外的数据源，定义方法可以在作业外部进行定义（作业execute之前定义），亦可以通过作业初始化回调接口进行托管定义
+             DBOutputConfig dbOutputConfig = (DBOutputConfig)context.getImportContext().getOutputConfig();
+             String dbname = dbOutputConfig.getTargetDbname();
+             
+                //关联查询数据,单值查询
             //sql中有多个条件用逗号分隔追加
-				Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+				Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,dbname,
 																"select * from head where billid = ? and othercondition= ?",
 																context.getIntegerValue("billid"),"otherconditionvalue");
              
             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
             context.addFieldValue("headdata",headdata);
             //关联查询数据,多值查询
-            List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+            List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,dbname,
                   "select * from facedata where billid = ?",
                   context.getIntegerValue("billid"));
             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
@@ -1911,7 +1919,52 @@ final AtomicInteger s = new AtomicInteger(0);
       //映射和转换配置结束
 ```
 
-***注意：***
+****
+
+作业外自定义数据库数据源方法（销毁需要自行处理）可以参考文档：[2.15 自定义启动db数据源案例](https://esdoc.bbossgroups.com/#/db-es-tool?id=_215-%e8%87%aa%e5%ae%9a%e4%b9%89%e5%90%af%e5%8a%a8db%e6%95%b0%e6%8d%ae%e6%ba%90%e6%a1%88%e4%be%8b)
+
+作业托管定义和销毁数据库数据源定义方法参考文档：[作业依赖资源初始化和销毁](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e4%be%9d%e8%b5%96%e8%b5%84%e6%ba%90%e5%88%9d%e5%a7%8b%e5%8c%96%e5%92%8c%e9%94%80%e6%af%81)
+
+##### 示例 2 标记记录状态
+
+根据条件判断记录是否存在，如果存在将记录标记为update，否则按照默认状态insert处理
+
+```java
+ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor("sql.xml");
+       /**"
+        * 重新设置数据结构
+        */
+       importBuilder.setDataRefactor(new DataRefactor() {
+          public void refactor(Context context) throws Exception  {
+
+              
+                //根据条件判断记录是否存在，如果存在将记录标记为update，否则按照默认状态insert处理
+                
+                DBOutputConfig dbOutputConfig = (DBOutputConfig)context.getImportContext().getOutputConfig();
+              //直接执行sql
+                Integer count = SQLExecutor.queryObjectWithDBName(Integer.class,dbOutputConfig.getTargetDbname(),
+                        "select count(1) from head where billid = ? and othercondition= ?",
+                        context.getIntegerValue("billid"),"otherconditionvalue");
+                if(count != null && count > 0 ){
+                    context.markRecoredUpdate();
+                }
+                //执行配置文件中的sql
+                count = configSQLExecutor.queryObjectWithDBName(Integer.class,dbOutputConfig.getTargetDbname(),
+                        "countSql",//在sql.xml文件中配置的sql语句名称
+                        context.getIntegerValue("billid"),"otherconditionvalue");
+                if(count != null && count > 0 ){
+                    context.markRecoredUpdate();
+                }
+                 
+
+             
+          }
+       });
+```
+
+处理标记状态后，还需要设置修改的sql语句，具体设置方法，参考db输出插件使用文档：[db输出插件使](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_21-db%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
+
+**注意：**
 
 ***1.内嵌的数据库查询会有性能损耗，在保证性能的前提下，尽量将内嵌的sql合并的外部查询数据的整体的sql中，或者采用缓存技术消除内部sql查询。***
 

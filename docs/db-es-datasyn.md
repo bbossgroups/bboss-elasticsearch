@@ -280,13 +280,13 @@ public class Dbdemo {
     
             /**
             //关联查询数据,单值查询
-            Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+            Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,"test",
                                                 "select * from head where billid = ? and othercondition= ?",
                                                 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
             //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
             context.addFieldValue("headdata",headdata);
             //关联查询数据,多值查询
-            List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+            List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"test",
                   "select * from facedata where billid = ?",
                   context.getIntegerValue("billid"));
             //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
