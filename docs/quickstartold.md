@@ -18,7 +18,7 @@ First add the maven dependency of BBoss to your pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@ Second if it's a spring boot project, add following maven dependency to pom.xml:
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 

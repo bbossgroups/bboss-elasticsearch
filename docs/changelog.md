@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.3.5 发布
+# BBOSS版本变更记录-v7.3.6 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,11 +37,14 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.3.6 功能改进-20250309
+1. Elasticsearch客户端改进：规范化mgetDocuments方法命名规范，避免潜在的方法执行冲突，并修改[mget使用文档](https://esdoc.bbossgroups.com/#/Elasticsearch-Mget-GetDocSource-partupdate)
+
 # v7.3.5 功能改进-20250220
 1. [Elasticsearch客户端改进](https://esdoc.bbossgroups.com/#/quickstart)：Elasticsearch客户端健康检查机制、服务节点发现机制、负载均衡容灾机制与[Http-proxy微服务框架](https://esdoc.bbossgroups.com/#/httpproxy)完全合并
 2. Elasticsearch客户端改进：Elasticsearch客户端新增异地双中心灾备机制
@@ -1136,7 +1139,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1144,7 +1147,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.5</version>
+            <version>7.3.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1231,7 +1234,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1777,7 +1780,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.5</version>
+    <version>7.3.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>

@@ -14,7 +14,7 @@ maven项目pom.xml添加Nacos和bbossEs相关依赖
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.5</version>
+    <version>7.3.6</version>
      <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
