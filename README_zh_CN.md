@@ -110,3 +110,7 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 The BBoss Framework is released under version 2.0 of the [Apache License][].
 
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=bbossgroups/bboss-elasticsearch&type=Date)](https://star-history.com/#bbossgroups/bboss-elasticsearch&Date)

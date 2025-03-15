@@ -353,7 +353,7 @@ public class Dbdemo {
 
 Dbdemo完整的内容参考：
 
-<https://gitee.com/bboss/bboss-datatran-demo/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/Dbdemo.java>
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Db2EleasticsearchDemo.java
 
 开发过程中可以直接运行Dbdemo中的main方法来调试作业程序。
 
