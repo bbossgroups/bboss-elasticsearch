@@ -60,8 +60,8 @@ dependencies {
 			project(':bboss-elasticsearch-rest')
 	)
 	compileOnly(
-			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.2.2', transitive: true],
-			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.2.2', transitive: true]
+			[group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.4.3', transitive: true],
+			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.4.3', transitive: true]
 	)
 
 
