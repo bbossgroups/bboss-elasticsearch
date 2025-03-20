@@ -137,7 +137,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
  <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-plugin-apollo</artifactId>
-            <version>6.3.9</version>
+            <version>6.5.0</version>
         </dependency>
 ```
 
@@ -175,7 +175,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
  <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-plugin-nacos</artifactId>
-            <version>6.3.9</version>
+            <version>6.5.0</version>
         </dependency>
 ```
 

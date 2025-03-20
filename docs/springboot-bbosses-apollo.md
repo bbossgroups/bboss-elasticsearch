@@ -16,7 +16,7 @@ bboss
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.6</version>
+    <version>7.3.7</version>
 </dependency>
 
 ```
@@ -29,7 +29,7 @@ bboss
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-    <version>7.3.6</version>
+    <version>7.3.7</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ spring boot 3.x依赖包
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
    <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-    <version>7.3.6</version>
+    <version>7.3.7</version>
 </dependency>
 ```
 
