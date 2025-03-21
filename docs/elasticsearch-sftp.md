@@ -124,7 +124,7 @@ public class ES2FileFtpBatchSplitFileDemo {
       			@Override
       			public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) {
       				//直接将记录按照json格式输出到文本文件中
-      				SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+      				SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),//获取记录中的字段数据
       						builder);
       				String data = (String)taskContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
       //          System.out.println(data);
@@ -402,7 +402,7 @@ String ftpIp = CommonLauncher.getProperty("ftpIP","192.168.137.1");//同时指�
          @Override
          public void buildRecord(TaskContext taskContext, CommonRecord record, Writer builder) {
              //直接将记录按照json格式输出到文本文件中
-            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+            SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),//获取记录中的字段数据
                                          builder);
             String data = (String)taskContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
@@ -522,7 +522,7 @@ ftpOutConfig.setFailedFileResendInterval(10000L);
          @Override
          public void buildRecord(TaskContext recordContext, CommonRecord record, Writer builder) {
              //直接将记录按照json格式输出到文本文件中
-            SerialUtil.normalObject2json(record.getDatas(),//获取记录中的字段数据
+            SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),//获取记录中的字段数据
                                          builder);
             //String data = (String)recordContext.getTaskData("data");//从任务上下文中获取本次任务执行前设置时间戳
 //          System.out.println(data);
@@ -918,7 +918,7 @@ FileOutputConfig.setFilenameGenerator(new FilenameGenerator() {
 FileOutputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
          public void buildRecord(TaskContext context, CommonRecord record, Writer builder) {
-            //SerialUtil.normalObject2json(record.getDatas(),builder);
+            //SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),builder);
             String data = (String)context.getTaskData("data");//获取全局参数
 //          System.out.println(data);
 

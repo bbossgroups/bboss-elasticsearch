@@ -2261,7 +2261,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 			public void buildRecord(TaskContext taskContext, CommonRecord record, Writer writer) {
                 //record.getDatas()方法返回当前记录，Map类型，key/value ，key代表字段名称，Value代表值；
                 //可以将当前记录构建为需要的格式，写入到writer对象即可,这里直接将记录转换为json输出
-				SerialUtil.normalObject2json(record.getDatas(),writer);
+				SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),writer);
                 //获取记录对应的元数据信息
                 Map<String, Object> metadatas = record.getMetaDatas();
 

@@ -8,16 +8,16 @@ bboss采用模块化管理，模块之间依赖关系如下：
 
 <img src="images\bboss_modules.png" style="zoom:80%;" />
 
-模块源码工程地址和功能说明如下：
+模块源码工程地址和功能说明如下：2025年03月20日 00:00 至 2025年03月27日 00:00 期间码云架构升级维护，要下载bboss最新代码，请从Github下载
 
-| 源码地址                                   | 说明                                                                                                                              |
-| ------------------------------------------ |---------------------------------------------------------------------------------------------------------------------------------|
-| https://gitee.com/bboss/bboss              | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
-| https://gitee.com/bboss/bboss-data         | [Redis](https://doc.bbossgroups.com/#/redis)、MongoDB、Milvus、Minio客户端封装                                                          |
-| https://gitee.com/bboss/bboss-http         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架                                                                       |
-| https://gitee.com/bboss/bboss-plugins      | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架                                                                  |
-| https://gitee.com/bboss/bboss-elastic      | Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart)                                                     |
-| https://gitee.com/bboss/bboss-elastic-tran | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架                  |
+| 码云源码地址                               | Github源码地址                                     | 说明                                                         |
+| ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| https://gitee.com/bboss/bboss              | https://github.com/bbossgroups/bboss               | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
+| https://gitee.com/bboss/bboss-data         | https://github.com/bbossgroups/bboss-data          | [Redis](https://doc.bbossgroups.com/#/redis)、[MongoDB](https://doc.bbossgroups.com/#/MongoDB)、[Milvus](https://doc.bbossgroups.com/#/Milvus)、[Minio](https://doc.bbossgroups.com/#/Minio)客户端封装 |
+| https://gitee.com/bboss/bboss-http         | https://github.com/bbossgroups/bboss-http          | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
+| https://gitee.com/bboss/bboss-plugins      | https://github.com/bbossgroups/bboss-plugins       | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架 |
+| https://gitee.com/bboss/bboss-elastic      | https://github.com/bbossgroups/bboss-elasticsearch | 高性能、高兼容性Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
+| https://gitee.com/bboss/bboss-elastic-tran | https://github.com/bbossgroups/bboss-elastic-tran  | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
 
 可以从以上地址下载各模块源码工程，然后按表格顺序，依次在命令行源码根目录下，执行gradle publishToMavenLocal指令，构建模块版本：
 

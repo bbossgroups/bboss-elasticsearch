@@ -1720,7 +1720,7 @@ fileFtpOupputConfig.setFilenameGenerator(new FilenameGenerator() {
 fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
          @Override
          public void buildRecord(TaskContext context, CommonRecord record, Writer builder) {
-            //SerialUtil.normalObject2json(record.getDatas(),builder);
+            //SerialUtil.object2jsonDisableCloseAndFlush(record.getDatas(),builder);
             String data = (String)context.getTaskData("data");//获取全局参数
 //          System.out.println(data);
 

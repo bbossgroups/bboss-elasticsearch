@@ -182,6 +182,12 @@ public class SerialUtil {
 
 
 	}
+
+    /**
+     * 将对象转换为json写入writer后不会关闭writer，也不会flushwriter
+     * @param bean
+     * @param writer
+     */
     public  static void object2jsonDisableCloseAndFlush(Object bean, Writer writer) {
         try {
 
@@ -191,6 +197,12 @@ public class SerialUtil {
             throw new IllegalArgumentException("Error JSON serialization operation",e);
         }
     }
+
+    /**
+     * 将对象转换为json写入writer后会关闭writer（慎用）
+     * @param bean
+     * @param writer
+     */
 	public  static void normalObject2json(Object bean, Writer writer) {
 		try {
 
