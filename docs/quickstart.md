@@ -43,7 +43,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.3.7</version>
+        <version>7.3.8</version>
     </dependency>
 ```
 下面两个坐标只需根据spring boot版本导入一个即可
@@ -54,7 +54,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.3.7</version>
+        <version>7.3.8</version>
     </dependency>
 ```
 如果是 spring boot 3.x,+ 项目，还需导入maven坐标:
@@ -63,7 +63,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-        <version>7.3.7</version>
+        <version>7.3.8</version>
     </dependency>
 ```
 
@@ -72,7 +72,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 7.3.7](https://pan.baidu.com/s/1rWNDRokXbZ6FoB7b4aKb4w?pwd=at2w)
+链接：[bboss 7.3.8](https://pan.baidu.com/s/1rWNDRokXbZ6FoB7b4aKb4w?pwd=at2w)
 提取码：at2w
 
 ## 1.3 快速配置
