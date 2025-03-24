@@ -615,7 +615,7 @@ https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
 
 Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
 
-## 2.3 定义作业配置
+## 2.3 定义作业配置主体流程
 
 作业需要通过ImportBuilder来进行配置和构建，大致的流程如下：
 
@@ -648,6 +648,7 @@ importBuilder.setDataRefactor(new DataRefactor() {
 DataStream dataStream = importBuilder.builder();
 dataStream.execute();//启动运行作业
 
+作业控制相关指令
 //停止作业
 dataStream.destroy();
 
@@ -737,14 +738,14 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 ## 2.6 作业基本配置
 
 ```java
-批量写入es记录数
-importBuilder.setBatchSize(5000);
+
+importBuilder.setBatchSize(5000);//可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理 
 importBuilder
 //
 				.setUseJavaName(true) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
 				.setUseLowcase(true)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
 				.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-				.setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
+				;  
 
 		//定时任务配置，
 		importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明

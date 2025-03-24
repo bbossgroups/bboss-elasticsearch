@@ -20,6 +20,12 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 
 [视频：bboss 流批一体化计算入门教程](https://www.bilibili.com/video/BV1o44y1w7VP)
 
+## 创建作业
+
+参考文档创建作业主题流程：[创建一个作业](https://esdoc.bbossgroups.com/#/db-es-tool?id=_23-%e5%ae%9a%e4%b9%89%e4%bd%9c%e4%b8%9a%e9%85%8d%e7%bd%ae%e4%b8%bb%e4%bd%93%e6%b5%81%e7%a8%8b)
+
+作业创建后后，就可以参考下面的章节对作业输入插件和输出插件进行配置。
+
 # 1.输入插件
 
 ## 1.1 Elasticsearch输入插件
@@ -225,6 +231,7 @@ dbInputConfig.setDbName("source")
       .setDbUser("root")
       .setDbPassword("123456")
       .setValidateSQL("select 1")
+      .setShowSql(true)//打印sql语句到日志文件和控制台，结合Log4j
       .setUsePool(true)//是否使用连接池
       .setSqlFilepath("sql.xml")
       .setSqlName("demoexport");
@@ -1873,12 +1880,11 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
 				.setDbUser("root")
 				.setDbPassword("123456")
 				.setValidateSQL("select 1")
-				.setUsePool(true)
+				.setUsePool(true)//是否使用连接池;
+            .setShowSql(true)//打印sql语句到日志文件和控制台，结合Log4j
 				.setDbInitSize(5)
 				.setDbMinIdleSize(5)
 				.setDbMaxSize(10)
-				.setShowSql(true)//是否使用连接池;
-
 				.setSqlFilepath("dsl2ndSqlFile.xml")
 				.setInsertSqlName("insertSQLnew")//指定新增的sql语句名称，在配置文件中配置：sql-dbtran.xml
 //				.setUpdateSqlName("updateSql")//指定修改的sql语句名称，在配置文件中配置：sql-dbtran.xml
@@ -1928,11 +1934,11 @@ DBOutputConfig dbOutputConfig = new DBOutputConfig();
                 .setDbUser("root")
                 .setDbPassword("123456")
                 .setValidateSQL("select 1")
-                .setUsePool(true)
+                .setUsePool(true)//是否使用连接池;
                 .setDbInitSize(5)
                 .setDbMinIdleSize(5)
                 .setDbMaxSize(10)
-                .setShowSql(true)//是否使用连接池;
+               .setShowSql(true)//打印sql语句到日志文件和控制台，结合Log4j
                 .setSqlFilepath("dsl2ndSqlFile.xml");//sql语句配置文件路径
         
         //设置不同表对应的增删改sql语句
