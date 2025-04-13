@@ -42,6 +42,12 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.3.9 功能改进
+1. 持久层改进：废弃就变量,调整为dbcp2的新变量，新版本对老版本做了兼容处理
+   skimmerFrequency --》timeBetweenEvictionRunsMillis
+   connectionTimeout --》 minEvictableIdleTimeMilli
+   shrinkBy --》 numTestsPerEvictionRun
+   
 # v7.3.8 功能改进-20250321
 1. 问题修复：修复数据交换Serial任务执行时报TaskMetrics空指针问题
 2. 问题修复：修复context设置记录级别的Elasticsearch索引名称不起作用问题

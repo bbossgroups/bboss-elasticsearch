@@ -72,8 +72,8 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 一般的java项目集成，直接从百度网盘下载bboss解压，将bboss jar包以及依赖jar文件导入java工程即可
 
-链接：[bboss 7.3.8](https://pan.baidu.com/s/1rWNDRokXbZ6FoB7b4aKb4w?pwd=at2w)
-提取码：at2w
+链接：[bboss 7.3.8](https://pan.baidu.com/s/13mw2mFThwRA7oeQVCFgcsw?pwd=sn92)
+提取码：sn92
 
 ## 1.3 快速配置
 

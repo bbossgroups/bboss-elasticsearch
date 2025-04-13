@@ -22,9 +22,9 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 
 ## 创建作业
 
-参考文档创建作业主题流程：[创建一个作业](https://esdoc.bbossgroups.com/#/db-es-tool?id=_23-%e5%ae%9a%e4%b9%89%e4%bd%9c%e4%b8%9a%e9%85%8d%e7%bd%ae%e4%b8%bb%e4%bd%93%e6%b5%81%e7%a8%8b)
+参考文档中的流程，创建ETL&流处理作业：[创建一个作业](https://esdoc.bbossgroups.com/#/db-es-tool?id=_23-%e5%ae%9a%e4%b9%89%e4%bd%9c%e4%b8%9a%e9%85%8d%e7%bd%ae%e4%b8%bb%e4%bd%93%e6%b5%81%e7%a8%8b)
 
-作业创建后后，就可以参考下面的章节对作业输入插件和输出插件进行配置。
+创建好作业后，即可参考下面的章节配置作业输入插件和输出插件，按需求实现完整的ETL&流处理作业。
 
 # 1.输入插件
 
