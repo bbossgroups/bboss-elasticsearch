@@ -317,8 +317,6 @@ public interface RecordBuidler<T> {
 }
 ```
 
-当setParallelDatarefactor(true)时，默认使用DBRecordBuilder类来构建当前result记录为Map<String,Object>，用查询返回的字段名称作为map的key值，字段值作为map的value值，
-这种场景下，在设置增量sql的变量名称和增量字段名称以及esid等信息时，都需要使用查询返回的实际字段名称。
 
 实现代码如下：
 
@@ -365,8 +363,27 @@ public class CustomDBRecordBuilder implements RecordBuidler<ResultSet> {
 ```java
 dbInputConfig.setRecordBuidler(new CustomDBRecordBuilder());
 ```
+### 1.2.5 注意事项
+当setParallelDatarefactor(true)时，有如下注意事项：
 
-### 1.2.5 引用第三方DataSource
+1）默认使用DBRecordBuilder类来构建当前result记录为Map<String,Object>，用查询返回的字段名称作为map的key值，字段值作为map的value值，这种场景下，在设置增量sql的变量名称和增量字段名称以及esid等信息时，都需要使用sql查询返回的实际字段名称（与查询字段的大小写保持一致）。
+
+2）如果自定义DBRecordBuilder类，那么根据实际指定的返回结果的key值，来定义增量sql的变量名称和增量字段名称
+
+当setParallelDatarefactor(false)时，有如下注意事项：设置增量sql的变量名称和增量字段名称以及esid等信息时,字段名称大小写无关
+
+对应最终输出字段名称有以下注意事项：
+
+1）如果设置importBuilder.setUseJavaName(true)时：将最终输出的数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId，此时在进行Excel文件数据时，列变量的名称都要使用驼峰名称进行映射，例如：
+
+```java
+fileOupputConfig.addCellMapping(0,"userAccount","用户账号")
+       .addCellMapping(1,"userName","姓名")
+```
+
+2）否则，需要使用实际的sql查询返回字段名称进行映射
+
+### 1.2.6 引用第三方DataSource
 
 在集成环境中开发作业时，可以直接引用第三方数据源：
 
