@@ -9,7 +9,7 @@ Elasticsearch向量检索案例分享，内容摘要
 
 ## 1.准备工作
 
-准备Elasticsearch 8以上的版本（下载Elasticsearch官方最新版本即可，bboss可自行适配Elasticsearch最新版本）。
+准备Elasticsearch 8以上的版本（下载Elasticsearch官方最新版本即可，bboss可自行适配Elasticsearch最新版本），本案例基于Elasticsearch 9.0.1实现。
 
 参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》导入和配置es客户端到工程
 
