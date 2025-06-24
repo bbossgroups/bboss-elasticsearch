@@ -1,12 +1,13 @@
 # 1. BBoss是什么
 
-[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下四部分构成：
 
-- **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
-- **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件；支持数据向量化处理
-- **流批一体化计算框架**，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
+- [**Elasticsearch Highlevel Java Restclient**](https://esdoc.bbossgroups.com/#/quickstart) ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
+- [**数据采集同步ETL**](https://esdoc.bbossgroups.com/#/db-es-tool) ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件；支持数据向量化处理
+- [**流批一体化计算框架**](https://esdoc.bbossgroups.com/#/etl-metrics)，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
+- [**通用分布式作业调度工作流**](https://esdoc.bbossgroups.com/#/jobworkflow)，提供通用流程编排模型，可以将各种需要按照先后顺序执行的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等，按照顺序编排成工作流程；默认提供了数据交换和流批处理作业节点、通用函数节点以及复合类型节点（串/并行执行），可以按需自定义扩展新的流程节点、远程服务执行节点；可以为流程节点设置条件触发器，控制流程节点是否执行；通过流程上下文和节点上下文在节点间传递和共享参数；通过设置流程执行和节点执行监听器，维护流程和节点执行参数，采集和获取流程、节点执行监控指标以及执行异常信息。
 
-bboss采用模块化管理以上三部分，模块之间依赖关系如下：
+bboss采用模块化管理以上四部分，模块之间依赖关系如下：
 
 <img src="images/bboss_modules.png" style="zoom:80%;" />
 
@@ -19,7 +20,7 @@ bboss采用模块化管理以上三部分，模块之间依赖关系如下：
 | https://gitee.com/bboss/bboss-http         | https://github.com/bbossgroups/bboss-http          | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy)微服务框架 |
 | https://gitee.com/bboss/bboss-plugins      | https://github.com/bbossgroups/bboss-plugins       | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架 |
 | https://gitee.com/bboss/bboss-elastic      | https://github.com/bbossgroups/bboss-elasticsearch | 高性能、高兼容性Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
-| https://gitee.com/bboss/bboss-elastic-tran | https://github.com/bbossgroups/bboss-elastic-tran  | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架 |
+| https://gitee.com/bboss/bboss-elastic-tran | https://github.com/bbossgroups/bboss-elastic-tran  | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架、[通用作业调度工作流](https://esdoc.bbossgroups.com/#/jobworkflow) |
 
 项目源码构建：[源码下载和构建](https://esdoc.bbossgroups.com/#/README?id=_3-源码下载和构建)，下面详细介绍各部分特色。
 
@@ -140,6 +141,14 @@ bboss支持全量和增量数据采集，增量数据采集默认基于sqlite数
 
 
 
+## 1.3 通用作业调度工作流
+
+**通用分布式作业调度工作流**，提供通用轻量级、高性能流程编排模型，可将各种各样、不同类型的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等按顺序编排成工作流
+
+![](images\workflow\jobworkflow.png)
+
+
+
 # 2. 快速开始bboss
 
 ## 2.1 Elasticsearch Highlevel Java Restclient
@@ -157,6 +166,11 @@ https://esdoc.bbossgroups.com/#/etl-metrics
 [bboss插件使用指南](https://esdoc.bbossgroups.com/#/datatran-plugins)
 
 [数据采集&流批一体化计算案例大全](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo)
+
+## 2.3 通用工作流应用
+
+[通用工作流使用介绍](https://esdoc.bbossgroups.com/#/jobworkflow?id=通用工作流使用介绍)
+
 # 3. 源码下载和构建
 
 源码工程地址，欢迎大家star和支持我们：

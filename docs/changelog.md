@@ -1,12 +1,13 @@
 
 
-# BBOSS版本变更记录-v7.3.8 发布
+# BBOSS版本变更记录-v7.3.9 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
 - **流批一体化计算框架**，提供灵活的数据指标统计计算流批一体化处理功能的简易框架，可以结合数据采集同步ETL工具，实现数据流处理和批处理计算，亦可以独立使用；计算结果可以保存到各种关系数据库、分布式数据仓库Elasticsearch、Clickhouse等，特别适用于数据体量和规模不大的企业级数据分析计算场景，具有成本低、见效快、易运维等特点，助力企业降本增效。
+- [**通用分布式作业调度工作流**](https://esdoc.bbossgroups.com/#/jobworkflow)，提供通用流程编排模型，可以将各种需要按照先后顺序执行的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等，按照顺序编排成工作流程；默认提供了数据交换和流批处理作业节点、通用函数节点以及复合类型节点（串/并行执行），可以按需自定义扩展新的流程节点、远程服务执行节点；可以为流程节点设置条件触发器，控制流程节点是否执行；通过流程上下文和节点上下文在节点间传递和共享参数；通过设置流程执行和节点执行监听器，维护流程和节点执行参数，采集和获取流程、节点执行监控指标以及执行异常信息。
 
 详细介绍参考：[bboss简介](https://esdoc.bbossgroups.com/#/README)
 
@@ -18,7 +19,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.8</version>
+            <version>7.3.9</version>
         </dependency>
 ```
 
@@ -28,7 +29,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.8</version>
+            <version>7.3.9</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -37,17 +38,38 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.8</version>
+            <version>7.3.9</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.3.9 功能改进
-1. 持久层改进：废弃就变量,调整为dbcp2的新变量，新版本对老版本做了兼容处理
-   skimmerFrequency --》timeBetweenEvictionRunsMillis
-   connectionTimeout --》 minEvictableIdleTimeMilli
-   shrinkBy --》 numTestsPerEvictionRun
-   
+# v7.3.9 功能改进-20250624
+1. 新增通用工作流模块，使用参考文档 https://esdoc.bbossgroups.com/#/jobworkflow
+
+2. 数据交换模块增加作业流程任务编排功能
+
+3. 基础框架jdk 17+版本兼容性改进
+
+4. 引入amz s3协议，实现文件上传到多种oss数据库，譬如Minio
+
+5. 处理Elasticsearch输出插件指定esid配置不起作用问题
+
+6. 完善kafka消费组件异常处理机制：处理消息出现异常时，无需关闭消费端
+
+7. 完善[Elasticsearch向量检索案例](https://gitee.com/bboss/eshelloword-booter/blob/master/src/main/java/org/bboss/elasticsearchtest/textembedding/TextEmbedding.java)：添加Elasticsearch 带向量字段索引表创建、数据批量写入、KNN检索案例，案例使用Xinference向量模型服务对数据和检索条件进行向量化处理
+
+8. Excel文件插件问题修复：records计数器初始化改进，避免可能得空指针异常
+
+9. 持久层添加磐为数据库适配器，增加对磐为数据库的支持
+
+10. 持久层改进：废弃旧变量,调整为dbcp2的新变量，新版本对老版本做了兼容处理
+
+  ```java
+  skimmerFrequency --》timeBetweenEvictionRunsMillis
+  connectionTimeout --》 minEvictableIdleTimeMilli
+  shrinkBy --》 numTestsPerEvictionRun
+  ```
+
 # v7.3.8 功能改进-20250321
 1. 问题修复：修复数据交换Serial任务执行时报TaskMetrics空指针问题
 2. 问题修复：修复context设置记录级别的Elasticsearch索引名称不起作用问题
@@ -1153,7 +1175,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.8</version>
+            <version>7.3.9</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1161,7 +1183,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.8</version>
+            <version>7.3.9</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1248,7 +1270,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.8时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.3.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1300,7 +1322,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.2.9",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.3.0",transitive: true 
   ```
 
   **maven坐标**
@@ -1311,7 +1333,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.2.9</version>  
+      <version>6.3.0</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1794,7 +1816,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.8</version>
+    <version>7.3.9</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2113,13 +2135,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.8</version>
+      <version>6.3.9</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.8", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.9", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
