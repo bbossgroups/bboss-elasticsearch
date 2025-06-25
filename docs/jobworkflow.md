@@ -57,6 +57,9 @@
 
       - 一次性执行策略，只启动执行一次，执行完毕后关闭工作流实例
       - 周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
+        - 默认策略
+        - xxl-job策略
+        - quartz策略
 
   - **NodeTrigger**  流程节点执行触发条件配置组件，配置节点是否执行控制接口或控制脚本，可以为流程节点设置条件触发器，控制流程节点是否执行，可以采用触发器接口和触发器脚本（Groovy）实现条件判断，控制节点是否执行
 
@@ -109,10 +112,13 @@ jobFlowBuilder.setJobFlowName("测试流程")
 
 #### 4.2.2 设置调度策略
 
+周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
+
 ```java
 JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
-jobFlowScheduleConfig.setScheduleEndDate(TimeUtil.addDateMinitues(new Date(), 10));
-jobFlowScheduleConfig.setPeriod(1000000L);
+jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
+jobFlowScheduleConfig.setScheduleEndDate(TimeUtil.addDates(new Date(), 10));//十天后结束运行
+jobFlowScheduleConfig.setPeriod(100000L);//每100秒运行一次
 jobFlowScheduleConfig.setExecuteOneTime(true);//启用一次性执行策略后，其他定时配置将不起作用
 jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
 
