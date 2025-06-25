@@ -1,13 +1,24 @@
 # 通用工作流使用介绍
 
-​		**通用分布式作业调度工作流**，提供通用轻量级、高性能流程编排模型，可将各种各样、不同类型的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等按顺序编排成工作流。
+​		bboss jobflow **通用分布式作业调度工作流**，提供通用轻量级、高性能流程编排模型，可将各种各样、不同类型的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等按顺序编排成工作流。
 
 ![](images\workflow\jobworkflow.png)
 
 ## 1. 工作流概述
 
-​		通用工作流由各种作业节点构成，通过流程调度控制流程执行生命周期，可以一次性执行，亦可以周期性执行。		
+​		通用工作流由各种作业节点构成，通过流程调度控制流程执行生命周期，可以一次性执行，亦可以周期性执行。
 
+### 1.1 引入bboss jobflow		
+
+​      导入一个maven坐标，即刻拥有bboss jobflow：
+
+```xml
+    <dependency>
+        <groupId>com.bbossgroups.plugins</groupId>
+        <artifactId>bboss-datatran-jdbc</artifactId>
+        <version>7.3.9</version>
+    </dependency>
+```
 ## 2. 功能特色
 
 工作流特性说明：
@@ -198,6 +209,8 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
 
 最后一个节点继续执行数据库到自定义输出的任务。
 
+
+
 #### 4.2.6 启动工作流
 
 ```java
@@ -217,7 +230,9 @@ jobFlow.pause();  // 暂停
 jobFlow.consume(); // 继续执行
 ```
 
-#### 4.2.8 工作流控制服务案例
+
+
+#### 4.2.8 工作流控制服务实现
 
 基于spring boot3的工作流控制web服务案例
 
@@ -387,13 +402,89 @@ DatatranJobFlowNodeBuilder jobFlowNodeBuilder = new DatatranJobFlowNodeBuilder("
 
 结合 BBoss 的流程编排能力，开发者可以构建高度可观察、可管理的分布式作业流程调度系统。
 
+## 6.自定义节点使用
 
-## 6. 总结
-使用通用工作流框架，开发者可以快速构建复杂而灵活的数据交换、流批处理以及业务作业流程，适用于：
+借助bboss工作流**自定义函数流程任务节点**，可以非常地实现复合各种业务场景的工作流任务,参考文档：
 
-- 多源异构数据采集
+https://esdoc.bbossgroups.com/#/jobflow-customnode
+
+## 7.流程节点间传递和共享参数
+
+在 BBoss 工作流框架中，支持在流程执行过程中动态地**添加、更新和获取上下文参数**。这些参数可以在不同的任务节点之间共享，并且具有明确的生命周期控制（本次流程执行期间有效，执行结束后自动清理），使用参考文档：
+
+https://esdoc.bbossgroups.com/#/jobflow-nodeparam
+
+## 8 为流程节点添加条件触发器
+
+可以为各种类型的流程节点添加条件触发器，控制流程节点是否执行：
+
+- 单任务节点
+- 串行节点
+- 并行任务节点
+
+支持两种类型的触发器：
+
+- 基于groovy脚本的触发器
+- 基于api接口的触发器
+
+### 8.1 定义触发器
+
+#### 8.1.1 脚本触发器定义
+
+脚本触发器在作业第一次初始化时，会被编译转化为一个api接口触发器，避免每次动态解析脚本，提升性能。
+
+```java
+NodeTrigger nodeTrigger = new NodeTrigger();
+//定义一段条件脚本
+String script = new StringBuilder()
+        .append("[import]")
+        .append("//导入脚本中需要引用的java类\r\n")
+        .append(" //import org.frameworkset.tran.jobflow.context.StaticContext; ")
+        .append("[/import]")
+        .append("StaticContext staticContext = nodeTriggerContext.getPreJobFlowStaticContext();")
+        .append("//前序节点执行异常结束，则忽略当前节点执行\r\n")
+        .append("if(staticContext != null && staticContext.getExecuteException() != null)")
+        .append("    return false;")
+        .append("else{")
+        .append("    return true;")
+        .append("}").toString();
+//设置脚本
+nodeTrigger.setTriggerScript(script);
+```
+
+#### 8.1.2 api接口触发器
+
+```java
+//为并行任务节点添加触发器
+NodeTrigger parrelnewNodeTrigger = new NodeTrigger();
+parrelnewNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
+    @Override
+    public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+        if(staticContext != null && staticContext.getExecuteException() != null)
+        	return false;
+        else
+            return true;
+        
+    }
+});
+```
+
+### 8.2 将触发器添加到节点
+
+参考一下代码，将条件触发器添加到节点即可：
+
+```java
+ParrelJobFlowNodeBuilder parrelJobFlowNodeBuilder = new ParrelJobFlowNodeBuilder("2","ParrelJobFlowNode");
+parrelJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
+```
+
+
+## 9. 总结
+使用通用工作流框架bboss jobflow，开发者可以快速构建复杂而灵活的数据交换、流批处理以及业务作业流程，适用于：
+
+- 多源异构数据采集任务编排
 - 批处理任务编排
-- 业务流程自动化
+- 业务流程自动化编排
 - 大模型推理链路编排
 
-该框架具备良好的扩展性和可维护性，能够满足企业级应用中对流程调度、控制和监控的需求。
+bboss jobflow具备良好的扩展性和可维护性，能够满足企业级应用中对流程调度、控制和监控的需求。

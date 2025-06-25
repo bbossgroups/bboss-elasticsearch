@@ -1,6 +1,9 @@
 - [BBOSS介绍](README.md)
 - [Http负载均衡器使用介绍](httpproxy.md)
-- [通用工作流使用介绍](jobworkflow.md)
+- 工作流
+  - [bboss jobflow使用介绍](jobworkflow.md)
+  - [自定义函数流程任务节点使用介绍](jobflow-customnode.md)
+  - [工作流节点间共享和传递参数使用文档](jobflow-nodeparam.md)
 - [MongoDB数据源定义和使用](MongoDBDatasource.md)
 - **Getting started**
   - [Elasticsearch Quick start](quickstart.md)
