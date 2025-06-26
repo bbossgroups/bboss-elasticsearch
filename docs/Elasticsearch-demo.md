@@ -39,7 +39,7 @@ gradle项目参考demo2：
 
 [elasticsearch-gradle-demo](https://git.oschina.net/bboss/elasticsearchdemo)  （gradle）
 
-## 2.bboss数据采集ETL案例
+## 2.bboss数据采集ETL及流程编排案例
 
 https://esdoc.bbossgroups.com/#/bboss-datasyn-demo 
 

@@ -1,4 +1,4 @@
-# 通用工作流使用介绍
+# 通用工作流jobflow使用介绍
 
 ​		bboss jobflow **通用分布式作业调度工作流**，提供通用轻量级、高性能流程编排模型，可将各种各样、不同类型的任务编排成工作流，进行统一调度执行，譬如数据采集作业任务、流批处理作业任务、业务办理任务、充值缴费任务以及大模型推理任务等按顺序编排成工作流。
 
@@ -19,6 +19,12 @@
         <version>7.3.9</version>
     </dependency>
 ```
+### 1.2 从源码构建
+
+可以参考文档从源码构建bboss jobflow：
+
+[https://esdoc.bbossgroups.com/#/bboss-build](https://esdoc.bbossgroups.com/#/bboss-build)
+
 ## 2. 功能特色
 
 工作流特性说明：
@@ -57,9 +63,9 @@
 
       - 一次性执行策略，只启动执行一次，执行完毕后关闭工作流实例
       - 周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
-        - 默认策略
-        - xxl-job策略
-        - quartz策略
+        - 默认策略：[案例](https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/datatran/imp/jobflow)
+        - xxl-job策略：[案例](https://gitee.com/bboss/db-elasticsearch-xxjob2x/blob/main/src/main/java/org/frameworkset/datatran/imp/jobhandler/XXLJobFlowHandlerDemo.java)
+        - quartz策略：[案例](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/QuartzJobFlowHandlerDemo.java)
 
   - **NodeTrigger**  流程节点执行触发条件配置组件，配置节点是否执行控制接口或控制脚本，可以为流程节点设置条件触发器，控制流程节点是否执行，可以采用触发器接口和触发器脚本（Groovy）实现条件判断，控制节点是否执行
 
@@ -484,8 +490,50 @@ ParrelJobFlowNodeBuilder parrelJobFlowNodeBuilder = new ParrelJobFlowNodeBuilder
 parrelJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
 ```
 
+## 9 流程调度策略
 
-## 9. 总结
+### 9.1 内置调度策略
+
+**bboss jobflow** 内置流程调度执行策略配置组件TimerScheduleConfig，用于设置流程调度执行策略，包括：
+
+- 一次性执行策略，只启动执行一次，执行完毕后关闭工作流实例
+
+示例代码
+
+```java
+JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
+jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
+jobFlowScheduleConfig.setExecuteOneTime(true);//启用一次性执行策略后，其他定时配置将不起作用
+jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
+```
+
+可以设置什么时候开始执行，如果没有设置，直接运行工作流
+
+- 周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
+
+  默认策略案例 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/datatran/imp/jobflow
+
+示例代码：
+
+```java
+JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
+jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
+jobFlowScheduleConfig.setScheduleEndDate(TimeUtil.addDates(new Date(), 10));//十天后结束运行
+jobFlowScheduleConfig.setPeriod(100000L);//每100秒运行一次
+
+jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
+
+```
+
+### 9.2 外部调度策略
+
+同时亦可以采用xxl-job和quartz实现流程调度：
+
+- xxl-job策略：[案例](https://gitee.com/bboss/db-elasticsearch-xxjob2x/blob/main/src/main/java/org/frameworkset/datatran/imp/jobhandler/XXLJobFlowHandlerDemo.java)
+- quartz策略：[案例](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/QuartzJobFlowHandlerDemo.java)
+
+## 10. 总结
+
 使用通用工作流框架bboss jobflow，开发者可以快速构建复杂而灵活的数据交换、流批处理以及业务作业流程，适用于：
 
 - 多源异构数据采集任务编排

@@ -10,6 +10,12 @@ bboss-datatran采用标准的输入输出异步管道来处理数据，输入插
 
 ![](images\datasyn-inout-now.png)
 
+采用 [bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow) **通用分布式作业调度工作流**（提供通用轻量级、高性能流程编排模型），轻松实现数据交换、流批处理作业的流程编排以及调度执行。
+
+![img](images/workflow/jobworkflow.png)
+
+
+
 ## 导入插件
 
 通过maven坐标直接将插件引入作业工程，参考文档：[插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-%e5%9c%a8%e5%b7%a5%e7%a8%8b%e4%b8%ad%e5%af%bc%e5%85%a5bboss-maven%e5%9d%90%e6%a0%87)

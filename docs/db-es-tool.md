@@ -26,7 +26,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 
 
-# 工具特性
+## 1. 工具特性
 
 ​	bboss-datatran由 [bboss ](https://www.bbossgroups.com)开源的数据采集同步ETL工具，提供数据采集、数据清洗转换处理和数据入库以及[数据指标统计计算流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)处理功能。	
 
@@ -38,16 +38,22 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 ![](images\datasyn-inout-now.png)
 
+采用 [bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow) **通用分布式作业调度工作流**（提供通用轻量级、高性能流程编排模型），轻松实现数据交换、流批处理作业的流程编排以及调度执行。
+
+![img](images\workflow\jobworkflow.png)
+
+
+
 如果您正在：
 
 - 寻求 logstash、flume、filebeat 之类的开源工具无法满足复杂的、海量数据自定义加工处理场景的解决方案；
 - 寻求调用企业现有服务和库来处理加工数据的解决方案；
 - 因项目投入有限、进度紧，急需一款功能强大、上手快、实施简单的数据交换工具
-- 寻求一款简单实用，且易于维护的，数据采集、处理、流批一体化的大数据工具
+- 寻求一款简单实用，且易于维护的，数据采集、处理、流批一体化以及任务流程编排的大数据工具
 
 那么 [bboss-datatran](http://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fesdoc.bbossgroups.com%2F%23%2Fdb-es-tool) 将是一个不错的选择。
 
-## 多种作业
+### 1.1 多种作业
 
 工具可以灵活定制具备各种功能的数据采集统计作业
 
@@ -57,7 +63,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 3) 采集数据只做指标统计计算作业
 
-## 指标计算特点
+### 1.2 指标计算特点
 
 1) 支持时间维度和非时间维度指标计算
 
@@ -71,7 +77,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 6）可以从不同的数据输入来源获取需要统计的指标数据，亦可以将指标计算结果保存到各种不同的目标数据源
 
-## 作业采集状态-增量采集-故障恢复
+### 1.3 作业采集状态-增量采集-故障恢复
 
 增量数据采集，默认基于sqlite数据库管理增量采集状态，可以配置到其他关系数据库管理增量采集状态，提供对多种不同数据来源增量采集机制：
 
@@ -89,7 +95,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 7）MongoDB CDC，基于MongoDB Data ChangeStream，实时采集MongoDB增、删、改以及替换数据
 
-## 主要功能
+### 1.4 主要功能
 
 1）数据导入的方式
 
@@ -147,7 +153,9 @@ https://gitee.com/bboss/bboss-elastic-tran
 
 19) 支持将数据同时输出到[多个输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_214-%e5%a4%9a%e6%ba%90%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)
 
-# 插件清单
+20）基于 [bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow)，轻松实现数据交换作业的灵活编排和调度执行
+
+## 2. 插件清单
 
 bboss通过输入、输出插件结合实现数据采集及流批一体化分析处理功能，各个插件需要对应的组件来支持，下面列出了现有的输入插件和输出插件清单及功能说明，同时也列出了插件对应的依赖maven坐标，对应的groupid统一为：
 
@@ -159,7 +167,7 @@ com.bbossgroups.plugins
 
 详细输入输出插件使用手册：https://esdoc.bbossgroups.com/#/datatran-plugins
 
-## 输入插件
+### 2.1 输入插件
 
 | 插件                                                         | 插码名称                                                     | Maven坐标               | 功能说明                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ----------------------- | ------------------------------------------------------------ |
@@ -180,7 +188,7 @@ com.bbossgroups.plugins
 | [MilvusInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/input/MilvusInputConfig.java) | Milvus输入插件-基于QueryIterator                             | bboss-datatran-milvus   | Milvus向量库输入插件，支持全量或者增量从Milvus采集同步数据到其他Milvus库，或者其他数据源,基于QueryIterator，通过指定过滤条件实现数据查询 |
 | [MilvusVectorInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-milvus/src/main/java/org/frameworkset/tran/plugin/milvus/input/MilvusVectorInputConfig.java) | Milvus输入插件-基于SearchIterator                            | bboss-datatran-milvus   | Milvus向量库输入插件，支持全量或者增量从Milvus采集同步数据到其他Milvus库，或者其他数据源,基于SearchIterator，通过向量相似度检索和过滤条件相结合实现数据查询 |
 
-## 输出插件
+### 2.2 输出插件
 
 | 插件                                                         | 插码名称                 | Maven坐标               | 功能说明                                                     |
 | ------------------------------------------------------------ | ------------------------ | ----------------------- | ------------------------------------------------------------ |
@@ -200,7 +208,7 @@ com.bbossgroups.plugins
 |                                                              |                          |                         |                                                              |
 | [DummyOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/dummy/output/DummyOutputConfig.java) | dummy插件                | bboss-datatran-jdbc     | 调试作业使用，将采集的数据直接输出到控制台                   |
 
-## 作业基础配置
+### 2.3 作业基础配置
 
 作业基础配置，包含了作业调度、并行处理、任务监控、任务回调处理、作业初始化和作业结束回调处理配置、增量配置、数据转换处理以及指标计算配置等等，大致配置流程可以参考文档：[2.3 定义作业配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_23-定义作业配置)
 
@@ -250,7 +258,7 @@ importBuilder.setJobName("流失数据挖掘");
 | jobId                    | String              | 可选，设置作业唯一标识                                       |
 | jobName                  | String              | 可选，设置作业名称                                           |
 
-## 关键对象说明
+### 2.4 关键对象说明
 
 Context --数据处理接口，存放源表字段和对应的值，中间临时变量和值，可以通过源表字段名称获取对应的字段数据。增量字段名称、sql或者dsl中的增量字段变量名称，都需与源表字段名称一致。context接口还提供了丢弃记录、添加字段、去除字段、字段名称映射规则配置功能、获取记录元数据功能
 
@@ -258,7 +266,7 @@ CommonRecord - 封装处理后的结果记录，字段名称是经过规范化�
 
 importbuilder.addFieldMapping方法和context.addFieldMapping
 
-## 作业依赖资源初始化和销毁
+### 2.5 作业依赖资源初始化和销毁
 
 需要对作业执行过程中依赖其他的资源组件进行初始化，作业结束时需要释放和关闭作业执行时初始化的依赖资源组件，bboss通过以下两个接口来实现资源组件的初始化和销毁释放。
 
@@ -379,9 +387,9 @@ importBuilder.setImportEndAction(new ImportEndAction() {
 
 接下来结合实际案例介绍bboss datatran的功能.
 
-# 1.准备工作
+## 3. 准备工作
 
-## 1.1 在工程中导入bboss maven坐标
+### 3.1 在工程中导入bboss maven坐标
 Elasticsearch/Database/Http/Metrics(流批一体化插件)/Custom(自定义处理器)/Dummy插件坐标，其他插件可以参考插件清单获取maven坐标信息
 
 ```xml
@@ -471,7 +479,7 @@ milvus插件maven坐标
  </dependency>
 ```
 
-## 1.2 clickhouse对接配置
+### 3.2 clickhouse对接配置
 
 如果需要使用bboss的数据库输入输出插件从clickhouse导出或者输出数据,需要额外引入clickhouse jdbc驱动包，可以根据需要使用不同的驱动连接Clickhouse
 
@@ -479,7 +487,7 @@ milvus插件maven坐标
 
 基于http端口对接：官方驱动包
 
-### 1.2.1 基于TCP端口对接
+#### 3.2.1 基于TCP端口对接
 
 基于TCP端口对接，需要额外引入clickhouse jdbc驱动包com.github.housepower
 
@@ -521,7 +529,7 @@ tcp端口详见clickhouse的config.xml配置文件：
 -->
 <tcp_port>29000</tcp_port>
 ```
-### 1.2.2 基于http端口对接
+#### 3.2.2 基于http端口对接
 
 基于Http端口对接，需要额外引入clickhouse 官方 jdbc驱动包
 
@@ -591,7 +599,7 @@ bboss持久层Clickhouse客户端负载均衡和容灾功能使用参考文档�
 
 https://doc.bbossgroups.com/#/persistent/datasource-cluster
 
-# 2.使用介绍
+## 4. 使用介绍
 
 下面以数据库表数据导入到Elasticsearch为案例，介绍bboss的使用方法。
 
@@ -605,17 +613,17 @@ https://gitee.com/bboss/db-elasticsearch-tool
 
 https://esdoc.bbossgroups.com/#/bboss-datasyn-demo
 
-## 2.1.案例对应的源码
+### 4.1. 案例对应的源码
 
 一次性批量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Db2EleasticsearchOnceScheduleDateDemo.java
 
 定时增量导入：https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/Db2EleasticsearchDemo.java
 
-## 2.2.索引表结构定义
+### 4.2.索引表结构定义
 
 Elasticsearch会在我们导入数据的情况下自动创建索引mapping结构，如果对mapping结构有特定需求或者自动创建的结构不能满足要求，可以自定义索引mapping结构，在导入数据之前创建好自定义的mapping结构或者mapping模板即可，具体定义和创建方法参考文档： [Elasticsearch索引表和索引表模板管理](index-indextemplate.md) 
 
-## 2.3 定义作业配置主体流程
+### 4.3 定义作业配置主体流程
 
 作业需要通过ImportBuilder来进行配置和构建，大致的流程如下：
 
@@ -665,7 +673,7 @@ dataStream.resumeSchedule();
 
 
 
-## 2.4.配置DBInput输入参数
+### 4.4.配置DBInput输入参数
 
 ```java
 DBInputConfig dbInputConfig = new DBInputConfig();
@@ -691,7 +699,7 @@ DBInputConfig dbInputConfig = new DBInputConfig();
 		importBuilder.setInputConfig(dbInputConfig);
 ```
 
-## 2.5.配置Elasticsearch输出参数
+### 4.5.配置Elasticsearch输出参数
 
 新建ElasticsearchOutputConfig配置对象：
 
@@ -735,7 +743,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 		importBuilder.setOutputConfig(elasticsearchOutputConfig);
 ```
 
-## 2.6 作业基本配置
+### 4.6 作业基本配置
 
 ```java
 
@@ -783,7 +791,7 @@ importBuilder
 
 ```
 
-## 2.7 作业执行
+### 4.7 作业执行
 
 ```java
 /**
@@ -793,11 +801,11 @@ DataStream dataStream = importBuilder.builder();
 dataStream.execute();//执行导入操作
 ```
 
-## 2.8 作业详解
+### 4.8 作业详解
 
 
 
-### 2.8.1同步批量导入
+#### 4.8.1同步批量导入
 
 批量导入Elasicsearch记录数配置：
 
@@ -866,7 +874,7 @@ importBuilder.setBatchSize(5000)
 
 
 
-### **2.8.2 异步批量导入**
+#### **4.8.2 异步批量导入**
 
 根据设置的SQL语句，异步批量一次性导入数据到Elasticsearch中，非定时执行。异步批量导入关键配置：
 
@@ -956,7 +964,7 @@ thread_pool.bulk.queue_size: 1000   es线程等待队列长度
 
 thread_pool.bulk.size: 10   线程数量，与cpu的核数对应
 
-#### 2.8.2.1 异步ResultSet缓冲队列大小配置
+##### 4.8.2.1 异步ResultSet缓冲队列大小配置
 
 ```java
 //数据异步同步通道缓存队列设置，默认为10
@@ -967,7 +975,7 @@ bboss会将采集数据先放入异步结果迭代器resultset缓冲队列，队
 
 如果目标写入比较慢，通过调整数据采集异步结果迭代器resultset数据缓冲队列tranDataBufferQueue大小，可以得到更好的数据采集性能，如果调大该参数会占用更多的jvm内存。
 
-### 2.8.3 一个有字段属性映射的稍微复杂案例实现
+#### 4.8.3 一个有字段属性映射的稍微复杂案例实现
 
 ```java
 	public void testImportBuilder(){
@@ -1067,7 +1075,7 @@ bboss会将采集数据先放入异步结果迭代器resultset缓冲队列，队
 
 
 
-### 2.8.4 设置文档id机制
+#### 4.8.4 设置文档id机制
 
 bboss充分利用elasticsearch的文档id生成机制，同步数据的时候提供了以下3种生成文档Id的机制：
 
@@ -1094,7 +1102,7 @@ elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
 
 
 
-### 2.8.5 定时增量导入
+#### 4.8.5 定时增量导入
 
 bboss的增量数据采集，默认基于sqlite数据库管理增量采集状态，可以配置到其他关系数据库管理增量采集状态，提供对多种不同数据来源增量采集机制：
 
@@ -1108,7 +1116,7 @@ bboss的增量数据采集，默认基于sqlite数据库管理增量采集状态
 
 支持[mysql binlog](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_13-mysql-binlog%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，实现mysql增删改实时增量数据采集
 
-#### 2.8.5.1 定时机制配置
+##### 4.8.5.1 定时机制配置
 
 ```java
 //定时任务配置，
@@ -1121,7 +1129,7 @@ bboss的增量数据采集，默认基于sqlite数据库管理增量采集状态
 
 更多设置参考章节：[4 数据同步模式控制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_4-数据同步模式控制)
 
-#### 2.8.5.1 数字增量同步
+##### 4.8.5.1 数字增量同步
 
 支持按照数字字段和时间字段进行增量导入，增量导入sql的语法格式：
 
@@ -1143,7 +1151,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.NUMBER_TYPE);//如果没�
 importBuilder.setLastValueColumn("log_id");//手动指定数字增量查询字段，默认采用上面设置的sql语句中的增量变量名称作为增量查询字段的名称，指定以后就用指定的字段
 ```
 
-#### 2.8.5.2 日期时间戳增量同步
+##### 4.8.5.2 日期时间戳增量同步
 
 两种类型日期时间戳增量
 
@@ -1167,7 +1175,7 @@ importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//字段�
 importBuilder.setLastValueType(ImportIncreamentConfig.LOCALDATETIME_TYPE);//指定字段类型：ImportIncreamentConfig.LOCALDATETIME_TYPE 支持纳秒时间精度,只对从elasticsearch增量采集数据起作用
 ```
 
-#### 2.8.5.3 日期类型增量字段日期格式配置
+##### 4.8.5.3 日期类型增量字段日期格式配置
 
 可以指定日期增量字段日期格式，当增量字段为日期类型且日期格式不是默认的
 ```java
@@ -1194,9 +1202,9 @@ yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'
 
 
 
-#### 2.8.5.4 时间戳增量导出截止时间偏移量配置
+##### 4.8.5.4 时间戳增量导出截止时间偏移量配置
 
-##### 日期类型增量字段
+###### 日期类型增量字段
 
 日期类型增量导入，还可以设置一个导入截止时间偏移量。引入IncreamentEndOffset配置，主要是增量导出时，考虑到elasticsearch、mongodb这种存在写入数据的延迟性的数据库，设置一个相对于当前时间偏移量导出的截止时间，避免增量导出时遗漏数据。
 
@@ -1278,7 +1286,7 @@ select * from td_sm_log where collecttime > #[collecttime] and collecttime <=
 
 ```
 
-##### 数字类型时间戳增量字段
+###### 数字类型时间戳增量字段
 
 数字类型增量字段，如果通过ImportBuilder将数字值标记为时间戳类型，那么可以通过increamentEndOffset为数字时间戳增量查询增加一个查询截止时间戳条件：
 
@@ -1297,7 +1305,7 @@ public ImportBuilder setNumberTypeTimestamp(boolean numberTypeTimestamp)
 
 使用参考案例：[Milvus时间戳增量同步](https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/milvus/Milvus2CustomNumerTimestampDemo.java)
 
-#### 2.8.5.5 控制重启作业是否重新开始同步数据
+##### 4.8.5.5 控制重启作业是否重新开始同步数据
 
 setFromFirst的使用
 
@@ -1392,7 +1400,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 	}
 ```
 
-#### 2.8.5.6 设置增量同步增量字段起始值
+##### 4.8.5.6 设置增量同步增量字段起始值
 
 可以指定增量字段的起始值，不指定的情况下数字默认起始值0,日期默认起始值:1970-01-01
 
@@ -1423,7 +1431,7 @@ setFromfirst(true) 如果作业停了，作业重启后，重新开始位置开�
 
 
 
-#### 2.8.5.7 排序设置
+##### 4.8.5.7 排序设置
 
 bboss 5.9.3及之前的版本需要注意：如果增量字段默认自带排序功能（比如采用主键id作为增量字段），则sql语句不需要显式对查询的数据进行排序，否则需要在sql语句中显式基于增量字段升序排序：
 
@@ -1433,7 +1441,7 @@ importBuilder.setSql("select * from td_sm_log where update_date > #[log_id] orde
 
 bboss 5.9.3及后续的版本已经内置了对增量字段值的排序功能，所以在sql或者dsl中不需要额外进行排序设置，可以提升导入性能(但是如果作业重启后，续接采集时，可能会存在部分数据丢失问题，这种情况下就需要进行排序)。
 
-#### 2.8.5.8 增量状态存储数据库
+##### 4.8.5.8 增量状态存储数据库
 
 bboss默认采用sqlite保存增量状态，通过setLastValueStorePath方法设置sqlite数据库文件路径
 
@@ -1463,11 +1471,11 @@ bboss支持将增量状态保存到其他关系数据库中（譬如mysql），�
 
 [保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
 
-#### 2.8.5.9.已完成增量状态记录过期清理机制设置
+##### 4.8.5.9.已完成增量状态记录过期清理机制设置
 
 本功能主要适用于文件数据采集插件，参考文档：[设置已完成记录增量状态过期清理机制](https://esdoc.bbossgroups.com/#/filelog-guide?id=_14设置已完成记录增量状态过期清理机制)
 
-#### 2.8.5.10  增量字段配置注意事项
+##### 4.8.5.10  增量字段配置注意事项
 
 增量字段配置注意事项：
 
@@ -1479,7 +1487,7 @@ MongoDB：增量字段必须出现fethField字段清单中
 
 如果增量字段没有出现在查询返回的数据记录中，就会获取不到增量值，从而导致数据增量采集无法实现。
 
-#### 2.8.5.11 增量状态ID生成策略配置
+##### 4.8.5.11 增量状态ID生成策略配置
 
 设置增量状态ID生成策略，在设置jobId的情况下起作用，目前提供了两种策略：
 
@@ -1509,7 +1517,7 @@ ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
 
 文件采集插件强制直接使用ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT策略
 
-### 2.8.6 定时全量导入
+#### 4.8.6 定时全量导入
 
 定时机制配置
 
@@ -1598,7 +1606,7 @@ ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
 	}
 ```
 
-### 2.8.7 定时任务指定执行拦截器使用
+#### 4.8.7 定时任务指定执行拦截器使用
 
 可以为同步定时任务指定执行拦截器，示例如下：
 
@@ -1640,13 +1648,13 @@ ImportIncreamentConfig.STATUSID_POLICY_JOBID_QUERYSTATEMENT
 
 拦截器常被应用于任务上下文数据的定义和获取，***任务拦截器对kafka-to-target类型的数据同步作业***不起作用。
 
-#### 2.8.7.1 任务上下文数据定义和获取
+##### 4.8.7.1 任务上下文数据定义和获取
 
 在一些特定场景下，避免任务执行过程中重复加载数据，需要在任务每次调度执行前加载一些任务执行过程中不会变化的数据,放入任务上下文TaskContext；任务执行过程中，直接从任务上下文中获取数据即可。例如：将每次任务执行的时间戳放入任务执行上下文。
 
 通过TaskContext对象的addTaskData方法来添加上下文数据，通过TaskContext对象的getTaskData方法来获取任务上下文数据.
 
-##### 2.8.7.1.1  定义任务上下文数据
+###### 4.8.7.1.1  定义任务上下文数据
 
  任务上下文数据定义-通过CallInterceptor接口的preCall的来往TaskContext对象来添加 任务上下文数据
 
@@ -1688,7 +1696,7 @@ public void preCall(TaskContext taskContext) {
     //设置任务执行拦截器结束，可以添加多个
 ```
 
-##### 2.8.7.1.2 获取任务上下文数据
+###### 4.8.7.1.2 获取任务上下文数据
 
 在生成文件名称的接口方法中获取任务上下文数据
 
@@ -1744,7 +1752,7 @@ fileFtpOupputConfig.setReocordGenerator(new ReocordGenerator() {
       });
 ```
 
-#### 2.8.7.2 kafka输入插件拦截器设置说明
+###### 4.8.7.2 kafka输入插件拦截器设置说明
 
 kafka输入插件拦截器收集作业metrics信息时，定时记录统计插件消费kafka数据记录情况，并调用任务拦截器的aftercall方法输出统计jobMetrics信息，可以指定统计时间间隔：
 
@@ -1752,7 +1760,7 @@ kafka输入插件拦截器收集作业metrics信息时，定时记录统计插�
 kafka2InputConfig.setMetricsInterval(300 * 1000L);//300秒做一次任务拦截调用，默认值
 ```
 
-### 2.8.8 定时任务调度说明
+#### 4.8.8 定时任务调度说明
 
 定时增量导入的关键配置：
 
@@ -1790,13 +1798,13 @@ importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说�
 importBuilder.setExternalTimer(true);
 ```
 
-### 2.8.9 增量导入注意事项
+#### 4.8.9 增量导入注意事项
 
 参考[定时增量导入](https://esdoc.bbossgroups.com/#/db-es-tool?id=_285-%e5%ae%9a%e6%97%b6%e5%a2%9e%e9%87%8f%e5%af%bc%e5%85%a5)
 
 
 
-### 2.8.10 数据加工处理
+#### 4.8.10 数据加工处理
 实现数据结构修改调整，增加、修改字段，过滤记录等功能。
 
 记录并行加工处理说明：
@@ -1808,7 +1816,7 @@ importBuilder.setExternalTimer(true);
 
 通过记录并行加工处理，可大幅提升数据加工处理性能。
 
-#### 2.8.10.1 全局处理
+##### 4.8.10.1 全局处理
 
 可以通过importBuilder全局扩展添加字段到es索引中：
 
@@ -1821,7 +1829,7 @@ importBuilder.setExternalTimer(true);
         importBuilder.addFieldMapping("dbcolumn","esFieldColumn");//全局添加字段名称映射
 ```
 
-#### 2.8.10.2 记录级别处理
+##### 4.8.10.2 记录级别处理
 
 如果需要针对单条记录，bboss提供org.frameworkset.tran.DataRefactor接口和Context接口像结合来提供对数据记录的自定义处理功能，这样就可以灵活控制文档数据结构，通过context可以对当前记录做以下调整：
 
@@ -1857,7 +1865,7 @@ Object value = context.getValue("ACTIVE_TIME", Types.TIMESTAMP)
 
 记录级别的转换处理参考下面的代码,举例说明如下：
 
-##### 示例 1 添加修改删除字段以及删除记录
+###### 示例 1 添加修改删除字段以及删除记录
 
 Elasticsearch会根据文档id自动根据记录状态对数据进行增删改处理，关系数据需要设置相应的insert、update、delete语句，可以参考[数据库输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_21-db%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)使用文档进行设置。
 
@@ -1926,7 +1934,7 @@ final AtomicInteger s = new AtomicInteger(0);
 
 作业托管定义和销毁数据库数据源定义方法参考文档：[作业依赖资源初始化和销毁](https://esdoc.bbossgroups.com/#/db-es-tool?id=%e4%bd%9c%e4%b8%9a%e4%be%9d%e8%b5%96%e8%b5%84%e6%ba%90%e5%88%9d%e5%a7%8b%e5%8c%96%e5%92%8c%e9%94%80%e6%af%81)
 
-##### 示例 2 标记记录状态
+###### 示例 2 标记记录状态
 
 根据条件判断记录是否存在，如果存在将记录标记为update，否则按照默认状态insert处理
 
@@ -1973,7 +1981,7 @@ ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor("sql.xml");
 
 ![](images\datarefactor.png)
 
-#### 2.8.10.3 过滤记录
+##### 4.8.10.3 过滤记录
 
 如果需要根据情况过滤特定的记录，可以通过以下方法将记录标记为过滤记录即可：
 
@@ -1990,7 +1998,7 @@ if(id.equals("5dcaa59e9832797f100c6806")){
 }
 ```
 
-#### 2.8.10.4 获取记录元数据
+##### 4.8.10.4 获取记录元数据
 
 可以通过context.getMetaValue(metaName)获取记录的元数据，比如文件信息、elasticsearch文档元数据、hbase元数据，使用示例：
 
@@ -2083,7 +2091,7 @@ Map<String, Object> getMetaDatas()
 logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
 ```
 
-#### 2.8.10.5 默认的字段映射配置
+#### 4.8.10.5 默认的字段映射配置
 
 使用 数据采集同步默认字段映射功能，可以自动将文本类型记录按照特定的字符切割成一个数组结构，然后通过设置数组下标位置与目标字段名称、默认值、目标字段类型、目标字段格式的映射关系，从而快速实现非结构化数据到结构化数据转换映射处理。
 
@@ -2185,7 +2193,7 @@ public static final int CELL_NUMBER_FLOAT = 8;
 public static final int CELL_NUMBER_SHORT = 9;
 public static final int CELL_STRING = 1;
 ```
-#### 2.8.10.6 消息key设置
+#### 4.8.10.6 消息key设置
 
 可以直接通过context设置kafka、Rocketmq输出插件的消息key，使用实例：
 
@@ -2201,7 +2209,7 @@ public static final int CELL_STRING = 1;
         });
 ```
 
-### 2.8.11 IP-地区运营商经纬度坐标转换
+### 4.8.11 IP-地区运营商经纬度坐标转换
 
 与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：
 
@@ -2257,7 +2265,7 @@ ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
   	importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
   ```
 
-### 2.8.12 设置任务执行结果回调处理函数
+### 4.8.12 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
@@ -2301,7 +2309,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler() {
 });
 ```
 
-#### 2.8.12.1 kafka输出插件任务状态记录说明
+#### 4.8.12.1 kafka输出插件任务状态记录说明
 
 kafka输出插件任务状态记录管理功能，可以采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能，避免频繁采集每条记录任务的metrics信息。
 
@@ -2310,7 +2318,7 @@ kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
 kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
 ```
 
-### 2.8.13 灵活指定索引名称和索引类型
+### 4.8.13 灵活指定索引名称和索引类型
 
 可以全局通过importBuilder组件设置索引类型和索引名称，也可以通过Context接口为相关的数据记录指定索引类型和索引名称：
 
@@ -2318,7 +2326,7 @@ kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：
 
 - 如果没有在记录级别指定索引类型则采用全局指定索引类型，如果在记录级别指定了索引类型则采用记录级别指定的索引类型
 
-#### 2.8.13.1 importBuilder组件全局设置索引类型和索引名称
+#### 4.8.13.1 importBuilder组件全局设置索引类型和索引名称
 
 ```java
 ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
@@ -2326,7 +2334,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
-#### 2.8.13.2 通过Context接口设置记录索引类型和索引名称
+#### 4.8.13.2 通过Context接口设置记录索引类型和索引名称
 
 ```java
 final Random random = new Random();
@@ -2352,7 +2360,7 @@ final Random random = new Random();
 		});
 ```
 
-#### 2.8.13.3 动态设置index和type
+#### 4.8.13.3 动态设置index和type
 
 ```properties
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成=
@@ -2384,7 +2392,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 				//.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
-#### 2.8.13.4 设置routing的方法
+#### 4.8.13.4 设置routing的方法
 
 在DataRefactor中指定routing值
 
@@ -2408,7 +2416,7 @@ clientOptions.setRoutingField(new ESField("parentid"));
 elasticsearchOutputConfig.setClientOptions(clientOptions);
 ```
 
-### 2.8.14 数据库ResultSet Stream机制说明
+#### 4.8.14 数据库ResultSet Stream机制说明
 
 可以利用JDBC驱动的ResultSet Stream机制来同步数据库中的大表数据，从而避免因数据量过大导致jvm内存溢出等问题，ResultSet Stream机制设置方式如下：
 
@@ -2420,7 +2428,7 @@ dbInputConfig.setJdbcFetchSize(2000);
 
 部分数据库，例如oracle默认具备fetch机制，只需要在必要时setJdbcFetchSize即可，无需进行特殊处理，但是mysql和postgresql开启流处理机制比较特殊，说明如下。
 
-#### 2.8.14.1 Mysql流处理机制
+##### 4.8.14.1 Mysql流处理机制
 
 同步Mysql 大数据表到Elasticsearch或者其他数据源时，针对jdbc fetchsize（ResultSet Stream）的使用比较特殊，mysql提供了两种机制来处理：
 
@@ -2454,7 +2462,7 @@ db.jdbcFetchSize = -2147483648
                 .setUsePool(true);//是否使用连接池
 ```
 
-#### 2.8.14.2 Postgresql流处理机制
+##### 4.8.14.2 Postgresql流处理机制
 
 一般可以全局设置jdbcFetchSize开启jdbc流处理机制，postgresql通过jdbcFetchSize开启流处理机制必须在数据库连接上开启数据库事务才会生效，为了避免导致所有jdbc链接被自动设置为启用事务,bboss持久层针对postgresql查询操作，默认全局禁用jdbcFetchSize设置，当需要启用postgresq的流处理机制进行大数据量查询时，可通过设置jdbcFetchSize进行启用，配置方法如下:
 
@@ -2482,7 +2490,7 @@ if (executor == null) {
 			}
 ```
 
-### 2.8.15 用配置文件来管理同步sql
+#### 4.8.15 用配置文件来管理同步sql
 
 如果同步的sql很长，那么可以在配置文件中管理同步的sql
 
@@ -2513,11 +2521,11 @@ importBuilder.setSqlFilepath("sql.xml")
            .setSqlName("demoexportFull");
 ```
 
-### 2.8.16 设置ES数据导入控制参数
+#### 4.8.16 设置ES数据导入控制参数
 
 数据同步工具可以全局设置Elasticsearch请求控制参数（基于importBuilder组件设置），也可以在记录级别设置Elasticsearch请求控制参数（基于Context接口设置），这里举例进行说明：
 
-#### 2.8.16.1 全局设置Elasticsearch请求控制参数
+##### 4.8.16.1 全局设置Elasticsearch请求控制参数
 
 可以通过elasticsearchOutputConfig直接提供的方法设置数据导入Elasticsearch的各种控制参数，例如routing,esid,parentid,refresh策略，版本信息等等：
 
@@ -2548,7 +2556,7 @@ elasticsearchOutputConfig.setEsIdField("documentId")//可选项，es自动为文
 		elasticsearchOutputConfig.setClientOptions(clientOptions);
 ```
 
-#### 2.8.16.2 记录级别设置Elasticsearch请求控制参数
+##### 4.8.16.2 记录级别设置Elasticsearch请求控制参数
 
 基于Context接口，可以在记录级别设置Elasticsearch请求控制参数，记录级别会继承importBuilder设置的控制参数设置的控制参数,但是会覆盖通过elasticsearchOutputConfig设置的同名控制参数，记录级别控制参数使用示例：
 
@@ -2604,9 +2612,9 @@ Elasticsearch控制参数参考文档：
 
  https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html 
 
-### 2.8.17 数据同步任务执行统计信息获取
+#### 4.8.17 数据同步任务执行统计信息获取
 
-#### 2.8.17.1 任务日志相关设置
+##### 4.8.17.1 任务日志相关设置
 
 ```java
  importBuilder.setPrintTaskLog(true);//true 打印作业任务执行统计日志，false 不打印作业任务统计信息
@@ -2627,7 +2635,7 @@ spring boot配置项
     spring.elasticsearch.bboss.elasticsearch.showTemplate=true  ## true 打印dsl（logger必须设置为info级别） false 不打印dsl
 ```
 
-#### 2.8.17.2 任务级别统计信息
+##### 4.8.17.2 任务级别统计信息
 
 通过数据同步任务执行结果回调处理函数，可以获取到每个任务的详细执行统计信息：
 
@@ -2681,7 +2689,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler() {
 
 
 
-#### 2.8.17.3 作业级别统计信息
+##### 4.8.17.3 作业级别统计信息
 
 
 
@@ -2731,7 +2739,7 @@ JobNo:558e370ae01041c4baf4835882fc6a77,JobStartTime:2022-03-24 14:46:52,JobEndTi
 			}
 ```
 
-#### 2.8.17.4 kafka输出插件设置
+##### 4.8.17.4 kafka输出插件设置
 
 kafka输出插件任务状态记录管理功能，可以采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能，避免频繁采集每条记录任务的metrics信息。
 
@@ -2740,7 +2748,7 @@ kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
 kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
 ```
 
-#### 2.8.17.5 事件型输入插件设置
+##### 4.8.17.5 事件型输入插件设置
 
 kafka和mysql binlog属于监听型输入插件，其拦截器收集作业metrics信息时，定时记录统计插件消费数据记录情况，并调用任务拦截器的aftercall方法输出统计jobMetrics信息，可以指定统计时间间隔：
 
@@ -2748,13 +2756,13 @@ kafka和mysql binlog属于监听型输入插件，其拦截器收集作业metric
 kafka2InputConfig.setMetricsInterval(300 * 1000L);//30秒时间间隔做一次任务拦截器调用
 ```
 
-#### 2.8.17.6 在作业处理过程手动记录和上报日志
+#### 4.8.17.6 在作业处理过程手动记录和上报日志
 
 bboss提供一个完备的日志记录模块，以便在作业处理过程中根据需要自行记录和输出作业和任务的日志和异常，具体使用，可以参考文档：
 
 - [ETL作业监控日志使用介绍](https://esdoc.bbossgroups.com/#/metrics-logs)
 
-### 2.8.18 设置并行导入参数
+#### 4.8.18 设置并行导入参数
 
 代码里面加上下面参数，可以并行导入，导入速度会更快
 ```java
@@ -2763,7 +2771,7 @@ importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 ```
 
-### 2.8.19 同步增删改数据到ES
+#### 4.8.19 同步增删改数据到ES
 
 数据同步工具可以非常方便地将各种数据源（Elasticsearch、DB、Mongodb等）的增删改操作同步到Elasticsearch中。在DataRefactor接口中，通过Context接口提供的三个方法来标注记录的增、删、改数据状态，同步工具根据记录状态的来实现对Elasticsearch的新增、修改、删除同步操作：
 
@@ -2812,7 +2820,7 @@ final Random random = new Random();
 
 [MongoDB CDC插件实现MongoDB增删改数据同步](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_18-mongodb-cdc插件)
 
-### 2.8.20 同步数据到多个ES集群
+#### 4.8.20 同步数据到多个ES集群
 
 bboss可以非常方便地将数据同步到多个ES集群，本小节介绍使用方法。
 
@@ -2826,11 +2834,11 @@ elasticsearchOutputConfig.setTargetElasticsearch("default,test");
 
 [5.2 多elasticsearch服务器集群支持](https://esdoc.bbossgroups.com/#/development?id=_52-多elasticsearch服务器集群支持)
 
-### 2.8.21 导入日期类型数据少8小时问题
+#### 4.8.21 导入日期类型数据少8小时问题
 
 在数据导入时，如果是时间类型，Elasticsearch默认采用UTC时区（而不是东八区时区）保存日期数据，如果通过json文本查看数据，会发现少8小时，这个是正常现象，通过bboss orm检索数据，日期类型数据就会自动将UTC时区转换为东八区时间（也就是中国时区，自动加8小时）
 
-### 2.8.22 记录切割
+#### 4.8.22 记录切割
 
 在数据导入时，有时需将单条记录切割为多条记录，通过设置切割字段以及SplitHandler接口来实现，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值,示例代码如下：
 
@@ -2925,7 +2933,7 @@ importBuilder.setSplitFieldName("@message");
 
 
 
-### 2.8.23 自定义处理器
+#### 4.8.23 自定义处理器
 
 通过自定义处理采集数据功能，可以自行将采集的数据按照自己的要求进行处理到目的地，支持数据来源包括：database，elasticsearch，kafka，mongodb，hbase，file，ftp等，想把采集的数据保存到什么地方，有自己实现CustomOutPut接口处理即可，例如：
 
@@ -2987,7 +2995,7 @@ ImportBuilder importBuilder = new ImportBuilder();
 
 [采集日志文件自定义处理案例](https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FileLog2CustomDemo.java)
 
-## 2.9 作业异常处理
+### 4.9 作业异常处理
 
 作业在运行过程中出现异常，一般会自动退出作业执行，有些异常情况，不会自动退出，可以通过ContinueOnError标识进行控制：任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 
@@ -2999,7 +3007,7 @@ importBuilder.setContinueOnError(false);//任务出现异常，停止执行作�
 
 
 
-## 2.10 作业参数配置
+### 4.10 作业参数配置
 
 在使用[db-elasticsearch-tool](https://github.com/bbossgroups/db-elasticsearch-tool)时，为了避免调试过程中不断打包发布数据同步工具，可以将需要调整的参数配置到启动配置文件src\test\resources\application.properties中,然后在代码中通过以下方法获取配置的参数：
 
@@ -3045,7 +3053,7 @@ importBuilder.setQueue(queueSize);//设置批量导入线程池等待队列长�
 importBuilder.setThreadCount(workThreads);//设置批量导入线程池工作线程数量
 ```
 
-## 2.11 基于xxjob 同步DB-Elasticsearch数据
+### 4.11 基于xxjob 同步DB-Elasticsearch数据
 
 bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现强大的shard分片分布式同步数据库数据到Elasticsearch功能，比如从一个10亿的数据表中同步数据，拆分为10个任务分片节点执行，每个节点同步1个亿，速度会提升10倍左右；同时提供了同步作业的故障迁移容灾能力。
 
@@ -3053,17 +3061,17 @@ bboss结合xxjob分布式定时任务调度引擎，可以非常方便地实现�
 
 [基于xxl-job数据同步作业调度](xxljobdatasyn.md)
 
-## 2.12 spring boot中使用数据同步功能
+### 4.12 spring boot中使用数据同步功能
 
 可以在spring boot中使用数据同步功能，这里以db-elasticsearch定时增量数据同步为例进行说明，其他数据源方法类似。
 
 参考文档：https://esdoc.bbossgroups.com/#/usedatatran-in-spring-boot
 
-## 2.13 数据导入不完整原因分析及处理
+### 4.13 数据导入不完整原因分析及处理
 
 如果在任务执行完毕后，发现es中的数据与数据库源表的数据不匹配，可能的原因如下：
 
-### 2.13.1.并行执行的过程中存在失败的任务
+#### 4.13.1.并行执行的过程中存在失败的任务
 
 并行执行的过程中存在失败的任务（比如服务端超时），这种情况通过setExportResultHandler设置的exception监听方法进行定位分析
 
@@ -3096,7 +3104,7 @@ http.timeoutConnection = 50000
 
 http.timeoutSocket = 50000
 
-### 2.13.2 存在es的bulk拒绝记录或者数据内容不合规
+#### 4.13.2 存在es的bulk拒绝记录或者数据内容不合规
 
 任务执行完毕，但是存在es的bulk拒绝记录或者数据内容不合规的情况，这种情况就通过setExportResultHandler设置的error监听方法进行定位分析
 
@@ -3132,13 +3140,13 @@ b) 调整同步程序导入线程数、批处理batchSize参数，降低并行�
          }
 ```
 
-### 2.13.3 elasticsearch或者mongodb写入数据延迟性
+#### 4.13.3 elasticsearch或者mongodb写入数据延迟性
 
 从elasticsearch、mongodb这种存在写入数据的延迟性的数据库导出数据时，不设置截止时间戳偏移量时会存在遗漏数据的情况，解决方法参考文档：
 
 [时间戳增量导出截止时间偏移量配置](https://esdoc.bbossgroups.com/#/db-es-tool?id=_2854-%e6%97%b6%e9%97%b4%e6%88%b3%e5%a2%9e%e9%87%8f%e5%af%bc%e5%87%ba%e6%88%aa%e6%ad%a2%e6%97%b6%e9%97%b4%e5%81%8f%e7%a7%bb%e9%87%8f%e9%85%8d%e7%bd%ae)
 
-## 2.14 跨库跨表数据同步
+### 4.14 跨库跨表数据同步
 
 在同步数据库中数据到elasticsearch时，会存在支持跨多个数据库跨多张表同步的情况，bboss通过以下方式进行处理。
 
@@ -3290,7 +3298,7 @@ importBuilder.setDbName("db1");
              context.addFieldValue("facedatas",facedatas);
 ```
 
-## 2.15 自定义启动db数据源案例
+### 4.15 自定义启动db数据源案例
 
 如果在application.properties中配置了数据库数据源连接池visualops：
 
@@ -3380,7 +3388,7 @@ List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,"visualops",
 
 https://doc.bbossgroups.com/#/persistent/tutorial
 
-## 2.16 作业关闭事件监听器
+### 4.16 作业关闭事件监听器
 
 通过作业关闭事件监听器，可以知道作业是正常结束关闭，还是异常结束导致关闭，同时可以做相应的处理工作，提供两种类型作业关闭事件监听器：同步执行和异步执行
 
@@ -3421,11 +3429,11 @@ importBuilder.setJobClosedListener(new AsynJobClosedListener() {
 });
 ```
 
-# 3 数据同步调优
+## 5 数据同步调优
 
 数据同步是一个非常耗资源（内存、cpu、io）的事情，所以如何充分利用系统资源，确保高效的数据同步作业长时间稳定运行，同时又不让同步服务器、Elasticsearch/数据库负荷过高，是一件很有挑战意义的事情，这里结合bboss的实践给出一些建议：
 
-## 3.1 内存调优
+### 5.1 内存调优
 
 内存溢出很大一个原因是jvm配置少了，这个处理非常简单，修改jvm.option文件，适当调大内存即可，设置作业运行需要的jvm内存，按照比例调整Xmx和MaxNewSize参数：
 
@@ -3459,7 +3467,7 @@ $$
 
 这些参数设置得越大，占用的内存越大，处理的速度就越快，典型的空间换时间的场景，所以需要根据同步服务器的主机内存来进行合理配置，避免由于资源不足出现jvm内存溢出的问题，影响同步的稳定性。
 
-##   3.2 采用分布式作业调度引擎
+###   5.2 采用分布式作业调度引擎
 
 需要同步的数据量很大，单机的处理能力有限，可以基于分布式作业调度引擎来实现数据分布式分片数据同步处理，参考文档：
 
@@ -3467,9 +3475,9 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
   
 
-# 4 数据同步模式控制
+## 6 数据同步模式控制
 
-## 4.1 全量/增量导入
+### 6.1 全量/增量导入
 
 根据实际需求，有些场景需要全量导入数据，有些场景下需要增量导入数据，具体的控制方法如下：
 
@@ -3513,7 +3521,7 @@ https://esdoc.bbossgroups.com/#/db-es-tool?id=_26-%e5%9f%ba%e4%ba%8exxjob-%e5%90
 
 
 
-## 4.2 一次性执行和周期定时执行
+### 6.2 一次性执行和周期定时执行
 
 根据实际需求，有些场景作业启动后只需执行一次，有些场景需要周期性定时执行，具体的控制方法如下：
 
@@ -3572,7 +3580,7 @@ FileInputConfig config = new FileInputConfig();
 config.setDisableScanNewFiles(true);
 ```
 
-## 4.3 串行执行和并行执行
+### 6.3 串行执行和并行执行
 
 根据实际需求，有些场景作业采用串行模式执行，有些场景需要并行执行，具体的控制方法如下：
 
@@ -3600,7 +3608,7 @@ config.setDisableScanNewFiles(true);
 		*/		
 ```
 
-## 4.4 任务执行开始时间和结束时间设置
+### 6.4 任务执行开始时间和结束时间设置
 
 一次性导入和周期性导入，都可以设置任务导出的开始时间、延时执行时间和任务结束时间（只对jdk timer有效）
 
@@ -3623,11 +3631,17 @@ config.setDisableScanNewFiles(true);
             .setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
 ```
 
-# 5 作业调度控制
+## 7 作业调度控制
 
 参考文档：[作业调度控制](bboss-datasyn-control.md)
 
-# 6 开发交流
+## 8.流程任务编排
+
+采用 [bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow) **通用分布式作业调度工作流**（提供通用轻量级、高性能流程编排模型），轻松实现数据交换、流批处理作业的流程编排以及调度执行。
+
+使用参考文档：https://esdoc.bbossgroups.com/#/jobworkflow
+
+## 9 开发交流
 
 完整的数据导入demo工程
 

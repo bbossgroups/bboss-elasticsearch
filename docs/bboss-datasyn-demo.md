@@ -24,7 +24,11 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 ​		bboss数据同步可以方便地实现多种数据源之间的数据同步功能，**支持增、删、改数据同步**，支持各种主流数据库、各种es版本以及日志文件数据采集和同步、加工处理，支持从kafka、Rocketmq接收数据；经过加工处理的数据亦可以发送到kafka、Rocketmq；可以将加工后的数据写入File并上传到ftp/sftp服务器。
 
-![img](images/datasyn.png)​	
+![img](images/datasyn.png)​	采用 [bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow) **通用分布式作业调度工作流**（提供通用轻量级、高性能流程编排模型），轻松实现数据交换、流批处理作业的流程编排以及调度执行。
+
+![img](images/workflow/jobworkflow.png)
+
+
 
 ​		bboss同步功能非常丰富，为了方便快速使用上手bboss，本文将各种数据同步案例呈现给大家，可以根据实际情况选用合适的案例。
 
@@ -537,6 +541,22 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 输出插件案例
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/rocketmq/DB2Rocketmq.java
+
+# 25 流程编排案例
+
+内置定时调度策略案例：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/jobflow/JobFlowTest.java
+
+基于spring boot3的工作流控制web服务案例
+
+https://gitee.com/bboss/springboot3-elasticsearch-webservice/blob/main/src/main/java/com/example/esbboss/jobflow/JobFlowDemo.java
+
+https://gitee.com/bboss/springboot3-elasticsearch-webservice/blob/main/src/main/java/com/example/esbboss/controller/ScheduleControlDataTranController.java
+
+xxl-job调度案例
+
+
 
 # 开发交流
 
