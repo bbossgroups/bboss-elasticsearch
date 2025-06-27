@@ -43,6 +43,12 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.5.0 功能改进-20250624
+1. 工作流调度机制完善：一次性执行流程支持异步执行模式
+2. 通用函数节点提供抽象函数基础类BaseJobFlowNodeFunction，搞具体函数继承使用，默认提供了节点初始化方法的实现
+3. 完善工作流执行上下文参数管理api，获取参数方法可以指定默认值
+4. 完善并行分支barrier机制：增加自定义JobFlowCyclicBarrier，设置barrier超时时间，避免出现一直阻塞等待的可能性
+
 # v7.3.9 功能改进-20250624
 1. 新增通用工作流模块，使用参考文档 https://esdoc.bbossgroups.com/#/jobworkflow
 

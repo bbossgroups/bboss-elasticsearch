@@ -6,7 +6,7 @@
 
 ## 1. 工作流概述
 
-​		通用工作流由各种作业节点构成，通过流程调度控制流程执行生命周期，可以一次性执行，亦可以周期性执行。
+​		bboss jobflow通用工作流由各种作业节点构成，通过流程调度控制流程执行生命周期（启动、停止、暂停、恢复），可以一次性执行，亦可以周期性执行，支持串行、并行分支，支持自定义任务执行节点，快速构建编排灵活、复杂、高效的的工作流。
 
 ### 1.1 引入bboss jobflow		
 
@@ -118,19 +118,27 @@ jobFlowBuilder.setJobFlowName("测试流程")
 
 #### 4.2.2 设置调度策略
 
-周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
+通过配置周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
 
 ```java
 JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
 jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
 jobFlowScheduleConfig.setScheduleEndDate(TimeUtil.addDates(new Date(), 10));//十天后结束运行
 jobFlowScheduleConfig.setPeriod(100000L);//每100秒运行一次
-jobFlowScheduleConfig.setExecuteOneTime(true);//启用一次性执行策略后，其他定时配置将不起作用
+
 jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
 
 ```
 
-配置一次性执行策略，设定结束时间和周期。
+通过配置setExecuteOneTime(true)，可以将流程设置为一次性执行策略：
+
+```java
+jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
+jobFlowScheduleConfig.setExecuteOneTime(true);//启用一次性执行策略后，其他定时配置将不起作用
+jobFlowScheduleConfig.setExecuteOneTimeSyn(false);//一次性执行模式：true 同步（默认值）  false 异步
+```
+
+
 
 #### 4.2.3 添加第一个任务节点（单任务）
 
@@ -155,7 +163,7 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
 
 ```
 
-数据交换作业节点，该节点从 Excel 文件导入数据并插入数据库，配置了条件触发器脚本，只有前序节点成功时才执行。
+数据交换作业节点，该节点从 Excel 文件导入数据并插入数据库，配置了条件触发器Groovy脚本，只有前序节点成功时才执行,如果存在异常则不执行。
 
 #### 4.2.4 添加第二个任务节点（并行任务）
 
@@ -166,42 +174,50 @@ NodeTrigger parrelnewNodeTrigger = new NodeTrigger();
         parrelnewNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
             @Override
             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
-                
+                //验证功能直接设置为true,可以根据实际情况从外部传入控制参数
                 return true;
             }
         });
 parrelJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
-
+//为并行任务节点添加第1个并行分支：只有一个任务子节点
 parrelJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-DatatranJobFlowNode-2-1", "ParrelJobFlowNode-DatatranJobFlowNode-2")
         .setImportBuilder(buildDB2Custom(1))
         .setNodeTrigger(nodeTrigger));
-
+//为并行任务节点添加第2个并行分支：只有一个任务子节点
 parrelJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-DatatranJobFlowNode-2-2", "ParrelJobFlowNode-DatatranJobFlowNode-2")
         .setImportBuilder(buildDB2Custom(2)));
-
+//为并行任务节点添加第3个并行分支：定义由多个任务子节点构成的串行复合节点
 SequenceJobFlowNodeBuilder comJobFlowNodeBuilder = new SequenceJobFlowNodeBuilder("ParrelJobFlowNode-2-3", "SequenceJobFlowNode");
+//为并行任务节点第3个并行分支对应的串行复合节点添加第1个子任务节点:数据交换节点
 comJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-2-3-1", "SequenceJobFlowNode-SequenceJobFlowNode")
         .setImportBuilder(buildDB2Custom(3)));
+//为并行任务节点第3个并行分支对应的串行复合节点添加第2个子任务节点:数据交换节点
 comJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-2-3-2", "SequenceJobFlowNode-SequenceJobFlowNode")
         .setImportBuilder(buildDB2Custom(4)));
+//为并行任务节点第3个并行分支对应的串行复合节点添加第3个子任务节点:自定义任务函数节点
 comJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new CommonJobFlowNodeBuilder("ParrelJobFlowNode-2-3-3", "SequenceJobFlowNode-SequenceJobFlowNode", new JobFlowNodeFunctionTest(false))
         .setNodeTrigger(nodeTrigger));
 
+//为并行任务节点添加第3个并行分支：添加由3个任务子节点构成的串行复合节点
 parrelJobFlowNodeBuilder.addJobFlowNodeBuilder(comJobFlowNodeBuilder);
 
+//为并行任务节点添加第4个并行分支：定义由2个分支节点构成的子并行任务复合节点
 ParrelJobFlowNodeBuilder subParrelJobFlowNodeBuilder = new ParrelJobFlowNodeBuilder("ParrelJobFlowNode-2-4", "ParrelJobFlowNode");
+
+//为并行任务节点第4个并行分支对应的并行复合节点添加第1个分支节点:数据交换节点
 subParrelJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-2-4-1", "ParrelJobFlowNode-SequenceJobFlowNode")
         .setImportBuilder(buildDB2Custom(5)));
+//为并行任务节点第4个并行分支对应的并行复合节点添加第2个分支节点:数据交换节点
 subParrelJobFlowNodeBuilder.addJobFlowNodeBuilder(
     new DatatranJobFlowNodeBuilder("ParrelJobFlowNode-2-4-2", "ParrelJobFlowNode-SequenceJobFlowNode")
         .setImportBuilder(buildDB2Custom(6)));
-
+//为并行任务节点添加第4个并行分支：添加由2个分支任务节点构成的并行行复合节点
 parrelJobFlowNodeBuilder.addJobFlowNodeBuilder(subParrelJobFlowNodeBuilder);
 jobFlowBuilder.addJobFlowNode(parrelJobFlowNodeBuilder);
 ```
@@ -214,6 +230,7 @@ jobFlowBuilder.addJobFlowNode(parrelJobFlowNodeBuilder);
 
 #### 4.2.5 添加第三个任务节点（单任务）
 ```java
+//为流程添加第3个任务节点（单任务）：数据交换节点
 jobFlowNodeBuilder = new DatatranJobFlowNodeBuilder("3", "DatatranJobFlowNode");
 jobFlowNodeBuilder.setImportBuilder(buildDB2Custom(7)).setNodeTrigger(nodeTrigger);
 jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
@@ -264,7 +281,7 @@ https://gitee.com/bboss/springboot3-elasticsearch-webservice/blob/main/src/main/
 - 灵活的调度策略（一次性或周期性执行）。
 - 流程控制接口（启动、停止、暂停、恢复）。
 
-bboss通用工作流模型适用于各种业务场景，如数据采集、批处理、业务流程编排等。
+bboss通用工作流模型适用于各种业务场景，如数据采集、批处理、业务流程编排、AI智能体编排等。
 
 由于篇幅关系，文中涉及的两个创建数据交换作业ImportBuilder方法buildFile2DB和buildDB2Custom访问完整的案例代码了解：
 
@@ -504,6 +521,7 @@ parrelJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
 JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
 jobFlowScheduleConfig.setScheduleDate(TimeUtil.addDateMinitues(new Date(), 10));//十分钟后开始执行
 jobFlowScheduleConfig.setExecuteOneTime(true);//启用一次性执行策略后，其他定时配置将不起作用
+jobFlowScheduleConfig.setExecuteOneTimeSyn(false);//一次性执行模式：true 同步（默认值）  false 异步
 jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
 ```
 
@@ -527,10 +545,12 @@ jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
 
 ### 9.2 外部调度策略
 
-同时亦可以采用xxl-job和quartz实现流程调度：
+目前支持两种流程外部调度策略：xxl-job和quartz
 
 - xxl-job策略：[案例](https://gitee.com/bboss/db-elasticsearch-xxjob2x/blob/main/src/main/java/org/frameworkset/datatran/imp/jobhandler/XXLJobFlowHandlerDemo.java)
 - quartz策略：[案例](https://gitee.com/bboss/db-elasticsearch-tool/blob/master/src/main/java/org/frameworkset/elasticsearch/imp/quartz/QuartzJobFlowHandlerDemo.java)
+
+可以参考以上两种策略，扩展实现其他外部调度策略。
 
 ## 10. 总结
 
