@@ -1,17 +1,17 @@
 # Elasticsearch向量检索
 
-Elasticsearch向量检索案例分享，内容摘要
+Elasticsearch向量检索案例分享，本文介绍如何采用向量模型将数据转化为向量数据，存入Elasticsearch向量表，并实现向量检索功能，内容摘要：
 
-1. 创建Elasticsearch向量索引表
-2. 初始化Xinference向量模型服务
-3. 数据向量化并批量写入Elasticsearch
-4. 基于[Elasticsearch KNN](https://www.elastic.co/docs/solutions/search/vector/knn#knn-search-filter-example)实现向量检索
+1. 向量表创建：创建Elasticsearch向量索引表，用于存储向量数据
+2. Xinference向量模型服务初始化：基于Xinference部署向量模型，并提供数据向量化服务
+3. 向量数据存储：调用Xinference向量模型服务，将数据转换为向量数据，并批量写入Elasticsearch
+4. 向量数据检索：基于[Elasticsearch KNN](https://www.elastic.co/docs/solutions/search/vector/knn#knn-search-filter-example)和高性能Elasticsearch java客户端bboss实现向量检索，调用Xinference向量模型服务，将查询条件转化为向量条件，实现向量检索，亦可以和普通条件结合，实现混合检索
 
 ## 1.准备工作
 
 准备Elasticsearch 8以上的版本（下载Elasticsearch官方最新版本即可，bboss可自行适配Elasticsearch最新版本），本案例基于Elasticsearch 9.0.1实现。
 
-参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》导入和配置es客户端到工程
+参考文档《[高性能elasticsearch ORM开发库使用介绍](development.md)》引入和配置es客户端bboss
 
 准备Xinference向量模型处理服务：bge-large-zh-v1.5,参考[Xinference官方文档](https://github.com/xorbitsai/inference)部署向量模型
 
