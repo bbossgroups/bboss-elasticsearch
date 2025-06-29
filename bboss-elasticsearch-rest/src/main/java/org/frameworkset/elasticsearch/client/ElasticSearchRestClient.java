@@ -102,7 +102,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 //	protected  boolean discoverHost = false;
 	protected LogDslCallback slowDslCallback;
 	protected LogDslCallback logDslCallback;
-	private boolean useHttps;
+//    @Deprecated
+//    /**
+//     * 最新版本已经废弃
+//     */
+//	private boolean useHttps;
 
 	public String getDayDateFormat() {
 		return dayDateFormat;
@@ -116,9 +120,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return yearDateFormat;
 	}
 
-	public boolean isUseHttps() {
-		return useHttps;
-	}
+ 
 	public String getElasticsearchName(){
 		return elasticSearch.getElasticSearchName();
 	}
@@ -527,15 +529,15 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 
 
-		String useHttps_ = elasticsearchPropes.getProperty("elasticsearch.useHttps");
-		if(useHttps_ != null && !useHttps_.equals("")){
-			try {
-				this.useHttps = Boolean.parseBoolean(useHttps_);
-			}
-			catch (Exception e){
-				logger.error("Parse Boolean useHttps parameter failed:"+useHttps_,e);
-			}
-		}
+//		String useHttps_ = elasticsearchPropes.getProperty("elasticsearch.useHttps");
+//		if(useHttps_ != null && !useHttps_.equals("")){
+//			try {
+//				this.useHttps = Boolean.parseBoolean(useHttps_);
+//			}
+//			catch (Exception e){
+//				logger.error("Parse Boolean useHttps parameter failed:"+useHttps_,e);
+//			}
+//		}
 
 
 	}
