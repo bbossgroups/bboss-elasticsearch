@@ -10,11 +10,11 @@
 
 ### 1.1、参数作用域分类
 
-| 参数类型           | 设置方式                                                     | 获取方式                                                     | 生效范围                   | 生命周期         |
-| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------- | ---------------- |
-| **流程级参数**     | `jobFlowNodeExecuteContext.getJobFlowExecuteContext().addContextData(key, value)` | `context.getJobFlowExecuteContext().getContextData(key)`     | 整个工作流的所有后续节点   | 流程执行结束     |
-| **复合节点级参数** | `jobFlowNodeExecuteContext.getContainerJobFlowNodeExecuteContext().addContextData(key, value)` | `context.getContainerJobFlowNodeExecuteContext().getContextData(key)` | 同一复合节点下的所有子节点 | 复合节点执行结束 |
-| **当前节点级参数** | `jobFlowNodeExecuteContext.addContextData(key, value)`       | `context.getContextData(key)`                                | 当前节点及其后续节点       | 节点执行结束     |
+| 参数类型           | 设置方式                                                     | 获取方式                                          | 生效范围                   | 生命周期         |
+| ------------------ | ------------------------------------------------------------ | ------------------------------------------------- | -------------------------- | ---------------- |
+| **流程级参数**     | `jobFlowNodeExecuteContext.addJobFlowContextData(key, value)` | `context.getJobFlowContextData(key)`              | 整个工作流的所有后续节点   | 流程执行结束     |
+| **复合节点级参数** | `jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData(key, value)` | `context.getContainerJobFlowNodeContextData(key)` | 同一复合节点下的所有子节点 | 复合节点执行结束 |
+| **当前节点级参数** | `jobFlowNodeExecuteContext.addContextData(key, value)`       | `context.getContextData(key)`                     | 当前节点及其后续节点       | 节点执行结束     |
 
 ---
 
