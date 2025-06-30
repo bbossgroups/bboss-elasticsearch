@@ -711,9 +711,12 @@ http.connectionRequestTimeout=10000
 
 ### **2.6.5 https协议配置**
 
-如果开启了Elasticsearch https协议，则需要在elasticsearch地址中添加https://协议头并且设置elasticsearch.useHttps为true
+如果开启了Elasticsearch https协议，则需要在elasticsearch地址中添加https://协议头，
+
+7.3.4及以下的版本还需设置elasticsearch.useHttps为true
 
 ```properties
+#7.3.4及以下的版本还需设置useHttps
 elasticsearch.useHttps=true
 elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
@@ -721,6 +724,7 @@ elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:92
 spring boot对应的配置：
 
 ```properties
+#7.3.4及以下的版本还需设置useHttps
 spring.elasticsearch.bboss.elasticsearch.useHttps=true
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```

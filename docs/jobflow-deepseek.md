@@ -1,9 +1,9 @@
 # **bboss jobflow 编排 Deepseek 对话流程使用文档**
 
-以下是使用 bboss jobflow 编排 Deepseek 对话流程的简要文档，包括模块介绍、依赖配置、代码示例和运行说明。
+本文介绍如何使用 bboss jobflow 编排 Deepseek 对话流程，包括功能简介、依赖配置、代码示例和运行说明。
 
-## **1. 模块简介**
-本模块是基于 `bboss` 的数据传输框架实现的，利用其 `jobflow` 流程编排功能，结合 Deepseek 大模型 API，实现多轮对话推理任务。通过构建多个节点任务，可以完成如写诗、评价诗词等复杂交互流程。
+## **1. 功能简介**
+利用bboss`jobflow` 流程编排功能，结合 Deepseek 大模型 API，实现多轮对话推理任务。通过构建多个节点任务，可以完成如写诗、评价诗词等复杂交互流程。
 
 - **核心组件**：
   - `JobFlowBuilder`：用于构建整个工作流。
@@ -19,7 +19,7 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 ## **2. 环境准备**
 ### **2.1 Maven 依赖**
-确保项目中已引入以下依赖：
+确保项目中已引入bboss jobflow依赖：
 
 ```xml
 <dependency>

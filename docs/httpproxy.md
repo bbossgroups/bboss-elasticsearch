@@ -1716,6 +1716,12 @@ http.httpClientBuilderCallback=org.bboss.elasticsearchtest.aws.HttpClientBuilder
 
 配置好后即可基于bboss api操作和访问aws elasticsearch了。
 
+# 11.SSL证书配置
+
+http ssl配置，参考文档：[**2.6.5 https协议配置**](https://esdoc.bbossgroups.com/#/development?id=_265-https协议配置)
+
+
+
 # 开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
