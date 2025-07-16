@@ -34,7 +34,7 @@ public interface JobFlowNodeFunction {
 
 ## **📌 三. 实现 `JobFlowNodeFunction` 接口**
 
-该接口是构建自定义任务节点的核心。你需要实现其中的五个关键方法：[init](file://C:\workspace\bbossgroups\bboss-elasticsearch\bboss-elasticsearch-rest\src\main\java\org\frameworkset\elasticsearch\bulk\BulkProcessor.java#L118-L144), `call`, [reset](file://C:\workspace\bbossgroups\bboss-elasticsearch\bboss-elasticsearch-rest\src\main\java\org\frameworkset\elasticsearch\boot\WrapperGetProperties.java#L38-L41), `release`, 和 [stop](file://C:\workspace\bbossgroups\bboss-elasticsearch\bboss-elasticsearch-rest\src\main\java\org\frameworkset\elasticsearch\bulk\BulkProcessor.java#L75-L99)。
+该接口是构建自定义任务节点的核心。你需要实现其中的五个关键方法：init, `call`, reset, `release`, 和 stop。
 
 ### ✅ 3.1 实现代码
 ```java
