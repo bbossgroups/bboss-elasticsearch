@@ -1615,6 +1615,8 @@ https://gitee.com/bboss/bboss-http/blob/master/test/org/frameworkset/http/client
 http.kerberos.serverRealmPath = /elasticsearch/serverrealm
 #直接指定ServerRealm，生产环境不建议
 http.kerberos.serverRealm = elasticsearch/hadoop.bbossgroups.com@BBOSSGROUPS.COM
+#可选参数，支持get和post两种，默认为get
+http.kerberos.serverRealmHttpMethod=get
 ```
 
 如果配置了serverRealm，serverRealmPath参数就被忽略。serverRealmPath服务为http/https restful类型服务相对地址，需由服务端提供的免鉴权免认证服务，要求直接返回serverRealm，不能返回其他格式数据。
@@ -1628,6 +1630,27 @@ http.kerberos.serverRealm = elasticsearch/hadoop.bbossgroups.com@BBOSSGROUPS.COM
         return "elasticsearch/hadoop.bbossgroups.com@BBOSSGROUPS.COM";
     }
 ```
+
+## 8.3 apiKey和secret认证配置
+
+如果服务端启用了apiKey和secret安全认证，那么通过下面两个属性配置apiKeyId和apiKeySecret：
+
+```properties
+   #基于apiKeyId和apiKeySecret认证配置（主要用于Elasticsearch认证）
+   http.apiKeyId = aaaa
+   http.apiKeySecret = bbbbbb
+```
+
+## 8.4 apiKey认证配置
+
+如果服务端启用了apiKeyt安全认证，那么配置apiKeyId：
+
+```properties
+   #基于apiKeyId认证配置（主要用于各种大模型服务对接认证）
+   http.apiKeyId = aaaa
+```
+
+
 
 # 9.配置HttpRequestInterceptor
 
