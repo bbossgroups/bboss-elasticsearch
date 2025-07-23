@@ -362,7 +362,58 @@ for(int i = 0; i < metaMaps.size(); i ++){
 }
 ```
 
-## 7.运行案例
+## 7.检索结果Rerank
+
+可以对向量检索召回的结果，采用Rerank模型，根据语义相关度进行精排序，从而提取与问题语义相关度最高的记录：
+
+实现代码：
+
+```java
+public void searchVectorAndRerank(){
+        ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/textembedding.xml");
+        Map params = new LinkedHashMap();
+        //设置向量查询条件，调用数据向量化方法，将检索文本bboss转化为向量数据
+        params.put("condition",text2embedding("bboss介绍"));
+        //设置返回top k条数据
+        params.put("k",50);
+        //设置Elasticsearch query size：最多返回记录数，需大于k参数值
+        params.put("size",100);
+        //指定向量相似度阈值，不会返回向量检索相似度低于similarity值的记录
+        params.put("similarity",0.5);
+        ESDatas<MetaMap> datas = clientUtil.searchList("/collection-with-embeddings/_search","searchWithScore",params, MetaMap.class);
+        logger.info("datas.getTotalSize():"+datas.getTotalSize());
+//        logger.info("datas.getDatas():"+ SimpleStringUtil.object2json(datas.getDatas()));
+        List<MetaMap> metaMaps = datas.getDatas();
+        List rerankDatas = new ArrayList();
+        for(int i = 0; i < metaMaps.size(); i ++){
+            MetaMap metaMap = metaMaps.get(i);
+            logger.info("score: {}",metaMap.getScore());//相似度分数
+            logger.info("text: {}",metaMap.get("text"));//检索的原始文本
+            rerankDatas.add(metaMap.get("text"));
+            logger.info("key: {}",metaMap.get("key"));//检索的key字段值
+
+        }
+        
+        //对检索结果进行Rerank处理
+        Map rerankParams = new LinkedHashMap();
+        rerankParams.put("model","bge-reranker-base");//指定基于Xinference部署的Rerank模型
+        rerankParams.put("documents",rerankDatas);//根据问题进行向量检索返回的数据
+        rerankParams.put("query","bboss介绍");//问题
+
+        //调用Xinference Rerank服务，对问题的各个答案进行语义相关度排序
+        Map reponse = HttpRequestProxy.sendJsonBody("embedding_model",rerankParams,"/v1/rerank",Map.class);
+        logger.info(SimpleStringUtil.object2json(reponse));
+    }
+```
+运行结果
+
+```json
+{"id":"913a8c4c-66cb-11f0-be3b-00155d8e1b16","results":[{"index":0,"relevance_score":0.9707212448120117,"document":null},{"index":10,"relevance_score":0.9707212448120117,"document":null},{"index":18,"relevance_score":0.9707212448120117,"document":null},{"index":17,"relevance_score":0.9707212448120117,"document":null},{"index":16,"relevance_score":0.9707212448120117,"document":null},{"index":15,"relevance_score":0.9707212448120117,"document":null},{"index":14,"relevance_score":0.9707212448120117,"document":null},{"index":13,"relevance_score":0.9707212448120117,"document":null},{"index":12,"relevance_score":0.9707212448120117,"document":null},{"index":11,"relevance_score":0.9707212448120117,"document":null},{"index":9,"relevance_score":0.9707212448120117,"document":null},{"index":8,"relevance_score":0.9707212448120117,"document":null},{"index":7,"relevance_score":0.9707212448120117,"document":null},{"index":6,"relevance_score":0.9707212448120117,"document":null},{"index":5,"relevance_score":0.9707212448120117,"document":null},{"index":4,"relevance_score":0.9707212448120117,"document":null},{"index":3,"relevance_score":0.9707212448120117,"document":null},{"index":2,"relevance_score":0.9707212448120117,"document":null},{"index":1,"relevance_score":0.9707212448120117,"document":null},{"index":19,"relevance_score":0.9707212448120117,"document":null},{"index":48,"relevance_score":0.9630429744720459,"document":null},{"index":49,"relevance_score":0.9630429744720459,"document":null},{"index":47,"relevance_score":0.9630429744720459,"document":null},{"index":46,"relevance_score":0.9630429744720459,"document":null},{"index":45,"relevance_score":0.9630429744720459,"document":null},{"index":44,"relevance_score":0.9630429744720459,"document":null},{"index":43,"relevance_score":0.9630429744720459,"document":null},{"index":42,"relevance_score":0.9630429744720459,"document":null},{"index":41,"relevance_score":0.9630429744720459,"document":null},{"index":40,"relevance_score":0.9630429744720459,"document":null},{"index":27,"relevance_score":0.828909158706665,"document":null},{"index":26,"relevance_score":0.828909158706665,"document":null},{"index":24,"relevance_score":0.828909158706665,"document":null},{"index":30,"relevance_score":0.828909158706665,"document":null},{"index":29,"relevance_score":0.828909158706665,"document":null},{"index":25,"relevance_score":0.828909158706665,"document":null},{"index":31,"relevance_score":0.828909158706665,"document":null},{"index":28,"relevance_score":0.828909158706665,"document":null},{"index":23,"relevance_score":0.828909158706665,"document":null},{"index":22,"relevance_score":0.828909158706665,"document":null},{"index":21,"relevance_score":0.828909158706665,"document":null},{"index":20,"relevance_score":0.828909158706665,"document":null},{"index":32,"relevance_score":0.8289089202880859,"document":null},{"index":33,"relevance_score":0.8289089202880859,"document":null},{"index":39,"relevance_score":0.8289089202880859,"document":null},{"index":38,"relevance_score":0.8289089202880859,"document":null},{"index":37,"relevance_score":0.8289089202880859,"document":null},{"index":36,"relevance_score":0.8289089202880859,"document":null},{"index":34,"relevance_score":0.8289089202880859,"document":null},{"index":35,"relevance_score":0.8289089202880859,"document":null}],"meta":{"api_version":null,"billed_units":null,"tokens":null,"warnings":null}}
+```
+
+
+
+## 8.运行案例
 
 定义测试用例-[TestTextEmbedding](https://gitee.com/bboss/eshelloword-booter/blob/master/src/test/java/org/bboss/elasticsearchtest/textembedding/TestTextEmbedding.java)
 
@@ -378,6 +429,7 @@ public void testEmbedding(){
     textEmbedding.search1();
     textEmbedding.searchWithFilter();
     textEmbedding.searchWithScore();
+    textEmbedding.searchVectorAndRerank();
 }
 ```
 
@@ -385,9 +437,9 @@ public void testEmbedding(){
 
 ![](images\embedding-result.png)
 
-## 8.参考资料和开发交流
+## 9.参考资料和开发交流
 
-### 8.1参考资料
+### 9.1参考资料
 
 Elasticsearch KNN  https://www.elastic.co/docs/solutions/search/vector/knn
 
@@ -399,7 +451,7 @@ Xinference官方文档  https://github.com/xorbitsai/inference
 
 本文对应的源码工程 https://gitee.com/bboss/eshelloword-booter
 
-### 8.2开发交流
+### 9.2开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
