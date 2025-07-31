@@ -2091,7 +2091,7 @@ Map<String, Object> getMetaDatas()
 logger.info(SimpleStringUtil.object2json(record.getMetaDatas()));
 ```
 
-#### 4.8.10.5 默认的字段映射配置
+##### 4.8.10.5 默认的字段映射配置
 
 使用 数据采集同步默认字段映射功能，可以自动将文本类型记录按照特定的字符切割成一个数组结构，然后通过设置数组下标位置与目标字段名称、默认值、目标字段类型、目标字段格式的映射关系，从而快速实现非结构化数据到结构化数据转换映射处理。
 
@@ -2193,7 +2193,7 @@ public static final int CELL_NUMBER_FLOAT = 8;
 public static final int CELL_NUMBER_SHORT = 9;
 public static final int CELL_STRING = 1;
 ```
-#### 4.8.10.6 消息key设置
+##### 4.8.10.6 消息key设置
 
 可以直接通过context设置kafka、Rocketmq输出插件的消息key，使用实例：
 
