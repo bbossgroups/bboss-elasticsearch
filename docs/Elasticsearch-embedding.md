@@ -451,6 +451,8 @@ Xinference官方文档  https://github.com/xorbitsai/inference
 
 本文对应的源码工程 https://gitee.com/bboss/eshelloword-booter
 
+[向量数据库Milvus客户端组件使用介绍](https://doc.bbossgroups.com/#/Milvus?id=向量数据库milvus客户端组件使用介绍)
+
 ### 9.2开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856

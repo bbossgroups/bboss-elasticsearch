@@ -642,23 +642,11 @@ http.defaultMaxPerRoute = 200
 
 ### 2.6.2 重试机制配置
 
-**参数1** 连接失败重试次数，默认-1，小于等于0时不重试
+http.automaticRetriesDisabled 为true时，关闭重试机制，不会进行重试，为false时，根据以下逻辑进行处理。
 
-http.retryTime = 3
+1、如果未通过http.customHttpRequestRetryHandler配置自定义重试机制，则按照默认机制进行重试。
 
-参数2 重试时间间隔，单位：毫秒，默认值-1,直接重试，>0时需要等待给定的时间后再重试
-
-```
-http.retryInterval=1000
-```
-
-**参数3** automaticRetriesDisabled开关，关闭重试机制
-
-http.automaticRetriesDisabled=false
-
-**注意** 没有指定重试机制http.retryTime为0或-1的情况下，如果automaticRetriesDisabled为false，在通讯则失败时自动重试3次，否则不重试
-
-**参数4** 自定义重试判断逻辑 ，在http.retryTime>0的情况下起作用，判断哪些场景下需要进行重试：
+2、如果通过http.customHttpRequestRetryHandler配置了自定义重试机制，自定义重试判断逻辑 ，指定哪些场景下需要进行重试：
 
 ```properties
 #* 自定义重试控制接口，必须实现接口方法
@@ -669,13 +657,21 @@ http.automaticRetriesDisabled=false
 # http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.DefaultHttpRequestRetryHandler
 ```
 
-可以设置为自己实现的重试控制组件：
+配置重试控制组件示例：
 
 ```
 http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
 ```
 
+重试次数配置
 
+1）如果http.retryTime大于0则重试http.retryTime指定的次数，例如http.retryTime = 5就重试5次
+
+2）如果http.retryTime<=0，则采用httpclient默认3次进行重试。
+
+重试时间间隔
+
+通过http.retryInterval指定重试时间间隔（单位：毫秒）,大于0时，每次等待对应的时间后再重试，否则直接重试。
 
 ### 2.6.3 保活机制配置
 

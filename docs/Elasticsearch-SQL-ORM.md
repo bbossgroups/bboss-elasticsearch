@@ -738,7 +738,7 @@ https://github.com/NLPchina/elasticsearch-sql
 	public void testESSQL(){
 		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
 		ESDatas<Map> esDatas =  //ESDatas包含当前检索的记录集合，最多10条记录，由sql中的limit属性指定
-				clientUtil.searchList("/_sql",//sql请求
+				clientUtil.searchList("/_nlpcn/sql",//sql请求，老版本的请求地址为：/_sql
 						"select * from vem_order_index_2018 limit 0,10", //elasticsearch-sql支持的sql语句
 						Map.class);//返回的文档封装对象类型
 		//获取结果对象列表
@@ -750,6 +750,8 @@ https://github.com/NLPchina/elasticsearch-sql
 	}
 ```
 
+
+
 ## 2.2 通过配置文件管理sql语句案例
 
 ```java
@@ -760,7 +762,7 @@ https://github.com/NLPchina/elasticsearch-sql
 public void testESSQLFromConf(){
    ClientInterface clientUtil = ElasticSearchHelper.getConfigRestClientUtil("esmapper/sql.xml");
    ESDatas<Map> esDatas =  //ESDatas包含当前检索的记录集合，最多10条记录，由sql中的limit属性指定
-         clientUtil.searchList("/_sql",//sql请求
+         clientUtil.searchList("/_nlpcn/sql",//sql请求，老版本的请求地址为：/_sql
                "testESSQL", //elasticsearch-sql支持的sql语句
                Map.class);//返回的文档封装对象类型    
    
@@ -796,7 +798,7 @@ public void testESSQLFromConfParams(){
    Map params = new HashMap();
    params.put("operModule","xxxx");
    ESDatas<Map> esDatas =  //ESDatas包含当前检索的记录集合，最多10条记录，由sql中的limit属性指定
-         clientUtil.searchList("/_sql",//sql请求
+         clientUtil.searchList("/_nlpcn/sql",//sql请求，老版本的请求地址为：/_sql
                "testESSQL", //elasticsearch-sql支持的sql语句
                params, //检索参数
                Map.class);//返回的文档封装对象类型
@@ -830,7 +832,7 @@ public void testESSQLFromConfParams(){
 public void testESSQLTranslate(){
    ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil();
    String dsl =  //将sql转换为dsl
-         clientUtil.executeHttp("/_sql/_explain",//sql转dsl请求
+         clientUtil.executeHttp("/_nlpcn/_sql/_explain",//sql转dsl请求,老版本请求地址为：/_sql/_explain
                "select operModule.keyword from dbdemo group by operModule.keyword ",ClientInterface.HTTP_POST);//返回的转换的结果
 
    //获取总记录数
