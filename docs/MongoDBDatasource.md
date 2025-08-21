@@ -22,7 +22,7 @@ name   MongoDB数据源名称，通过name对应的数据源名称，来针对Mo
 <dependency>
     <groupId>com.bbossgroups</groupId>
     <artifactId>bboss-data</artifactId>
-    <version>6.3.2</version>
+    <version>6.3.3</version>
 </dependency>
 ```
 

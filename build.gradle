@@ -1,4 +1,8 @@
-
+tasks.register('publishToCentralPortal', Exec) {
+    commandLine 'curl', '-u', "${sonatype_username}:${sonatype_password}",
+            '-X', 'POST',
+            'https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/com.bbossgroups'
+}
 configure(allprojects) { project ->
 	group = PROJ_GROUP
 	version = PROJ_VERSION	
@@ -76,18 +80,19 @@ configure(allprojects) { project ->
 
  
 configure(subprojects) { subproject ->
-	task sourcesJar(type: Jar) {
-		archiveClassifier = "sources"
-		from sourceSets.main.allJava
-		duplicatesStrategy = DuplicatesStrategy.INCLUDE
-	}
+    tasks.register('sourcesJar', Jar) {
+        archiveClassifier = "sources"
+        from sourceSets.main.allJava
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 	processResources{
 		duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	}
-	task javaDocJar(type: Jar, dependsOn: javadoc) {
-		archiveClassifier = "javadoc"
-		from javadoc.destinationDir
-	}
+    tasks.register('javaDocJar', Jar) {
+        dependsOn javadoc
+        archiveClassifier = "javadoc"
+        from javadoc.destinationDir
+    }
 	artifacts {
 	    archives sourcesJar, javaDocJar
 	}

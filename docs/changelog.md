@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.3.9 发布
+# BBOSS版本变更记录-v7.5.0 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
 
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.9</version>
+            <version>7.5.0</version>
         </dependency>
 ```
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.3.9</version>
+            <version>7.5.0</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -38,16 +38,19 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.3.9</version>
+            <version>7.5.0</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.0 功能改进-20250624
+# v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：一次性执行流程支持异步执行模式
 2. 通用函数节点提供抽象函数基础类BaseJobFlowNodeFunction，搞具体函数继承使用，默认提供了节点初始化方法的实现
 3. 完善工作流执行上下文参数管理api，获取参数方法可以指定默认值
 4. 完善并行分支barrier机制：增加自定义JobFlowCyclicBarrier，设置barrier超时时间，避免出现一直阻塞等待的可能性
+5. 文件采集插件扩展：支持下载和采集遵循S3协议的OSS对象库文件中的数据，譬如Minio
+6. 基础框架jdk17兼容性改进
+7. httpproxy改进：优化[重试机制](https://esdoc.bbossgroups.com/#/development?id=_262-%e9%87%8d%e8%af%95%e6%9c%ba%e5%88%b6%e9%85%8d%e7%bd%ae)
 
 # v7.3.9 功能改进-20250624
 1. 新增通用工作流模块，使用参考文档 https://esdoc.bbossgroups.com/#/jobworkflow
@@ -1181,7 +1184,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.3.9</version>
+            <version>7.5.0</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1189,7 +1192,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.3.9</version>
+            <version>7.5.0</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1276,7 +1279,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.3.9时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.5.0时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1328,7 +1331,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.3.0",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.3.1",transitive: true 
   ```
 
   **maven坐标**
@@ -1339,7 +1342,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.3.0</version>  
+      <version>6.3.1</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -1822,7 +1825,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.3.9</version>
+    <version>7.5.0</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2141,13 +2144,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version>6.3.9</version>
+      <version>6.5.0</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.3.9", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: "6.5.0", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
