@@ -1987,6 +1987,7 @@ ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor("sql.xml");
 
 ```java
  context.setDrop(true);
+ return;//记录过滤掉后，直接中断datarefactor方法处理，忽略后续处理并返回
 ```
 
 例如
@@ -1995,6 +1996,7 @@ ConfigSQLExecutor configSQLExecutor = new ConfigSQLExecutor("sql.xml");
 String id = context.getStringValue("_id");//根据字段值忽略对应的记录，这条记录将不会被同步到elasticsearch中 
 if(id.equals("5dcaa59e9832797f100c6806")){
 	context.setDrop(true);
+    return;//记录过滤掉后，直接中断datarefactor方法处理，忽略后续处理并返回
 }
 ```
 
@@ -2209,7 +2211,7 @@ public static final int CELL_STRING = 1;
         });
 ```
 
-### 4.8.11 IP-地区运营商经纬度坐标转换
+#### 4.8.11 IP-地区运营商经纬度坐标转换
 
 与geolite2 和ip2region相结合，bboss 支持将ip地址转换为国家-省份-城市-运营商-经纬度坐标信息，我们在DataRefactor中，可以获取ip对应的运营商和地区信息，举例说明：
 
@@ -2265,7 +2267,7 @@ ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
   	importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
   ```
 
-### 4.8.12 设置任务执行结果回调处理函数
+#### 4.8.12 设置任务执行结果回调处理函数
 
 我们通过importBuilder的setExportResultHandler方法设置任务执行结果以及异常回调处理函数，函数实现接口即可：
 
@@ -2309,7 +2311,7 @@ importBuilder.setExportResultHandler(new ExportResultHandler() {
 });
 ```
 
-#### 4.8.12.1 kafka输出插件任务状态记录说明
+##### 4.8.12.1 kafka输出插件任务状态记录说明
 
 kafka输出插件任务状态记录管理功能，可以采用指标分析模块对发送记录统计信息，按照指定的时间窗口进行聚合计算后在回调任务处理success方法，taskMetrics信息为聚合后的统计信息，可以通过开关控制是否进行预聚合功能，避免频繁采集每条记录任务的metrics信息。
 
@@ -2318,7 +2320,7 @@ kafkaOutputConfig.setEnableMetricsAgg(true);//启用预聚合功能
 kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：秒，默认值60秒
 ```
 
-### 4.8.13 灵活指定索引名称和索引类型
+#### 4.8.13 灵活指定索引名称和索引类型
 
 可以全局通过importBuilder组件设置索引类型和索引名称，也可以通过Context接口为相关的数据记录指定索引类型和索引名称：
 
@@ -2326,7 +2328,7 @@ kafkaOutputConfig.setMetricsAggWindow(60);//指定统计时间窗口，单位：
 
 - 如果没有在记录级别指定索引类型则采用全局指定索引类型，如果在记录级别指定了索引类型则采用记录级别指定的索引类型
 
-#### 4.8.13.1 importBuilder组件全局设置索引类型和索引名称
+##### 4.8.13.1 importBuilder组件全局设置索引类型和索引名称
 
 ```java
 ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
@@ -2334,7 +2336,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 				.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
-#### 4.8.13.2 通过Context接口设置记录索引类型和索引名称
+##### 4.8.13.2 通过Context接口设置记录索引类型和索引名称
 
 ```java
 final Random random = new Random();
@@ -2360,7 +2362,7 @@ final Random random = new Random();
 		});
 ```
 
-#### 4.8.13.3 动态设置index和type
+##### 4.8.13.3 动态设置index和type
 
 ```properties
 索引名称由demowithesindex和日期类型字段agentStarttime通过yyyy.MM.dd格式化后的值拼接而成=
@@ -2392,7 +2394,7 @@ ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputCon
 				//.setIndexType("dbclobdemo") //elasticsearch7之前必填项，之后的版本不需要指定
 ```
 
-#### 4.8.13.4 设置routing的方法
+##### 4.8.13.4 设置routing的方法
 
 在DataRefactor中指定routing值
 

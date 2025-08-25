@@ -584,6 +584,8 @@ https://esdoc.bbossgroups.com/#/mysql-binlog
 
 ### 1.4.1 配置案例
 
+#### 1.4.1.1 本地文件采集
+
 本地文件采集：提供记录切割设置，如果不需要可以去掉
 
 ```java
@@ -653,7 +655,11 @@ ImportBuilder importBuilder = new ImportBuilder();
       importBuilder.setInputConfig(config);
 ```
 
+#### 1.4.1.2 FTP文件采集
+
 如需从Ftp采集数据，增加FtpConfig即可：
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/FTPFileLog2CustomRedisDemo.java
 
 ```java
  FtpConfig ftpConfig = new FtpConfig().setFtpIP("127.0.0.1").setFtpPort(5322)
@@ -663,6 +669,34 @@ ImportBuilder importBuilder = new ImportBuilder();
  config.addConfig(new FileConfig().setFtpConfig(ftpConfig) 
                   。。。。。。。
 ```
+
+#### 1.4.1.3 OSS文件采集
+
+如需从OSS采集数据，增加OSSFileInputConfig即可：
+
+https://gitee.com/bboss/filelog-elasticsearch/blob/main/src/main/java/org/frameworkset/datatran/imp/oss/OSSWordFile2CustomDemo.java
+
+```java
+OSSFileInputConfig ossFileInputConfig = new OSSFileInputConfig()
+                .setName("miniotest")
+                .setBucket("wordfiles")
+//                .setRemoteFileDir("subdir")
+        .setAccessKeyId("N3XNZFqSZfpthypuoOzL")
+        .setSecretAccesskey("2hkDSEll1Z7oYVfhr0uLEam7r0M4UWT8akEBqO97").setRegion("east-r-a1")
+                .setEndpoint("http://172.24.176.18:9000");
+        ossFileInputConfig.setDeleteRemoteFile(false);//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除
+        wordFileConfig.setScanChild(true);
+        wordFileConfig.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+                return true;
+            }
+        });
+        wordFileConfig.setOssFileInputConfig(ossFileInputConfig);
+       wordFileInputConfig.addConfig(wordFileConfig);
+```
+
+#### 1.4.1.4 文件过滤器配置
 
 文件过滤筛选配置：采集子目录文件
 

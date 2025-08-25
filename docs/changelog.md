@@ -51,6 +51,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 5. 文件采集插件扩展：支持下载和采集遵循S3协议的OSS对象库文件中的数据，譬如Minio
 6. 基础框架jdk17兼容性改进
 7. httpproxy改进：优化[重试机制](https://esdoc.bbossgroups.com/#/development?id=_262-%e9%87%8d%e8%af%95%e6%9c%ba%e5%88%b6%e9%85%8d%e7%bd%ae)
+8. 持久层改进：升级Clickhouse官方驱动版本，为对应[数据源增加负载均衡](https://doc.bbossgroups.com/#/persistent/datasource-cluster?id=_4clickhouse-jdbc%e4%bd%bf%e7%94%a8)功能
 
 # v7.3.9 功能改进-20250624
 1. 新增通用工作流模块，使用参考文档 https://esdoc.bbossgroups.com/#/jobworkflow
