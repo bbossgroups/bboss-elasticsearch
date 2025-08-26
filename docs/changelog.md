@@ -44,14 +44,15 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 # v7.5.0 功能改进-20250821
-1. 工作流调度机制完善：一次性执行流程支持异步执行模式
-2. 通用函数节点提供抽象函数基础类BaseJobFlowNodeFunction，搞具体函数继承使用，默认提供了节点初始化方法的实现
-3. 完善工作流执行上下文参数管理api，获取参数方法可以指定默认值
-4. 完善并行分支barrier机制：增加自定义JobFlowCyclicBarrier，设置barrier超时时间，避免出现一直阻塞等待的可能性
-5. 文件采集插件扩展：支持下载和采集遵循S3协议的OSS对象库文件中的数据，譬如Minio
-6. 基础框架jdk17兼容性改进
+1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
+2. 工作流改进：[通用函数节点提供抽象函数基础类BaseJobFlowNodeFunction](https://esdoc.bbossgroups.com/#/jobflow-customnode)，供具体函数继承使用，默认提供了节点初始化方法的实现
+3. 工作流改进：完善工作流执行上下文参数管理api，[获取参数方法可以指定默认值](https://esdoc.bbossgroups.com/#/jobflow-nodeparam)
+4. 工作流改进：完善并行分支barrier机制：增加自定义JobFlowCyclicBarrier，设置barrier超时时间，避免出现一直阻塞等待的可能性
+5. 文件采集插件扩展：支持[下载和采集遵循S3协议的OSS对象库文件中的数据](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_1413-oss%e6%96%87%e4%bb%b6%e9%87%87%e9%9b%86)，譬如Minio
+6. 基础框架改进：完善框架对jdk17兼容性
 7. httpproxy改进：优化[重试机制](https://esdoc.bbossgroups.com/#/development?id=_262-%e9%87%8d%e8%af%95%e6%9c%ba%e5%88%b6%e9%85%8d%e7%bd%ae)
 8. 持久层改进：升级Clickhouse官方驱动版本，为对应[数据源增加负载均衡](https://doc.bbossgroups.com/#/persistent/datasource-cluster?id=_4clickhouse-jdbc%e4%bd%bf%e7%94%a8)功能
+9. 持久层改进：[优化连接池参数设置](https://doc.bbossgroups.com/#/persistent/PersistenceLayer1)
 
 # v7.3.9 功能改进-20250624
 1. 新增通用工作流模块，使用参考文档 https://esdoc.bbossgroups.com/#/jobworkflow

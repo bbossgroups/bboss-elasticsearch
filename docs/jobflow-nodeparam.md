@@ -10,11 +10,11 @@
 
 ### 1.1、参数作用域分类
 
-| 参数类型           | 设置方式                                                     | 获取方式                                          | 生效范围                   | 生命周期         |
-| ------------------ | ------------------------------------------------------------ | ------------------------------------------------- | -------------------------- | ---------------- |
-| **流程级参数**     | `jobFlowNodeExecuteContext.addJobFlowContextData(key, value)` | `context.getJobFlowContextData(key)`              | 整个工作流的所有后续节点   | 流程执行结束     |
-| **复合节点级参数** | `jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData(key, value)` | `context.getContainerJobFlowNodeContextData(key)` | 同一复合节点下的所有子节点 | 复合节点执行结束 |
-| **当前节点级参数** | `jobFlowNodeExecuteContext.addContextData(key, value)`       | `context.getContextData(key)`                     | 当前节点及其后续节点       | 节点执行结束     |
+| 参数类型           | 设置方式                                                     | 获取方式(可以指定默认值)                                     | 生效范围                   | 生命周期         |
+| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------- | ---------------- |
+| **流程级参数**     | `jobFlowNodeExecuteContext.addJobFlowContextData(key, value)` | `context.getJobFlowContextData(key[,defaultValue])`          | 整个工作流的所有后续节点   | 流程执行结束     |
+| **复合节点级参数** | `jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData(key, value)` | `context.getContainerJobFlowNodeContextData(key[,defaultValue])` | 同一复合节点下的所有子节点 | 复合节点执行结束 |
+| **当前节点级参数** | `jobFlowNodeExecuteContext.addContextData(key, value)`       | `context.getContextData(key[,defaultValue])`                 | 当前节点及其后续节点       | 节点执行结束     |
 
 ---
 
@@ -54,19 +54,22 @@ public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) throws E
 @Override
 public Object call(JobFlowNodeExecuteContext context) throws Exception {
     // 获取流程级参数
-    Object flowParam = context.getJobFlowExecuteContext().getContextData("flowParam");
+    Object flowParam = context.getJobFlowContextData("flowParam");
     System.out.println("流程级参数: " + flowParam);
+    flowParam = context.getJobFlowContextData("flowParam","defaultValue");//指定默认值
 
     // 获取复合节点级参数（如果存在）
     JobFlowNodeExecuteContext containerContext = context.getContainerJobFlowNodeExecuteContext();
     if (containerContext != null) {
         Object containerParam = containerContext.getContextData("containerNodeParam");
         System.out.println("复合节点级参数: " + containerParam);
+        containerParam = containerContext.getContextData("containerNodeParam","defaultValue");  //指定默认值
     }
 
     // 获取当前节点级参数
     Object nodeParam = context.getContextData("nodeParam");
     System.out.println("当前节点级参数: " + nodeParam);
+    nodeParam = context.getContextData("flowParam","defaultValue");  //指定默认值
 
     // 标记节点完成
     jobFlowNode.nodeComplete(null);

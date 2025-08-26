@@ -118,6 +118,8 @@ jobFlowBuilder.setJobFlowName("测试流程")
 
 #### 4.2.2 设置调度策略
 
+##### 4.2.2.1 周期性调度执行
+
 通过配置周期性执行策略，可以设置流程执行开始时间、结束时间，执行时间段、忽略执行时间段，执行时间间隔
 
 ```java
@@ -129,6 +131,8 @@ jobFlowScheduleConfig.setPeriod(100000L);//每100秒运行一次
 jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
 
 ```
+
+##### 4.2.2.2 一次性调度执行
 
 通过配置setExecuteOneTime(true)，可以将流程设置为一次性执行策略：
 
