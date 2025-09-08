@@ -43,6 +43,18 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
+# v7.5.1 功能改进-20250904
+1. 升级bboot，支持jetty10 websocket功能
+2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
+3. 优化数据库管理工具
+4. mysqlbinlog同步改进：自定义BinaryLogClientExt，打印异常情况日
+5. mysqlbinlog同步改进：修复mysqlbinlog多表同步不起作用问题
+6. 去除commons-lang,升级为commons-lang3
+7. 优化增量同步参数管理机制以及全局启用增量参数配置处理优化
+8. 优化Postgresql持久层适配器
+9. 修复非增量模式下，不支持设置sql变量参数问题；同时非增量模式下，在设置了sql变量参数的情况下，需要通过以下配置显示禁止增量机制：
+importBuilder.setIncreamentImport(false);
+
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
 2. 工作流改进：[通用函数节点提供抽象函数基础类BaseJobFlowNodeFunction](https://esdoc.bbossgroups.com/#/jobflow-customnode)，供具体函数继承使用，默认提供了节点初始化方法的实现
