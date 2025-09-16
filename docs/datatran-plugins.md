@@ -1916,6 +1916,52 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 更多Milvus输入插件使用文档，参考：[Milvus向量数据库数据迁移指南](https://esdoc.bbossgroups.com/#/milvus-datatran)
 
+## 1.16 CSV文件采集插件
+
+插件配置 [CSVFileInputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/input/CSVFileInputConfig.java)(FileInputConfig子类)和CSVFileConfig（FileConfig子类）结合
+
+通过CSVFileConfig设置csv文件列与字段的映射关系，csv忽略行配置等，除了csv需要的配置，其他配置和文件采集插件配置一致
+
+### 1.16.1 配置案例
+
+```java
+CSVFileInputConfig config = new CSVFileInputConfig();
+		FileConfig csvFileConfig = new CSVFileConfig();
+		csvFileConfig
+				.addCellMapping(0,"shebao_org")//0 代表第一个单元格，shebao_org 映射字段名称
+				.addCellMapping(1,"person_no")
+				.addCellMapping(2,"name")
+				.addCellMapping(3,"cert_type")
+
+				.addCellMapping(4,"cert_no","")
+				.addCellMapping(5,"zhs_item")
+
+				.addCellMapping(6,"zhs_class")
+				.addCellMapping(7,"zhs_sub_class")
+				.addCellMapping(8,"zhs_year","2022")
+				.addCellMapping(9,"zhs_level","1");
+		csvFileConfig.setSourcePath("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\csvfiles")//指定目录
+				.setFileFilter(new FileFilter() { //设置过滤器
+					@Override
+					public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+						//判断是否采集文件数据，返回true标识采集，false 不采集
+						return fileInfo.getFileName().equals("cityperson.csv");
+					}
+				})//指定文件过滤器
+				.setSkipHeaderLines(1);//忽略第一行
+		//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
+		//配置excel文件列与导出字段名称映射关系
+		config.addConfig(csvFileConfig		);
+
+		//将文件元数据信息附带到记录
+		config.setEnableMeta(true);
+		importBuilder.setInputConfig(config);
+```
+
+元数据信息和文件插件一致,完整案例地址如下：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/file/CSVUserBehaviorJob.java
+
 # 2.输出插件
 
 ## 2.1 DB输出插件
@@ -3668,7 +3714,51 @@ https://gitee.com/bboss/kafka2x-elasticsearch
 
 https://gitee.com/bboss/elasticsearch-file2ftp
 
+## 2.15 CSV文件输出插件
 
+CSV文件输出插件配置类：[CSVFileOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-fileftp/src/main/java/org/frameworkset/tran/plugin/file/output/CSVFileOutputConfig.java)，FileOutputConfig的子类，继承其所有特性，增加CSV单元格和源记录字段映射关系配置
+
+### 2.15.1 导出本地CSV文件
+
+```java
+CSVFileOutputConfig fileOupputConfig = new CSVFileOutputConfig();
+      
+
+        fileOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+                .addCellMapping(1,"person_no","人员编号")
+                .addCellMapping(2,"name","*姓名")
+                .addCellMapping(3,"cert_type","*证件类型")
+
+                .addCellMapping(4,"cert_no","*证件号码","")
+                .addCellMapping(5,"zhs_item","*征收项目")
+
+                .addCellMapping(6,"zhs_class","*征收品目")
+                .addCellMapping(7,"zhs_sub_class","征收子目")
+                .addCellMapping(8,"zhs_year","*缴费年度","2022")
+                .addCellMapping(9,"zhs_level","*缴费档次","1");
+        fileOupputConfig.setFileDir("D:\\excelfiles\\hebin");//数据生成目录
+
+        fileOupputConfig.setFilenameGenerator(new FilenameGenerator() {
+            @Override
+            public String genName(TaskContext taskContext, int fileSeq) {
+
+
+                return "师大2021年新生医保（2021年）申报名单-合并.xlsx";
+            }
+        });
+
+        importBuilder.setOutputConfig(fileOupputConfig);
+```
+
+关键配置说明：
+
+fileOupputConfig.addCellMapping(0,"shebao_org","社保经办机构（建议填写）")
+
+addCellMapping方法参数：第一个参数为CSV单元格编号，从0开始，第二个参数源字段名称，第三个参数对应单元格CSV标题行名称
+
+完整案例地址：
+
+https://gitee.com/bboss/csv-dbhandle/blob/main/src/main/java/org/frameworkset/elasticsearch/imp/DB2OPENCSVFile.java
 
 # 3.参考文档
 

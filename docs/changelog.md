@@ -43,7 +43,7 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.1 功能改进-20250904
+# v7.5.1 功能改进-20250910
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具
@@ -54,6 +54,10 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 8. 优化Postgresql持久层适配器
 9. 修复非增量模式下，不支持设置sql变量参数问题；同时非增量模式下，在设置了sql变量参数的情况下，需要通过以下配置显示禁止增量机制：
 importBuilder.setIncreamentImport(false);
+10. 持久层改进：完善对Clickhouse官方驱动时间类型参数支持
+11. 持久层改进：修复SQLExecutor.insert方法参数异常问题
+12. 文件采集插件改进：增强对复杂CSV文件采集支持
+13. 文件输出插件改进：增强对复杂格式内容输出到CSV文件支持
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
