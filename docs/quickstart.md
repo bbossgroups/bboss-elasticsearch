@@ -234,11 +234,7 @@ ClientInterface clientUtil = bbossESStarter.getConfigRestClient("esmapper/demo.x
     ClientInterface clientUtil = bbossESStarter.getRestClient();    
 ```
 
-Elasticsearch bboss 开发指南:
 
-https://esdoc.bbossgroups.com/#/document-crud
-
-https://esdoc.bbossgroups.com/#/development
 
 # 3.配置和使用-进阶
 
@@ -353,11 +349,7 @@ maven project案例下载地址:
 
 https://gitee.com/bboss/eshelloword-booter
 
-参考文档
 
-集成和配置Elasticsearch bboss：
-
-https://esdoc.bbossgroups.com/#/common-project-with-bboss
 
 ## 3.2 spring boot maven 项目配置
 
@@ -595,16 +587,6 @@ A spring boot Web demo github url:包含本文案例及dsl xml配置文件demo7.
 
 https://gitee.com/bboss/springboot-elasticsearch
 
-参考文档
-
-Spring boot集成和配置Elasticsearch:
-
-https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
-
-Springboot集成bboss Elasticsearch和Apollo:
-
-https://esdoc.bbossgroups.com/#/springboot-bbosses-apollo
-
 
 
 # 4.从源码构建Elasticsearch BBoss
@@ -625,13 +607,37 @@ Gradle环境搭建和配置教程
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-# 5.视频教程
+# 5.Elasticsearch bboss 开发指南
+
+https://esdoc.bbossgroups.com/#/document-crud
+
+https://esdoc.bbossgroups.com/#/development
+
+参考文档
+
+集成和配置Elasticsearch bboss：
+
+https://esdoc.bbossgroups.com/#/common-project-with-bboss
+
+Spring boot集成和配置Elasticsearch:
+
+https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
+
+Springboot集成bboss Elasticsearch和Apollo:
+
+https://esdoc.bbossgroups.com/#/springboot-bbosses-apollo
+
+nacos配置集成
+
+https://esdoc.bbossgroups.com/#/nacos-config
+
+# 6.视频教程
 
 [实战：快速开始Elasticsearch client bboss](https://www.bilibili.com/video/BV1JP411k7sY)
 
 [实战：PO对象查询、元数据获取、文档删除、批量删除](https://www.bilibili.com/video/BV1nP411k7mF)
 
-# 6. 开发交流
+# 7. 开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
@@ -646,7 +652,7 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
 
 
-# 7.支持我们
+# 8.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 

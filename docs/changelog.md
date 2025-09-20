@@ -43,7 +43,7 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.1 功能改进-20250910
+# v7.5.1 功能改进-20250920
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具

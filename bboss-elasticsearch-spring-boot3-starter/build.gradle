@@ -17,8 +17,6 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.withType(Javadoc) {
-    sourceCompatibility = JAVADOC17_SOURCE_LEVEL
-    targetCompatibility = JAVADOC17_COMPILER_LEVEL
     options.encoding = 'UTF-8'
     // disable the crazy super-strict doclint tool in Java 8
     // noinspection SpellCheckingInspection
