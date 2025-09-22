@@ -58,6 +58,9 @@ importBuilder.setIncreamentImport(false);
 11. 持久层改进：修复SQLExecutor.insert方法参数异常问题
 12. 文件采集插件改进：增强对复杂CSV文件采集支持
 13. 文件输出插件改进：增强对复杂格式内容输出到CSV文件支持
+14. ftp/oss文件采集插件改进：文件过滤筛选器增加对文件名正则表达式过滤匹配的支持
+15. 工作流增加ftp/oss远程文件下载节点支持
+16. 改进数据采集和入库配置的泛型定义机制
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
