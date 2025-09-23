@@ -6,6 +6,7 @@
   - [工作流节点间共享和传递参数使用文档](jobflow-nodeparam.md)
   - [Deepseek对话工作流使用介绍](jobflow-deepseek.md)
   - [多智能体协同：轻松搞定智能体工具调用](jobflow-deepseek-fuctioncall.md)
+  - [基于工作流的Zip文件下载与数据采集方法](jobflow-remotefile.md)
 - [MongoDB数据源定义和使用](MongoDBDatasource.md)
 - **Getting started**
   - [Elasticsearch Quick start](quickstart.md)

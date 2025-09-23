@@ -1948,6 +1948,7 @@ CSVFileInputConfig config = new CSVFileInputConfig();
 						return fileInfo.getFileName().equals("cityperson.csv");
 					}
 				})//指定文件过滤器
+            .setMaxCellIndexMatchesFailedPolicy(FieldMappingManager.MAX_CELL_INDEX_MATCHES_FAILED_POLICY_WARN_USENULLVALUE)//如果配置的映射列号大于记录列号，设置自动空值填充策略，还可以设置抛出异常、忽略记录两种策略               
 				.setSkipHeaderLines(1);//忽略第一行
 		//shebao_org,person_no, name, cert_type,cert_no,zhs_item  ,zhs_class ,zhs_sub_class,zhs_year  , zhs_level
 		//配置excel文件列与导出字段名称映射关系
