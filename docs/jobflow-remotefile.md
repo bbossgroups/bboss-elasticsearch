@@ -6,9 +6,13 @@
 
 1.利用bboss远程文件采集节点从ftp服务器或者OSS下载Zip文件
 
-2.解压Zip文件，将Zip文件中包含的数据文件存放到指定的目录，支持解压加密Zip文件
+2.远程文件采集节点解压Zip文件，将Zip文件中包含的数据文件解压存放到指定的目录，支持解压加密Zip文件
 
-3.利用bboss数据交换节点采集解压后的数据文件
+3.远程文件采集节点通过流程上下文，将解压的数据目录路径传递给数据交换节点，通过流程上下文记录每次解压文件数量
+
+4.bboss数据交换节点从流程上下文中获取解压数据目录路径，采集和处理解压到其中的文件数据
+
+5.数据交换节点从流程上下文中获取解压文件数量，并判断解压文件数量，如果大于0，则执行数据交换采集作业，否则不执行
 
 ## 2. 场景说明
 
@@ -63,9 +67,13 @@ Ftp下载参数，通过FtpConfig配置Ftp服务器参数、远程文件目录�
 
 OSS下载参数，通过OSSFileInputConfig配置OSS服务器参数、远程文件目录、本地下载目录、zip文件存放目录、解压文件目录、zip文件口令等参数
 
-**下载情况跟踪记录器设置**
+#### 3.2.1下载情况跟踪记录器
 
-DownloadedFileRecorder 提供两个方法，裁决是否需要
+DownloadedFileRecorder 提供两个方法：
+
+recordBeforeDownload可以裁决是否需要下载当前文件
+
+recordAfterDownload 用于记录当前文件下载统计信息以及下载异常信息，可以相关统计信息作为流程参数添加到流程执行上下文中（流程、流程节点、流程容器节点上下文）
 
 ```java
 /**
@@ -86,6 +94,43 @@ public boolean recordBeforeDownload(DownloadFileMetrics downloadFileMetrics, Job
              */
 public void recordAfterDownload(DownloadFileMetrics downloadFileMetrics, JobFlowNodeExecuteContext jobFlowNodeExecuteContext, Throwable exception)    
 ```
+
+参数DownloadFileMetrics中包含了远程文件路径、本地存放路径以及下载、解压、校验耗时信息、解压得到的文件数量以及其他说明信息：
+
+```java
+/**
+     * 下载耗时
+     */
+    private long elapsed;
+    /**
+     * 解压耗时
+     */
+    private long unzipElapsed;
+    
+    /**
+     * 校验耗时
+     */
+    private long validateElapsed;
+
+    /**
+     * 从当前压缩文件中解压的文件数量
+     */
+    private int files;
+    /**
+     * 远程文件路径
+     */
+    private String remoteFilePath;
+    /**
+     * 本地存放路径
+     */
+    private String localFilePath;
+    /**
+     * 其他说明信息
+     */
+    private String message;
+```
+
+#### 3.2.2 远程文件下载节点定义
 
 远程文件下载节点定义：
 
@@ -123,9 +168,13 @@ jobFlowNodeBuilder.setDownloadedFileRecorder(new DownloadedFileRecorder() {
      */
     @Override
     public void recordAfterDownload(DownloadFileMetrics downloadFileMetrics, JobFlowNodeExecuteContext jobFlowNodeExecuteContext, Throwable exception) {
-        //如果文件成功，则记录下载信息
-        if(exception == null)
-            downloadedFileRecorder.put(downloadFileMetrics.getRemoteFilePath(),o);
+        //如果文件下载解压成功，则记录下载信息
+                if(exception == null) {
+                    //获取从当前压缩文件中解压的文件数量并判断是否大于0，则将解压文件数量保存到流程上下文数据中，用于作为数据采集作业节点的触发条件（只有当前解压文件数量大于0时，才触发下一个任务节点）
+                    if(downloadFileMetrics.getFiles() > 0)
+                        jobFlowNodeExecuteContext.addJobFlowContextData("unzipFiles",downloadFileMetrics.getFiles());
+                    downloadedFileRecorder.put(downloadFileMetrics.getRemoteFilePath(), o);
+                }
     }
 });
 /**
@@ -157,6 +206,14 @@ jobFlowNodeBuilder.setBuildDownloadConfigFunction(jobFlowNodeExecuteContext -> {
 jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
 ```
 
+#### 3.2.2传递csv数据文件目录路径
+
+通过流程上下文，向后续数据采集作业传递解压后的数据文件存放目录
+
+```java
+ jobFlowNodeExecuteContext.addJobFlowContextData("csvfilepath",ftpConfig.getUnzipDir());
+```
+
 ### 3.3 数据交换流程节点
 
 DatatranJobFlowNodeBuilder：配置和构建数据交换流程节点配置类，用配置和构建数据交换流程节点
@@ -175,7 +232,22 @@ datatranJobFlowNodeBuilder.setImportBuilderFunction(jobFlowNodeExecuteContext ->
     CSVUserBehaviorImport csvUserBehaviorImport = new CSVUserBehaviorImport();
     return csvUserBehaviorImport.buildImportBuilder(jobFlowNodeExecuteContext);
 });
-
+//4.2 为数据采集作业任务节点添加触发器，当上个节点解压文件数量大于0时，则触发数据采集作业，否则不触发
+        NodeTrigger parrelnewNodeTrigger = new NodeTrigger();
+        parrelnewNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
+            @Override
+            public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                Object unzipFiles = nodeTriggerContext.getJobFlowExecuteContext().getContextData("unzipFiles");
+                //当上个节点解压文件数量大于0时，则触发数据采集作业，否则不触发
+                if(unzipFiles == null || ((Integer)unzipFiles) == 0){
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+        datatranJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
         /**
          * 5 将第二个节点添加到工作流构建器
          */
@@ -185,6 +257,39 @@ datatranJobFlowNodeBuilder.setImportBuilderFunction(jobFlowNodeExecuteContext ->
 CSVUserBehaviorImport的实现类：
 
 https://gitee.com/bboss/bboss-datatran-demo/tree/main/src/main/java/org/frameworkset/datatran/imp/jobflow/CSVUserBehaviorImport.java
+
+#### 3.3.1获取csv数据文件目录路径
+
+CSV文件采集插件从流程执行上下文中获取并设置csv数据文件目录路径：
+
+```java
+csvFileConfig.setSourcePath((String)jobFlowNodeExecuteContext.getJobFlowContextData("csvfilepath"));//从流程执行上下文中获取csv文件目录
+```
+
+#### 3.3.2 数据交换采集作业触发条件
+
+数据交换节点执行触发条件：通过设置触发器，从流程执行上下文节点中获取解压后的数据文件数量，如果数据文件数量大于0时，则执行数据采集作业，否则不执行。
+
+```java
+//4.2 为数据采集作业任务节点添加触发器，当上个节点解压文件数量大于0时，则触发数据采集作业，否则不触发
+        NodeTrigger parrelnewNodeTrigger = new NodeTrigger();
+        parrelnewNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
+            @Override
+            public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                Object unzipFiles = nodeTriggerContext.getJobFlowExecuteContext().getContextData("unzipFiles");
+                //当上个节点解压文件数量大于0时，则触发数据采集作业，否则不触发
+                if(unzipFiles == null || ((Integer)unzipFiles) <= 0){
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+        datatranJobFlowNodeBuilder.setNodeTrigger(parrelnewNodeTrigger);
+```
+
+
 
 ### 3.4 构建和启动作业
 
@@ -215,5 +320,7 @@ jobFlow.start();
 6. **增量处理机制**：结合工作流调度，实现增量文件的识别与处理。
 
 7. **易于扩展**：采用模块化设计，可轻松扩展支持其他类型的文件处理和数据源。
+
+8. **节点间通讯**：通过流程上下文实现节点间数据传递，降低模块间耦合度
 
 该方案适用于需要定期从远程服务器获取压缩数据包并进行数据处理的场景，如日志收集、数据同步等业务场景。
