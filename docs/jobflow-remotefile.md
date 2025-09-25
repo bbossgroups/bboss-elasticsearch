@@ -214,6 +214,16 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
  jobFlowNodeExecuteContext.addJobFlowContextData("csvfilepath",ftpConfig.getUnzipDir());
 ```
 
+#### 3.2.3传递解压文件数量
+
+ 获取从当前压缩文件中解压的文件数量并判断是否大于0，则将解压文件数量保存到流程上下文数据中，用于作为数据采集作业节点的触发条件（只有当前解压文件数量大于0时，才触发下一个任务节点）
+
+```java
+ if(downloadFileMetrics.getFiles() > 0){
+                        jobFlowNodeExecuteContext.addJobFlowContextData("unzipFiles",downloadFileMetrics.getFiles());
+                        }
+```
+
 ### 3.3 数据交换流程节点
 
 DatatranJobFlowNodeBuilder：配置和构建数据交换流程节点配置类，用配置和构建数据交换流程节点
@@ -308,19 +318,13 @@ jobFlow.start();
 本文介绍了基于bboss工作流的Zip文件下载与数据采集完整解决方案，该方案具有以下特点：
 
 1. **自动化流程**：通过工作流调度机制，实现从远程服务器下载Zip文件、解压、数据采集的全自动化处理流程。
-
 2. **灵活的远程文件支持**：支持FTP/SFTP和OSS等多种远程存储方式，满足不同环境下的文件获取需求。
-
 3. **并发处理能力**：支持多线程并行下载，提高大文件或多个文件的下载效率。
-
 4. **安全可靠的解压机制**：支持加密Zip文件的解压，并可配置解压后是否删除源文件。
-
 5. **防止重复处理**：通过DownloadedFileRecorder记录器跟踪已处理文件，避免重复采集。
-
 6. **增量处理机制**：结合工作流调度，实现增量文件的识别与处理。
-
 7. **易于扩展**：采用模块化设计，可轻松扩展支持其他类型的文件处理和数据源。
-
 8. **节点间通讯**：通过流程上下文实现节点间数据传递，降低模块间耦合度
+9. **节点条件触发器**：通过设置节点触发器，判断是当前调度轮次中是否有产生解压文件，有则执行后续数据采集作业，否则不执行
 
 该方案适用于需要定期从远程服务器获取压缩数据包并进行数据处理的场景，如日志收集、数据同步等业务场景。
