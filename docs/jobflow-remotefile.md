@@ -1,6 +1,6 @@
 # 基于工作流的Zip文件下载与数据采集方法
 
-bboss工作流提供了文件下载类型节点，具备文件下载、zip文件解压（包括加密zip文件），以及ftp、oss以及本地文件定期归档清理功能。本文介绍基于工作流的Zip文件下载与数据采集方法。
+bboss工作流提供了文件下载类型节点，具备文件下载、zip文件解压（包括加密zip文件），以及ftp、oss以及本地文件定期归档清理功能;可以将文件下载类型节点编排到工作流中任意位置，同时可以通过流程上下文与其他流程节点进行通信。本文介绍基于工作流的Zip文件下载与数据采集方法。
 
 ## 1.内容摘要
 
@@ -222,6 +222,79 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
  if(downloadFileMetrics.getFiles() > 0){
                         jobFlowNodeExecuteContext.addJobFlowContextData("unzipFiles",downloadFileMetrics.getFiles());
                         }
+```
+
+#### 3.2.4 文件筛选过滤配置
+
+可以配置文件筛选过滤规则，实现特定文件的过滤下载, 文件筛选过滤器接口JobFileFilter：
+
+```java
+public interface JobFileFilter  {
+
+    /**
+     * 判断是否采集文件数据或者归档文件，返回true标识采集/归档，false 不采集/归档
+     * @param fileInfo
+     * @param jobFlowNodeExecuteContext
+     * @return
+     */
+    boolean accept(FilterFileInfo fileInfo, JobFlowNodeExecuteContext jobFlowNodeExecuteContext);
+}
+```
+
+**方法1** 指定归档的文件名称正则，匹配的文件才会被下载，内部会转换成JobFileFilter实现
+
+相对简单的规则可以采用这种方法
+
+```java
+downloadfileConfig.setFileNameRegular(".*\\.csv")//可以指定归档的文件名称正则，匹配的文件才会被归档
+```
+
+**方法2** 自定义文件过滤器
+
+相对复杂的规则配置可以采用自定义文件过滤器，以下是一个示例：
+
+```java
+downloadfileConfig.setJobFileFilter(new JobFileFilter() {
+
+    /**
+     * 判断是否下载文件，返回true标识下载，false 不下载
+     *
+     * @param fileInfo
+     * @param jobFlowNodeExecuteContext
+     * @return
+     */
+    @Override
+    public boolean accept(FilterFileInfo fileInfo, JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                        String name = fileInfo.getFileName();
+                        //判断是否下载文件，返回true标识下载采集，false 不下载
+                        boolean nameMatch = name.startsWith("data_file_");
+                        if(nameMatch){
+
+                            /**
+                             * 采集1分钟之前生成的FTP文件,本地未采集完的文件继续采集
+                             */
+                            Object fileObject = fileInfo.getFileObject();
+                            if(fileObject instanceof RemoteResourceInfo) {
+                                RemoteResourceInfo remoteResourceInfo = (RemoteResourceInfo) fileObject;
+                                long mtime = remoteResourceInfo.getAttributes().getMtime()*1000;
+                                long interval = System.currentTimeMillis() - mtime;
+                                if(interval > 100000){
+                                    return true;
+                                }
+                                else{
+                                    return false;
+                                }
+                            }
+                            else{
+                                return true;
+                            }
+                            
+                        } else {
+                            return false;//不采集文件
+                        }
+                    }
+    }
+});
 ```
 
 ### 3.3 数据交换流程节点
