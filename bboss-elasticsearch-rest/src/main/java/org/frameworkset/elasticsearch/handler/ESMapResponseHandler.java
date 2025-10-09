@@ -15,9 +15,11 @@ package org.frameworkset.elasticsearch.handler;
  * limitations under the License.
  */
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
 
 import java.io.IOException;
@@ -37,8 +39,8 @@ public class ESMapResponseHandler  extends BaseExceptionResponseHandler<Map> imp
 	}
 
 	@Override
-	public Map handleResponse(final HttpResponse response)
-			throws ClientProtocolException, IOException {
+	public Map handleResponse(final ClassicHttpResponse response)
+            throws ClientProtocolException, IOException, ParseException {
 		int status = initStatus(  response);
 
 		if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {

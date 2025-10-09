@@ -1,8 +1,10 @@
 package org.frameworkset.elasticsearch.handler;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.SearchHit;
 import org.frameworkset.elasticsearch.serial.ESClassType;
@@ -32,8 +34,8 @@ public class GetDocumentResponseHandler extends BaseGetDocESResponsehandler {
 	}
 
 	 @Override
-     public SearchHit handleResponse(final HttpResponse response)
-             throws ClientProtocolException, IOException {
+     public SearchHit handleResponse(final ClassicHttpResponse response)
+             throws ClientProtocolException, IOException, ParseException {
 		 int status = initStatus(  response);
 
          if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {

@@ -1,7 +1,7 @@
 package org.frameworkset.elasticsearch.client;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestUtil;
 import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
@@ -86,11 +86,11 @@ public class HealthCheck implements Runnable{
 			 		 try {		
 			 			 if(logger.isDebugEnabled())
 			 				 logger.debug(new StringBuilder().append("Check downed elasticsearch [").append(elasticsearch).append("] server[").append(address.toString()).append("] status.").toString());
-						 HttpRequestUtil.httpGet(healthHttpPool,address.getHealthPath(), null,new ResponseHandler<Void>(){
+						 HttpRequestUtil.httpGet(healthHttpPool,address.getHealthPath(), null,new HttpClientResponseHandler<Void>(){
 	
 							 @Override
-							 public Void handleResponse(HttpResponse response) throws IOException {
-								 int status = response.getStatusLine().getStatusCode();
+							 public Void handleResponse(ClassicHttpResponse response) throws IOException {
+								 int status = response.getCode();
 								 if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 									 if(logger.isInfoEnabled())
 										 logger.info(new StringBuilder().append("Downed elasticsearch[").append(elasticsearch).append("] server[").append(address.toString()).append("] recovered to normal server.").toString());

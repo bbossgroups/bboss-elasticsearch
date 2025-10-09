@@ -1,6 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
@@ -425,8 +425,8 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	 * @throws ElasticSearchException
 	 */
 	public abstract String deleteDocumentsWithrefreshOption(String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException;
-	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException;
-	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public <T> T getIndexMapping(String index,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public <T> T getIndexMapping(String index,boolean pretty,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 	/**
 	 * 判断索引是否存在
@@ -1370,9 +1370,9 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T executeHttp(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T executeHttp(String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
-	public abstract <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T discover(String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 	/**
 	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
@@ -1384,7 +1384,7 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttp(String path, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 		/**
 		 * 发送es restful请求，获取String类型json报文
@@ -1406,7 +1406,7 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttp(String path, String entity,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttp(String path, String entity,String action,Map params,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 
 
@@ -1429,7 +1429,7 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttp(String path, String entity,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttp(String path, String entity,String action,Object bean,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 	/**
 	 * 发送es restful请求，获取String类型json报文
@@ -1452,12 +1452,12 @@ public interface ClientInterface extends ClientInterfaceWithESDatasource {
 	public abstract String executeRequest(String path, String templateName, Object params) throws ElasticSearchException;
 
 
-	public abstract <T> T executeRequest(String path, String entity, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequest(String path, String entity, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
-	public abstract <T> T executeRequest(String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequest(String path, String templateName, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 
-	public abstract <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequest(String path, String templateName, Object params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 	public abstract MapRestResponse search(String path, String templateName, Map params) throws ElasticSearchException;
 

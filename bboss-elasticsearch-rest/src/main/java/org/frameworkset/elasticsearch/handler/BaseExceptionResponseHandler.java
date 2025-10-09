@@ -15,8 +15,9 @@ package org.frameworkset.elasticsearch.handler;
  * limitations under the License.
  */
 
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public abstract class BaseExceptionResponseHandler<T> extends BaseResponseHandle
 	public void clean(){
 		elasticSearchException = null;
 	}
-	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException {
+	protected Object handleException(String url,HttpEntity entity ,int status) throws IOException, ParseException {
 
 		return handleException(url, entity ,status, null);
 	}
@@ -55,7 +56,7 @@ public abstract class BaseExceptionResponseHandler<T> extends BaseResponseHandle
             builder.append(requestBody);
         }
     }
-	protected Object handleException(String url,HttpEntity entity ,int status,String charSet) throws IOException {
+	protected Object handleException(String url,HttpEntity entity ,int status,String charSet) throws IOException, ParseException {
 
 		if(status == 404){//在有些场景下面，404不能作为异常抛出，这里作一次桥接，避免不必要的exception被apm性能监控工具探测到
 

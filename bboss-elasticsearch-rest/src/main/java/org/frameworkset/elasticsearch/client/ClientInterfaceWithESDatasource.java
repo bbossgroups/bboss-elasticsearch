@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
@@ -434,8 +434,8 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @throws ElasticSearchException
 	 */
 	public abstract String deleteDocumentsWithrefreshOptionWithCluster(String datasourceName,String indexName, String indexType, String refreshOption,String[] ids) throws ElasticSearchException;
-	public <T> T getIndexMappingWithCluster(String datasourceName,String index, ResponseHandler<T> responseHandler) throws ElasticSearchException;
-	public <T> T getIndexMappingWithCluster(String datasourceName,String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public <T> T getIndexMappingWithCluster(String datasourceName,String index, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public <T> T getIndexMappingWithCluster(String datasourceName,String index,boolean pretty,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 	/**
 	 * 判断索引是否存在
@@ -1379,9 +1379,9 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T executeHttpWithCluster(String datasourceName,String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T executeHttpWithCluster(String datasourceName,String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
-	public abstract <T> T discoverWithCluster(String datasourceName,String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T discoverWithCluster(String datasourceName,String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 	/**
 	 * 发送es restful请求，获取返回值，返回值类型由ResponseHandler决定
@@ -1393,7 +1393,7 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 	/**
 	 * 发送es restful请求，获取String类型json报文
@@ -1415,7 +1415,7 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,Map params,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 
 
@@ -1438,7 +1438,7 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException ;
+	public abstract <T> T  executeHttpWithCluster(String datasourceName,String path, String entity,String action,Object bean,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException ;
 
 	/**
 	 * 发送es restful请求，获取String类型json报文
@@ -1461,12 +1461,12 @@ public interface ClientInterfaceWithESDatasource extends ClientInterfaceNew{
 	public abstract String executeRequestWithCluster(String datasourceName,String path, String templateName, Object params) throws ElasticSearchException;
 
 
-	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String entity, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String entity, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
-	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String templateName, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 
-	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException;
+	public abstract <T> T executeRequestWithCluster(String datasourceName,String path, String templateName, Object params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException;
 
 	public abstract MapRestResponse searchWithCluster(String datasourceName,String path, String templateName, Map params) throws ElasticSearchException;
 

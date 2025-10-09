@@ -27,7 +27,7 @@ sourceSets {
 
 dependencies {
 	api project(':bboss-elasticsearch-rest-entity')
-   api([group: 'com.bbossgroups', name: 'bboss-http', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
+   api([group: 'com.bbossgroups', name: 'bboss-http5', version: "${PROJ_BBOSS_HTTP_VERSION}", transitive: true])
 	api([group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true])
     api([group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: true])
    	 

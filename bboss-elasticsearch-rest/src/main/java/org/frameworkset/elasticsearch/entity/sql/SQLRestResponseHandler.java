@@ -16,10 +16,11 @@ package org.frameworkset.elasticsearch.entity.sql;
  */
 
 import com.frameworkset.util.SimpleStringUtil;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.spi.remote.http.URLResponseHandler;
 import org.frameworkset.spi.remote.http.callback.ExecuteIntercepter;
@@ -62,8 +63,8 @@ public class SQLRestResponseHandler implements URLResponseHandler<SQLRestRespons
     }
 
     @Override
-	public SQLRestResponse handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-		int status = response.getStatusLine().getStatusCode();
+	public SQLRestResponse handleResponse(ClassicHttpResponse response) throws ClientProtocolException, IOException, ParseException {
+		int status = response.getCode();
 
 		if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 			HttpEntity entity = response.getEntity();

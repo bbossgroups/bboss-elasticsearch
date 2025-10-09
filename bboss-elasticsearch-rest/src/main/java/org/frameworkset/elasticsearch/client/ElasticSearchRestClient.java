@@ -19,12 +19,13 @@
 package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ConnectTimeoutException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
@@ -284,11 +285,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	private void initVersionInfo(){
 		try {
 			//获取es的实际版本信息
-			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
+			this.getElasticSearch().getRestClientUtil().discover("/", ClientInterface.HTTP_GET, new HttpClientResponseHandler<Void>() {
 
 				@Override
-				public Void handleResponse(HttpResponse response) throws IOException {
-					int status = response.getStatusLine().getStatusCode();
+				public Void handleResponse(ClassicHttpResponse response) throws IOException, ParseException {
+					int status = response.getCode();
 					if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 						HttpEntity entity = response.getEntity();
 						clusterVarcharInfo = entity != null ? EntityUtils.toString(entity) : null;
@@ -563,20 +564,20 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	}
 
 	
-	private ElasticSearchException handleConnectionPoolTimeOutException(String url,ConnectionPoolTimeoutException ex){
-		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
-		if(configuration == null){
-			return new ElasticSearchException(ex);
-		}
-		else{
-			StringBuilder builder = new StringBuilder();
-			builder.append(url).append(" Wait Connection timeout for ").append(configuration.getConnectionRequestTimeout()).append("ms for idle http connection from http connection pool.");
+//	private ElasticSearchException handleConnectionPoolTimeOutException(String url,ConnectionPoolTimeoutException ex){
+//		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
+//		if(configuration == null){
+//			return new ElasticSearchException(ex);
+//		}
+//		else{
+//			StringBuilder builder = new StringBuilder();
+//			builder.append(url).append(" Wait Connection timeout for ").append(configuration.getConnectionRequestTimeout()).append("ms for idle http connection from http connection pool.");
+//
+//			return new ElasticSearchException(builder.toString(),ex);
+//		}
+//	}
 
-			return new ElasticSearchException(builder.toString(),ex);
-		}
-	}
-
-	private NoServerElasticSearchException handleConnectionTimeOutException(String url,ConnectTimeoutException ex){
+	private NoServerElasticSearchException handleConnectionTimeOutException(String url, ConnectTimeoutException ex){
 		ClientConfiguration configuration = ClientConfiguration.getClientConfiguration(this.httpPool);
 		if(configuration == null){
 			return new NoServerElasticSearchException(url,ex);
@@ -662,11 +663,11 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		return executeHttp(path, null,  action) ;
 	}
 
-	public <T> T executeHttp(String path,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T executeHttp(String path,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return executeHttp(path, null,  action, responseHandler) ;
 	}
 
-	public <T> T discover(String path,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T discover(String path,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return discover(path, null,  action, responseHandler) ;
 	}
 
@@ -684,7 +685,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttp(String path, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return _executeHttp(path, entity,action,responseHandler,false);
 	}
 
@@ -696,7 +697,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	private <T> T _executeHttp(String path, final String entity,final String action,final ResponseHandler<T> responseHandler,final boolean discoverHost) throws ElasticSearchException {
+	private <T> T _executeHttp(String path, final String entity,final String action,final HttpClientResponseHandler<T> responseHandler,final boolean discoverHost) throws ElasticSearchException {
         if(showTemplate && !discoverHost ){
             if(logger.isInfoEnabled()) {
                 if(responseHandler !=null && responseHandler instanceof URLResponseHandler)
@@ -752,7 +753,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	private <T> T _executeHttp(String path, ResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
+	private <T> T _executeHttp(String path, HttpClientResponseHandler<T> responseHandler,ExecuteRequest executeRequest) throws ElasticSearchException {
 		
 		T response = null;
 		Throwable e = null; 
@@ -800,7 +801,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T discover(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T discover(String path, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return _executeHttp(path, entity,action,responseHandler,true);
 	}
 
@@ -850,10 +851,10 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		});
 	
 	}
-	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T executeRequest(String path, String entity,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return executeRequest(path, entity,responseHandler,ClientUtil.HTTP_POST);
 	}
-	public static Exception getException(ResponseHandler responseHandler ){
+	public static Exception getException(HttpClientResponseHandler responseHandler ){
 		if(responseHandler instanceof BaseExceptionResponseHandler){
 			return ((BaseExceptionResponseHandler)responseHandler).getElasticSearchException();
 		}
@@ -867,7 +868,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeRequest(String path, final String entity, final ResponseHandler<T> responseHandler, final String action) throws ElasticSearchException {
+	public <T> T executeRequest(String path, final String entity, final HttpClientResponseHandler<T> responseHandler, final String action) throws ElasticSearchException {
         if(showTemplate  ){
             if(logger.isInfoEnabled()) {
                 if(responseHandler != null && responseHandler instanceof URLResponseHandler) {

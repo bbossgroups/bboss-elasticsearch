@@ -2,7 +2,7 @@
 
 # BBOSS版本变更记录-v7.5.0 发布
 
-[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下三部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下四部分构成：
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
@@ -43,7 +43,7 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.1 功能改进-20250920
+# v7.5.1 功能改进-20250927（待发布）
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具
@@ -60,8 +60,12 @@ importBuilder.setIncreamentImport(false);
 13. 文件输出插件改进：增强对复杂格式内容输出到CSV文件支持
 14. ftp/oss文件采集插件改进：文件过滤筛选器增加对文件名正则表达式过滤匹配的支持
 15. 工作流增加ftp/oss远程文件下载节点支持
-16. 改进数据采集和入库配置的泛型定义机制
-17. 改进工作流上下文容器参数获取机制：获取容器节点对应的上下文数据,会逐级递从当前容器到上级容器递归获取上下文参数数据，直到获取为止或者达到最上级为止
+16. 工作流ftp/oss远程文件下载节点支持对Zip文件、加密Zip文件下载和解压
+17. ftp/oss远程文件下载节点支持对本地文件、ftp/oss远程文件的定期归档清理功能
+18. 改进数据采集和入库配置的泛型定义机制
+19. 改进工作流上下文容器参数获取机制：获取容器节点对应的上下文数据,会逐级递从当前容器到上级容器递归获取上下文参数数据，直到获取为止或者达到最上级为止
+20. OSS数据源改进：完善关闭OSS数据源功能，清理遗留数据源
+21. 完善工程源码和案例源码gradle构建脚本，兼容jdk25和gradle 9.1.0及后续版本
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)

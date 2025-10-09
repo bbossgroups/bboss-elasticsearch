@@ -1,6 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearch;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
@@ -198,13 +198,13 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> T getIndexMappingWithCluster(String datasourceName, String index, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T getIndexMappingWithCluster(String datasourceName, String index, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.getIndexMapping(index, responseHandler);
 	}
 
 	@Override
-	public <T> T getIndexMappingWithCluster(String datasourceName, String index, boolean pretty, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T getIndexMappingWithCluster(String datasourceName, String index, boolean pretty, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.getIndexMapping(index, pretty, responseHandler);
 	}
@@ -802,19 +802,19 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttpWithCluster(String datasourceName, String path, String action, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttpWithCluster(String datasourceName, String path, String action, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeHttp(path, action, responseHandler);
 	}
 
 	@Override
-	public <T> T discoverWithCluster(String datasourceName, String path, String action, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T discoverWithCluster(String datasourceName, String path, String action, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.discover(path, action, responseHandler);
 	}
 
 	@Override
-	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeHttp(path, entity, action, responseHandler);
 	}
@@ -826,7 +826,7 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeHttp(path, entity, action, params, responseHandler);
 	}
@@ -838,7 +838,7 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, Object bean, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttpWithCluster(String datasourceName, String path, String entity, String action, Object bean, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeHttp(path, entity, action, bean, responseHandler);
 	}
@@ -874,19 +874,19 @@ public class RestClientUtil extends AbstractRestClientUtil{
 	}
 
 	@Override
-	public <T> T executeRequestWithCluster(String datasourceName, String path, String entity, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequestWithCluster(String datasourceName, String path, String entity, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeRequest(path, entity,  responseHandler);
 	}
 
 	@Override
-	public <T> T executeRequestWithCluster(String datasourceName, String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequestWithCluster(String datasourceName, String path, String templateName, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeRequest(path, templateName, params, responseHandler);
 	}
 
 	@Override
-	public <T> T executeRequestWithCluster(String datasourceName, String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequestWithCluster(String datasourceName, String path, String templateName, Object params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(datasourceName);
 		return clientInterface.executeRequest(path,  templateName,  params, responseHandler);
 	}

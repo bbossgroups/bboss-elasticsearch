@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.spi.remote.http.proxy.ExceptionWare;
 import org.frameworkset.spi.remote.http.proxy.HttpServiceHosts;
 
@@ -29,7 +29,7 @@ import org.frameworkset.spi.remote.http.proxy.HttpServiceHosts;
 public class ElasticsearchExceptionWare implements ExceptionWare {
     private HttpServiceHosts httpServiceHosts;
     @Override
-    public Exception getExceptionFromResponse(ResponseHandler responseHandler) {
+    public Exception getExceptionFromResponse(HttpClientResponseHandler responseHandler) {
         return ElasticSearchRestClient.getException(responseHandler);
     }
 

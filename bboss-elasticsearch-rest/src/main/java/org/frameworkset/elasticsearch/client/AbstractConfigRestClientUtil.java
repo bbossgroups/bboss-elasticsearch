@@ -1,6 +1,6 @@
 package org.frameworkset.elasticsearch.client;
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.IndexNameBuilder;
 import org.frameworkset.elasticsearch.entity.*;
@@ -307,13 +307,13 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 		return super.executeRequest(path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params));
 	}
 
-	public <T> T executeRequest(String path, String templateName, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequest(String path, String templateName, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeRequest(  path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   responseHandler);
 //		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
 
 
-	public <T> T executeRequest(String path, String templateName, Object params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequest(String path, String templateName, Object params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeRequest(  path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params), responseHandler);
 //		return this.client.executeRequest(path, evalTemplate(templateName, params), responseHandler);
 	}
@@ -398,7 +398,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T  executeHttp(String path, String templateName,String action,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T  executeHttp(String path, String templateName,String action,Map params,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, params),   action,responseHandler);
 	}
 
@@ -423,11 +423,11 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T  executeHttp(String path, String templateName,String action,Object bean,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T  executeHttp(String path, String templateName,String action,Object bean,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, bean),   action,responseHandler);
 	}
 	@Override
-	public <T> T  executeHttp(String path, String templateName,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T  executeHttp(String path, String templateName,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return super.executeHttp(  path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object)null),   action,responseHandler);
 	}
 
@@ -445,7 +445,7 @@ public abstract class AbstractConfigRestClientUtil extends RestClientUtil {
 
 
 	@Override
-	public <T> T executeRequest(String path, String templateName, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequest(String path, String templateName, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		// TODO Auto-generated method stub
 //		return this.client.executeRequest(path, evalTemplate(templateName, (Object) null), responseHandler);
 		return super.executeRequest(path, ESTemplateHelper.evalTemplate(configDSLUtil,templateName, (Object) null), responseHandler);

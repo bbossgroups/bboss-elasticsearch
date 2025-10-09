@@ -3,10 +3,10 @@ package org.frameworkset.elasticsearch.client;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.spi.assemble.GetProperties;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
@@ -43,11 +43,11 @@ public class ElasticsearchHostNodeDiscover extends HttpHostDiscover {
         try {
             List<HttpHost> hosts = new ArrayList<>();
             ClientInterface clientInterface = ElasticSearchHelper.getRestClientUtil(configuration.getBeanName());
-            clientInterface.executeHttp("_nodes/http",ClientInterface.HTTP_GET, new ResponseHandler<Void>() {
+            clientInterface.executeHttp("_nodes/http",ClientInterface.HTTP_GET, new HttpClientResponseHandler<Void>() {
 
                 @Override
-                public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
+                public Void handleResponse(ClassicHttpResponse response) throws ClientProtocolException, IOException {
+                    int status = response.getCode();
                     if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
                         List<HttpHost> hostsNew = readHosts(response.getEntity(),configuration);
                         if(hostsNew != null && hostsNew.size() > 0 )
@@ -67,7 +67,7 @@ public class ElasticsearchHostNodeDiscover extends HttpHostDiscover {
     }
  
 
-	private List<HttpHost> readHosts(HttpEntity entity,ClientConfiguration configuration) throws IOException {
+	private List<HttpHost> readHosts(HttpEntity entity, ClientConfiguration configuration) throws IOException {
 
 		InputStream inputStream = null;
 

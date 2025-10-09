@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.entity.LogDsl;
 import org.frameworkset.elasticsearch.handler.ESStringResponseHandler;
@@ -114,7 +114,7 @@ public class RestSearchExecutor {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeHttp(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+	public <T> T executeHttp(String url, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws Exception {
 
 		int resultCode = 0;
 		long start = System.currentTimeMillis();
@@ -145,7 +145,7 @@ public class RestSearchExecutor {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T discoverHost(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+	public <T> T discoverHost(String url, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws Exception {
 
 			int resultCode = 0;
 			long start = System.currentTimeMillis();
@@ -209,7 +209,7 @@ public class RestSearchExecutor {
 	 * @return
 	 * @throws ElasticSearchException
 	 */
-	public <T> T executeRequest(String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+	public <T> T executeRequest(String url, String entity, String action, HttpClientResponseHandler<T> responseHandler) throws Exception {
 		long start = System.currentTimeMillis();
 		int resultCode = 0;
 		try {

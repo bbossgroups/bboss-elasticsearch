@@ -15,7 +15,7 @@ package org.frameworkset.elasticsearch.client;
  * limitations under the License.
  */
 
-import org.apache.http.client.ResponseHandler;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.frameworkset.spi.remote.http.BaseResponseHandler;
 import org.frameworkset.spi.remote.http.HttpRequestProxy;
 
@@ -46,7 +46,7 @@ public abstract class RestSearchExecutorUtil {
 	}
 
 
-	public static <T> T __executeHttp(String httpPool,Map<String, String> headers,String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception{
+	public static <T> T __executeHttp(String httpPool,Map<String, String> headers,String url, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws Exception{
 		T response = null;
 		if (entity == null) {
 			if (action == null)
@@ -85,7 +85,7 @@ public abstract class RestSearchExecutorUtil {
 
 
 
-	public static  <T> T _executeRequest(String httpPool,Map<String, String> headers,String url, String entity,String action,ResponseHandler<T> responseHandler) throws Exception {
+	public static  <T> T _executeRequest(String httpPool, Map<String, String> headers, String url, String entity, String action, HttpClientResponseHandler<T> responseHandler) throws Exception {
 		T response = null;
 		if (entity == null){
 			if(action == null)

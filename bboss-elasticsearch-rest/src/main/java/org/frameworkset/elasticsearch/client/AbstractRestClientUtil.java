@@ -1,11 +1,13 @@
 package org.frameworkset.elasticsearch.client;
 
 import com.frameworkset.util.SimpleStringUtil;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+
 import org.frameworkset.elasticsearch.*;
 import org.frameworkset.elasticsearch.bulk.BulkCommand;
 import org.frameworkset.elasticsearch.bulk.BulkConfig;
@@ -96,11 +98,11 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	public List<IndexField> getIndexMappingFields(String index,final String indexType) throws ElasticSearchException{
 		try{
 			final List<IndexField> fields = new ArrayList<IndexField>();
-			getIndexMapping(index,false,new ResponseHandler<Void>(){
+			getIndexMapping(index,false,new HttpClientResponseHandler<Void>(){
 
 				@Override
-				public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-					int status = response.getStatusLine().getStatusCode();
+				public Void handleResponse(ClassicHttpResponse response) throws ClientProtocolException, IOException, ParseException {
+					int status = response.getCode();
 
 					if (org.frameworkset.spi.remote.http.ResponseUtil.isHttpStatusOK( status)) {
 						HttpEntity entity = response.getEntity();
@@ -1615,7 +1617,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 	
 	@Override
-	public <T> T executeRequest(String path, String entity,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeRequest(String path, String entity, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
         assertStop();
         return this.client.executeRequest(path,entity,  responseHandler);
 	}
@@ -1806,7 +1808,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttp(String path, String entity, String action, Map params, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttp(String path, String entity, String action, Map params, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return null;
 	}
 
@@ -1816,7 +1818,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttp(String path, String entity, String action, Object bean, ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttp(String path, String entity, String action, Object bean, HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
 		return null;
 	}
 
@@ -1826,16 +1828,16 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	}
 
 	@Override
-	public <T> T executeHttp(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T executeHttp(String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
         assertStop();
         return this.client.executeHttp(path,action,responseHandler);
 	}
-	public <T> T discover(String path, String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T discover(String path, String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
         assertStop();
         return this.client.discover(path,action,responseHandler);
 	}
 	@Override
-	public <T> T  executeHttp(String path, String entity,String action,ResponseHandler<T> responseHandler) throws ElasticSearchException {
+	public <T> T  executeHttp(String path, String entity,String action,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException {
         assertStop();
         return this.client.executeHttp(path,entity,action,responseHandler);
 	}
@@ -1844,7 +1846,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		return this.getIndexMapping(index,true);
 
 	}
-	public <T> T getIndexMapping(String index,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T getIndexMapping(String index,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return this.getIndexMapping(index,true,responseHandler);
 
 	}
@@ -1862,7 +1864,7 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 		}
 	}
 
-	public <T> T getIndexMapping(String index,boolean pretty,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T getIndexMapping(String index,boolean pretty,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
         assertStop();
         try {
 			if (pretty)
@@ -1923,12 +1925,12 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 			return ResultUtil.hand404HttpRuntimeException(e,boolean.class,ResultUtil.OPERTYPE_existIndiceType);
 		}
 	}
-	public <T> T executeRequest(String path, String templateName,Map params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T executeRequest(String path, String templateName,Map params,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return null;
 	}
 	
 	 
-	public <T> T  executeRequest(String path, String templateName,Object params,ResponseHandler<T> responseHandler) throws ElasticSearchException{
+	public <T> T  executeRequest(String path, String templateName,Object params,HttpClientResponseHandler<T> responseHandler) throws ElasticSearchException{
 		return null;
 	}
 	@Override

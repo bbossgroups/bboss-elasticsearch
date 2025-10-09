@@ -15,9 +15,10 @@ package org.frameworkset.elasticsearch.bulk;
  * limitations under the License.
  */
 
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
+import org.apache.hc.client5.http.ConnectTimeoutException;
+import org.apache.hc.client5.http.HttpHostConnectException;
+
+import org.apache.hc.core5.http.NoHttpResponseException;
 import org.frameworkset.elasticsearch.client.NoServerElasticSearchException;
 
 import java.net.SocketException;
