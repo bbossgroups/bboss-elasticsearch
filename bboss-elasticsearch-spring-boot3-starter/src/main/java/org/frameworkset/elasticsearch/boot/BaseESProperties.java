@@ -378,6 +378,14 @@ public abstract class BaseESProperties {
         private String failAllContinue;
 
         private Map<String,String> kerberos;
+        private String maxIdleTime;
+        public String getMaxIdleTime() {
+            return maxIdleTime;
+        }
+
+        public void setMaxIdleTime(String maxIdleTime) {
+            this.maxIdleTime = maxIdleTime;
+        }
         public String getApiKeyId() {
             return apiKeyId;
         }
@@ -1117,6 +1125,8 @@ public abstract class BaseESProperties {
             else if(SimpleStringUtil.isNotEmpty(this.getHttp().getAuthPassword())){
                 properties.put(_name+"http.authPassword",this.getHttp().getAuthPassword());
             }
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getMaxIdleTime()))
+                properties.put(_name + "http.maxIdleTime",this.getHttp().getMaxIdleTime());
 
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getApiKeyId()))
                 properties.put(_name + "http.apiKeyId",this.getHttp().getApiKeyId());
