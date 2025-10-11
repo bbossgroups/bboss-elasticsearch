@@ -363,7 +363,12 @@ ftpConfig.setZipFilePasswordFunction(new ZipFilePasswordFunction() {
      */
     @Override
     public String getZipFilePassword(JobFlowNodeExecuteContext jobFlowNodeExecuteContext, String remoteFile, String localFilePath) {
-        return "123456";
+        if(remoteFile.endWith("xxxxx.zip"))
+        	return "123456";
+        else if(remoteFile.endWith("sssss.zip"))
+        	return "365218";
+        else
+            return "88888"
     }
 })
 ```
