@@ -6,7 +6,7 @@ bboss工作流提供了文件下载类型节点，具备文件下载、zip文件
 
 1.利用bboss远程文件采集节点从ftp服务器或者OSS下载Zip文件
 
-2.远程文件采集节点解压Zip文件，将Zip文件中包含的数据文件解压存放到指定的目录，支持解压加密Zip文件
+2.远程文件采集节点解压Zip文件，将Zip文件中包含的数据文件解压存放到指定的目录，支持解压加密Zip文件，可为不同zip文件指定相应的解压密码
 
 3.远程文件采集节点通过流程上下文，将解压的数据目录路径传递给数据交换节点，通过流程上下文记录每次解压文件数量
 
@@ -132,7 +132,9 @@ public void recordAfterDownload(DownloadFileMetrics downloadFileMetrics, JobFlow
 
 #### 3.2.2 远程文件下载节点定义
 
-远程文件下载节点定义：
+##### 3.2.2.1 FTP远程zip文件下载
+
+配置FtpConfig实现FTP远程zip文件下载
 
 ```java
 /**
@@ -206,6 +208,43 @@ jobFlowNodeBuilder.setBuildDownloadConfigFunction(jobFlowNodeExecuteContext -> {
 jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
 ```
 
+##### 3.2.2.1 OSS远程zip文件下载
+
+配置OSSFileInputConfig实现OSS远程zip文件下载
+
+```java
+/**
+         * 2.2 设置Zip下载远程参数
+         */
+        jobFlowNodeBuilder.setBuildDownloadConfigFunction(jobFlowNodeExecuteContext -> {
+            OSSFileInputConfig ossFileInputConfig = new OSSFileInputConfig()
+                    .setName("miniotest")
+
+//                .setRemoteFileDir("subdir")
+                    .setAccessKeyId("N3XNZFqSZfpthypuoOzL")
+                    .setSecretAccesskey("2hkDSEll1Z7oYVfhr0uLEam7r0M4UWT8akEBqO97").setRegion("east-r-a1")
+                    .setEndpoint("http://172.24.176.18:9000")//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除
+                    .setDownloadWorkThreads(4)
+                    .setBucket("zipfile")
+                    .setSocketTimeout(600000L)
+                    .setConnectTimeout(600000L)
+                    .setUnzip(true)
+                    .setUnzipDir("c:/data/unzipfile")//解压目录
+                    .setZipFilePassward("123456").setDeleteZipFileAfterUnzip(false)
+                    .setSourcePath("c:/data/osszipfile");//下载目录
+            ;
+            ossFileInputConfig.setDeleteRemoteFile(false);
+            //向后续数据采集作业传递数据文件存放目录
+            jobFlowNodeExecuteContext.addJobFlowContextData("csvfilepath",ossFileInputConfig.getUnzipDir());
+            DownloadfileConfig downloadfileConfig = new DownloadfileConfig();
+            downloadfileConfig
+                    .setOssFileInputConfig(ossFileInputConfig)
+                    .setScanChild(true)
+                    .setFileNameRegular(".*\\.zip");
+            return downloadfileConfig;
+        });
+```
+
 #### 3.2.2传递csv数据文件目录路径
 
 通过流程上下文，向后续数据采集作业传递解压后的数据文件存放目录
@@ -271,7 +310,7 @@ downloadfileConfig.setJobFileFilter(new JobFileFilter() {
                         if(nameMatch){
 
                             /**
-                             * 采集1分钟之前生成的FTP文件,本地未采集完的文件继续采集
+                             * 采集1分钟之前生成的FTP文件
                              */
                             Object fileObject = fileInfo.getFileObject();
                             if(fileObject instanceof RemoteResourceInfo) {
@@ -295,6 +334,38 @@ downloadfileConfig.setJobFileFilter(new JobFileFilter() {
                     }
     }
 });
+```
+
+#### 3.2.5 zip文件解压口令配置
+
+工作流ftp/oss远程文件下载节点支持对Zip文件、加密Zip文件下载和解压，可为不同zip文件指定相应的解压密码。
+
+##### 3.2.5.1 统一解压口令设置
+
+直接设置统一解压口令：
+
+```java
+ftpConfig.setZipFilePassward("123456")//设置解压口令，如果zip文件没加密则忽略
+```
+
+##### 3.2.5.2 动态解压口令设置
+
+通过函数为不同zip文件指定相应的解压密码：
+
+```java
+ftpConfig.setZipFilePasswordFunction(new ZipFilePasswordFunction() {
+    /**
+     * 根据zip文件路径获取密码
+     * @param jobFlowNodeExecuteContext 流程节点执行上下文对象
+     * @param remoteFile 远程zip文件路径
+     * @param localFilePath 本地zip文件路径
+     * @return
+     */
+    @Override
+    public String getZipFilePassword(JobFlowNodeExecuteContext jobFlowNodeExecuteContext, String remoteFile, String localFilePath) {
+        return "123456";
+    }
+})
 ```
 
 ### 3.3 数据交换流程节点
