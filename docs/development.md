@@ -642,7 +642,7 @@ http.defaultMaxPerRoute = 200
 
 ### 2.6.2 重试机制配置
 
-http.automaticRetriesDisabled 为true时，关闭重试机制，不会进行重试，为false时，根据以下逻辑进行处理。
+http.automaticRetriesDisabled 为true时，关闭重试机制，不会进行重试，为false时，根据以下逻辑进行处理，默认值false。
 
 1、如果未通过http.customHttpRequestRetryHandler配置自定义重试机制，则按照默认机制进行重试。
 
@@ -675,35 +675,40 @@ http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionRe
 
 ### 2.6.3 保活机制配置
 
-- **推荐配置：**主动清理过期的连接，过期时间由timeToLive设置，如果已经设置了validateAfterInactivity，则可以关闭evictExpiredConnections，控制HttpClient实例使用后台线程主动地从连接池中驱逐过期连接，过期时间由timeToLive指定，timeToLive单位毫秒，默认值为true，false 禁用
+- 推荐配置
 
-
-http.evictExpiredConnections=true
-
-http.timeToLive=3600000 单位毫秒
-
-- 推荐配置：单位：毫秒，当获取连接时，判断连接是否已经空闲了validateAfterInactivity对应的时间，如果是则对连接进行有效性校验，无效链接直接清理掉，>0起作用，默认值 -1
-
+validateAfterInactivity 单位：毫秒，当获取连接时，判断连接是否已经空闲了validateAfterInactivity对应的时间，如果是则对连接进行有效性校验，无效链接直接清理掉，>0起作用，默认值 -1
 
 http.validateAfterInactivity=2000
+
+获取连接时校验链接存活时间，超过timeToLive对应的时间则销毁链接
+
+http.timeToLive=3600000 单位毫秒
 
 - 不推荐配置：每次获取connection时校验连接，true，校验，默认false
 
 
 http.staleConnectionCheckEnabled=false 
 
-
-
 ### 2.6.4 超时时间配置
+
+网络超时时间配置
 
 ```properties
 #建立连接超时时间，单位：毫秒
 http.timeoutConnection = 10000
 #socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值，单位：毫秒
 http.timeoutSocket = 50000
-#申请连接超时时间，设置为0不超时，单位：毫秒
+
+```
+
+申请连接超时时间，设置为0不超时，单位：毫秒
+
+```properties
 http.connectionRequestTimeout=10000
 ```
+
+
 
 ### **2.6.5 https协议配置**
 

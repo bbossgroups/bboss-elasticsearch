@@ -68,6 +68,9 @@ importBuilder.setIncreamentImport(false);
 21. 完善工程源码和案例源码gradle构建脚本，兼容jdk25和gradle 9.1.0及后续版本
 22. httpproxy微服务框架改进：增加bboss-http5模块，基于httpclient5实现，支持http 2协议、stream响应式请求
 23. bboss mvc改进：增加对异步流式响应模式restful服务支持
+24. httpproxy微服务框架bug修复：修复httpproxy灾备不能正常工作问题
+25. nacos插件改进：升级nacos依赖包版本
+26. OSS客户端组件改进：升级S3包版本
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
