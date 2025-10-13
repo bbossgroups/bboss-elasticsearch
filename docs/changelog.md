@@ -43,11 +43,11 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.1 功能改进-20250927（待发布）
+# v7.5.1 功能改进-20251013（待发布）
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具
-4. mysqlbinlog同步改进：自定义BinaryLogClientExt，打印异常情况日
+4. [mysqlbinlog同步改进](https://esdoc.bbossgroups.com/#/datatran-plugins)：自定义BinaryLogClientExt，打印异常情况日
 5. mysqlbinlog同步改进：修复mysqlbinlog多表同步不起作用问题
 6. 去除commons-lang,升级为commons-lang3
 7. 优化增量同步参数管理机制以及全局启用增量参数配置处理优化
@@ -56,21 +56,21 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 importBuilder.setIncreamentImport(false);
 10. 持久层改进：完善对Clickhouse官方驱动时间类型参数支持
 11. 持久层改进：修复SQLExecutor.insert方法参数异常问题
-12. 文件采集插件改进：增强对复杂CSV文件采集支持
-13. 文件输出插件改进：增强对复杂格式内容输出到CSV文件支持
+12. 文件采集插件改进：增强对[复杂CSV文件采集](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_116-csv%e6%96%87%e4%bb%b6%e9%87%87%e9%9b%86%e6%8f%92%e4%bb%b6)支持
+13. 文件输出插件改进：增强对[复杂格式内容输出到CSV文件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_215-csv%e6%96%87%e4%bb%b6%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)支持
 14. ftp/oss文件采集插件改进：文件过滤筛选器增加对文件名正则表达式过滤匹配的支持
-15. 工作流增加ftp/oss远程文件下载节点支持
-16. 工作流ftp/oss远程文件下载节点支持对Zip文件、加密Zip文件下载和解压，可为不同zip文件指定相应的解压密码
-17. ftp/oss远程文件下载节点支持对本地文件、ftp/oss远程文件的定期归档清理功能
+15. 工作流增加[ftp/oss远程文件下载节点](ftp/oss远程文件下载节点)支持
+16. 工作流ftp/oss远程文件下载节点[支持对Zip文件、加密Zip文件下载和解压，可为不同zip文件指定相应的解压密码](https://esdoc.bbossgroups.com/#/jobflow-remotefile)
+17. ftp/oss远程文件下载节点支持对[本地文件、ftp/oss远程文件的定期归档清理功能](https://esdoc.bbossgroups.com/#/jobflow-filelifecycle)
 18. 改进数据采集和入库配置的泛型定义机制
 19. 改进工作流上下文容器参数获取机制：获取容器节点对应的上下文数据,会逐级递从当前容器到上级容器递归获取上下文参数数据，直到获取为止或者达到最上级为止
 20. OSS数据源改进：完善关闭OSS数据源功能，清理遗留数据源
 21. 完善工程源码和案例源码gradle构建脚本，兼容jdk25和gradle 9.1.0及后续版本
-22. httpproxy微服务框架改进：增加bboss-http5模块，基于httpclient5实现，支持http 2协议、stream响应式请求
-23. bboss mvc改进：增加对异步流式响应模式restful服务支持
-24. httpproxy微服务框架bug修复：修复httpproxy灾备不能正常工作问题
-25. nacos插件改进：升级nacos依赖包版本
-26. OSS客户端组件改进：升级S3包版本
+22. httpproxy微服务框架改进：增加[bboss-http5模块](https://esdoc.bbossgroups.com/#/httpproxy5)，基于httpclient5实现，支持http 2协议、stream响应式请求，轻松实现各种大模型流式模式调用
+23. bboss mvc改进：增加对异步流式响应模式[restful服务](https://esdoc.bbossgroups.com/#/httpproxy5)支持
+24. httpproxy微服务框架bug修复：修复[httpproxy灾备](https://esdoc.bbossgroups.com/#/httpproxy?id=_6%e4%b8%bb%e5%a4%87%e5%92%8c%e5%bc%82%e5%9c%b0%e7%81%be%e5%a4%87%e9%85%8d%e7%bd%ae%e5%92%8c%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0)不能正常工作问题，主集群故障后无法正常切换到备集群
+25. nacos插件改进：升级nacos依赖包最新版本
+26. OSS客户端组件改进：升级S3包最新版本
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)

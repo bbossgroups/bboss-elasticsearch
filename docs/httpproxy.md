@@ -24,6 +24,20 @@ https://gitee.com/bboss/httpproxy-apollo
 
 https://gitee.com/bboss/httpproxy-nacos
 
+# 升级bboss http5
+
+bboss http基于httpclient4实现，不支持流式服务调用，也不支持http2协议，不推荐使用，建议升级到基于httpclient5的[bboss http5版本](https://esdoc.bbossgroups.com/#/httpproxy5)，升级方法将bboss-http maven坐标替换为bboss-http5即可：
+
+```xml
+<dependency>
+   <groupId>com.bbossgroups</groupId>
+   <artifactId>bboss-http5</artifactId>
+   <version>6.5.1</version>
+</dependency>
+```
+
+更多升级注意事项，参考文档：[升级bboss http5注意事项](https://esdoc.bbossgroups.com/#/httpproxy5?id=_6升级bboss-http5注意事项)
+
 # 1.负载均衡器特色
 
 bboss http基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，具有以下特色
