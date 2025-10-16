@@ -685,10 +685,7 @@ http.validateAfterInactivity=2000
 
 http.timeToLive=3600000 单位毫秒
 
-- 不推荐配置：每次获取connection时校验连接，true，校验，默认false
 
-
-http.staleConnectionCheckEnabled=false 
 
 ### 2.6.4 超时时间配置
 
