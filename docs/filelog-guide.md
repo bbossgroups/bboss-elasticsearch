@@ -998,6 +998,7 @@ ftp下载的日志文件强制关闭inode机制，强制开启closeEOF机制，�
 | FtpConfig.transferProtocol            | bboss 支持ftp和sftp两种协议类型：FtpConfig.TRANSFER_PROTOCOL_FTP  FtpConfig.TRANSFER_PROTOCOL_SFTP                                默认值：FtpConfig.TRANSFER_PROTOCOL_SFTP |
 | FtpConfig.deleteRemoteFile            | 控制是否删除下载完毕的ftp文件，true 删除，false 不删除，默认值false |
 | FtpConfig.downloadWorkThreads         | 设置并行下载线程数，默认为3个，如果设置为0代表串行下载       |
+| FtpConfig.enterLocalPassiveMode | 可选，Boolean类型，默认为空，设置为true时，将使用passiveMode模式建立ftp链接并下载文件 |
 | FtpConfig.remoteFileValidate          | [远程数据文件校验机制](https://esdoc.bbossgroups.com/#/bboss-datasyn-demo?id=_11-从sftp服务器采集excel文件写入redis案例)，以实现对数据文件md5签名校验、记录数校验等功能 |
 | keepAliveTimeout          | 可选，long类型，单位毫秒，ftp/sftp通讯协议连接存活超时时间   |
 | socketTimeout             | 可选，long类型，单位毫秒，ftp/sftp数据读取超时时间，避免socketTimeout异常 |

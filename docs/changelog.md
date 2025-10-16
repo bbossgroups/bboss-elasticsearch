@@ -71,6 +71,7 @@ importBuilder.setIncreamentImport(false);
 24. httpproxy微服务框架bug修复：修复[httpproxy灾备](https://esdoc.bbossgroups.com/#/httpproxy?id=_6%e4%b8%bb%e5%a4%87%e5%92%8c%e5%bc%82%e5%9c%b0%e7%81%be%e5%a4%87%e9%85%8d%e7%bd%ae%e5%92%8c%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0)不能正常工作问题，主集群故障后无法正常切换到备集群
 25. nacos插件改进：升级nacos依赖包最新版本
 26. OSS客户端组件改进：升级S3包最新版本
+27. Ftp文件下载插件改进：FtpConfig增加enterLocalPassiveMode参数设置，Boolean类型，默认为空，设置为true时，将使用passiveMode模式建立ftp链接并下载文件
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
