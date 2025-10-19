@@ -72,6 +72,7 @@ importBuilder.setIncreamentImport(false);
 25. nacos插件改进：升级nacos依赖包最新版本
 26. OSS客户端组件改进：升级S3包最新版本
 27. Ftp文件下载插件改进：FtpConfig增加enterLocalPassiveMode参数设置，Boolean类型，默认为空，设置为true时，将使用passiveMode模式建立ftp链接并下载文件
+28. 文件采集插件问题修复：处理ftp下载采集空文件时，空文件采集任务一直不完成问题
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
