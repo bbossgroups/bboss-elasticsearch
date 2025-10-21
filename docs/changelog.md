@@ -67,7 +67,7 @@ importBuilder.setIncreamentImport(false);
 20. OSS数据源改进：完善关闭OSS数据源功能，清理遗留数据源
 21. 完善工程源码和案例源码gradle构建脚本，兼容jdk25和gradle 9.1.0及后续版本
 22. httpproxy微服务框架改进：增加[bboss-http5模块](https://esdoc.bbossgroups.com/#/httpproxy5)，基于httpclient5实现，支持http 2协议、stream响应式请求，轻松实现各种大模型流式模式调用
-23. bboss mvc改进：增加对异步流式响应模式[restful服务](https://esdoc.bbossgroups.com/#/httpproxy5)支持
+23. bboss mvc改进：增加对异步流式响应模式[restful服务](https://esdoc.bbossgroups.com/#/httpproxy5)支持，轻松实现各种[大模型流式模式调用](https://doc.bbossgroups.com/#/mvc/chatstream)
 24. httpproxy微服务框架bug修复：修复[httpproxy灾备](https://esdoc.bbossgroups.com/#/httpproxy?id=_6%e4%b8%bb%e5%a4%87%e5%92%8c%e5%bc%82%e5%9c%b0%e7%81%be%e5%a4%87%e9%85%8d%e7%bd%ae%e5%92%8c%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0)不能正常工作问题，主集群故障后无法正常切换到备集群
 25. nacos插件改进：升级nacos依赖包最新版本
 26. OSS客户端组件改进：升级S3包最新版本
