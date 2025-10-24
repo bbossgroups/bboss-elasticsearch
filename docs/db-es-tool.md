@@ -539,50 +539,26 @@ maven
 		<dependency>
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.6.5</version>
+            <version>0.9.2</version>
             <classifier>http</classifier>
         </dependency>
-	    <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.4</version>   
-            <exclusions>
-                <exclusion>                    
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-	    <dependency>
-            <groupId>org.apache.httpcomponents.core5</groupId>
-            <artifactId>httpcore5</artifactId>
-            <version>5.3</version>   
-            <exclusions>
-                <exclusion>                    
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>             
-        </dependency>
+	    
 
 ```
 
 gradle
 
 ```groovy
-api 'com.clickhouse:clickhouse-jdbc:0.6.5:http'
-    api (
-            [group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: "5.4", transitive: true]
+api(
+            [group: 'com.clickhouse', name: 'clickhouse-jdbc', version: "0.9.2", transitive: true],
     )
-    {
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-    }
-    api (
-            [group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: "5.3", transitive: true]
-    )
-    {
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-    }
+            {
+                exclude group: 'org.slf4j', module: 'slf4j-api'
+                exclude group: 'commons-codec', module: 'commons-codec'
+                exclude group: 'commons-io', module: 'commons-io'
+                exclude group: 'org.ow2.asm', module: 'asm'
+                exclude group: 'org.apache.commons', module: 'commons-lang3'
+            }
 ```
 
 对应clickhouse的配置案例：
