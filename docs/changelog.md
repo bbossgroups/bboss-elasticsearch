@@ -43,7 +43,7 @@
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.3 功能改进-20251022（待发布）
+# v7.5.3 功能改进-20251026
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具
@@ -73,7 +73,7 @@ importBuilder.setIncreamentImport(false);
 26. OSS客户端组件改进：升级S3包最新版本
 27. Ftp文件下载插件改进：FtpConfig增加enterLocalPassiveMode参数设置，Boolean类型，默认为空，设置为true时，将使用passiveMode模式建立ftp链接并下载文件
 28. 文件采集插件问题修复：处理ftp下载采集空文件时，空文件采集任务一直不完成问题
-29. 
+29. ftp文件采集插件改进：修改框架ftp协议模式，增加ftpdebug模式，支持调试输出ftp指令到日志文件，改进ftp协议下的listFile机制
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
