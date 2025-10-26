@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.5.2 发布
+# BBOSS版本变更记录-v7.5.3 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下四部分构成：
 
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.5.2</version>
+            <version>7.5.3</version>
         </dependency>
 ```
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.5.2</version>
+            <version>7.5.3</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -38,12 +38,12 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.5.2</version>
+            <version>7.5.3</version>
         </dependency>
 ```
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
-# v7.5.2 功能改进-20251022（待发布）
+# v7.5.3 功能改进-20251022（待发布）
 1. 升级bboot，支持jetty10 websocket功能
 2. 工作流触发器脚本接口增加logger日志对象，用于在脚本中记录日志
 3. 优化数据库管理工具
@@ -73,6 +73,7 @@ importBuilder.setIncreamentImport(false);
 26. OSS客户端组件改进：升级S3包最新版本
 27. Ftp文件下载插件改进：FtpConfig增加enterLocalPassiveMode参数设置，Boolean类型，默认为空，设置为true时，将使用passiveMode模式建立ftp链接并下载文件
 28. 文件采集插件问题修复：处理ftp下载采集空文件时，空文件采集任务一直不完成问题
+29. 
 
 # v7.5.0 功能改进-20250821
 1. 工作流调度机制完善：[一次性执行流程支持异步执行模式](https://esdoc.bbossgroups.com/#/jobworkflow?id=_4222-%e4%b8%80%e6%ac%a1%e6%80%a7%e8%b0%83%e5%ba%a6%e6%89%a7%e8%a1%8c)
@@ -1217,7 +1218,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.5.2</version>
+            <version>7.5.3</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1225,7 +1226,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.5.2</version>
+            <version>7.5.3</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1312,7 +1313,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.5.2时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.5.3时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1858,7 +1859,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.5.2</version>
+    <version>7.5.3</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
