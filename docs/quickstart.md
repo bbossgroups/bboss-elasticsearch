@@ -607,7 +607,7 @@ Gradle环境搭建和配置教程
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-# 5.Elasticsearch bboss 开发指南
+# 5.bboss 开发指南
 
 https://esdoc.bbossgroups.com/#/document-crud
 
@@ -630,6 +630,14 @@ https://esdoc.bbossgroups.com/#/springboot-bbosses-apollo
 nacos配置集成
 
 https://esdoc.bbossgroups.com/#/nacos-config
+
+数据交换作业开发指南
+
+https://esdoc.bbossgroups.com/#/db-es-tool
+
+大数据流处理引擎作业开发指南
+
+https://esdoc.bbossgroups.com/#/etl-metrics
 
 # 6.视频教程
 
