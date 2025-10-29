@@ -436,7 +436,15 @@ Map data = HttpRequestProxy.httpGetforObject("/testBBossIndexCrud",Map.class);//
  String data = HttpRequestProxy.httpGetforString("report","/testBBossIndexCrud");//在report集群上执行请求
 ```
 
-### 3.2.4 配置参数中使用环境变量
+### 3.2.4 停止负载均衡器
+
+可以调用API停止负载均衡器：停止名称为report的服务组
+
+```java
+HttpRequestProxy.stopHttpClient("report");
+```
+
+### 3.2.5 配置参数中使用环境变量
 
 可以在配置参数中使用环境变量，环境变量引用方式：
 
@@ -462,7 +470,7 @@ http.routing=#[area]
 
 这样我们在os(linux,unix,windows)中配置名称为area的环境变量即可。
 
-### 3.2.5 spring boot配置和使用http proxy
+### 3.2.6 spring boot配置和使用http proxy
 
 示例工程源码获取地址：https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter
 
@@ -486,7 +494,7 @@ spring 3.x
 </dependency>
 ```
 
-#### 3.2.5.1 单http服务池
+#### 3.2.6.1 单http服务池
 
 在spring boot配置文件[application.properties](https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter/resources/application.properties)中添加http proxy的配置参数
 
@@ -625,7 +633,7 @@ public class BBossStarterTestCase {
 ```
 
 
-#### 3.2.5.2 多http服务池配置
+#### 3.2.6.2 多http服务池配置
 
 在spring boot配置文件[application-multi.properties](https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter/resources/application-multi.properties)中添加http proxy的配置参数
 
@@ -862,7 +870,7 @@ public class MultiBBossStartersTestCase {
 	private BBossStarter bbossStarterDefault;
 ```
 
-### 3.2.6 failAllContinue配置
+### 3.2.7 failAllContinue配置
 failAllContinue配置
 如果所有节点都被标记为不可用时，可以通过控制开关设置返回故障节点用于处理请求，如果请求能够被正常处理则将节点标记为正常节点 默认值true 非spring boot项目配置
 
@@ -871,7 +879,7 @@ spring boot配置项
 
      spring.bboss.http.failAllContinue = true
 
-### 3.2.7 http协议参数配置
+### 3.2.8 http协议参数配置
 
 参考文档：[http协议配置](https://esdoc.bbossgroups.com/#/development?id=_26-http%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
 

@@ -86,18 +86,10 @@ https://esdoc.bbossgroups.com/#/httpproxy
 ```properties
 http.poolNames = default
 ##http连接池配置
-http.timeoutConnection = 5000000
-http.timeoutSocket = 50000
-http.connectionRequestTimeout=10000
-http.retryTime = 0
-http.maxLineLength = -1
-http.maxHeaderCount = 200
+
 http.maxTotal = 200
 http.defaultMaxPerRoute = 200
-http.soReuseAddress = false
-http.soKeepAlive = false
-http.timeToLive = 3600000
-http.keepAlive = 3600000
+
 # ha proxy 集群负载均衡地址配置,多个地址用逗号分隔
 http.hosts=https://api.deepseek.com
 # https服务必须带https://协议头,多个地址用逗号分隔
@@ -219,38 +211,104 @@ Thread.sleep(100000000);
 
 ```java
 /**
-     * http://192.168.137.1:80/demoproject/reactor/deepseekChat.api?message=用Java解释Reactor编程模式
-     * @param message
+     * 背压案例 - 带会话记忆功能（完善版）
+     * http://127.0.0.1/demoproject/chatBackuppressSession.html
+     * @param questions
      * @return
      */
-    public Flux<String> deepseekChat(String message) {
-        Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("model", "deepseek-chat");
+    public Flux<List<ServerEvent>> deepseekBackuppressSession(@RequestBody Map<String,Object> questions) {
 
-        List<Map<String, String>> messages = new ArrayList<>();
-        Map<String, String> userMessage = new HashMap<>();
+        String selectedModel = (String)questions.get("selectedModel");
+        Boolean reset = (Boolean) questions.get("reset");
+        if(reset != null && reset){
+            sessionMemory.clear();
+        }
+        String message = (String)questions.get("message");
+        Map<String, Object> requestMap = new HashMap<>();
+        if(selectedModel.equals("deepseek")) {
+            requestMap.put("model", "deepseek-chat");
+        }
+        else {
+            requestMap.put("model", "Qwen/Qwen3-Next-80B-A3B-Instruct");//指定模型
+        }
+    
+        // 构建消息历史列表，包含之前的会话记忆
+        List<Map<String, Object>> messages = new ArrayList<>(sessionMemory);
+        
+        // 添加当前用户消息
+        Map<String, Object> userMessage = new HashMap<>();
         userMessage.put("role", "user");
         userMessage.put("content", message);
         messages.add(userMessage);
-
+    
         requestMap.put("messages", messages);
         requestMap.put("stream", true);
         requestMap.put("max_tokens", 2048);
         requestMap.put("temperature", 0.7);
-        return HttpRequestProxy.streamChatCompletion("/chat/completions",requestMap);
+        Flux<ServerEvent> flux = HttpRequestProxy.streamChatCompletionEvent(selectedModel,"/chat/completions",requestMap);
+    
+        // 用于累积完整的回答
+        StringBuilder completeAnswer = new StringBuilder();
+    
+        return flux.doOnNext(chunk -> {
+           
+            if(!chunk.isDone()) {
+                logger.info(chunk.getData());
+            }
+            
+        })
+        .limitRate(5) // 限制请求速率
+        .buffer(3) // 每3个元素缓冲一次
+        .doOnNext(bufferedEvents -> {
+            // 处理模型响应并更新会话记忆
+            for(ServerEvent event : bufferedEvents) {
+                //答案前后都可以添加链接和标题
+                if(event.isFirst() || event.isDone()){
+                    event.addExtendData("url","https://www.bbossgroups.com");
+                    event.addExtendData("title","bboss官网");
+                }
+                if(!event.isDone() ) {
+                    // 累积回答内容
+                    if(event.getData() != null) {
+                        completeAnswer.append(event.getData());
+                    }
+                } else  {
+                    
+                    if( completeAnswer.length() > 0) {
+                        // 当收到完成信号且有累积内容时，将完整回答添加到会话记忆
+                        Map<String, Object> assistantMessage = new HashMap<>();
+                        assistantMessage.put("role", "assistant");
+                        assistantMessage.put("content", completeAnswer.toString());
+                        sessionMemory.add(assistantMessage);
 
+                        // 维护记忆窗口大小为20
+                        if (sessionMemory.size() > 20) {
+                            sessionMemory.remove(0);
+                        }
+                    }
+                    
+                    
+                }
+            }
+        });
     }
 ```
 
-服务接收message参数（用户提问），返回reactor Flux结果，前端可以发起以下请求调用服务：
-
-http://192.168.137.1:80/demoproject/reactor/deepseekChat.api?message=用Java解释Reactor编程模式
+服务接收message参数（用户提问），返回reactor Flux结果
 
 案例源码工程地址：https://gitee.com/bboss/bbootdemo    
 
-下载案例源码后运行https://gitee.com/bboss/bbootdemo/blob/master/src/test/java/org/frameworkset/test/Main.java
+Deepseek和硅基流动模型服务配置文件（自行申请和修改相关服务的官方apiKey）：https://gitee.com/bboss/bbootdemo/blob/master/src/main/resources/application.properties
 
-启动服务即可
+服务实现类：https://gitee.com/bboss/bbootdemo/blob/master/src/main/java/org/frameworkset/web/react/ReactorController.java
+
+下载案例源码后，直接运行Main类启动服务：https://gitee.com/bboss/bbootdemo/blob/master/src/test/java/org/frameworkset/test/Main.java
+
+服务启动后访问地址：http://127.0.0.1/demoproject/chatBackuppressSession.html
+
+可以选择特定模型进行功能验证：
+
+![](images\httpproxy\testpage.png)
 
 
 
