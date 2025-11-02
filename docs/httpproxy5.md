@@ -205,9 +205,9 @@ Thread.sleep(100000000);
 
 通过StreamDataHandler < T >和FluxSink < T >中的泛型类型，可以将Stream中的数据转换为特定的数据类型。
 
-#### 5.3.3 与bboss mvc结合示例
+#### 5.3.3 AI智能问答示例
 
-可以与bboss mvc restful服务结合，为前端问答功能提供智能问答服务：
+可以与[bboss mvc restful服务结合](https://doc.bbossgroups.com/#/mvc/chatstream)，轻松实现基于AI大模型、多模型的智能问答功能：
 
 ```java
 /**

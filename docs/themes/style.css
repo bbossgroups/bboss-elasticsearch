@@ -1,0 +1,31 @@
+ @media screen and (max-width: 768px) {
+   .sidebar {
+     width: 100%;
+     height: auto;
+     position: relative;
+   }
+   
+   .sidebar-toggle {
+     display: block;
+   }
+   
+   .content {
+     margin-left: 0;
+   }
+ }
+ nav.app-nav {
+   position: relative;
+   z-index: 1000; /* 确保导航栏在其他元素之上 */
+ }
+  .markdown-section {
+   margin: 0 auto;
+   max-width: 1350px;
+   padding: 60px 15px 40px; /* 增加顶部padding值 */
+   position: relative;
+ }
+     @media screen and (max-width: 768px) {
+       .markdown-section {
+         padding-top: 80px; /* 在小屏幕上增加更多顶部空间 */
+       }
+     }
+          

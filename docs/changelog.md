@@ -44,8 +44,12 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.5 功能改进-20251026(待发布)
-1. Mvc stream restful服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
+# v7.5.5 功能改进-20251031(待发布)
+1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
+2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
+3. 持久层改进：完善对Clickhouse官方驱动支持
+4. 数据库管理工程改进：解决limit复杂sql查询异常问题
+5. AI模型客户端httprpxoy改进：增加对阿里百炼语音识别模型支持，并提供相应的案例
 
 # v7.5.3 功能改进-20251026
 1. 升级[bboot](https://gitee.com/bboss/bbootdemo)，支持jetty10 websocket功能

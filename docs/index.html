@@ -14,19 +14,24 @@ var _hmt = _hmt || [];
   <meta charset="UTF-8">
   <title>ETL-Stream-ElasticsearchClient</title>
   <link rel="icon" href="images/logo1.png">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     
   <meta name="google-site-verification" content="6t0LoIeFksrjF4c9sqUEsVXiQNxLp2hgoqo0KryT-sE" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<!--  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />-->
   <meta name="keywords" content="bboss,es,elastic,elasticsearch,bboss elasticsearch,bboss es,es bboss,bboss elastic,elastic bboss,elasticsearch bboss,Elasticsearch,jdbc,esdoc,document,lucene,全文检索,highlevel,最佳实践,java rest client api,restclient,rest client,流批一体,流处理,批处理,etl,流批一体,流处理,批处理,etl,数据采集&流批一体化处理,mysql binlog,mysql cdc,cdc,bboss-datatran,bboss datatran,datatran">
   <meta name="description" content="The best elasticsearch highlevel java rest client API and ETL Stream handle.">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<!--  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
   <!--<link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css" title="vue">
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/dark.css" title="dark" disabled>
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/buble.css" title="buble" disabled>
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/pure.css" title="pure" disabled>-->
   <link rel="stylesheet" href="themes/vue.css" title="vue">
-  <link rel="stylesheet" href="themes/dark.css" title="dark" disabled>
-  <link rel="stylesheet" href="themes/buble.css" title="buble" disabled>
-  <link rel="stylesheet" href="themes/pure.css" title="pure" disabled>
+<!--  <link rel="stylesheet" href="themes/dark.css" title="dark" disabled>-->
+<!--  <link rel="stylesheet" href="themes/buble.css" title="buble" disabled>-->
+<!--  <link rel="stylesheet" href="themes/pure.css" title="pure" disabled>-->
+    <link rel="stylesheet" href="themes/style.css" title="pure" >
+    
   <script src="_media/index.js"></script>
   <style>
     nav.app-nav li ul {
@@ -40,6 +45,15 @@ var _hmt = _hmt || [];
 <div id="app">Loading ...</div>
 <script>
   window.$docsify = {
+    mergeNavbar: false, // 小屏设备下合并导航栏到侧边栏
+    auto2top: true,
+    coverpage: true,
+    executeScript: true,
+    loadSidebar: true,
+    loadNavbar: true,
+    maxLevel: 5,
+    subMaxLevel: 5,  
+      
     alias: {
       '.*?/awesome': 'https://raw.githubusercontent.com/docsifyjs/awesome-docsify/master/README.md',
       // '.*?/changelog': 'https://github.com/bbossgroups/bboss-elasticsearch/commits/master',
