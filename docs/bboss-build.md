@@ -42,10 +42,22 @@ cd bboss-elastic-tran
 gradle publishToMavenLocal
 ```
 
+其他辅助模块下载和构建：如果在运行bboss案例的过程中，报其他组件依赖问题，可以继续按序下载构建以下模块即可
+
+https://gitee.com/bboss/bboss-rpc
+
+https://gitee.com/bboss/security
+
+https://gitee.com/bboss/bboot
+
+
+
 下面分别介绍：
 
 1. 如何安装和配置gradle环境
 2. 源码工程导入idea及工程在idea中gradle相关配置
+
+
 
 # 2.Gradle安装和配置
 
