@@ -32,7 +32,7 @@
   - [数据采集&流批一体化处理](etl-metrics.md)
   - [基于数据库管理dsl介绍](db-dsl.md)
   - [Elasticsearch索引文档增删改查](document-crud.md)
-  - [Elasticsearch向量检索](Elasticsearch-embedding.md)
+  - [Elasticsearch向量检索及Rerank](Elasticsearch-embedding.md)
   - Elasticsearch分页查询
     - [from-size](from-size.md)
     - [Scroll-SliceScroll-api](Scroll-SliceScroll-api.md)

@@ -1,11 +1,12 @@
-# Elasticsearch向量检索
+# Elasticsearch向量检索及Rerank
 
-Elasticsearch向量检索案例分享，本文介绍如何采用向量模型将数据转化为向量数据，存入Elasticsearch向量表，并实现向量检索功能，内容摘要：
+Elasticsearch向量检索案例分享，本文介绍如何采用向量模型将数据转化为向量数据，并存入Elasticsearch向量表，然后进行向量检索，以及对检索结果进行Rerank处理，内容摘要：
 
 1. 向量表创建：创建Elasticsearch向量索引表，用于存储向量数据
 2. Xinference向量模型服务初始化：基于Xinference部署向量模型，并提供数据向量化服务
 3. 向量数据存储：调用Xinference向量模型服务，将数据转换为向量数据，并批量写入Elasticsearch
 4. 向量数据检索：基于[Elasticsearch KNN](https://www.elastic.co/docs/solutions/search/vector/knn#knn-search-filter-example)和高性能Elasticsearch java客户端bboss实现向量检索，调用Xinference向量模型服务，将查询条件转化为向量条件，实现向量检索，亦可以和普通条件结合，实现混合检索
+5. 检索结果Rerank: 采用Rerank模型，对向量检索召回的结果，根据语义相关度进行精排序，从而提取与问题语义相关度最高的记录
 
 ## 1.准备工作
 
