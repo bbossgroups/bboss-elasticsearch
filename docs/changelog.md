@@ -52,6 +52,8 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 5. AI模型客户端httprpxoy改进：增加对阿里百炼语音识别模型支持，并提供相应的案例
 6. 标签库改进：pager标签内置变量pager_info增加获取数据库查询列字段信息
 7. 标签库改进：改进beaninfo标签嵌套机制
+8. 工作流文件下载节点支持tar.gz,tar,gz文件下载
+9. 工作流与文件数据下载采集改进：支持同步并行进行文件下载与文件数据采集，提升数据采集效率
 
 # v7.5.3 功能改进-20251026
 1. 升级[bboot](https://gitee.com/bboss/bbootdemo)，支持jetty10 websocket功能
