@@ -8,6 +8,7 @@
   - [Deepseek对话工作流使用介绍](jobflow-deepseek.md)
   - [多智能体协同：轻松搞定智能体工具调用](jobflow-deepseek-fuctioncall.md)
   - [基于工作流的Zip文件下载与数据采集方法](jobflow-remotefile.md)
+  - [基于工作流的Zip数据文件并行下载和采集](jobflow-remotefile-parrel.md)
   - [基于工作流的文件定期归档清理介绍](jobflow-filelifecycle.md)
 - [MongoDB数据源定义和使用](MongoDBDatasource.md)
 - **Getting started**

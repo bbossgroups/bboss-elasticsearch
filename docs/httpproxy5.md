@@ -1,12 +1,23 @@
-# bboss http5负载均衡器使用指南
+# bboss http5使用指南
 
-bboss http5一个简单而功能强大的、基于httpclient5的、去中心化的http/https负载均衡器以及http rpc框架，基于http/https协议实现客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，包括spring cloud、spring boot、spring mvc以及其他基于http协议开发的微服务；提供streamchat方法，轻松对接各种大模型服务，实现流式对话应用；完全支持http2协议；同时还可以非常方便地实现多个文件上传服务器。可基于apollo和nacos管理[服务配置参数和实现服务发现](https://esdoc.bbossgroups.com/#/nacos-config)功能。
+bboss http5,一个简单而功能强大的、基于httpclient5的、去中心化的http/https负载均衡器、http rpc框架以及java ai客户端;基于http/https协议实现的客户端-服务端点到点的负载均衡和集群容灾功能，可以基于post/get/put/requestbody等方法对接调用任何基于http协议开发的微服务，包括spring cloud、spring boot、spring mvc以及其他基于http协议开发的微服务；提供streamchat方法，轻松对接各种大模型服务，实现流式对话应用；完全支持http2协议；同时还可以非常方便地实现多个文件上传服务器。可基于apollo和nacos管理[服务配置参数和实现服务发现](https://esdoc.bbossgroups.com/#/nacos-config)功能。
 
 
 
 ![](images\client-server-httpclient5.jpg)
 
 bboss http5完全继承了[bboss http](https://esdoc.bbossgroups.com/#/httpproxy)（基于httpclient4）的所有功能和api方法以及参数配置，在此基础上新增了响应式的stream流式api方法，本文介绍bboss http5新增功能使用方法以及升级的一些注意事项。
+
+## AI多模态功能
+
+bboss ai客户端支持多模态功能：
+
+- **文本对话** 
+- **图像识别** 
+- **图像生成**
+- **语音识别**
+- **语音生成** 
+- **视频生成**
 
 正式介绍之前，先了解一下HttpClient 5 的新特性。
 
@@ -69,7 +80,7 @@ api 'com.bbossgroups:bboss-http5:6.5.1'
 
 ## 4.基础功能使用文档
 
-原有功能和api方法以及参数配置参考文档：
+本文只介绍http5新引入的功能特性及其使用方法，原有功能和api方法以及参数配置参考文档：
 
 https://esdoc.bbossgroups.com/#/httpproxy
 

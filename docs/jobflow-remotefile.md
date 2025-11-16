@@ -1,6 +1,16 @@
 # 基于工作流的Zip文件下载与数据采集方法
 
-bboss工作流提供了文件下载类型节点，具备文件下载、zip文件解压（包括加密zip文件），以及ftp、oss以及本地文件定期归档清理功能;可以将文件下载类型节点编排到工作流中任意位置，同时可以通过流程上下文与其他流程节点进行通信。本文介绍基于工作流的Zip文件下载与数据采集方法。
+bboss工作流提供了文件下载类型节点，具备文件下载、zip文件解压（包括加密zip文件），以及ftp、oss以及本地文件定期归档清理功能;可以将文件下载类型节点编排到工作流中任意位置，同时可以通过流程上下文与其他流程节点进行通信。
+
+bboss支持两种zip文件下载解压和采集模式：
+
+**串行模式**----下载和采集串行方式运行，所有文件下载完毕后，再采集下载解压的文件数据
+
+**并行模式**-----下载和采集并行方式运行，所有文件下载解压的同时，开始采集下载解压的文件数据，效率更高
+
+并行模式参考文档：https://esdoc.bbossgroups.com/#/jobflow-remotefile-parrel
+
+本文介绍基于工作流的Zip文件下载与数据串行采集模式。
 
 ## 1.内容摘要
 
@@ -208,7 +218,7 @@ jobFlowNodeBuilder.setBuildDownloadConfigFunction(jobFlowNodeExecuteContext -> {
 jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
 ```
 
-##### 3.2.2.1 OSS远程zip文件下载
+##### 3.2.2.2 OSS远程zip文件下载
 
 配置OSSFileInputConfig实现OSS远程zip文件下载
 
@@ -224,7 +234,7 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
                     .setAccessKeyId("N3XNZFqSZfpthypuoOzL")
                     .setSecretAccesskey("2hkDSEll1Z7oYVfhr0uLEam7r0M4UWT8akEBqO97").setRegion("east-r-a1")
                     .setEndpoint("http://172.24.176.18:9000")//下载文件成功完成后，删除对应的ftp文件，false 不删除 true 删除
-                    .setDownloadWorkThreads(4)
+                    .setDownloadWorkThreads(5)
                     .setBucket("zipfile")
                     .setSocketTimeout(600000L)
                     .setConnectTimeout(600000L)
@@ -244,6 +254,16 @@ jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
             return downloadfileConfig;
         });
 ```
+
+##### 3.2.2.3 设置并行下载线程数
+
+文件下载节点默认使用3个线程并行下载文件，可以通过以下方式自定义下载线程数：
+
+ftpConfig.setDownloadWorkThreads(5);
+
+ossFileInputConfig.setDownloadWorkThreads(5);
+
+如果设置为0时，将是串行下载模式。
 
 #### 3.2.2传递csv数据文件目录路径
 
