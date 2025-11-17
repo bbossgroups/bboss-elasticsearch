@@ -25,7 +25,7 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.5.3</version>
+    <version>7.5.5</version>
 </dependency>
 
 ```
@@ -228,7 +228,7 @@ public static void main(String[] args) {
         /**
          * 2 将第一个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 
         /**
          * 3.构建第二个任务节点：单任务节点 分析诗
@@ -267,7 +267,7 @@ public static void main(String[] args) {
         /**
          * 4 将第二个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
         
         //构建和运行与Deepseek通话流程
         JobFlow jobFlow = jobFlowBuilder.build();

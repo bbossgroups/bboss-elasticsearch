@@ -21,7 +21,7 @@ bboss是一个高性能高兼容性的Elasticsearch java客户端框架：
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.5.3</version>
+    <version>7.5.5</version>
 </dependency>
 ```
 

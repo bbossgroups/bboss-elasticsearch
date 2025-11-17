@@ -1,6 +1,6 @@
 # 基于工作流的Zip文件下载与数据采集方法
 
-bboss工作流提供了文件下载类型节点，具备文件下载、zip文件解压（包括加密zip文件），以及ftp、oss以及本地文件定期归档清理功能;可以将文件下载类型节点编排到工作流中任意位置，同时可以通过流程上下文与其他流程节点进行通信。
+bboss工作流提供了文件下载类型节点，具备文件下载、zip压缩文件下载解压（包括加密zip文件）、tar.gz压缩文件下载解压，以及ftp、oss以及本地文件定期归档清理功能;可以将文件下载类型节点编排到工作流中任意位置，同时可以通过流程上下文与其他流程节点进行通信。
 
 bboss支持两种zip文件下载解压和采集模式：
 
@@ -215,7 +215,7 @@ jobFlowNodeBuilder.setBuildDownloadConfigFunction(jobFlowNodeExecuteContext -> {
 /**
  * 3.将第一个节点添加到工作流构建器
  */
-jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 ```
 
 ##### 3.2.2.2 OSS远程zip文件下载
@@ -430,7 +430,7 @@ datatranJobFlowNodeBuilder.setImportBuilderFunction(jobFlowNodeExecuteContext ->
         /**
          * 5 将第二个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(datatranJobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(datatranJobFlowNodeBuilder);
 ```
 
 CSVUserBehaviorImport的实现类：
@@ -482,9 +482,27 @@ JobFlow jobFlow = jobFlowBuilder.build();
 jobFlow.start();
 ```
 
+### 3.5 zip文件和tar文件下载解压区别
+
+zip文件和tar文件下载解压配置大体一致，唯一的区别：解压设置不同
+
+tar文件下载解压设置
+
+```java
+FtpConfig ftpConfig = new FtpConfig();
+ftpConfig.setUntar(true);  // 如果是tar文件下载解压
+```
+
+zip文件下载解压设置
+
+```java
+FtpConfig ftpConfig = new FtpConfig();
+ftpConfig.setUnzip(true); // 如果是zip文件下载解压
+```
+
 ## 4. 总结
 
-本文介绍了基于bboss工作流的Zip文件下载与数据采集完整解决方案，该方案具有以下特点：
+本文介绍了基于bboss工作流的Zip/tar/gz文件下载与数据采集完整解决方案，该方案具有以下特点：
 
 1. **自动化流程**：通过工作流调度机制，实现从远程服务器下载Zip文件、解压、数据采集的全自动化处理流程。
 2. **灵活的远程文件支持**：支持FTP/SFTP和OSS等多种远程存储方式，满足不同环境下的文件获取需求。

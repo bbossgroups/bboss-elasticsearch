@@ -233,7 +233,7 @@ logger.info(deepseekMessage.getContent());
         /**
          * 4 将第工具调用节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 ```
 
 

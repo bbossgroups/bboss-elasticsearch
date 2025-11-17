@@ -32,7 +32,7 @@ bboss http基于httpclient4实现，不支持流式服务调用，也不支持ht
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http5</artifactId>
-   <version>6.5.1</version>
+   <version> 6.5.2</version>
 </dependency>
 ```
 
@@ -76,14 +76,14 @@ ip:port（默认http协议）
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http</artifactId>
-   <version>6.5.1</version>
+   <version> 6.5.2</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-api 'com.bbossgroups:bboss-http:6.5.1'
+api 'com.bbossgroups:bboss-http: 6.5.2'
 ```
 
 # 3.负载均衡器配置和初始化
@@ -151,7 +151,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
  <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-plugin-apollo</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
 
@@ -189,7 +189,7 @@ configs.put("http.hosts，","192.168.137.1:9200,192.168.137.2:9200,192.168.137.3
  <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-plugin-nacos</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
         </dependency>
 ```
 
@@ -481,7 +481,7 @@ spring 1.x,2.x
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot-starter</artifactId>
-  <version>6.5.1</version>
+  <version> 6.5.2</version>
 </dependency>
 ```
 
@@ -490,7 +490,7 @@ spring 3.x
 <dependency>
   <groupId>com.bbossgroups</groupId>
   <artifactId>bboss-spring-boot3-starter</artifactId>
-  <version>6.5.1</version>
+  <version> 6.5.2</version>
 </dependency>
 ```
 

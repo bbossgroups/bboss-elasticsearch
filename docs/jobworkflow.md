@@ -16,7 +16,7 @@
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.5.3</version>
+        <version>7.5.5</version>
     </dependency>
 ```
 ### 1.2 从源码构建
@@ -163,7 +163,7 @@ String script = new StringBuilder()
 nodeTrigger.setTriggerScript(script);
 
 jobFlowNodeBuilder.setImportBuilder(buildFile2DB()).setNodeTrigger(nodeTrigger);
-jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 
 ```
 
@@ -223,7 +223,7 @@ subParrelJobFlowNodeBuilder.addJobFlowNodeBuilder(
         .setImportBuilder(buildDB2Custom(6)));
 //为并行任务节点添加第4个并行分支：添加由2个分支任务节点构成的并行行复合节点
 parrelJobFlowNodeBuilder.addJobFlowNodeBuilder(subParrelJobFlowNodeBuilder);
-jobFlowBuilder.addJobFlowNode(parrelJobFlowNodeBuilder);
+jobFlowBuilder.addJobFlowNodeBuilder(parrelJobFlowNodeBuilder);
 ```
 
 此节点为复合结构，包含三个子任务：
@@ -237,7 +237,7 @@ jobFlowBuilder.addJobFlowNode(parrelJobFlowNodeBuilder);
 //为流程添加第3个任务节点（单任务）：数据交换节点
 jobFlowNodeBuilder = new DatatranJobFlowNodeBuilder("3", "DatatranJobFlowNode");
 jobFlowNodeBuilder.setImportBuilder(buildDB2Custom(7)).setNodeTrigger(nodeTrigger);
-jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 ```
 
 最后一个节点继续执行数据库到自定义输出的任务。

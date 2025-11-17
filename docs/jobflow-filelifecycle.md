@@ -92,7 +92,7 @@ ftp文件归档可以定期归档ftp服务器上的文档，通过指定ftp服�
         /**
          * 3.将第一个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 ```
 
 构建和启动ftp文件归档流程：
@@ -144,7 +144,7 @@ OSS文件归档可以定期归档OSS服务器上的文档，通过指定OSS服�
         /**
          * 3.将第一个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 ```
 
 构建和启动OSS文件归档流程：
@@ -186,7 +186,7 @@ jobFlow.start();
         /**
          * 3.将第一个节点添加到工作流构建器
          */
-        jobFlowBuilder.addJobFlowNode(jobFlowNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobFlowNodeBuilder);
 
 ```
 

@@ -221,7 +221,7 @@ jobFlowBuilder.setJobFlowName("自定义任务工作流")
              .setJobFlowId("custom_workflow");
 
 // 添加任务节点到工作流
-jobFlowBuilder.addJobFlowNode(jobNodeBuilder);
+jobFlowBuilder.addJobFlowNodeBuilder(jobNodeBuilder);
 
 // 构建并启动工作流
 JobFlow jobFlow = jobFlowBuilder.build();
@@ -250,7 +250,7 @@ public class JobFlowMain {
         );
 
         // 添加任务节点到工作流
-        jobFlowBuilder.addJobFlowNode(jobNodeBuilder);
+        jobFlowBuilder.addJobFlowNodeBuilder(jobNodeBuilder);
 
         // 构建并启动工作流
         JobFlow jobFlow = jobFlowBuilder.build();
