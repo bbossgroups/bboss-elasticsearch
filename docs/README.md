@@ -1,6 +1,6 @@
 # 1. BBoss是什么
 
-[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下四部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下五部分构成：
 - [**bboss ai客户端**](https://esdoc.bbossgroups.com/#/quickstart) bboss ai java大模型对接客户端，支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能
 - [**Elasticsearch Highlevel Java Restclient**](https://esdoc.bbossgroups.com/#/quickstart) ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - [**数据采集同步ETL**](https://esdoc.bbossgroups.com/#/db-es-tool) ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，可以基于插件规范轻松扩展新的输入插件和输出插件；支持数据向量化处理

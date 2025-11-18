@@ -2,7 +2,9 @@
 
 # BBOSS版本变更记录-v7.5.5 发布
 
-[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下四部分构成：
+[bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下五部分构成：
+
+- [**bboss ai客户端**](https://esdoc.bbossgroups.com/#/quickstart) bboss ai java大模型对接客户端，支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
@@ -44,6 +46,11 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
+# v7.5.6 功能改进-20251118(待发布)
+1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
+2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
+   
+
 # v7.5.5 功能改进-20251117
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
@@ -55,6 +62,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 8. 工作流文件下载节点支持tar.gz,tar,gz文件下载
 9. 工作流与文件数据下载采集改进：支持基于并行节点实现文件下载与文件数据采集同时执行功能，提升数据采集效率
 10. 工作流引擎改进：处理工作流并行任务节点多线程管理导致定时任务不能继续执行问题
+11. Mysql CDC改进：升级cdc包为io.debezium:mysql-binlog-connector-java:0.40.3
 
 # v7.5.3 功能改进-20251026
 1. 升级[bboot](https://gitee.com/bboss/bbootdemo)，支持jetty10 websocket功能
