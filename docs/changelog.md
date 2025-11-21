@@ -46,9 +46,11 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20251118(待发布)
+# v7.5.6 功能改进-20251119(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
+3. AI模型客户端改进：增加问答同步调用API
+4. 文件采集插件改进：处理通过FileInputConfig设置的文件字符编码集不起作用问题
    
 
 # v7.5.5 功能改进-20251117
@@ -56,11 +58,11 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
 3. 持久层改进：完善对Clickhouse官方驱动支持
 4. 数据库管理工程改进：解决limit复杂sql查询异常问题
-5. AI模型客户端httprpxoy改进：增加对阿里百炼语音识别模型支持，并提供相应的案例
+5. AI模型客户端httprpxoy改进：增加对[阿里百炼语音识别模型](https://gitee.com/bboss/bbootdemo)支持，并提供相应的[案例](https://gitee.com/bboss/bbootdemo)
 6. 标签库改进：pager标签内置变量pager_info增加获取数据库查询列字段信息
 7. 标签库改进：改进beaninfo标签嵌套机制
-8. 工作流文件下载节点支持tar.gz,tar,gz文件下载
-9. 工作流与文件数据下载采集改进：支持基于并行节点实现文件下载与文件数据采集同时执行功能，提升数据采集效率
+8. 工作流文件下载节点支持tar.gz,[tar,gz文件下载](https://esdoc.bbossgroups.com/#/jobflow-remotefile?id=_35-zip%e6%96%87%e4%bb%b6%e5%92%8ctar%e6%96%87%e4%bb%b6%e4%b8%8b%e8%bd%bd%e8%a7%a3%e5%8e%8b%e5%8c%ba%e5%88%ab)
+9. 工作流与文件数据下载采集改进：支持基于[并行节点实现文件下载与文件数据采集同时执行功能](https://esdoc.bbossgroups.com/#/jobflow-remotefile-parrel)，提升数据采集效率
 10. 工作流引擎改进：处理工作流并行任务节点多线程管理导致定时任务不能继续执行问题
 11. Mysql CDC改进：升级cdc包为io.debezium:mysql-binlog-connector-java:0.40.3
 
