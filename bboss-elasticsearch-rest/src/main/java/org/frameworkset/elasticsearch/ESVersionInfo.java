@@ -46,6 +46,6 @@ public class ESVersionInfo {
      * @return String with description
      */
     public static String getVersionDescription() {
-        return "bboss elasticsearch client " + " Version: \t" + ES_VERSION + ",Release Date:\t" + ES_RELEASEDATE ;
+        return "bboss elasticsearch client " + " Version: " + ES_VERSION + ",Release Date: " + ES_RELEASEDATE ;
     }
 }
