@@ -49,6 +49,9 @@ public abstract class AbstractRestClientUtil extends ClientUtil{
 	protected ElasticSearchRestClient client;
 	protected StringBuilder bulkBuilder;
 	protected IndexNameBuilder indexNameBuilder;
+    static {
+        ESVersionInfo.getESVersion();
+    }
 	/**
 	 * ".security",".watches",
 	 * 清除监控表

@@ -15,6 +15,9 @@ package org.frameworkset.elasticsearch;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>Description: Get bboss elasticsearch client version info.</p>
  * <p></p>
@@ -24,7 +27,25 @@ package org.frameworkset.elasticsearch;
  * @version 1.0
  */
 public class ESVersionInfo {
-	public static String getESVersion636(){
-		return "6.3.6";
+    private static final String ES_VERSION = "7.5.6";
+    private static final String ES_RELEASEDATE = "20251127";
+    private static Logger logger = LoggerFactory.getLogger(ESVersionInfo.class);
+    static {
+        logger.info(getVersionDescription());
+    }
+	public static String getESVersion756(){
+		return ES_VERSION+"_"+ES_RELEASEDATE;
 	}
+
+    public static String getESVersion(){
+        return ES_VERSION;
+    }
+
+    /**
+     * Returns the catenation of the description and cvs fields.
+     * @return String with description
+     */
+    public static String getVersionDescription() {
+        return "bboss elasticsearch client " + " Version: \t" + ES_VERSION + ",Release Date:\t" + ES_RELEASEDATE ;
+    }
 }

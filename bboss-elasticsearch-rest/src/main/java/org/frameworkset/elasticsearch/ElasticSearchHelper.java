@@ -36,6 +36,7 @@ public class ElasticSearchHelper {
 
 	static
 	{
+        ESVersionInfo.getESVersion();
 		ShutdownUtil.addShutdownHook(new Runnable(){
 
 			public void run() {
