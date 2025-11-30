@@ -34,18 +34,20 @@ public class ElasticSearchHelper {
 	private static Method bootMethod;
 	public final static ConfigHolder configHolder = new ConfigHolder("Elasticsearch");
 
+    /**
+     * 如果需要释放资源，需要手动在应用结束时，调用destroyConfigHolder方法
+     */
+    public static void destroyConfigHolder(){
+        configHolder.destory();
+    }
 	static
 	{
         ESVersionInfo.getESVersion();
-		ShutdownUtil.addShutdownHook(new Runnable(){
-
-			public void run() {
-//				ESUtil.stopmonitor();
-//				destory(esutils);
-				configHolder.stopmonitor();
-				configHolder.destory();
-
-			}});
+//		ShutdownUtil.addShutdownHook(new Runnable(){
+//
+//			public void run() {
+//				configHolder.destory();
+//			}});
 	}
 
 	static {
@@ -330,12 +332,6 @@ public class ElasticSearchHelper {
 				Map.Entry<String, ElasticSearch> entry = entries.next();
 				final ElasticSearch elasticSearch = entry.getValue();
 				elasticSearch.start();
-//				ShutdownUtil.addShutdownHook(new Runnable() {
-//					@Override
-//					public void run() {
-//						elasticSearch.stop();
-//					}
-//				});
 			}
 			synchronized (ElasticSearchHelper.elasticSearchMap) {
 				ElasticSearchHelper.elasticSearchMap.putAll(elasticSearchMap);

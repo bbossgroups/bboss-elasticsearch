@@ -85,8 +85,18 @@ public class ConfigHolder {
 		return configDSLUtil;
 //		return configDSLUtils.get(name);
 	}
+    private Object destorylock = new Object();
 	public void destory()
 	{
+        if(destoried)
+            return;
+        synchronized (destorylock){
+            if(destoried){
+                return;
+            }
+            destoried = true;
+        }
+        stopmonitor();
 		if(configDSLUtils != null)
 		{
 			Iterator<Map.Entry<String, ConfigDSLUtil>> it = configDSLUtils.entrySet().iterator();
@@ -96,7 +106,6 @@ public class ConfigHolder {
 				entry.getValue()._destroy();
 			}
 			configDSLUtils.clear();
-//			configDSLUtils = null;
 		}
 	}
 	public List<String> getTemplateFiles()
@@ -109,6 +118,7 @@ public class ConfigHolder {
 	}
 
 
+    private boolean destoried = false;
 	public void stopmonitor()
 	{
 		try {

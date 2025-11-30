@@ -134,12 +134,6 @@ public class BulkProcessor {
                 flush = new Flush("ElasticsearchBulk[" + (bulkConfig.getElasticsearch() != null ? bulkConfig.getElasticsearch() : "default") + "]-" + bulkConfig.getBulkProcessorName() + "-flush-thread");
                 flush.start();
             }
-//            ShutdownUtil.addShutdownHook(new Runnable() {
-//                @Override
-//                public void run() {
-//                    shutDown();
-//                }
-//            });
             this.inited = true;
         }
 	}
