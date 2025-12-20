@@ -7,8 +7,8 @@ Introduce Elasticsearch [Bboss](README.md):
 1. A highlevel rest client.
 2. A high performence o/r mapping rest client.
 3. A dsl and sql rest client.
-4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
-5. Support Spring boot 1.x,2.x
+4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,9.x,+
+5. Support Spring boot 1.x,2.x,3.x
 
 # Integration Bboss
 

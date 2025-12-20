@@ -14,7 +14,7 @@ Spring boot整合ElasticSearch HighLevel Rest Client案例分享，本文涉及�
 本文内容适合于:
 
 - spring boot 1.x,2.x,3.x
-- elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+- elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,9.x,+
 
 本文案例涉及源码下载地址：
 

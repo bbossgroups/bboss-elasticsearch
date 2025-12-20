@@ -394,7 +394,7 @@ https://gitee.com/bboss/elasticsearch-file2ftp/blob/main/src/main/java/org/frame
 
 # v7.1.8 功能改进
 1. Elasticsearch客户端改进：处理Elasticsearch 8以上版本_type兼容性问题
-2. Elasticsearch客户端改进：处理Elasticsearch 7.x,8.x 版本sql api兼容性问题
+2. Elasticsearch客户端改进：处理Elasticsearch 7.x,8.x,9.x 版本sql api兼容性问题
 # v7.1.7 功能改进
 1. 持久层改进：修复无法获取Clickhouse元数据问题
 2. 完善MongoDB CDC插件：解决新版MongoDB场景下修改数据不完整的场景下空指针异常问题

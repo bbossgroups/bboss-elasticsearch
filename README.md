@@ -11,14 +11,14 @@ ES小白分分钟上手，功能丰富，涵盖Elasticsearch所有功能，多�
 
 JDK requirement: JDK 1.8+
 
-Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,+
+Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,9.x,+
 
 Spring booter 1.x,2.x,3.x,+
 
 # bboss兼容性
 
 | bboss | Elasticsearch | spring boot |
-| ----- | ------------- | ----------- |
+| ----- |---------------| ----------- |
 | all   | 1.x           | 1.x,2.x,3.x,+    |
 | all   | 2.x           | 1.x,2.x,3.x,+    |
 | all   | 3.x           | 1.x,2.x,3.x,+    |
@@ -26,6 +26,7 @@ Spring booter 1.x,2.x,3.x,+
 | all   | 6.x           | 1.x,2.x,3.x,+    |
 | all   | 7.x           | 1.x,2.x,3.x,+     |
 | all   | 8.x           | 1.x,2.x,3.x,+     |
+| all   | 9.x           | 1.x,2.x,3.x,+     |
 
 # 快速开始bboss
 
@@ -40,10 +41,10 @@ https://esdoc.bbossgroups.com/#/bboss-build
 
 
 # Elasticsearch Java Demos
-The following Demo and related documentation is compatible with Elasticsearch 1.x,2.X,5.X,6.X,7.x,8.x,+ versions
+The following Demo and related documentation is compatible with Elasticsearch 1.x,2.X,5.X,6.X,7.x,8.x,9.x,+ versions
 ## Elasticsearch demo for Java project:
 https://github.com/bbossgroups/elasticsearch-example
-## Elasticsearch demo for spring booter 1.x,2.x
+## Elasticsearch demo for spring booter 1.x,2.x,3.x
 
 github
 

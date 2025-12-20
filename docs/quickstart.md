@@ -11,7 +11,7 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 3. A dsl and sql rest client.
 
-4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,+
+4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,9.x,+
 
 5. Support Opensearch 1.x,2.x,+
 

@@ -113,7 +113,7 @@ https://gitee.com/bboss/bboss-elastic-tran
 支持各种关系数据库： mysql,maridb，postgresql,oracle ,sqlserver,db2，derby,sqlite,informix,sybase,达梦，以及其他支持jdbc协议的数据库
 支持分布式数仓：clickhouse，mongodb、HBase、tidb、hive、doris、druid、StarRocks
 
-支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,+
+支持各种Elasticsearch版本： 1.x,2.x,5.x,6.x,7.x,8.x,9.x,+
 
 3）支持数据向量化处理，并将向量数据保存到Milvus向量数据库
 

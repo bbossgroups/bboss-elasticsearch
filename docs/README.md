@@ -210,13 +210,14 @@ https://www.bbossgroups.com/sources-demos.html
 作为Elasticsearch兼容性最好的java客户端和数据采集&流批一体化计算工具，bboss各版本对Elasticsearch、Spring boot兼容性说明如下：
 
 | bboss | Elasticsearch | spring boot |
-| ----- | ------------- | ----------- |
+| ----- |---------------| ----------- |
 | all   | 1.x           | 1.x,2.x,3.x |
 | all   | 2.x           | 1.x,2.x,3.x |
 | all   | 5.x           | 1.x,2.x,3.x |
 | all   | 6.x           | 1.x,2.x,3.x |
 | all   | 7.x           | 1.x,2.x,3.x |
 | all   | 8.x           | 1.x,2.x,3.x |
+| all   | 9.x           | 1.x,2.x,3.x,+     |
 
 jdk兼容性：jdk 1.8+
 

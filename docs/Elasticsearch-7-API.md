@@ -20,7 +20,7 @@
 
 Elasticsearch 7.0.0与之前版本的差别，衔接ES 6和ES 8的中间版本，ES 7默认关闭indexType的支持，这样索引Index将不允许定义和使用indexType，ES 8完全去掉indexType的支持。
 
-bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持Elasticsearch的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss 提供了额外的控制属性来开启elasticsearch 7.x的type特性：
+bboss作为一款高性能的Elasticsearch Java Rest客户端，几乎支持Elasticsearch的所有版本（1.x,2.x,4.x,5.x,6.x,7.x,8.x,9.x.....）。如果需要向下兼容ES 6的type类型，使得带indexType的索引mapping和索引Template能够在ES 7上面创建成功，bboss 提供了额外的控制属性来开启elasticsearch 7.x的type特性：
 
 ```properties
 ## 设置为true，兼容ES 6的indexType
