@@ -454,20 +454,6 @@ Xinference官方文档  https://github.com/xorbitsai/inference
 
 [向量数据库Milvus客户端组件使用介绍](https://doc.bbossgroups.com/#/Milvus?id=向量数据库milvus客户端组件使用介绍)
 
-### 9.2开发交流
-
-QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
-
-微信交流群：
-
-<img src="images\wxbboss.png" style="zoom:50%;" />
-
-
-
-交流社区：
-
-<img src="images/qrcode.jpg"  height="200" width="200"><img src="images/douyin.png"  height="200" width="200"><img src="images/wvidio.png"  height="200" width="200">
-
 
 
 

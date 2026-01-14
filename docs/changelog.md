@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20251222(待发布)
+# v7.5.6 功能改进-20260114(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -68,7 +68,16 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
     commons-pool2-2.13.0
     commons-dbcp2-2.14.0
 16. OSS客户端组件改进：增加获取[oss对象分享地址方法](https://doc.bbossgroups.com/#/Minio)
-
+17. 持久层改进：列表查询和行处理器查询接口改进，可以设置返回的最大记录数，避免内存溢出问题，使用示例
+```java
+    DBOptions dbOptions = new DBOptions();
+    dbOptions.setMaxRows(2);//列表查询时，可以指定返回的最大记录数，避免内存溢出问题
+    datas = SQLExecutor.queryListWithDBName(dbOptions,Map.class, "clickhousedm",sql);
+```
+18. 持久层改进：增加解析sql语句功能
+```java
+    VariableHandler.SQLStruction sqlStruction = SQLBaseCache.evalSQLStruction("select * from test where id = #[id,type=int]");
+```
 # v7.5.5 功能改进-20251117
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
