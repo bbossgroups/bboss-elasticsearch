@@ -67,7 +67,7 @@ public class ESTemplateCache {
 
 	}
 
-	public static class TempateVariable extends VariableHandler.Variable{
+	public static class TempateVariable extends VariableHandler.TypeDefaultValueVariable{
 		/**
 		 * 控制字符串变量是否需要添加""
 		 * true 添加，默认添加
@@ -81,7 +81,7 @@ public class ESTemplateCache {
 		private Boolean escape;
 
 
-
+         
 
 
 		/**
@@ -140,6 +140,7 @@ public class ESTemplateCache {
 
 				for (int i = 0; i < ts.length; i ++) {
 					String t = ts[i];
+                    super.parserTypeAndDefaultObjectValue(t);
 					if (t.startsWith("quoted=")) {
 						String q = t.substring("quoted=".length()).trim();
 						if(q.equals("false"))
@@ -200,6 +201,7 @@ public class ESTemplateCache {
 
 				}
 
+                super.evalDefaultObjectValue();
 				if(this.dateFormat != null){
 					this.dateFormateMeta = DateFormateMeta.buildDateFormateMeta(this.dateFormat,this.locale);
 				}

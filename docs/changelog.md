@@ -74,10 +74,17 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
     dbOptions.setMaxRows(2);//列表查询时，可以指定返回的最大记录数，避免内存溢出问题
     datas = SQLExecutor.queryListWithDBName(dbOptions,Map.class, "clickhousedm",sql);
 ```
-18. 持久层改进：增加解析sql语句功能
+18. 持久层改进：增加解析sql语句方法，同时可以指定sql变量参数默认值,需同时指定类型:
 ```java
-    VariableHandler.SQLStruction sqlStruction = SQLBaseCache.evalSQLStruction("select * from test where id = #[id,type=int]");
+    VariableHandler.SQLStruction sqlStruction = SQLBaseCache.evalSQLStruction("select * from test where id = #[id,type=int,default=10]");
 ```
+19. Elasticsearch客户端改进：可以指定dsl变量参数默认值,需同时指定类型，示例如下：
+```json
+{
+    "id": #[id,type=int,default=10]
+}
+```
+
 # v7.5.5 功能改进-20251117
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因

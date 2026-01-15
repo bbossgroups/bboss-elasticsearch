@@ -454,12 +454,15 @@ public class ConfigDSLUtil {
 			if (column != null && (column.ignoreCUDbind() || column.ignorebind()))
 				continue;
 
-			type = property.getPropertyType();
+//			type = property.getPropertyType();
 
 			try {
 				if (property.canread()) {
 					try {
 						value = property.getValue(bean);
+                        if(value == null && variable.getDefaultObjectValue() != null){
+                            value = variable.getDefaultObjectValue();                            
+                        }
 					} catch (InvocationTargetException e1) {
 						log.error(new StringBuilder().append("Failed to get attribute[" ).append( beanInfo.getClazz().getName() ).append( "." + property.getName() ).append( "] value:Check the template definition").append("[")
 								.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(), e1.getTargetException());
@@ -468,7 +471,7 @@ public class ConfigDSLUtil {
 								.append(template).append("]@").append(this.templatecontext.getNamespace()).toString(), e1);
 					}
 
-					name = property.getName();
+//					name = property.getName();
 
 					if (column != null) {
 						if(escape == null){
@@ -598,6 +601,10 @@ public class ConfigDSLUtil {
 				ESTemplateCache.TempateVariable variable = (ESTemplateCache.TempateVariable)variables.get(i);
 				Boolean escape = variable.getEscape();
 				Object data = bean.get(variable.getVariableName());
+                if(data == null && variable.getDefaultObjectValue() != null){
+                    data = variable.getDefaultObjectValue();
+                    
+                }
 				if (data == null) {
 					if (bean.containsKey(variable.getVariableName()))
 						builder.append("null");
