@@ -379,6 +379,15 @@ public abstract class BaseESProperties {
         private String failAllContinue;
 
         private Map<String,String> kerberos;
+
+        private Map<String,String> extendConfigs;
+        public Map<String, String> getExtendConfigs() {
+            return extendConfigs;
+        }
+
+        public void setExtendConfigs(Map<String, String> extendConfigs) {
+            this.extendConfigs = extendConfigs;
+        }
         private String maxIdleTime;
         public String getMaxIdleTime() {
             return maxIdleTime;
@@ -1124,7 +1133,15 @@ public abstract class BaseESProperties {
                 }
                 
             }
+            Map<String,String> extendConfigs = this.getHttp().getExtendConfigs();
+            if(extendConfigs != null && !extendConfigs.isEmpty()){
+                Iterator<Map.Entry<String, String>> iterator = extendConfigs.entrySet().iterator();
+                while (iterator.hasNext()){
+                    Map.Entry<String, String> entry = iterator.next();
+                    properties.put(name+"http.extendConfigs."+entry.getKey(),entry.getValue());
+                }
 
+            }
 
 //		##default集群配配置
             if(SimpleStringUtil.isNotEmpty(this.elasticPassword)){
