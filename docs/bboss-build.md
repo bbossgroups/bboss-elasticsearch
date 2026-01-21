@@ -50,7 +50,9 @@ https://gitee.com/bboss/security
 
 https://gitee.com/bboss/bboot
 
+整体构建顺序如下：
 
+bboss-》bboss-data-》bboss-http5-》bboss-plugins-》bboss-elastic-》bboss-elastic-tran-》bboss-rpc-》security-》bboot
 
 下面分别介绍：
 
