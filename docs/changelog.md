@@ -88,9 +88,34 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 21. 微服务框架bboss-http5改进：服务组增加扩展属性配置和解析机制，Map<String, String> extendConfigs
 21. bboss-ai客户端扩展：增加文图生图功能，支持展示多张图片融合合并,支持的模型：阿里百炼文图生图、豆包文图生图、九天文图生图
 22. bboss-ai客户端扩展：支撑生成图片自动下载功能，支持将生成到远程图片下载转换为base64编码，并返回给前端；支持将生成的图片保存到本地目录，可以指定动态保存文件相对路径和根目录，同时可以设置下载后文件的访问endpoint地址，拼接完整url地址返回客户端
-23. bboss-ai客户端扩展：增加Kimi、智谱平台适配器
+23. bboss-ai客户端扩展：增加Kimi、智谱平台适配器,所有模型类型清单如下：
+```java
+    public static final String AI_MODEL_TYPE_QWEN = "qwen";
+    public static final String AI_MODEL_TYPE_DOUBAO = "doubao";
+    public static final String AI_MODEL_TYPE_DEEPSEEK = "deepseek";
+    public static final String AI_MODEL_TYPE_KIMI = "kimi";
+    public static final String AI_MODEL_TYPE_NONE = "none";
+    public static final String AI_MODEL_TYPE_BAIDU = "baidu";
+    public static final String AI_MODEL_TYPE_OPENAI = "openai";
+    public static final String AI_MODEL_TYPE_SILICONFLOW = "siliconflow";
+    public static final String AI_MODEL_TYPE_JIUTIAN = "jiutian";
+    public static final String AI_MODEL_TYPE_ZHIPU = "zhipu";
 
-
+    public enum ModelType{
+    QWEN(AI_MODEL_TYPE_QWEN,"通义千问"),
+    DOUBAO(AI_MODEL_TYPE_DOUBAO,"字节火山引擎"),
+    DEEPSEEK(AI_MODEL_TYPE_DEEPSEEK,"深度思索"),
+    KIMI(AI_MODEL_TYPE_KIMI,"月之暗面"),
+    NONE(AI_MODEL_TYPE_NONE,"通用"),
+    BAIDU(AI_MODEL_TYPE_BAIDU,"百度"),
+    OPENAI(AI_MODEL_TYPE_OPENAI,"OpenAI"),
+    SILICONFLOW(AI_MODEL_TYPE_SILICONFLOW,"硅基流程"),
+    JIUTIAN(AI_MODEL_TYPE_JIUTIAN,"九天平台")        ,
+    ZHIPU(AI_MODEL_TYPE_ZHIPU,"智谱");
+    
+         
+    }
+```
 # v7.5.5 功能改进-20251117
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
