@@ -714,8 +714,8 @@ http.connectionRequestTimeout=10000
 7.3.4及以下的版本还需设置elasticsearch.useHttps为true
 
 ```properties
-#7.3.4及以下的版本还需设置useHttps
-elasticsearch.useHttps=true
+#7.3.4及以下的版本需设置useHttps
+#elasticsearch.useHttps=true
 elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
@@ -723,7 +723,7 @@ spring boot对应的配置：
 
 ```properties
 #7.3.4及以下的版本还需设置useHttps
-spring.elasticsearch.bboss.elasticsearch.useHttps=true
+#spring.elasticsearch.bboss.elasticsearch.useHttps=true
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 ```
 
