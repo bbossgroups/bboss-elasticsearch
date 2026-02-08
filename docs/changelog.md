@@ -89,6 +89,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 21. bboss-ai客户端扩展：增加文图生图功能，支持展示多张图片融合合并,支持的模型：阿里百炼文图生图、豆包文图生图、九天文图生图
 22. bboss-ai客户端扩展：支撑生成图片自动下载功能，支持将生成到远程图片下载转换为base64编码，并返回给前端；支持将生成的图片保存到本地目录，可以指定动态保存文件相对路径和根目录，同时可以设置下载后文件的访问endpoint地址，拼接完整url地址返回客户端
 23. bboss-ai客户端扩展：增加Kimi、智谱平台适配器,所有模型类型清单如下：
+
 ```java
     public static final String AI_MODEL_TYPE_QWEN = "qwen";
     public static final String AI_MODEL_TYPE_DOUBAO = "doubao";
@@ -116,6 +117,24 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
          
     }
 ```
+
+24. mvc框架改进：增加基于xml配置文件指定全局、控制器级别httpmethod方法允许清单
+
+控制器级别配置方法：
+```xml
+    <property name="/reactor/*.api" httpMethods="POST,GET,PUT" class="org.frameworkset.web.react.ReactorController"/>
+```
+
+全局设置方法：
+```xml
+    <property name="gloableHttpMethods" value="POST,GET,PUT"/>
+```
+
+方法级别设置方法：通过注解设置
+```java
+@HandlerMapping(value="/openapi/{apiUrl}.api", method={HttpMethod.POST})
+```
+
 # v7.5.5 功能改进-20251117
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
 2. AI模型客户端httprpxoy改进：改进stream相应结果报文，增加stream结束完成原因
