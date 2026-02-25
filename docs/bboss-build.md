@@ -10,14 +10,15 @@ bboss采用模块化管理，模块之间依赖关系如下：
 
 模块源码工程地址和功能说明如下：建议优先从Github下载bboss最新代码
 
-| 码云源码地址                                     | Github源码地址                                         | 说明                                                                                                                                                                                                      |
-|--------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| https://gitee.com/bboss/bboss              | https://github.com/bbossgroups/bboss               | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能                                                                         |
+| 码云源码地址                               | Github源码地址                                     | 说明                                                         |
+| ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| https://gitee.com/bboss/bboss              | https://github.com/bbossgroups/bboss               | [基础框架](https://doc.bbossgroups.com/#/)：包含ioc、持久层、mvc、任务调度管理、序列化/反序列化以及[配置管理](https://doc.bbossgroups.com/#/aop/IntroduceIoc)等功能 |
 | https://gitee.com/bboss/bboss-data         | https://github.com/bbossgroups/bboss-data          | [Redis](https://doc.bbossgroups.com/#/redis)、[MongoDB](https://doc.bbossgroups.com/#/MongoDB)、[Milvus](https://doc.bbossgroups.com/#/Milvus)、[Minio](https://doc.bbossgroups.com/#/Minio)、S3 OSS协议客户端封装 |
-| https://gitee.com/bboss/bboss-http5        | https://github.com/bbossgroups/bboss-http5         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy5)微服务框架                                                                                                                                              |
-| https://gitee.com/bboss/bboss-plugins      | https://github.com/bbossgroups/bboss-plugins       | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架                                                                                                                                  |
-| https://gitee.com/bboss/bboss-elastic      | https://github.com/bbossgroups/bboss-elasticsearch | 高性能、高兼容性Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart)                                                                                                                     |
-| https://gitee.com/bboss/bboss-elastic-tran | https://github.com/bbossgroups/bboss-elastic-tran  | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架、[通用作业调度工作流](https://esdoc.bbossgroups.com/#/jobworkflow)                                 |
+| https://gitee.com/bboss/bboss-http5        | https://github.com/bbossgroups/bboss-http5         | 轻量级[http](https://esdoc.bbossgroups.com/#/httpproxy5)微服务框架 |
+| https://gitee.com/bboss/bboss-ai           | https://github.com/bbossgroups/bboss-ai            | ai java 智能体及大模型对接客户端，支持同步调用和流式调用两种模式；集成业界主流模型平台模型，包括Deepseek，通义千问，智谱，字节豆包，大语言模型、多模态模型（计算视觉，音频/视频模型），快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能 |
+| https://gitee.com/bboss/bboss-plugins      | https://github.com/bbossgroups/bboss-plugins       | [kafka](https://doc.bbossgroups.com/#/kafka)、apollo、nacos、Rocketmq对接框架 |
+| https://gitee.com/bboss/bboss-elastic      | https://github.com/bbossgroups/bboss-elasticsearch | 高性能、高兼容性Elasticsearch Java [RestClient](https://esdoc.bbossgroups.com/#/quickstart) |
+| https://gitee.com/bboss/bboss-elastic-tran | https://github.com/bbossgroups/bboss-elastic-tran  | [数据采集](https://esdoc.bbossgroups.com/#/db-es-tool)ETL、[流批一体化](https://esdoc.bbossgroups.com/#/etl-metrics)计算框架、[通用作业调度工作流](https://esdoc.bbossgroups.com/#/jobworkflow) |
 
 可以从以上地址下载各模块源码工程，然后按表格顺序，依次在命令行源码根目录下，执行gradle publishToMavenLocal指令，构建模块版本：
 
@@ -28,7 +29,10 @@ gradle publishToMavenLocal
 cd bboss-data
 gradle publishToMavenLocal
 
-cd bboss-http
+cd bboss-http5
+gradle publishToMavenLocal
+
+cd bboss-ai
 gradle publishToMavenLocal
 
 cd bboss-plugins
@@ -52,7 +56,7 @@ https://gitee.com/bboss/bboot
 
 整体构建顺序如下：
 
-bboss-》bboss-data-》bboss-http5-》bboss-plugins-》bboss-elastic-》bboss-elastic-tran-》bboss-rpc-》security-》bboot
+bboss-》bboss-data-》bboss-http5-》bboss-ai-》bboss-plugins-》bboss-elastic-》bboss-elastic-tran-》bboss-rpc-》security-》bboot
 
 下面分别介绍：
 
