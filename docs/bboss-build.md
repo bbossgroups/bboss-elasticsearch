@@ -23,25 +23,31 @@ bboss采用模块化管理，模块之间依赖关系如下：
 可以从以上地址下载各模块源码工程，然后按表格顺序，依次在命令行源码根目录下，执行gradle publishToMavenLocal指令，构建模块版本：
 
 ```shell
+git clone https://gitee.com/bboss/bboss
 cd bboss
 gradle publishToMavenLocal
 
+git clone https://gitee.com/bboss/bboss-data
 cd bboss-data
 gradle publishToMavenLocal
 
+git clone https://gitee.com/bboss/bboss-http5
 cd bboss-http5
 gradle publishToMavenLocal
 
+git clone https://gitee.com/bboss/bboss-ai
 cd bboss-ai
 gradle publishToMavenLocal
 
+git clone https://gitee.com/bboss/ bboss-plugins
 cd bboss-plugins
 gradle publishToMavenLocal
 
-
+git clone https://gitee.com/bboss/bboss-elastic
 cd bboss-elastic
 gradle publishToMavenLocal
 
+git clone https://gitee.com/bboss/bboss-elastic-tran
 cd bboss-elastic-tran
 gradle publishToMavenLocal
 ```
