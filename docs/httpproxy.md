@@ -1674,9 +1674,13 @@ http.kerberos.serverRealmHttpMethod=get
 
 
 
-# 9.配置HttpRequestInterceptor
+# 9.配置请求和响应拦截器
 
-在bboss配置文件application.properties中设置HttpRequestInterceptor，多个用逗号分隔，自定义httpquest请求处理。
+请求拦截器：HttpRequestInterceptor
+
+响应拦截器：HttpResponseInterceptor
+
+在bboss配置文件application.properties中设置HttpRequestInterceptor和HttpResponseInterceptor，多个用逗号分隔，自定义httpquest请求处理。
 
 定义两个拦截器HttpRequestInterceptorDemo和HttpRequestInterceptorDemo1。
 
@@ -1712,13 +1716,17 @@ spring boot配置：
 
 ```properties
 spring.elasticsearch.bboss.http.httpRequestInterceptors=org.frameworkset.http.client.HttpRequestInterceptorDemo,org.frameworkset.http.client.HttpRequestInterceptorDemo1
+spring.elasticsearch.bboss.http.httpResponseInterceptors=org.frameworkset.http.client.HttpResponseInterceptorDemo,org.frameworkset.http.client.HttpResponseInterceptorDemo1
 ```
 
 普通项目配置：
 
 ```properties
 http.httpRequestInterceptors=org.frameworkset.http.client.HttpRequestInterceptorDemo,org.frameworkset.http.client.HttpRequestInterceptorDemo1
+http.httpResponseInterceptors=org.frameworkset.http.client.HttpResponseInterceptorDemo,org.frameworkset.http.client.HttpResponseInterceptorDemo1
 ```
+
+
 
 # 10.配置HttpClientBuilderCallback
 

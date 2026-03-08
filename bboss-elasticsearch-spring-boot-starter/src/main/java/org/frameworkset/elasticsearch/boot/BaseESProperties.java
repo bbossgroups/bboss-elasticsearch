@@ -459,6 +459,15 @@ public abstract class BaseESProperties {
          * http接口org.apache.http.HttpRequestInterceptor清单，多个用逗号分隔
          */
         private String httpRequestInterceptors;
+        
+        private String httpResponseInterceptors;
+        public String getHttpResponseInterceptors() {
+            return httpResponseInterceptors;
+        }
+
+        public void setHttpResponseInterceptors(String httpResponseInterceptors) {
+            this.httpResponseInterceptors = httpResponseInterceptors;
+        }
 		/**
 		 * 每次获取connection时校验连接，true，校验，false不校验，有性能开销，推荐采用
 		 * validateAfterInactivity来控制连接是否有效
@@ -720,6 +729,8 @@ public abstract class BaseESProperties {
         public void setModelType(String modelType) {
             this.modelType = modelType;
         }
+
+
     }
 
 	public static class Elasticsearch{
@@ -1230,6 +1241,11 @@ public abstract class BaseESProperties {
 
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpRequestInterceptors()))
                 properties.put(_name + "http.httpRequestInterceptors",this.getHttp().getHttpRequestInterceptors());
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getHttpResponseInterceptors()))
+                properties.put(_name + "http.httpResponseInterceptors",this.getHttp().getHttpResponseInterceptors());
+            
+            
 		}
 
 		if(dslfile != null){
