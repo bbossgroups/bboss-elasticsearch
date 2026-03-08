@@ -1674,7 +1674,7 @@ http.kerberos.serverRealmHttpMethod=get
 
 
 
-# 9.配置请求和响应拦截器
+# 9.请求和响应拦截器配置
 
 请求拦截器：HttpRequestInterceptor
 
