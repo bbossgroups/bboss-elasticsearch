@@ -45,9 +45,14 @@
   - **节点类型**， 基础节点默认提供了数据交换和流批处理作业节点、通用函数节点以及复合类型节点（串/并行执行），可以按需自定义扩展新的流程节点、远程服务执行节点，内置节点说明：
 
     ​       1）数据交换节点：指定作业ImportBuilder，可以指定条件触发器，控制节点是否执行
+
     ​       2）通用节点：指定节点执行函数，自定义节点执行业务逻辑，可以指定条件触发器，控制节点是否执行
-    ​       3）并行任务节点：多个并行分支构成的复合节点，各分支可以由多种节点类型组成，各分支并行运行，			可以指定条件触发器，控制整个并行任务节点是否执行，各分支节点及内部子节点都可以指定条件触发			器
-    ​       4）串行任务节点：多个节点构成的复合节点，各节点按照顺序执行，可以指定条件触发器，控制整个串			行节点是否执行；可以为子节点设置触发器，如果子节点不满足条件，则子节点及对应节点后续节点都			不会执行
+
+    ​       3）并行任务节点：多个并行分支构成的复合节点，各分支可以由多种节点类型组成，各分支并行运行，可以指定条件触发器，控制整个并行任务节点是否执行，各分支节点及内部子节点都可以指定条件触发器
+
+    ​       4）串行任务节点：多个节点构成的复合节点，各节点按照顺序执行，可以指定条件触发器，控制整个串行节点是否执行；可以为子节点设置触发器，如果子节点不满足条件，则子节点及对应节点后续节点都不会执行
+
+    ​       5）条件任务节点：多个条件分支节点构成复合节点，可以包含一个默认节点，也可以不包含默认节点，每次执行时只能选取其中一个符合条件的节点执行，执行完毕后即刻进入条件任务节点的下一个节点；条件任务节点中的条件分支节点可以是通用简单节点，也可能是其他复合节点（串行、并行、条件）
 
   - **条件触发器**，可以为流程节点设置条件触发器，控制流程节点是否执行，可以采用触发器接口和触发器脚本（Groovy）实现条件判断，控制节点是否执行
 
@@ -58,6 +63,8 @@
   - **流程控制**，通过启动、停止、暂停、恢复流程控制API，控制和管理流程执行生命周期
 
   - **调度策略**，可以一次性执行，亦可以周期性执行,自带灵活定时调度策略，支持xxl-job和quartz两种外部调度机制，可以非常方便地扩展支持其他调度引擎
+
+  - **有向循环图**，通过条件节点可以实现各种复杂的循环流程（主干循环、串行/并行分支内循环、节点自循环）
 
 ##   3. 关键组件
 
@@ -308,7 +315,214 @@ https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/framewor
 
 https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/jobflow/JobFlowNodeFunctionTest.java
 
+更多案例
 
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/jobflow/
+
+### 4.4 有限循环图案例
+
+以下是一个有限循环图的案例代码：
+
+```java
+//构建流程
+		JobFlowBuilder jobFlowBuilder = new JobFlowBuilder();
+		jobFlowBuilder.setJobFlowName("指标数据清理导入工作流")
+				.setJobFlowId("指标数据清理导入-1");
+		JobFlowScheduleConfig jobFlowScheduleConfig = new JobFlowScheduleConfig();
+		jobFlowScheduleConfig.setExecuteOneTime(true);
+		jobFlowBuilder.setJobFlowScheduleConfig(jobFlowScheduleConfig);
+		jobFlowBuilder.addJobFlowListener(new JobFlowListener() {
+			@Override
+			public void beforeStart(JobFlow jobFlow) {
+				
+			}
+			
+			@Override
+			public void beforeExecute(JobFlowExecuteContext jobFlowExecuteContext) {
+				String accessToken = feishuUtil.getTenantAccessToken();
+				jobFlowExecuteContext.addContextData("accessToken", accessToken);
+				opptyMetricsService.deleteDataTranStatus("DBInputDataTranPlugin-metrics-to-feishu-table");
+				opptyMetricsService.deleteUpdateTime("metrics-to-feishu-table");
+ 
+			}
+			
+			@Override
+			public void afterExecute(JobFlowExecuteContext jobFlowExecuteContext, Throwable throwable) {
+				
+			}
+			
+			@Override
+			public void afterEnd(JobFlow jobFlow) {
+				
+			}
+		});
+		
+		/**
+		 * 2.构建第一个任务节点：查询记录，并将记录信息添加到流程上下文
+		 */
+		SimpleJobFlowNodeBuilder searchdataFlowNodeBuilder = new CallableJobFlowNodeBuilder("1", "查询记录") {
+			@Override
+			public Void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) throws Exception {
+				try{
+					jobFlowNodeExecuteContext.addJobFlowContextData("exception",null);
+					String accessToken = (String)jobFlowNodeExecuteContext.getJobFlowContextData("accessToken");
+					String searchUrl = "/open-apis/bitable/v1/apps/F1JHb8MOjaZAYPsv/tables/tbl7C6yF7JY/records/search?page_size=500&user_id_type=open_id";
+					String requestBody = """
+							{
+								"automatic_fields": false,
+								"field_names": [
+									 
+									"名称"
+								],
+								"filter": {
+									"conditions": [
+										
+									],
+									"conjunction": "and"
+								},
+								"sort": [
+									 
+								],
+								"view_id": "vew5xJoNE6"
+							}
+							""";
+					Map datas = feishuUtil.searchData(accessToken,searchUrl,  requestBody);
+					if(datas != null ){
+						Map data = (Map)datas.get("data");
+						if(data != null) {
+							List<Map> items = (List<Map>) data.get("items");
+							if (items != null && items.size() > 0) {
+								jobFlowNodeExecuteContext.addJobFlowContextData("datas", items);
+							} else {
+								jobFlowNodeExecuteContext.addJobFlowContextData("datas", null);
+							}
+						}
+						else{
+							jobFlowNodeExecuteContext.addJobFlowContextData("datas", null);
+						}
+					}
+					else{
+						jobFlowNodeExecuteContext.addJobFlowContextData("datas", null);
+					}
+					return null;
+				}
+				catch (Exception e){
+					jobFlowNodeExecuteContext.addJobFlowContextData("exception",true);
+					return null;
+				}
+			}
+			
+		};
+		
+		/**
+		 * 2.将第一个节点添加到工作流构建器
+		 */
+		jobFlowBuilder.addJobFlowNodeBuilder(searchdataFlowNodeBuilder);
+		
+		/**
+		 * 3.构建第二个任务节点：删除表格记录
+		 */
+		SimpleJobFlowNodeBuilder deleteNodeBuilder = new CallableJobFlowNodeBuilder("2", "删除表格记录") {
+			@Override
+			public Void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) throws Exception {
+				String accessToken = (String) jobFlowNodeExecuteContext.getJobFlowContextData("accessToken");
+				List<Map> datas = (List<Map>) jobFlowNodeExecuteContext.getJobFlowContextData("datas");
+				if (datas != null && datas.size() > 0) {
+					String deleteUrl = "/open-apis/bitable/v1/apps/F1JHb8MOjaZAYPvhNkc/tables/tbl7ATX/records/batch_delete";
+					Map requestBody = new LinkedHashMap();
+					
+					List<String> records = new ArrayList<>();
+					for (Map data : datas) {
+						records.add((String) data.get("record_id"));
+					}
+					requestBody.put("records", records);
+					
+					Map result = feishuUtil.deleteData(accessToken, deleteUrl, requestBody);
+					
+					
+					
+				}
+				return null;
+				
+			}
+			
+			
+		};
+		
+		
+		NodeTrigger deleteNodeTrigger = new NodeTrigger();
+		deleteNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
+			
+			@Override
+			public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+				if(nodeTriggerContext.getFlowContextData("exception") != null){//查询数据发生异常，继续查询数据并删除
+					return true;
+				}
+				boolean containContextData = nodeTriggerContext.containJobFlowContextData("datas");
+				if(containContextData){
+					List<Map> datas = (List<Map>)nodeTriggerContext.getFlowContextData("datas");
+					if(datas == null || datas.size() == 0){
+						return false;
+					}
+				}
+				return true;
+			}
+		});
+
+		
+		//如果有数据则执行删除节点，否则执行数据采集节点
+		jobFlowBuilder.addConditionJobFlowNodeBuilder(deleteNodeBuilder,deleteNodeTrigger);
+		SequenceJobFlowNodeBuilder sequenceJobFlowNodeBuilder = new SequenceJobFlowNodeBuilder("数据导入作业分支");
+		/**
+		 * 4.构建一次性全量采集商机指标数据节点
+		 */
+		DatatranJobFlowNodeBuilder datatranJobFlowNodeBuilder = new SimpleDatatranJobFlowNodeBuilder("一次性全量采集指标数据节点"){
+			
+			@Override
+			protected ImportBuilder buildImportBuilder(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+				ImportBuilder importBuilder = OpptyMetricsToFeishuTableOnceJob.buildImportBuilder(jobFlowNodeExecuteContext);
+				jobFlowNodeExecuteContext.addJobFlowContextData("executeDatatranJobFlowNode",true);
+				return importBuilder;
+			}
+		};
+		 
+		sequenceJobFlowNodeBuilder.addJobFlowNodeBuilder(datatranJobFlowNodeBuilder);
+		CallableJobFlowNodeBuilder saveUpdateTimeJobFlowNodeBuilder = new CallableJobFlowNodeBuilder("记录最后工作总结更新时间") {
+			@Override
+			public Void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) throws Exception {
+				JobFlowExecuteContext jobFlowExecuteContext = jobFlowNodeExecuteContext.getJobFlowExecuteContext();
+				SynObjectHolder<Long> updateTimeHolder = (SynObjectHolder)jobFlowExecuteContext.getContextData("updateTimeHolder");
+				if(updateTimeHolder != null){
+					Long updateTime = updateTimeHolder.getObject();
+					opptyMetricsService.saveUpdateTime("metrics-to-feishu-table",updateTime);
+				}
+				return null;
+			}
+		};
+		sequenceJobFlowNodeBuilder.addJobFlowNodeBuilder(saveUpdateTimeJobFlowNodeBuilder);
+		//作为默认节点添加到流程中删除、采集条件分支节点，如果没有数据需要删除时，则执行采集作业节点
+		jobFlowBuilder.addConditionJobFlowNodeBuilder(sequenceJobFlowNodeBuilder,true);
+		
+		NodeTrigger researchdataNodeTrigger = new NodeTrigger();
+		researchdataNodeTrigger.setTriggerScriptAPI(new TriggerScriptAPI() {
+			
+			@Override
+			public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+				Boolean executeDatatranJobFlowNode = (Boolean) nodeTriggerContext.getFlowContextData("executeDatatranJobFlowNode");//如果已经重新采集过数据，则不在执行查询和删除数据操作
+				if(executeDatatranJobFlowNode != null){
+					return false;
+				}
+				return true;
+			}
+		});
+		//5. 添加条件节点：如果还有数据则循环执行数据查询和删除节点
+		//如果已经重新采集过数据，则不再执行查询和删除数据操作
+		jobFlowBuilder.addAnotherConditionJobFlowNodeBuilder(searchdataFlowNodeBuilder,researchdataNodeTrigger);
+		 		 
+
+		JobFlow jobFlow = jobFlowBuilder.build();
+		jobFlow.start();
+```
 
 
 
