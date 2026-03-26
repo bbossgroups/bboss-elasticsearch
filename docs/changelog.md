@@ -4,7 +4,7 @@
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下五部分构成：
 
-- [**bboss ai客户端**](https://esdoc.bbossgroups.com/#/quickstart) bboss ai java大模型对接客户端，支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能
+- [**bboss ai客户端**](https://esdoc.bbossgroups.com/#/bboss-ai) bboss ai java大模型对接客户端，支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
@@ -135,7 +135,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 @HandlerMapping(value="/openapi/{apiUrl}.api", method={HttpMethod.POST})
 ```
 
-25. bboss-ai升级为bboss-agent，一个支持工具、mcp的多模态智能体客户端，提供mcp server和mcp client实现，提供sse和streamable http两种协议的mcp实现
+25. [bboss-ai升级为bboss-agent](https://esdoc.bbossgroups.com/#/bboss-ai)，一个支持工具、mcp的多模态智能体客户端，提供mcp server和mcp client实现，提供sse和streamable http两种协议的mcp实现
 26. bboss工作流扩展有限循环图能力和条件复合分支能力
     - 基于有向循环图的智能体协同、自主规划、迭代执行、结果评估和优化机制；可灵活设置最大循环次数，避免流程陷入无限循环
     - 基于串行、并行、条件类型流程节点，实现多智能体协同流程编排和执行
@@ -143,9 +143,9 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
     - 任务调度：提供一次性和周期性两种任务调度策略，灵活调度智能体协同工作流
 27. 数据集成模块改进：优化数据加工处理机制，减少数据加工处理过程中的内存占用量
 28. 数据集成模块问题修复：处理自定义任务和多输出源任务、指标输出任务无法正常从taskContext获取任务上下文数据问题
-29. 数据集成扩展：增加飞书输出插件，支持新增、修改、删除数据同步飞书多维表格
-30. 数据集成扩展：增加飞书输入插件，支持从飞书多维表格导出数据（全量）
-31. 多模态智能体客户端扩展：增加Minimax模型适配器，提供对Minimax-M2.7支持，包括LLM文本生成、工具、MCP服务调用
+29. 数据集成扩展：增加[飞书输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_216-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，支持新增、修改、删除数据同步飞书多维表格
+30. 数据集成扩展：增加[飞书输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_117-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，支持从飞书多维表格导出数据（全量）
+31. [多模态智能体客户端扩展](https://esdoc.bbossgroups.com/#/bboss-ai)：增加Minimax模型适配器，提供对Minimax-M2.7支持，包括LLM文本生成、工具、MCP服务调用
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等

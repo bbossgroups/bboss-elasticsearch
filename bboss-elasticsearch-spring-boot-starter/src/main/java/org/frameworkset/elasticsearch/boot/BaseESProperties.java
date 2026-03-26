@@ -374,6 +374,14 @@ public abstract class BaseESProperties {
 		private String trustPassword;
         private String apiKeyId;
         private String modelType;
+        private String agentAdapter;
+        public String getAgentAdapter() {
+            return agentAdapter;
+        }
+
+        public void setAgentAdapter(String agentAdapter) {
+            this.agentAdapter = agentAdapter;
+        }
         private String apiKeySecret;
         private String authAccount;
         private String authPassword;
@@ -731,6 +739,7 @@ public abstract class BaseESProperties {
         }
 
 
+        
     }
 
 	public static class Elasticsearch{
@@ -1170,6 +1179,9 @@ public abstract class BaseESProperties {
                 properties.put(_name + "http.apiKeyId",this.getHttp().getApiKeyId());
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getModelType()))
                 properties.put(_name + "http.modelType",this.getHttp().getModelType());
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getAgentAdapter()))
+                properties.put(_name + "http.agentAdapter",this.getHttp().getAgentAdapter());
             
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getApiKeySecret() ))
                 properties.put(_name + "http.apiKeySecret",this.getHttp().getApiKeySecret());

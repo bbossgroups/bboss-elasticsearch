@@ -1,4 +1,5 @@
 - [BBOSS介绍](README.md)
+- [bboss ai使用教程](bboss-ai.md)
 - [Http5负载均衡器使用介绍](httpproxy5.md)
 - [Http负载均衡器使用介绍](httpproxy.md)
 - 工作流
