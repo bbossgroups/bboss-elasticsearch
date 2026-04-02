@@ -97,7 +97,7 @@ hunyuan.http.apiKeyId = sk-xxxxx
 如需使用 MCP 工具服务，配置 `mcpserver.properties`：使用时，需将apiKey替换为实际apiKey
 
 ```properties
-http.poolNames = aliyun,gaotie,amap,WebParser,visualops,12306,shuqi
+http.poolNames = aliyun,gaotie,amap,WebParser,visualops,12306,shuqi,feishumcp
 #分析文档，编写一篇简洁实用的bboss ai实用教程
 ##aliyun mcp模型服务配置：在代码中引用服务的名称为aliyun
 # 服务连接池参数
@@ -172,7 +172,13 @@ visualops.http.apiKeyId = 17689048891086XsDsJVgwiQcmKhOdh23DX4NT
 #visualops.http.extendConfigs.sseendpoint = /mcp/sse.api
 visualops.http.extendConfigs.streamableendpoint = /mcp/streamable.api
 
-
+##feishumcp mcp模型服务配置：在代码中引用服务的名称为feishumcp
+# 服务连接池参数
+feishumcp.http.maxTotal = 200
+feishumcp.http.defaultMaxPerRoute = 200
+# feishumcp服务地址
+feishumcp.http.hosts=https://mcp.feishu.cn
+feishumcp.http.extendConfigs.streamableendpoint = /mcp
 
 
 
@@ -800,6 +806,47 @@ public static void streamChatWithMcpTools(String maas, String mcpServer,
 
 ---
 
+### 9.3 飞书MCP服务集成调用
+
+飞书MCP服务实现与标准MCP服务有所差别：需要通过http header设置临时AccessToken和工具清单配置
+
+飞书开发者调用远程 MCP 服务文档：
+
+https://open.feishu.cn/document/mcp_open_tools/developers-call-remote-mcp-server
+
+下面是bboss对接和使用飞书Mcp服务的案例代码：feishumcp server配置，参考前文的mcp服务配置，基于streamable 访问飞书Mcp服务
+
+```java
+            BaseFeishuConfig baseFeishuConfig = new BaseFeishuConfig();
+//            设置bboss应用id和应用token，用于申请访问飞书Mcp服务的AccessToken
+            baseFeishuConfig.setFeishuAppId("cli_a9d43b8f89cd0")
+                    .setFeishAppSecret("gIhy0EbVfgQGlpNBN8rqMKMnYCJs");
+            //定义用于获取飞书Mcp服务认证Token的http数据源：feishu，用例访问开发平台获取飞书MCP服务认证Token
+            baseFeishuConfig.addHttpConfig("http.poolNames", "feishu")
+                    .addHttpConfig("feishu.http.hosts", "https://open.feishu.cn")
+                    .addHttpConfig("feishu.http.maxTotal", 100)
+                    .addHttpConfig("feishu.http.defaultMaxPerRoute", 100)
+                    .setMcpTools("search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments");//需要设置飞书Mcp工具清单，否则大模型无法识别Mcp工具并调用
+            ;
+            chatAgentMessage.setToolsRegist(new FeishuMcpRegist("feishumcp",baseFeishuConfig));
+
+ CountDownLatch latch = new CountDownLatch(1);
+    AIAgent aiAgent = new AIAgent();
+
+    aiAgent.streamChat(maas, chatMsg)
+            .doOnNext(chunk -> {
+                if (!chunk.isDone() && chunk.getData() != null) {
+                    System.out.print(chunk.getData());
+                } else if (chunk.isToolCallsType()) {
+                    System.out.println("\n开始执行工具...");
+                }
+            })
+            .doOnComplete(() -> latch.countDown())
+            .subscribe();
+
+    latch.await();
+```
+
 ## 十、视频识别与生成
 
 ### 10.1 视频内容识别
@@ -1132,3 +1179,6 @@ public class IntelligentAssistant {
 - **后端多模态演示案例**：https://gitee.com/bboss/bboss-ai
 
   关键代码：https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/StreamTest.java
+  
+- **bboss rag参考文档**：https://esdoc.bbossgroups.com/#/Elasticsearch-embedding
+
