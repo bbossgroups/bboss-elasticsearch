@@ -1,5 +1,5 @@
 # 快速集成和应用Bboss
-Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
+Elasticsearch/Easysearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性能Elasticsearch Java RestClient 
 
 ![](images\client-Elasticsearch.png)
 
@@ -13,17 +13,17 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
 
 4. Support Elasticsearch 1.x,2.x,5.x,6.x,7.x,8.x,9.x,+
 
-5. Support Opensearch 1.x,2.x,+
+5. Support Easysearch 1.x,2.x,+
+6. Support Opensearch 1.x,2.x,+
+7. Support Spring boot 1.x,2.x,3.x,+
 
-6. Support Spring boot 1.x,2.x,3.x,+
+8. 可在普通maven项目和其他java工程中集成bboss
 
-7. 可在普通maven项目和其他java工程中集成bboss
+9. 操作返回的结果可以是原始json报文、PO对象、List集合、Map对象以及分页查询、聚合查询、高亮检索封装对象，可以方便的从结果中获取索引文档id、score等元数据信息
 
-8. 操作返回的结果可以是原始json报文、PO对象、List集合、Map对象以及分页查询、聚合查询、高亮检索封装对象，可以方便的从结果中获取索引文档id、score等元数据信息
+10. 支持多Elasticsearch数据源，每个数据源可以是不同版本的Elasticsearch
 
-9. 支持多Elasticsearch数据源，每个数据源可以是不同版本的Elasticsearch
-
-10. 学习成本低
+11. 学习成本低
 
    1）无需任何配置即可完成增删改、简单查询操作，复杂的查询才需编写和配置dsl；
 
@@ -32,6 +32,19 @@ Elasticsearch/Opensearch [Bboss](https://esdoc.bbossgroups.com/#/README)--高性
    3）可以借助kibana devtool调试dsl，调试通过后直接放入bboss dsl配置文件，调整放置检索变量参数即可完成各种复杂的Elasticsearch查询检索操作
 
    4）bboss完全支持和兼容Elasticsearch各个版本的dsl语法，基于bboss对接各个版本的Elasticsearch，不会对Elasticsearch造成任何的功能损耗，可以说Elasticsearch的既是bboss的，免除Elasticsearch版本升级的后顾之忧。
+
+# bboss兼容性
+
+| bboss | Elasticsearch | Easysearch | Opensearch | spring boot   |
+| ----- | ------------- | ---------- | ---------- | ------------- |
+| all   | 1.x           | 1.x        | 1.x        | 1.x,2.x,3.x,+ |
+| all   | 2.x           | 2.x        | 2.x        | 1.x,2.x,3.x,+ |
+| all   | 3.x           |            |            | 1.x,2.x,3.x,+ |
+| all   | 5.x           |            |            | 1.x,2.x,3.x,+ |
+| all   | 6.x           |            |            | 1.x,2.x,3.x,+ |
+| all   | 7.x           |            |            | 1.x,2.x,3.x,+ |
+| all   | 8.x           |            |            | 1.x,2.x,3.x,+ |
+| all   | 9.x           |            |            | 1.x,2.x,3.x,+ |
 
 # 1.集成应用
 

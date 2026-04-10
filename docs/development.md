@@ -23,6 +23,19 @@ bboss elasticsearch管理dsl的方式：
 
   **bboss es restful组件不依赖elasticsearch官方任何jar文件，兼容所有elasticsearch版本:1.x,2.x,5.x,6.x,7.x,8.x,9.x,+**   ,兼容spring boot 1.x,2,x,3.x
 
+# bboss兼容性
+
+| bboss | Elasticsearch | Easysearch | Opensearch | spring boot |
+| ----- |---------------| ----------- | ----------- | ----------- |
+| all   | 1.x           | 1.x | 1.x | 1.x,2.x,3.x,+    |
+| all   | 2.x           | 2.x        | 2.x        | 1.x,2.x,3.x,+    |
+| all   | 3.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 5.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 6.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 7.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 8.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 9.x           |            |            | 1.x,2.x,3.x,+     |
+
    bboss与es官方客户端的对比：[bboss es对比直接使用es客户端的优势](bboss-vs-es.md)
 
   bboss elasticsearch开发环境搭建和开发入门视频教程：[观看教程](https://esdoc.bbossgroups.com/#/README?id=_6-%e8%a7%86%e9%a2%91%e6%95%99%e7%a8%8b)
