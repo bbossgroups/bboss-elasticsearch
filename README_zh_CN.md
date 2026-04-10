@@ -1,45 +1,54 @@
 # Elasticsearch Bboss
 a good elasticsearch orm Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
 
-ES小白分分钟上手，功能丰富，涵盖Elasticsearch所有功能，多集群多数据源,自动索引托管，多种分页机制，傻瓜级CRUD，脚本，sql，jdbc，高亮，权重，聚合，IP，GEO地理位置，父子嵌套，应有尽有
+ES小白分分钟上手，功能丰富，涵盖Elasticsearch/Easysearch/Opensearch所有功能，多集群多数据源,自动索引托管，多种分页机制，傻瓜级CRUD，脚本，sql，jdbc，高亮，权重，聚合，IP，GEO地理位置，父子嵌套，应有尽有
+
 ![](https://esdoc.bbossgroups.com/images/client-Elasticsearch.png)
-https://esdoc.bbossgroups.com/#/README
+
+<https://esdoc.bbossgroups.com/#/README>
 
 # Environmental requirements
 
 JDK requirement: JDK 1.8+
+
 Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,9.x,+
+
+Easysearch: 1.x,2.x
+
+Opensearch: 1.x,2.x
+
+Spring booter 1.x,2.x,3.x,+
+
 # bboss兼容性
 
-| bboss | Elasticsearch | spring boot |
-| ----- |---------------| ----------- |
-| all   | 1.x           | 1.x,2.x,3.x,+     |
-| all   | 2.x           | 1.x,2.x,3.x,+     |
-| all   | 3.x           | 1.x,2.x,3.x,+     |
-| all   | 5.x           | 1.x,2.x,3.x,+     |
-| all   | 6.x           | 1.x,2.x,3.x,+     |
-| all   | 7.x           | 1.x,2.x,3.x,+     |
-| all   | 8.x           | 1.x,2.x,3.x,+     |
-| all   | 9.x           | 1.x,2.x,3.x,+     |
+| bboss | Elasticsearch | Easysearch | Opensearch | spring boot |
+| ----- |---------------| ----------- | ----------- | ----------- |
+| all   | 1.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 2.x           | 2.x        | 2.x        | 1.x,2.x,3.x,+    |
+| all   | 3.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 5.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 6.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 7.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 8.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 9.x           |            |            | 1.x,2.x,3.x,+     |
 
 # 快速开始bboss
 
 https://esdoc.bbossgroups.com/#/quickstart
+
+
 # Build from source code
+
 Build from source code guide:
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
 
 # Elasticsearch Java Demos
-
-The following Demo and related documentation is compatible with Elasticsearch 2. X,5. X,6. X,7.x,8.x,9.x,+ versions
-
+The following Demo and related documentation is compatible with Elasticsearch 1.x,2.X,5.X,6.X,7.x,8.x,9.x,+ versions
 ## Elasticsearch demo for Java project:
-
 https://github.com/bbossgroups/elasticsearch-example
-
-## Elasticsearch demo for spring booter 1.x,2.x
+## Elasticsearch demo for spring booter 1.x,2.x,3.x
 
 github
 
@@ -59,17 +68,15 @@ https://gitee.com/bboss/springboot3-elasticsearch-webservice
 
 https://gitee.com/bboss/eshelloword-spring-boot3-starter
 
-# Elasticsearch Java rest client bboss fast integration documentation
-
+# Fast integration bboss documentation
 [Spring boot integration ElasticSearch case sharing](https://esdoc.bbossgroups.com/#/spring-booter-with-bboss)
 
 [Quickly integrate Elasticsearch Restful API case sharing](https://esdoc.bbossgroups.com/#/common-project-with-bboss)
 
-[Quick Start](https://esdoc.bbossgroups.com/#/quickstart)
 
 # Elasticsearch BBoss Developer Tutorial
 
-[High-performance elasticsearch ORM library bboss use introduction](https://my.oschina.net/bboss/blog/1556866)
+[High-performance elasticsearch ORM library bboss use introduction](https://esdoc.bbossgroups.com/#/development)
 
 # 联系我们
 
@@ -103,7 +110,6 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 <img src="https://esdoc.bbossgroups.com/images/wchat.png"   height="200" width="200" />
 
 非常感谢您对开源精神的支持！❤您的捐赠将用于bboss社区建设、QQ群年费、网站云服务器租赁费用。
-
 
 
 ## License

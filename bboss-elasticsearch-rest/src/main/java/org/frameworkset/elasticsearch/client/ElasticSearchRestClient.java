@@ -326,7 +326,7 @@ public class ElasticSearchRestClient implements ElasticSearchClient {
 		}
 		if (esVersion != null) {
 
-			if(distribution != null && 	distribution.toLowerCase().indexOf("opensearch") >= 0){
+			if(distribution != null && 	(distribution.toLowerCase().indexOf("easysearch") >= 0 || distribution.toLowerCase().indexOf("opensearch") >= 0 )){
 				version = 7;
 				upper7 = true;
 			}

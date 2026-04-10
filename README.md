@@ -1,7 +1,7 @@
 # Elasticsearch Bboss
 a good elasticsearch orm Java rest client. It operates and accesses elasticsearch in a way similar to mybatis.
 
-ES小白分分钟上手，功能丰富，涵盖Elasticsearch所有功能，多集群多数据源,自动索引托管，多种分页机制，傻瓜级CRUD，脚本，sql，jdbc，高亮，权重，聚合，IP，GEO地理位置，父子嵌套，应有尽有
+ES小白分分钟上手，功能丰富，涵盖Elasticsearch/Easysearch/Opensearch所有功能，多集群多数据源,自动索引托管，多种分页机制，傻瓜级CRUD，脚本，sql，jdbc，高亮，权重，聚合，IP，GEO地理位置，父子嵌套，应有尽有
 
 ![](https://esdoc.bbossgroups.com/images/client-Elasticsearch.png)
 
@@ -13,20 +13,24 @@ JDK requirement: JDK 1.8+
 
 Elasticsearch version requirements: 1.X,2.X,5.X,6.X,7.x,8.x,9.x,+
 
+Easysearch: 1.x,2.x
+
+Opensearch: 1.x,2.x
+
 Spring booter 1.x,2.x,3.x,+
 
 # bboss兼容性
 
-| bboss | Elasticsearch | spring boot |
-| ----- |---------------| ----------- |
-| all   | 1.x           | 1.x,2.x,3.x,+    |
-| all   | 2.x           | 1.x,2.x,3.x,+    |
-| all   | 3.x           | 1.x,2.x,3.x,+    |
-| all   | 5.x           | 1.x,2.x,3.x,+    |
-| all   | 6.x           | 1.x,2.x,3.x,+    |
-| all   | 7.x           | 1.x,2.x,3.x,+     |
-| all   | 8.x           | 1.x,2.x,3.x,+     |
-| all   | 9.x           | 1.x,2.x,3.x,+     |
+| bboss | Elasticsearch | Easysearch | Opensearch | spring boot |
+| ----- |---------------| ----------- | ----------- | ----------- |
+| all   | 1.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 2.x           | 2.x        | 2.x        | 1.x,2.x,3.x,+    |
+| all   | 3.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 5.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 6.x           |            |            | 1.x,2.x,3.x,+    |
+| all   | 7.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 8.x           |            |            | 1.x,2.x,3.x,+     |
+| all   | 9.x           |            |            | 1.x,2.x,3.x,+     |
 
 # 快速开始bboss
 
