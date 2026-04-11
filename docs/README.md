@@ -27,11 +27,15 @@ bboss采用模块化管理以上四部分，模块之间依赖关系如下：
 
 ## 1.1 高性能 Elasticsearch Highlevel Java Restclient
 
-[bboss Elasticsearch Highlevel Java Restclient](https://esdoc.bbossgroups.com/#/quickstart)是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Easysearch/Opensearch的o/r mapping高性能开发库
+[bboss](https://esdoc.bbossgroups.com/#/quickstart)是一套基于query dsl语法操作和访问分布式搜索引擎Elasticsearch/Easysearch/Opensearch的o/r mapping高性能开发库
 
 <img src="images\client-Elasticsearch.png" style="zoom:80%;" />
 
 ### bboss兼容性
+
+作为兼容性最好的Elasticsearch/Easysearch/Opensearch java客户端和数据采集&流批一体化计算工具，bboss各版本对Elasticsearch/Easysearch/Opensearch、Spring boot兼容性说明如下：
+
+jdk兼容性：jdk 1.8+
 
 | bboss | Elasticsearch | Easysearch | Opensearch | spring boot   |
 | ----- | ------------- | ---------- | ---------- | ------------- |
@@ -219,23 +223,9 @@ https://www.bbossgroups.com/sources-demos.html
 
 [bboss cdc之实时采集Mysql binlog增删改数据教程](https://www.bilibili.com/video/BV1ko4y1M7My)
 
-# 7. bboss兼容性
 
-作为Elasticsearch兼容性最好的java客户端和数据采集&流批一体化计算工具，bboss各版本对Elasticsearch、Spring boot兼容性说明如下：
 
-| bboss | Elasticsearch | spring boot |
-| ----- |---------------| ----------- |
-| all   | 1.x           | 1.x,2.x,3.x |
-| all   | 2.x           | 1.x,2.x,3.x |
-| all   | 5.x           | 1.x,2.x,3.x |
-| all   | 6.x           | 1.x,2.x,3.x |
-| all   | 7.x           | 1.x,2.x,3.x |
-| all   | 8.x           | 1.x,2.x,3.x |
-| all   | 9.x           | 1.x,2.x,3.x,+     |
-
-jdk兼容性：jdk 1.8+
-
-# 8. 开发交流
+# 7. 开发交流
 
 QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
@@ -250,7 +240,7 @@ QQ交流群：21220580,166471282,3625720,154752521,166471103,166470856
 
 
 
-# 9.支持我们
+# 8.支持我们
 
 如果您正在使用bboss，或是想支持我们继续开发，您可以通过如下方式支持我们：
 
