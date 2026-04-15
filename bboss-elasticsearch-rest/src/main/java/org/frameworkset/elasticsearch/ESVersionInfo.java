@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ESVersionInfo {
     private static final String ES_VERSION = "7.5.6";
-    private static final String ES_RELEASEDATE = "20260409";
+    private static final String ES_RELEASEDATE = "20260413";
     private static Logger logger = LoggerFactory.getLogger(ESVersionInfo.class);
     static {
         logger.info(getVersionDescription());
