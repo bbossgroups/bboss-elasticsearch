@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20260323(待发布)
+# v7.5.6 功能改进-20260420(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -146,6 +146,10 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 29. 数据集成扩展：增加[飞书输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_216-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，支持新增、修改、删除数据同步飞书多维表格
 30. 数据集成扩展：增加[飞书输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_117-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，支持从飞书多维表格导出数据（全量）
 31. [多模态智能体客户端扩展](https://esdoc.bbossgroups.com/#/bboss-ai)：增加Minimax模型适配器，提供对Minimax-M2.7支持，包括LLM文本生成、工具、MCP服务调用
+32. Elasticsearch客户端改进：增加对国产搜索引起Easysearch 1.x,2.x支持
+33. 修复IP地址解析组件当不配置ipv6地址库时空指针问题
+34. 完善工作流引擎：简化流程节点触发器设置，可以直接指定script api
+35. 多模态智能体框架：多智能体协同增加路由功能，增加对豆包seedance 2.0支持
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
