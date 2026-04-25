@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20260420(待发布)
+# v7.5.6 功能改进-20260425(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -150,6 +150,14 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 33. 修复IP地址解析组件当不配置ipv6地址库时空指针问题
 34. 完善工作流引擎：简化流程节点触发器设置，可以直接指定script api
 35. 多模态智能体框架：多智能体协同增加路由功能，增加对豆包seedance 2.0支持
+36. 微服务框架改进：增加http proxy支持，相关配置如下：
+```properties
+    openai.http.proxyHost = 127.0.0.1  # 代理主机(必填)
+    openai.http.proxyPort = 7897  # 代理端口(必填)
+    openai.http.proxyProtocol = http  # 代理协议 (可选)   
+    openai.http.proxyUser = admin  # 代理用户 (可选)   
+    openai.http.proxyPassword = admin  # 代理口令 (可选)   
+```
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等

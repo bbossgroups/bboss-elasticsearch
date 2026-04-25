@@ -375,6 +375,59 @@ public abstract class BaseESProperties {
         private String apiKeyId;
         private String modelType;
         private String agentAdapter;
+        /**
+         http.proxyHost = 127.0.0.1
+         http.proxyPort = 7890
+         http.proxyProtocol = http
+         http.proxyUser = admin
+         http.proxyPassword = admin
+         */
+        private String proxyHost;
+        private String proxyPort;
+        private String proxyProtocol;
+        private String proxyUser;
+        private String proxyPassword;
+
+        public String getProxyHost() {
+            return proxyHost;
+        }
+
+        public void setProxyHost(String proxyHost) {
+            this.proxyHost = proxyHost;
+        }
+
+        public String getProxyPort() {
+            return proxyPort;
+        }
+
+        public void setProxyPort(String proxyPort) {
+            this.proxyPort = proxyPort;
+        }
+
+        public String getProxyProtocol() {
+            return proxyProtocol;
+        }
+
+        public void setProxyProtocol(String proxyProtocol) {
+            this.proxyProtocol = proxyProtocol;
+        }
+
+        public String getProxyUser() {
+            return proxyUser;
+        }
+
+        public void setProxyUser(String proxyUser) {
+            this.proxyUser = proxyUser;
+        }
+
+        public String getProxyPassword() {
+            return proxyPassword;
+        }
+
+        public void setProxyPassword(String proxyPassword) {
+            this.proxyPassword = proxyPassword;
+        }
+
         public String getAgentAdapter() {
             return agentAdapter;
         }
@@ -1177,6 +1230,35 @@ public abstract class BaseESProperties {
             
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getApiKeyId()))
                 properties.put(_name + "http.apiKeyId",this.getHttp().getApiKeyId());
+
+            /**
+             http.proxyHost = 127.0.0.1
+             http.proxyPort = 7890
+             http.proxyProtocol = http
+             http.proxyUser = admin
+             http.proxyPassword = admin
+             */
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getProxyHost())) {
+                properties.put(name + "http.proxyHost", this.getHttp().getProxyHost());
+            }
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getProxyPort())){
+                properties.put(name + "http.proxyPort",this.getHttp().getProxyPort());
+            }
+
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getProxyProtocol())){
+                properties.put(name + "http.proxyProtocol",this.getHttp().getProxyProtocol());
+            }
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getProxyUser())){
+                properties.put(name + "http.proxyUser",this.getHttp().getProxyUser());
+            }
+
+
+            if(SimpleStringUtil.isNotEmpty(this.getHttp().getProxyPassword())){
+                properties.put(name + "http.proxyPassword",this.getHttp().getProxyPassword());
+            }
             if(SimpleStringUtil.isNotEmpty(this.getHttp().getModelType()))
                 properties.put(_name + "http.modelType",this.getHttp().getModelType());
 
