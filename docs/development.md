@@ -863,7 +863,16 @@ http.pemkeyPassword = 7240a0366eb6a764103e
  
 ```
 
+### 2.6.6 http代理配置
 
+http proxy支持，相关配置如下：
+```properties
+    openai.http.proxyHost = 127.0.0.1  # 代理主机(必填)
+    openai.http.proxyPort = 7897  # 代理端口(必填)
+    openai.http.proxyProtocol = http  # 代理协议 (可选)   
+    openai.http.proxyUser = admin  # 代理用户 (可选)   
+    openai.http.proxyPassword = admin  # 代理口令 (可选)   
+```
 
 ## 2.7 DSL加载机制配置
 

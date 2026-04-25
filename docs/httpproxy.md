@@ -879,9 +879,243 @@ spring boot配置项
 
      spring.bboss.http.failAllContinue = true
 
-### 3.2.8 http协议参数配置
 
-参考文档：[http协议配置](https://esdoc.bbossgroups.com/#/development?id=_26-http%e5%8d%8f%e8%ae%ae%e9%85%8d%e7%bd%ae)
+
+## 3.3 http协议配置
+
+### 3.3.1 连接池数量配置
+
+ \## 总共允许的最大连接数:节点数n x defaultMaxPerRoute
+
+http.maxTotal = 600
+
+\## 每个地址允许的最大连接数
+
+http.defaultMaxPerRoute = 200
+
+### 3.3.2 重试机制配置
+
+http.automaticRetriesDisabled 为true时，关闭重试机制，不会进行重试，为false时，根据以下逻辑进行处理，默认值false。
+
+1、如果未通过http.customHttpRequestRetryHandler配置自定义重试机制，则按照默认机制进行重试。
+
+2、如果通过http.customHttpRequestRetryHandler配置了自定义重试机制，自定义重试判断逻辑 ，指定哪些场景下需要进行重试：
+
+```properties
+#* 自定义重试控制接口，必须实现接口方法
+#* public interface CustomHttpRequestRetryHandler  {
+#*     public boolean retryRequest(IOException exception, int executionCount, HttpContext context,ClientConfiguration configuration);
+#* }
+#* 方法返回true，进行重试，false不重试
+# http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.DefaultHttpRequestRetryHandler
+```
+
+配置重试控制组件示例：
+
+```
+http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+```
+
+重试次数配置
+
+1）如果http.retryTime大于0则重试http.retryTime指定的次数，例如http.retryTime = 5就重试5次
+
+2）如果http.retryTime<=0，则采用httpclient默认3次进行重试。
+
+重试时间间隔
+
+通过http.retryInterval指定重试时间间隔（单位：毫秒）,大于0时，每次等待对应的时间后再重试，否则直接重试。
+
+### 3.3.3 保活机制配置
+
+- 推荐配置
+
+validateAfterInactivity 单位：毫秒，当获取连接时，判断连接是否已经空闲了validateAfterInactivity对应的时间，如果是则对连接进行有效性校验，无效链接直接清理掉，>0起作用，默认值 -1
+
+http.validateAfterInactivity=2000
+
+获取连接时校验链接存活时间，超过timeToLive对应的时间则销毁链接
+
+http.timeToLive=3600000 单位毫秒
+
+
+
+### 3.3.4 超时时间配置
+
+网络超时时间配置
+
+```properties
+#建立连接超时时间，单位：毫秒
+http.timeoutConnection = 10000
+#socket通讯超时时间，如果在通讯过程中出现sockertimeout异常，可以适当调整timeoutSocket参数值，单位：毫秒
+http.timeoutSocket = 50000
+
+```
+
+
+申请连接超时时间，设置为0不超时，单位：毫秒
+
+```properties
+http.connectionRequestTimeout=10000
+```
+
+
+
+### **3.3.5 https协议配置**
+
+如果开启了Elasticsearch https协议，则需要在elasticsearch地址中添加https://协议头，
+
+7.3.4及以下的版本还需设置elasticsearch.useHttps为true
+
+```properties
+#7.3.4及以下的版本需设置useHttps
+#elasticsearch.useHttps=true
+elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
+```
+
+spring boot对应的配置：
+
+```properties
+#7.3.4及以下的版本还需设置useHttps
+#spring.elasticsearch.bboss.elasticsearch.useHttps=true
+spring.elasticsearch.bboss.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
+```
+
+Elasticsearch 启用https协议后，如果不想在客户端使用ssl证书则不需要进行ssl证书配置，如果需要使用ssl证书，bboss支持以下六种方式配置ssl证书参数。
+
+如果是spring boot项目，在对应的参数名称添加前缀即可：spring.elasticsearch.bboss.
+
+#### 1 Using PEM certificates
+
+| 参数名称                | 说明                                               |
+| ----------------------- | -------------------------------------------------- |
+| http.pemCert            | pem证书路径，String                                |
+| http.pemtrustedCA       | trustedHTTPCertificates证书路径，String            |
+| http.supportedProtocols | ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.pemkeyPassword     | 私钥pem证书口令，String                            |
+| http.pemKey             | 私钥pem证书路径，String                            |
+
+配置示例（search guard）：
+
+```properties
+# Using PEM certificates
+http.pemCert = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.crtfull.pem
+http.pemtrustedCA = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/chain-ca.pem
+http.pemKey = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin.key.pem
+http.pemkeyPassword = 7240a0366eb6a764103e
+```
+
+#### 2 Using the keystore and truststore file（JKS）
+
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.keystoreAlias      | 可选，String                                             |
+| http.trustAlias         | 可选，String                                             |
+| http.supportedProtocols | 可选，ssl协议版本，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.truststore         | truststore证书文件路径，证书类型为JKS                    |
+| http.trustPassword      | truststore证书口令，String                               |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
+
+配置示例（search guard）：
+
+```properties
+# Using the keystore- and truststore file
+ http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
+ http.keyPassword = 7240a0366eb6a764103e
+ http.truststore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/truststore.jks
+ http.trustPassword = 6aa4bd79096852203a5b
+```
+
+#### 3 Using the keystore 
+
+| 参数名称                | 说明                                                     |
+| ----------------------- | -------------------------------------------------------- |
+| http.supportedProtocols | ssl协议版本，可选，String，默认值：TLSv1.2,TLSv1.1,TLSv1 |
+| http.keystore           | keystore证书路径，证书类型为JKS                          |
+| http.keyPassword        | keystore证书口令                                         |
+
+配置示例：
+
+
+```properties
+# Using the keystore file
+ http.keystore = D:/workspace/bbossesdemo/eshelloword-booter/src/main/resources/sgadmin-keystore.jks
+ http.keyPassword = 7240a0366eb6a764103e
+ 
+```
+
+#### 4 Using the crt文件
+
+| 参数名称     | 说明                |
+| ------------ | ------------------- |
+| http.pemCert | pem证书路径，String |
+
+配置示例：
+
+
+```properties
+# Using the crt file
+ http.pemCert = /path/to/ca.crt
+ 
+```
+
+#### 5 Using the truststore文件
+
+| 参数名称           | 说明                                            |
+| ------------------ | ----------------------------------------------- |
+| http.truststore    | truststore证书文件路径，证书类型为pkcs12或者JKS |
+| http.trustPassword | truststore证书口令，可选项                      |
+
+配置示例：
+
+
+```properties
+# Using the crt file
+ http.truststore = /path/to/truststore.p12
+ # 可选项
+ http.trustPassword = 6aa4bd79096852203a5b
+ 
+```
+
+#### 6 Using the keystore and truststore file（pkcs12）
+
+| 参数名称           | 说明                                     |
+| ------------------ | ---------------------------------------- |
+| http.truststore    | truststore证书文件路径，证书类型为pkcs12 |
+| http.trustPassword | truststore证书口令，可选项               |
+| http.keystore      | keystore证书路径，证书类型为pkcs12       |
+| http.keyPassword   | keystore证书口令                         |
+
+配置示例：
+
+
+```properties
+# Using the truststore file
+ http.truststore = /path/to/your/truststore.p12
+ # 可选项
+ http.trustPassword = 6aa4bd79096852203a5b
+ 
+ # Using the crt file
+ http.keystore = /path/to/your/keystore.p12
+ # 可选项
+ http.keyPassword = 6aa4bd79096852203a5b
+ 
+```
+
+### 3.3.6 http代理配置
+
+http proxy支持，相关配置如下：
+
+```properties
+    openai.http.proxyHost = 127.0.0.1  # 代理主机(必填)
+    openai.http.proxyPort = 7897  # 代理端口(必填)
+    openai.http.proxyProtocol = http  # 代理协议 (可选)   
+    openai.http.proxyUser = admin  # 代理用户 (可选)   
+    openai.http.proxyPassword = admin  # 代理口令 (可选)   
+```
+
+## 
 
 # 4 使用负载均衡器调用服务
 
@@ -1771,7 +2005,7 @@ http.httpClientBuilderCallback=org.bboss.elasticsearchtest.aws.HttpClientBuilder
 
 # 11.SSL证书配置
 
-http ssl配置，参考文档：[**2.6.5 https协议配置**](https://esdoc.bbossgroups.com/#/development?id=_265-https协议配置)
+http ssl配置，参考文档：**3.3 https协议配置**
 
 
 
