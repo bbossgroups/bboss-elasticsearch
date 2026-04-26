@@ -59,4 +59,8 @@ public interface TemplateContainer {
 	boolean isAlwaysCacheDslStruction();
 
 	void monitor(DaemonThread daemonThread, ResourceInitial resourceTempateRefresh);
+    
+    default boolean needMonitor(){
+        return true;
+    }
 }

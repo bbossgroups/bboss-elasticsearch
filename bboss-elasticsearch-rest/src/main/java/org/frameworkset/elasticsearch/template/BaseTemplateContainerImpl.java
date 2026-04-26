@@ -191,7 +191,7 @@ public abstract class BaseTemplateContainerImpl implements TemplateContainer{
 			configDSLUtil.buildTemplateDatas(this);
 		}
 		catch (Exception e){
-			logger.warn("reinit namespace"+namespace+" failed:",e);
+			logger.warn("Reinit namespace"+namespace+" failed:",e);
 		}
 
 

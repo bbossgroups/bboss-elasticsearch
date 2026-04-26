@@ -137,6 +137,11 @@ public class ConfigHolder {
 	private Object lock = new Object();
 	private void checkESUtil(ConfigDSLUtil configDSLUtil){
 		TemplateContainer templateContainer = configDSLUtil.getTemplateContext();
+        if(!templateContainer.needMonitor()){
+            if(log.isDebugEnabled())
+                log.debug("{} needMonitor[false], ignore hotload DSL [{}]",holderName,templateContainer.getNamespace());
+            return;
+        }
 		long refresh_interval = ElasticSearchHelper.getDslfileRefreshInterval();
 		if(refresh_interval > 0)
 		{
@@ -156,7 +161,8 @@ public class ConfigHolder {
 //			damon.addFile(fileUrl,templateNamespace, new ResourceTempateRefresh(sqlutil));
 		}
 		else{
-			log.debug(holderName+ " DSL Refresh Interval:"+refresh_interval+",ignore hotload DSL ["+templateContainer.getNamespace()+"]");
+            if(log.isDebugEnabled())
+                log.debug("{} DSL Refresh Interval[{}], ignore hotload DSL [{}]",holderName,refresh_interval,templateContainer.getNamespace());
 		}
 
 	}
