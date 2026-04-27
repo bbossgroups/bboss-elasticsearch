@@ -1906,7 +1906,106 @@ http.kerberos.serverRealmHttpMethod=get
    http.apiKeyId = aaaa
 ```
 
+## 8.5 有效期动态token认证
 
+动态有效期令牌认证功能，可定期更新快失效令牌，已应用于飞书token认证机制
+
+飞书Mcp服务配置
+```properties
+    feishumcp.http.hosts=https://mcp.feishu.cn
+    feishumcp.http.authorTokenFunction = org.frameworkset.spi.ai.mcp.feishu.FeishuMCPAuthorTokenFunction
+    # 105分钟自动刷新token，飞书token有效期120分钟
+    feishumcp.http.authorTokenExpiredTime = 6300000
+    feishumcp.http.extendConfigs.tools = search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments
+    feishumcp.http.extendConfigs.appId = cli_a9d43b8789cd0
+    feishumcp.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+```
+飞书开放平台服务配置
+```properties
+feishu.http.authorTokenFunction = org.frameworkset.spi.feishu.FeishuAuthorTokenFunction
+# 105分钟自动刷新token，飞书token有效期120分钟
+feishu.http.authorTokenExpiredTime = 6300000
+feishu.http.extendConfigs.appId = cli_a9d43b8789cd0
+feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+```
+
+通过authorTokenFunction指定获取最新token函数，通过authorTokenExpiredTime指定当前令牌过期时间，要比实际过期时间小，及提前更新快过期token，避免认证失败。
+
+authorTokenFunction实现接口：
+
+```java
+public interface AuthorTokenFunction {
+    /**
+     * 获取最新令牌
+     * @param clientConfiguration
+     * @return
+     */
+    String genAuthorToken(ClientConfiguration clientConfiguration);
+
+    /**
+     * 认证header参数名称，一般为Authorization，可以根据不同要求设置为其他值
+     * @return
+     */
+    default String authorHeaderKey(){
+        return "Authorization";
+    }
+
+    /**
+     * 认证token前缀，一般为"Bearer "，如果不需要前缀则返回null即可
+     * @return
+     */
+    default String authorTokenPrefix(){
+        return "Bearer ";
+    }
+}
+```
+
+实现案例：
+
+```java
+public class FeishuAuthorTokenFunction implements AuthorTokenFunction {
+    private String feishuDatasource;
+
+    public ClientConfiguration getFeishuClientConfiguration(ClientConfiguration clientConfiguration) {
+        if(feishuDatasource != null){
+            return ClientConfiguration.getClientConfiguration(feishuDatasource);
+        }
+        return clientConfiguration;
+    }
+    public void setFeishuDatasource(String feishuDatasource) {
+        this.feishuDatasource = feishuDatasource;
+    }
+    @Override
+    public String genAuthorToken(ClientConfiguration clientConfiguration) {
+            clientConfiguration = getFeishuClientConfiguration(clientConfiguration);
+            String feishuDatasource = clientConfiguration.getDatasource() ;
+            String appId = clientConfiguration.getExtendConfig("appId");
+            String appSecret = clientConfiguration.getExtendConfig("appSecret");
+            if(SimpleStringUtil.isEmpty(appId) || SimpleStringUtil.isEmpty(appSecret)){
+                throw new FeishuException("app id or app secret is empty:appId="+appId+",appSecret="+appSecret);
+            }
+            String url = "/open-apis/auth/v3/tenant_access_token/internal";
+            Map<String,Object> params = new LinkedHashMap<>();
+            params.put("app_id",appId);
+            params.put("app_secret",appSecret);
+            Map tenantAccessToken = null;
+            int times = 10;
+            do {
+                try {
+                    tenantAccessToken = HttpRequestProxy.sendJsonBody(feishuDatasource,params,url,Map.class);
+                    break;
+                } catch (Exception e) {
+                    times--;
+                    if(times < 0){
+                        throw new FeishuException("get tenant access token failed:",e);
+                    }
+//                 throw new DataImportException("get tenant access token failed:", e);
+                }
+            }while(true);
+            return (String)tenantAccessToken.get("tenant_access_token");
+    }
+}
+```
 
 # 9.请求和响应拦截器配置
 

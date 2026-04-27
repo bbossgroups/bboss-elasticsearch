@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20260425(待发布)
+# v7.5.6 功能改进-20260428(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -158,6 +158,27 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
     openai.http.proxyUser = admin  # 代理用户 (可选)   
     openai.http.proxyPassword = admin  # 代理口令 (可选)   
 ```
+37. 微服务框架改进：增加动态有效期令牌认证功能，可定期更新快失效令牌，已应用于飞书token认证机制
+
+飞书Mcp服务配置
+```properties
+    feishumcp.http.hosts=https://mcp.feishu.cn
+    feishumcp.http.authorTokenFunction = org.frameworkset.spi.ai.mcp.feishu.FeishuMCPAuthorTokenFunction
+    # 105分钟自动刷新token，飞书token有效期120分钟
+    feishumcp.http.authorTokenExpiredTime = 6300000
+    feishumcp.http.extendConfigs.tools = search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments
+    feishumcp.http.extendConfigs.appId = cli_a9d43b8789cd0
+    feishumcp.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+```
+飞书开放平台服务配置
+```properties
+feishu.http.authorTokenFunction = org.frameworkset.spi.feishu.FeishuAuthorTokenFunction
+# 105分钟自动刷新token，飞书token有效期120分钟
+feishu.http.authorTokenExpiredTime = 6300000
+feishu.http.extendConfigs.appId = cli_a9d43b8789cd0
+feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+```
+
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
