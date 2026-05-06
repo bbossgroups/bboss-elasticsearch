@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+	配置数据导入的http服务queryDsl
+ ]]>
+    </description>
+    <property name="requestBody">
+        <![CDATA[
+        {
+								"automatic_fields": false,
+								"field_names": [
+									 
+									"日志ID","用户ID","卡片消息类型","发送状态","发送内容","返回结果","分析结果","建议","发送时间","发送时间戳"
+								],
+								"filter": {
+									"conjunction": "and",
+									"conditions": [
+										{
+										   "field_name": "发送时间戳",
+										   "operator": "isGreater",
+										   "value": [
+											 "#[发送时间戳]"
+										   ]
+										 },
+										 {
+										   "field_name": "发送时间戳",
+										   "operator": "isLessEqual",
+										   "value": [
+											 "#[发送时间戳__endTime]"
+										   ]
+										 }
+									]
+								},
+								"sort": [
+									 
+								],
+								"view_id": "vewFoeaJxt"
+							}
+        ]]></property>
+    <property name="requestBodyxdb">
+        <![CDATA[
+        {
+								"automatic_fields": false,
+								"field_names": [],
+								"filter": {
+									"conjunction": "and",
+									"conditions": [
+										{
+										   "field_name": "沙场信点兵-最后更新时间时间戳",
+										   "operator": "isGreater",
+										   "value": [
+											 "#[沙场信点兵-最后更新时间时间戳]"
+										   ]
+										 },
+										 {
+										   "field_name": "沙场信点兵-最后更新时间时间戳",
+										   "operator": "isLessEqual",
+										   "value": [
+											 "#[沙场信点兵-最后更新时间时间戳__endTime]"
+										   ]
+										 }
+									]
+								},
+								"sort": [
+									 
+								],
+								"view_id": "vewThQsZW1"
+							}
+        ]]></property>
+
+    <property name="requestBodyPerson">
+        <![CDATA[
+        {
+								"automatic_fields": false,
+								"field_names": [],
+								"filter": {
+									"conjunction": "and",
+									"conditions": [
+										 
+									]
+								},
+								"sort": [
+									 
+								],
+								"view_id": "vewfx91OoV"
+							}
+        ]]></property>
+
+    <property name="requestTag">
+        <![CDATA[
+        {
+								"automatic_fields": false,
+								"field_names": [],
+								"filter": {
+									"conjunction": "and",
+									"conditions": [
+									]
+								},
+								"sort": [
+
+								],
+								"view_id": "vewlNtP64E"
+							}
+        ]]></property>
+    <property name="requestExitsXdb">
+        <![CDATA[
+        {
+								"automatic_fields": false,
+								"field_names": [],
+								"filter": {
+									"conjunction": "and",
+									"conditions": [
+									]
+								},
+								"sort": [
+
+								],
+								"view_id": "vewSUz56G1"
+							}
+        ]]></property>
+</properties>

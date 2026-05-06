@@ -1,0 +1,24 @@
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    <RollingFile name="RollingFile" fileName="bboss-ai.log"
+                      filePattern="bboss-ai-%d{yyyy-MM-dd}-%i.log">
+             <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+             <Policies>
+                 <TimeBasedTriggeringPolicy/>
+                 <SizeBasedTriggeringPolicy size="5 MB"/>
+                 
+             </Policies>
+        <DefaultRolloverStrategy max="5"/>  <!--最多产生多少个日志文件，如果更多，将以前的覆盖-->
+       </RollingFile>
+  </Appenders>
+  <Loggers>
+
+    <Root level="INFO">
+        <AppenderRef ref="Console"/>
+        <AppenderRef ref="RollingFile"/>
+    </Root>
+  </Loggers>
+</Configuration>
