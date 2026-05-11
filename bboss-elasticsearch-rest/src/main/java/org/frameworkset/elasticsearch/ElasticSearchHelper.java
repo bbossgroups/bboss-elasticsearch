@@ -4,14 +4,13 @@ import com.frameworkset.util.BaseSimpleStringUtil;
 import com.frameworkset.util.SimpleStringUtil;
 import org.frameworkset.elasticsearch.boot.ElasticsearchBootResult;
 import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.frameworkset.elasticsearch.client.ConfigHolder;
+import org.frameworkset.elasticsearch.template.ConfigHolder;
 import org.frameworkset.elasticsearch.template.AOPTemplateContainerImpl;
 import org.frameworkset.elasticsearch.template.BaseTemplateContainerImpl;
 import org.frameworkset.elasticsearch.template.ESSOAFileApplicationContext;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.DefaultApplicationContext;
 import org.frameworkset.spi.assemble.GetProperties;
-import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

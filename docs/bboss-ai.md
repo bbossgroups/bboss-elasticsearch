@@ -14,7 +14,9 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 - **工具能力**：支持工具调用和 MCP 服务发现，提供 MCP SSE 和 Streamable 两种通讯协议，同时提供mcp server协议实现
 - **多模态支持**：支持文本、图片、音频、视频等多种模态的识别与生成
 - **流式响应**：基于 Reactor 的响应式编程模型，支持背压控制
-- **多轮会话**：内置会话记忆管理，支持多轮对话
+- **多轮会话**：内置会话记忆管理，支持多轮对话；支持内存和数据库两种会话持久化方式
+- **智能体工作流编排**：基于有向循环图实现多智能体协同工作流，支持串行、并行、路由、条件分支、裁判评估等丰富的流程编排能力，快速构建复杂多智能体系统
+- **向量模型支持**：内置文本向量化（Embedding）和重排序（Rerank）能力，支持知识库检索增强生成（RAG）
 - **多智能体协同**：配合bboss graph提供的工作流和有限循环图，实现多智能体协同，快速构建多智能体系统
 
 ---
@@ -192,14 +194,14 @@ feishumcp.http.extendConfigs.streamableendpoint = /mcp
 
 在应用启动时加载配置文件：
 
-```java
+```
 import org.frameworkset.spi.remote.http.HttpRequestProxy;
 
 public class Application {
     public void init() {
         // 加载模型服务配置文件
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         // 加载 MCP 服务配置文件
         HttpRequestProxy.startHttpPools("mcpserver.properties");
     }
@@ -208,7 +210,7 @@ public class Application {
 
 ### 3.2 同步聊天（非流式）
 
-```java
+```
 import org.frameworkset.spi.ai.AIAgent;
 import org.frameworkset.spi.ai.model.ChatAgentMessage;
 import org.frameworkset.spi.ai.model.ServerEvent;
@@ -217,7 +219,7 @@ public class ChatExample {
     public static void main(String[] args) {
         // 初始化配置
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         // 创建消息对象
         ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
         chatAgentMessage.setModel("deepseek-chat");  // 模型名称
@@ -225,11 +227,11 @@ public class ChatExample {
         chatAgentMessage.setSystemPrompt("你是一个编程大师");
         chatAgentMessage.setTemperature(0.7);         // 温度参数
         chatAgentMessage.setMaxTokens(8192);          // 最大输出 Token
-
+        
         // 创建 AIAgent 并调用
         AIAgent aiAgent = new AIAgent();
         ServerEvent response = aiAgent.chat("deepseek", chatAgentMessage);
-
+        
         // 输出结果
         System.out.println(response.getData());
     }
@@ -246,7 +248,7 @@ public class StreamChatExample {
     public static void main(String[] args) throws InterruptedException {
         // 初始化配置
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         // 创建消息对象，设置 stream=true
         ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
         chatAgentMessage.setModel("deepseek-chat");
@@ -254,28 +256,28 @@ public class StreamChatExample {
         chatAgentMessage.setStream(true);
         chatAgentMessage.setTemperature(0.7);
         chatAgentMessage.setMaxTokens(8192);
-
+        
         CountDownLatch countDownLatch = new CountDownLatch(1);
-
+        
         AIAgent aiAgent = new AIAgent();
         Flux<ServerEvent> flux = aiAgent.streamChat("deepseek", chatAgentMessage);
-
+        
         flux.doOnSubscribe(subscription -> System.out.println("开始订阅流..."))
-                .doOnNext(chunk -> {
-                    if (chunk.getData() != null) {
-                        System.out.print(chunk.getData());
-                    }
-                })
-                .doOnComplete(() -> {
-                    System.out.println("\n=== 流完成 ===");
-                    countDownLatch.countDown();
-                })
-                .doOnError(error -> {
-                    error.printStackTrace();
-                    countDownLatch.countDown();
-                })
-                .subscribe();
-
+            .doOnNext(chunk -> {
+                if (chunk.getData() != null) {
+                    System.out.print(chunk.getData());
+                }
+            })
+            .doOnComplete(() -> {
+                System.out.println("\n=== 流完成 ===");
+                countDownLatch.countDown();
+            })
+            .doOnError(error -> {
+                error.printStackTrace();
+                countDownLatch.countDown();
+            })
+            .subscribe();
+        
         // 等待异步完成
         countDownLatch.await();
     }
@@ -292,31 +294,31 @@ import java.util.Map;
 public class SessionChatExample {
     // 静态会话记忆列表
     static List<Map<String, Object>> sessionMemory = new ArrayList<>();
-
+    
     public static void main(String[] args) {
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         AIAgent aiAgent = new AIAgent();
-
+        
         // 第一轮对话
         ChatAgentMessage message1 = new ChatAgentMessage();
         message1.setModel("deepseek-chat");
         message1.setPrompt("我叫张三");
         message1.setSessionMemory(sessionMemory);  // 传入会话记忆
         message1.setSessionSize(50);                // 保留最近50条消息
-
+        
         ServerEvent response1 = aiAgent.chat("deepseek", message1);
         System.out.println("AI: " + response1.getData());
-
+        
         // 第二轮对话，AI 会记住用户名字
         ChatAgentMessage message2 = new ChatAgentMessage();
         message2.setModel("deepseek-chat");
         message2.setPrompt("我叫什么名字？");
         message2.setSessionMemory(sessionMemory);
-
+        
         ServerEvent response2 = aiAgent.chat("deepseek", message2);
         System.out.println("AI: " + response2.getData());
-
+        
         // 重置会话
         sessionMemory.clear();
     }
@@ -336,25 +338,25 @@ import com.frameworkset.util.FileUtil;
 public class ImageRecognitionExample {
     public static void main(String[] args) {
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         ImageVLAgentMessage imageMsg = new ImageVLAgentMessage();
         imageMsg.setModel("qwen3-vl-plus");
         imageMsg.setPrompt("介绍图片内容");
-
+        
         // 方式1：使用图片 URL
         imageMsg.addImageUrl("https://example.com/image.jpg");
-
+        
         // 方式2：使用 Base64 编码
         String base64 = FileUtil.getBase64Content("/path/to/image.jpg");
         imageMsg.addImageUrl(base64);
-
+        
         // 可选参数
         imageMsg.addParameter("enable_thinking", true);   // 开启思考过程
         imageMsg.addParameter("thinking_budget", 81920);  // 推理 Token 数
-
+        
         AIAgent aiAgent = new AIAgent();
         ServerEvent response = aiAgent.imageParser("qwenvlplus", imageMsg);
-
+        
         System.out.println(response.getData());
     }
 }
@@ -369,20 +371,20 @@ public static void streamImageRecognition() throws InterruptedException {
     imageMsg.setPrompt("介绍图片内容");
     imageMsg.addImageUrl("https://example.com/image.jpg");
     imageMsg.setStream(true);
-
+    
     CountDownLatch latch = new CountDownLatch(1);
-
+    
     AIAgent aiAgent = new AIAgent();
     Flux<ServerEvent> flux = aiAgent.streamImageParser("qwenvlplus", imageMsg);
-
+    
     flux.doOnNext(chunk -> {
-                if (!chunk.isDone() && chunk.getData() != null) {
-                    System.out.print(chunk.getData());
-                }
-            })
-            .doOnComplete(() -> latch.countDown())
-            .subscribe();
-
+            if (!chunk.isDone() && chunk.getData() != null) {
+                System.out.print(chunk.getData());
+            }
+        })
+        .doOnComplete(() -> latch.countDown())
+        .subscribe();
+    
     latch.await();
 }
 ```
@@ -394,13 +396,13 @@ public static void compareImages() {
     ImageVLAgentMessage imageMsg = new ImageVLAgentMessage();
     imageMsg.setModel("qwen3-vl-plus");
     imageMsg.setPrompt("对比两张图片的相似度，以 JSON 格式返回结果");
-
+    
     imageMsg.addImageUrl("https://example.com/image1.jpg");
     imageMsg.addImageUrl("https://example.com/image2.jpg");
-
+    
     AIAgent aiAgent = new AIAgent();
     ServerEvent response = aiAgent.imageParser("qwenvlplus", imageMsg);
-
+    
     System.out.println(response.getData());
 }
 ```
@@ -418,24 +420,24 @@ import org.frameworkset.spi.ai.model.ImageEvent;
 public class ImageGenerationExample {
     public static void main(String[] args) {
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         ImageAgentMessage request = new ImageAgentMessage();
         request.setPrompt("一只可爱的橘猫，坐在窗台上晒太阳，油画风格");
         request.setModel("qwen-image-plus");
-
+        
         // 可选参数
         request.addParameter("size", "1328*1328");      // 图片尺寸
         request.addParameter("watermark", false);       // 是否添加水印
         request.addParameter("prompt_extend", true);    // 提示词扩展
-
+        
         // 设置图片保存路径
         request.setStoreFilePathFunction(imageUrl -> {
             return "image/" + System.currentTimeMillis() + ".jpg";
         });
-
+        
         AIAgent aiAgent = new AIAgent();
         ImageEvent result = aiAgent.genImage("qwenvlplus", request);
-
+        
         System.out.println("生成的图片 URL: " + result.getGenImageUrl());
         System.out.println("本地保存路径: " + result.getImageUrl());
     }
@@ -449,18 +451,18 @@ public static void doubaoImageGen() {
     ImageAgentMessage request = new ImageAgentMessage();
     request.setPrompt("一只可爱的小狗，卡通风格");
     request.setModel("doubao-seedream-5-0-260128");
-
+    
     // 豆包特有参数
     request.addParameter("response_format", "url");
     request.addParameter("size", "2k");
     request.addParameter("watermark", true);
     request.addParameter("sequential_image_generation", "auto");  // 多图生成
-    request.addMapParameter("sequential_image_generation_options",
-            "max_images", 3);
-
+    request.addMapParameter("sequential_image_generation_options", 
+                           "max_images", 3);
+    
     AIAgent aiAgent = new AIAgent();
     ImageEvent result = aiAgent.genImage("volcengine", request);
-
+    
     System.out.println("生成图片数量: " + result.getImageUrls().size());
 }
 ```
@@ -560,27 +562,27 @@ import org.frameworkset.spi.ai.model.AudioSTTAgentMessage;
 public class SpeechRecognitionExample {
     public static void main(String[] args) throws IOException {
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         AudioSTTAgentMessage audioMsg = new AudioSTTAgentMessage();
         audioMsg.setModel("qwen3-asr-flash");
         audioMsg.setPrompt("介绍音频内容");
-
+        
         // 方式1：设置音频文件
         File audioFile = new File("/path/to/audio.wav");
         audioMsg.setAudio(audioFile);
         audioMsg.setContentType("audio/wav");
-
+        
         // 方式2：设置音频 URL
         // audioMsg.setAudio("https://example.com/audio.mp3");
-
+        
         // 可选参数
         audioMsg.addMapParameter("asr_options", "enable_itn", true);
         audioMsg.addParameter("incremental_output", true);
         audioMsg.setResultFormat("message");
-
+        
         AIAgent aiAgent = new AIAgent();
         ServerEvent result = aiAgent.audioParser("qwenvlplus", audioMsg);
-
+        
         System.out.println("识别结果: " + result.getData());
     }
 }
@@ -599,23 +601,23 @@ import org.frameworkset.spi.ai.model.AudioEvent;
 public class TextToSpeechExample {
     public static void main(String[] args) {
         HttpRequestProxy.startHttpPools("application-stream.properties");
-
+        
         AudioAgentMessage audioMsg = new AudioAgentMessage();
         audioMsg.setModel("qwen3-tts-flash");
         audioMsg.setPrompt("诗歌朗诵：床前明月光，疑似地上霜。");
-
+        
         // 可选参数
         audioMsg.addParameter("voice", "Cherry");           // 音色
         audioMsg.addParameter("language_type", "Chinese");  // 语言
-
+        
         // 设置保存路径
         audioMsg.setStoreFilePathFunction(url -> {
             return "audio/" + System.currentTimeMillis() + ".wav";
         });
-
+        
         AIAgent aiAgent = new AIAgent();
         AudioEvent result = aiAgent.genAudio("qwenvlplus", audioMsg);
-
+        
         System.out.println("音频文件路径: " + result.getAudioUrl());
     }
 }
@@ -630,22 +632,22 @@ public static void streamTextToSpeech() throws InterruptedException {
     audioMsg.setPrompt("欢迎使用 bboss AI 语音合成服务");
     audioMsg.addParameter("voice", "Cherry");
     audioMsg.setStream(true);
-
+    
     CountDownLatch latch = new CountDownLatch(1);
-
+    
     AIAgent aiAgent = new AIAgent();
     Flux<ServerEvent> flux = aiAgent.streamAudioGen("qwenvlplus", audioMsg);
-
+    
     flux.doOnNext(chunk -> {
-                if (!chunk.isDone() && chunk.getData() != null) {
-                    // 处理音频数据块
-                    byte[] audioData = Base64.getDecoder().decode(chunk.getData());
-                    // 播放或保存音频数据
-                }
-            })
-            .doOnComplete(() -> latch.countDown())
-            .subscribe();
-
+            if (!chunk.isDone() && chunk.getData() != null) {
+                // 处理音频数据块
+                byte[] audioData = Base64.getDecoder().decode(chunk.getData());
+                // 播放或保存音频数据
+            }
+        })
+        .doOnComplete(() -> latch.countDown())
+        .subscribe();
+    
     latch.await();
 }
 ```
@@ -665,7 +667,7 @@ public class ToolCallExample {
         ChatAgentMessage chatMsg = new ChatAgentMessage();
         chatMsg.setModel("deepseek-chat");
         chatMsg.setPrompt("查询杭州的天气，并给出穿衣建议");
-
+        
         // 定义天气查询工具
         FunctionToolDefine weatherTool = new FunctionToolDefine();
         weatherTool.funtionName2ndDescription("weather_info_query","天气查询服务，根据城市查询当地温度和天气信息")
@@ -673,15 +675,15 @@ public class ToolCallExample {
                 .requiredParameters("location")
                 .addSubParameter("params","location","string","城市或者地州, 例如：上海市")
                 .setFunctionCall(new ToolFunctionCall() );
-
+        
         chatMsg.registTool(weatherTool);
-
+        
         AIAgent aiAgent = new AIAgent();
         ServerEvent response = aiAgent.chat("deepseek", chatMsg);
         System.out.println(response.getData());
     }
-
-
+    
+    
 }
 ```
 
@@ -696,16 +698,16 @@ import org.frameworkset.spi.remote.http.HttpRequestProxy;
 import java.util.List;
 import java.util.Map;
 
-
+ 
 public class ToolFunctionCall implements FunctionCall {
     private String toolDatasource = "tool";
-
+    
     public ToolFunctionCall(String toolDatasource) {
         this.toolDatasource = toolDatasource;
     }
     public ToolFunctionCall( ) {
     }
-
+ 
 
     @Override
     public Object call(FunctionTool functionTool) throws FunctionCallException {
@@ -731,10 +733,10 @@ chatMsg.setToolsRegist(new ToolsRegist() {
         // 从远程服务获取工具定义
         Map<String, Object> params = new HashMap<>();
         params.put("apiKey", "your-api-key");
-        return HttpRequestProxy.sendJsonBodyForList("tool", params,
+        return HttpRequestProxy.sendJsonBodyForList("tool", params, 
                 "/function/tools.api", FunctionToolDefine.class);
     }
-
+    
     @Override
     public FunctionCall getFunctionCall(String functionName) {
         // 返回远程工具调用器
@@ -757,10 +759,10 @@ public class MCPExample {
         ChatAgentMessage chatMsg = new ChatAgentMessage();
         chatMsg.setModel("deepseek-chat");
         chatMsg.setPrompt("帮我查一下明天北京到上海的高铁");
-
+        
         // 注册 12306高铁MCP 工具服务，
         chatMsg.setToolsRegist(new MCPToolsRegist("12306"));  // 对应配置文件中的服务名
-
+        
         AIAgent aiAgent = new AIAgent();
         ServerEvent response = aiAgent.chat("deepseek", chatMsg);
         System.out.println(response.getData());
@@ -774,32 +776,32 @@ public class MCPExample {
 public static void streamChatWithMcpTools(String maas, String mcpServer,
                                           String model, String prompt)
         throws InterruptedException {
-
+    
     List<Map<String, Object>> session = new ArrayList<>();
     ChatAgentMessage chatMsg = new ChatAgentMessage()
-            .setPrompt(prompt)
-            .setSessionSize(50)
-            .setSessionMemory(session)
-            .setModel(model)
-            .setStream(true)
-            .setMaxTokens(4096);
-
+        .setPrompt(prompt)
+        .setSessionSize(50)
+        .setSessionMemory(session)
+        .setModel(model)
+        .setStream(true)
+        .setMaxTokens(4096);
+    
     chatMsg.setToolsRegist(new MCPToolsRegist(mcpServer));
-
+    
     CountDownLatch latch = new CountDownLatch(1);
     AIAgent aiAgent = new AIAgent();
-
+    
     aiAgent.streamChat(maas, chatMsg)
-            .doOnNext(chunk -> {
-                if (!chunk.isDone() && chunk.getData() != null) {
-                    System.out.print(chunk.getData());
-                } else if (chunk.isToolCallsType()) {
-                    System.out.println("\n开始执行工具...");
-                }
-            })
-            .doOnComplete(() -> latch.countDown())
-            .subscribe();
-
+        .doOnNext(chunk -> {
+            if (!chunk.isDone() && chunk.getData() != null) {
+                System.out.print(chunk.getData());
+            } else if (chunk.isToolCallsType()) {
+                System.out.println("\n开始执行工具...");
+            }
+        })
+        .doOnComplete(() -> latch.countDown())
+        .subscribe();
+    
     latch.await();
 }
 ```
@@ -856,14 +858,14 @@ public static void videoRecognition() {
     VideoVLAgentMessage videoMsg = new VideoVLAgentMessage();
     videoMsg.setModel("kimi-k2.5");
     videoMsg.setPrompt("识别视频内容");
-
+    
     // 使用 Base64 编码的视频文件
     String base64 = FileUtil.getBase64Video("/path/to/video.mp4");
     videoMsg.addVideoUrl(base64);
-
+    
     // 可选参数
     videoMsg.addMapParameter("thinking", "type", "disabled");
-
+    
     AIAgent aiAgent = new AIAgent();
     ServerEvent response = aiAgent.videoParser("kimi", videoMsg);
     System.out.println(response.getData());
@@ -872,21 +874,21 @@ public static void videoRecognition() {
 
 ### 10.2 提交视频生成任务
 
-```java
+```
 public static void submitVideoTask() {
     VideoAgentMessage videoMsg = new VideoAgentMessage();
     videoMsg.setModel("wan2.6-t2v");
     videoMsg.setPrompt("一只可爱的小猫在花园里玩耍");
-
+    
     // 可选参数
     videoMsg.addParameter("size", "1280*720");
     videoMsg.addParameter("duration", 10);
     videoMsg.addParameter("prompt_extend", true);
     videoMsg.addParameter("watermark", true);
-
+    
     AIAgent aiAgent = new AIAgent();
     VideoTask task = aiAgent.submitVideoTask("qwenvlplus", videoMsg);
-
+    
     System.out.println("任务 ID: " + task.getTaskId());
     System.out.println("任务状态: " + task.getTaskStatus());
 }
@@ -894,17 +896,17 @@ public static void submitVideoTask() {
 
 ### 10.3 查询视频生成结果
 
-```java
+```
 public static void getVideoTaskResult(String taskId) {
     VideoStoreAgentMessage queryMsg = new VideoStoreAgentMessage();
     queryMsg.setTaskId(taskId);
     queryMsg.setStoreFilePathFunction(url -> {
         return "video/" + System.currentTimeMillis() + ".mp4";
     });
-
+    
     AIAgent aiAgent = new AIAgent();
     VideoGenResult result = aiAgent.getVideoTaskResult("qwenvlplus", queryMsg);
-
+    
     System.out.println("任务状态: " + result.getTaskStatus());
     System.out.println("视频 URL: " + result.getVideoGenUrl());
     System.out.println("本地保存路径: " + result.getVideoUrl());
@@ -912,7 +914,6 @@ public static void getVideoTaskResult(String taskId) {
 ```
 
 ---
-
 ## 十一、私有Maas平台对接
 
 bboss默认做了对国内主流公有云maas平台的兼容和支持，包括DeepSeek、Kimi、智谱、阿里百炼通义千问、字节豆包火山引擎、MiniMax、腾讯混元、中国移动九天等主流 MaaS 平台。
@@ -1019,7 +1020,7 @@ custom.http.agentAdapter=org.frameworkset.spi.ai.CustomAgentAdapter
    http.poolNames = deepseek,guiji,qwenvlplus,volcengine,jiutian,kimi,zhipu,minimax,hunyuan,custom
    ```
 
-   
+
 
 2.  配置maas平台地址和apiKey
 
@@ -1029,7 +1030,7 @@ custom.http.agentAdapter=org.frameworkset.spi.ai.CustomAgentAdapter
    custom.http.apiKeyId = sk-469f01dbb5724e6dbb2f4
    ```
 
-   
+
 
 3. 指定模型平台类型(可选)
 
@@ -1047,7 +1048,7 @@ custom.http.agentAdapter=org.frameworkset.spi.ai.CustomAgentAdapter
 
 #### 方法2 代码API配置（不推荐）
 
-   首先，还是要在配置文件中配置maas平台服务：只是不需要指定模型平台适配器
+首先，还是要在配置文件中配置maas平台服务：只是不需要指定模型平台适配器
 
 ```properties
 http.poolNames = deepseek,guiji,qwenvlplus,volcengine,jiutian,kimi,zhipu,minimax,hunyuan,custom
@@ -1069,26 +1070,25 @@ custom.http.modelType = custom
 AgentAdapterFactory.registerAgentAdapter("custom",CustomAgentAdapter.class);//注册模型平台适配器
 HttpRequestProxy.startHttpPools("application-stream.properties");
 ```
-
 ## 十二、背压与缓冲控制
 
-```java
+```
 Flux<ServerEvent> flux = aiAgent.streamChat("deepseek", chatMsg)
-        .limitRate(5)        // 限制请求速率，每次最多 5 个元素
-        .buffer(3);          // 每 3 个元素缓冲一次
+    .limitRate(5)        // 限制请求速率，每次最多 5 个元素
+    .buffer(3);          // 每 3 个元素缓冲一次
 
 flux.subscribe(bufferedEvents -> {
-        for (ServerEvent event : bufferedEvents) {
+    for (ServerEvent event : bufferedEvents) {
         // 批量处理事件
-        }
-        });
+    }
+});
 ```
 
 ---
 
 ## 十三、完整示例：多轮智能问答助手
 
-```java
+```
 import org.frameworkset.spi.ai.AIAgent;
 import org.frameworkset.spi.ai.model.*;
 import org.frameworkset.spi.remote.http.HttpRequestProxy;
@@ -1102,17 +1102,17 @@ import java.util.concurrent.CountDownLatch;
 public class IntelligentAssistant {
     private static List<Map<String, Object>> sessionMemory = new ArrayList<>();
     private static AIAgent aiAgent = new AIAgent();
-
+    
     static {
         HttpRequestProxy.startHttpPools("application-stream.properties");
     }
-
+    
     public static void chat(String message, boolean reset) throws InterruptedException {
         if (reset) {
             sessionMemory.clear();
             System.out.println("会话已重置");
         }
-
+        
         ChatAgentMessage chatMsg = new ChatAgentMessage();
         chatMsg.setModel("deepseek-chat");
         chatMsg.setPrompt(message);
@@ -1121,34 +1121,34 @@ public class IntelligentAssistant {
         chatMsg.setSessionSize(50);
         chatMsg.setMaxTokens(8192);
         chatMsg.setTemperature(0.7);
-
+        
         CountDownLatch latch = new CountDownLatch(1);
         StringBuilder answer = new StringBuilder();
-
+        
         aiAgent.streamChat("deepseek", chatMsg)
-                .doOnNext(chunk -> {
-                    if (!chunk.isDone() && chunk.getData() != null) {
-                        System.out.print(chunk.getData());
-                        answer.append(chunk.getData());
-                    }
-                })
-                .doOnComplete(() -> {
-                    // 保存回答到会话记忆
-                    if (answer.length() > 0) {
-                        chatMsg.addSessionMessage(answer.toString());
-                    }
-                    System.out.println();
-                    latch.countDown();
-                })
-                .doOnError(error -> {
-                    System.err.println("错误: " + error.getMessage());
-                    latch.countDown();
-                })
-                .subscribe();
-
+            .doOnNext(chunk -> {
+                if (!chunk.isDone() && chunk.getData() != null) {
+                    System.out.print(chunk.getData());
+                    answer.append(chunk.getData());
+                }
+            })
+            .doOnComplete(() -> {
+                // 保存回答到会话记忆
+                if (answer.length() > 0) {
+                    chatMsg.addSessionMessage(answer.toString());
+                }
+                System.out.println();
+                latch.countDown();
+            })
+            .doOnError(error -> {
+                System.err.println("错误: " + error.getMessage());
+                latch.countDown();
+            })
+            .subscribe();
+        
         latch.await();
     }
-
+    
     public static void main(String[] args) throws InterruptedException {
         chat("你好，我叫小明", false);
         chat("我叫什么名字？", false);
@@ -1160,11 +1160,810 @@ public class IntelligentAssistant {
 
 ---
 
-## 十四、技术支持
+## 十四、智能体工作流编排
+
+bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基于有向循环图实现多智能体协同。支持串行、并行、路由、条件分支、裁判评估等丰富的流程编排模式，能够快速构建复杂的多智能体系统。
+
+### 14.1 工作流核心组件
+
+| 组件 | 说明 |
+|------|------|
+| `AIPlanAgent` | 工作流编排主控制器，负责构建和执行整个智能体工作流 |
+| `AINodeAgent` | 普通AI节点智能体，执行具体的AI任务 |
+| `UserNodeAgent` | 用户智能体，不引用上游父智能体的会话记忆，适合处理独立任务 |
+| `AIParrelAgent` | 并行智能体容器，内部多个子智能体并发执行 |
+| `AISequenceAgent` | 串行智能体容器，内部多个子智能体按顺序执行 |
+| `AIRouteAgent` | 路由智能体，根据用户问题自动决策后续执行路径 |
+| `AIJudgeAgent` | 裁判智能体，评估执行结果是否满足预期 |
+| `StoreContext` | 会话存储上下文，支持内存和数据库两种持久化方式 |
+
+#### 14.1.1 会话存储配置
+
+工作流支持将会话记录持久化到数据库或内存中：
+
+```
+import org.frameworkset.spi.ai.store.StoreContext;
+
+// 数据库存储方式
+StoreContext storeContext = new StoreContext()
+    .setSessionId("session_001")           // 会话ID
+    .setUserId("user123")                  // 用户ID
+    .setRequestId("request123")            // 请求ID
+    .setSessionSize(100)                   // 会话窗口大小
+    .setStoreType(StoreContext.STORE_TYPE_DB)  // 数据库存储
+    .setDataSource("visualops");           // 数据源名称
+
+// 内存存储方式（默认）
+StoreContext memoryContext = new StoreContext()
+    .setSessionSize(50)
+    .setStoreType(StoreContext.STORE_TYPE_MEMORY);
+```
+
+#### 14.1.2 工作流基本结构
+
+```
+import org.frameworkset.spi.ai.flow.*;
+import org.frameworkset.spi.ai.model.ChatAgentMessage;
+import org.frameworkset.spi.ai.model.LastSessionMessage;
+import org.frameworkset.spi.ai.store.StoreContext;
+
+// 1. 定义会话消息
+ChatAgentMessage chatAgentMessage = new ChatAgentMessage()
+    .setModel("qwen3.6-plus")
+    .setMaas("qwenvlplus")
+    .setPrompt("介绍省份智能体");
+
+// 2. 定义工作流智能体
+AIPlanAgent aiPlanAgent = new AIPlanAgent(storeContext)
+    .setAgentMessage(chatAgentMessage)
+    .setAgentName("工作流智能体")
+    .setAgentId("workflowAgent");
+
+// 3. 添加工作流节点...
+
+// 4. 执行工作流
+LastSessionMessage result = aiPlanAgent.chat();
+```
+
+### 14.2 串行任务编排
+
+串行智能体（`AISequenceAgent`）将多个子智能体按顺序执行，前一个智能体的输出会作为后续智能体的上下文输入。
+
+#### 14.2.1 同步串行工作流
+
+```
+// 构建工作流智能体
+AIPlanAgent aiPlanAgent = new AIPlanAgent(new StoreContext()
+        .setSessionId(sessionId).setUserId("user123").setSessionSize(100)
+        .setStoreType(StoreContext.STORE_TYPE_DB).setRequestId("request123")
+        .setDataSource("visualops"))
+    .setAgentMessage(chatAgentMessage)
+    .setAgentName("工作流智能体").setAgentId("workflowAgent");
+
+// 添加第一个普通节点
+AIBaseNodeAgent introduceProvinces = new AINodeAgent("用200字介绍中国有多少个省份和直辖市")
+    .setAgentName("介绍中国省份和直辖市")
+    .setAgentId("introduceProvinces");
+aiPlanAgent.addAgent(introduceProvinces);
+
+// 构建串行智能体
+AISequenceAgent sequenceAgent = new AISequenceAgent(aiPlanAgent)
+    .setAgentId("sequenceAgent")
+    .setAgentName("串行任务节点");
+
+// 按顺序添加子智能体
+sequenceAgent.addAgent(new AINodeAgent("用50字介绍湖南，并且和介绍中国省份和直辖市内容合并输出")
+    .setAgentId("jieshaohunan")
+    .setAgentName("用50字介绍湖南"));
+sequenceAgent.addAgent(new AINodeAgent("用50字介绍湖北")
+    .setAgentId("jieshaohubei")
+    .setAgentName("用50字介绍湖北"));
+sequenceAgent.addAgent(new AINodeAgent("用50字介绍江西")
+    .setAgentId("jieshaojiangxi")
+    .setAgentName("用50字介绍江西"));
+sequenceAgent.addAgent(new AINodeAgent("将下面的文字翻译为英文（不要回答问题）：用50字介绍江西")
+    .setAgentId("translate")
+    .setAgentName("将文字翻译为英文"));
+
+// 将串行智能体加入主工作流
+aiPlanAgent.addSequenceAgent(sequenceAgent);
+
+// 执行工作流
+LastSessionMessage lastSessionMessage = aiPlanAgent.chat();
+if (lastSessionMessage != null) {
+    logger.info("结果: {}", lastSessionMessage.getData());
+}
+```
+
+#### 14.2.2 流式串行工作流
+
+流式模式与同步模式结构一致，只需将 `chat()` 替换为 `chatStream()`：
+
+```
+Flux<ServerEvent> flux = aiPlanAgent.chatStream();
+
+StringBuilder completeAnswer = new StringBuilder();
+CountDownLatch countDownLatch = new CountDownLatch(1);
+
+flux.doOnNext(event -> {
+    if (event.getData() != null) {
+        System.out.print(event.getData());
+    }
+    if (!event.isDone() && event.getData() != null) {
+        completeAnswer.append(event.getData());
+    } else {
+        if (completeAnswer.length() > 0) {
+            chatAgentMessage.addAgentResultSessionMessage(
+                completeAnswer.toString(), event.getAgent());
+            completeAnswer.setLength(0);
+        }
+    }
+})
+.doOnComplete(() -> {
+    logger.info("\n=== 流完成 ===");
+    countDownLatch.countDown();
+})
+.doOnError(error -> {
+    logger.error("错误: " + error.getMessage(), error);
+    countDownLatch.countDown();
+})
+.subscribe();
+
+countDownLatch.await();
+```
+
+#### 14.2.3 条件分支节点
+
+可以为节点添加条件触发器，控制节点是否执行：
+
+```
+import org.frameworkset.tran.jobflow.script.TriggerScriptAPI;
+import org.frameworkset.tran.jobflow.context.NodeTriggerContext;
+
+IntegerCount integerCount = new IntegerCount();
+
+// 为 introduceProvinces 节点添加条件：仅第一次执行时触发
+aiPlanAgent.addConditionFlowNode(introduceProvinces, new TriggerScriptAPI() {
+    @Override
+    public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+        int i = integerCount.increament();
+        return i == 1;
+    }
+});
+```
+
+### 14.3 并行任务编排
+
+并行智能体（`AIParrelAgent`）将多个子智能体并发执行，所有子任务完成后自动聚合结果。
+
+#### 14.3.1 同步并行工作流
+
+```
+// 构建工作流智能体
+AIPlanAgent aiPlanAgent = new AIPlanAgent(storeContext)
+    .setAgentMessage(chatAgentMessage)
+    .setAgentName("工作流智能体").setAgentId("workflowAgent");
+
+// 添加初始节点
+aiPlanAgent.addAgent(new AINodeAgent("用200字介绍中国有多少个省份和直辖市")
+    .setAgentName("介绍中国省份和直辖市")
+    .setAgentId("introduceProvinces"));
+
+// 构建并行智能体
+AIParrelAgent aiParrelAgent = new AIParrelAgent(aiPlanAgent)
+    .setAgentId("aiParrelAgent")
+    .setAgentName("共享任务节点");
+
+// 添加多个并行子智能体
+aiParrelAgent.addAgent(new AINodeAgent("用50字介绍湖南")
+    .setAgentId("jieshaohunan")
+    .setAgentName("用50字介绍湖南"));
+aiParrelAgent.addAgent(new UserNodeAgent("用50字介绍湖北")
+    .setAgentId("jieshaohubei")
+    .setAgentName("用50字介绍湖北"));
+aiParrelAgent.addAgent(new UserNodeAgent("用50字介绍江西")
+    .setAgentId("jieshaojiangxi")
+    .setAgentName("用50字介绍江西"));
+
+// 将并行智能体加入主工作流
+aiPlanAgent.addParrelAgent(aiParrelAgent);
+
+// 执行
+LastSessionMessage result = aiPlanAgent.chat();
+```
+
+#### 14.3.2 流式并行工作流
+
+```
+Flux<ServerEvent> flux = aiPlanAgent.chatStream();
+
+StringBuilder completeAnswer = new StringBuilder();
+CountDownLatch countDownLatch = new CountDownLatch(1);
+
+flux.doOnSubscribe(subscription -> logger.info("开始订阅流..."))
+    .doOnNext(event -> {
+        // 首条消息可添加扩展链接
+        if (event.isFirst() && !event.isToolCallResponse()) {
+            event.addExtendData("url", "https://www.bbossgroups.com");
+            event.addExtendData("title", "bboss官网");
+        }
+
+        if (event.isDone()) {
+            event.addExtendData("url", "https://www.bbossgroups.com");
+            event.addExtendData("title", "bboss官网");
+        }
+
+        if (event.getData() != null) {
+            System.out.print(event.getData());
+        }
+
+        if (event.isToolCallsType()) {
+            System.out.println("\n开始执行工具：");
+        }
+
+        if (event.isDone() || event.finished()) {
+            System.out.println();
+        }
+
+        if (!event.isDone()) {
+            if (event.getData() != null) {
+                completeAnswer.append(event.getData());
+            }
+        } else {
+            if (completeAnswer.length() > 0) {
+                chatAgentMessage.addAgentResultSessionMessage(
+                    completeAnswer.toString(), event.getAgent());
+                completeAnswer.setLength(0);
+            }
+        }
+    })
+    .doOnComplete(() -> {
+        logger.info("\n=== 流完成 ===");
+        countDownLatch.countDown();
+    })
+    .doOnError(error -> {
+        logger.error("错误: " + error.getMessage(), error);
+        countDownLatch.countDown();
+    })
+    .subscribe();
+
+countDownLatch.await();
+```
+
+#### 14.3.3 并行结果聚合
+
+并行智能体执行完毕后，会自动调用 `buildResult()` 方法聚合所有子智能体的结果。默认格式为：
+
+```
+agentId1:子智能体1的结果
+agentId2:子智能体2的结果
+```
+
+如需自定义聚合格式，可重载 `buildResult()` 方法：
+
+```
+AIParrelAgent aiParrelAgent = new AIParrelAgent(aiPlanAgent) {
+    @Override
+    public String buildResult(List<LastSessionMessage> lastSessionMessages) {
+        StringBuilder builder = new StringBuilder();
+        for (LastSessionMessage msg : lastSessionMessages) {
+            if (builder.length() > 0) {
+                builder.append("\n---\n");
+            }
+            builder.append("[").append(msg.getMsgAgentId()).append("]\n")
+                   .append(msg.getData());
+        }
+        return builder.toString();
+    }
+};
+```
+
+### 14.4 路由智能体
+
+路由智能体（`AIRouteAgent`）能够根据用户问题自动选择后续执行路径，实现智能分发。
+
+#### 14.4.1 同步路由工作流
+
+```
+AIPlanAgent aiPlanAgent = new AIPlanAgent(storeContext)
+    .setAgentMessage(chatAgentMessage)
+    .setAgentName("工作流智能体").setAgentId("workflowAgent");
+
+// 构建路由规则智能体
+aiPlanAgent.addAIRouteAgent(new AIRouteAgent()
+    .setAgentId("Router")
+    .setAgentName("路由规则智能体")
+    .setSystemPrompt("你是一个路由智能体。你的目标是将用户查询路由到正确的后续任务，注意你不需要回答用户的问题。")
+    .addRoutingChoice("weatherAgent", "查询城市天气，并给出穿衣出行建议")
+    .addRoutingChoice("docAgent", "操作飞书文档")
+);
+
+// 构建天气查询智能体
+aiPlanAgent.addRouteChoiceAgent(new UserNodeAgent(new MCPToolsRegist("visualops"))
+    .setAgentId("weatherAgent")
+    .setAgentName("天气查询智能体"));
+
+// 构建飞书文档操作智能体
+ToolsRegist feishuMcp = new FeishuMcpRegist("feishumcp");
+aiPlanAgent.addRouteChoiceAgent(new UserNodeAgent(feishuMcp)
+    .setAgentId("docAgent")
+    .setAgentName("飞书文档智能体"));
+
+// 构建默认智能体：当用户问题匹配不上时执行
+aiPlanAgent.addDefaultRouteChoiceAgent(
+    new AINodeAgent().setAgentId("defaultAgent").setAgentName("默认智能体"));
+
+// 构建裁判智能体：判断是否回答了问题
+aiPlanAgent.addJudgeAgent(new AIJudgeAgent("评估结果是否回答了问题,回答请回复：是，否则回复：否")
+    .setAgentId("judgeAgent")
+    .setAgentName("评估智能体"));
+
+// 构建条件节点：根据裁判结果决定是否创建飞书文档
+aiPlanAgent.addAgent(
+    new AINodeAgent("将结果创建为飞书文档", feishuMcp)
+        .setAgentId("createDocAgent")
+        .setAgentName("飞书文档创建智能体"),
+    nodeTriggerContext -> {
+        String judgeResult = (String) nodeTriggerContext
+            .getFlowContextData("judgeAgent.judgeResult");
+        return "是".equals(judgeResult);
+    });
+
+// 执行
+LastSessionMessage result = aiPlanAgent.chat();
+```
+
+#### 14.4.2 流式路由工作流
+
+流式路由与同步路由结构一致，只需调用 `chatStream()`：
+
+```
+Flux<ServerEvent> flux = aiPlanAgent.chatStream();
+// ... 流式处理逻辑与并行流式示例相同
+```
+
+### 14.5 工作流组合模式
+
+串行和并行智能体可以相互嵌套，构建复杂的工作流：
+
+```
+// 串行智能体中嵌入并行智能体
+AISequenceAgent sequenceAgent = new AISequenceAgent(aiPlanAgent);
+
+AIParrelAgent innerParrel = new AIParrelAgent(aiPlanAgent);
+innerParrel.addAgent(new AINodeAgent("任务A"));
+innerParrel.addAgent(new AINodeAgent("任务B"));
+
+sequenceAgent.addAgent(innerParrel);  // 并行作为串行的一个步骤
+sequenceAgent.addAgent(new AINodeAgent("任务C"));
+
+aiPlanAgent.addSequenceAgent(sequenceAgent);
+
+// 并行智能体中嵌入串行智能体
+AIParrelAgent parrelAgent = new AIParrelAgent(aiPlanAgent);
+
+AISequenceAgent innerSequence = new AISequenceAgent(aiPlanAgent);
+innerSequence.addAgent(new AINodeAgent("步骤1"));
+innerSequence.addAgent(new AINodeAgent("步骤2"));
+
+parrelAgent.addAgent(innerSequence);
+parrelAgent.addAgent(new AINodeAgent("独立任务"));
+
+aiPlanAgent.addParrelAgent(parrelAgent);
+```
+
+### 14.6 工作流节点类型说明
+
+| 节点类型 | 继承类 | 特点 |
+|---------|--------|------|
+| AI节点 | `AINodeAgent` | 标准AI智能体，自动引用父智能体会话记忆 |
+| 用户节点 | `UserNodeAgent` | 不引用上游父智能体记忆，适合独立任务或工具调用 |
+| 路由节点 | `AIRouteAgent` | 负责路由决策，不直接回答问题 |
+| 裁判节点 | `AIJudgeAgent` | 评估结果质量，输出判断结论 |
+
+### 14.7 智能体配置参数
+
+| 参数 | 说明 |
+|------|------|
+| `agentId` | 智能体唯一标识 |
+| `agentName` | 智能体名称 |
+| `prompt` | 用户提示词 |
+| `systemPrompt` | 系统提示词 |
+| `model` | 模型名称 |
+| `maas` | MaaS平台服务名 |
+| `stream` | 是否开启流式响应 |
+| `thinking` | 是否开启思考过程 |
+
+---
+
+## 十五、向量模型与Rerank
+
+bboss AI 内置了文本向量化（Embedding）和重排序（Rerank）能力，可配合 Elasticsearch 等向量数据库实现检索增强生成（RAG）。
+
+### 15.1 向量模型 Embedding
+
+bboss-ai 内置了统一的向量模型调用能力，通过 `AIAgent.embedding(EmbeddingMessage)` 方法即可将文本转换为高维向量。
+
+#### 基本用法
+
+```java
+import org.frameworkset.spi.ai.AIAgent;
+import org.frameworkset.spi.ai.model.EmbeddingMessage;
+
+public float[] text2embedding(String text) {
+    EmbeddingMessage embeddingMessage = new EmbeddingMessage();
+    embeddingMessage.setInput(text);          // 设置将要向量化的数据
+    embeddingMessage.setModel("bge-m3");      // 指定向量模型名称
+    embeddingMessage.setMaas("embedding_model"); // 指定 MaaS 平台服务名
+
+    AIAgent agent = new AIAgent();
+    float[] embedding = agent.embedding(embeddingMessage);
+    if (embedding == null) {
+        throw new AIRuntimeException("Embedding failed: response is null");
+    }
+    return embedding;
+}
+```
+
+#### 关键参数说明
+
+| 参数 | 说明 |
+|------|------|
+| `input` | 待向量化的文本内容 |
+| `model` | 向量模型名称，如 `bge-m3`、`bge-large-zh-v1.5` 等 |
+| `maas` | MaaS 平台服务配置名，对应 `application.properties` 中的服务定义 |
+
+> **提示**：向量模型服务需在 `application.properties` 中预先配置好对应的 MaaS 服务地址和认证信息。
+
+---
+
+### 15.2 Rerank 重排序
+
+在 RAG（检索增强生成）场景中，向量检索和 BM25 文本检索返回的结果往往存在排序差异。`AIAgent.rerank(RerankMessage)` 方法调用专业的 Rerank 模型对候选文档进行重新排序，显著提升检索结果的相关性。
+
+#### 基本用法
+
+```java
+import org.frameworkset.spi.ai.AIAgent;
+import org.frameworkset.spi.ai.model.RerankMessage;
+import org.frameworkset.spi.ai.model.RerankDocument;
+import org.frameworkset.spi.ai.model.RerankedDocument;
+
+public List<RerankedDocument> rerankDocuments(String query, List<RerankDocument> candidates) {
+    RerankMessage rerankMessage = new RerankMessage();
+    rerankMessage.setMaas("aigw");                       // MaaS 服务名
+    rerankMessage.setModel("10086/bge-reranker-v2-m3");  // Rerank 模型
+    rerankMessage.setRerankDocuments(candidates);          // 候选文档列表
+    rerankMessage.setQuery(query);                         // 用户查询
+    rerankMessage.setReturnDocuments(false);               // 是否返回原始文本
+    rerankMessage.setTopK(10);                             // 最多返回前 10 个最相关文档
+    rerankMessage.setRelevanceScore(0.5d);                 // 只召回相似度大于该值的文档
+
+    AIAgent aiAgent = new AIAgent();
+    List<RerankedDocument> rerankedDocuments = aiAgent.rerank(rerankMessage);
+    return rerankedDocuments;
+}
+```
+#### RerankMessage 数据结构
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `maas` | `String` | MaaS 平台服务配置名，对应 `application.properties` 中的服务定义 |
+| `model` | `String` | Rerank 模型名称，如 `bge-reranker-v2-m3` 等 |
+| `query` | `String` | 用户查询语句，用于与候选文档计算相关性 |
+| `rerankDocuments` | `List<RerankDocument>` | 候选文档列表，需预先通过向量检索或 BM25 检索构建 |
+| `returnDocuments` | `boolean` | 是否在结果中返回原始文档内容；设为 `true` 可在结果中直接获取原始文本，设为 `false` 则仅返回分数和索引，减少数据传输。 |
+| `topK` | `int` | 最多返回的文档数量，只召回相似度最高的前 `topK` 个文档 |
+| `relevanceScore` | `double` | 相关性分数阈值，只召回相似度大于该值的文档 |
+
+#### RerankDocument 数据结构
+
+```java
+RerankDocument doc = new RerankDocument();
+doc.setDocument("文档原始文本内容");    // 设置文档内容
+doc.setVectorScore(0.85f);               // 来自向量检索的分数（可选）
+doc.setBm25Score(12.5f);                 // 来自 BM25 检索的分数（可选）
+doc.setMetadata(metaMap);                // 附加元数据（可选）
+```
+
+#### RerankedDocument 返回结构
+
+| 字段 | 说明 |
+|------|------|
+| `index` | 原始文档在候选列表中的位置 |
+| `relevanceScore` | Rerank 模型计算的相关性分数 |
+| `document` | 原始文档内容（当 `returnDocuments=true` 时返回） |
+
+ 
+---
+
+### 15.3 RAG 实战：混合检索 + Rerank
+
+以下是一个完整的 RAG 检索流程示例，演示如何结合 Elasticsearch KNN 向量检索、BM25 文本检索和 Rerank 重排序，实现高质量的知识库问答。
+
+#### 15.3.1 初始化与启动
+
+```java
+import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
+import org.frameworkset.spi.remote.http.HttpRequestProxy;
+
+// 启动 Elasticsearch 客户端和 HTTP 连接池
+ElasticSearchBoot.boot("application-stream.properties");
+HttpRequestProxy.startHttpPools("application-stream.properties");
+```
+
+#### 15.3.2 完整检索流程
+
+```java
+import org.frameworkset.elasticsearch.ElasticSearchHelper;
+import org.frameworkset.elasticsearch.client.ClientInterface;
+import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.frameworkset.elasticsearch.entity.MetaMap;
+import org.frameworkset.spi.ai.AIAgent;
+import org.frameworkset.spi.ai.model.*;
+
+public void searchVectorAndRerank() {
+    ClientInterface clientUtil = ElasticSearchHelper
+            .getConfigRestClientUtil("esmapper/knowledge.xml");
+    String query = "Spring AOP";
+
+    // 1. 向量检索（KNN）
+    Map vectorParams = new LinkedHashMap();
+    vectorParams.put("embedding", text2embedding(query));
+    vectorParams.put("k", 100);
+    vectorParams.put("size", 50);
+    vectorParams.put("similarity", 0.5);
+    ESDatas<MetaMap> vectorDatas = clientUtil.searchList(
+            "/knowledge_chunks/_search", "searchWithScore",
+            vectorParams, MetaMap.class);
+    List<MetaMap> vectorResults = vectorDatas.getDatas();
+
+    // 2. BM25 文本检索
+    Map bm25Params = new LinkedHashMap();
+    bm25Params.put("query", query);
+    bm25Params.put("size", 50);
+    bm25Params.put("is_active", true);
+    ESDatas<MetaMap> bm25Datas = clientUtil.searchList(
+            "/knowledge_chunks/_search", "searchBM25",
+            bm25Params, MetaMap.class);
+    List<MetaMap> bm25Results = bm25Datas.getDatas();
+
+    // 3. 合并结果（去重）
+    Map<String, RerankDocument> mergedMap = new LinkedHashMap<>();
+    if (vectorResults != null) {
+        for (MetaMap metaMap : vectorResults) {
+            String chunkId = (String) metaMap.get("chunk_id");
+            RerankDocument doc = new RerankDocument();
+            doc.setDocument((String) metaMap.get("content"));
+            doc.setVectorScore(metaMap.getScore());
+            doc.setMetadata(metaMap);
+            mergedMap.put(chunkId, doc);
+        }
+    }
+    if (bm25Results != null) {
+        for (MetaMap metaMap : bm25Results) {
+            String chunkId = (String) metaMap.get("chunk_id");
+            RerankDocument doc = mergedMap.get(chunkId);
+            if (doc == null) {
+                doc = new RerankDocument();
+                doc.setDocument((String) metaMap.get("content"));
+                doc.setBm25Score(metaMap.getScore());
+                doc.setMetadata(metaMap);
+                mergedMap.put(chunkId, doc);
+            } else {
+                doc.setBm25Score(metaMap.getScore());
+            }
+        }
+    }
+
+    // 4. Rerank 重排序
+    if (mergedMap != null && mergedMap.size() > 0) {
+        List<RerankDocument> rerankDatas = new ArrayList<>(mergedMap.values());
+
+        RerankMessage rerankMessage = new RerankMessage();
+        rerankMessage.setMaas("aigw");
+        rerankMessage.setModel("10086/bge-reranker-v2-m3");
+        rerankMessage.setRerankDocuments(rerankDatas);
+        rerankMessage.setQuery(query);
+        rerankMessage.setReturnDocuments(false);
+        rerankMessage.setTopK(3);                            // 最多返回前 3 个最相关文档
+        rerankMessage.setRelevanceScore(0.8d);               // 只召回相似度大于 0.8 的文档
+
+        AIAgent aiAgent = new AIAgent();
+        List<RerankedDocument> rerankedDocuments = aiAgent.rerank(rerankMessage);
+
+        // 按 relevanceScore 排序后的最终结果就是高质量检索结果
+        logger.info("Rerank 结果: {}", JsonUtil.object2jsonPretty(rerankedDocuments));
+    }
+}
+```
+
+#### 流程说明
+
+1. **向量检索**：通过 KNN 搜索获取语义相关的文档片段
+2. **BM25 检索**：通过关键词匹配获取文本相关的文档片段
+3. **结果合并**：以 `chunk_id` 为键去重合并，同时保留两种检索的分数
+4. **Rerank 排序**：调用 Rerank 模型对合并后的候选集进行精细排序，返回按相关性排列的最终结果
+
+> **混合检索方案**：Elasticsearch 8.x 也支持原生的混合检索（`knn` + `query` + `rank: { rrf }`），可通过 `searchHybrid` DSL 一步完成向量+BM25+RRF 融合，详见下面索引配置中的 `searchHybrid` 定义。
+
+---
+
+### 15.4 Elasticsearch 索引配置
+
+以下是为知识库检索场景设计的 Elasticsearch 索引模板和检索 DSL 配置，需放置在 `esmapper/knowledge.xml` 中。
+
+#### 15.4.1 索引结构与 Mapping
+
+```xml
+<property name="createKnowledgeChunksIndex">
+    <![CDATA[{
+      "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0,
+        "analysis": {
+          "filter": {
+            "cn_stop": {
+              "type": "stop",
+              "stopwords": ["的", "了", "是", "在", "和", "或", "与", "对", "中", "也", "都", "就", "而"]
+            }
+          },
+          "analyzer": {
+            "cn_index_analyzer": {
+              "type": "custom",
+              "tokenizer": "ik_max_word",
+              "filter": ["lowercase", "cn_stop"]
+            },
+            "cn_search_analyzer": {
+              "type": "custom",
+              "tokenizer": "ik_smart",
+              "filter": ["lowercase", "cn_stop"]
+            }
+          }
+        }
+      },
+      "mappings": {
+        "properties": {
+          "chunk_id":    { "type": "keyword" },
+          "document_id": { "type": "keyword" },
+          "batch_id":    { "type": "keyword" },
+          "is_active":   { "type": "boolean" },
+          "doc_path":    { "type": "keyword" },
+          "anchor":      { "type": "keyword" },
+          "domain":      { "type": "keyword" },
+          "doc_type":    { "type": "keyword" },
+          "heading_path": {
+            "type": "text",
+            "analyzer": "cn_index_analyzer",
+            "search_analyzer": "cn_search_analyzer"
+          },
+          "content": {
+            "type": "text",
+            "analyzer": "cn_index_analyzer",
+            "search_analyzer": "cn_search_analyzer",
+            "fields": {
+              "en": { "type": "text", "analyzer": "english" }
+            }
+          },
+          "embedding": {
+            "type": "dense_vector",
+            "dims": 1024,
+            "index": true,
+            "similarity": "cosine"
+          },
+          "created_at": { "type": "date" }
+        }
+      }
+    }]]>
+</property>
+```
+
+#### 15.4.2 KNN 向量检索 DSL
+
+```xml
+<property name="searchWithScore">
+    <![CDATA[{
+       "size":#[size],
+      "knn": {
+        "field": "embedding",
+        "query_vector": #[embedding,serialJson=true],
+        "k": #[k],
+        "similarity": #[similarity],
+        "num_candidates": 100,
+        "boost": 0.9
+      }
+    }]]>
+</property>
+```
+
+#### 15.4.3 BM25 文本检索 DSL
+
+```xml
+<property name="searchBM25">
+    <![CDATA[{
+      "size": #[size],
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "multi_match": {
+                "query": #[query],
+                "fields": ["content^3", "heading_path^2"],
+                "type": "best_fields"
+              }
+            }
+          ],
+          "filter": [
+            { "term": { "is_active": #[is_active] } }
+          ]
+        }
+      }
+    }]]>
+</property>
+```
+
+#### 15.4.4 混合检索（KNN + BM25 + RRF）DSL
+
+```xml
+<property name="searchHybrid">
+    <![CDATA[{
+      "size": #[size],
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "multi_match": {
+                "query": #[query],
+                "fields": ["content^3", "heading_path^2"],
+                "type": "best_fields"
+              }
+            }
+          ],
+          "filter": [
+            { "term": { "is_active": #[is_active] } }
+          ]
+        }
+      },
+      "knn": {
+        "field": "embedding",
+        "query_vector": #[embedding,serialJson=true],
+        "k": #[k],
+        "similarity": #[similarity],
+        "num_candidates": 200,
+        "boost": 0.5,
+        "filter": [
+          { "term": { "is_active": #[is_active] } }
+        ]
+      },
+      "rank": {
+        "rrf": {
+          "window_size": 100,
+          "rank_constant": 60
+        }
+      }
+    }]]>
+</property>
+```
+
+#### 索引配置要点
+
+| 配置项 | 说明 |
+|--------|------|
+| `dense_vector` | `embedding` 字段类型，`dims: 1024` 对应 bge-m3 模型输出维度 |
+| `similarity: cosine` | 向量相似度算法，可选 `cosine`、`dot_product`、`l2_norm` |
+| `ik_max_word` / `ik_smart` | IK 分词器的索引模式和搜索模式 |
+| `cn_stop` | 自定义中文停用词过滤 |
+| `RRF` | Reciprocal Rank Fusion，Elasticsearch 原生多路检索融合算法 |
+
+> **注意**：使用 `searchHybrid` 需要 Elasticsearch 8.x 及以上版本，且索引的 `dense_vector` 字段必须设置 `index: true`。
+
+---
+
+## 十六、技术支持
 
 - **技术交流群**：21220580、166471282
 
-- **参考文档**：https://esdoc.bbossgroups.com/#/bboss-ai
+- **参考文档**：https://doc.bbossgroups.com/#/mvc/chatstream
 
 - **源码地址**：https://gitee.com/bboss/bboss-ai
 
@@ -1179,6 +1978,3 @@ public class IntelligentAssistant {
 - **后端多模态演示案例**：https://gitee.com/bboss/bboss-ai
 
   关键代码：https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/StreamTest.java
-  
-- **bboss rag参考文档**：https://esdoc.bbossgroups.com/#/Elasticsearch-embedding
-

@@ -18,7 +18,6 @@ package org.frameworkset.elasticsearch.template;
 import com.frameworkset.daemon.ResourceNameSpace;
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
-import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.assemble.AOPValueHandler;
 import org.frameworkset.spi.assemble.PropertiesContainer;
 import org.frameworkset.spi.assemble.ValueContainer;

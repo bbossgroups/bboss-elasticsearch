@@ -17,7 +17,6 @@ package org.frameworkset.elasticsearch.template;
 
 import com.frameworkset.util.DaemonThread;
 import com.frameworkset.util.ResourceInitial;
-import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Pro;
 import org.frameworkset.spi.runtime.BaseStarter;

@@ -23,7 +23,6 @@ import com.frameworkset.util.*;
 import com.frameworkset.velocity.BBossVelocityUtil;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticsearchParseException;
-import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.CustomCharEscapeUtil;
 import org.frameworkset.elasticsearch.serial.SerialUtil;

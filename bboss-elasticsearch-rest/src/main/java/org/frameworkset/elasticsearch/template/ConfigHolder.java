@@ -1,4 +1,4 @@
-package org.frameworkset.elasticsearch.client;
+package org.frameworkset.elasticsearch.template;
 /**
  * Copyright 2022 bboss
  * <p>
@@ -36,15 +36,17 @@ public class ConfigHolder {
 	private Map<String, ConfigDSLUtil> configDSLUtils = new HashMap<String, ConfigDSLUtil>();
 	private DaemonThread damon = null;
 	private String holderName;
-	public ConfigHolder(String holderName){
-		this.holderName = holderName;
-	}
+ 
 
-	public ConfigHolder(){
-		this.holderName = "Default";
-	}
+    public ConfigHolder(String holderName){
+        this.holderName = holderName;
+    }
+    
+ 
 	public ConfigDSLUtil getConfigDSLUtil(String templateFile){
 		return getConfigDSLUtil(ElasticSearchHelper.getDslfileMappingDir(),templateFile);
+//        return getConfigDSLUtil(dslfileMappingDir,templateFile);
+        
 	}
 	public ConfigDSLUtil getConfigDSLUtil(TemplateContainer templateContainer) {
 		String namespace = templateContainer.getNamespace();

@@ -15,7 +15,6 @@
  */
 package org.frameworkset.elasticsearch.template;
 
-import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.elasticsearch.serial.CharEscapeUtil;
 import org.frameworkset.soa.BBossStringWriter;
 import org.frameworkset.spi.BaseApplicationContext;

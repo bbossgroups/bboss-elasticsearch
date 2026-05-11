@@ -15,7 +15,6 @@ package org.frameworkset.elasticsearch.template;
  * limitations under the License.
  */
 
-import org.frameworkset.elasticsearch.client.ConfigHolder;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.LinkConfigFile;
 import org.frameworkset.spi.assemble.Pro;

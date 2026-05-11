@@ -1,7 +1,10 @@
 - [BBOSS介绍](README.md)
-- [bboss ai使用教程](bboss-ai.md)
-- [Http5负载均衡器使用介绍](httpproxy5.md)
-- [Http负载均衡器使用介绍](httpproxy.md)
+- 多模态智能体
+  - [bboss ai使用教程](bboss-ai.md)
+- 微服务框架
+  - [Http5负载均衡器使用介绍](httpproxy5.md)
+  - [Http负载均衡器使用介绍](httpproxy.md)
+  - [配置化dsl微服务调用介绍](http-config-dsl.md)
 - 工作流
   - [bboss jobflow使用介绍](jobworkflow.md)
   - [自定义函数流程任务节点使用介绍](jobflow-customnode.md)
