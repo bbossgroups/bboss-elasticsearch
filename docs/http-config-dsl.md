@@ -430,7 +430,189 @@ Map result = client.sendJsonBody(clientConfiguration, url, "requestBody", params
 
 ### 8.3 与流式AI服务结合
 
-> 实现中
+配置化DSL框架同样支持流式（Server-Sent Events）AI服务的调用。通过 `ConfigHttpRequestProxy` 提供的流式方法，可将 DSL 模板发送到 AI 服务，并以 `reactor.core.publisher.Flux<String>` 形式逐段接收响应内容。
+
+#### 8.3.1 流式调用示例
+
+以下示例演示通过 DSL 配置文件调用支持 SSE 的 AI 对话接口。完整的交互流程为：**客户端**通过 DSL 模板发送用户消息 → **服务端**接收消息后调用 AI 大模型流式接口 → **服务端**通过 SSE 逐段返回 AI 生成的内容 → **客户端**通过 `Flux<String>` 接收并消费流数据。
+
+**客户端调用代码：**
+
+```java
+public static void testStream() throws InterruptedException {
+    initFeishu();
+
+    // 获取DSL代理：指定连接池bootdemo，DSL文件feishudsl.xml
+    ConfigHttpRequestProxy client = ConfigHttpRequestProxyHelper
+            .getHttpConfigClientProxy("bootdemo", "feishudsl.xml");
+
+    // 构造请求参数
+    Map<String, Object> params = new HashMap<>();
+    params.put("message", "介绍bboss");
+
+    // 在数据源bootdemo上执行流式查询
+    Flux<String> flux = client.streamDefaultDS(
+            "/demoproject/reactor/deepseekChat.api", "queryChat", params);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    flux
+        .doOnSubscribe(subscription -> logger.info("开始订阅流..."))
+        .doOnNext(event -> {
+            System.out.println(event);
+        })
+        .doOnComplete(() -> {
+            logger.info("\n=== 流完成 ===");
+            countDownLatch.countDown();
+        })
+        .doOnError(error -> {
+            logger.error("错误: " + error.getMessage(), error);
+            countDownLatch.countDown();
+        })
+        .subscribe();
+
+    // 等待异步操作完成，否则流式异步方法执行后会因为主线程的退出而退出
+    countDownLatch.await();
+}
+```
+
+**DSL 配置文件 `feishudsl.xml`（queryChat 片段）：**
+
+```xml
+<property name="queryChat">
+    <![CDATA[
+    {
+        "message": #[message]
+    }
+    ]]>
+</property>
+```
+
+**服务端实现代码（`ReactorController.java`）：**
+
+服务端接收到客户端发送的包含 `message` 字段的请求后，调用 bboss AI 模块的 `AIAgent.streamChat` 方法与大模型进行流式对话，并将返回的 `Flux<ServerEvent>` 转换为字符串流返回给客户端。
+
+```java
+@RestController
+public class ReactorController {
+    
+    @RequestMapping("/deepseekChat.api")
+    public Flux<String> deepseekChat(@RequestBody Map<String,Object> questions, @RequestParam String q) {
+        String message = questions != null ? (String)questions.get("message") : q;
+        ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
+        chatAgentMessage.setPrompt(message); // 当前消息
+        chatAgentMessage.setModel("deepseek-v4-pro").setTemperature(0.5);
+
+        chatAgentMessage.setStream(true);
+        AIAgent aiAgent = new AIAgent();
+        Flux<ServerEvent> flux = aiAgent.streamChat("deepseek", chatAgentMessage);
+
+        // 将流数据转换成字符串流
+        Flux<String> stringFlux = flux.map(serverEvent -> {
+            if(serverEvent.getData() != null) {
+                return serverEvent.getData();
+            }
+            else {
+                return "";
+            }
+        });
+        return stringFlux;
+    }
+}
+```
+
+#### 8.3.2 指定服务连接池
+
+如需在已有代理实例上临时切换到其他连接池执行流式调用，可使用 `stream` 系列方法直接指定目标连接池名称，无需重新获取代理实例。
+
+**带 DSL 模板的流式调用：**
+
+```java
+// 在已有 client 实例上，指定连接池 "deepseek" 和 DSL 模板执行流式调用
+Flux<String> flux = client.stream(
+        "deepseek",                          // 目标连接池名称
+        "/chat/completions",                 // 请求 URL
+        "queryChat",                         // DSL 模板名称
+        params,                              // 参数
+        HttpMethodName.HTTP_POST             // HTTP 方法
+);
+
+// 简写形式：默认 POST 方法
+Flux<String> flux = client.stream(
+        "deepseek",
+        "/chat/completions",
+        "queryChat",
+        params
+);
+```
+
+**通过 DataCollector 收集流数据（指定连接池）：**
+
+```java
+client.stream(
+        "deepseek",                          // 目标连接池名称
+        "/chat/completions",                 // 请求 URL
+        "queryChat",                         // DSL 模板名称
+        params,                              // 参数
+        HttpMethodName.HTTP_POST,            // HTTP 方法
+        new DataCollector() {                // 数据收集器
+            @Override
+            public void collect(String data) {
+                System.out.println(data);
+            }
+        }
+);
+
+// 简写形式：默认 POST 方法
+client.stream(
+        "deepseek",
+        "/chat/completions",
+        "queryChat",
+        params,
+        new DataCollector() {
+            @Override
+            public void collect(String data) {
+                System.out.println(data);
+            }
+        }
+);
+```
+
+**不带 DSL 模板的流式调用（直接发送请求体）：**
+
+```java
+// 指定连接池，自定义 HTTP 方法
+Flux<String> flux = client.stream("deepseek", "/chat/completions", HttpMethodName.HTTP_POST);
+
+// 简写形式：默认 POST 方法
+Flux<String> flux = client.stream("deepseek", "/chat/completions");
+```
+
+**方法列表：**
+
+| 方法签名 | 说明 |
+|----------|------|
+| `stream(String poolName, String url, String queryDslName, Object params, String method)` | 指定连接池、DSL 模板、参数和 HTTP 方法，返回 `Flux<String>` |
+| `stream(String poolName, String url, String queryDslName, Object params)` | 同上，默认使用 `POST` 方法 |
+| `stream(String poolName, String url, String queryDslName, Object params, String method, DataCollector dataCollector)` | 指定连接池和收集器，同步消费流数据 |
+| `stream(String poolName, String url, String queryDslName, Object params, DataCollector dataCollector)` | 同上，默认使用 `POST` 方法 |
+| `stream(String poolName, String url, String method)` | 指定连接池和 HTTP 方法，无 DSL 模板，返回 `Flux<String>` |
+| `stream(String poolName, String url)` | 指定连接池，无 DSL 模板，默认 `POST` 方法，返回 `Flux<String>` |
+
+> **提示**：`streamDefaultDS` 固定使用代理初始化时绑定的连接池（即 `ConfigHttpRequestProxyHelper.getHttpConfigClientProxy(poolName, ...)` 中的 `poolName`）；而 `stream(String poolName, ...)` 允许在单次调用中动态指定任意已初始化的连接池。
+
+#### 8.3.3 关键说明
+
+| 要点 | 说明 |
+|------|------|
+| **返回类型** | `Flux<String>`，每个元素为服务端推送的一段文本片段 |
+| **连接池** | `streamDefaultDS` 在代理初始化时指定的连接池上执行；如需切换连接池，可通过其他重载方法或重新获取代理实例 |
+| **异步等待** | 流式调用为异步非阻塞，主线程需通过 `CountDownLatch`、`Thread.sleep` 等方式等待，避免进程提前退出 |
+| **背压与缓冲** | `Flux` 支持 `limitRate(n)`、`buffer(size)` 等背压控制操作（示例中已注释），可按业务需求调整消费速率 |
+| **错误处理** | 通过 `doOnError` 捕获异常，并在异常时释放等待锁，防止主线程永久阻塞 |
+
+#### 8.3.4 更底层的流式控制
+
+若需要对 SSE 原始数据行进行自定义解析（如提取 `data:` 字段、处理 `[DONE]` 结束标志、解析 JSON 中的 `choices[].delta.content`），可直接使用 `HttpRequestProxy` 的 `streamChatCompletion` 方法并传入自定义的 `StreamDataHandler`。详细用法请参考 [bboss http5 流式调用文档](https://esdoc.bbossgroups.com/#/httpproxy5)。
 
 ### 8.4 资源释放
 

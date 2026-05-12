@@ -1576,6 +1576,10 @@ aiPlanAgent.addParrelAgent(parrelAgent);
 
 ---
 
+## 14.8 智能体工作流变量体系
+
+智能体工作流变量体系，流程输入参数：input.query和input.system
+
 ## 十五、向量模型与Rerank
 
 bboss AI 内置了文本向量化（Embedding）和重排序（Rerank）能力，可配合 Elasticsearch 等向量数据库实现检索增强生成（RAG）。
@@ -1674,7 +1678,7 @@ doc.setMetadata(metaMap);                // 附加元数据（可选）
 | `relevanceScore` | Rerank 模型计算的相关性分数 |
 | `document` | 原始文档内容（当 `returnDocuments=true` 时返回） |
 
- 
+
 ---
 
 ### 15.3 RAG 实战：混合检索 + Rerank
