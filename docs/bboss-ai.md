@@ -1459,11 +1459,150 @@ AIParrelAgent aiParrelAgent = new AIParrelAgent(aiPlanAgent) {
 };
 ```
 
-### 14.4 路由智能体
+### 14.4 条件任务节点和触发器
 
-路由智能体（`AIRouteAgent`）能够根据用户问题自动选择后续执行路径，实现智能分发。
+通过条件任务节点，可以在工作流或者并行/串行分支中，添加多个候选条件任务分支节点以及一个默认分支节点（可行）,每个条件任务分支节点需指定特定的条件触发器。
 
-#### 14.4.1 同步路由工作流
+流程调度执行时，会从所以条件分支任务节点选择满足触发条件的任务分支节点执行，如果没有满足的节点，则会选择默认分支节点执行；如果既没有满足条件的条件分支节点，也没有设置默认分支节点，则会根据控制参数allCondtionNodeMatchedfailedContinue的值，来判别是否继续执行条件节点后面的任务节点（如果有），true，则执行，false不执行，直接终止当前条件节点所在流程或者并行/串行分支的执行。
+
+基于条件任务节点，可以实现：
+
+1. if-elseif-else条件决策树编排
+2. 有限循环图智能体流程编排
+3. 路由智能体编排
+
+#### 14.4.1 简单条件任务分支
+
+如果选择的智能体id为docAgent，则执行飞书文档智能体
+
+如果选择的智能体id为logAgent，则执行日志分析智能体
+
+如果没有选择具体的智能体，则执行默认智能体，直接回答用户问题
+
+```java
+//添加一个简单的决策智能体节点，在流程上下文中添加路由的agentId
+planAgent.addAgent(new AIFlowNode() {
+            /**
+             * 由子类继承和实现
+             *
+             * @param jobFlowNodeExecuteContext
+             * @return
+             */
+            @Override
+            public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                jobFlowNodeExecuteContext.addJobFlowContextData("routeChoice","docAgent");//模拟设置后续节点id
+                return null;
+            }
+        });
+        ToolsRegist feishuMcp = new FeishuMcpRegist("feishumcp");
+        planAgent.addConditionFlowNode(new UserNodeAgent(feishuMcp).setAgentId("docAgent").setAgentName("飞书文档智能体"),
+                nodeTriggerContext -> {
+                    String agentId = (String) nodeTriggerContext.getFlowContextData("routeChoice",true);
+                    
+                    if(agentId != null && agentId.equals("docAgent")){
+                        return true;
+                    }
+                    return false;
+                });
+        planAgent.addConditionFlowNode(new UserNodeAgent().setAgentId("logAgent").setAgentName("日志分析智能体"),
+                nodeTriggerContext -> {
+                    String agentId = (String) nodeTriggerContext.getFlowContextData("routeChoice",true);
+                    
+                    if(agentId != null && agentId.equals("logAgent")){
+                        return true;
+                    }
+                    return false;
+                });
+//添加默认条件分支节点
+        planAgent.addConditionFlowNode(new UserNodeAgent( ).setAgentId("defaultAgent").setAgentName("默认智能体直接回答问题"),true);
+//开始对话，执行对话流程，并返回会话结果
+        Flux<ServerEvent> flux = planAgent.chatStream();
+```
+
+#### 14.4.2 条件分支后开启新条件分支
+
+可以通过以下系列addAnotherConditionJobFlowNodeAgent方法，在当前条件分支后开启一个新的条件分支：
+
+```java
+public String addAnotherConditionJobFlowNodeAgent(AppendToParentAgent baseNodeAgent, NodeTrigger conditionNodeTrigger)
+public String addAnotherConditionJobFlowNodeAgent(AppendToParentAgent baseNodeAgent, NodeTrigger conditionNodeTrigger,boolean defaultConditionNode)    
+public String addAnotherConditionJobFlowNodeAgent(boolean allCondtionNodeMatchedfailedContinue,AppendToParentAgent baseNodeAgent, TriggerScriptAPI conditionNodeTrigger)
+public String addAnotherConditionJobFlowNodeAgent(boolean allCondtionNodeMatchedfailedContinue,AppendToParentAgent baseNodeAgent, TriggerScriptAPI conditionNodeTrigger,boolean defaultConditionNode)    
+    
+```
+
+注意调用addAnotherConditionJobFlowNodeAgent方法后，表示开启新的条件任务节点，并添加第一个分支，后续条件分支节点则通过addConditionFlowNode方法添加即可。
+
+#### 14.4.3 实现有向循环图
+
+基于条件分支节点，在通过addConditionFlowNode方法和addAnotherConditionJobFlowNodeAgent方法添加条件分支节点时，可以指定为当前流程或者并行、串行分支流程的前序节点（案例中为introduceProvinces），从而实现有向循环图流程编排功能：
+
+```java
+AIPlanAgent planAgent = new AIPlanAgent(new StoreContext()
+        .setSessionId(sessionId).setUserId("user123").setSessionSize(100)                 
+        .setStoreType(StoreContext.STORE_TYPE_DB).setRequestId("request123")
+        .setDataSource("visualops"))
+        .setAgentMessage(chatAgentMessage)
+        .setAgentName("工作流智能体").setAgentId("workflowAgent")
+         ;
+AIBaseNodeAgent introduceProvinces = new AINodeAgent("用200字介绍中国有多少个省份和直辖市").setAgentName("介绍中国省份和直辖市").setAgentId("introduceProvinces");
+planAgent.addAgent(introduceProvinces);
+//构建并行智能体
+AIParrelAgent aiParrelAgent = new AIParrelAgent(planAgent).setAgentId("aiParrelAgent").setAgentName("并行智能体");
+aiParrelAgent.addAgent(new AINodeAgent("用50字介绍湖南，并且和介绍中国省份和直辖市内容合并输出").setAgentId("jieshaohunan").setAgentName("用50字介绍湖南"));
+aiParrelAgent.addAgent(new UserNodeAgent("用50字介绍湖北").setAgentId("jieshaohubei").setAgentName("用50字介绍湖北"));
+aiParrelAgent.addAgent(new UserNodeAgent("用50字介绍江西").setAgentId("jieshaojiangxi").setAgentName("用50字介绍江西"));
+aiParrelAgent.addAgent(new UserNodeAgent("将下面的文字翻译为英文（不要回答问题）：用50字介绍江西").setAgentId("translate").setAgentName("将文字翻译为英文"));
+planAgent.addAgent(aiParrelAgent);
+IntegerCount integerCount = new IntegerCount();
+//直接指向前序节点introduceProvinces，实现有条件循环，多循环一次，就结束循环，第一个参数为true，表示循环结束后继续执行流程后续节点
+planAgent.addConditionFlowNode(true,introduceProvinces, new TriggerScriptAPI() {
+    @Override
+    public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+        int i = integerCount.increament();
+        if(i == 1) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+});
+//下面给流程增加了两个通用节点
+planAgent.addAgent(new AIFlowNode() {
+            @Override
+            public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext)   {
+                logger.info("call 自定义节点1。");
+                jobFlowNodeExecuteContext.addJobFlowContextData("customNode", "customNodeData");
+                return null;
+            }
+        });
+
+        planAgent.addAgent(new AIFlowNode() {
+            @Override
+            public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext)   {
+                logger.info("call 自定义节点2。");
+                logger.info("call 自定义节点2。customNode:{}", jobFlowNodeExecuteContext.getJobFlowContextData("customNode"));
+                return null;
+            }
+        });
+```
+
+#### 14.4.4 注意事项
+
+- 条件节点只能在当前主干流程节点间跳转，不能跳转到分支复合节点内部
+
+- 条件节点只能在串行分支流程节点之间跳转，不能跳转分支复合节点内部或者分支外部
+
+- 条件节点只能在并行分支中并行分支流程节点之间跳转，不能跳转分支复合节点内部或者分支外部
+
+- 可以为条件节点设置条件触发器，节点可以加入到多个条件分支，每个分支都可以指定特定条件触发器，如果没有指定，则使用节点自身的条件触发器，条件节点必须指定自己的条件触发器
+
+### 14.5 路由智能体
+
+路由智能体（`AIRouteAgent`）基于条件任务节点实现，能够根据用户问题自动选择后续执行路径，实现智能分发。
+
+#### 14.5.1 同步路由工作流
 
 ```java
 AIPlanAgent aiPlanAgent = new AIPlanAgent(storeContext)
@@ -1514,7 +1653,7 @@ aiPlanAgent.addAgent(
 LastSessionMessage result = aiPlanAgent.chat();
 ```
 
-#### 14.4.2 流式路由工作流
+#### 14.5.2 流式路由工作流
 
 流式路由与同步路由结构一致，只需调用 `chatStream()`：
 
@@ -1523,7 +1662,9 @@ Flux<ServerEvent> flux = aiPlanAgent.chatStream();
 // ... 流式处理逻辑与并行流式示例相同
 ```
 
-### 14.5 工作流组合模式
+
+
+### 14.6 工作流组合模式
 
 串行和并行智能体可以相互嵌套，构建复杂的工作流：
 
@@ -1553,7 +1694,7 @@ parrelAgent.addAgent(new AINodeAgent("独立任务"));
 aiPlanAgent.addAgent(parrelAgent);
 ```
 
-### 14.6 工作流节点类型说明
+### 14.7 工作流节点类型说明
 
 | 节点类型 | 继承类 | 特点 |
 |---------|--------|------|
@@ -1598,7 +1739,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 - `addJobFlowContextData(key, value)`：向工作流上下文写入键值对数据
 - `getJobFlowContextData(key)`：从工作流上下文读取数据
 
-### 14.7 智能体配置参数
+### 14.8 智能体配置参数
 
 | 参数 | 说明 |
 |------|------|
@@ -1613,11 +1754,11 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 
 ---
 
-## 14.8 智能体工作流变量体系
+### 14.9 智能体工作流变量体系
 
 智能体工作流支持丰富的变量传递机制，支持在智能体之间传递数据，并在 Prompt 中动态引用变量。
 
-### 14.8.1 变量概述
+#### 14.9.1 变量概述
 
 工作流中的变量用于实现智能体之间的数据共享和传递，主要包含以下使用场景：
 
@@ -1626,7 +1767,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 - **内置变量**：框架自动注入的流程级变量，如用户输入、系统提示等
 - **上下文变量**：通过 `JobFlowNodeExecuteContext` 或 `NodeTriggerContext` 在代码层面读写
 
-### 14.8.2 设置输出变量
+#### 14.9.2 设置输出变量
 
 通过 `setOutputVaribleName` 方法将智能体的输出结果保存为指定名称的变量，并可指定作用域：
 
@@ -1644,7 +1785,7 @@ aiPlanAgent.addAgent(new AINodeAgent("用200字介绍中国有多少个省份和
 | `varName` | 变量名称，后续通过该名称引用 |
 | `scope` | 变量作用域，可选 `AIFlowConst.AIFLOW_VAR_SCOPE_FLOW`（全局）、`AIFLOW_VAR_SCOPE_NODE`（节点级）、`AIFLOW_VAR_SCOPE_CONTAINER`（容器级） |
 
-### 14.8.3 变量作用域
+#### 14.9.3 变量作用域
 
 | 作用域常量 | 说明 |
 |-----------|------|
@@ -1652,7 +1793,7 @@ aiPlanAgent.addAgent(new AINodeAgent("用200字介绍中国有多少个省份和
 | `AIFLOW_VAR_SCOPE_NODE` | 节点作用域，仅在当前节点内有效 |
 | `AIFLOW_VAR_SCOPE_CONTAINER` | 容器作用域，仅在当前串行/并行容器内有效 |
 
-### 14.8.4 在 Prompt 中使用变量
+#### 14.9.4 在 Prompt 中使用变量
 
 在智能体的提示词中，通过 `#[变量名,scope=作用域]` 的语法引用已定义的变量：
 
@@ -1676,7 +1817,7 @@ aiParrelAgent.addAgent(new AINodeAgent(
 
 其中 `scope` 可选值为：`flow`、`node`、`container`，需与定义变量时指定的作用域一致。
 
-### 14.8.5 在代码中获取变量
+#### 14.9.5 在代码中获取变量
 
 在条件触发器或通用流程节点中，可通过上下文对象获取变量值：
 
@@ -1704,7 +1845,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 });
 ```
 
-### 14.8.6 内置变量
+#### 14.9.6 内置变量
 
 框架自动维护以下内置变量：
 
@@ -1714,7 +1855,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 | `input.system` | 系统提示词（System Prompt） |
 | `judgeAgent.judgeResult` | `AIJudgeAgent` 裁判节点的评估结果 |
 
-### 14.8.7 完整示例
+#### 14.9.7 完整示例
 
 以下示例演示了从变量定义、Prompt 引用到代码获取的完整流程：
 

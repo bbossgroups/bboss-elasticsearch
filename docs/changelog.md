@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20260428(待发布)
+# v7.5.6 功能改进-20260515(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -178,7 +178,10 @@ feishu.http.authorTokenExpiredTime = 6300000
 feishu.http.extendConfigs.appId = cli_a9d43b8789cd0
 feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
 ```
-
+38. 微服务框架改进：新增基于dsl的服务API，支持通过dsl方式调用服务，简化服务调用参数传递和组装机制，使用文档：https://esdoc.bbossgroups.com/#/http-config-dsl
+39. 数据交换改进：完善Elasticsearch输出插件，处理disablebulkreponse时，增量同步不起作用问题
+40. 工作流引擎改进：改造工作流节点流转机制：条件节点、并行节点、串行节点、简单节点、工作流，有向循环图除了可以执行前序节点，还可以指向后续节点
+41. 多模态智能体框架改进： 多智能体协同时，可以指定用户自定义AgentOutput接口，对智能体输出对象ServerEvent进行自定义输出处理
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
