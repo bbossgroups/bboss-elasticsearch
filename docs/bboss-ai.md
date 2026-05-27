@@ -169,7 +169,7 @@ visualops.http.maxTotal = 200
 visualops.http.defaultMaxPerRoute = 200
 # visualops服务地址
 
-visualops.http.hosts=10.13.6.4:8128
+visualops.http.hosts=127.0.0.1:8080
 visualops.http.apiKeyId = 17689048891086XsDsJVgwiQcmKhOdh23DX4NT
 #visualops.http.extendConfigs.sseendpoint = /mcp/sse.api
 visualops.http.extendConfigs.streamableendpoint = /mcp/streamable.api
