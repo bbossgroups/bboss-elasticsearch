@@ -82,58 +82,92 @@ package org.frameworkset.spi.ai.tools;
 import org.frameworkset.spi.ai.model.annotation.Tool;
 import org.frameworkset.spi.ai.model.annotation.ToolParam;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+ 
 public class PreOrderTool {
-
-    /**
-     * 酒店预订查询工具
-     */
-    @Tool(
-        name = "hotelBook",
-        description = "请根据用户的行程需求，查询并推荐合适的酒店。" +
-                      "需要考虑：地理位置、价格区间、用户评分、配套设施等因素。" +
-                      "给出至少3个推荐选项，并说明理由。"
+    @Tool(name="hotelQuery",description = "根据用户的行程需求，查询合适的酒店。"
     )
-    public List<Map> hotelBook(
-        @ToolParam(name = "startDay", description = "入驻时间,例如：5月25日", required = true) String startDay,
-        @ToolParam(name = "endDay", description = "离房时间,例如：5月28日", required = true) String endDay
-    ) {
+    public List<Map> hotelQuery(@ToolParam(name="startDay",description = "入驻时间,例如：5月25日",required = true) String startDay,
+                                @ToolParam(name="endDay",description = "离房时间,例如：5月28日",required = true) String endDay){
         List<Map> hotels = new ArrayList<>();
-        // ... 业务逻辑，构造推荐结果
         Map hotelData = new LinkedHashMap();
-        hotelData.put("name", "迁移山水酒店");
-        hotelData.put("price", "300$");
-        hotelData.put("score", 80);
-        hotelData.put("position", "位于市中心，交通便利");
+        hotelData.put("name","迁移山水酒店");
+        hotelData.put("price","300$");
+        hotelData.put("score",80);
+        hotelData.put("devices","配套设施：健身房、保龄球");
+        hotelData.put("position","位于市中心，交通便利");
         hotels.add(hotelData);
-        // 添加更多酒店...
+
+        hotelData = new LinkedHashMap();
+        hotelData.put("name","俊逸酒店");
+        hotelData.put("price","400$");
+        hotelData.put("score",90);
+        hotelData.put("devices","配套设施：健身房、保龄球、羽毛球");
+        hotelData.put("position","位于郊区，环境优雅");
+        hotels.add(hotelData);
+
+
+        hotelData = new LinkedHashMap();
+        hotelData.put("name","华天大酒店");
+        hotelData.put("price","500$");
+        hotelData.put("score",95);
+        hotelData.put("devices","配套设施：健身房、保龄球、羽毛球、游泳池");
+        hotelData.put("position","位于郊区，环境优雅，五星级环境");
+        hotels.add(hotelData);
         return hotels;
+
     }
 
-    /**
-     * 机票预订查询工具
-     */
-    @Tool(
-        name = "flightBook",
-        description = "请根据用户的行程需求，查询并推荐合适的航班。" +
-                      "需要考虑：出发时间、到达时间、航空公司、价格、准点率等因素。" +
-                      "给出至少3个推荐选项，并说明理由。"
-    )
-    public List<Map> flightBook(
-        @ToolParam(name = "bookDay", description = "出发时间,例如：5月25日", required = true) String bookDay
-    ) {
-        List<Map> flights = new ArrayList<>();
-        // ... 业务逻辑，构造推荐结果
-        Map flightData = new LinkedHashMap();
-        flightData.put("name", "国航6678");
-        flightData.put("price", "300$");
-        flightData.put("leaveTime", "14点30分");
-        flightData.put("arrivedTime", "17点30分");
-        flights.add(flightData);
-        // 添加更多航班...
-        return flights;
+    @Tool(name="flightQuery",description = "根据用户的行程需求，查询合适的航班机票。" )
+    public List<Map> flightQuery(@ToolParam(name="bookDay",description = "出发时间,例如：5月25日",required = true) String bookDay,
+                                 @ToolParam(name="arriveDay",description = "到达时间,例如：5月28日",required = true) String arriveDay,
+                                 @ToolParam(name="fromStation",description = "出发地,例如：长沙",required = true) String fromStation,
+                                 @ToolParam(name="toStation",description = "到达地,例如：北京",required = true) String toStation){
+        List<Map> hotels = new ArrayList<>();
+        Map hotelData = new LinkedHashMap();
+        hotelData.put("name","国航6678");
+        hotelData.put("price","300$");
+        hotelData.put("score",80);
+        hotelData.put("devices","波音777");
+
+        hotelData.put("leaveTime","14点30分");
+        hotelData.put("arrivedTime","17点30分");
+        hotelData.put("description","宽体大飞机，准点率99%");
+        hotels.add(hotelData);
+
+        hotelData = new LinkedHashMap();
+        hotelData.put("name","南航5578");
+        hotelData.put("price","400$");
+        hotelData.put("score",70);
+        hotelData.put("devices","空壳380");
+
+        hotelData.put("leaveTime","15点30分");
+        hotelData.put("arrivedTime","18点30分");
+        hotelData.put("description","宽体大飞机，准点率90%");
+        hotels.add(hotelData);
+
+
+        hotelData = new LinkedHashMap();
+        hotelData.put("name","厦门航空3378");
+        hotelData.put("price","300$");
+        hotelData.put("score",80);
+        hotelData.put("devices","波音730");
+
+        hotelData.put("leaveTime","16点30分");
+        hotelData.put("arrivedTime","18点30分");
+        hotelData.put("description","宽体大飞机，准点率100%");
+        hotels.add(hotelData);
+        return hotels;
+
     }
+
+    
+
+
 }
 ```
 
