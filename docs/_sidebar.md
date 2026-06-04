@@ -2,6 +2,7 @@
 - 多模态智能体
   - [bboss ai使用教程](bboss-ai.md)
   - [AI 工具注解功能使用教程](bboss-ai-toolannotation.md)
+  - [AI 工具类发布为Mcp服务使用教程](bboss-ai-mcpbean.md)
 - 微服务框架
   - [Http5负载均衡器使用介绍](httpproxy5.md)
   - [Http负载均衡器使用介绍](httpproxy.md)
