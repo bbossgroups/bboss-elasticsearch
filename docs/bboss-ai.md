@@ -327,6 +327,23 @@ public class SessionChatExample {
 
 ---
 
+### 3.5 失败重试
+
+如果模型服务不是太稳定，则需要设置重试机制，通过以下参数设置重试机制：
+
+**retry** 设置重试次数，大于0时，当调用大模型失败时，会自动重试，否则不重试，默认值0
+
+**retryInterval** 每次重试时，需等待特定时间后再重试，单位毫秒，大于0时才进行等待，默认值：500毫秒
+
+```java
+ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
+chatAgentMessage.setModel("deepseek-v4-pro")
+       .setStream( true)
+       .setRetry(3).setRetryInterval(1000L)
+       .setMaas("deepseek").setTemperature(0.3)
+       .setPrompt(question);
+```
+
 ## 四、图片识别（视觉大模型）
 
 ### 4.1 单张图片识别
