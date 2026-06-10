@@ -46,7 +46,7 @@
 
 ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐标](https://esdoc.bbossgroups.com/#/db-es-tool?id=_11-在工程中导入bboss-maven坐标)
 
-# v7.5.6 功能改进-20260515(待发布)
+# v7.5.6 功能改进-20260609(待发布)
 1. 改进IP地址解析组件：增加对不存在IP地址库文件的监听，一旦IP地址库文件存在后就自动进行热加载
 2. 扩展DaemonThread：增加对不存在文件的监听，一旦文件存在后就自动进行热加载
 3. AI模型客户端改进：增加问答同步调用API
@@ -179,9 +179,36 @@ feishu.http.extendConfigs.appId = cli_a9d43b8789cd0
 feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
 ```
 38. 微服务框架改进：新增基于dsl的服务API，支持通过dsl方式调用服务，简化服务调用参数传递和组装机制，使用文档：https://esdoc.bbossgroups.com/#/http-config-dsl
+
 39. 数据交换改进：完善Elasticsearch输出插件，处理disablebulkreponse时，增量同步不起作用问题
+
 40. 工作流引擎改进：改造工作流节点流转机制：条件节点、并行节点、串行节点、简单节点、工作流，有向循环图除了可以执行前序节点，还可以指向后续节点
-41. 多模态智能体框架改进： 多智能体协同时，可以指定用户自定义AgentOutput接口，对智能体输出对象ServerEvent进行自定义输出处理
+
+41. 多智能体工作流扩展：增加变量体系，流程中智能体可以将智能体执行结果输出到流程上下文、节点上下文、复合节点上下文中；流程中的智能体的提示词工程中可以使用变量，从流程上下文、节点上下文、复合节点上下文中获取变量值，拼接到提示词工程
+
+42. 多模态智能体框架改进： 多智能体协同时，可以指定用户自定义AgentOutput接口，对智能体输出对象ServerEvent进行自定义输出处理
+
+43. 完善redis组件：分布式锁新增重试机制，完善[分布式锁案例和文档](https://doc.bbossgroups.com/#/redis-distributed-lock)
+
+44. 智能体框架改进：增加Tool和ToolParam注解，快速将bean组件快速发布为[Function Tool](https://esdoc.bbossgroups.com/#/bboss-ai-toolannotation)和[Mcp 服务](https://esdoc.bbossgroups.com/#/bboss-ai-mcpbean)
+
+45. Tool和ToolParam注解，快速将bean组件快速发布为服务，与Spring boot集成发布Mcp服务参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-springboot
+
+46. 完善智能体工作流，增加[停止工作流](https://esdoc.bbossgroups.com/#/bboss-ai?id=_1410-%e5%81%9c%e6%ad%a2%e6%99%ba%e8%83%bd%e4%bd%93%e5%b7%a5%e4%bd%9c%e6%b5%81)方法
+
+47. 智能体框架功能改进：增加重试机制,可以设置重试次数、重试时间间隔
+
+48. mcp bean tool注册机制改进：一个apikey下面，可以注册多个bean tool
+    bean tool注册机制改进：可以注册多个bean tool
+
+49. 完善评估智能体节点内置提示词：增加节点级别input.query和answer变量，例如：
+
+    ```shell
+    #[input.query,scope=node]
+    #[answer,scope=node]
+    ```
+
+    
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等

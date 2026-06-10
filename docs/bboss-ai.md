@@ -611,6 +611,8 @@ public class SpeechRecognitionExample {
 
 ### 7.1 同步语音合成
 
+通义千问语音生成：
+
 ```java
 import org.frameworkset.spi.ai.model.AudioAgentMessage;
 import org.frameworkset.spi.ai.model.AudioEvent;
@@ -627,7 +629,7 @@ public class TextToSpeechExample {
         audioMsg.addParameter("voice", "Cherry");           // 音色
         audioMsg.addParameter("language_type", "Chinese");  // 语言
 
-        // 设置保存路径
+        // 设置保存路径，通过StoreFilePathFunction保存音频文件到本地
         audioMsg.setStoreFilePathFunction(url -> {
             return "audio/" + System.currentTimeMillis() + ".wav";
         });
@@ -639,6 +641,39 @@ public class TextToSpeechExample {
     }
 }
 ```
+
+智谱语音生成：
+
+```java
+   AudioAgentMessage audioMsg = new AudioAgentMessage();
+            //https://docs.bigmodel.cn/api-reference/%E6%A8%A1%E5%9E%8B-api/%E6%96%87%E6%9C%AC%E8%BD%AC%E8%AF%AD%E9%9F%B3
+             
+ 			audioMsg.setModel("glm-tts");
+        	audioMsg.setPrompt("诗歌朗诵：床前明月光，疑似地上霜。");
+            audioAgentMessage.addParameter("voice", "female")
+                    .addParameter("response_format", "wav")
+                    .addParameter("speed", 1.0)
+                    .addParameter("volume", 1.0)            
+                    ;
+ // 设置保存路径,智谱语音模型默认返回对应音频文件格式的base64字符串。
+        audioMsg.setStoreFilePathFunction(new ReponseStoreFilePathFunction() {
+                @Override
+                public String getStoreFilePath(String imageUrl) {
+                    return "audio/"+SimpleStringUtil.getUUID32() +".wav";
+                }
+            });            
+       
+        
+        AIAgent aiAgent = new AIAgent();
+        AudioEvent audioEvent = aiAgent.genAudio(selectedModel,audioAgentMessage,storeFilePathFunction);
+        return audioEvent;
+```
+
+StoreFilePathFunction和ReponseStoreFilePathFunction区别：
+
+StoreFilePathFunction：当模型将生成的语音通过url方式返回时，采用StoreFilePathFunction保存到本地音频文件
+
+ReponseStoreFilePathFunction：当模型将生成的语音通过base64码方式返回时，采用ReponseStoreFilePathFunction直接将base64编码音频内容保存到本地音频文件
 
 ### 7.2 流式语音合成
 
@@ -1192,8 +1227,9 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 | `AIParrelAgent` | 并行智能体容器，内部多个子智能体并发执行 |
 | `AISequenceAgent` | 串行智能体容器，内部多个子智能体按顺序执行 |
 | `AIRouteAgent` | 路由智能体，根据用户问题自动决策后续执行路径 |
-| `AIJudgeAgent` | 裁判智能体，评估执行结果是否满足预期 |
+| `AIJudgeAgent` | 裁判智能体，评估执行结果是否满足预期，内置节点及变量：#[input.query,scope=node]<br/>#[answer,scope=node] |
 | `StoreContext` | 会话存储上下文，支持内存和数据库两种持久化方式 |
+| StandaloneAgent | 独立智能体，不会接受上游消息,也不会向下游推送消息 |
 
 #### 14.1.1 会话存储配置
 
@@ -2071,6 +2107,14 @@ aiPlanAgent.addAgent(new AIFlowNode() {
         return null;
     }
 });
+```
+
+### 14.10 停止智能体工作流
+
+可以通过以下方法停止智能体工作流的执行：
+
+```java
+aiPlanAgent.shutdown();
 ```
 
 ## 十五、向量模型与Rerank

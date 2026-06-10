@@ -2217,7 +2217,9 @@ geolite2 ip库文件：
 
 ip2region 库文件：
 
-https://github.com/lionsoul2014/ip2region/blob/master/data/ip2region.db
+https://github.com/lionsoul2014/ip2region/blob/master/data/
+
+https://gitee.com/lionsoul/ip2region/tree/master/data
 
 ip地址库设置方式有两种：
 
@@ -2228,9 +2230,9 @@ ip地址库设置方式有两种：
 ```properties
 ip.cachesize = 10000
 # geoip的ip地址信息库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
-ip.database = E:/workspace/geolite2/GeoLite2-City.mmdb
-ip.asnDatabase = E:/workspace/geolite2/GeoLite2-ASN.mmdb
-ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
+ip.database = C:/workdir/geolite2/GeoLite2-City.mmdb
+ip.asnDatabase = C:/workdir/geolite2/GeoLite2-ASN.mmdb
+ip.ip2regionDatabase=C:/workdir/geolite2/ip2region_v4.xdb;C:/workdir/geolite2/ip2region_v6.xdb
 ```
 
 
@@ -2238,9 +2240,10 @@ ip.ip2regionDatabase=E:/workspace/ipdb/ip2region.db
 - 方式2 代码中直接设置ip地址信息库
 
   ```java
-  importBuilder.setGeoipDatabase("E:/workspace/geolite2/GeoLite2-City.mmdb");
-  importBuilder.setGeoipAsnDatabase("E:/workspace/geolite2/GeoLite2-ASN.mmdb");
-  	importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
+  	importBuilder.setGeoipDatabase("C:/workdir/geolite2/GeoLite2-City.mmdb");
+  		importBuilder.setGeoipAsnDatabase("C:/workdir/geolite2/GeoLite2-ASN.mmdb");
+  		importBuilder.setGeoip2regionDatabase("C:/workdir/geolite2/ip2region_v4.xdb;C:/workdir/geolite2/ip2region_v6.xdb");
+  		
   ```
 
 #### 4.8.12 设置任务执行结果回调处理函数
