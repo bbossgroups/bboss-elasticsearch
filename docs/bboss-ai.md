@@ -11,12 +11,27 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 ### 核心特性
 
 - **多模型支持**：兼容 DeepSeek、Kimi、智谱、阿里百炼通义千问、字节豆包火山引擎、MiniMax、腾讯混元、中国移动九天等主流 MaaS 平台；通过简单的适配和扩展即可支持私有化模型平台
+
 - **工具能力**：支持工具调用和 MCP 服务发现，提供 MCP SSE 和 Streamable 两种通讯协议，同时提供mcp server协议实现
+
 - **多模态支持**：支持文本、图片、音频、视频等多种模态的识别与生成
+
 - **流式响应**：基于 Reactor 的响应式编程模型，支持背压控制
+
 - **多轮会话**：内置会话记忆管理，支持多轮对话；支持内存和数据库两种会话持久化方式
+
 - **智能体工作流编排**：基于有向循环图实现多智能体协同工作流，支持串行、并行、路由、条件分支、裁判评估等丰富的流程编排能力，快速构建复杂多智能体系统
+
+  ![](images\workflow\jobworkflow.png)
+
+  
+
+  ![](images\workflow\bbossgraph.png)
+
+  多智能体编排工作流底层基于[bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow)实现（一套数据交换作业编排工作流）
+
 - **向量模型支持**：内置文本向量化（Embedding）和重排序（Rerank）能力，支持知识库检索增强生成（RAG）
+
 - **多智能体协同**：配合bboss graph提供的工作流和有限循环图，实现多智能体协同，快速构建多智能体系统
 
 ---
@@ -39,7 +54,7 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 implementation 'com.bbossgroups:bboss-ai:6.5.3'
 ```
 
-### 2.3 配置文件
+### 2.3 maas服务配置
 
 创建配置文件 `application-stream.properties`，配置各模型服务：使用时，需将apiKey替换为实际apiKey
 
@@ -190,7 +205,94 @@ feishumcp.http.extendConfigs.streamableendpoint = /mcp
 
 ## 三、基础使用
 
-### 3.1 初始化配置
+### 3.1 智能体消息类型
+
+```java
+/**
+ * 智能体用户输入消息:包括用户输入的原始问题、用户上传文件、用户图片描述等
+ */
+public static final String MESSAGE_TYPE_USERINPUTMESSAGE = "8";
+/**
+ * 智能体输出消息:ASSISTANT中的一种
+ */
+public static final String MESSAGE_TYPE_AGENTRESULTMESSAGE = "1";
+/**
+ * 智能体用户输入消息：提交给大模型或者其他多模态模型
+ */
+public static final String MESSAGE_TYPE_USER_MESSAGE = "2";
+
+/**
+ * 智能体辅助消息
+ */
+public static final String MESSAGE_TYPE_ASSISTANT_MESSAGE = "0";
+
+
+/**
+ * 智能体系统消息
+ */
+public static final String MESSAGE_TYPE_SYSTEM_MESSAGE = "3";
+
+
+
+/**
+ * 智能体跟踪消息
+ */
+public static final String MESSAGE_TYPE_TRACE_MESSAGE = "5";
+
+/**
+ * 智能体RAG知识消息
+ */
+public static final String MESSAGE_TYPE_RAG_MESSAGE = "6";
+
+/**
+ * 智能体拒答消息
+ */
+public static final String MESSAGE_TYPE_REFUSE_MESSAGE = "7";
+
+
+/**
+ * 智能体用户输入消息:包括用户输入的原始问题、用户上传文件、用户图片描述等
+ */
+public static final String MESSAGE_TYPE_USERINPUTMESSAGE_NAME = "userinput";
+/**
+ * 智能体输出消息:ASSISTANT中的一种
+ */
+public static final String MESSAGE_TYPE_AGENTRESULTMESSAGE_NAME = "agentresult";
+/**
+ * 智能体用户输入消息
+ */
+public static final String MESSAGE_TYPE_USER_MESSAGE_NAME = "user";
+
+/**
+ * 智能体辅助消息
+ */
+public static final String MESSAGE_TYPE_ASSISTANT_MESSAGE_NAME = "assistant";
+
+
+/**
+ * 智能体系统消息
+ */
+public static final String MESSAGE_TYPE_SYSTEM_MESSAGE_NAME = "system";
+
+
+
+/**
+ * 智能体跟踪消息
+ */
+public static final String MESSAGE_TYPE_TRACE_MESSAGE_NAME = "trace";
+
+/**
+ * 智能体RAG知识消息
+ */
+public static final String MESSAGE_TYPE_RAG_MESSAGE_NAME = "rag";
+
+/**
+ * 智能体拒答消息
+ */
+public static final String MESSAGE_TYPE_REFUSE_MESSAGE_NAME = "refuse";
+```
+
+### 3.2 初始化配置
 
 在应用启动时加载配置文件：
 
@@ -208,7 +310,7 @@ public class Application {
 }
 ```
 
-### 3.2 同步聊天（非流式）
+### 3.3 同步聊天（非流式）
 
 ```java
 import org.frameworkset.spi.ai.AIAgent;
@@ -238,7 +340,7 @@ public class ChatExample {
 }
 ```
 
-### 3.3 流式聊天
+### 3.4 流式聊天
 
 ```java
 import reactor.core.publisher.Flux;
@@ -284,7 +386,7 @@ public class StreamChatExample {
 }
 ```
 
-### 3.4 多轮会话
+### 3.5 多轮会话
 
 ```java
 import java.util.ArrayList;
@@ -327,7 +429,9 @@ public class SessionChatExample {
 
 ---
 
-### 3.5 失败重试
+多智能体协同编排，访问章节：[多智能体协同编排](https://esdoc.bbossgroups.com/#/bboss-ai?id=%e5%8d%81%e5%9b%9b%e3%80%81%e5%a4%9a%e6%99%ba%e8%83%bd%e4%bd%93%e7%bc%96%e6%8e%92%e5%b7%a5%e4%bd%9c%e6%b5%81)
+
+### 3.6 失败重试
 
 如果模型服务不是太稳定，则需要设置重试机制，通过以下参数设置重试机制：
 
@@ -880,6 +984,15 @@ https://open.feishu.cn/document/mcp_open_tools/developers-call-remote-mcp-server
                     .addHttpConfig("feishu.http.hosts", "https://open.feishu.cn")
                     .addHttpConfig("feishu.http.maxTotal", 100)
                     .addHttpConfig("feishu.http.defaultMaxPerRoute", 100)
+                .addHttpConfig("feishu.http.authorTokenFunction", "org.frameworkset.spi.ai.mcp.feishu.FeishuMCPAuthorTokenFunction")
+                feishumcp.http.authorTokenFunction = 
+// 25分钟自动刷新token
+// tenant_access_token 的最大有效期是 2 小时。
+// 剩余有效期小于 30 分钟时，调用本接口会返回一个新的 tenant_access_token，这会同时存在两个有效的 tenant_access_token。
+// 剩余有效期大于等于 30 分钟时，调用本接口会返回原有的 tenant_access_token
+feishumcp.http.authorTokenExpiredTime = 1500000
+                
+                .addHttpConfig("feishu.http.authorTokenExpiredTime", 1500000)
                     .setMcpTools("search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments");//需要设置飞书Mcp工具清单，否则大模型无法识别Mcp工具并调用
 ;
             chatAgentMessage.setToolsRegist(new FeishuMcpRegist("feishumcp",baseFeishuConfig));
@@ -1213,9 +1326,13 @@ public class IntelligentAssistant {
 
 ---
 
-## 十四、智能体工作流编排
+## 十四、多智能体编排工作流
 
 bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基于有向循环图实现多智能体协同。支持串行、并行、路由、条件分支、裁判评估等丰富的流程编排模式，能够快速构建复杂的多智能体系统。
+
+![](images\workflow\bbossgraph.png)
+
+多智能体编排工作流底层基于[bboss jobflow](https://esdoc.bbossgroups.com/#/jobworkflow)实现（一套数据交换作业编排工作流）
 
 ### 14.1 工作流核心组件
 
@@ -1230,6 +1347,8 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 | `AIJudgeAgent` | 裁判智能体，评估执行结果是否满足预期，内置节点及变量：#[input.query,scope=node]<br/>#[answer,scope=node] |
 | `StoreContext` | 会话存储上下文，支持内存和数据库两种持久化方式 |
 | StandaloneAgent | 独立智能体，不会接受上游消息,也不会向下游推送消息 |
+| `AIFlowNode` | 通用工作流节点，执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据<br/>,接口方法call带返回值 |
+| AIFlowNodeVoid | 通用工作流节点，执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据<br/>,接口方法call不需要返回值 |
 
 #### 14.1.1 会话存储配置
 
@@ -1278,6 +1397,8 @@ AIPlanAgent aiPlanAgent = new AIPlanAgent(storeContext)
 // 4. 执行工作流
 LastSessionMessage result = aiPlanAgent.chat();
 ```
+
+
 
 ### 14.2 串行任务编排
 
@@ -1888,9 +2009,82 @@ Flux<ServerEvent> flux = aiPlanAgent.chatStream();
 // ... 流式处理逻辑与并行流式示例相同
 ```
 
+### 14.6 通用流程节点
 
+bboss提供了两种类型通用节点：AIFlowNode和AIFlowNodeVoid（二者区别：后者call方法无返回值，视情况选取），通用流程节点用于在工作流中执行纯 Java 代码逻辑，不调用大模型。适合数据转换、参数校验、外部接口调用、数据预处理、记录用户输入和创建用户会话等场景。
 
-### 14.6 工作流组合模式
+记录用户输入信息和创建会话：
+
+```java
+          planAgent.addAgent(new AIFlowNodeVoid(){
+             
+             @Override
+             public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                // ===== 2. 加载历史会话消息，如果会话不存在，则创建 =====
+                planAgent.loadSessionMemory( question, domain);
+                TraceMessage traceMessage = new TraceMessage();       
+                //记录用户输入的原始问题
+                traceMessage.setMessage(Map.of("question", question,"role",SessionMessage.MESSAGE_TYPE_USERINPUTMESSAGE_NAME));
+                //其他用户上传的附件材料信息可以放到metaData中,也可以直接放到上面的消息中
+//              traceMessage.setMetaData(Map.of("documents", new ArrayList<>()));
+                traceMessage.setStartTime(System.currentTimeMillis());
+//              traceMessage.setEndTime(System.currentTimeMillis());
+                planAgent.recordTraceMessage(traceMessage);
+ 
+                
+                
+             }
+          });
+```
+
+其他应用案例：
+
+ 
+
+```java
+import org.frameworkset.spi.ai.flow.AIFlowNode;
+import org.frameworkset.tran.jobflow.context.JobFlowNodeExecuteContext;
+
+aiPlanAgent.addAgent(new AIFlowNode() {
+    @Override
+    public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+        logger.info("call 自定义节点1。");
+        // 向工作流上下文写入数据
+        jobFlowNodeExecuteContext.addJobFlowContextData("customNode", "customNodeData");
+        return null;
+    }
+});
+
+aiPlanAgent.addAgent(new AIFlowNode() {
+    @Override
+    public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+        logger.info("call 自定义节点2。");
+        // 从工作流上下文读取数据
+        Object data = jobFlowNodeExecuteContext.getJobFlowContextData("customNode");
+        logger.info("customNode:{}", data);
+        return null;
+    }
+});
+
+aiPlanAgent.addAgent(new AIFlowNodeVoid() {
+    @Override
+    public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+        logger.info("call 自定义节点2。");
+        // 从工作流上下文读取数据
+        Object data = jobFlowNodeExecuteContext.getJobFlowContextData("customNode");
+        logger.info("customNode:{}", data);
+        
+});
+```
+
+通用流程节点通过 `JobFlowNodeExecuteContext` 实现与上下游节点的数据交互：
+
+- `addJobFlowContextData(key, value)`：向工作流上下文写入键值对数据
+- `getJobFlowContextData(key)`：从工作流上下文读取数据
+
+### 14.7 智能体配置参数
+
+### 14.8 工作流组合模式
 
 串行和并行智能体可以相互嵌套，构建复杂的工作流：
 
@@ -1920,7 +2114,7 @@ parrelAgent.addAgent(new AINodeAgent("独立任务"));
 aiPlanAgent.addAgent(parrelAgent);
 ```
 
-### 14.7 工作流节点类型说明
+### 14.9工作流节点类型说明
 
 | 节点类型 | 继承类 | 特点 |
 |---------|--------|------|
@@ -1928,44 +2122,9 @@ aiPlanAgent.addAgent(parrelAgent);
 | 用户节点 | `UserNodeAgent` | 不引用上游父智能体记忆，适合独立任务或工具调用 |
 | 路由节点 | `AIRouteAgent` | 负责路由决策，不直接回答问题 |
 | 裁判节点 | `AIJudgeAgent` | 评估结果质量，输出判断结论 |
-| 通用流程节点 | `AIFlowNode` | 执行纯Java自定义逻辑，不调用大模型，可在工作流中传递数据 |
+| 通用流程节点 | `AIFlowNode` | 执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据 |
 
-#### 通用流程节点（AIFlowNode）
-
-通用流程节点用于在工作流中执行纯 Java 代码逻辑，不调用大模型。适合数据转换、参数校验、外部接口调用、数据预处理等场景。
-
-```java
-import org.frameworkset.spi.ai.flow.AIFlowNode;
-import org.frameworkset.tran.jobflow.context.JobFlowNodeExecuteContext;
-
-aiPlanAgent.addAgent(new AIFlowNode() {
-    @Override
-    public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
-        logger.info("call 自定义节点1。");
-        // 向工作流上下文写入数据
-        jobFlowNodeExecuteContext.addJobFlowContextData("customNode", "customNodeData");
-        return null;
-    }
-});
-
-aiPlanAgent.addAgent(new AIFlowNode() {
-    @Override
-    public Object call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
-        logger.info("call 自定义节点2。");
-        // 从工作流上下文读取数据
-        Object data = jobFlowNodeExecuteContext.getJobFlowContextData("customNode");
-        logger.info("customNode:{}", data);
-        return null;
-    }
-});
-```
-
-通用流程节点通过 `JobFlowNodeExecuteContext` 实现与上下游节点的数据交互：
-
-- `addJobFlowContextData(key, value)`：向工作流上下文写入键值对数据
-- `getJobFlowContextData(key)`：从工作流上下文读取数据
-
-### 14.8 智能体配置参数
+### 
 
 | 参数 | 说明 |
 |------|------|
@@ -1980,11 +2139,11 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 
 ---
 
-### 14.9 智能体工作流变量体系
+### 14.10 智能体工作流变量体系
 
 智能体工作流支持丰富的变量传递机制，支持在智能体之间传递数据，并在 Prompt 中动态引用变量。
 
-#### 14.9.1 变量概述
+#### 14.10.1 变量概述
 
 工作流中的变量用于实现智能体之间的数据共享和传递，主要包含以下使用场景：
 
@@ -1993,7 +2152,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 - **内置变量**：框架自动注入的流程级变量，如用户输入、系统提示等
 - **上下文变量**：通过 `JobFlowNodeExecuteContext` 或 `NodeTriggerContext` 在代码层面读写
 
-#### 14.9.2 设置输出变量
+#### 14.10.2 设置输出变量
 
 通过 `setOutputVaribleName` 方法将智能体的输出结果保存为指定名称的变量，并可指定作用域：
 
@@ -2011,7 +2170,7 @@ aiPlanAgent.addAgent(new AINodeAgent("用200字介绍中国有多少个省份和
 | `varName` | 变量名称，后续通过该名称引用 |
 | `scope` | 变量作用域，可选 `AIFlowConst.AIFLOW_VAR_SCOPE_FLOW`（全局）、`AIFLOW_VAR_SCOPE_NODE`（节点级）、`AIFLOW_VAR_SCOPE_CONTAINER`（容器级） |
 
-#### 14.9.3 变量作用域
+#### 14.10.3 变量作用域
 
 | 作用域常量 | 说明 |
 |-----------|------|
@@ -2019,7 +2178,7 @@ aiPlanAgent.addAgent(new AINodeAgent("用200字介绍中国有多少个省份和
 | `AIFLOW_VAR_SCOPE_NODE` | 节点作用域，仅在当前节点内有效 |
 | `AIFLOW_VAR_SCOPE_CONTAINER` | 容器作用域，仅在当前串行/并行容器内有效 |
 
-#### 14.9.4 在 Prompt 中使用变量
+#### 14.10.4 在 Prompt 中使用变量
 
 在智能体的提示词中，通过 `#[变量名,scope=作用域]` 的语法引用已定义的变量：
 
@@ -2043,7 +2202,7 @@ aiParrelAgent.addAgent(new AINodeAgent(
 
 其中 `scope` 可选值为：`flow`、`node`、`container`，需与定义变量时指定的作用域一致。
 
-#### 14.9.5 在代码中获取变量
+#### 14.10.5 在代码中获取变量
 
 在条件触发器或通用流程节点中，可通过上下文对象获取变量值：
 
@@ -2071,7 +2230,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 });
 ```
 
-#### 14.9.6 内置变量
+#### 14.10.6 内置变量
 
 框架自动维护以下内置变量：
 
@@ -2081,7 +2240,7 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 | `input.system` | 系统提示词（System Prompt） |
 | `judgeAgent.judgeResult` | `AIJudgeAgent` 裁判节点的评估结果 |
 
-#### 14.9.7 完整示例
+#### 14.10.7 完整示例
 
 以下示例演示了从变量定义、Prompt 引用到代码获取的完整流程：
 
@@ -2109,7 +2268,146 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 });
 ```
 
-### 14.10 停止智能体工作流
+### 14.11 评估智能体
+
+```java
+//构建裁判智能体：判断是否回答了问题，可以指定评估提示词，通过变量一样问题和问题答案
+aiPlanAgent.addAgent(new AIJudgeAgent("评估结果是否回答了问题:\n#[input.query,scope=node]\n# 问题答案：\n#[answer,scope=node],回答请回复：是，否则回复：否").setAgentId("judgeAgent").setAgentName("评估智能体"));
+
+//构建裁判智能体：如果不指定提示词，则使用默认提示词
+
+aiPlanAgent.addAgent(new AIJudgeAgent().setAgentId("judgeAgent").setAgentName("评估智能体"));
+```
+
+### 14.12 流程调度
+
+bboss提供了智能体流程一次性执行和定期调度执行机制，可以设置节假日忽略执行策略，先看一个完整示例：
+
+```java
+private static void initDeepseekService(){
+      
+        HttpRequestProxy.startHttpPools("application.properties");//启动模型服务服务
+
+    }
+    public static void main(String[] args){
+        //初始化Deepseek服务
+        initDeepseekService();
+        ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
+        chatAgentMessage.setModel("deepseek-chat").setMaas("deepseek");
+
+        //构建流程
+        AIPlanAgent planAgent = new AIPlanAgent(new StoreContext().setStoreType(StoreContext.STORE_TYPE_MEMORY).setSessionSize(100));
+        planAgent.setAgentName("Deepseek写诗-评价诗词流程")
+                .setAgentId("测试id").setAgentMessage(chatAgentMessage);
+        
+        HolidayJobFlowScheduleConfig jobFlowScheduleConfig = new HolidayJobFlowScheduleConfig();
+        jobFlowScheduleConfig.setDelay(1000L);//延期1秒执行
+        jobFlowScheduleConfig.setFixedRate(true);
+        jobFlowScheduleConfig.setPeriod(30000L);//每隔30秒执行
+        jobFlowScheduleConfig.addCustomHoliday("2026-06-10");//设定某天不执行，可以调用多次添加多天不执行
+        
+        planAgent.setJobFlowScheduleConfig(jobFlowScheduleConfig);
+
+        planAgent.addAgent(new AINodeAgent("模仿李白的风格写一首七律.飞机!").setSystemPrompt("你是一位唐代诗人.").setAgentId("1").setAgentName("Deepseek写诗-评价诗词流程").setAgentOutput(new AgentOutput() {
+            @Override
+            public void output(ServerEvent message) {
+                logger.info("--------诗歌内容---------\n{}",message.getData());
+            }
+        }));
+
+        planAgent.addAgent(new AINodeAgent("帮忙评估上述诗词的意境").setAgentId("2").setAgentName("Deepseek-chat-分析诗").setAgentOutput(new AgentOutput() {
+            @Override
+            public void output(ServerEvent message) {
+                logger.info("--------诗歌评价---------\n{}",message.getData());
+            }
+        }));
+
+
+        planAgent.chat();
+         
+        
+
+    }
+```
+
+bboss默认采用一次性执行智能体编排工作流，如需周期性执行，则进行以下配置：
+
+
+```java
+    HolidayJobFlowScheduleConfig jobFlowScheduleConfig = new HolidayJobFlowScheduleConfig();
+    jobFlowScheduleConfig.setDelay(1000L);//延期1秒执行
+    jobFlowScheduleConfig.setFixedRate(true);
+    jobFlowScheduleConfig.setPeriod(30000L);//每隔30秒执行
+    jobFlowScheduleConfig.addCustomHoliday("2026-06-10");//设定某天不执行，可以调用多次添加多天不执行
+    jobFlowScheduleConfig.setSkipSunday(true);
+    planAgent.setJobFlowScheduleConfig(jobFlowScheduleConfig);
+```
+如果需要跳过节假日不执行，则进行如下设置：
+
+```java
+jobFlowScheduleConfig.addCustomHoliday("2026-06-10");//设定某天不执行，可以调用多次添加多天不执行
+/**
+ * 设置跳过星期六
+ 
+ */
+jobFlowScheduleConfig.skipSaturday() 
+
+/**
+ * 设置跳过星期天
+ * @return
+ */
+jobFlowScheduleConfig.skipSunday() 
+
+/**
+ * 设置跳过周末（星期六和星期天）
+ * @return
+ */
+jobFlowScheduleConfig.skipWeekends() 
+
+/**
+ * 设置跳过元旦（1月1日）
+ * @return
+ */
+jobFlowScheduleConfig.skipNewYearsDay() 
+
+/**
+ * 设置跳过劳动节（5月1日）
+ * @return
+ */
+jobFlowScheduleConfig.skipLaborDay() 
+
+/**
+ * 设置跳过端午节
+ * @return
+ */
+jobFlowScheduleConfig.skipDragonBoatFestival() 
+
+/**
+ * 设置跳过中秋节
+ * @return
+ */
+jobFlowScheduleConfig.skipMidAutumnFestival() 
+
+/**
+ * 设置跳过国庆节（10月1日）
+ * @return
+ */
+jobFlowScheduleConfig.skipNationalDay() 
+
+/**
+ * 设置跳过春节
+ * @return
+ */
+jobFlowScheduleConfig.skipSpringFestival() 
+
+/**
+ * 设置跳过所有内置节假日（元旦、劳动节、端午节、中秋节、国庆节、春节）及周末
+ * @return
+ */
+jobFlowScheduleConfig.skipAllHolidays() 
+```
+
+### 14.13 停止智能体工作流
 
 可以通过以下方法停止智能体工作流的执行：
 
