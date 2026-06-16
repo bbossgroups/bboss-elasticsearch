@@ -207,6 +207,10 @@ feishumcp.http.extendConfigs.streamableendpoint = /mcp
 
 ### 3.1 智能体消息类型
 
+#### 3.1.1 编码定义
+
+消息类型messageType，对应agent_session_message表中的messageType字段
+
 ```java
 /**
  * 智能体用户输入消息:包括用户输入的原始问题、用户上传文件、用户图片描述等
@@ -248,7 +252,19 @@ public static final String MESSAGE_TYPE_RAG_MESSAGE = "6";
  * 智能体拒答消息
  */
 public static final String MESSAGE_TYPE_REFUSE_MESSAGE = "7";
+    /**
+     * LLM输入消息
+     */
+    public static final String MESSAGE_TYPE_LLMINPUTMESSAGE = "9";
 
+
+```
+
+#### 3.1.2 名称定义
+
+消息类型messageType对应的角色名称:
+
+```java
 
 /**
  * 智能体用户输入消息:包括用户输入的原始问题、用户上传文件、用户图片描述等
@@ -290,7 +306,113 @@ public static final String MESSAGE_TYPE_RAG_MESSAGE_NAME = "rag";
  * 智能体拒答消息
  */
 public static final String MESSAGE_TYPE_REFUSE_MESSAGE_NAME = "refuse";
+    /**
+     * LLM输入消息
+     */
+    public static final String MESSAGE_TYPE_LLMINPUTMESSAGE_NAME = "llminput";
 ```
+
+#### 3.1.3 扩展消息类型
+
+AgentMessageTypeConvertor提供以上内置角色名称到消息类型的转换，如果用户需要扩展自己的消息角色和编码，可以继承AgentMessageTypeConvertor类并重写convertMessageType方法，0-100为系统内置编码，如果用户自定义编码请从101开始，示例如下：
+
+```java
+public class CustomAgentMessageTypeConvertor extends AgentMessageTypeConvertor {
+    /**
+     * 将角色转换为消息类型messageType，对应agent_session_message表中的messageType字段    
+     *
+     * @param role
+     * @return
+     */
+    @Override
+    public String convertMessageType(String role) {
+        if("custom".equals(role)){
+            return "101";
+        }
+        return super.convertMessageType(role);
+    }
+}
+```
+
+使用自定义转换器：
+
+```java
+StoreContext storeContext = new StoreContext();
+storeContext.setAgentMessageTypeConvertor(new CustomAgentMessageTypeConvertor());
+```
+
+#### 3.1.3 使用场景
+
+消息类型使用场景：在智能体编排流程中设置消息角色类型
+
+```java
+    TraceMessage traceMessage = new TraceMessage();       
+                //记录用户输入的原始问题
+                traceMessage.setMessage(Map.of("question", question,"role",SessionMessage.MESSAGE_TYPE_USERINPUTMESSAGE_NAME));
+                //其他用户上传的附件材料信息可以放到metaData中,也可以直接放到上面的消息中
+
+                traceMessage.setStartTime(System.currentTimeMillis());
+
+                planAgent.recordTraceMessage(traceMessage);
+```
+
+#### 3.1.4 ServerEvent结构
+
+```java
+contentType：主要用来区分答案正文内容和思维链内容，0表示答案内容，1表示思维链内容, 2 表示工具调用，3 表示mcp服务调用，5 表示监控对象，默认值为0
+
+ type 字段：标记消息报文类型 
+    /**
+     * 数据报文类型:0 数据消息，1表示异常消息,2 trace信息，traceId 3 拒答消息 5 知识库资料消息 6 步骤消息
+     * 默认值为0     
+     */
+type = TYPE_DATA;
+数据报文类型常量说明
+ /**
+     * type：数据消息
+     */
+    public static final int TYPE_DATA = 0;
+    /**
+     * type：异常消息
+     */
+    public static final int TYPE_ERROR = 1;
+
+    /**
+     * type：trace信息，traceId
+     */
+    public static final int TYPE_TRACE = 2;
+    /**
+     * type：拒绝消息：
+     */
+    public static final int TYPE_REFUSAL = 3;
+    
+    /**
+     * type：知识库资料消息：
+     */
+    public static final int TYPE_RAG_KNOWLEDGE = 5;
+
+    /**
+     * type：步骤消息：
+     */
+    public static final int TYPE_STEP = 6;
+```
+
+#### 3.1.5 属性说明
+
+| 参数           | 说明             |
+| -------------- | ---------------- |
+| `agentId`      | 智能体唯一标识   |
+| `agentName`    | 智能体名称       |
+| `prompt`       | 用户提示词       |
+| `systemPrompt` | 系统提示词       |
+| `model`        | 模型名称         |
+| `maas`         | MaaS平台服务名   |
+| `stream`       | 是否开启流式响应 |
+| `thinking`     | 是否开启思考过程 |
+
+---
+
+### 
 
 ### 3.2 初始化配置
 
@@ -2124,21 +2246,6 @@ aiPlanAgent.addAgent(parrelAgent);
 | 裁判节点 | `AIJudgeAgent` | 评估结果质量，输出判断结论 |
 | 通用流程节点 | `AIFlowNode` | 执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据 |
 
-### 
-
-| 参数 | 说明 |
-|------|------|
-| `agentId` | 智能体唯一标识 |
-| `agentName` | 智能体名称 |
-| `prompt` | 用户提示词 |
-| `systemPrompt` | 系统提示词 |
-| `model` | 模型名称 |
-| `maas` | MaaS平台服务名 |
-| `stream` | 是否开启流式响应 |
-| `thinking` | 是否开启思考过程 |
-
----
-
 ### 14.10 智能体工作流变量体系
 
 智能体工作流支持丰富的变量传递机制，支持在智能体之间传递数据，并在 Prompt 中动态引用变量。
@@ -2407,7 +2514,35 @@ jobFlowScheduleConfig.skipSpringFestival()
 jobFlowScheduleConfig.skipAllHolidays() 
 ```
 
-### 14.13 停止智能体工作流
+### 14.13 自定义消息推送
+
+```java
+ServerEvent serverEvent = new ServerEvent();//向客户端推送拒答信息
+serverEvent.setType(ServerEvent.TYPE_REFUSAL);
+serverEvent.setData(msg);
+serverEvent.setConfidence(confidence);
+serverEvent.setDone(true);//告诉前端流已经输出完毕
+getAgentFluxSink().next(serverEvent);
+```
+
+### 14.14 流程轨迹记录
+
+```java
+// ===== 2. 加载历史会话消息，如果会话不存在，则创建 =====
+					planAgent.loadSessionMemory( question, domain);
+					TraceMessage traceMessage = new TraceMessage();		
+					//记录用户输入的原始问题
+					traceMessage.setMessage(Map.of("question", question,"role",SessionMessage.MESSAGE_TYPE_USERINPUTMESSAGE_NAME));
+					//其他用户上传的附件材料信息可以放到metaData中,也可以直接放到上面的消息中
+//					traceMessage.setMetaData(Map.of("documents", new ArrayList<>()));
+					traceMessage.setStartTime(System.currentTimeMillis());
+//					traceMessage.setEndTime(System.currentTimeMillis());
+					planAgent.recordTraceMessage(traceMessage);
+```
+
+
+
+### 14.15 停止智能体工作流
 
 可以通过以下方法停止智能体工作流的执行：
 
