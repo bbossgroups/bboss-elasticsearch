@@ -2630,8 +2630,8 @@ import org.frameworkset.spi.ai.model.RerankedDocument;
 
 public List<RerankedDocument> rerankDocuments(String query, List<RerankDocument> candidates) {
     RerankMessage rerankMessage = new RerankMessage();
-    rerankMessage.setMaas("aigw");                       // MaaS 服务名
-    rerankMessage.setModel("10086/bge-reranker-v2-m3");  // Rerank 模型
+    rerankMessage.setMaas("agw");                       // MaaS 服务名
+    rerankMessage.setModel("bge-reranker-v2-m3");  // Rerank 模型
     rerankMessage.setRerankDocuments(candidates);          // 候选文档列表
     rerankMessage.setQuery(query);                         // 用户查询
     rerankMessage.setReturnDocuments(false);               // 是否返回原始文本
@@ -2760,8 +2760,8 @@ public void searchVectorAndRerank() {
         List<RerankDocument> rerankDatas = new ArrayList<>(mergedMap.values());
 
         RerankMessage rerankMessage = new RerankMessage();
-        rerankMessage.setMaas("aigw");
-        rerankMessage.setModel("10086/bge-reranker-v2-m3");
+        rerankMessage.setMaas("agw");
+        rerankMessage.setModel("bge-reranker-v2-m3");
         rerankMessage.setRerankDocuments(rerankDatas);
         rerankMessage.setQuery(query);
         rerankMessage.setReturnDocuments(false);
