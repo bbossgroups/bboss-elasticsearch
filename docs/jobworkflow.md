@@ -29,7 +29,7 @@
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.5.5</version>
+        <version>7.5.6</version>
     </dependency>
 ```
 ### 1.2 从源码构建

@@ -68,14 +68,14 @@ https://gitee.com/bboss/httpproxy-nacos
 <dependency>
    <groupId>com.bbossgroups</groupId>
    <artifactId>bboss-http5</artifactId>
-   <version> 6.5.2</version>
+   <version> 6.5.3</version>
 </dependency>
 ```
 
 如果是gradle工程，导入方法如下：
 
 ```groovy
-api 'com.bbossgroups:bboss-http5: 6.5.2'
+api 'com.bbossgroups:bboss-http5: 6.5.3'
 ```
 
 ## 4.基础功能使用文档

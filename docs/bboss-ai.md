@@ -1473,7 +1473,8 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 | `UserNodeAgent` | 用户智能体，不引用上游父智能体的会话记忆，适合处理独立任务 |
 | `AIParrelAgent` | 并行智能体容器，内部多个子智能体并发执行 |
 | `AISequenceAgent` | 串行智能体容器，内部多个子智能体按顺序执行 |
-| `AIRouteAgent` | 路由智能体，根据用户问题自动决策后续执行路径 |
+| `AIRouteAgent` | 基于LLM路由智能体，根据用户问题自动决策后续执行路径 |
+| AIKeywordsRouteAgent | 基于关键词数组路由智能体，根据用户问题和关键词自动决策后续执行路径 |
 | `AIJudgeAgent` | 裁判智能体，评估执行结果是否满足预期，内置节点及变量：#[input.query,scope=node]<br/>#[answer,scope=node] |
 | `StoreContext` | 会话存储上下文，支持内存和数据库两种持久化方式 |
 | StandaloneAgent | 独立智能体，不会接受上游消息,也不会向下游推送消息 |
@@ -2077,7 +2078,7 @@ planAgent.addAgent(aiFlowNode);
 
 ### 14.5 路由智能体
 
-路由智能体（`AIRouteAgent`）基于条件任务节点实现，能够根据用户问题自动选择后续执行路径，实现智能分发。
+路由智能体（`AIRouteAgent`和AIKeywordsRouteAgent）基于条件任务节点实现，能够根据用户问题自动选择后续执行路径，实现智能分发。典型的**意图识别+路由分发**的AI架构模式，利用 LLM + 关键词规则，自动识别用户意图，然后决定走哪条处理分支，实现意图识别与路由分发机制。
 
 #### 14.5.1 同步路由工作流
 
@@ -2138,6 +2139,22 @@ LastSessionMessage result = aiPlanAgent.chat();
 Flux<ServerEvent> flux = aiPlanAgent.chatStream();
 // ... 流式处理逻辑与并行流式示例相同
 ```
+
+#### 14.5.3 关键词路由智能体
+
+```java
+ planAgent.addAgent(new AIKeywordsRouteAgent()
+				.addRoutingChoice("bothAgent", new String[]{"酒店和机票"}, "用户需要同时预定酒店和机票")
+				.addRoutingChoice("hotelAgent", new String[]{"酒店"},"用户只需要预定酒店")
+				.addRoutingChoice("flightAgent", new String[]{"航班","机票"}, "用户只需要预定机票")
+				
+                .setAgentId("bookingRouter").setAgentName("预定路由智能体")
+                .setSystemPrompt("你是一个行程预定路由智能体。请分析用户的问题，判断用户需要预定什么，注意你不需要直接回答用户的问题，只需要做路由判断,使用json格式返回匹配的智能体信息")              
+                
+        );
+```
+
+AIKeywordsRouteAgent 是轻量级的关键词匹配方案，适合意图明确、关键词边界清晰的场景（如本例中的"酒店"、"机票"）。
 
 ### 14.6 通用流程节点
 

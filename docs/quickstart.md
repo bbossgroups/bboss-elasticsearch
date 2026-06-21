@@ -56,7 +56,7 @@
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-datatran-jdbc</artifactId>
-        <version>7.5.5</version>
+        <version>7.5.6</version>
     </dependency>
 ```
 下面两个坐标只需根据spring boot版本导入一个即可
@@ -67,7 +67,7 @@
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-        <version>7.5.5</version>
+        <version>7.5.6</version>
     </dependency>
 ```
 如果是 spring boot 3.x,+ 项目，还需导入maven坐标:
@@ -76,7 +76,7 @@
     <dependency>
         <groupId>com.bbossgroups.plugins</groupId>
         <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-        <version>7.5.5</version>
+        <version>7.5.6</version>
     </dependency>
 ```
 

@@ -1,6 +1,6 @@
 
 
-# BBOSS版本变更记录-v7.5.5 发布
+# BBOSS版本变更记录-v7.5.6 发布
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下五部分构成：
 
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.5.5</version>
+            <version>7.5.6</version>
         </dependency>
 ```
 
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-            <version>7.5.5</version>
+            <version>7.5.6</version>
         </dependency>
 ```
 如果是spring boot 3.x 项目还需要导入下面的maven坐标：
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-elasticsearch-spring-boot3-starter</artifactId>
-            <version>7.5.5</version>
+            <version>7.5.6</version>
         </dependency>
 ```
 
@@ -208,7 +208,8 @@ feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
     #[answer,scope=node]
     ```
 
-    
+50. 数据交换问题修复：修复ip地址解析时省份信息处理不正确问题    
+51. 智能体框架改进：mcp和工具函数增加[工具搜索过滤](https://esdoc.bbossgroups.com/#/bboss-ai-toolsearcher)功能，增加关键词路由智能体功能
 # v7.5.5 功能改进-20251117
 
 1. AI模型客户端服务改进：发送流结束事件到前端，可以在流结束事件中附带附加信息，例如：Rag附件材料链接等
@@ -1398,7 +1399,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-jdbc</artifactId>
-            <version>7.5.5</version>
+            <version>7.5.6</version>
         </dependency>
 ```
 调整为xxl-job 2.3.0及更高版本采用的maven坐标：
@@ -1406,7 +1407,7 @@ xxl-job 2.3.0以下版本采用的maven坐标
         <dependency>
             <groupId>com.bbossgroups.plugins</groupId>
             <artifactId>bboss-datatran-schedule-xxljob</artifactId>
-            <version>7.5.5</version>
+            <version>7.5.6</version>
         </dependency>
 ```
 xxl job 低版本案例工程
@@ -1493,7 +1494,7 @@ fileConfit.setFileFilter(new FileFilter() {//指定ftp文件筛选规则
                         })
 ```
 
-**因此升级到7.5.5时需要对采集作业的FileFilter接口方法accept进行相应调整**
+**因此升级到7.5.6时需要对采集作业的FileFilter接口方法accept进行相应调整**
 
 3. db管理dsl mysql无法创建加载dsl问题处理
 4. log4j2版本升级2.17.1、slfj版本升级1.7.32
@@ -1545,7 +1546,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   Java代码
 
   ```java
-  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.3.3",transitive: true 
+  group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "6.3.5",transitive: true 
   ```
 
   **maven坐标**
@@ -1556,7 +1557,7 @@ https://esdoc.bbossgroups.com/#/bulkProcessor-common
   <dependency>  
       <groupId>com.bbossgroups</groupId>  
       <artifactId>bboss-bootstrap-rt</artifactId>  
-      <version>6.3.3</version>  
+      <version>6.3.5</version>  
   </dependency>  
   ```
 4. 运行容器工具改进：停止进程时需等待进程停止完毕再退出
@@ -2039,7 +2040,7 @@ spring boot配置项
 <dependency>
     <groupId>com.bbossgroups.plugins</groupId>
     <artifactId>bboss-datatran-jdbc</artifactId>
-    <version>7.5.5</version>
+    <version>7.5.6</version>
     <!--排除bboss-elasticsearch-rest-booter包-->
     <exclusions>
         <exclusion>
@@ -2358,13 +2359,13 @@ maven坐标：
     <dependency>
       <groupId>com.bbossgroups</groupId>
       <artifactId>bboss-spring-boot-starter</artifactId>
-      <version> 6.5.2</version>
+      <version> 6.5.3</version>
      
     </dependency>
 ```
 gradle坐标：
 ```xml
-[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: " 6.5.2", transitive: true]
+[group: 'com.bbossgroups', name: 'bboss-spring-boot-starter', version: " 6.5.3", transitive: true]
 ```
 使用案例：
 <https://github.com/bbossgroups/bestpractice/tree/master/springboot-starter>
