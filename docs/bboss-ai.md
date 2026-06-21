@@ -934,6 +934,10 @@ public static void streamTextToSpeech() throws InterruptedException {
 
 ## 八、工具调用（Function Calling）
 
+基于bboss发布工具函数参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-toolannotation
+
+高效工具检索功能参考使用文档：https://esdoc.bbossgroups.com/#/bboss-ai-toolsearcher
+
 ### 8.1 本地工具调用
 
 ```java
@@ -1026,6 +1030,10 @@ chatMsg.setToolsRegist(new ToolsRegist() {
 ---
 
 ## 九、MCP 服务集成
+
+基于bboss发布mcp服务参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-mcpbean
+
+基于bboss发布mcp服务并与spring boot集成参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-springboot
 
 ### 9.1 使用 MCP 工具
 
