@@ -36,6 +36,18 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 
 ---
 
+### 项目源码
+
+bboss ai 源码地址：
+
+码云    https://gitee.com/bboss/bboss-ai
+
+github  https://github.com/bbossgroups/bboss-ai
+
+源码构建参考文档：https://esdoc.bbossgroups.com/#/bboss-build
+
+demo工程：https://gitee.com/bboss/bbootdemo
+
 ## 二、环境准备
 
 ### 2.1 Maven 依赖
@@ -43,7 +55,7 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 ```xml
 <dependency>
     <groupId>com.bbossgroups</groupId>
-    <artifactId>bboss-ai</artifactId>
+    <artifactId>bboss-ai-flow</artifactId>
     <version>6.5.3</version>
 </dependency>
 ```
@@ -51,7 +63,7 @@ bboss AI 是一个轻量级多模态 Java 大模型智能体客户端，基于 H
 ### 2.2 Gradle 依赖
 
 ```groovy
-implementation 'com.bbossgroups:bboss-ai:6.5.3'
+implementation 'com.bbossgroups:bboss-ai-flow:6.5.3'
 ```
 
 ### 2.3 maas服务配置
@@ -2064,7 +2076,27 @@ planAgent.addAgent(aiFlowNode);
 。。。。。。后续节点。。。。。
 ```
 
+##### 14.4.3.1 关键说明
 
+通过以下方法添加条件跳转节点，如果条件不成立，会自动终止执行条件节点的后续节点执行：
+
+1）如果条件节点是在工作流也就是终止整个工作流
+
+2）如果条件节点是在串行分支中，则会终止串行分支节点执行
+
+```java
+//2.添加后序条件跳转节点
+        planAgent.addConditionFlowNode(AppendToParentAgent aiAgent , TriggerScriptAPI conditionNodeTrigger)
+```
+
+通过以下方法添加条件跳转节点，如果条件不成立，当allCondtionNodeMatchedfailedContinue为true时，会自动执行条件节点的后续节点，不会终止条件节点所在的主干流程或者串行分支流程：
+
+```java
+//2.添加后序条件跳转节点
+        planAgent.addConditionFlowNode(boolean allCondtionNodeMatchedfailedContinue,AppendToParentAgent aiAgent , TriggerScriptAPI conditionNodeTrigger)
+```
+
+有限循环图可以基于条件节点来实现的关键点，就在于**allCondtionNodeMatchedfailedContinue**参数，当allCondtionNodeMatchedfailedContinue取值为true时，我们指定条件节点为流程中或者串行分支中之前的节点，如果conditionNodeTrigger触发器判定条件成立，则继续跳转到导之前的节点重复执行，形成循环；如果判定条件不成立，则结束循环，继续执行后续流程节点。
 
 #### 14.4.4 注意事项
 

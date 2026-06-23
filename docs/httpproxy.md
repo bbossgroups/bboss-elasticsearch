@@ -1115,7 +1115,34 @@ http proxy支持，相关配置如下：
     openai.http.proxyPassword = admin  # 代理口令 (可选)   
 ```
 
-## 
+### 3.3.7 服务扩展参数配置
+
+服务组增加扩展属性配置和解析机制，Map<String, String> extendConfigs，使用示例：
+
+飞书Mcp服务配置
+
+```properties
+    feishumcp.http.hosts=https://mcp.feishu.cn
+    feishumcp.http.authorTokenFunction = org.frameworkset.spi.ai.mcp.feishu.FeishuMCPAuthorTokenFunction
+   # 剩余有效期小于 30 分钟时，调用本接口会返回一个新的 tenant_access_token，这会同时存在两个有效的 tenant_access_token。
+# 剩余有效期大于等于 30 分钟时，调用本接口会返回原有的 tenant_access_token
+feishumcp.http.authorTokenExpiredTime = 1500000
+    feishumcp.http.extendConfigs.tools = search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments
+    feishumcp.http.extendConfigs.appId = cli_a9d4789cd0
+    feishumcp.http.extendConfigs.appSecret = gIhy0EbVpNMKMnYCJs
+```
+
+代码中获取扩展参数：
+
+```java
+ClientConfiguration clientConfiguration 。。。
+
+  String appId = clientConfiguration.getExtendConfig("appId");           
+
+ String appSecret = clientConfiguration.getExtendConfig("appSecret");
+```
+
+
 
 # 4 使用负载均衡器调用服务
 

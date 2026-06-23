@@ -4,7 +4,7 @@
 
 [bboss](https://esdoc.bbossgroups.com/#/README)基于Apache License开源协议，由开源社区bboss发起和维护，主要由以下五部分构成：
 
-- [**bboss ai客户端**](https://esdoc.bbossgroups.com/#/bboss-ai) bboss ai java大模型对接客户端，支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能
+- [**多模态智能体框架**](https://esdoc.bbossgroups.com/#/bboss-ai) 支持同步调用和流式调用两种模式；集成Deepseek，通义千问，计算视觉，音频/视频模型，快速实现智能问答、图片识别/生成、语音识别/生成以及视频识别/生成功能；基于工作流图的多智能体协同；支持函数工具/Mcp工具调用。
 
 - **Elasticsearch Highlevel Java Restclient** ， 一个高性能高兼容性的Elasticsearch/Easysearch/Opensearch java客户端框架
 - **数据采集同步ETL** ，一个基于java语言实现数据采集作业的强大ETL工具，提供丰富的输入插件和输出插件，支撑将数据同时同步到多个数据源，可以基于插件规范轻松扩展新的输入插件和输出插件
@@ -146,7 +146,7 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 29. 数据集成扩展：增加[飞书输出插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_216-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%87%ba%e6%8f%92%e4%bb%b6)，支持新增、修改、删除数据同步飞书多维表格
 30. 数据集成扩展：增加[飞书输入插件](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_117-%e9%a3%9e%e4%b9%a6%e8%be%93%e5%85%a5%e6%8f%92%e4%bb%b6)，支持从飞书多维表格导出数据（全量）
 31. [多模态智能体客户端扩展](https://esdoc.bbossgroups.com/#/bboss-ai)：增加Minimax模型适配器，提供对Minimax-M2.7支持，包括LLM文本生成、工具、MCP服务调用
-32. Elasticsearch客户端改进：增加对国产搜索引起Easysearch 1.x,2.x支持
+32. Elasticsearch客户端改进：增加对国产搜索引擎Easysearch 1.x,2.x支持
 33. 修复IP地址解析组件当不配置ipv6地址库时空指针问题
 34. 完善工作流引擎：简化流程节点触发器设置，可以直接指定script api
 35. 多模态智能体框架：多智能体协同增加路由功能，增加对豆包seedance 2.0支持
@@ -164,19 +164,21 @@ ETL插件依赖的maven坐标，参考文档：[在工程中导入插件maven坐
 ```properties
     feishumcp.http.hosts=https://mcp.feishu.cn
     feishumcp.http.authorTokenFunction = org.frameworkset.spi.ai.mcp.feishu.FeishuMCPAuthorTokenFunction
-    # 105分钟自动刷新token，飞书token有效期120分钟
-    feishumcp.http.authorTokenExpiredTime = 6300000
+   # 剩余有效期小于 30 分钟时，调用本接口会返回一个新的 tenant_access_token，这会同时存在两个有效的 tenant_access_token。
+# 剩余有效期大于等于 30 分钟时，调用本接口会返回原有的 tenant_access_token
+feishumcp.http.authorTokenExpiredTime = 1500000
     feishumcp.http.extendConfigs.tools = search-user,get-user,fetch-file,search-doc,create-doc,fetch-doc,update-doc,list-docs,get-comments,add-comments
-    feishumcp.http.extendConfigs.appId = cli_a9d43b8789cd0
-    feishumcp.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+    feishumcp.http.extendConfigs.appId = cli_a9d4789cd0
+    feishumcp.http.extendConfigs.appSecret = gIhy0EbVpNMKMnYCJs
 ```
 飞书开放平台服务配置
 ```properties
 feishu.http.authorTokenFunction = org.frameworkset.spi.feishu.FeishuAuthorTokenFunction
-# 105分钟自动刷新token，飞书token有效期120分钟
-feishu.http.authorTokenExpiredTime = 6300000
-feishu.http.extendConfigs.appId = cli_a9d43b8789cd0
-feishu.http.extendConfigs.appSecret = gIhy0EbVfgQGlpNMKMnYCJs
+# 剩余有效期小于 30 分钟时，调用本接口会返回一个新的 tenant_access_token，这会同时存在两个有效的 tenant_access_token。
+# 剩余有效期大于等于 30 分钟时，调用本接口会返回原有的 tenant_access_token
+feishu.http.authorTokenExpiredTime = 1500000
+feishu.http.extendConfigs.appId = cli_a9d4789cd0
+feishu.http.extendConfigs.appSecret = gIhy0EbVfgQKMnYCJs
 ```
 38. 微服务框架改进：新增基于dsl的服务API，支持通过dsl方式调用服务，简化服务调用参数传递和组装机制，使用文档：https://esdoc.bbossgroups.com/#/http-config-dsl
 
