@@ -1478,6 +1478,8 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 
 ### 14.1 工作流核心组件
 
+#### 14.1.1工作流节点类型
+
 | 组件 | 说明 |
 |------|------|
 | `AIPlanAgent` | 工作流编排主控制器，负责构建和执行整个智能体工作流 |
@@ -1493,7 +1495,17 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 | `AIFlowNode` | 通用工作流节点，执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据<br/>,接口方法call带返回值 |
 | AIFlowNodeVoid | 通用工作流节点，执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据<br/>,接口方法call不需要返回值 |
 
-#### 14.1.1 会话存储配置
+| 节点类型     | 继承类          | 特点                                                         |
+| ------------ | --------------- | ------------------------------------------------------------ |
+| AI节点       | `AINodeAgent`   | 标准AI智能体，自动引用父智能体会话记忆                       |
+| 用户节点     | `UserNodeAgent` | 不引用上游父智能体记忆，适合独立任务或工具调用               |
+| 路由节点     | `AIRouteAgent`  | 负责路由决策，不直接回答问题                                 |
+| 裁判节点     | `AIJudgeAgent`  | 评估结果质量，输出判断结论                                   |
+| 通用流程节点 | `AIFlowNode`    | 执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据 |
+
+
+
+#### 14.1.2 会话存储配置
 
 工作流支持将会话记录持久化到数据库或内存中：
 
@@ -1515,7 +1527,7 @@ StoreContext memoryContext = new StoreContext()
     .setStoreType(StoreContext.STORE_TYPE_MEMORY);
 ```
 
-#### 14.1.2 工作流基本结构
+#### 14.1.3 工作流基本结构
 
 ```java
 import org.frameworkset.spi.ai.flow.*;
@@ -2261,9 +2273,22 @@ aiPlanAgent.addAgent(new AIFlowNodeVoid() {
 - `addJobFlowContextData(key, value)`：向工作流上下文写入键值对数据
 - `getJobFlowContextData(key)`：从工作流上下文读取数据
 
-### 14.7 智能体配置参数
+### 14.7 评估智能体
 
-### 14.8 工作流组合模式
+```java
+//构建裁判智能体：判断是否回答了问题，可以指定评估提示词，通过变量一样问题和问题答案
+aiPlanAgent.addAgent(new AIJudgeAgent("评估结果是否回答了问题:\n#[input.query,scope=node]\n# 问题答案：\n#[answer,scope=node],回答请回复：是，否则回复：否").setAgentId("judgeAgent").setAgentName("评估智能体"));
+
+//构建裁判智能体：如果不指定提示词，则使用默认提示词
+
+aiPlanAgent.addAgent(new AIJudgeAgent().setAgentId("judgeAgent").setAgentName("评估智能体"));
+```
+
+
+
+### 14.8 智能体配置参数
+
+### 14.9 工作流组合模式
 
 串行和并行智能体可以相互嵌套，构建复杂的工作流：
 
@@ -2292,16 +2317,6 @@ parrelAgent.addAgent(new AINodeAgent("独立任务"));
 
 aiPlanAgent.addAgent(parrelAgent);
 ```
-
-### 14.9工作流节点类型说明
-
-| 节点类型 | 继承类 | 特点 |
-|---------|--------|------|
-| AI节点 | `AINodeAgent` | 标准AI智能体，自动引用父智能体会话记忆 |
-| 用户节点 | `UserNodeAgent` | 不引用上游父智能体记忆，适合独立任务或工具调用 |
-| 路由节点 | `AIRouteAgent` | 负责路由决策，不直接回答问题 |
-| 裁判节点 | `AIJudgeAgent` | 评估结果质量，输出判断结论 |
-| 通用流程节点 | `AIFlowNode` | 执行纯Java自定义逻辑，不调用大模型，可在工作流中加工和传递数据、记录流程过程数据 |
 
 ### 14.10 智能体工作流变量体系
 
@@ -2432,16 +2447,26 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 });
 ```
 
-### 14.11 评估智能体
+### 14.11 加载外部资源提示词
+
+智能体支持三种加载外部资源提示词的方法：
+
+1）加载外部文件中的提示词
+
+2）加载classpath下文件中的提示词
+
+3）加载url中提供的提示词
+
+分别举例如下：
 
 ```java
-//构建裁判智能体：判断是否回答了问题，可以指定评估提示词，通过变量一样问题和问题答案
-aiPlanAgent.addAgent(new AIJudgeAgent("评估结果是否回答了问题:\n#[input.query,scope=node]\n# 问题答案：\n#[answer,scope=node],回答请回复：是，否则回复：否").setAgentId("judgeAgent").setAgentName("评估智能体"));
-
-//构建裁判智能体：如果不指定提示词，则使用默认提示词
-
-aiPlanAgent.addAgent(new AIJudgeAgent().setAgentId("judgeAgent").setAgentName("评估智能体"));
+ String message = "#[prompt.txt,type=resource,charset=UTF-8]";
+ String message = "#[prompt.txt,type=resource]";
+ String message = "#[http://localhost:85/prompt.txt,type=url,charset=UTF-8]";
+ String message = "#[C:\\workspace\\bbossgroups\\bboss-ai\\bboss-ai-flow\\src\\test\\resources\\prompt.txt,type=file,charset=UTF-8]";
 ```
+
+参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-prompt-resource
 
 ### 14.12 流程调度
 
