@@ -6,6 +6,7 @@
   - [MCP Bean Tool 服务与 Spring Boot 集成使用文档](bboss-ai-springboot.md)
   - [工具搜索功能使用指南](bboss-ai-toolsearcher.md)
   -  [bboss AI 外部资源提示词加载](bboss-ai-prompt-resource.md) 
+  -  [智能体工具可观测性指南](AgentTraceHolder-usage.md) 
 - 微服务框架
   - [Http5负载均衡器使用介绍](httpproxy5.md)
   - [Http负载均衡器使用介绍](httpproxy.md)

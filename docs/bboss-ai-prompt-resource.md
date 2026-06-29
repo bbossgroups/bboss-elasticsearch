@@ -8,7 +8,7 @@
 
 最直接的方式是将提示词内容直接定义在代码变量中。这种方式适用于提示词内容较短、固定且不经常变化的场景。
 
-### 使用方式
+### 1.使用方式
 
 将提示词文本直接赋值给消息对象的 `prompt` 或 `systemPrompt` 属性：
 
@@ -26,11 +26,11 @@ AIAgent aiAgent = new AIAgent();
 ServerEvent response = aiAgent.chat("deepseek", chatAgentMessage);
 ```
 
-### 提示词变量插值
+### 2.提示词变量插值
 
 在提示词字符串中，可以通过 `#[变量名]` 的语法嵌入动态变量。框架在执行时会将占位符替换为对应变量的实际值，从而实现提示词模板与动态数据的解耦。
 
-#### 示例
+#### 2.1示例
 
 ```java
 // 定义行程查询智能体，在提示词中嵌入用户输入变量 input.query
@@ -42,7 +42,7 @@ AINodeAgent hotelAgent = new AINodeAgent(
         .setAgentName("酒店查询智能体");
 ```
 
-#### 变量作用域 `scope`
+#### 2.2变量作用域 `scope`
 
 在变量占位符中，可以通过 `scope` 属性指定变量的取值范围，以明确变量从哪个上下文中解析。常用格式如下：
 
@@ -58,7 +58,7 @@ AINodeAgent hotelAgent = new AINodeAgent(
 | `container` | **容器级别**：从容器上下文中获取变量值。变量在容器范围内共享，适用于容器内多个组件的协作场景。 | 在同一容器内共享中间计算结果、容器级配置等。 |
 | `node` | **节点级别**：从**当前执行节点**的上下文中获取变量值。变量仅作用于当前节点内部。 | 引用当前节点的局部变量、节点输入参数或上游节点传入的节点级数据。 |
 
-##### 示例
+##### 2.2.1示例
 
 以下示例展示了在评估智能体中，使用 `scope=node` 引用当前节点内的 `input.query` 和 `answer` 变量：
 
@@ -72,14 +72,14 @@ planAgent.addAgent(new AIJudgeAgent(
         .setAgentName("评估智能体"));
 ```
 
-#### 使用要点
+#### 2.3使用要点
 
 - 变量占位符格式为 `#[变量名]`，如 `#[input.query]`、`#[user.name]` 等；可通过 `scope` 属性限定变量来源，如 `#[input.query,scope=node]`、`#[sessionId,scope=flow]`。
 - 变量插值可与静态文本混合使用，构建动态提示词模板。
 - 变量值通常由运行时上下文、用户输入或上游节点输出提供。
 - 变量插值功能同样适用于外部资源加载的提示词内容（在资源文件内也可使用 `#[变量名]` 语法）。
 
-### 适用场景
+### 3.适用场景
 
 - 提示词内容简短、固定
 - 快速验证和调试
@@ -104,11 +104,51 @@ planAgent.addAgent(new AIJudgeAgent(
 
 在代码中，只需将上述格式的字符串赋值给 `prompt` 或 `systemPrompt` 属性，框架会在运行时自动解析并加载对应的资源内容。
 
+在外部资源中管理的Prompt，可以使用变量和引用其他外部资源，但是不能出现递归引用的情况，否则会在解析过程中抛出异常。
+
+#### 2.1.1 属性说明
+
+| 属性       | 是否必填 | 说明                                                         |
+| :--------- | :------- | :----------------------------------------------------------- |
+| `资源路径` | 是       | 根据 `type` 类型不同，分别表示 classpath 下的文件路径、本地文件绝对/相对路径、或 HTTP/HTTPS URL 地址。 |
+| `type`     | 是       | 资源加载类型。可选值：<br>- `resource`：从 classpath 加载<br>- `file`：从外部文件系统加载<br>- `url`：从远程 URL 加载 |
+| `charset`  | 否       | 指定读取资源时的字符编码，例如 `UTF-8`、`GBK` 等。若不指定，则使用系统默认编码。 |
+
+#### 2.1.2 外部资源文件示例
+
+外部文件本质上就是将提示词放入到一个文件中来维护和管理，示例如下：
+
+bboss-ai-flow/src/test/resources/RoutingStreamJudge.prompt
+
+```markdown
+评估问题回复是否回答了问题,回答请回复：是，否则回复：否
+
+# 用户问题
+#[input.query,scope=node]
+
+# 问题回复：
+
+#[answer,scope=node]
+
+# 输出要求，只输出：是或否
+
+#[RoutingStreamJudge.prompt,type=resource]
+```
+
+url对应的资源可能是对应一个Prompt文件资源，也可能对应从其他存储介质（数据库、注册中心）中查询返回的一段Prompt。
+
+引用资源文件：
+
+```java
+String message = "你是一个专业的旅行顾问。\n#[RoutingStreamJudge.prompt,type=resource,charset=UTF-8]\n出至少3个推荐选项，并说明理由。如未匹配到工具，请返回\"未找到匹配的酒店查询工具\"";
+```
+
+
 ### 2.2 加载 classpath 下的提示词文件（type=resource）
 
 当提示词文件打包在项目的 `resources` 目录下时，可以使用 `type=resource` 进行加载。框架会从当前线程的类路径（classpath）中查找并读取文件。
 
-#### 示例
+#### 2.2.1示例
 
 项目结构：
 
@@ -151,7 +191,7 @@ chatAgentMessage.setPrompt(message);
 
 当提示词文件存放在项目外部的文件系统路径（如本地磁盘、共享目录）时，可以使用 `type=file` 进行加载。此时需要提供文件的绝对路径或相对路径。
 
-#### 示例
+#### 2.3.1示例
 
 ```java
 ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
@@ -179,7 +219,7 @@ chatAgentMessage.setPrompt(message);
 
 当提示词内容托管在远程 HTTP 服务上（如配置中心、文档服务器、OSS 等），可以使用 `type=url` 进行加载。框架会发起 HTTP 请求获取远程提示词内容。
 
-#### 示例
+#### 2.4.1示例
 
 ```java
 ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
@@ -203,15 +243,7 @@ String message = "你是一名资深代码审查专家。\n"
 chatAgentMessage.setPrompt(message);
 ```
 
-### 2.5 属性说明
 
-| 属性 | 是否必填 | 说明 |
-| :--- | :--- | :--- |
-| `资源路径` | 是 | 根据 `type` 类型不同，分别表示 classpath 下的文件路径、本地文件绝对/相对路径、或 HTTP/HTTPS URL 地址。 |
-| `type` | 是 | 资源加载类型。可选值：<br>- `resource`：从 classpath 加载<br>- `file`：从外部文件系统加载<br>- `url`：从远程 URL 加载 |
-| `charset` | 否 | 指定读取资源时的字符编码，例如 `UTF-8`、`GBK` 等。若不指定，则使用系统默认编码。 |
-
----
 
 ## 三、缓存机制
 
