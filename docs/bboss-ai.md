@@ -1156,6 +1156,211 @@ AIAgent aiAgent = new AIAgent();
     latch.await();
 ```
 
+### 9.4 MCP 客户端
+
+`MCPClient` 实现了 Model Context Protocol 协议客户端，支持两种传输模式：
+
+#### 9.4.1 **核心功能**
+
+- SSE（Server-Sent Events）连接管理（`MCPSSEClient`）
+- Streamable HTTP 连接管理（`MCPStreamableClient`）
+- 会话生命周期管理（initialize、notifications/initialized）
+- 工具列表获取（tools/list）
+- 工具调用（tools/call）
+- 飞书 MCP 集成（`FeishuMCPClient`、`FeishuMCPStreamableClient`）
+
+#### 9.4.2 **工作流程**
+
+1. 通过 SSE 端点或 Streamable HTTP 端点建立连接
+2. 接收 endpoint 事件获取 messagePath 和 sessionId
+3. 发送 initialize 请求进行协议初始化
+4. 发送 notifications/initialized 通知服务端
+5. 正常进行工具列表查询和调用
+
+#### **9.4.3 Spring Boot 客户端集成示例**
+
+```java
+// 1. 配置 mcpserver.properties
+// http.poolNames = ecop_mcp_server
+// ecop_mcp_server.http.hosts = 127.0.0.1:8889
+// ecop_mcp_server.http.apiKeyId = 123456
+// ecop_mcp_server.http.extendConfigs.streamableendpoint = /ecop-biz-srv/mcp/streamable
+
+// 2. 启动时初始化 MCP 连接池
+@Component
+public class AgentBootrap {
+    @PostConstruct
+    public void start() {
+        // 初始化大模型 maas 服务
+        HttpRequestProxy.startHttpPools("maas.properties");
+        // 初始化 mcp 服务
+        HttpRequestProxy.startHttpPools("mcpserver.properties");
+    }
+}
+
+// 3. Spring Boot 配置类注册 MCP 工具
+@Configuration
+public class EcopAgentMcpClientFactory {
+    @Bean("ecopConfigMcpServerToolsRegist")
+    public ToolsRegist buildEcopConfigMcpServerToolsRegist() {
+        // MCPToolsRegist 通过服务名称关联到 mcpserver.properties 配置
+        ToolsRegist toolsRegist = new MCPToolsRegist("ecop_mcp_server");
+        return toolsRegist;
+    }
+}
+
+// 4. 在 AIAgent 中使用 MCP 工具
+@Service
+public class RagQAService {
+    @Autowired
+    @Qualifier("ecopConfigMcpServerToolsRegist")
+    private ToolsRegist mcpToolsRegist;
+
+    public ServerEvent chat(String question) {
+        AIAgent agent = new AIAgent();
+        agent.setToolsRegist(mcpToolsRegist);
+
+        ChatAgentMessage message = new ChatAgentMessage();
+        message.setPrompt(question);
+        message.setModel("deepseek-chat");
+
+        return agent.chat("maasName", message);
+    }
+}
+```
+
+#### 9.4.4**配置说明**
+
+| 配置项                                             | 说明                         |
+| -------------------------------------------------- | ---------------------------- |
+| `http.poolNames`                                   | 连接池名称列表，对应服务标识 |
+| `{poolName}.http.hosts`                            | MCP 服务端地址               |
+| `{poolName}.http.apiKeyId`                         | 访问 MCP 服务端的 API 密钥   |
+| `{poolName}.http.extendConfigs.streamableendpoint` | Streamable HTTP 端点路径     |
+| `{poolName}.http.extendConfigs.sseendpoint`        | SSE 端点路径（可选）         |
+
+#### 9.4.5**MCPToolsRegist 工作原理**
+
+1. `MCPToolsRegist` 通过服务名称（如 `ecop_mcp_server`）关联到 `mcpserver.properties` 中的连接池配置
+2. 初始化时向 MCP 服务端发送 `initialize` 请求进行协议握手
+3. 调用 `tools/list` 获取服务端暴露的工具列表
+4. 将工具列表转换为 `FunctionToolDefine` 供 `AIAgent` 使用
+5. 当 AI 模型需要调用工具时，`MCPToolsRegist` 通过 `tools/call` 将请求转发到 MCP 服务端执行
+
+### 9.5 MCP 服务端
+
+bboss-ai 不仅可以作为 MCP 客户端调用外部工具，还可以作为 MCP 服务端对外暴露工具能力：
+
+#### **9.5.1 核心组件**
+
+| 类名                                             | 作用                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------ |
+| `MCPToolService` / `MCPToolServiceImpl`          | MCP 服务端接口实现，提供 SSE 和 Streamable HTTP 两种服务端接口 |
+| `MCPApiKeyService` / `MCPApiKeyServiceImpl`      | API 密钥认证与工具注册管理                                   |
+| `MCPBeanToolsRegist` / `MCPBeanToolFunctionCall` | Bean 工具服务端注册与调用                                    |
+| `MCPApiRequestUtil`                              | 服务端请求响应构建工具                                       |
+
+#### 9.5.2 **服务端能力**
+
+- **SSE 模式**：`sse()` 建立 SSE 长连接，`message()` 处理客户端消息
+- **Streamable HTTP 模式**：`streamable()` 处理无状态请求
+- **API 密钥认证**：支持按 apiKey 注册和授权访问工具
+- **工具权限控制**：支持按 functionName + apiKey 细粒度授权
+- **支持的方法**：initialize、notifications/initialized、tools/list、tools/call
+
+#### 9.5.3 **服务端工作流程**
+
+1. 客户端通过 `registMcpBeanTool(apiKey, bean)` 注册 Bean 工具到指定密钥
+2. 客户端通过 SSE 端点建立连接或发送 Streamable HTTP 请求
+3. 服务端校验 apiKey 合法性
+4. 根据请求方法返回工具列表或执行工具调用
+5. 通过 SSE Sink 或 HTTP Response 返回结果
+
+#### 9.5.4 **Spring Boot 集成示例**
+
+```java
+// 1. 使用 @Tool 注解定义工具
+@Service
+public class Hotel2ndFlightBookTool {
+    @Tool(name="hotelQuery", description="根据用户的行程需求，查询合适的酒店。")
+    public List<Map> hotelQuery(
+        @ToolParam(name="startDay", description="入驻时间,例如：5月25日", required=true) String startDay,
+        @ToolParam(name="endDay", description="离房时间,例如：5月28日", required=true) String endDay
+    ) {
+        // 业务逻辑实现
+        return hotels;
+    }
+
+    @Tool(name="flightQuery", description="根据用户的行程需求，查询合适的航班机票。")
+    public List<Map> flightQuery(
+        @ToolParam(name="bookDay", description="出发时间,例如：5月25日", required=true) String bookDay,
+        @ToolParam(name="arriveDay", description="到达时间,例如：5月28日", required=true) String arriveDay,
+        @ToolParam(name="fromStation", description="出发地,例如：长沙", required=true) String fromStation,
+        @ToolParam(name="toStation", description="到达地,例如：北京", required=true) String toStation
+    ) {
+        // 业务逻辑实现
+        return flights;
+    }
+}
+
+// 2. Spring Boot 配置类注册 MCP 服务
+@Configuration
+public class EcopAgentMcpServiceFactory {
+    @Autowired
+    private Hotel2ndFlightBookTool hotel2ndFlightBookTool;
+
+    @Bean("ecopConfigMCPToolService")
+    public MCPToolService buildEcopConfigMCPToolService() {
+        MCPApiKeyServiceImpl mcpApiKeyService = new MCPApiKeyServiceImpl();
+        // 将组件中定义的工具方法注册为 MCP 服务
+        mcpApiKeyService.registMcpBeanTool("123456", hotel2ndFlightBookTool);
+
+        MCPToolServiceImpl mcpService = new MCPToolServiceImpl();
+        mcpService.setMcpApiKeyService(mcpApiKeyService);
+        return mcpService;
+    }
+}
+
+// 3. Spring Boot Controller 暴露 MCP 端点
+@RestController
+@RequestMapping("/mcp")
+public class MCPServerController {
+    @Autowired
+    @Qualifier("ecopConfigMCPToolService")
+    private MCPToolService ecopConfigMCPToolService;
+
+    // SSE 模式端点
+    @GetMapping("/sse")
+    public Flux<String> sse(@RequestHeader(name="Authorization") String authorizationHeader) {
+        String apiKey = HttpRequestProxy.extractApiKeyFromBearer(authorizationHeader);
+        return ecopConfigMCPToolService.sse(apiKey);
+    }
+
+    // SSE 消息处理端点
+    @PostMapping("/message")
+    public String message(
+        @RequestHeader(name="Authorization") String authorizationHeader,
+        @RequestParam(name = "sessionId") String sessionId,
+        @RequestBody String requestBody
+    ) {
+        String apiKey = HttpRequestProxy.extractApiKeyFromBearer(authorizationHeader);
+        return ecopConfigMCPToolService.message(apiKey, sessionId, requestBody);
+    }
+
+    // Streamable HTTP 模式端点
+    @PostMapping("/streamable")
+    public Object streamable(
+        @RequestHeader(name="Authorization") String authorizationHeader,
+        @RequestBody String requestBody
+    ) {
+        String apiKey = HttpRequestProxy.extractApiKeyFromBearer(authorizationHeader);
+        return ecopConfigMCPToolService.streamable(apiKey, requestBody);
+    }
+}
+```
+
+
+
 ## 十、视频识别与生成
 
 ### 10.1 视频内容识别
@@ -3015,7 +3220,86 @@ public void searchVectorAndRerank() {
 
 ---
 
-## 十六、技术支持
+## 十六 智能体 Trace 可观测性
+
+bboss-ai 内置了一套全链路、多维度的智能体 Trace 可观测性体系，覆盖 LLM 调用、工具执行、工作流编排等全部环节，支持内存和数据库两种持久化方式，并可通过流式通道实时推送观测事件到前端。
+
+**核心模型：**
+
+| 类名                        | 作用                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `TraceMessage`              | Trace 消息载体，包含消息内容、起止时间、agentId、parentAgentId、traceId、metaData 等 |
+| `TokenMetrics`              | Token 用量指标，包含 model、totalTokens、promptTokens、completionTokens、completionReasoningTokens、reasoningData、elapsed 等 |
+| `SessionMessage`            | 会话消息类型体系，定义了 18 种消息类型常量，覆盖用户输入、LLM 输入输出、Embedding、Rerank、工具搜索、MCP 调用、Trace 等 |
+| `AgentMessageTypeConvertor` | 角色（role）到 messageType 的转换器，支持用户自定义扩展（101 起） |
+
+**消息类型对照表：**
+
+| 常量                                   | 值   | role 名称       | 说明                                                         |
+| -------------------------------------- | ---- | --------------- | ------------------------------------------------------------ |
+| `MESSAGE_TYPE_ASSISTANT_MESSAGE`       | 0    | assistant       | 智能体辅助消息（如果是tool，无需在会话历史中呈现，因为需要通过toolsearch类型在历史中展示），大模型回复消息 |
+|                                        | 0    | tool            |                                                              |
+| `MESSAGE_TYPE_AGENT_RESULTMESSAGE`     | 1    | agentresult     | 智能体输出结果                                               |
+| `MESSAGE_TYPE_USER_MESSAGE`            | 2    | user            | 用户输入消息（提交给模型）用户提问                           |
+| `MESSAGE_TYPE_SYSTEM_MESSAGE`          | 3    | system          | 系统消息                                                     |
+| `MESSAGE_TYPE_TRACE_MESSAGE`           | 5    | trace           | 智能体跟踪消息                                               |
+| `MESSAGE_TYPE_RAG_MESSAGE`             | 6    | rag             | RAG 知识库资料消息                                           |
+| `MESSAGE_TYPE_REFUSE_MESSAGE`          | 7    | refuse          | 拒答消息                                                     |
+| `MESSAGE_TYPE_USER_INPUTMESSAGE`       | 8    | userinput       | 用户原始输入（含文件、图片描述）                             |
+| `MESSAGE_TYPE_LLM_INPUTMESSAGE`        | 9    | llminput        | 提交给 LLM 的完整请求报文                                    |
+| `MESSAGE_TYPE_LLM_OUTPUTMESSAGE`       | 10   | llmoutput       | LLM 返回的完整响应报文                                       |
+| `MESSAGE_TYPE_EMBEDDING_INPUTMESSAGE`  | 11   | embeddinginput  | Embedding 模型输入                                           |
+| `MESSAGE_TYPE_RERANK_INPUTMESSAGE`     | 12   | rerankinput     | Rerank 模型输入                                              |
+| `MESSAGE_TYPE_EMBEDDING_OUTPUTMESSAGE` | 13   | embeddingoutput | Embedding 模型输出                                           |
+| `MESSAGE_TYPE_RERANK_OUTPUTMESSAGE`    | 14   | rerankoutput    | Rerank 模型输出                                              |
+| `MESSAGE_TYPE_TOOLSEARCH_MESSAGE`      | 15   | toolsearch      | 工具搜索匹配消息(会话历史中需要展示)                         |
+| `MESSAGE_TYPE_MCPCALL_MESSAGE`         | 16   | mcpcall         | MCP 服务调用消息                                             |
+| `MESSAGE_TYPE_TOOLCALL_MESSAGE`        | 17   | toolcall        | 工具服务调用消息                                             |
+
+**自动 Trace 采集：**
+
+`AIAgentUtil` 在各类模型调用前后自动插入 Trace，无需业务代码介入：
+
+- `traceLLMInput()`：记录提交给模型的完整请求报文（LLM、Embedding、Rerank）
+- `traceLLMOutput()`：记录模型返回的完整响应报文
+- 覆盖场景：同步/流式聊天、图片生成、音频生成、视频任务提交、Embedding、Rerank
+
+**流式 Token 计量：**
+
+`BaseStreamDataBuilder` 在流式响应过程中通过 `computeTokens()` 累加各数据段的 Token 用量，最终在 `addChatWithToolCallSessionMessage()` 中将完整结果与 `TokenMetrics` 一并持久化。
+
+**手动 Trace 记录：**
+
+- **`AIAgent.recordTraceMessage()`**：智能体入口方法，自动补全 agentId 和 parentAgentId，写入主会话存储
+- **`AgentTraceHolder`**：基于 ThreadLocal 的 Trace 上下文持有者，支持在工具调用、异步执行等跨线程场景中安全记录 Trace；提供 `trace()` 和 `emitterServerEvent()` 方法
+- **`AIFlowNode.recordTraceMessage()` / `AIFlowNodeVoid.recordTraceMessage()`**：工作流普通节点支持手动记录 Trace，自动绑定 nodeId 和 parentAgentId
+
+**工作流编排 Trace：**
+
+工作流引擎在关键决策点自动记录 Trace：
+
+- **`AIRouterNodeBuilder`**：AI 路由节点记录路由选择结果（匹配成功/失败、重试次数）
+- **`AIKeywordsRouterNodeBuilder`**：关键词路由记录匹配到的智能体 ID 及描述
+- **自定义节点**：业务可通过 `recordTraceMessage()` 记录循环控制、条件判断等自定义轨迹（如循环次数、修复标记）
+
+**实时流式推送：**
+
+`ServerEvent` 支持 `TYPE_TRACE = 2` 类型，可将 Trace 信息通过 Flux/SSE 实时推送给前端。流式场景下，路由失败、重试等关键事件可即时反馈到用户界面。
+
+**存储与持久化：**
+
+```
+AgentSessionStore（接口）
+  ├── AgentSessionStoreMemory（内存存储）
+  └── AgentSessionStoreDB（数据库存储）
+       └── agent_session_message 表
+```
+
+`AgentSessionStoreDB` 自动完成建表，核心字段包括：msgId、createTime、sessionId、parentAgentId、agentId、messageType、seqNo、message（JSON）、role、marks、metadata、requestId、tokenMetrics（JSON）、elapsed、traceId。
+
+Trace 消息与业务消息统一存储在同一张表中，通过 `messageType = 5` 和 `role = trace` 区分，便于按会话维度进行全链路回放和分析。
+
+## 十七、技术支持
 
 - **技术交流群**：21220580、166471282
 
