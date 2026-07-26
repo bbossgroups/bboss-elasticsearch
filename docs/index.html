@@ -46,14 +46,12 @@ var _hmt = _hmt || [];
 <script>
   window.$docsify = {
     mergeNavbar: false, // 小屏设备下合并导航栏到侧边栏
-    auto2top: true,
-    coverpage: true,
-    executeScript: true,
-    loadSidebar: true,
-    loadNavbar: true,
-    maxLevel: 5,
-    subMaxLevel: 5,  
-      
+      relativePath: true,
+      // 确保侧边栏支持折叠
+      sidebar: {
+          auto: true,
+          collapse: true  // 关键：启用折叠功能
+      },  
     alias: {
       '.*?/awesome': 'https://raw.githubusercontent.com/docsifyjs/awesome-docsify/master/README.md',
       // '.*?/changelog': 'https://github.com/bbossgroups/bboss-elasticsearch/commits/master',

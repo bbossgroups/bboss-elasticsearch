@@ -1,4 +1,4 @@
-# 工具方法执行审核（Auditor）
+# 工具方法执行审核
 
 ## 1.1 功能说明
 
@@ -28,7 +28,6 @@
 | `nextAction` | `String`  | 阻断后的下一步操作指引，返回给大模型引导后续行为          |
 
 ## 1.3 使用案例
-
 为工具设置审核器，在工具方法执行前自动拦截。以下案例对文件操作进行审核，涉及敏感信息时拒绝操作：
 
 ```java
@@ -39,47 +38,46 @@ agent.setMaxLoopToolCalls(80);
 // 注册文件操作工具，并设置审核器
 agent.registBeanTool(new FileFunctionTool("C:\\data\\ai\\code")
         .setAuditor(new Auditor() {
-            @Override
-            public AuditResult audit(AuditContext auditContext) {
-                AuditResult auditResult = new AuditResult();
-                // 通过 auditContext.getToolName() 获取工具方法名
-                // 通过 auditContext.getContent() / auditContext.getToolInfo() 获取调用参数
-                auditResult.setSuccess(false);
-                auditResult.setMessage("文件内容涉及敏感信息");
-                auditResult.setNextAction("取消后续操作！");
-                return auditResult;
-            }
-        }));
+	@Override
+	public AuditResult audit(AuditContext auditContext) {
+		AuditResult auditResult = new AuditResult();
+		// 通过 auditContext.getToolName() 获取工具方法名
+		// 通过 auditContext.getContent() / auditContext.getToolInfo() 获取调用参数
+		auditResult.setSuccess(false);
+		auditResult.setMessage("文件内容涉及敏感信息");
+		auditResult.setNextAction("取消后续操作！");
+		return auditResult;
+	}
+}));
 ```
 
 审核拒绝时，大模型收到的返回结果：
 
 ```json
 {
-    "auditResult": "rejected",
-    "message": "audit toolName readFile, failed for reason: 文件内容涉及敏感信息",
-    "nextAction": "取消后续操作！"
+  "auditResult": "rejected",
+  "message": "audit toolName readFile, failed for reason: 文件内容涉及敏感信息",
+  "nextAction": "取消后续操作！"
 }
 ```
 
 ## 1.4 自定义工具集成审核
-
 自定义工具继承 `BaseAuditorTool`，在工具方法中调用 `audit` 方法即可集成审核：
 
 ```java
 public class MyCustomTool extends BaseAuditorTool<MyCustomTool> {
-
-    @Tool(name = "myMethod", description = "自定义工具方法")
-    public Map myMethod(@ToolParam(name = "param1") String param1) {
-        Map result = new HashMap();
-        // 审核：传入工具名和内容，返回非 null 表示拒绝
-        Map<String, Object> auditResult = audit("myMethod", param1);
-        if (auditResult != null)
-            return auditResult;
-        // 审核通过，执行业务逻辑
-        result.put("success", true);
-        return result;
-    }
+	
+	@Tool(name = "myMethod", description = "自定义工具方法")
+	public Map myMethod(@ToolParam(name = "param1") String param1) {
+		Map result = new HashMap();
+		// 审核：传入工具名和内容，返回非 null 表示拒绝
+		Map<String, Object> auditResult = audit("myMethod", param1);
+		if (auditResult != null)
+			return auditResult;
+		// 审核通过，执行业务逻辑
+		result.put("success", true);
+		return result;
+	}
 }
 ```
 
@@ -92,7 +90,6 @@ public class MyCustomTool extends BaseAuditorTool<MyCustomTool> {
 | `audit(String toolName, Map toolInfo)`   | 多参数工具 |
 
 ## 1.5 注意事项
-
 1. 未设置 `Auditor` 时（默认），审核逻辑自动跳过，不影响性能。
 2. 审核在路径校验之后执行，路径越权时直接抛异常，不进入审核。
 3. 审核失败时输出 WARN 日志（内容超 300 字符截断）。
