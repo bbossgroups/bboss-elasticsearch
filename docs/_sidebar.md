@@ -9,7 +9,8 @@
   -  [bboss AI 外部资源提示词加载](bboss-ai-prompt-resource.md) 
   -  [智能体工具可观测性指南](AgentTraceHolder-usage.md) 
   -   [内置工具使用文档](bboss-ai-innertools.md) 
-  -    [人工介入Hitl功能使用文档](bboss-ai-hitl.md) 
+  -    [人工介入Hitl功能使用文档](bboss-ai-hitl.md)  
+  -    [工具方法审核使用文档](bboss-ai-toolaudit.md) 
 - 微服务框架
   - [Http5负载均衡器使用介绍](httpproxy5.md)
   - [Http负载均衡器使用介绍](httpproxy.md)

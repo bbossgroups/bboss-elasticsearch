@@ -604,7 +604,9 @@ chatAgentMessage.setModel("deepseek-v4-pro")
 
 ### 3.7 与spring boot 集成
 
-bboss ai与spring boot集成实现智能体问答案例代码：
+本节介绍bboss ai与spring boot集成，实现智能体问答功能。
+
+#### 3.7.1 控制器方法
 
 ```java
 @RequestMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE, method = {RequestMethod.POST, RequestMethod.GET})
@@ -643,6 +645,400 @@ public SseEmitter stream(@RequestBody ChatRequest request, HttpServletResponse r
     return emitter;
 }
 ```
+
+#### 3.7.2 智能体流程编排代码
+
+```java
+public void streamFluxAdapted(String requestId, String sessionId, String userId, String question, String model, String domain,boolean thinking, FluxStreamCallback callback) {
+ 
+    
+       
+       try {
+          //1.定义会话存储机制
+          StoreContext storeContext = new StoreContext()
+                .setSessionId(sessionId)
+                .setUserId(userId)
+                .setRequestId(requestId)
+                .setSessionSize(500)
+                .setStoreType(StoreContext.STORE_TYPE_DB)
+                .setDataSource("agent").setDomain(domain);
+          
+          //2.定义大模型相关参数：maas平台
+          ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
+          chatAgentMessage.setThinking(thinking);
+//        chatAgentMessage.setEffort("medium");
+          chatAgentMessage
+//         .setModel("jiutian-lan-comv3")
+//         .setModel("deepseek/deepseek-v4-flash")
+//         .setMaas("jiutian1")
+                .setMaas("deepseek")//maas平台
+                .setModel("deepseek-v4-pro")//大模型标识
+//              .setMaas("qwenvlplus")
+//              .setMaas("qwentokenplan")        
+//              .setModel("qwen3.7-plus")
+//              .setMaas("jiutian")
+//              .setModel("jiutian_75b")
+                .setStream( true)
+                .setRetry(3).setRetryInterval(1000L) //定义重试机制
+                .setTemperature(0.3)  //定义温度
+                .setPrompt(question); //设置用户原始问题
+          AIPlanAgent planAgent = new AIPlanAgent(storeContext)
+                .setAgentMessage(chatAgentMessage)
+                .setAgentName("知识检索和问答工作流").setAgentId("ragQAFlow");
+ 
+     
+ 
+          planAgent.addAgent(new AIFlowNodeVoid("init","初始化节点"){
+             
+             @Override
+             public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                // ===== 2. 加载历史会话消息，如果会话不存在，则创建 =====
+                planAgent.loadSessionMemory( question, domain);
+                TraceMessage traceMessage = new TraceMessage();       
+                //记录用户输入的原始问题
+                traceMessage.setMessage(Map.of("question", question,"role",SessionMessage.MESSAGE_TYPE_USER_INPUTMESSAGE_NAME));
+                //其他用户上传的附件材料信息可以放到metaData中,也可以直接放到上面的消息中
+//              traceMessage.setMetaData(Map.of("documents", new ArrayList<>()));
+                traceMessage.setStartTime(System.currentTimeMillis());
+//              traceMessage.setEndTime(System.currentTimeMillis());
+                recordTraceMessage(traceMessage);
+ 
+                
+                
+             }
+          });
+          
+          //构建串行智能体
+          AISequenceAgent sequenceAgent = new AISequenceAgent(planAgent).setAgentId("sequenceAgent").setAgentName("技术问答串行任务节点");
+          
+          // ===== 4. 读历史并改写追问 =====
+          //直接使用用户问题改写智能体触发器中设置的ragQuestion变量对应的改写提示词，生成改写后的rag问题
+          //StandaloneAgent:用户问题改写智能体不会参与整个工作流的上下文记忆，但是会持久化改下消息
+          sequenceAgent.addConditionFlowNode(true,new StandaloneAgent("#[ragQuestion]").setDisableStream(true)
+                .setAgentName("用户问题改写智能体")
+                .setAgentId("userQuestionRewriter")
+//              .setToolsRegist(configMcpServerToolsRegist) //注册mcp工具
+                .setOutputVaribleName("retrievalQuestion", AIFlowConst.AIFLOW_VAR_SCOPE_FLOW), new TriggerScriptAPI() {
+             @Override
+             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                String ragQuestion = null;
+                
+                List<Map<String,Object>> sessionMemory = planAgent.getSessionMemory();
+                
+                if(CollectionUtils.isNotEmpty(sessionMemory)) {
+                   
+                   String historyText = buildRewriteMemory(sessionMemory);
+                   if(SimpleStringUtil.isNotEmpty(historyText)) {
+                      ragQuestion = """
+                            请根据历史对话，把用户最新问题改写成一个可以独立检索知识库的完整问题。
+                            要求：
+                            1. 只输出改写后的问题，不要解释。
+                            2. 不要回答问题。
+                            3. 如果最新问题本身已经完整，原样返回。
+                            4. 保留关键技术名词、产品名、配置项、错误信息。
+                                  
+                            历史对话：
+                            %s
+                                  
+                            最新问题：
+                            %s
+                            """.formatted(historyText, question);
+                   }
+                   nodeTriggerContext.getJobFlowExecuteContext().addContextData("ragQuestion", ragQuestion);
+                   return true;
+                }
+                
+                return false;
+             }
+          });
+          // ===== 5. 混合检索（向量 + BM25 + RRF） =====
+          sequenceAgent.addAgent(new AIFlowNodeVoid(){
+             
+             /**
+              * 由子类继承和实现
+              *
+              * @param jobFlowNodeExecuteContext
+              */
+             @Override
+             public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                long startTime = System.currentTimeMillis();
+                String retrievalQuestion = (String) jobFlowNodeExecuteContext.getJobFlowContextData("retrievalQuestion");
+                if(retrievalQuestion == null){
+                   retrievalQuestion = question;
+                }
+                List<RerankedDocument> rerankedDocuments = knowledgeEmbeddingService.searchVectorAndRerank(retrievalQuestion,sequenceAgent);
+                double confidence = 0.0d;
+                if(rerankedDocuments != null && rerankedDocuments.size() > 0) {
+                   RerankedDocument rerankedDocument = rerankedDocuments.get(0);
+                   confidence = rerankedDocument.getRelevanceScore();
+                }
+                List<Citation> citations = ragCitationExtractor.extractFlux( rerankedDocuments);
+
+                if (SimpleStringUtil.isEmpty(citations) ) {
+                   String msg = ragProperties.getRefusal().getMessage();
+ 
+                   TraceMessage traceMessage = new TraceMessage();
+                   
+                   traceMessage.setMessage(Map.of("refuse", msg, "confidence", confidence,"role",SessionMessage.MESSAGE_TYPE_REFUSE_MESSAGE_NAME,"input",retrievalQuestion));
+                   traceMessage.setStartTime(startTime);
+                   traceMessage.setEndTime(System.currentTimeMillis());
+                   recordTraceMessage(traceMessage);//记录拒答消息
+                   ServerEvent serverEvent = new ServerEvent();//向客户端推送拒答信息
+                   serverEvent.setType(ServerEvent.TYPE_REFUSAL);
+                   serverEvent.setData(msg);
+                   serverEvent.setConfidence(confidence);
+                   serverEvent.setDone(true);
+                   this.getAgentFluxSink().next(serverEvent);
+ 
+                   jobFlowNodeExecuteContext.addJobFlowContextData("isShouldRefuse",true);
+//                 try { callback.onComplete(); } catch (Exception ignored) {}
+                }
+                else{
+                   
+                   //记录 citations到trace中
+//                 jobFlowNodeExecuteContext.addJobFlowContextData("citations",citations);
+//                 objectHolder.setObject(citations);
+                   // ===== 7. 上下文增强：把 reranked 的 top-K 注入 prompt =====
+                   StringBuilder ragDocuments = new StringBuilder();
+                   for (Citation document:citations){
+                      ragDocuments.append(document.getEvidence()).append(System.lineSeparator());
+                   }
+                   String ragDocuments_ = ragDocuments.toString();
+                   jobFlowNodeExecuteContext.addJobFlowContextData("ragDocuments",ragDocuments_);
+                   ServerEvent serverEvent = new ServerEvent();
+                   serverEvent.setType(ServerEvent.TYPE_RAG_KNOWLEDGE);
+                   serverEvent.setConfidence(confidence);
+//                 serverEvent.setData(ragDocuments_);
+                   serverEvent.setRagKnowledge(citations);
+                   this.getAgentFluxSink().next(serverEvent);
+                   TraceMessage traceMessage = new TraceMessage();
+                   traceMessage.setMessage(Map.of("rag", citations, "confidence", confidence,"role", SessionMessage.MESSAGE_TYPE_RAG_MESSAGE_NAME,"input",retrievalQuestion));
+                   traceMessage.setStartTime(startTime);
+                   traceMessage.setEndTime(System.currentTimeMillis());
+                   recordTraceMessage(traceMessage);
+                }
+                
+                
+             }
+          });
+          String userPrompt = """
+                # 用户问题
+                
+                #[input.query]
+                
+                # 问题知识
+                
+                #[ragDocuments]
+                
+                """;
+//        UserNodeAgent userNodeAgent = new UserNodeAgent(userPrompt).setAgentId("answerQuestionAgent").setAgentName("答案生成智能体");
+          // ===== 8. 答案生成智能体:如果问题已近拒答，则不生成答案 =====
+          sequenceAgent.addAgent(new AINodeAgent(userPrompt).setAgentId("answerQuestionAgent").setAgentName("答案生成智能体")
+//                    .setToolsRegist(configMcpServerToolsRegist) //注册mcp工具
+                , new TriggerScriptAPI() {
+                   @Override
+                   public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                      Boolean isShouldRefuse = (Boolean) nodeTriggerContext.getFlowContextData("isShouldRefuse");
+                      if(isShouldRefuse != null){
+                         return !isShouldRefuse;
+                      }
+                      return true;
+                   }
+                });
+          
+          planAgent.addConditionFlowNode(sequenceAgent,true);
+          
+          AISequenceAgent vopsSequenceAgent = new AISequenceAgent(planAgent).setAgentId("vopsSequenceAgent").setAgentName("运维串行任务节点");
+          AINodeAgent scan2ndClosePortProcessAgent = new AINodeAgent("#[prompts/rag-looptoolcall-prompt.txt,type=resource]")
+                .setSystemPrompt("你是一个专家，可以根据用户要求获取系统信息，生成符合要求的、完整的、可执行的shell脚本" +
+                      "，并将生成的脚本交由工具执行，输出执行结果。注意事项：通过Java Process调用cmd或者sh来执行脚本，确保脚本在目标操作系统上能够正常运行。")
+                .setAgentId("scan2ndClosePortProcessAgent").setAgentName("扫描并关闭端口进程");
+          scan2ndClosePortProcessAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+          scan2ndClosePortProcessAgent.setMaxLoopToolCalls(100);
+          //注册获取当前操作系统OS信息工具：框架内置工具
+          scan2ndClosePortProcessAgent.registBeanTool(new GetOSFunctionTool(60));
+        //注册脚本执行工具，会根据获取到的OS信息，生成对应的OS环境命令行脚本进行执行：框架内置工具
+          scan2ndClosePortProcessAgent.registBeanTool(new CLIShellFunctionTool(60));
+          vopsSequenceAgent.addAgent(scan2ndClosePortProcessAgent);
+          vopsSequenceAgent.addAgent(new AINodeAgent( "请根据用户的问题:#[input.query]，以及前面的回复，创建一份详细的飞书报告。请用清晰的中文输出。" )
+                .setAgentName("飞书文档创建结果")
+                .setAgentId("createFeishuDoc")
+                .setToolsRegist(feishuMcpToolsRegist).setToolSearcher(new KeywordToolSearcher("创建飞书云文档")));
+          
+          planAgent.addConditionFlowNode(vopsSequenceAgent, new TriggerScriptAPI() {
+             @Override
+             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                if(question.contains("OS信息查询"))
+ 
+                   return true;
+                return false;
+             }
+          });
+          
+          AISequenceAgent hitlSequenceAgent = new AISequenceAgent(planAgent).setAgentId("hitlSequenceAgent").setAgentName("人工干预串行任务节点");
+          
+//        String prompt = "请评审代码并修复问题,java文件路径：C:\\data\\ai\\code\\AIAgent.java";
+          String prompt = "请评审代码并修复问题,java文件路径：" + agentBootrap.getHitlCodeReviewJavaFile();
+          AINodeAgent hitlAgent = new AINodeAgent( prompt );
+ 
+          hitlAgent.setSystemPrompt("你是一个 Java 代码审查助手，可以审查 Java 代码并给出修改建议，还可以将修复后的代码保存到源文件中。 长期规则： - 如果用户提交 Java 代码并要求审查，先调用 Skill 工具加载 code-review-skill。 - 保存修改代码前请调用工具hitlTaskTool进行人工确认。" +
+                      "- 加载技能书后，再按照技能书里的审查顺序审查java代码。 - 优先指出 bug、安全风险、边界条件、异常处理和缺失测试。 " +
+                      "- 如果信息不足，要说明缺少哪些上下文，不要编造项目背景。 - 不要输出与代码审查无关的泛泛建议。 输出要求： - 用中文回答。 " +
+                      "- 使用 Markdown。 - 先给总体结论，再列主要问题，最后给测试建议和下一步。");
+          hitlAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+          hitlAgent.setMaxLoopToolCalls(80);
+          hitlAgent.registTools(new SkillsToolRegist()
+                      .addClasspathSkills("skills"))
+                .registBeanTool(new HitlTaskcallTool());//注册人工介入任务调用工具，用于人工介入任务的调用
+          hitlAgent.setHitlTaskTimeout(60000L);
+          //注册文件操作工具，用于读取文件,需要设置运行文件工具操作的目录清单，禁止文件工具操作清单之外的目录
+          String[] baseDirs = agentBootrap.getHitlFileToolDasedirs();
+          FileFunctionTool fileFunctionTool = new FileFunctionTool( );
+          if(baseDirs != null && baseDirs.length > 0){
+             fileFunctionTool.addBaseDirectory(baseDirs);
+          }
+          hitlAgent.registBeanTool(fileFunctionTool);
+          
+          hitlSequenceAgent.addAgent(hitlAgent);
+//        hitlSequenceAgent.addAgent(new AINodeAgent( "请根据用户的问题:#[input.query]，以及评审结果及修复情况，创建一份详细的飞书报告。请用清晰的中文输出。" )
+//              .setAgentName("创建代码评审飞书文档")
+//              .setAgentId("createCodereviewFeishuDoc")
+//              .setToolsRegist(feishuMcpToolsRegist).setToolSearcher(new KeywordToolSearcher("创建飞书云文档")));
+          
+          planAgent.addConditionFlowNode(hitlSequenceAgent, new TriggerScriptAPI() {
+             @Override
+             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                if(question.contains("代码评审"))
+ 
+                   return true;
+                return false;
+             }
+          });
+ 
+ 
+          Flux<ServerEvent> flux = planAgent.chatStream();
+          
+          
+          Disposable disposable =  flux
+ 
+                .doOnNext(event -> {
+                   if(event.isHitl()){
+                      log.info("=== 智能问答工作流进入人工干预信号来咯 ===,hitlTaskId={}", event.getHitlTaskId());
+                   }
+                   // 答案前后都可以添加链接和标题，实现相关知识资料链接
+                   callback.onEvent(JsonUtil.object2json(event));
+                }).doOnComplete(() -> {
+                   log.info("\n=== 智能问答工作流执行完成 ===");
+                   callback.onComplete();
+ 
+                })
+                .doOnError(error -> {
+                   log.error("智能问答工作流执行错误: " + error.getMessage(), error);
+                   callback.onError(error);
+ 
+                   
+                })
+                .subscribe();
+          callback.registerDisposable(disposable, planAgent, requestId);
+ 
+          
+          
+       } catch (Exception e) {
+          log.error("Rag stream failed sessionId={},requestId={}", sessionId,requestId, e);
+          throw new AIRuntimeException("Rag stream failed", e);
+ 
+       } finally {
+        
+       }
+    }
+```
+
+#### 3.7.3 spring sse消息发送器接口
+
+```java
+public class FluxRagStreamCallback implements FluxStreamCallback {
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(FluxRagStreamCallback.class);
+    private final SseEmitter emitter;
+    /** 请求方传入的题目 ID（评测题原样回传），随 trace 事件一并推给前端 */
+    private final String requestId;
+
+    public FluxRagStreamCallback(SseEmitter emitter, String requestId) {
+        this.emitter = emitter;
+        this.requestId = requestId;
+    }
+    
+    /**
+     * 错误：以错误终止 emitter。前端 EventSource 会触发 onerror 回调。
+     */
+    @Override
+    public void onError(Throwable error) {
+       emitter.completeWithError(error);
+    }
+
+    /**
+     * 推送 LLM 流式 token。SSE 默认事件（不指定 event 名）。
+     */
+    @Override
+    public void onEvent(String token) {
+        try {
+            emitter.send(SseEmitter.event().data(token));
+        } catch (IOException e) {
+            emitter.completeWithError(e);
+        }
+    }
+
+    
+    /**
+     * 流结束：发 done 事件并 close emitter。
+     */
+    @Override
+    public void onComplete() {
+        try {
+//            emitter.send(SseEmitter.event().name("done").data("[DONE]"));
+            emitter.complete();
+        } catch (Exception e) {
+            emitter.completeWithError(e);
+        }
+    }
+
+    
+    
+    public void registerDisposable(Disposable disposable, AIPlanAgent planAgent,String requestId){
+       // 使用 AtomicReference 安全地在不同线程间传递 Disposable
+     
+       // 注册 SseEmitter 监听器，在连接结束或异常时取消底层 Flux
+       emitter.onCompletion(() -> {
+          Disposable d = disposable;
+          if (d != null && !d.isDisposed()) {
+             planAgent.shutdown();
+             d.dispose();
+             log.info("Client completed/disconnected, disposed flux subscription id={}", requestId);
+          }
+          
+          
+       });
+       emitter.onTimeout(() -> {
+          Disposable d = disposable;
+          if (d != null && !d.isDisposed()) {
+             planAgent.shutdown();
+             d.dispose();
+             log.info("SSE timeout, disposed flux subscription id={}", requestId);
+          }
+       });
+       emitter.onError((e) -> {
+          Disposable d = disposable;
+          if (d != null && !d.isDisposed()) {
+             planAgent.shutdown();
+             d.dispose();
+             
+             log.info("SSE error or client abort, disposed flux subscription id={}", requestId);
+          }
+       });
+    }
+}
+```
+
+#### 3.7.4 禁用nginx sse缓存
 
 注意：nginx会自动缓存sse stream消息，如果后续无消息到来时，导致浏览器端迟迟收不到缓存中的消息数据，可通过以下配置禁用nginx对sse服务的缓存：
 
@@ -1301,10 +1697,10 @@ AIAgent aiAgent = new AIAgent();
 
 ```java
 // 1. 配置 mcpserver.properties
-// http.poolNames = ecop_mcp_server
-// ecop_mcp_server.http.hosts = 127.0.0.1:8889
-// ecop_mcp_server.http.apiKeyId = 123456
-// ecop_mcp_server.http.extendConfigs.streamableendpoint = /ecop-biz-srv/mcp/streamable
+// http.poolNames = mcp_server
+// mcp_server.http.hosts = 127.0.0.1:8889
+// mcp_server.http.apiKeyId = 123456
+// mcp_server.http.extendConfigs.streamableendpoint = /ecop-biz-srv/mcp/streamable
 
 // 2. 启动时初始化 MCP 连接池
 @Component
@@ -1324,7 +1720,7 @@ public class EcopAgentMcpClientFactory {
     @Bean("ecopConfigMcpServerToolsRegist")
     public ToolsRegist buildEcopConfigMcpServerToolsRegist() {
         // MCPToolsRegist 通过服务名称关联到 mcpserver.properties 配置
-        ToolsRegist toolsRegist = new MCPToolsRegist("ecop_mcp_server");
+        ToolsRegist toolsRegist = new MCPToolsRegist("mcp_server");
         return toolsRegist;
     }
 }
@@ -1361,7 +1757,7 @@ public class RagQAService {
 
 #### 9.4.5**MCPToolsRegist 工作原理**
 
-1. `MCPToolsRegist` 通过服务名称（如 `ecop_mcp_server`）关联到 `mcpserver.properties` 中的连接池配置
+1. `MCPToolsRegist` 通过服务名称（如 `mcp_server`）关联到 `mcpserver.properties` 中的连接池配置
 2. 初始化时向 MCP 服务端发送 `initialize` 请求进行协议握手
 3. 调用 `tools/list` 获取服务端暴露的工具列表
 4. 将工具列表转换为 `FunctionToolDefine` 供 `AIAgent` 使用
