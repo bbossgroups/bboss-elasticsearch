@@ -11,6 +11,7 @@
   - [内置工具使用文档](bboss-ai-innertools.md)
   - [人工介入Hitl功能使用文档](bboss-ai-hitl.md)
   - [工具方法审核使用文档](bboss-ai-toolaudit.md)
+  - [智能问答和会话管理](bboss-ai-qa.md)
 - 微服务框架
   - [Http5负载均衡器使用介绍](httpproxy5.md)
   - [Http负载均衡器使用介绍](httpproxy.md)

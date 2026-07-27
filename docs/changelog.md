@@ -65,14 +65,17 @@ Gradle 依赖
 ```groovy
 implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 ```
-# [DataTran] v7.5.6 功能改进-20260716(待发布)
+# [DataTran] v7.5.7 功能改进-20260726(待发布)
 
 1. Elasticsearch客户端：新增spring boot4 starter
 
-# [Agent] V6.5.6 功能改进-20260715(待发布)
+# [Agent] V6.5.6 功能改进-20260726(待发布)
 
 1. 智能体框架改进：Skill注册、加载和执行实现，使用样例：[代码评审](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/ChecklistCodeViewAgentTest.java) [掷骰子](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/SkillAgentTest.java)
 2. 智能体框架改进：内置文件工具支持[设定多个限定目录](https://esdoc.bbossgroups.com/#/bboss-ai-innertools?id=%e5%9b%9b%e3%80%81filefunctiontool-%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e6%93%8d%e4%bd%9c%e5%b7%a5%e5%85%b7)
+3. 智能体框架改进：增加工具方法执行审核机制，使用参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-toolaudit
+4. 智能体框架改进：新增[人工介入 Hitl（Human-in-the-Loop）功能](https://esdoc.bbossgroups.com/#/bboss-ai-hitl)
+5. 智能体框架改进：完善[智能体Trace可观测性](https://esdoc.bbossgroups.com/#/AgentTraceHolder-usage)功能
 
 # [Agent] V6.5.5 功能改进-20260710
 
