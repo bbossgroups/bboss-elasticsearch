@@ -1448,10 +1448,60 @@ public class RagQAService {
 #### 9.4.5**MCPToolsRegist 工作原理**
 
 1. `MCPToolsRegist` 通过服务名称（如 `mcp_server`）关联到 `mcpserver.properties` 中的连接池配置
+
 2. 初始化时向 MCP 服务端发送 `initialize` 请求进行协议握手
+
 3. 调用 `tools/list` 获取服务端暴露的工具列表
+
 4. 将工具列表转换为 `FunctionToolDefine` 供 `AIAgent` 使用
+
 5. 当 AI 模型需要调用工具时，`MCPToolsRegist` 通过 `tools/call` 将请求转发到 MCP 服务端执行
+
+#### 9.4.6 Spring ai mcp服务兼容性设置
+
+采用streamable api协议对接Spring ai mcp服务时，需要额外设置一下http请求拦截器。
+
+编写一个简单的httprequest拦截器SpringAIMcpRequestIntercepter（内置在bboss框架包，无需自行编写，只需进行下一步的配置即可）：
+
+```java
+package org.frameworkset.spi.ai.mcp.intercepter;
+
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.frameworkset.spi.remote.http.callback.ClientConfigurationHttpRequestInterceptor;
+
+import java.io.IOException;
+
+/**
+ * spring ai mcp 服务兼容mcp请求拦截器
+ * @author biaoping.yin
+ * @Date 2026/7/31
+ */
+public class SpringAIMcpRequestIntercepter extends ClientConfigurationHttpRequestInterceptor {
+    
+    @Override
+    public void process(HttpRequest httpRequest, EntityDetails entityDetails, HttpContext httpContext) throws HttpException, IOException {
+       try {
+          
+          httpRequest.addHeader("Accept", "application/json, text/event-stream");
+       } catch (Exception e) {
+          throw new RuntimeException(e);
+       }
+       
+    }
+    
+}
+```
+
+ spring ai mcp 服务兼容mcp请求拦截器，在mcpserver配置文件进行如下配置即可：test为mcp数据源名称
+
+```properties
+test.http.httpRequestInterceptors=org.frameworkset.spi.ai.mcp.intercepter.SpringAIMcpRequestIntercepter
+```
+
+
 
 ### 9.5 MCP 服务端
 

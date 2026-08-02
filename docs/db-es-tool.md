@@ -3002,7 +3002,27 @@ importBuilder.setSplitFieldName("@message");
 {"uuid":"7af4eee7-61d7-4ab8-8678-117fd6f37e24","message":{"userId":"123457","userName":"李四3","yearMonth":"202104","readTime":"20210401","payTime":"20210501","waterNum":"100","waterType":"工业用水"},"@timestamp":"2021-10-12T02:45:06.419Z","@filemeta":{"hostName":"DESKTOP-U3V5C85","pointer":1354,"hostIp":"169.254.252.194","filePath":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json","fileId":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json"}}
 ```
 
+##### 4.8.22.1设置记录key
 
+如果是往kafka推送数据，可以设置推送的key
+
+```java
+       importBuilder.setSplitHandler(new SplitHandler() {
+          @Override
+          public List<KeyMap> splitRecord(TaskContext taskContext,
+                                              Record record) {
+             List<KeyMap> splitDatas = new ArrayList<>();
+             //模拟将数据切割为10条记录
+             for(int i = 0 ; i < 10; i ++){
+                KeyMap d = new KeyMap();
+                d.put("message",i+"-"+o);
+                d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+                splitDatas.add(d);
+             }
+             return splitDatas;
+          }
+       });
+```
 
 #### 4.8.23 自定义处理器
 

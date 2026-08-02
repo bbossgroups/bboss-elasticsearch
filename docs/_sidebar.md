@@ -29,6 +29,7 @@
 - **Getting started**
   - [Elasticsearch Quick start](quickstart.md)
   - [bboss Demo](Elasticsearch-demo.md)
+  - [任务定时调度-忽略节假日调度配置](schedule-holiday-config.md) 
   - [集成和配置Elasticsearch bboss](common-project-with-bboss.md)
   - [Spring boot集成和配置Elasticsearch ](spring-booter-with-bboss.md)
   - [Spring boot+Elasticsearch+Apollo](springboot-bbosses-apollo.md)
