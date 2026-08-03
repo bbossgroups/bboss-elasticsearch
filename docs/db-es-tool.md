@@ -2911,6 +2911,8 @@ elasticsearchOutputConfig.setTargetElasticsearch("default,test");
 
 #### 4.8.22 记录切割
 
+##### 4.8.22.1 指定字段记录切割
+
 在数据导入时，有时需将单条记录切割为多条记录，通过设置切割字段以及SplitHandler接口来实现，可以将指定的字段拆分为多条新记录，新产生的记录会自动继承原记录其他字段数据，亦可以指定覆盖原记录字段值,示例代码如下：
 
 ```java
@@ -3002,7 +3004,51 @@ importBuilder.setSplitFieldName("@message");
 {"uuid":"7af4eee7-61d7-4ab8-8678-117fd6f37e24","message":{"userId":"123457","userName":"李四3","yearMonth":"202104","readTime":"20210401","payTime":"20210501","waterNum":"100","waterType":"工业用水"},"@timestamp":"2021-10-12T02:45:06.419Z","@filemeta":{"hostName":"DESKTOP-U3V5C85","pointer":1354,"hostIp":"169.254.252.194","filePath":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json","fileId":"D:/workspace/bbossesdemo/kafka2x-elasticsearch/data/waterinfo_20210811211501009.json"}}
 ```
 
-##### 4.8.22.1设置记录key
+##### 4.8.22.2 多字段记录切割
+
+跟多的情况是涉及根据多个字段拆分记录，本节详细介绍。
+
+有如下文件内容：
+
+```json
+{"ids":["1","2","3","4","5","6","7","8","9","10"],"names":["张三","李四","王五","胡六","马七","钱一","郭二","熊八","苟九","刘诗诗"],"org":"渠道中心"}
+{"ids":["10","20","30","40","50","60","70","80","90","100"],"names":["张旭","李魁","王安","胡非","马云","钱多多","郭东","熊海","苟火","刘朝"],"org":"市场中心"}
+{"ids":["11","12","13","14","15","16","17","18","19","20"],"names":["徐浩","孙悦","马丁","朱婷","胡军","郭靖","林黛","何勇","高远","罗杰"],"org":"市场中心"}
+```
+
+现在需要根据ids和names拆分id和name的多条记录，拆分记录时对应org信息复用原纪录字段值，同时最终输出到Elasticsearch时，去掉ids和names字段：
+
+```java
+importBuilder.setSplitHandler(new SplitHandler() {
+          @Override
+          public List<KeyMap> splitRecord(TaskContext taskContext,
+                                              Record record) {
+             List<String> ids = (List<String>)record.getValue("ids");
+             
+             List<String> names = (List<String>)record.getValue("names");
+             List<KeyMap> splitDatas = new ArrayList<>(ids.size());
+             //模拟将数据切割为10条记录
+             for(int i = 0 ; i < ids.size(); i ++){
+                KeyMap d = new KeyMap();
+                d.put("id",ids.get(i));
+                
+                d.put("name",names.get(i));
+//              d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+                splitDatas.add(d);
+             }
+             return splitDatas;
+          }
+       });
+//最终输出到Elasticsearch时，去掉ids和names字段
+       importBuilder.addIgnoreFieldMapping("ids");
+       importBuilder.addIgnoreFieldMapping("names");
+```
+
+完善的作业实现，参考案例：
+
+https://gitee.com/bboss/bboss-datatran-demo/blob/main/src/main/java/org/frameworkset/datatran/imp/file/FileInputWithSplitRecordMultiField.java
+
+##### 4.8.22.3设置记录key
 
 如果是往kafka推送数据，可以设置推送的key
 
@@ -3011,7 +3057,9 @@ importBuilder.setSplitFieldName("@message");
           @Override
           public List<KeyMap> splitRecord(TaskContext taskContext,
                                               Record record) {
+             List<String> ids = record.get 
              List<KeyMap> splitDatas = new ArrayList<>();
+              
              //模拟将数据切割为10条记录
              for(int i = 0 ; i < 10; i ++){
                 KeyMap d = new KeyMap();
