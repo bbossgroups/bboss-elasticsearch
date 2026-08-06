@@ -65,6 +65,10 @@ Gradle 依赖
 ```groovy
 implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 ```
+3）从源码构建
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
 # [DataTran] v7.5.7 功能改进-20260726(待发布)
 
 1. Elasticsearch客户端：新增spring boot4 starter
