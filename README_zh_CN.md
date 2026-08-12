@@ -120,4 +120,4 @@ The BBoss Framework is released under version 2.0 of the [Apache License][].
 
 # Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=bbossgroups/bboss-elasticsearch&type=Date)](https://star-history.com/#bbossgroups/bboss-elasticsearch&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=bbossgroups/bboss-elasticsearch&type=Date)](https://star-history.dera.page/#bbossgroups/bboss-elasticsearch&Date)
