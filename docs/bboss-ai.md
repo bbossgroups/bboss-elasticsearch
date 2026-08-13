@@ -1243,7 +1243,7 @@ chatMsg.setToolsRegist(new ToolsRegist() {
 
 ### 8.4 内置工具
 
-bboss提供了一系列内置工具，比如脚本执行、文件操作、获取系统信息、代码执行等，可以访问以下文档了解内置工具的介绍和使用方法：
+bboss提供了一系列内置工具，比如脚本执行、文件操作、获取系统信息、代码执行以及人工审核工具等，可以访问以下文档了解内置工具的介绍和使用方法：
 
 https://esdoc.bbossgroups.com/#/bboss-ai-innertools
 
@@ -1437,13 +1437,30 @@ public class RagQAService {
 
 #### 9.4.4**配置说明**
 
-| 配置项                                             | 说明                         |
-| -------------------------------------------------- | ---------------------------- |
-| `http.poolNames`                                   | 连接池名称列表，对应服务标识 |
-| `{poolName}.http.hosts`                            | MCP 服务端地址               |
-| `{poolName}.http.apiKeyId`                         | 访问 MCP 服务端的 API 密钥   |
-| `{poolName}.http.extendConfigs.streamableendpoint` | Streamable HTTP 端点路径     |
-| `{poolName}.http.extendConfigs.sseendpoint`        | SSE 端点路径（可选）         |
+| 配置项                                             | 说明                                    |
+| -------------------------------------------------- | --------------------------------------- |
+| `http.poolNames`                                   | 连接池名称列表，对应服务标识            |
+| `{poolName}.http.hosts`                            | MCP 服务端地址                          |
+| `{poolName}.http.apiKeyId`                         | 访问 MCP 服务端的 API 密钥              |
+| `{poolName}.http.extendConfigs.streamableendpoint` | Streamable HTTP 端点路径                |
+| `{poolName}.http.extendConfigs.sseendpoint`        | SSE 端点路径（可选）                    |
+| `{poolName}.http.extendConfigs.toolCallRetry = 3`  | 设置mcp调用失败重试次数，不设置则不重试 |
+
+##### 9.4.4.1 失败重试
+
+设置mcp调用失败重试次数，不设置则不重试
+
+通过配置文件在mcp服务上设置
+
+```properties
+http.extendConfigs.toolCallRetry = 3
+```
+
+通过api接口设置，会直接覆盖上面的配置文件中的配置
+
+```java
+feishuMcpToolsRegist.setToolCallRetry(3);
+```
 
 #### 9.4.5**MCPToolsRegist 工作原理**
 
@@ -1966,11 +1983,42 @@ bboss-ai-flow 模块提供了一套强大的智能体工作流编排能力，基
 
 
 
-#### 14.1.2 会话存储配置
+#### 14.1.2 会话配置
 
-工作流支持将会话记录持久化到数据库、Clickhouse或内存中：
+工作流支持将会话记录持久化到数据库、Clickhouse或内存中。
+
+##### 自动会话创建
+
+智能体会自动创建会话记录，会话标题一般以用户问题来命名，需要显示通过chatAgentMessage.setPrompt(question,true)方法设置用户问题和提示词，第二个参数为true，会将question设置为默认的input.query变量，可以在智能体创建会话时引用变量来设置会话主题。
+
+```java
+chatAgentMessage.setMaas("deepseek").setModel("deepseek-v4-pro");
+      chatAgentMessage.setRetry(3);
+String question = "查找和管理端口808";
+chatAgentMessage.setPrompt(question,true).setSystemPrompt("你是一个专家，可以根据用户要求获取系统信息，生成符合要求的、完整的、可执行的shell脚本" +
+              "，并将生成的脚本交由工具执行，输出执行结果。注意事项：通过Java Process调用cmd或者sh来执行脚本，确保脚本在目标操作系统上能够正常运行。");
+
+String message = "#[loopprompt.txt,type=resource]";
+		AIAgent agent = new AIAgent(message);
+```
+
+提示词文本：
+
+```markdown
+根据用户问题：#[input.query]，请依次执行以下命令：
+1.获取OS版本信息、CPU信息
+3.打印OS和CPU信息
+4.查找用户提到的端口的进程，如果存在对应进程，关闭进程，注意：端口为用户提到的端，不要查找其它端口
+5.打印端口进程信息和关闭核对结果
+6.将OS和CPU信息，端口进程信息和关闭核对结果以Markdown格式写入文件：C:\data\ai\aigenfiles\tools\result.md
+报告生成时间以服务器时间为准
+```
+
+
 
 ##### 关系数据库会话存储设置
+
+
 
 ```java
 import org.frameworkset.spi.ai.store.StoreContext;
@@ -2326,6 +2374,63 @@ AIParrelAgent aiParrelAgent = new AIParrelAgent(aiPlanAgent) {
         return builder.toString();
     }
 };
+```
+
+#### 14.3.4 动态构建并行子智能体
+
+智能体框架工作流可以根据任务参数，通过接口DynamicNodeBuilder动态构建并行智能体的并行分支：
+
+```java
+org.frameworkset.tran.jobflow.builder.DynamicNodeBuilder
+```
+
+示例如下：
+
+```java
+//构建并行智能体
+          AIParrelAgent aiParrelAgent = new AIParrelAgent(planAgent).setAgentId("provincesParrelAgent").setAgentName("中国省份介绍并行智能体");
+          //动态创建并行子智能体
+          aiParrelAgent.setDynamicNodeBuilder(new DynamicNodeBuilder() {
+           
+             private boolean needCreateFeishu(String province,List<String> feishuProvinces){
+                if(feishuProvinces == null || feishuProvinces.size() == 0)
+                   return false;
+                for(String feishuProvince: feishuProvinces) {
+                   if (province.equals(feishuProvince))
+                      return true;
+                }
+                return false;
+             }
+             @Override
+             public void nodeBuilder( JobFlowNodeExecuteContext jobFlowNodeExecuteContext){
+//              ChatObject chatObject = AgentTraceHolder.getChatObject();
+                List<String> provinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("provinces");
+                List<String> feishuProvinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("feishuProvinces");
+                for(String province: provinces){
+                   StringBuilder prompt = new StringBuilder();
+                   prompt.append("请用500字介绍").append(province).append("。");
+                   if(!needCreateFeishu( province, feishuProvinces)) {
+                      aiParrelAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("介绍" + province));
+                   }
+                   else{
+                      AISequenceAgent hunanSequenceAgent = new AISequenceAgent(planAgent).setAgentId(province+"介绍及报告任务").setAgentName(province+"介绍及报告任务");
+                      
+                      hunanSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("用500字介绍" + province));
+                      
+                      AINodeAgent feishuAgent = new AINodeAgent( "根据"+province+"介绍，创建一份详细的飞书报告。请用清晰的中文输出。约束：创建飞书文档前需要调用工具hitlTaskTool，经人工确认后才能创建，否则不能创建。" )
+                            .setAgentName("创建"+province+"介绍报告")
+                            .setAgentId("create"+province+"FeishuDoc")
+                            .registBeanTool(new HitlTaskcallTool().setTimeoutAction(HitlTaskcallTool.TIMEOUT_ACTION_CONTINUE).setHitlTaskTimeout(60000L))
+                            .setToolsRegist(feishuMcpToolsRegist).setToolSearcher(new KeywordToolSearcher("人工介入工具","创建飞书云文档"));
+                      feishuAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+                      feishuAgent.setMaxLoopToolCalls(80);//限定最大论次
+                      hunanSequenceAgent.addAgent(feishuAgent);
+                      aiParrelAgent.addAgent(hunanSequenceAgent);
+                   }
+                }
+                
+             }
+          });
 ```
 
 ### 14.4 条件任务节点和触发器
@@ -3013,7 +3118,9 @@ aiPlanAgent.addAgent(new AIFlowNode() {
 
 2）加载classpath下文件中的提示词
 
-3）加载url中提供的提示词
+3）加载url中提供的提示词，可以指定httpproxy资源服务名称
+
+4）加载service服务中提供的提示词
 
 分别举例如下：
 
@@ -3021,6 +3128,8 @@ aiPlanAgent.addAgent(new AIFlowNode() {
  String message = "#[prompt.txt,type=resource,charset=UTF-8]";
  String message = "#[prompt.txt,type=resource]";
  String message = "#[http://localhost:85/prompt.txt,type=url,charset=UTF-8]";
+ String message = "#[/prompt.txt,type=url,httpproxy=knowledge]";
+ String message = "#[/prompt.txt,type=service]";
  String message = "#[C:\\workspace\\bbossgroups\\bboss-ai\\bboss-ai-flow\\src\\test\\resources\\prompt.txt,type=file,charset=UTF-8]";
 ```
 

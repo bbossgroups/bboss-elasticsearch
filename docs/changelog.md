@@ -69,17 +69,24 @@ implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-# [DataTran] v7.5.7 功能改进-20260726(待发布)
+# [DataTran] v7.5.7 功能改进-20260807(待发布)
 
 1. Elasticsearch客户端：新增spring boot4 starter
+2. 数据交换改进：工作流增加动态规划和生成并行子任务功能
+3. 数据交换改进：增加多字段记录切割功能，修复数据交换作业，外部调度不能正常工作问题（引入节假日机制导致的问题）
+4. Elasticsearch输出插件改进：动态生成索引名称和类型时，可以从临时变量值获取索引名称和类型变量值
 
-# [Agent] V6.5.6 功能改进-20260726(待发布)
+# [Agent] V6.5.6 功能改进-20260807(待发布)
 
 1. 智能体框架改进：Skill注册、加载和执行实现，使用样例：[代码评审](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/ChecklistCodeViewAgentTest.java) [掷骰子](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/SkillAgentTest.java)
 2. 智能体框架改进：内置文件工具支持[设定多个限定目录](https://esdoc.bbossgroups.com/#/bboss-ai-innertools?id=%e5%9b%9b%e3%80%81filefunctiontool-%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e6%93%8d%e4%bd%9c%e5%b7%a5%e5%85%b7)
 3. 智能体框架改进：增加工具方法执行审核机制，使用参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-toolaudit
-4. 智能体框架改进：新增[人工介入 Hitl（Human-in-the-Loop）功能](https://esdoc.bbossgroups.com/#/bboss-ai-hitl)
+4. 智能体框架改进：新增[人工介入 Hitl（Human-in-the-Loop）功能](https://esdoc.bbossgroups.com/#/bboss-ai-hitl)，实现人工审核、人工信息补充功能
 5. 智能体框架改进：完善[智能体Trace可观测性](https://esdoc.bbossgroups.com/#/AgentTraceHolder-usage)功能
+6. 智能体框架改进：并行子智能体增加动态[构建并行分支智能体功能](https://esdoc.bbossgroups.com/#/bboss-ai?id=_1434-%e5%8a%a8%e6%80%81%e6%9e%84%e5%bb%ba%e5%b9%b6%e8%a1%8c%e5%ad%90%e6%99%ba%e8%83%bd%e4%bd%93)
+7. 智能体框架改进：工作流改进，并行工作流增加并行分支分组id和父分支分组id，用以支撑智能体工作流并行子智能体向客户端并行输出子智能体消息
+8. 智能体框架改进：会话删除，增加人工任务删除功能，修改Clickhouse会话表字段定义，String类型字段允许空值字段
+9. 智能体框架改进：增加mcp工具调用失败重试次数，使用方法：https://esdoc.bbossgroups.com/#/bboss-ai?id=_9441-%e5%a4%b1%e8%b4%a5%e9%87%8d%e8%af%95
 
 # [Agent] V6.5.5 功能改进-20260710
 

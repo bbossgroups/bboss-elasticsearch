@@ -8,6 +8,10 @@
 
 最直接的方式是将提示词内容直接定义在代码变量中。这种方式适用于提示词内容较短、固定且不经常变化的场景。
 
+变量体系参考文档：
+
+https://esdoc.bbossgroups.com/#/bboss-ai?id=_1410-%e6%99%ba%e8%83%bd%e4%bd%93%e5%b7%a5%e4%bd%9c%e6%b5%81%e5%8f%98%e9%87%8f%e4%bd%93%e7%b3%bb
+
 ### 1.使用方式
 
 将提示词文本直接赋值给消息对象的 `prompt` 或 `systemPrompt` 属性：
@@ -111,8 +115,10 @@ planAgent.addAgent(new AIJudgeAgent(
 | 属性       | 是否必填 | 说明                                                         |
 | :--------- | :------- | :----------------------------------------------------------- |
 | `资源路径` | 是       | 根据 `type` 类型不同，分别表示 classpath 下的文件路径、本地文件绝对/相对路径、或 HTTP/HTTPS URL 地址。 |
-| `type`     | 是       | 资源加载类型。可选值：<br>- `resource`：从 classpath 加载<br>- `file`：从外部文件系统加载<br>- `url`：从远程 URL 加载 |
+| `type`     | 是       | 资源加载类型。可选值：<br>- `resource`：从 classpath 加载<br>- `file`：从外部文件系统加载<br>- `url`：从远程 URL 加载<br/>- service:  从本地服务加载 |
 | `charset`  | 否       | 指定读取资源时的字符编码，例如 `UTF-8`、`GBK` 等。若不指定，则使用系统默认编码。 |
+| httpproxy  | 否       | 当type为url时，可以通过[httpproxy服务](https://esdoc.bbossgroups.com/#/httpproxy5)获取提示词资源 |
+| cache      | 否       | 当type为resource和file时，默认为true，当type为url和service时，默认为false，cache属性必须配置为所有属性的最后一个属性，注意目前内置的cache没有热加载机制 |
 
 #### 2.1.2 外部资源文件示例
 
@@ -141,6 +147,7 @@ url对应的资源可能是对应一个Prompt文件资源，也可能对应从�
 
 ```java
 String message = "你是一个专业的旅行顾问。\n#[RoutingStreamJudge.prompt,type=resource,charset=UTF-8]\n出至少3个推荐选项，并说明理由。如未匹配到工具，请返回\"未找到匹配的酒店查询工具\"";
+message = "你是一个专业的旅行顾问。\n#[RoutingStreamJudge.prompt,type=resource,charset=UTF-8,cache=false]\n出至少3个推荐选项，并说明理由。如未匹配到工具，请返回\"未找到匹配的酒店查询工具\"";
 ```
 
 
@@ -199,6 +206,7 @@ chatAgentMessage.setModel("deepseek-chat");
 
 // 加载外部文件系统中的提示词文件
 String message = "#[C:\\workspace\\bbossgroups\\bboss-ai\\bboss-ai-flow\\src\\test\\resources\\prompt.txt,type=file,charset=UTF-8]";
+message = "#[C:\\workspace\\bbossgroups\\bboss-ai\\bboss-ai-flow\\src\\test\\resources\\prompt.txt,type=file,charset=UTF-8,cache=false]";
 chatAgentMessage.setPrompt(message);
 
 AIAgent aiAgent = new AIAgent();
@@ -219,7 +227,9 @@ chatAgentMessage.setPrompt(message);
 
 当提示词内容托管在远程 HTTP 服务上（如配置中心、文档服务器、OSS 等），可以使用 `type=url` 进行加载。框架会发起 HTTP 请求获取远程提示词内容。
 
-#### 2.4.1示例
+如果还指定了
+
+#### 2.4.1示例-绝对url
 
 ```java
 ChatAgentMessage chatAgentMessage = new ChatAgentMessage();
@@ -243,7 +253,86 @@ String message = "你是一名资深代码审查专家。\n"
 chatAgentMessage.setPrompt(message);
 ```
 
+#### 2.4.2示例-相对url
 
+通过httpproxy服务指定资源服务器knownledge：
+
+```java
+// 静态上下文 + 远程提示词模板 + 静态约束
+String message = "你是一名资深代码审查专家。\n"
+        + "#[/prompts/code-review.txt,type=url,httpproxy=knownledge]\n"
+        + "请用中文输出审查意见，并给出改进建议。";
+chatAgentMessage.setPrompt(message);
+```
+
+此时需额外启动knownledge [httpproxy](https://esdoc.bbossgroups.com/#/httpproxy?id=%e5%a4%9a%e9%9b%86%e7%be%a4)服务
+
+```java
+    Map<String,Object> configs = new HashMap<String,Object>();
+        configs.put("http.poolNames","knownledge");
+  
+        configs.put("knownledge.http.hosts","192.168.137.1:808,192.168.137.1:809,192.168.137.1:810");//服务节点地址清单，多个地址用逗号分隔
+ 
+ 
+        HttpRequestProxy.startHttpPools(configs);
+```
+
+### 2.5 通过本地服务加载提示词
+
+可以通过service组件加载提示词，示例如下：
+
+```java
+String question = "查找和管理端口808";
+chatAgentMessage.setPrompt(question,true).setSystemPrompt("你是一个专家，可以根据用户要求获取系统信息，生成符合要求的、完整的、可执行的shell脚本" +
+              "，并将生成的脚本交由工具执行，输出执行结果。注意事项：通过Java Process调用cmd或者sh来执行脚本，确保脚本在目标操作系统上能够正常运行。",true);
+chatAgentMessage.setMaas("deepseek").setModel("deepseek-v4-pro");
+        chatAgentMessage.setRetry(3);
+
+AIAgent agent = new AIAgent("#[loopprompt.txt,type=service]");
+        agent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+        agent.setMaxLoopToolCalls(80);
+        //注册获取当前操作系统OS信息工具：框架内置工具
+        agent.registBeanTool(new GetOSFunctionTool(60));
+        //注册脚本执行工具，会根据获取到的OS信息，生成对应的OS环境命令行脚本进行执行：框架内置工具
+        agent.registBeanTool(new CLIShellFunctionTool(60));
+		agent.registBeanTool(new FileFunctionTool("C:\\data\\ai\\aigenfiles\\tools\\"))
+				.setKeywordToolSearcher("获取OS、OS版本、OS架构以及CPU信息","将内容写入到指定文件","执行shell脚本","获取服务器时间");
+		 
+		//通过智能体响应式异步交互接口，请求Deepseek模型服务，提交问题
+		Flux<ServerEvent> flux = agent.streamChat(chatAgentMessage);
+```
+
+通过service服务加载提示词，首先需要在智能体启动之前初始化service：
+
+提示词服务加载接口：`org.frameworkset.spi.ai.prompt.AgentResouceService`
+
+```java
+PromptResourceCache.getInstance().setAgentResouceService(new AgentResouceService() {
+    @Override
+    public String getResourceContent(PromptVariable variable) throws Exception {
+       String resource = variable.getVariableName();
+       String charset = variable.getCharset();
+       String content = ClasspathResourceReader.readClasspathResource(resource, charset);
+       return content;
+    }
+});
+```
+
+getResourceContent方法的参数说明：PromptVariable variable
+
+vaiable中提供了对#[loopprompt.txt,type=service]的完整解析信息，resource的值为loopprompt.txt，可以在服务实现中从数据库或者文件系统加载loopprompt.txt对应的提示词内容，这里直接从classpath下读取文件内容，如果设置了charset，将会按照设置字符集charset读取内容。
+
+文件loopprompt.txt内容：
+
+```markdown
+根据用户问题：#[input.query]，请依次执行以下命令：
+1.获取OS版本信息、CPU信息
+3.打印OS和CPU信息
+4.查找用户提到的端口的进程，如果存在对应进程，关闭进程，注意：端口为用户提到的端口，不要查找其它端口
+5.打印端口进程信息和关闭核对结果
+6.将OS和CPU信息，端口进程信息和关闭核对结果以Markdown格式写入文件：C:\data\ai\aigenfiles\tools\result.md
+报告生成时间以服务器时间为准
+```
 
 ## 三、缓存机制
 

@@ -262,6 +262,19 @@ AIAgent agent = new AIAgent();
 agent.setHitlTaskTimeout(300000L);  // 设置超时时间（毫秒），默认无限等待
 ```
 
+可以直接在HitlTaskcallTool 上设置超时机制：
+
+```java
+new HitlTaskcallTool().setHitlTaskTimeout(300000L);  // 设置超时时间（毫秒），默认无限等待
+```
+
+设置超时默认处理机制：
+
+```java
+new HitlTaskcallTool().setTimeoutAction(HitlTaskcallTool.TIMEOUT_ACTION_REJECTED)
+new HitlTaskcallTool().setTimeoutAction(HitlTaskcallTool.TIMEOUT_ACTION_CONTINUE)    
+```
+
 ### 6.3 StoreContext 配置
 
 ```java
@@ -621,7 +634,198 @@ public class OAApprovalHitlTool {
 }
 ```
 
-### 9.5 自定义工具最佳实践
+### 9.5 省份信息提取和人工补充工具
+
+#### 9.5.1 工具定义
+
+ProvinceAppendHitlTool
+
+```java
+public class ProvinceAppendHitlTool extends BaseHitlTaskTool<ProvinceAppendHitlTool> {
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ProvinceAppendHitlTool.class);
+ 
+    
+    public ProvinceAppendHitlTool(Auditor auditor) {
+       super(auditor);
+    }
+    
+    public ProvinceAppendHitlTool(){
+       
+    }
+  
+    
+    /**
+     * Human-in-the-Loop，人工介入工具表单
+     * @param hitlTaskReason 人工介入原因描述
+     * @return 人工介入任务执行结果，包含状态信息，提交的表单数据
+     */
+    @Tool(name = "provinceAppendTool", description = "当需要处理省份信息，或者需要通过人工介入补充省份信息时，调用本工具方法")
+    public Map<String,Object> provinceAppendTool(@ToolParam(name = "hitlTaskReason",required = false, description = "人工介入原因，需包含：1.任务背景与已执行步骤 2.当前卡住的具体原因（信息缺失等）3.建议人类关注的关键点或待决策事项 4.期望人类提供的具体帮助；格式清晰，精简聚焦，便于人类快速理解。") 
+                                            String hitlTaskReason,
+                                      @ToolParam(name = "provinces",required = false,description = "从问题中提取的省份信息，多个以逗号分隔。" ) String provinces,
+                                      @ToolParam(name = "feishuProvinces",required = false,description = "从问题中提取的需要创建飞书文档省份信息，多个以逗号分隔。") String feishuProvinces, 
+                                      @ToolParam(name = "allCreateFeishudoc",required = false,description = "标识用户是否要求将补充的省份介绍创建为飞书文档。" ) boolean allCreateFeishudoc
+    ){
+       ToolCallContext toolCallContext = new ToolCallContext();
+       toolCallContext.addParam("hitlTaskReason", hitlTaskReason);
+       toolCallContext.addParam("provinces", provinces);
+       toolCallContext.addParam("feishuProvinces", feishuProvinces);
+       toolCallContext.addParam("allCreateFeishudoc", allCreateFeishudoc);
+       // 参数 null/空白校验：防止空任务传递给人工
+       if(provinces != null && !provinces.equals("")){
+          Map<String,Object> result = new LinkedHashMap<>();
+          String[] provincesArray = provinces.split(",");
+          List<String> provincesList = Arrays.asList(provincesArray);
+          result.put("provinces", provincesList);
+          if(feishuProvinces != null && !feishuProvinces.equals("")) {
+             String[] feishuProvincesArray = feishuProvinces.split(",");
+             result.put("feishuProvinces", Arrays.asList(feishuProvincesArray));
+          }
+          else if(allCreateFeishudoc){
+             result.put("feishuProvinces", provincesList);
+          }
+          
+          if(hitlAssistant != null){
+             hitlAssistant.handleHumanSubbmitDatas(result, toolCallContext);
+          }
+          return result;
+       }
+       Map<String,Object> result = super.innerHitlTaskTool(hitlTaskReason, toolCallContext);
+       
+       
+       return result;
+       
+    }
+}
+```
+
+#### 9.5.2 工具注册和使用
+
+大模型通过工具向客户端传递人工辅助信息provinces（省份清单）和hitlTaskType，借助HitlAssistant接口的getHumanAssistantDatas方法来获取需要向客户端传递的人工辅助信息：
+
+```java
+AISequenceAgent chinaProvinceSequenceAgent = new AISequenceAgent(planAgent).setAgentId("chinaProvinceSequenceAgent").setAgentName("中国省份介绍介绍分支智能体");
+AINodeAgent chinaProvinceAgent = new AINodeAgent( "根据用户提交的问题提取或者补充省份信息:#[input.query]\n" +
+       "如果问题中已经包含省份信息，则直接提取出来，多个省份以逗号分隔，亦可以收集需要创建飞书文档的省份信息，并将提取出来的省份信息和需要创建飞书文档的省份信息一起交给工具provinceAppendTool处理；" +
+       "如果没有包含，则调用工具provinceAppendTool，要求用户补充省份信息，同时需要告诉工具用户是否要求将补充的省份介绍创建为飞书文档；如果用户未补充任何信息，需继续提示用户进行补充。\n" +
+       
+       "输出要求：输出提取的省份信息或者用户补充的省份信息,并告诉用户介绍即将通过后续省份介绍助手介绍相关省份信息。" )
+       .setSystemPrompt("你是一个人工信息助手，可以提取用户问题中的省份信息或者补充用户问题中缺失的省份信息。注意：你只需要将提取的信息交给工具provinceAppendTool处理，或者通过provinceAppendTool补充省份信息，无需回答用户问题。")
+       .setAgentName("中国省份信息提取和补充智能体")
+       .setAgentId("中国省份信息提取和补充智能体");
+String[] provinces = new String[]{"北京", "上海", "天津", "重庆", "河北", "山西", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西",
+       "山东", "河南", "湖北", "湖南", "广东", "海南", "四川", "贵州", "云南", "陕西", "甘肃", "青海", "内蒙古", "广西", "西藏", "宁夏", "新疆"};
+chinaProvinceAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+chinaProvinceAgent.setMaxLoopToolCalls(80);//限定最大论次
+chinaProvinceAgent.registBeanTool(new ProvinceAppendHitlTool().setHitlAssistant(new HitlAssistant() {
+    @Override
+    public Map<String, Object> getHumanAssistantDatas(ToolCallContext toolCallContext) {
+       Map<String, Object> hitlAssistantDatas = new LinkedHashMap<>();
+       hitlAssistantDatas.put("provinces", provinces);
+       hitlAssistantDatas.put("hitlTaskType", "provinceAppend");
+       return hitlAssistantDatas;
+    }
+    
+    @Override
+    public void handleHumanSubbmitDatas(Map<String, Object> humanSubbmitDatas,ToolCallContext toolCallContext) {
+       List<String> selectProvinces = (List<String>) humanSubbmitDatas.get("provinces");
+       List<String> feishuProvinces = (List<String>) humanSubbmitDatas.get("feishuProvinces");
+       if(selectProvinces != null && selectProvinces.size() > 0){
+          // chatObject null 检查：防御非对话上下文调用
+          ChatObject chatObject = AgentTraceHolder.getChatObject();
+          JobFlowNodeExecuteContext jobFlowNodeExecuteContext = chatObject.getChatContext().getJobFlowNodeExecuteContext();
+          jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData("provinces", selectProvinces);
+          if(feishuProvinces != null && feishuProvinces.size() > 0) {
+             jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData("feishuProvinces", feishuProvinces);
+          }
+          else {
+             Boolean allCreateFeishudoc = toolCallContext.getBooleanParam("allCreateFeishudoc");
+             if(allCreateFeishudoc != null && allCreateFeishudoc) {
+                jobFlowNodeExecuteContext.addContainerJobFlowNodeContextData("feishuProvinces", selectProvinces);
+             }
+          }
+       }
+       
+    }
+}));
+
+```
+
+#### 9.5.3 人工任务参数传递和任务结果处理
+
+大模型通过工具向客户端传递人工辅助信息provinces（省份清单）和hitlTaskType，借助HitlAssistant接口的getHumanAssistantDatas方法来获取需要向客户端传递的人工辅助信息：
+
+用户提交人工任务后，工具会将人工操作的结果或者补充的信息返回给大模型，如果设置了HitlAssistant，则会将这些数据交给HitlAssistant接口的handleHumanSubbmitDatas方法来处理，可以将相关数据作为流程上下文数据变量数据；
+
+#### 9.5.4  人工任务结果应用案例
+
+例如，可以根据用户提交的省份数据和需要创建飞书文档的省份，动态构建并行子智能体任务：
+
+```java
+    chinaProvinceSequenceAgent.addAgent(chinaProvinceAgent);
+          
+          //需要提供一个动态并行智能体类型，根据提供的省份信息，动态生成并行智能体
+          //构建并行智能体
+          AIParrelAgent aiParrelAgent = new AIParrelAgent(planAgent).setAgentId("provincesParrelAgent").setAgentName("中国省份介绍并行智能体");
+          //动态创建并行子智能体
+          aiParrelAgent.setDynamicNodeBuilder(new DynamicNodeBuilder() {
+           
+             private boolean needCreateFeishu(String province,List<String> feishuProvinces){
+                if(feishuProvinces == null || feishuProvinces.size() == 0)
+                   return false;
+                for(String feishuProvince: feishuProvinces) {
+                   if (province.equals(feishuProvince))
+                      return true;
+                }
+                return false;
+             }
+             @Override
+             public void nodeBuilder( JobFlowNodeExecuteContext jobFlowNodeExecuteContext){
+//              ChatObject chatObject = AgentTraceHolder.getChatObject();
+                List<String> provinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("provinces");
+                List<String> feishuProvinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("feishuProvinces");
+                for(String province: provinces){
+                   StringBuilder prompt = new StringBuilder();
+                   prompt.append("请用500字介绍").append(province).append("。");
+                   if(!needCreateFeishu( province, feishuProvinces)) {
+                      aiParrelAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("介绍" + province));
+                   }
+                   else{
+                      AISequenceAgent hunanSequenceAgent = new AISequenceAgent(planAgent).setAgentId(province+"介绍及报告任务").setAgentName(province+"介绍及报告任务");
+                      
+                      hunanSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("用500字介绍" + province));
+                      
+                      AINodeAgent feishuAgent = new AINodeAgent( "根据"+province+"介绍，创建一份详细的飞书报告。请用清晰的中文输出。约束：创建飞书文档前需要调用工具hitlTaskTool，经人工确认后才能创建，否则不能创建。" )
+                            .setAgentName("创建"+province+"介绍报告")
+                            .setAgentId("create"+province+"FeishuDoc")
+                            .registBeanTool(new HitlTaskcallTool().setTimeoutAction(HitlTaskcallTool.TIMEOUT_ACTION_CONTINUE).setHitlTaskTimeout(60000L))
+                            .setToolsRegist(feishuMcpToolsRegist).setToolSearcher(new KeywordToolSearcher("人工介入工具","创建飞书云文档"));
+                      feishuAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+                      feishuAgent.setMaxLoopToolCalls(80);//限定最大论次
+                      hunanSequenceAgent.addAgent(feishuAgent);
+                      aiParrelAgent.addAgent(hunanSequenceAgent);
+                   }
+                }
+                
+             }
+          });
+  
+          chinaProvinceSequenceAgent.addAgent(aiParrelAgent, new TriggerScriptAPI() {
+             @Override
+             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                List<String> provinces = (List<String>)nodeTriggerContext.getContainerContextData("provinces");
+                if(provinces != null && provinces.size() > 0)
+                   return true;
+                return false;
+             }
+          });
+          
+          planAgent.addRouteChoiceAgent(chinaProvinceSequenceAgent);
+```
+
+通过接口DynamicNodeBuilder来构建并行子智能体的动态并行任务分支。
+
+### 9.6 自定义工具最佳实践
 
 | 实践要点 | 说明 |
 |---------|------|
