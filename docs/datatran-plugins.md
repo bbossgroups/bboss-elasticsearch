@@ -3179,6 +3179,17 @@ public HBaseOutputConfig addFamilyColumnMapping(String family,String field){
 public HBaseOutputConfig addFamilyColumnMapping(String family,String field,String column)
 ```
 
+### 2.9.3 设置输出记录的timestamp
+
+默认采用系统时间作为记录时间戳，用可以通过以下方式指定记录时间戳：
+
+```java
+//如果源为hbase，指定直接使用源记录的时间戳     
+hBaseOutputConfig.setUserSourceMetaTimestamp(true);
+//直接指定一个字段的值作为记录时间戳，字段必须是Date类型或者long类型
+     hBaseOutputConfig.setRowTimestampField("createTime");
+```
+
 ## 2.10 指标结果输出插件
 
 指标结果输出插件配置类：[MetricsOutputConfig](https://gitee.com/bboss/bboss-elastic-tran/blob/master/bboss-datatran-core/src/main/java/org/frameworkset/tran/plugin/metrics/output/MetricsOutputConfig.java)，指定指标计算器，对采集的数据进行流处理指标计算
