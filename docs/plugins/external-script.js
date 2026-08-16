@@ -1,28 +1,29 @@
-(function () {
-function handleExternalScript() {
-  var container = Docsify.dom.getNode('#main');
-  var scripts = Docsify.dom.findAll(container, 'script');
-
-  for (var i = scripts.length; i--;) {
-    var script = scripts[i];
-
-    if (script && script.src) {
-      var newScript = document.createElement('script');
-
-      Array.prototype.slice.call(script.attributes).forEach(function (attribute) {
-        newScript[attribute.name] = attribute.value;
-      });
-
-      script.parentNode.insertBefore(newScript, script);
-      script.parentNode.removeChild(script);
+/*!
+ * Docsify Plugin: external-script v5.0.0
+ * https://docsify.js.org
+ * (c) 2017-2026
+ * MIT license
+ */
+(function() {
+    "use strict";
+    const window = globalThis;
+    function handleExternalScript() {
+        const container = Docsify.dom.getNode("#main");
+        const scripts = Docsify.dom.findAll(container, "script");
+        for (const script of scripts) {
+            if (script.src) {
+                const newScript = document.createElement("script");
+                Array.from(script.attributes).forEach((attribute => {
+                    newScript[attribute.name] = attribute.value;
+                }));
+                script.before(newScript);
+                script.remove();
+            }
+        }
     }
-  }
-}
-
-var install = function (hook) {
-  hook.doneEach(handleExternalScript);
-};
-
-window.$docsify.plugins = [].concat(install, window.$docsify.plugins);
-
-}());
+    const install = function(hook) {
+        hook.doneEach(handleExternalScript);
+    };
+    window.$docsify = window.$docsify || {};
+    window.$docsify.plugins = [ install, ...window.$docsify.plugins || [] ];
+})();

@@ -1,40 +1,501 @@
-(function () {
-/*
- * medium-zoom v0.4.0
- * Medium zoom on your images in vanilla JavaScript
- * Copyright 2018 Francois Chalifour
- * https://github.com/francoischalifour/medium-zoom
- * MIT License
- */var _extends=Object.assign||function(a){for(var b,c=1;c<arguments.length;c++){ for(var d in b=arguments[c], b){ Object.prototype.hasOwnProperty.call(b,d)&&(a[d]=b[d]); } }return a};
- var SUPPORTED_FORMATS=['IMG'];
- var KEY_ESC=27;
- var KEY_Q=81;
- var CANCEL_KEYS=[KEY_ESC,KEY_Q];
- var isSupported=function(a){return-1<SUPPORTED_FORMATS.indexOf(a.tagName)};
- var isScaled=function(a){return a.naturalWidth!==a.width};
- var isListOrCollection=function(a){return NodeList.prototype.isPrototypeOf(a)||HTMLCollection.prototype.isPrototypeOf(a)};
- var isNode=function(a){return a&&1===a.nodeType};
- var mediumZoom=function(a){var b=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{},c=b.margin,d=void 0===c?0:c,e=b.background,f=void 0===e?'#fff':e,g=b.scrollOffset,h=void 0===g?48:g,i=b.metaClick,j=b.container,k=b.template,l=function(a){var b=a.getBoundingClientRect(),c=b.top,d=b.left,e=b.width,f=b.height,g=a.cloneNode(),h=window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop||0,i=window.pageXOffset||document.documentElement.scrollLeft||document.body.scrollLeft||0;return g.removeAttribute('id'), g.style.position='absolute', g.style.top=c+h+'px', g.style.left=d+i+'px', g.style.width=e+'px', g.style.height=f+'px', g.style.transform='', g},m=function(a){var b=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{bubbles:!1,cancelable:!1,detail:void 0};if('function'==typeof window.CustomEvent){ return new CustomEvent(a,b); }var c=document.createEvent('CustomEvent');return c.initCustomEvent(a,b.bubbles,b.cancelable,b.detail), c},n=function(){if(z.original){if(z.original.dispatchEvent(m('show')), A=window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop||0, B=!0, z.zoomed=l(z.original), document.body.appendChild(y), w.template){var a=isNode(w.template)?w.template:document.querySelector(w.template);z.template=document.createElement('div'), z.template.appendChild(a.content.cloneNode(!0)), document.body.appendChild(z.template);}if(document.body.appendChild(z.zoomed), requestAnimationFrame(function(){document.body.classList.add('medium-zoom--open');}), z.original.style.visibility='hidden', z.zoomed.classList.add('medium-zoom-image--open'), z.zoomed.addEventListener('click',o), z.zoomed.addEventListener('transitionend',r), z.original.getAttribute('data-zoom-target')){z.zoomedHd=z.zoomed.cloneNode(), z.zoomedHd.src=z.zoomed.getAttribute('data-zoom-target'), z.zoomedHd.onerror=function(){clearInterval(b), console.error('Unable to reach the zoom image target '+z.zoomedHd.src), z.zoomedHd=null, v();};var b=setInterval(function(){z.zoomedHd.naturalWidth&&(clearInterval(b), z.zoomedHd.classList.add('medium-zoom-image--open'), z.zoomedHd.addEventListener('click',o), document.body.appendChild(z.zoomedHd), v());},10);}else { v(); }}},o=function a(){var b=0<arguments.length&&void 0!==arguments[0]?arguments[0]:0,c=function(){B||!z.original||(z.original.dispatchEvent(m('hide')), B=!0, document.body.classList.remove('medium-zoom--open'), z.zoomed.style.transform='', z.zoomedHd&&(z.zoomedHd.style.transform='', z.zoomedHd.removeEventListener('click',a)), z.template&&(z.template.style.transition='opacity 150ms', z.template.style.opacity=0), z.zoomed.removeEventListener('click',a), z.zoomed.addEventListener('transitionend',s));};0<b?setTimeout(c,b):c();},p=function(a){a&&a.target?(z.original=a.target, n()):z.original?o():(z.original=x[0], n());},q=function(a){return(a.metaKey||a.ctrlKey)&&w.metaClick?window.open(a.target.getAttribute('data-original')||a.target.parentNode.href||a.target.src,'_blank'):void(a.preventDefault(), p(a))},r=function a(){B=!1, z.zoomed.removeEventListener('transitionend',a), z.original.dispatchEvent(m('shown'));},s=function a(){z.original&&(z.original.style.visibility='', document.body.removeChild(z.zoomed), z.zoomedHd&&document.body.removeChild(z.zoomedHd), document.body.removeChild(y), z.zoomed.classList.remove('medium-zoom-image--open'), z.template&&document.body.removeChild(z.template), B=!1, z.zoomed.removeEventListener('transitionend',a), z.original.dispatchEvent(m('hidden')), z.original=null, z.zoomed=null, z.zoomedHd=null, z.template=null);},t=function(){if(!B&&z.original){var a=window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop||0;Math.abs(A-a)>w.scrollOffset&&o(150);}},u=function(a){-1<CANCEL_KEYS.indexOf(a.keyCode||a.which)&&o();},v=function(){var a=Math.min;if(z.original){var b,c,d={width:window.innerWidth,height:window.innerHeight,left:0,top:0,right:0,bottom:0};if(w.container){ if(w.container instanceof Object){ _extends(d,w.container), b=d.width-d.left-d.right-2*w.margin, c=d.height-d.top-d.bottom-2*w.margin; }else{var e=isNode(w.container)?w.container:document.querySelector(w.container),f=e.getBoundingClientRect(),g=f.width,h=f.height,i=f.left,j=f.top;_extends(d,{width:g,height:h,left:i,top:j});} }b=b||d.width-2*w.margin, c=c||d.height-2*w.margin;var k=z.zoomedHd||z.original,l=k.naturalWidth,m=void 0===l?b:l,n=k.naturalHeight,o=void 0===n?c:n,p=k.getBoundingClientRect(),q=p.top,r=p.left,s=p.width,t=p.height,u=a(m,b)/s,v=a(o,c)/t,x=a(u,v)||1,y=(-r+(b-s)/2+w.margin+d.left)/x,A=(-q+(c-t)/2+w.margin+d.top)/x,B='scale('+x+') translate3d('+y+'px, '+A+'px, 0)';z.zoomed.style.transform=B, z.zoomedHd&&(z.zoomedHd.style.transform=B);}},w={margin:d,background:f,scrollOffset:h,metaClick:void 0===i||i,container:j,template:k};a instanceof Object&&_extends(w,a);var x=function(a){try{return Array.isArray(a)?a.filter(isSupported):isListOrCollection(a)?Array.apply(null,a).filter(isSupported):isNode(a)?[a].filter(isSupported):'string'==typeof a?Array.apply(null,document.querySelectorAll(a)).filter(isSupported):Array.apply(null,document.querySelectorAll(SUPPORTED_FORMATS.map(function(a){return a.toLowerCase()}).join(','))).filter(isScaled)}catch(a){throw new TypeError('The provided selector is invalid.\nExpects a CSS selector, a Node element, a NodeList, an HTMLCollection or an array.\nSee: https://github.com/francoischalifour/medium-zoom')}}(a),y=function(a){var b=document.createElement('div');return b.classList.add('medium-zoom-overlay'), b.style.backgroundColor=a, b}(w.background),z={original:null,zoomed:null,zoomedHd:null,template:null},A=0,B=!1;return x.forEach(function(a){a.classList.add('medium-zoom-image'), a.addEventListener('click',q);}), y.addEventListener('click',o), document.addEventListener('scroll',t), document.addEventListener('keyup',u), window.addEventListener('resize',o), {show:p,hide:o,toggle:p,update:function(){var a=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return a.background&&(y.style.backgroundColor=a.background), a.container&&a.container instanceof Object&&(a.container=_extends({},w.container,a.container)), _extends(w,a)},addEventListeners:function(a,b){x.forEach(function(c){c.addEventListener(a,b);});},detach:function(){z.zoomed&&o();var a=m('detach');x.forEach(function(b){b.classList.remove('medium-zoom-image'), b.removeEventListener('click',q), b.dispatchEvent(a);}), x.splice(0,x.length), y.removeEventListener('click',o), document.removeEventListener('scroll',t), document.removeEventListener('keyup',u), window.removeEventListener('resize',o);},images:x,options:w}};
- var mediumZoom$1=Object.freeze({default:mediumZoom});function styleInject(a,b){void 0===b&&(b={});var c=b.insertAt;if(a&&'undefined'!=typeof document){var d=document.head||document.getElementsByTagName('head')[0],e=document.createElement('style');e.type='text/css', 'top'===c?d.firstChild?d.insertBefore(e,d.firstChild):d.appendChild(e):d.appendChild(e), e.styleSheet?e.styleSheet.cssText=a:e.appendChild(document.createTextNode(a));}}var css='.medium-zoom-overlay{position:fixed;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity .3s;will-change:opacity}.medium-zoom--open .medium-zoom-overlay{cursor:pointer;cursor:zoom-out;opacity:1}.medium-zoom-image{cursor:pointer;cursor:zoom-in;transition:transform .3s}.medium-zoom-image--open{position:relative;cursor:pointer;cursor:zoom-out;will-change:transform}';styleInject(css);var mediumZoom$2=mediumZoom$1&&mediumZoom||mediumZoom$1; var src=mediumZoom$2;
-
-var matchesSelector = Element.prototype.matches || Element.prototype.webkitMatchesSelector || Element.prototype.msMatchesSelector;
-
-function install(hook) {
-  var zoom;
-
-  hook.doneEach(function (_) {
-    var elms = Array.apply(null, document.querySelectorAll('.markdown-section img:not(.emoji):not([data-no-zoom])'));
-
-    elms = elms.filter(function (elm) { return matchesSelector.call(elm, 'a img') === false; });
-
-    if (zoom) {
-      zoom.detach();
+/*!
+ * Docsify Plugin: zoom-image v5.0.0
+ * https://docsify.js.org
+ * (c) 2017-2026
+ * MIT license
+ */
+(function() {
+    "use strict";
+    /*! medium-zoom 1.1.0 | MIT License | https://github.com/francoischalifour/medium-zoom */    var _extends = Object.assign || function(target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = arguments[i];
+            for (var key in source) {
+                if (Object.prototype.hasOwnProperty.call(source, key)) {
+                    target[key] = source[key];
+                }
+            }
+        }
+        return target;
+    };
+    var isSupported = function isSupported(node) {
+        return node.tagName === "IMG";
+    };
+    var isNodeList = function isNodeList(selector) {
+        return NodeList.prototype.isPrototypeOf(selector);
+    };
+    var isNode = function isNode(selector) {
+        return selector && selector.nodeType === 1;
+    };
+    var isSvg = function isSvg(image) {
+        var source = image.currentSrc || image.src;
+        return source.substr(-4).toLowerCase() === ".svg";
+    };
+    var getImagesFromSelector = function getImagesFromSelector(selector) {
+        try {
+            if (Array.isArray(selector)) {
+                return selector.filter(isSupported);
+            }
+            if (isNodeList(selector)) {
+                return [].slice.call(selector).filter(isSupported);
+            }
+            if (isNode(selector)) {
+                return [ selector ].filter(isSupported);
+            }
+            if (typeof selector === "string") {
+                return [].slice.call(document.querySelectorAll(selector)).filter(isSupported);
+            }
+            return [];
+        } catch (err) {
+            throw new TypeError("The provided selector is invalid.\n" + "Expects a CSS selector, a Node element, a NodeList or an array.\n" + "See: https://github.com/francoischalifour/medium-zoom");
+        }
+    };
+    var createOverlay = function createOverlay(background) {
+        var overlay = document.createElement("div");
+        overlay.classList.add("medium-zoom-overlay");
+        overlay.style.background = background;
+        return overlay;
+    };
+    var cloneTarget = function cloneTarget(template) {
+        var _template$getBounding = template.getBoundingClientRect(), top = _template$getBounding.top, left = _template$getBounding.left, width = _template$getBounding.width, height = _template$getBounding.height;
+        var clone = template.cloneNode();
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+        clone.removeAttribute("id");
+        clone.style.position = "absolute";
+        clone.style.top = top + scrollTop + "px";
+        clone.style.left = left + scrollLeft + "px";
+        clone.style.width = width + "px";
+        clone.style.height = height + "px";
+        clone.style.transform = "";
+        return clone;
+    };
+    var createCustomEvent = function createCustomEvent(type, params) {
+        var eventParams = _extends({
+            bubbles: false,
+            cancelable: false,
+            detail: undefined
+        }, params);
+        if (typeof window.CustomEvent === "function") {
+            return new CustomEvent(type, eventParams);
+        }
+        var customEvent = document.createEvent("CustomEvent");
+        customEvent.initCustomEvent(type, eventParams.bubbles, eventParams.cancelable, eventParams.detail);
+        return customEvent;
+    };
+    var mediumZoom = function mediumZoom(selector) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var Promise = window.Promise || function Promise(fn) {
+            function noop() {}
+            fn(noop, noop);
+        };
+        var _handleClick = function _handleClick(event) {
+            var target = event.target;
+            if (target === overlay) {
+                close();
+                return;
+            }
+            if (images.indexOf(target) === -1) {
+                return;
+            }
+            toggle({
+                target: target
+            });
+        };
+        var _handleScroll = function _handleScroll() {
+            if (isAnimating || !active.original) {
+                return;
+            }
+            var currentScroll = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            if (Math.abs(scrollTop - currentScroll) > zoomOptions.scrollOffset) {
+                setTimeout(close, 150);
+            }
+        };
+        var _handleKeyUp = function _handleKeyUp(event) {
+            var key = event.key || event.keyCode;
+            if (key === "Escape" || key === "Esc" || key === 27) {
+                close();
+            }
+        };
+        var update = function update() {
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var newOptions = options;
+            if (options.background) {
+                overlay.style.background = options.background;
+            }
+            if (options.container && options.container instanceof Object) {
+                newOptions.container = _extends({}, zoomOptions.container, options.container);
+            }
+            if (options.template) {
+                var template = isNode(options.template) ? options.template : document.querySelector(options.template);
+                newOptions.template = template;
+            }
+            zoomOptions = _extends({}, zoomOptions, newOptions);
+            images.forEach((function(image) {
+                image.dispatchEvent(createCustomEvent("medium-zoom:update", {
+                    detail: {
+                        zoom: zoom
+                    }
+                }));
+            }));
+            return zoom;
+        };
+        var clone = function clone() {
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            return mediumZoom(_extends({}, zoomOptions, options));
+        };
+        var attach = function attach() {
+            for (var _len = arguments.length, selectors = Array(_len), _key = 0; _key < _len; _key++) {
+                selectors[_key] = arguments[_key];
+            }
+            var newImages = selectors.reduce((function(imagesAccumulator, currentSelector) {
+                return [].concat(imagesAccumulator, getImagesFromSelector(currentSelector));
+            }), []);
+            newImages.filter((function(newImage) {
+                return images.indexOf(newImage) === -1;
+            })).forEach((function(newImage) {
+                images.push(newImage);
+                newImage.classList.add("medium-zoom-image");
+            }));
+            eventListeners.forEach((function(_ref) {
+                var type = _ref.type, listener = _ref.listener, options = _ref.options;
+                newImages.forEach((function(image) {
+                    image.addEventListener(type, listener, options);
+                }));
+            }));
+            return zoom;
+        };
+        var detach = function detach() {
+            for (var _len2 = arguments.length, selectors = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                selectors[_key2] = arguments[_key2];
+            }
+            if (active.zoomed) {
+                close();
+            }
+            var imagesToDetach = selectors.length > 0 ? selectors.reduce((function(imagesAccumulator, currentSelector) {
+                return [].concat(imagesAccumulator, getImagesFromSelector(currentSelector));
+            }), []) : images;
+            imagesToDetach.forEach((function(image) {
+                image.classList.remove("medium-zoom-image");
+                image.dispatchEvent(createCustomEvent("medium-zoom:detach", {
+                    detail: {
+                        zoom: zoom
+                    }
+                }));
+            }));
+            images = images.filter((function(image) {
+                return imagesToDetach.indexOf(image) === -1;
+            }));
+            return zoom;
+        };
+        var on = function on(type, listener) {
+            var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+            images.forEach((function(image) {
+                image.addEventListener("medium-zoom:" + type, listener, options);
+            }));
+            eventListeners.push({
+                type: "medium-zoom:" + type,
+                listener: listener,
+                options: options
+            });
+            return zoom;
+        };
+        var off = function off(type, listener) {
+            var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+            images.forEach((function(image) {
+                image.removeEventListener("medium-zoom:" + type, listener, options);
+            }));
+            eventListeners = eventListeners.filter((function(eventListener) {
+                return !(eventListener.type === "medium-zoom:" + type && eventListener.listener.toString() === listener.toString());
+            }));
+            return zoom;
+        };
+        var open = function open() {
+            var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {}, target = _ref2.target;
+            var _animate = function _animate() {
+                var container = {
+                    width: document.documentElement.clientWidth,
+                    height: document.documentElement.clientHeight,
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0
+                };
+                var viewportWidth = void 0;
+                var viewportHeight = void 0;
+                if (zoomOptions.container) {
+                    if (zoomOptions.container instanceof Object) {
+                        container = _extends({}, container, zoomOptions.container);
+                        viewportWidth = container.width - container.left - container.right - zoomOptions.margin * 2;
+                        viewportHeight = container.height - container.top - container.bottom - zoomOptions.margin * 2;
+                    } else {
+                        var zoomContainer = isNode(zoomOptions.container) ? zoomOptions.container : document.querySelector(zoomOptions.container);
+                        var _zoomContainer$getBou = zoomContainer.getBoundingClientRect(), _width = _zoomContainer$getBou.width, _height = _zoomContainer$getBou.height, _left = _zoomContainer$getBou.left, _top = _zoomContainer$getBou.top;
+                        container = _extends({}, container, {
+                            width: _width,
+                            height: _height,
+                            left: _left,
+                            top: _top
+                        });
+                    }
+                }
+                viewportWidth = viewportWidth || container.width - zoomOptions.margin * 2;
+                viewportHeight = viewportHeight || container.height - zoomOptions.margin * 2;
+                var zoomTarget = active.zoomedHd || active.original;
+                var naturalWidth = isSvg(zoomTarget) ? viewportWidth : zoomTarget.naturalWidth || viewportWidth;
+                var naturalHeight = isSvg(zoomTarget) ? viewportHeight : zoomTarget.naturalHeight || viewportHeight;
+                var _zoomTarget$getBoundi = zoomTarget.getBoundingClientRect(), top = _zoomTarget$getBoundi.top, left = _zoomTarget$getBoundi.left, width = _zoomTarget$getBoundi.width, height = _zoomTarget$getBoundi.height;
+                var scaleX = Math.min(Math.max(width, naturalWidth), viewportWidth) / width;
+                var scaleY = Math.min(Math.max(height, naturalHeight), viewportHeight) / height;
+                var scale = Math.min(scaleX, scaleY);
+                var translateX = (-left + (viewportWidth - width) / 2 + zoomOptions.margin + container.left) / scale;
+                var translateY = (-top + (viewportHeight - height) / 2 + zoomOptions.margin + container.top) / scale;
+                var transform = "scale(" + scale + ") translate3d(" + translateX + "px, " + translateY + "px, 0)";
+                active.zoomed.style.transform = transform;
+                if (active.zoomedHd) {
+                    active.zoomedHd.style.transform = transform;
+                }
+            };
+            return new Promise((function(resolve) {
+                if (target && images.indexOf(target) === -1) {
+                    resolve(zoom);
+                    return;
+                }
+                var _handleOpenEnd = function _handleOpenEnd() {
+                    isAnimating = false;
+                    active.zoomed.removeEventListener("transitionend", _handleOpenEnd);
+                    active.original.dispatchEvent(createCustomEvent("medium-zoom:opened", {
+                        detail: {
+                            zoom: zoom
+                        }
+                    }));
+                    resolve(zoom);
+                };
+                if (active.zoomed) {
+                    resolve(zoom);
+                    return;
+                }
+                if (target) {
+                    active.original = target;
+                } else if (images.length > 0) {
+                    var _images = images;
+                    active.original = _images[0];
+                } else {
+                    resolve(zoom);
+                    return;
+                }
+                active.original.dispatchEvent(createCustomEvent("medium-zoom:open", {
+                    detail: {
+                        zoom: zoom
+                    }
+                }));
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                isAnimating = true;
+                active.zoomed = cloneTarget(active.original);
+                document.body.appendChild(overlay);
+                if (zoomOptions.template) {
+                    var template = isNode(zoomOptions.template) ? zoomOptions.template : document.querySelector(zoomOptions.template);
+                    active.template = document.createElement("div");
+                    active.template.appendChild(template.content.cloneNode(true));
+                    document.body.appendChild(active.template);
+                }
+                if (active.original.parentElement && active.original.parentElement.tagName === "PICTURE" && active.original.currentSrc) {
+                    active.zoomed.src = active.original.currentSrc;
+                }
+                document.body.appendChild(active.zoomed);
+                window.requestAnimationFrame((function() {
+                    document.body.classList.add("medium-zoom--opened");
+                }));
+                active.original.classList.add("medium-zoom-image--hidden");
+                active.zoomed.classList.add("medium-zoom-image--opened");
+                active.zoomed.addEventListener("click", close);
+                active.zoomed.addEventListener("transitionend", _handleOpenEnd);
+                if (active.original.getAttribute("data-zoom-src")) {
+                    active.zoomedHd = active.zoomed.cloneNode();
+                    active.zoomedHd.removeAttribute("srcset");
+                    active.zoomedHd.removeAttribute("sizes");
+                    active.zoomedHd.removeAttribute("loading");
+                    active.zoomedHd.src = active.zoomed.getAttribute("data-zoom-src");
+                    active.zoomedHd.onerror = function() {
+                        clearInterval(getZoomTargetSize);
+                        console.warn("Unable to reach the zoom image target " + active.zoomedHd.src);
+                        active.zoomedHd = null;
+                        _animate();
+                    };
+                    var getZoomTargetSize = setInterval((function() {
+                        if (active.zoomedHd.complete) {
+                            clearInterval(getZoomTargetSize);
+                            active.zoomedHd.classList.add("medium-zoom-image--opened");
+                            active.zoomedHd.addEventListener("click", close);
+                            document.body.appendChild(active.zoomedHd);
+                            _animate();
+                        }
+                    }), 10);
+                } else if (active.original.hasAttribute("srcset")) {
+                    active.zoomedHd = active.zoomed.cloneNode();
+                    active.zoomedHd.removeAttribute("sizes");
+                    active.zoomedHd.removeAttribute("loading");
+                    var loadEventListener = active.zoomedHd.addEventListener("load", (function() {
+                        active.zoomedHd.removeEventListener("load", loadEventListener);
+                        active.zoomedHd.classList.add("medium-zoom-image--opened");
+                        active.zoomedHd.addEventListener("click", close);
+                        document.body.appendChild(active.zoomedHd);
+                        _animate();
+                    }));
+                } else {
+                    _animate();
+                }
+            }));
+        };
+        var close = function close() {
+            return new Promise((function(resolve) {
+                if (isAnimating || !active.original) {
+                    resolve(zoom);
+                    return;
+                }
+                var _handleCloseEnd = function _handleCloseEnd() {
+                    active.original.classList.remove("medium-zoom-image--hidden");
+                    document.body.removeChild(active.zoomed);
+                    if (active.zoomedHd) {
+                        document.body.removeChild(active.zoomedHd);
+                    }
+                    document.body.removeChild(overlay);
+                    active.zoomed.classList.remove("medium-zoom-image--opened");
+                    if (active.template) {
+                        document.body.removeChild(active.template);
+                    }
+                    isAnimating = false;
+                    active.zoomed.removeEventListener("transitionend", _handleCloseEnd);
+                    active.original.dispatchEvent(createCustomEvent("medium-zoom:closed", {
+                        detail: {
+                            zoom: zoom
+                        }
+                    }));
+                    active.original = null;
+                    active.zoomed = null;
+                    active.zoomedHd = null;
+                    active.template = null;
+                    resolve(zoom);
+                };
+                isAnimating = true;
+                document.body.classList.remove("medium-zoom--opened");
+                active.zoomed.style.transform = "";
+                if (active.zoomedHd) {
+                    active.zoomedHd.style.transform = "";
+                }
+                if (active.template) {
+                    active.template.style.transition = "opacity 150ms";
+                    active.template.style.opacity = 0;
+                }
+                active.original.dispatchEvent(createCustomEvent("medium-zoom:close", {
+                    detail: {
+                        zoom: zoom
+                    }
+                }));
+                active.zoomed.addEventListener("transitionend", _handleCloseEnd);
+            }));
+        };
+        var toggle = function toggle() {
+            var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {}, target = _ref3.target;
+            if (active.original) {
+                return close();
+            }
+            return open({
+                target: target
+            });
+        };
+        var getOptions = function getOptions() {
+            return zoomOptions;
+        };
+        var getImages = function getImages() {
+            return images;
+        };
+        var getZoomedImage = function getZoomedImage() {
+            return active.original;
+        };
+        var images = [];
+        var eventListeners = [];
+        var isAnimating = false;
+        var scrollTop = 0;
+        var zoomOptions = options;
+        var active = {
+            original: null,
+            zoomed: null,
+            zoomedHd: null,
+            template: null
+        };
+        if (Object.prototype.toString.call(selector) === "[object Object]") {
+            zoomOptions = selector;
+        } else if (selector || typeof selector === "string") {
+            attach(selector);
+        }
+        zoomOptions = _extends({
+            margin: 0,
+            background: "#fff",
+            scrollOffset: 40,
+            container: null,
+            template: null
+        }, zoomOptions);
+        var overlay = createOverlay(zoomOptions.background);
+        document.addEventListener("click", _handleClick);
+        document.addEventListener("keyup", _handleKeyUp);
+        document.addEventListener("scroll", _handleScroll);
+        window.addEventListener("resize", close);
+        var zoom = {
+            open: open,
+            close: close,
+            toggle: toggle,
+            update: update,
+            clone: clone,
+            attach: attach,
+            detach: detach,
+            on: on,
+            off: off,
+            getOptions: getOptions,
+            getImages: getImages,
+            getZoomedImage: getZoomedImage
+        };
+        return zoom;
+    };
+    function styleInject(css, ref) {
+        if (ref === void 0) ref = {};
+        var insertAt = ref.insertAt;
+        if (typeof document === "undefined") {
+            return;
+        }
+        var head = document.head || document.getElementsByTagName("head")[0];
+        var style = document.createElement("style");
+        style.type = "text/css";
+        if (insertAt === "top") {
+            if (head.firstChild) {
+                head.insertBefore(style, head.firstChild);
+            } else {
+                head.appendChild(style);
+            }
+        } else {
+            head.appendChild(style);
+        }
+        if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
     }
-
-    zoom = src(elms);
-  });
-}
-
-$docsify.plugins = [].concat(install, $docsify.plugins);
-
-}());
+    var css = ".medium-zoom-overlay{position:fixed;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity .3s;will-change:opacity}.medium-zoom--opened .medium-zoom-overlay{cursor:pointer;cursor:zoom-out;opacity:1}.medium-zoom-image{cursor:pointer;cursor:zoom-in;transition:transform .3s cubic-bezier(.2,0,.2,1)!important}.medium-zoom-image--hidden{visibility:hidden}.medium-zoom-image--opened{position:relative;cursor:pointer;cursor:zoom-out;will-change:transform}";
+    styleInject(css);
+    function install(hook) {
+        let zoom;
+        hook.doneEach((_ => {
+            let elms = Array.from(document.querySelectorAll(".markdown-section img:not(.emoji):not([data-no-zoom])"));
+            Docsify.dom.style(`.medium-zoom-image--opened,.medium-zoom-overlay{z-index:999}`);
+            elms = elms.filter((elm => !elm.matches("a img")));
+            if (zoom) {
+                zoom.detach();
+            }
+            zoom = mediumZoom(elms, {
+                background: "var(--color-bg)"
+            });
+        }));
+    }
+    window.$docsify = window.$docsify || {};
+    window.$docsify.plugins = [ install, ...window.$docsify.plugins || [] ];
+})();
