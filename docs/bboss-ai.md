@@ -732,7 +732,11 @@ chatAgentMessage.setModel("deepseek-v4-pro")
        .setPrompt(question);
 ```
 
-### 3.7 与spring boot 集成
+### 3.7 技能使用
+
+bboss提供了完备的技能支持，使用参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-skills
+
+### 3.8 与spring boot 集成
 
 本节介绍bboss ai与spring boot集成，实现智能体问答功能。
 
@@ -2375,22 +2379,100 @@ AIParrelAgent aiParrelAgent = new AIParrelAgent(aiPlanAgent) {
 };
 ```
 
-#### 14.3.4 动态构建并行子智能体
+#### 14.3.4 动态构建流程子智能体
 
-智能体框架工作流可以根据任务参数，通过接口DynamicNodeBuilder动态构建并行智能体的并行分支：
+智能体框架工作流可以根据任务参数，通过接口DynamicNodeBuilder动态构建：
+
+- 并行智能体的并行分支子流程
+
+- 串行智能体子流程
 
 ```java
 org.frameworkset.tran.jobflow.builder.DynamicNodeBuilder
 ```
 
+##### 14.3.4.1 动态构建并行子智能体
+
 示例如下：
 
 ```java
-//构建并行智能体
-          AIParrelAgent aiParrelAgent = new AIParrelAgent(planAgent).setAgentId("provincesParrelAgent").setAgentName("中国省份介绍并行智能体");
+//需要提供一个动态并行智能体类型，根据提供的省份信息，动态生成并行智能体
+			//构建并行智能体
+			AIParrelAgent provincesParrelAgent = new AIParrelAgent(planAgent).setAgentId("provincesParrelAgent").setAgentName("中国省份介绍并行智能体");
+			//动态创建并行子智能体
+			provincesParrelAgent.setDynamicNodeBuilder(new DynamicNodeBuilder() {
+			 
+				private boolean needCreateFeishu(String province,List<String> feishuProvinces){
+					if(feishuProvinces == null || feishuProvinces.size() == 0)
+						return false;
+					for(String feishuProvince: feishuProvinces) {
+						if (province.equals(feishuProvince))
+							return true;
+					}
+					return false;
+				}
+				@Override
+				public void nodeBuilder( JobFlowNodeExecuteContext jobFlowNodeExecuteContext){
+//					ChatObject chatObject = AgentTraceHolder.getChatObject();
+					List<String> provinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("provinces");
+					List<String> feishuProvinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("feishuProvinces");
+					for(String province: provinces){
+						StringBuilder prompt = new StringBuilder();
+						prompt.append("请用200字介绍").append(province).append("。");
+						if(!needCreateFeishu( province, feishuProvinces)) {
+							provincesParrelAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("介绍" + province));
+						}
+						else{
+							AISequenceAgent hunanSequenceAgent = new AISequenceAgent(planAgent).setAgentId(province+"介绍及报告任务").setAgentName(province+"介绍及报告任务");
+							
+							hunanSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("用200字介绍" + province));
+							hunanSequenceAgent.addAgent(new AIFlowNodeVoid() {
+								@Override
+								public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+									ServerEventUtil.emitterStepEvent(this);
+								}
+							});
+							AINodeAgent feishuAgent = new AINodeAgent( "根据"+province+"介绍，创建一份详细的飞书报告。请用清晰的中文输出。约束：创建飞书文档前需要调用工具hitlTaskTool，经人工确认后才能创建，否则不能创建。" )
+									.setAgentName("创建"+province+"介绍报告")
+									.setAgentId("create"+province+"FeishuDoc")
+									.registBeanTool(new HitlTaskcallTool().setTimeoutAction(HitlTaskcallTool.TIMEOUT_ACTION_CONTINUE).setHitlTaskTimeout(60000L))
+									.setToolsRegist(feishuMcpToolsRegist).setToolSearcher(new KeywordToolSearcher("人工介入工具","创建飞书云文档"));
+							feishuAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
+							feishuAgent.setMaxLoopToolCalls(80);//限定最大论次
+							hunanSequenceAgent.addAgent(feishuAgent);
+							provincesParrelAgent.addAgent(hunanSequenceAgent);
+						}
+					}
+					
+				}
+			});
+ 
+			chinaProvinceSequenceAgent.addConditionFlowNode(provincesParrelAgent, new TriggerScriptAPI() {
+				@Override
+				public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+					// 判断是否启用并行模式，只有并行模式才执行，否则不执行
+					Boolean parallelMode = (Boolean) nodeTriggerContext.getContainerContextData("parallelMode");
+					if(parallelMode != null && !parallelMode){
+						return false;
+					}
+					// 判断是否包含省份信息，只有包含省份信息才执行，否则不执行
+					List<String> provinces = (List<String>)nodeTriggerContext.getContainerContextData("provinces");
+					if(provinces != null && provinces.size() > 0)
+						return true;
+					return false;
+				}
+			});
+```
+
+##### 14.3.4.2 动态构建串行子智能体
+
+示例如下：
+
+```java
+AISequenceAgent provincesSequenceAgent = new AISequenceAgent(planAgent).setAgentId("provincesSequenceAgent").setAgentName("中国省份介绍串行智能体");
           //动态创建并行子智能体
-          aiParrelAgent.setDynamicNodeBuilder(new DynamicNodeBuilder() {
-           
+          provincesSequenceAgent.setDynamicNodeBuilder(new DynamicNodeBuilder() {
+             
              private boolean needCreateFeishu(String province,List<String> feishuProvinces){
                 if(feishuProvinces == null || feishuProvinces.size() == 0)
                    return false;
@@ -2405,17 +2487,31 @@ org.frameworkset.tran.jobflow.builder.DynamicNodeBuilder
 //              ChatObject chatObject = AgentTraceHolder.getChatObject();
                 List<String> provinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("provinces");
                 List<String> feishuProvinces = (List<String>) jobFlowNodeExecuteContext.getContainerJobFlowNodeContextData("feishuProvinces");
+                int i = 0;
                 for(String province: provinces){
                    StringBuilder prompt = new StringBuilder();
-                   prompt.append("请用500字介绍").append(province).append("。");
+                   prompt.append("请用200字介绍").append(province).append("。");
+                   if(i > 0){
+                      provincesSequenceAgent.addAgent(new AIFlowNodeVoid() {
+                         @Override
+                         public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                               ServerEventUtil.emitterStepEvent(this);
+                         }
+                      });
+                   }
                    if(!needCreateFeishu( province, feishuProvinces)) {
-                      aiParrelAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("介绍" + province));
+                      provincesSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("介绍" + province));
                    }
                    else{
                       AISequenceAgent hunanSequenceAgent = new AISequenceAgent(planAgent).setAgentId(province+"介绍及报告任务").setAgentName(province+"介绍及报告任务");
                       
-                      hunanSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("用500字介绍" + province));
-                      
+                      hunanSequenceAgent.addAgent(new UserNodeAgent(prompt.toString()).setAgentId("介绍" + province).setAgentName("用200字介绍" + province));
+                      hunanSequenceAgent.addAgent(new AIFlowNodeVoid() {
+                         @Override
+                         public void call(JobFlowNodeExecuteContext jobFlowNodeExecuteContext) {
+                            ServerEventUtil.emitterStepEvent(this);
+                         }
+                      });
                       AINodeAgent feishuAgent = new AINodeAgent( "根据"+province+"介绍，创建一份详细的飞书报告。请用清晰的中文输出。约束：创建飞书文档前需要调用工具hitlTaskTool，经人工确认后才能创建，否则不能创建。" )
                             .setAgentName("创建"+province+"介绍报告")
                             .setAgentId("create"+province+"FeishuDoc")
@@ -2424,10 +2520,26 @@ org.frameworkset.tran.jobflow.builder.DynamicNodeBuilder
                       feishuAgent.setEnableLoopToolCall(true);//启用智能体多次调用工具机制
                       feishuAgent.setMaxLoopToolCalls(80);//限定最大论次
                       hunanSequenceAgent.addAgent(feishuAgent);
-                      aiParrelAgent.addAgent(hunanSequenceAgent);
+                      provincesSequenceAgent.addAgent(hunanSequenceAgent);
                    }
+                   i++;
                 }
                 
+             }
+          });
+          chinaProvinceSequenceAgent.addConditionFlowNode(provincesSequenceAgent, new TriggerScriptAPI() {
+             @Override
+             public boolean needTrigger(NodeTriggerContext nodeTriggerContext) throws Exception {
+                // 判断是否启用串行模式，只有串行模式才执行，否则不执行
+                Boolean parallelMode = (Boolean) nodeTriggerContext.getContainerContextData("parallelMode");
+                if(parallelMode == null || parallelMode){
+                   return false;
+                }
+                // 判断是否包含省份信息，只有包含省份信息才执行，否则不执行
+                List<String> provinces = (List<String>)nodeTriggerContext.getContainerContextData("provinces");
+                if(provinces != null && provinces.size() > 0)
+                   return true;
+                return false;
              }
           });
 ```
