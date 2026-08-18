@@ -1535,7 +1535,119 @@ sqlite作为一个本地单线程文件数据库，可能在一些场景下无�
 
 bboss支持将增量状态保存到其他关系数据库中（譬如mysql），具体的配置方法如下：
 
-[保存增量状态的数据源配置](https://esdoc.bbossgroups.com/#/db-es-datasyn?id=_6-%e4%bf%9d%e5%ad%98%e5%a2%9e%e9%87%8f%e7%8a%b6%e6%80%81%e7%9a%84%e6%95%b0%e6%8d%ae%e6%ba%90%e9%85%8d%e7%bd%ae)
+先初始化一个数据源：在系统初始化时启动即可
+
+```java
+SQLUtil.startPool("testds",//数据源名称
+        "com.mysql.cj.jdbc.Driver",//mysql驱动
+        "jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true",//mysql链接串
+        "root","123456",//数据库账号和口令
+        "select 1 " //数据库连接校验sql
+);
+```
+
+设置作业状态数据源：直接指定为上面初始化的数据源名称testds
+
+```java
+importBuilder.setStatusDbname("testds");
+//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab，表会自动创建
+importBuilder.setLastValueStoreTableName("logstable");
+```
+
+以下数据库是自动提供了建表语句：
+
+```properties
+sqlite、mysql、oracle、dm、sqlserver、postgresql
+```
+
+如果需要自定义其他类型数据库的状态管理建表sql语句，可以采用以下两种方式：
+
+方式1 从配置文件中加载
+
+新建配置文件dml.xml
+
+```
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置数据导入的sql
+         ]]>
+    </description>
+    <!--
+      创建状态表
+ -->
+    <property name="createStatusTableName">
+        <![CDATA[
+           CREATE TABLE $statusTableName (ID varchar(100) NOT NULL,lasttime bigint NOT NULL,lastvalue bigint NOT NULL,
+           strLastValue varchar(2000),
+           lastvaluetype INT NOT NULL,
+           status INT ,
+           filePath varchar(500) ,
+           relativeParentDir varchar(500) ,
+           fileId varchar(500) ,
+           jobId varchar(500) ,
+           jobType varchar(500) ,
+           primary key(ID))
+        ]]>
+    </property>
+    <!--
+          创建历史状态表
+     -->
+    <property name="createHistoryStatusTableName">
+        <![CDATA[
+           CREATE TABLE $historyStatusTableName (ID varchar(100),lasttime bigint NOT NULL,lastvalue bigint NOT NULL,
+           strLastValue varchar(2000),
+           lastvaluetype INT NOT NULL,
+           status INT ,
+           filePath varchar(500) ,
+           relativeParentDir varchar(500) ,
+           fileId varchar(500) ,
+           jobId varchar(500) ,
+           jobType varchar(500) ,
+           statusId varchar(100) )
+        ]]>
+    </property>
+</properties>
+```
+
+在代码中配置：
+
+```java
+importBuilder.setStatusDMLXMLFile("dml.xml");
+importBuilder.setStatusTableDML("createStatusTableName");
+importBuilder.setStatusHistoryTableDML("createHistoryStatusTableName");
+```
+
+方式2 直接设置sql：
+
+```java
+String postgresql_createStatusTableSQL = new StringBuilder().append("CREATE TABLE $statusTableName (ID varchar(100) NOT NULL,lasttime bigint NOT NULL,lastvalue bigint NOT NULL," )
+            .append( "strLastValue varchar(2000),")  //增量字段值，存储字符串形式的增量值，比如LocalDateTime
+            .append("lastvaluetype INT NOT NULL,") //值类型 0-数字 1-日期 2-LocalDateTime
+            .append( "status INT ,")  //数据采集完成状态：0-采集中  1-完成  适用于文件日志采集 默认值 0
+            .append( "filePath varchar(500) ,")  //日志文件路径
+            .append( "relativeParentDir varchar(500) ,")  //日志文件子目录相对路径,relativeParentDir,
+            .append( "fileId varchar(500) ,")   //日志文件indoe标识
+            .append( "jobId varchar(500) ,")   //作业id 6.7.7版本新增
+            .append( "jobType varchar(500) ,")   //作业输入插件类型 6.7.7版本新增
+            .append( "primary key(ID))").toString();
+importBuilder.setStatusTableDML(postgresql_createStatusTableSQL);
+
+String postgresql_createHistoryStatusTableSQL = new StringBuilder().append("CREATE TABLE $historyStatusTableName (ID varchar(100),lasttime bigint NOT NULL,lastvalue bigint NOT NULL," )
+            .append( "strLastValue varchar(2000),")  //增量字段值，存储字符串形式的增量值，比如LocalDateTime
+            .append("lastvaluetype INT NOT NULL,") //值类型 0-数字 1-日期 2-LocalDateTime
+            .append( "status INT ,")  //数据采集完成状态：0-采集中  1-完成  适用于文件日志采集 默认值 0
+            .append( "filePath varchar(500) ,")  //日志文件路径
+            .append( "relativeParentDir varchar(500) ,")  //日志文件子目录相对路径,relativeParentDir,
+            .append( "fileId varchar(500) ,")   //日志文件indoe标识
+            .append( "jobId varchar(500) ,")   //作业id 6.7.7版本新增
+            .append( "jobType varchar(500) ,")   //作业输入插件类型 6.7.7版本新增
+            .append( "statusId varchar(100) )").toString(); //状态表中使用的主键标识
+importBuilder.setStatusHistoryTableDML(postgresql_createHistoryStatusTableSQL);
+```
+
+
 
 ##### 4.8.5.9.已完成增量状态记录过期清理机制设置
 

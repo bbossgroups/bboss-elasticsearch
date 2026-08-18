@@ -35,10 +35,6 @@ git clone https://gitee.com/bboss/bboss-http5
 cd bboss-http5
 gradle publishToMavenLocal
 
-git clone https://gitee.com/bboss/bboss-ai
-cd bboss-ai
-gradle publishToMavenLocal
-
 git clone https://gitee.com/bboss/ bboss-plugins
 cd bboss-plugins
 gradle publishToMavenLocal
@@ -49,6 +45,10 @@ gradle publishToMavenLocal
 
 git clone https://gitee.com/bboss/bboss-elastic-tran
 cd bboss-elastic-tran
+gradle publishToMavenLocal
+
+git clone https://gitee.com/bboss/bboss-ai
+cd bboss-ai
 gradle publishToMavenLocal
 ```
 
@@ -62,7 +62,7 @@ https://gitee.com/bboss/bboot
 
 整体构建顺序如下：
 
-bboss-》bboss-data-》bboss-http5-》bboss-ai-》bboss-plugins-》bboss-elastic-》bboss-elastic-tran-》bboss-rpc-》security-》bboot
+bboss-》bboss-data-》bboss-http5-》bboss-plugins-》bboss-elastic-》bboss-elastic-tran-》bboss-ai-》bboss-rpc-》security-》bboot
 
 下面分别介绍：
 

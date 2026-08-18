@@ -1,7 +1,7 @@
 # 多模态AI智能体开发框架使用教程
 ## 一、概述
 
-**bboss-ai** 是一个轻量级 Java AI Agent 开发客户端，基于 Apache HttpClient5、HttpCore5 以及 Project Reactor 构建，提供了对大语言模型（LLM）和多模态模型的统一对接能力，支持同步调用和流式调用两种模式，并内置智能体工作流编排、会话管理、工具搜索等企业级特性。能够快速集成各大主流 AI 模型平台，实现智能问答、图片识别/生成、语音识别/生成、视频识别/生成等功能。![img](images\bboss-ai.png)
+**bboss-ai** 是一个轻量级 Java AI Agent 全栈多模态智能体框架，基于 Apache HttpClient5、HttpCore5 以及 Project Reactor 构建，提供了对大语言模型（LLM）和多模态模型的统一对接能力，支持同步调用和流式调用两种模式，并内置智能体工作流编排、会话管理、工具搜索等企业级特性。能够快速集成各大主流 AI 模型平台，实现智能问答、图片识别/生成、语音识别/生成、视频识别/生成等功能。![img](images\bboss-ai.png)
 
 **ClickHouse 生产级会话存储**：bboss-ai 支持基于 ClickHouse 分布式集群的生产级会话持久化能力。使用时需要指定 ClickHouse 集群名称，并为每个集群节点定义名为 `shard` 和 `replica` 的两个宏变量。ClickHouse 模式下会话续问续答时不会更新最后访问时间（受限于 ClickHouse 不支持高频 UPDATE）。详细使用方式参见 [Clickhouse会话存储管理](#chatper14-122) 章节。
 
@@ -27,7 +27,7 @@
   - 语音识别与合成（Speech-to-Text/Text-to-Speech）
   - 视频识别与生成（Video Understanding/Generation）
 
-- **检索增强生成（RAG）：**内置文本向量化（Embedding）和重排序（Rerank）能力，支持知识库检索增强生成（RAG）
+- **检索增强生成（RAG）**：内置文本向量化（Embedding）和重排序（Rerank）能力，支持知识库检索增强生成（RAG）
 
   - 向量嵌入（Embedding）
   - 重排序（Rerank）
@@ -41,11 +41,11 @@
 
 - **多轮会话**：支持会话长短期记忆管理,会话消息智能压缩；支持多智能体协同通讯和信息共享；子智能体独立会话空间，彼此隔离，互不干扰；支持内存、关系数据库（MySQL、Oracle、达梦 DM、SQL Server、PostgreSQL、SQLite）、Clickhouse多种会话持久化机制，生产级推荐Clickhouse。
 
-- **Hitl（Human-in-the-Loop）：**人工介入功能允许在智能体执行过程中，当遇到需要人工决策的关键节点时，暂停智能体执行并等待人工介入处理，使用参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-hitl
+- **Hitl（Human-in-the-Loop）**：人工介入功能允许在智能体执行过程中，当遇到需要人工决策的关键节点时，暂停智能体执行并等待人工介入处理，使用参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-hitl
 
-- **智能体任务调度：灵活的智能体工作流任务**定时调度执行能力，可制定节假日或或者特定时间段忽略执行策略
+- **智能体任务调度**：灵活的智能体工作流任务定时调度执行能力，可制定节假日或或者特定时间段忽略执行策略
 
-- **全链路监控：**智能体全链路 Trace 可观测性，覆盖 LLM 调用、工具执行、工作流编排；可基于智能体trace api，应用可自主记录智能体流程执行过程中的任何状态信息、数据信息和中间结果信息。
+- **全链路监控**：智能体全链路 Trace 可观测性，覆盖 LLM 调用、工具执行、工作流编排；可基于智能体trace api，应用可自主记录智能体流程执行过程中的任何状态信息、数据信息和中间结果信息。
 
 ### 支持的平台
 
@@ -62,6 +62,8 @@
 - Xinference
 - OpenAI 兼容接口
 - ChatGPT
+
+
 
 ## 二、环境准备
 
@@ -81,7 +83,17 @@
 implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 ```
 
-### 2.3 maas服务配置
+### 2.3 基于源码构建
+
+源码工程
+
+https://gitee.com/bboss/bboss-ai
+
+源码构建指南
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
+### 2.4 maas服务配置
 
 创建配置文件 `application-stream.properties`，配置各模型服务：使用时，需将apiKey替换为实际apiKey
 
@@ -1369,7 +1381,7 @@ AIAgent aiAgent = new AIAgent();
 
 `MCPClient` 实现了 Model Context Protocol 协议客户端，支持两种传输模式：
 
-#### 9.4.1 **核心功能**
+#### 9.4.1 核心功能
 
 - SSE（Server-Sent Events）连接管理（`MCPSSEClient`）
 - Streamable HTTP 连接管理（`MCPStreamableClient`）
@@ -1378,7 +1390,7 @@ AIAgent aiAgent = new AIAgent();
 - 工具调用（tools/call）
 - 飞书 MCP 集成（`FeishuMCPClient`、`FeishuMCPStreamableClient`）
 
-#### 9.4.2 **工作流程**
+#### 9.4.2 工作流程
 
 1. 通过 SSE 端点或 Streamable HTTP 端点建立连接
 2. 接收 endpoint 事件获取 messagePath 和 sessionId
@@ -1386,7 +1398,7 @@ AIAgent aiAgent = new AIAgent();
 4. 发送 notifications/initialized 通知服务端
 5. 正常进行工具列表查询和调用
 
-#### **9.4.3 Spring Boot 客户端集成示例**
+#### 9.4.3 Spring Boot 客户端集成示例
 
 ```java
 // 1. 配置 mcpserver.properties
@@ -1438,7 +1450,7 @@ public class RagQAService {
 }
 ```
 
-#### 9.4.4**配置说明**
+#### 9.4.4mcp客户端配置
 
 | 配置项                                             | 说明                                    |
 | -------------------------------------------------- | --------------------------------------- |
@@ -1449,7 +1461,32 @@ public class RagQAService {
 | `{poolName}.http.extendConfigs.sseendpoint`        | SSE 端点路径（可选）                    |
 | `{poolName}.http.extendConfigs.toolCallRetry = 3`  | 设置mcp调用失败重试次数，不设置则不重试 |
 
-##### 9.4.4.1 失败重试
+##### 9.4.4.1mcp 配置和应用
+
+书旗小说mcp服务配置
+
+```properties
+##shuqi mcp模型服务配置：在代码中引用服务的名称为shuqi
+# 服务连接池参数
+shuqi.http.maxTotal = 200
+shuqi.http.defaultMaxPerRoute = 200
+# shuqi服务地址
+shuqi.http.hosts=https://dashscope.aliyuncs.com
+shuqi.http.apiKeyId = sk-469f01dbb5724d6db4fb2f4
+shuqi.http.extendConfigs.streamableendpoint = /api/v1/mcps/market-cmapi00072981/mcp
+```
+
+配置参考：[bboss-ai/src/test/resources/mcpserver.properties · bboss/bboss-ai - Gitee.com](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/resources/mcpserver.properties)
+
+在智能体中使用mcp服务
+
+```java
+ MCPToolsRegist mcpToolsRegist = null;
+ mcpToolsRegist = new MCPToolsRegist("shuqi");
+ aiAgent.setToolsRegist(mcpToolsRegist);
+```
+
+##### 9.4.4.3 mcp失败重试
 
 设置mcp调用失败重试次数，不设置则不重试
 
@@ -1465,7 +1502,7 @@ http.extendConfigs.toolCallRetry = 3
 feishuMcpToolsRegist.setToolCallRetry(3);
 ```
 
-#### 9.4.5**MCPToolsRegist 工作原理**
+#### 9.4.5 MCPToolsRegist 工作原理
 
 1. `MCPToolsRegist` 通过服务名称（如 `mcp_server`）关联到 `mcpserver.properties` 中的连接池配置
 
@@ -1527,7 +1564,7 @@ test.http.httpRequestInterceptors=org.frameworkset.spi.ai.mcp.intercepter.Spring
 
 bboss-ai 不仅可以作为 MCP 客户端调用外部工具，还可以作为 MCP 服务端对外暴露工具能力：
 
-#### **9.5.1 核心组件**
+#### 9.5.1 核心组件
 
 | 类名                                             | 作用                                                         |
 | ------------------------------------------------ | ------------------------------------------------------------ |
@@ -1536,7 +1573,7 @@ bboss-ai 不仅可以作为 MCP 客户端调用外部工具，还可以作为 MC
 | `MCPBeanToolsRegist` / `MCPBeanToolFunctionCall` | Bean 工具服务端注册与调用                                    |
 | `MCPApiRequestUtil`                              | 服务端请求响应构建工具                                       |
 
-#### 9.5.2 **服务端能力**
+#### 9.5.2 服务端能力
 
 - **SSE 模式**：`sse()` 建立 SSE 长连接，`message()` 处理客户端消息
 - **Streamable HTTP 模式**：`streamable()` 处理无状态请求
@@ -1544,7 +1581,7 @@ bboss-ai 不仅可以作为 MCP 客户端调用外部工具，还可以作为 MC
 - **工具权限控制**：支持按 functionName + apiKey 细粒度授权
 - **支持的方法**：initialize、notifications/initialized、tools/list、tools/call
 
-#### 9.5.3 **服务端工作流程**
+#### 9.5.3 服务端工作流程
 
 1. 客户端通过 `registMcpBeanTool(apiKey, bean)` 注册 Bean 工具到指定密钥
 2. 客户端通过 SSE 端点建立连接或发送 Streamable HTTP 请求
@@ -1552,7 +1589,7 @@ bboss-ai 不仅可以作为 MCP 客户端调用外部工具，还可以作为 MC
 4. 根据请求方法返回工具列表或执行工具调用
 5. 通过 SSE Sink 或 HTTP Response 返回结果
 
-#### 9.5.4 **Spring Boot 集成示例**
+#### 9.5.4 Spring Boot 集成示例
 
 ```java
 // 1. 使用 @Tool 注解定义工具
@@ -3797,7 +3834,7 @@ public void searchVectorAndRerank() {
 
 bboss-ai 内置了一套全链路、多维度的智能体 Trace 可观测性体系，覆盖 LLM 调用、工具执行、工作流编排等全部环节，支持内存和数据库、Clickhouse三中持久化方式，并可通过流式通道实时推送观测事件到前端。
 
-### **16.1 核心模型**
+### 16.1 核心模型
 
 | 类名                        | 作用                                                         |
 | --------------------------- | ------------------------------------------------------------ |
@@ -3834,7 +3871,7 @@ bboss-ai 内置了一套全链路、多维度的智能体 Trace 可观测性体�
 | MESSAGE_TYPE_HITL_MESSAGE              | 20   | hitltask        | 智能体人工介入消息：大模型提供输入内容，需要人工介入处理     |
 | MESSAGE_TYPE_HITL_HANDLE_MESSAGE       | 21   | hitlhandle      | 智能体人工介入处理消息：人工介入处理完成后，返回给大模型的消息和数据内容 |
 
-### **16.3 自动 Trace 采集**
+### 16.3 自动 Trace 采集
 
 `AIAgentUtil` 在各类模型调用前后自动插入 Trace，无需业务代码介入：
 
@@ -3842,17 +3879,17 @@ bboss-ai 内置了一套全链路、多维度的智能体 Trace 可观测性体�
 - `traceLLMOutput()`：记录模型返回的完整响应报文
 - 覆盖场景：同步/流式聊天、图片生成、音频生成、视频任务提交、Embedding、Rerank
 
-### **16.4 流式 Token 计量**
+### 16.4 流式 Token 计量
 
 `BaseStreamDataBuilder` 在流式响应过程中通过 `computeTokens()` 累加各数据段的 Token 用量，最终在 `addChatWithToolCallSessionMessage()` 中将完整结果与 `TokenMetrics` 一并持久化。
 
-### **16.5 手动 Trace 记录**
+### 16.5 手动 Trace 记录
 
 - **`AIAgent.recordTraceMessage()`**：智能体入口方法，自动补全 agentId 和 parentAgentId，写入主会话存储
 - **`AgentTraceHolder`**：基于 ThreadLocal 的 Trace 上下文持有者，支持在工具调用、异步执行等跨线程场景中安全记录 Trace；提供 `trace()` 和 `emitterServerEvent()` 方法
 - **`AIFlowNode.recordTraceMessage()` / `AIFlowNodeVoid.recordTraceMessage()`**：工作流普通节点支持手动记录 Trace，自动绑定 nodeId 和 parentAgentId
 
-### **16.6 工作流编排 Trace**
+### 16.6 工作流编排 Trace
 
 工作流引擎在关键决策点自动记录 Trace：
 
@@ -3860,11 +3897,11 @@ bboss-ai 内置了一套全链路、多维度的智能体 Trace 可观测性体�
 - **`AIKeywordsRouterNodeBuilder`**：关键词路由记录匹配到的智能体 ID 及描述
 - **自定义节点**：业务可通过 `recordTraceMessage()` 记录循环控制、条件判断等自定义轨迹（如循环次数、修复标记）
 
-### **16.7 实时流式推送**
+### 16.7 实时流式推送
 
 `ServerEvent` 支持 `TYPE_TRACE = 2` 类型，可将 Trace 信息通过 Flux/SSE 实时推送给前端。流式场景下，路由失败、重试等关键事件可即时反馈到用户界面。
 
-### **16.8 存储与持久化**
+### 16.8 存储与持久化
 
 ```
 AgentSessionStore（接口）
