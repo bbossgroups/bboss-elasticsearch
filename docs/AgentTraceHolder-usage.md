@@ -2,16 +2,18 @@
 
 ## 一、概述
 
-`AgentTraceHolder` 是 bboss-ai 框架提供的 **AI Agent 执行追踪与事件上报工具类**，用于在工具调用、MCP（Model Context Protocol）通信等关键环节记录执行轨迹、上报调试信息以及向客户端推送流式事件。
+工具场景下，通过`AgentTraceHolder` 来记录和上报工具调用过程中的trace事件，`AgentTraceHolder` 是 bboss-ai 框架提供的 **AI Agent 执行追踪与事件上报工具类**，用于在工具调用、MCP（Model Context Protocol）通信等关键环节记录执行轨迹、上报调试信息以及向客户端推送流式事件。
 
 核心能力包括：
 - **执行耗时追踪**：记录工具/MCP 调用的起止时间
 - **调用链路上报**：将调用参数、响应结果、角色信息等封装为追踪消息
 - **服务器事件推送**：在工具执行过程中实时向客户端发送流式数据
 
+非工具场景下，可以直接使用AIAgent提供的方法来记录和上报trace事件。
+
 ---
 
-## 二、核心 API
+## 二、AgentTraceHolder核心 API
 
 ### 2.1 `isToolTrace`
 
@@ -70,7 +72,7 @@ public static void emitterServerEvent(ServerEvent serverEvent)
 | `type` | `String` | 事件类型，如 `ServerEvent.TYPE_DATA` |
 | `data` | `String` | 事件数据内容 |
 
-## 三、使用场景与示例
+## 三、AgentTraceHolder使用场景与示例
 
 场景1、场景2、场景3做为内置逻辑；可以参考场景4在自定义工具方法内部调用trace和emitterServerEvent方法。
 
@@ -199,7 +201,30 @@ AgentTraceHolder.emitterServerEvent(serverEvent);
 
 ---
 
-## 四、最佳实践
+## 四、AIAgent trace方法
+
+AIAgent定义了以下两个 trace方法
+
+```
+recordTraceMessage(TraceMessage traceMessage)  //只记录trace信息
+recordTraceMessage(TraceMessage traceMessage,TokenMetrics tokenMetrics) //需要传递一下监控指标信息
+```
+
+使用方法
+
+```java
+//记录模型调用异常轨迹消息
+       TraceMessage traceMessage = new TraceMessage();
+       LinkedMessageMap  tracemessage = new LinkedMessageMap();
+       tracemessage.put("error", error);
+//        tracemessage.put("role", SessionMessage.MESSAGE_TYPE_LLMINPUTMESSAGE_NAME);
+       tracemessage.put("role", SessionMessage.MESSAGE_TYPE_LLMCALLERROR_MESSAGE_NAME);
+       traceMessage.setMessage(tracemessage);
+       traceMessage.setStartTime(System.currentTimeMillis());
+       agent.recordTraceMessage(traceMessage);
+```
+
+## 五、最佳实践
 
 | 实践建议 | 说明 |
 |----------|------|
@@ -209,7 +234,7 @@ AgentTraceHolder.emitterServerEvent(serverEvent);
 | **异常场景考虑补全追踪** | 在 `catch` 块中可补充记录异常信息并上报，避免调用失败时追踪链路断裂 |
 | **流式事件与追踪消息区分使用** | `trace()` 用于后端链路追踪；`emitterServerEvent()` 用于向客户端推送实时数据 |
 
-## 五、参考资料
+## 六、参考资料
 
 bboss ai：https://esdoc.bbossgroups.com/#/bboss-ai
 

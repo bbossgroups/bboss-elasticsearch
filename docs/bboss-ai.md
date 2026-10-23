@@ -67,7 +67,11 @@
 
 ## 二、环境准备
 
-### 2.1 Maven 依赖
+### 2.1 jdk兼容性
+
+要求jdk 8+及以上版本
+
+### 2.2 Maven 依赖
 
 ```xml
 <dependency>
@@ -77,13 +81,13 @@
 </dependency>
 ```
 
-### 2.2 Gradle 依赖
+### 2.3 Gradle 依赖
 
 ```groovy
 implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 ```
 
-### 2.3 基于源码构建
+### 2.4 基于源码构建
 
 源码工程
 
@@ -93,12 +97,12 @@ https://gitee.com/bboss/bboss-ai
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-### 2.4 maas服务配置
+### 2.5 maas服务配置
 
 创建配置文件 `application-stream.properties`，配置各模型服务：使用时，需将apiKey替换为实际apiKey
 
 ```properties
-http.poolNames = deepseek,qwenvlplus,volcengine,kimi,zhipu,minimax,hunyuan
+http.poolNames = deepseek,qwenvlplus,volcengine,kimi,zhipu,minimax,hunyuan,embedding_model
 
 ## DeepSeek 配置
 deepseek.http.maxTotal = 200
@@ -146,9 +150,21 @@ hunyuan.http.maxTotal = 200
 hunyuan.http.defaultMaxPerRoute = 200
 hunyuan.http.hosts=https://api.hunyuan.cloud.tencent.com
 hunyuan.http.apiKeyId = sk-xxxxx
+
+embedding_model.http.hosts = 101.13.6.7:9997
+
+embedding_model.http.timeoutSocket = 600000
+embedding_model.http.timeoutConnection = 400000
+embedding_model.http.connectionRequestTimeout = 700000
+embedding_model.http.maxTotal = 100
+embedding_model.http.defaultMaxPerRoute = 100
+#embedding_model.http.extendConfigs.embedding_url = /v1/embeddings
+#embedding_model.http.extendConfigs.rerank_url = /v1/rerank
+embedding_model.http.modelType = xinference
+#embedding_model.http.apiKeyId = sk-xxxxx
 ```
 
-### 2.4 MCP 服务配置
+### 2.6 MCP 服务配置
 
 如需使用 MCP 工具服务，配置 `mcpserver.properties`：使用时，需将apiKey替换为实际apiKey
 
@@ -753,6 +769,39 @@ bboss提供了完备的技能支持，使用参考文档：https://esdoc.bbossgr
 本节介绍bboss ai与spring boot集成，实现智能体问答功能。
 
 参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-qa
+
+### 3.9 记忆窗口及消息压缩摘要设置
+
+可以设置会话记忆窗口，通过setSessionSize(3)和setTriggerSessionSize(6)组合设置会话记忆窗口
+
+```java
+StoreContext storeContext = new StoreContext()
+       .setSessionId(sessionId)
+       .setUserId(userId)
+       .setRequestId(requestId)
+       .setSessionSize(3)
+       .setTriggerSessionSize(6)
+       .setStoreType(StoreContext.STORE_TYPE_DB)
+       .setDataSource("sessionds").setDomain(domain);
+```
+
+TriggerSessionSize   当前会话记录达到TriggerSessionSize 时触发消息压缩和截断机制
+
+SessionSize 设置需保留的不压缩的消息记录数
+
+注意系统提示词不会被压缩和截断，即保留的SessionSize 不将system prompt消息统计在内，也不会将摘要消息统计在内，压缩时会确保工具入参和工具调用结果成对完整出现。
+
+被截断的消息记录，会生成对应的消息摘要，将摘要作为一条消息插入到system prompt消息和保留的session消息记录中间，即截断和压缩后，最终的消息组成如下：
+
+```shell
+system prompt消息+摘要消息+保留消息
+```
+
+可以额外设置摘要生成模型，不设置默认使用智能体LLM模型：
+
+```java
+storeContext.setCompactModelInfo(maas, model)
+```
 
 ## 四、图片识别（视觉大模型）
 
@@ -1851,9 +1900,7 @@ custom.http.agentAdapter=org.frameworkset.spi.ai.CustomAgentAdapter
 
    ```properties
    custom.http.hosts=https://dashscope.aliyuncs.com
-   ```
-
-custom.http.apiKeyId = sk-469f01dbb5724e6dbb2f4
+   custom.http.apiKeyId = sk-469f01dbb5724e6dbb2f4
    ```
 
 
@@ -2136,7 +2183,7 @@ storeContext.setClickhouseCluster("vops_3shards_1replicas")
 
 shard和replica两个宏变量配置，参考Clickhouse官方文档。
 
-如果通过框架自动建表，clickhouse 表集群名称一定要设置，否则报错，如果表已经提起创建创建好了，可以不用创建
+如果通过框架自动建表，clickhouse 表集群名称一定要设置，否则报错，如果表已经提起创建好了，框架会忽略创建
 
 2）使用Clickhouse时，会话续问续答时，不会更新会话修改时间
 
@@ -3451,6 +3498,12 @@ aiPlanAgent.shutdown();
 
 bboss AI 内置了文本向量化（Embedding）和重排序（Rerank）能力，可配合 Elasticsearch 等向量数据库实现检索增强生成（RAG）。
 
+向量模型和RERANK模型maas平台配置参考文档：
+
+https://esdoc.bbossgroups.com/#/Elasticsearch-embedding
+
+亦可以参考章节：[2.5 maas服务配置](https://esdoc.bbossgroups.com/#/bboss-ai?id=_25-maas服务配置)
+
 ### 15.1 向量模型 Embedding
 
 bboss-ai 内置了统一的向量模型调用能力，通过 `AIAgent.embedding(EmbeddingMessage)` 方法即可将文本转换为高维向量。
@@ -3914,9 +3967,13 @@ AgentSessionStore（接口）
 
 Trace 消息与业务消息统一存储在同一张表中，通过 `messageType` 和 `role` 区分，便于按会话维度进行全链路回放和分析，例如：`messageType = 5` 和 `role = trace` 。具体消息类型映射关系，看上面的对照表。
 
+## 十七 技能定义和使用
 
+技能是 `bboss-ai` 智能体（AIAgent）扩展能力的一种轻量级机制，通过 Markdown 文件（`SKILL.md`）描述专家知识与工作流程，并由框架注册为一个可被大模型调用的 `Skill` 工具。
 
-## 十七、技术支持
+技能使用详细参考文档：https://esdoc.bbossgroups.com/#/bboss-ai-skills
+
+## 十八、技术支持
 
 - **技术交流群**：21220580、166471282
 
