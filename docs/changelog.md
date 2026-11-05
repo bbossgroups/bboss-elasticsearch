@@ -69,19 +69,35 @@ implementation 'com.bbossgroups:bboss-ai-flow:6.5.5'
 
 https://esdoc.bbossgroups.com/#/bboss-build
 
-# [DataTran] v7.5.7 功能改进-20260815(待发布)
+# [DataTran] v7.5.7 功能改进-20261103(待发布)
 
 1. Elasticsearch客户端：新增spring boot4 starter
+
 2. 数据交换改进：工作流增加动态规划和生成并行子任务功能
+
 3. 数据交换改进：工作流增加动态规划和生产串行子任务功能
+
 4. 数据交换改进：增加多字段记录切割功能，
+
 5. 数据交换改进：修复数据交换作业，外部调度不能正常工作问题（引入节假日机制导致的问题）
+
 6. Elasticsearch输出插件改进：动态生成索引名称和类型时，可以从临时变量值获取索引名称和类型变量值
+
 7. Elasticsearch输入插件改进：增量[同步增加函数方式获取增量字段值](https://esdoc.bbossgroups.com/#/db-es-tool?id=_48512-%E9%80%9A%E8%BF%87%E5%87%BD%E6%95%B0%E8%8E%B7%E5%8F%96%E5%A2%9E%E9%87%8F%E5%AD%97%E6%AE%B5%E5%80%BC)功能，用于处理在复杂结构中获取增量字段值，同时务必设置增量字段名称
+
 8. Hbase输出插件改进：可以[设置timestamp时间戳字段](https://esdoc.bbossgroups.com/#/datatran-plugins?id=_293-%E8%AE%BE%E7%BD%AE%E8%BE%93%E5%87%BA%E8%AE%B0%E5%BD%95%E7%9A%84timestamp)，如果源库是Hbase，可以直接将源记录的时间戳设置为输出记录的时间戳
+
 9. 数据交换改进：完善[增量状态sql配置机制](https://esdoc.bbossgroups.com/#/db-es-tool?id=_4858-%E5%A2%9E%E9%87%8F%E7%8A%B6%E6%80%81%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E5%BA%93)，当数据库类型为不支持类型时，可以自行设置状态管理表和状态管理历史表建表sql
 
-# [Agent] V6.5.6 功能改进-20260815(待发布)
+10. 配置文件解析支持yaml格式：涉及bboss、bboot、bboss-http5、bboss-plugins、security、bboss-ai等模块
+
+11. dubbo插件扩展：支持nacos注册中心服务发布和发现,引入方式
+
+    ```groovy
+    api "com.bbossgroups.plugins:bboss-plugin-dubbo2:${bbossDubbo2Version}"
+    ```
+
+# [Agent] V6.5.6 功能改进-20261103(待发布)
 
 1. 智能体框架改进：Skill注册、加载和执行实现，使用样例：[代码评审](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/ChecklistCodeViewAgentTest.java) [掷骰子](https://gitee.com/bboss/bboss-ai/blob/main/bboss-ai/src/test/java/org/frameworkset/spi/ai/skills/SkillAgentTest.java)
 2. 智能体框架改进：内置文件工具支持[设定多个限定目录](https://esdoc.bbossgroups.com/#/bboss-ai-innertools?id=%e5%9b%9b%e3%80%81filefunctiontool-%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e6%93%8d%e4%bd%9c%e5%b7%a5%e5%85%b7)

@@ -24,8 +24,16 @@ import org.frameworkset.spi.assemble.PropertiesContainer;
  * @Date 2020/8/1 21:15
  * @author biaoping.yin
  * @version 1.0
+ * @deprecated 用org.frameworkset.spi.assemble.PropertiesUtil代替
  */
+@Deprecated
 public class PropertiesUtil {
+	@Deprecated
+	/**
+	 * 获取默认属性配置容器
+	 * @return
+	 * @deprecated 用org.frameworkset.spi.assemble.PropertiesUtil.getPropertiesContainer()替代
+	 */
 	public static PropertiesContainer getPropertiesContainer(){
 
 		return org.frameworkset.spi.assemble.PropertiesUtil.getPropertiesContainer();
